@@ -227,7 +227,7 @@ interface IShortX {
     ByteArrayWrapper getDASetById(String id, boolean withDAs);
     List<ByteArrayWrapper> getAllDASets(boolean withDAs);
 
-    void testFATALError();
+    void reportFATALError(String errorMessage);
 
     void attachQSTileHost(in IQSTileHost host);
     // QSTileList

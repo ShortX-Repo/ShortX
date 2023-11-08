@@ -90,6 +90,11 @@ class UIService(shortXContext: ShortXContext) : SystemService(shortXContext, "UI
             val result = runBlocking { receiver.awaitResultNoInterrupt(Duration.ofSeconds(10)) }
             val tileList = QSTileList.parseFrom(result.getValue(emptyByteArrayWrapper)?.byteData)
             logger.d("tileList: ${tileList.tileList.joinToString { it.label }}")
+
+            tileList.tileList.forEach {
+                val state = host.getState(it.tileSpec)
+                logger.d("state: ${it.label} $state")
+            }
         }
     }
 

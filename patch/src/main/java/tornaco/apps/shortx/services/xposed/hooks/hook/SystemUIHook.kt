@@ -30,6 +30,7 @@ import tornaco.apps.shortx.core.systemui.IQSTileHost
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.logAdapter
 import util.Reflections
+import java.util.Collection
 
 object SystemUIHook {
     private val logger = Logger("ShortXHook.SystemUIHook")
@@ -79,7 +80,7 @@ object SystemUIHook {
                 logger.d("onTuningChanged: ${param.args.map { it }}")
                 val shortx = ShortXManagerNative.shortX
                 logger.i("ShortX: $shortx")
-                shortx?.attachQSTileHost(QSTileHostImpl(param.thisObject))
+                shortx?.attachQSTileHost(QSTileHostImpl(param.thisObject, shortx))
             }
         }
     }.onFailure {
@@ -190,7 +191,7 @@ object SystemUIHook {
 }
 
 @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN", "UNCHECKED_CAST")
-class QSTileHostImpl(private val hostObj: Any) : IQSTileHost.Stub() {
+class QSTileHostImpl(private val hostObj: Any, private val shortx: IShortX) : IQSTileHost.Stub() {
     private val logger = Logger("ShortXHook.SystemUIHook.QSTileHostImpl")
 
     override fun getTiles(receiver: SynchronousResultReceiver) {
@@ -198,27 +199,56 @@ class QSTileHostImpl(private val hostObj: Any) : IQSTileHost.Stub() {
     }
 
     override fun click(tileSpec: String) {
-        onEachTiles { spec, tile ->
-            if (spec == tileSpec) {
-                logger.d("click: $spec")
-                Reflections.callMethod(tile, "click", arrayOf(View::class.java), null)
+        runCatching {
+            onEachTiles { spec, tile ->
+                if (spec == tileSpec) {
+                    logger.d("click: $spec")
+                    Reflections.callMethod(tile, "click", arrayOf(View::class.java), null)
+                }
             }
+        }.onFailure {
+            shortx.reportFATALError(it.stackTraceToString())
         }
     }
 
     override fun longClick(tileSpec: String) {
-        onEachTiles { spec, tile ->
-            if (spec == tileSpec) {
-                logger.d("long click: $spec")
-                Reflections.callMethod(tile, "longClick", arrayOf(View::class.java), null)
+        runCatching {
+            onEachTiles { spec, tile ->
+                if (spec == tileSpec) {
+                    logger.d("long click: $spec")
+                    Reflections.callMethod(tile, "longClick", arrayOf(View::class.java), null)
+                }
             }
+        }.onFailure {
+            shortx.reportFATALError(it.stackTraceToString())
+        }
+    }
+
+    override fun getState(tileSpec: String): Int {
+        return runCatching {
+            var state = -1
+            onEachTiles { spec, tile ->
+                if (spec == tileSpec) {
+                    logger.d("getState found spec: $spec")
+                    val stateObj = Reflections.callMethod(tile, "getState")
+                    logger.d("getState stateObj: $stateObj")
+                    if (stateObj != null) {
+                        val stateInt = Reflections.getIntField(stateObj, "state")
+                        logger.d("getState stateInt: $stateInt")
+                        state = stateInt
+                    }
+                }
+            }
+            state
+        }.getOrElse {
+            shortx.reportFATALError(it.stackTraceToString())
+            -1
         }
     }
 
     private fun onEachTiles(action: (spec: String, Any) -> Unit) {
-        val tiles =
-            Reflections.callMethod(hostObj, "getTiles") as java.util.Collection<*>
-        logger.d("tiles: ${tiles.map { it }}")
+        val tiles = invokeGetTiles()
+        logger.d("onEachTiles, tiles: ${tiles.map { it }}")
         tiles.forEach {
             val spec = Reflections.callMethod(it, "getTileSpec") ?: it.toString()
             action(spec.toString(), it)
@@ -226,21 +256,8 @@ class QSTileHostImpl(private val hostObj: Any) : IQSTileHost.Stub() {
     }
 
     private fun getTilesInternal(): QSTileList = runCatching {
-        val tiles =
-            runCatching {
-                Reflections.callMethod(hostObj, "getTiles") as java.util.Collection<*>
-            }.getOrElse {
-                if (it is NoSuchMethodError) {
-                    logger.w("NoSuchMethodError when call getTiles(), try to get field: mTiles")
-                    // LinkedHashMap<String, QSTile> mTiles = new LinkedHashMap<>()
-                    val map = Reflections.getObjectField(hostObj, "mTiles") as Map<*, *>
-                    map.values
-                } else {
-                    throw Error(it)
-                }
-            }
-
-        logger.d("tiles: ${tiles.map { it }}")
+        val tiles = invokeGetTiles()
+        logger.d("getTilesInternal, tiles: ${tiles.map { it }}")
         val qsTiles = tiles.mapNotNull {
             runCatching {
                 val spec = Reflections.callMethod(it, "getTileSpec") ?: it.toString()
@@ -257,6 +274,20 @@ class QSTileHostImpl(private val hostObj: Any) : IQSTileHost.Stub() {
         logger.e(it, "getTilesInternal")
         QSTileList.getDefaultInstance()
     }
+
+    private fun invokeGetTiles() = runCatching {
+        Reflections.callMethod(hostObj, "getTiles") as Collection<*>
+    }.getOrElse {
+        if (it is NoSuchMethodError) {
+            logger.w("NoSuchMethodError when call getTiles(), try to get field: mTiles")
+            // LinkedHashMap<String, QSTile> mTiles = new LinkedHashMap<>()
+            val map = Reflections.getObjectField(hostObj, "mTiles") as Map<*, *>
+            map.values
+        } else {
+            throw Error(it)
+        }
+    }.filterNotNull()
+
 }
 
 

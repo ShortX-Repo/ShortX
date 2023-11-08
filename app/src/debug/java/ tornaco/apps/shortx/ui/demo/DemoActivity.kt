@@ -90,7 +90,7 @@ class DemoActivity : BaseActivity() {
                         }
 
                         FilledTonalButton(onClick = {
-                            ShortXManagerNative.shortX?.testFATALError()
+                            ShortXManagerNative.shortX?.reportFATALError("Test")
                         }) {
                             Text(text = "Test fatal error")
                         }

@@ -515,7 +515,7 @@ public interface IShortX extends android.os.IInterface
     {
       return null;
     }
-    @Override public void testFATALError() throws android.os.RemoteException
+    @Override public void reportFATALError(java.lang.String errorMessage) throws android.os.RemoteException
     {
     }
     @Override public void attachQSTileHost(tornaco.apps.shortx.core.systemui.IQSTileHost host) throws android.os.RemoteException
@@ -2120,10 +2120,12 @@ public interface IShortX extends android.os.IInterface
           reply.writeTypedList(_result);
           return true;
         }
-        case TRANSACTION_testFATALError:
+        case TRANSACTION_reportFATALError:
         {
           data.enforceInterface(descriptor);
-          this.testFATALError();
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          this.reportFATALError(_arg0);
           reply.writeNoException();
           return true;
         }
@@ -5303,15 +5305,16 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
-      @Override public void testFATALError() throws android.os.RemoteException
+      @Override public void reportFATALError(java.lang.String errorMessage) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          boolean _status = mRemote.transact(Stub.TRANSACTION_testFATALError, _data, _reply, 0);
+          _data.writeString(errorMessage);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_reportFATALError, _data, _reply, 0);
           if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().testFATALError();
+            getDefaultImpl().reportFATALError(errorMessage);
             return;
           }
           _reply.readException();
@@ -5918,7 +5921,7 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_deleteDASet = (android.os.IBinder.FIRST_CALL_TRANSACTION + 129);
     static final int TRANSACTION_getDASetById = (android.os.IBinder.FIRST_CALL_TRANSACTION + 130);
     static final int TRANSACTION_getAllDASets = (android.os.IBinder.FIRST_CALL_TRANSACTION + 131);
-    static final int TRANSACTION_testFATALError = (android.os.IBinder.FIRST_CALL_TRANSACTION + 132);
+    static final int TRANSACTION_reportFATALError = (android.os.IBinder.FIRST_CALL_TRANSACTION + 132);
     static final int TRANSACTION_attachQSTileHost = (android.os.IBinder.FIRST_CALL_TRANSACTION + 133);
     static final int TRANSACTION_getAllQSTiles = (android.os.IBinder.FIRST_CALL_TRANSACTION + 134);
     static final int TRANSACTION_getSwipeDistanceThresholdDp = (android.os.IBinder.FIRST_CALL_TRANSACTION + 135);
@@ -6140,7 +6143,7 @@ public interface IShortX extends android.os.IInterface
   public void deleteDASet(java.lang.String id) throws android.os.RemoteException;
   public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getDASetById(java.lang.String id, boolean withDAs) throws android.os.RemoteException;
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllDASets(boolean withDAs) throws android.os.RemoteException;
-  public void testFATALError() throws android.os.RemoteException;
+  public void reportFATALError(java.lang.String errorMessage) throws android.os.RemoteException;
   public void attachQSTileHost(tornaco.apps.shortx.core.systemui.IQSTileHost host) throws android.os.RemoteException;
   // QSTileList
 

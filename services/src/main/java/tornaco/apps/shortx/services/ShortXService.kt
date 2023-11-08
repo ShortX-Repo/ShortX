@@ -477,8 +477,8 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }
         }
 
-        override fun testFATALError() {
-            shortXContext.watchDog.onFatalError(java.lang.IllegalStateException(), "testFATALError")
+        override fun reportFATALError(error: String) {
+            shortXContext.watchDog.onFatalError(Error(error), "reportFATALError")
         }
 
         override fun executeHttpRequest(request: ByteArrayWrapper): List<String> {
