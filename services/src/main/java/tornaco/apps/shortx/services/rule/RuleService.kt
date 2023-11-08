@@ -272,7 +272,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             // Check Normal Rules.
             val fact = KeyEvent.newBuilder().setKeyCode(it.keyCode).build()
             val enabledRules = getAllEnabledRules()
-            if (shouldFire(enabledRules, fact, true)) {
+            if (shouldFire(enabledRules, fact, false)) {
                 if (it.action == android.view.KeyEvent.ACTION_UP) {
                     logger.d("hasAnyRuleMatchFact for keyCode: ${it.keyCode}")
                     handler.postSafety {
@@ -293,7 +293,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             logger.d("onGestureEvent: $it")
             val fact = EdgeGesture.newBuilder().setEdge(it.first).setGesture(it.second).build()
             val enabledRules = getAllEnabledRules()
-            if (shouldFire(enabledRules, fact, true)) {
+            if (shouldFire(enabledRules, fact, false)) {
                 logger.d("hasAnyRuleMatchFact for onGestureEvent: $it")
                 handler.postSafety {
                     engine.fire(
