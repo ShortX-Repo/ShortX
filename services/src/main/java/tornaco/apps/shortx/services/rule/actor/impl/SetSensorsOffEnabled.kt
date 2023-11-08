@@ -24,10 +24,12 @@ object SetSensorsOffEnabled : Actor {
         val data =
             action unpack_ tornaco.apps.shortx.core.proto.action.SetSensorsOffEnabled::class.java
         val enable = data.enable
+        require(OsUtils.isSOrAbove()) {
+            "Sensor off feature is not supported on lower Android version. (require 12+)"
+        }
         if (OsUtils.isSOrAbove()) {
             if (enable && androidContext.keyguardManager.isKeyguardLocked) {
-                logger.w("Keyguard is locked, skip.")
-                return@with
+                throw IllegalStateException("Keyguard is locked.")
             }
             logger.i("setAllSensorPrivacy: $enable")
             val sensorPriv: SensorPrivacyManager =
