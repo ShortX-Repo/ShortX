@@ -39,6 +39,7 @@ fun SystemConditions(
         Condition.IsInCall::class,
         Condition.IsRinging::class,
         Condition.IsHeadsetPlug::class,
+        Condition.RequireSensorOff::class,
     ).map {
         SelectorItem(
             type = it,

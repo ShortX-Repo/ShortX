@@ -136,6 +136,25 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     )
     MenuDialog(state = windowRotationSelectorState)
 
+    val sensorOffSelectorState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.action.sensors.off"],
+        menuItems = listOf(
+            MenuDialogItem(
+                "on",
+                LocalI18N.current["ui.common.on"],
+            ),
+            MenuDialogItem(
+                "off",
+                LocalI18N.current["ui.common.off"],
+            )
+        ),
+        onItemSelected = { data, id ->
+            val isOn = "on" == id
+            addCondition(Condition.RequireSensorOff(isRequireOn = isOn))
+        }
+    )
+    MenuDialog(state = sensorOffSelectorState)
+
     return { source ->
         when (source.clazz) {
             Condition.IsHeadsetPlug::class -> {
@@ -225,6 +244,11 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
 
             Condition.RequireWindowRotation::class -> {
                 windowRotationSelectorState.show()
+                true
+            }
+
+            Condition.RequireSensorOff::class -> {
+                sensorOffSelectorState.show()
                 true
             }
 
