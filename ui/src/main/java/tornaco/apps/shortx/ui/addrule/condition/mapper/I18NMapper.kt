@@ -196,6 +196,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             )
         }
 
+        Condition.RequireSensorOff::class -> {
+            listOf(
+                i18N["ui.action.sensors.off"],
+            )
+        }
+
         else -> {
             emptyList()
         }
@@ -423,6 +429,16 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
             listOf(
                 i18N["ui.action.delay"],
                 i18N[condition.timeString]
+            )
+        }
+
+        is Condition.RequireSensorOff -> {
+            listOf(
+                i18N["ui.action.sensors.off"],
+                condition.isRequireOn.select(
+                    i18N["ui.common.on"],
+                    i18N["ui.common.off"]
+                )
             )
         }
     }

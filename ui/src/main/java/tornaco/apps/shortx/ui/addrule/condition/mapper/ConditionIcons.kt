@@ -136,6 +136,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.System.alarm_fill
         }
 
+        Condition.RequireSensorOff::class -> {
+            Remix.Device.sensor_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }
