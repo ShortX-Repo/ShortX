@@ -40,6 +40,7 @@ fun SystemConditions(
         Condition.IsRinging::class,
         Condition.IsHeadsetPlug::class,
         Condition.RequireSensorOff::class,
+        Condition.RequireTileState::class,
     ).map {
         SelectorItem(
             type = it,

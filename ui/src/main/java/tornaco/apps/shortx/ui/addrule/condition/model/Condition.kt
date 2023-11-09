@@ -6,6 +6,7 @@ import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.CustomContextDataKey
 import tornaco.apps.shortx.core.proto.common.IntOp
+import tornaco.apps.shortx.core.proto.common.QSTileState
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.common.TimeOfADayRange
@@ -852,6 +853,31 @@ sealed interface Condition : Parcelable {
         override val id: String = defaultNewConditionId(),
 
         val isRequireOn: Boolean
+    ) : Condition {
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: CustomContextDataKey
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
+        }
+    }
+
+    @Parcelize
+    data class RequireTileState(
+        override val isInvert: Boolean = false,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val note: String = "",
+        override val id: String = defaultNewConditionId(),
+
+        val spec: String,
+        val state: QSTileState
     ) : Condition {
         override fun clone(
             id: String,

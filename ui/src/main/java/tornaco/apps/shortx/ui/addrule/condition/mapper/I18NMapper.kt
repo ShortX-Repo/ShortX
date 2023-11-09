@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.common.timeOfADayRangeToString
 import tornaco.apps.shortx.core.proto.common.App
+import tornaco.apps.shortx.core.proto.common.QSTileState
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.select
@@ -203,6 +204,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
         Condition.RequireSensorOff::class -> {
             listOf(
                 i18N["ui.action.sensors.off"],
+            )
+        }
+
+        Condition.RequireTileState::class -> {
+            listOf(
+                i18N["ui.condition.tile.state"],
             )
         }
 
@@ -455,6 +462,13 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
                 )
             )
         }
+
+        is Condition.RequireTileState -> {
+            listOf(
+                i18N["ui.condition.tile.state"],
+                i18N[condition.state.labelKey()]
+            )
+        }
     }
 }
 
@@ -549,4 +563,8 @@ fun opDescriptionForComponent(op: Op, i18N: I18N): String {
             op.toString()
         }
     }
+}
+
+fun QSTileState.labelKey(): String {
+    return "ui.condition.tile.state.${this.name.lowercase()}"
 }

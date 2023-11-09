@@ -177,6 +177,15 @@ enum class PrebuiltCond : CondProvider {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.RequireDelay
     },
+    RequireSensorOff {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.RequireSensorOff
+    },
+
+    RequireTileState {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.RequireTileState
+    },
 }
 
 fun prebuiltCondFor(condition: ProtoAny): Cond? {

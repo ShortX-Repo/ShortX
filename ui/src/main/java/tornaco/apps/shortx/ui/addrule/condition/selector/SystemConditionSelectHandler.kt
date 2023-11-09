@@ -1,21 +1,26 @@
 package tornaco.apps.shortx.ui.addrule.condition.selector
 
 import androidx.compose.runtime.Composable
+import tornaco.apps.shortx.core.proto.common.QSTileState
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.condition.PlugType
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.condition.BatteryPercentSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.ConditionSelectSource
 import tornaco.apps.shortx.ui.addrule.condition.EvaluateGlobalVarSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.SIMSlotSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.getConditionAs
+import tornaco.apps.shortx.ui.addrule.condition.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.rememberBatteryPercentSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateGlobalVarSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberSIMSlotSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.fact.selector.BTDeviceSelectorDialog
+import tornaco.apps.shortx.ui.addrule.fact.selector.QSTileSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.WifiSSIDSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberBTDeviceSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberQSTileSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberWifiSSIDSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MenuDialog
@@ -155,6 +160,35 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     )
     MenuDialog(state = sensorOffSelectorState)
 
+
+    val tileStateSelectorState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.condition.tile.state"],
+        menuItems = QSTileState.values()
+            .filterNot { it == QSTileState.UNRECOGNIZED }
+            .map {
+                MenuDialogItem(it.name, title = LocalI18N.current[it.labelKey()])
+            },
+        onItemSelected = { data, id ->
+            val state = QSTileState.valueOf(id)
+            addCondition(
+                Condition.RequireTileState(
+                    state = state,
+                    spec = data.fallbackOnEmpty("ERROR")
+                )
+            )
+        }
+    )
+    MenuDialog(state = windowRotationSelectorState)
+
+    val targetTileSelectorState = rememberQSTileSelectorState(
+        title = LocalI18N.current["ui.condition.tile.state"],
+        onSelected = {
+            tileStateSelectorState.show(it.tileSpec)
+        }
+    )
+    QSTileSelectorDialog(state = targetTileSelectorState)
+
+
     return { source ->
         when (source.clazz) {
             Condition.IsHeadsetPlug::class -> {
@@ -249,6 +283,11 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
 
             Condition.RequireSensorOff::class -> {
                 sensorOffSelectorState.show()
+                true
+            }
+
+            Condition.RequireTileState::class -> {
+                targetTileSelectorState.show()
                 true
             }
 

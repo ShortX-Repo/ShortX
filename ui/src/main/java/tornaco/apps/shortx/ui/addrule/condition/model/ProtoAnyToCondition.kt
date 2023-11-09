@@ -27,6 +27,7 @@ import tornaco.apps.shortx.core.proto.condition.RequireDelay
 import tornaco.apps.shortx.core.proto.condition.RequireMobileDataEnabled
 import tornaco.apps.shortx.core.proto.condition.RequireScreenRotate
 import tornaco.apps.shortx.core.proto.condition.RequireSensorOff
+import tornaco.apps.shortx.core.proto.condition.RequireTileState
 import tornaco.apps.shortx.core.proto.condition.RequireWifiConnected
 import tornaco.apps.shortx.core.proto.condition.RequireWifiDisconnected
 import tornaco.apps.shortx.core.proto.condition.RequireWindowRotation
@@ -442,6 +443,18 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 isInvert = data.isInvert,
                 customContextDataKey = data.customContextDataKey,
                 isRequireOn = data.isRequireOn
+            )
+        }
+
+        this is_ RequireTileState::class.java -> {
+            val data = this unpack_ RequireTileState::class.java
+            Condition.RequireTileState(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+                customContextDataKey = data.customContextDataKey,
+                state = data.state,
+                spec = data.tileSpec
             )
         }
 

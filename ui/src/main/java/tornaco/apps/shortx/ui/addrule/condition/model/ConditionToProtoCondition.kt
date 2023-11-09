@@ -27,6 +27,7 @@ import tornaco.apps.shortx.core.proto.condition.RequireDelay
 import tornaco.apps.shortx.core.proto.condition.RequireMobileDataEnabled
 import tornaco.apps.shortx.core.proto.condition.RequireScreenRotate
 import tornaco.apps.shortx.core.proto.condition.RequireSensorOff
+import tornaco.apps.shortx.core.proto.condition.RequireTileState
 import tornaco.apps.shortx.core.proto.condition.RequireWifiConnected
 import tornaco.apps.shortx.core.proto.condition.RequireWifiDisconnected
 import tornaco.apps.shortx.core.proto.condition.RequireWindowRotation
@@ -461,6 +462,17 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setIsInvert(isInvert)
                 .setCustomContextDataKey(customContextDataKey)
                 .setIsRequireOn(isRequireOn)
+                .build()
+        }
+
+        is Condition.RequireTileState -> {
+            RequireTileState.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
+                .setState(state)
+                .setTileSpec(spec)
                 .build()
         }
     }

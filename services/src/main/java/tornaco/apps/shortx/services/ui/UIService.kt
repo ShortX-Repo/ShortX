@@ -137,4 +137,14 @@ class UIService(shortXContext: ShortXContext) : SystemService(shortXContext, "UI
         val first = qsTileHost.getRegisteredCallbackItem(0)
         first.longClick(tileSpec)
     }
+
+    fun getTileState(tileSpec: String): Int {
+        val itemCount = qsTileHost.registeredCallbackCount
+        if (itemCount == 0) {
+            throw Error("no registered qsTileHost")
+        }
+        logger.d("getTileState: $tileSpec")
+        val first = qsTileHost.getRegisteredCallbackItem(0)
+        return first.getState(tileSpec)
+    }
 }

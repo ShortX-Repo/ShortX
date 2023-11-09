@@ -144,6 +144,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.Logos.android_fill
         }
 
+        Condition.RequireTileState::class -> {
+            Remix.Device.server_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

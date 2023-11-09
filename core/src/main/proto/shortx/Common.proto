@@ -328,6 +328,12 @@ message QSTileList {
   repeated QSTile tile = 1;
 }
 
+enum QSTileState  {
+  QSTileState_Unavailable = 0;
+  QSTileState_InActive = 1;
+  QSTileState_Active = 2;
+}
+
 enum BiometricVerifyResultCase {
   BiometricVerifyResult_Allow_BiometricNotReady = 0;
   BiometricVerifyResult_Allow_Verified = 1;
@@ -350,6 +356,6 @@ message SensorUsage {
 }
 
 enum RegexMatchOptions {
-    RegexMatchOptions_Match = 0;
-    RegexMatchOptions_ContainsMatchIn = 1;
+  RegexMatchOptions_Match = 0;
+  RegexMatchOptions_ContainsMatchIn = 1;
 }

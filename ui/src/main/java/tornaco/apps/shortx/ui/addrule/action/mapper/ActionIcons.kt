@@ -421,6 +421,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.System.lock_password_fill
         }
 
+        Action.ClickTile::class -> {
+            Remix.Device.server_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }
