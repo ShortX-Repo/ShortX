@@ -162,7 +162,7 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
 
 
     val tileStateSelectorState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.condition.tile.state"],
+        title = LocalI18N.current["ui.conditions.tile.state"],
         menuItems = QSTileState.values()
             .filterNot { it == QSTileState.UNRECOGNIZED }
             .map {
@@ -178,10 +178,10 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
             )
         }
     )
-    MenuDialog(state = windowRotationSelectorState)
+    MenuDialog(state = tileStateSelectorState)
 
     val targetTileSelectorState = rememberQSTileSelectorState(
-        title = LocalI18N.current["ui.condition.tile.state"],
+        title = LocalI18N.current["ui.conditions.tile.state"],
         onSelected = {
             tileStateSelectorState.show(it.tileSpec)
         }

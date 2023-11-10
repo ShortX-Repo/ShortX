@@ -281,7 +281,7 @@ fun HttpRequestDialog(state: HttpRequestDialogState) {
 private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
     val context = LocalContext.current
 
-    val outputDialogState = rememberOutputDialogState(title = "ui.action.http.request")
+    val outputDialogState = rememberOutputDialogState(title = LocalI18N.current["ui.action.http.request"])
     OutputDialog(state = outputDialogState)
 
     val errorDialogState =

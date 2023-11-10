@@ -209,7 +209,7 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
 
         Condition.RequireTileState::class -> {
             listOf(
-                i18N["ui.condition.tile.state"],
+                i18N["ui.conditions.tile.state"],
             )
         }
 
@@ -465,7 +465,7 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
 
         is Condition.RequireTileState -> {
             listOf(
-                i18N["ui.condition.tile.state"],
+                i18N["ui.conditions.tile.state"],
                 i18N[condition.state.labelKey()]
             )
         }
@@ -566,5 +566,5 @@ fun opDescriptionForComponent(op: Op, i18N: I18N): String {
 }
 
 fun QSTileState.labelKey(): String {
-    return "ui.condition.tile.state.${this.name.lowercase()}"
+    return "ui.conditions.tile.state.${this.name.lowercase()}"
 }
