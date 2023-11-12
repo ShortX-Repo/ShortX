@@ -22,6 +22,7 @@ import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.services.rule.JobTags.RULE_QUIT_JOB
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
@@ -297,82 +298,88 @@ class DefaultRuleEngine(
 
                 val localVars = LocalVars.obtain()
 
-                // Match condition
-                val conditionRes = runBlocking {
-                    if (rule.conditionsList.isEmpty()) {
-                        logger.d("this rule: ${rule.title} has no condition, assume match!")
-                        true
-                    } else {
-                        conditionEvaluator.evaluate(
-                            evaluateContext = evaluateContext,
-                            condOp = rule.condOp,
-                            condOpPayload = rule.condOpPayload,
-                            conditions = rule.conditionsList,
-                            contextData = contextData,
-                            // No local var for a Rule condition.
-                            localVars = LocalVars.obtain()
-                        )
-                    }
-                }
-                logger.d("conditionRes for  ${fact.javaClass} ${rule.title} is: $conditionRes")
-
-                // Check if should execute actions?
-                var shouldExecuteActions = conditionRes
-                if (conditionRes) {
-                    val conflictStrategy: ConflictStrategy = rule.conflictPolicy
-                    val isThisRuleAlreadyRunning = synchronized(jobs) {
-                        jobs.any {
-                            it.id == rule.id
+                val job = coroutineScope.launchSafety {
+                    // Launch Start
+                    withContext(Dispatchers.IO) {
+                        // Match condition
+                        val conditionRes: Boolean = if (rule.conditionsList.isEmpty()) {
+                            logger.d("this rule: ${rule.title} has no condition, assume match!")
+                            true
+                        } else {
+                            conditionEvaluator.evaluate(
+                                evaluateContext = evaluateContext,
+                                condOp = rule.condOp,
+                                condOpPayload = rule.condOpPayload,
+                                conditions = rule.conditionsList,
+                                contextData = contextData,
+                                // No local var for a Rule condition.
+                                localVars = LocalVars.obtain()
+                            )
                         }
-                    }
-                    logger.d("${rule.title} conflictStrategy: $conflictStrategy, isThisRuleAlreadyRunning: $isThisRuleAlreadyRunning")
-                    if (isThisRuleAlreadyRunning) {
-                        when (conflictStrategy) {
-                            ConflictStrategy.ConflictStrategy_ExecuteBoth, ConflictStrategy.UNRECOGNIZED -> {
-                                // Fall through.
-                                shouldExecuteActions = true
-                            }
+                        logger.d("conditionRes for  ${fact.javaClass} ${rule.title} is: $conditionRes")
 
-                            ConflictStrategy.ConflictStrategy_ReplaceOld -> {
-                                cancelJobs("ConflictStrategy_ReplaceOld") {
+                        // Check if should execute actions?
+                        var shouldExecuteActions = conditionRes
+                        if (conditionRes) {
+                            val conflictStrategy: ConflictStrategy = rule.conflictPolicy
+                            val isThisRuleAlreadyRunning = synchronized(jobs) {
+                                jobs.any {
                                     it.id == rule.id
                                 }
-                                shouldExecuteActions = true
                             }
+                            logger.d("${rule.title} conflictStrategy: $conflictStrategy, isThisRuleAlreadyRunning: $isThisRuleAlreadyRunning")
+                            if (isThisRuleAlreadyRunning) {
+                                when (conflictStrategy) {
+                                    ConflictStrategy.ConflictStrategy_ExecuteBoth, ConflictStrategy.UNRECOGNIZED -> {
+                                        // Fall through.
+                                        shouldExecuteActions = true
+                                    }
 
-                            ConflictStrategy.ConflictStrategy_SkipNew -> {
-                                logger.d("Skip this rule actions since ConflictStrategy_SkipNew")
-                                shouldExecuteActions = false
+                                    ConflictStrategy.ConflictStrategy_ReplaceOld -> {
+                                        cancelJobs("ConflictStrategy_ReplaceOld") {
+                                            it.id == rule.id
+                                        }
+                                        shouldExecuteActions = true
+                                    }
+
+                                    ConflictStrategy.ConflictStrategy_SkipNew -> {
+                                        logger.d("Skip this rule actions since ConflictStrategy_SkipNew")
+                                        shouldExecuteActions = false
+                                    }
+                                }
+                            }
+                            logger.d("shouldExecuteActions for rule ${rule.title} $shouldExecuteActions")
+
+                            // Launch actions.
+                            if (shouldExecuteActions) {
+                                runActionsJob(
+                                    ruleTitleForLog = rule.title,
+                                    asyncMode = rule.asyncMode,
+                                    muteX = rule.muteX,
+                                    actionsToRun = rule.actionsList,
+                                    evaluateContext = evaluateContext,
+                                    contextData = contextData,
+                                    localVars = localVars
+                                )
+
                             }
                         }
                     }
-                    logger.d("shouldExecuteActions for rule ${rule.title} $shouldExecuteActions")
+                    // Launch END.
+                }
 
-                    // Launch actions.
-                    if (shouldExecuteActions) {
-                        val job = runActionsJob(
-                            ruleTitleForLog = rule.title,
-                            asyncMode = rule.asyncMode,
-                            muteX = rule.muteX,
-                            actionsToRun = rule.actionsList,
-                            evaluateContext = evaluateContext,
-                            contextData = contextData,
-                            localVars = localVars
-                        )
-                        logger.d("Created job: $job for rule: ${rule.title}")
-                        synchronized(jobs) {
-                            jobs.add(JobRecord(rule.id, job))
-                        }
-                        onJobStarted(rule.id)
-                        job.invokeOnCompletion {
-                            logger.d("job for rule: ${rule.title} complete, err: $it")
-                            synchronized(jobs) {
-                                jobs.remove(JobRecord(rule.id, job))
-                            }
-                            contextData.recycle()
-                            onJobCompleted(rule.id)
-                        }
+                logger.d("Created job: $job for rule: ${rule.title}")
+                synchronized(jobs) {
+                    jobs.add(JobRecord(rule.id, job))
+                }
+                onJobStarted(rule.id)
+                job.invokeOnCompletion {
+                    logger.d("job for rule: ${rule.title} complete, err: $it")
+                    synchronized(jobs) {
+                        jobs.remove(JobRecord(rule.id, job))
                     }
+                    contextData.recycle()
+                    onJobCompleted(rule.id)
                 }
             } else {
                 logger.d("fire, not match for rule it self: ${fact.javaClass} ${rule.title}, will check it's quit.")
@@ -391,36 +398,58 @@ class DefaultRuleEngine(
                         .build()
                     val localVars = LocalVars.obtain()
 
-                    val conditionRes = runBlocking {
-                        if (quit.conditionsList.isEmpty()) {
-                            logger.d("$LOG_TAG_RULE_QUIT quit for rule: ${rule.title} has no condition, assume match!")
-                            true
-                        } else {
-                            conditionEvaluator.evaluate(
-                                evaluateContext = evaluateContext,
-                                condOp = quit.condOp,
-                                condOpPayload = quit.condOpPayload,
-                                conditions = quit.conditionsList,
-                                contextData = contextData,
-                                // No local var for a Rule condition.
-                                localVars = LocalVars.obtain()
-                            )
+                    val job = coroutineScope.launchSafety {
+                        // Launch start
+                        withContext(Dispatchers.IO) {
+                            val conditionRes = if (quit.conditionsList.isEmpty()) {
+                                logger.d("$LOG_TAG_RULE_QUIT quit for rule: ${rule.title} has no condition, assume match!")
+                                true
+                            } else {
+                                conditionEvaluator.evaluate(
+                                    evaluateContext = evaluateContext,
+                                    condOp = quit.condOp,
+                                    condOpPayload = quit.condOpPayload,
+                                    conditions = quit.conditionsList,
+                                    contextData = contextData,
+                                    // No local var for a Rule condition.
+                                    localVars = LocalVars.obtain()
+                                )
+                            }
+                            logger.d("$LOG_TAG_RULE_QUIT conditionRes for  ${fact.javaClass} ${rule.title} is: $conditionRes")
+                            if (conditionRes) {
+                                logger.d("$LOG_TAG_RULE_QUIT about to quit ${rule.title}")
+
+                                // DO NOT cancel ourself...
+                                cancelJobs("Rule quit") {
+                                    it.id == rule.id && !it.hasTag(RULE_QUIT_JOB)
+                                }
+
+                                runActionsJob(
+                                    ruleTitleForLog = "$LOG_TAG_RULE_QUIT-${rule.title}",
+                                    asyncMode = rule.asyncMode,
+                                    muteX = rule.muteX,
+                                    actionsToRun = rule.quit.actionsList,
+                                    evaluateContext = evaluateContext,
+                                    contextData = contextData,
+                                    localVars = localVars
+                                )
+                            }
+                            // Launch End
                         }
                     }
-                    logger.d("$LOG_TAG_RULE_QUIT conditionRes for  ${fact.javaClass} ${rule.title} is: $conditionRes")
-                    if (conditionRes) {
-                        logger.d("$LOG_TAG_RULE_QUIT about to quit ${rule.title}")
-                        cancelJobs("Rule quit") { it.id == rule.id }
 
-                        runActionsJob(
-                            ruleTitleForLog = "$LOG_TAG_RULE_QUIT-${rule.title}",
-                            asyncMode = rule.asyncMode,
-                            muteX = rule.muteX,
-                            actionsToRun = rule.quit.actionsList,
-                            evaluateContext = evaluateContext,
-                            contextData = contextData,
-                            localVars = localVars
-                        )
+                    logger.d("Created quit job: $job for rule: ${rule.title}")
+                    synchronized(jobs) {
+                        jobs.add(JobRecord(rule.id, job, setOf(RULE_QUIT_JOB)))
+                    }
+                    onJobStarted(rule.id)
+                    job.invokeOnCompletion {
+                        logger.d("quit job for rule: ${rule.title} complete, err: $it")
+                        synchronized(jobs) {
+                            jobs.remove(JobRecord(rule.id, job))
+                        }
+                        contextData.recycle()
+                        onJobCompleted(rule.id)
                     }
 
                 }
@@ -429,7 +458,7 @@ class DefaultRuleEngine(
         return anyMatch
     }
 
-    private fun runActionsJob(
+    private suspend fun runActionsJob(
         ruleTitleForLog: String,
         asyncMode: AsyncMode,
         muteX: Mutex,
@@ -437,61 +466,58 @@ class DefaultRuleEngine(
         evaluateContext: EvaluateContext,
         contextData: ContextData,
         localVars: LocalVars
-    ) = coroutineScope.launchSafety {
+    ) {
         // By default, execute action in IO
-        withContext(Dispatchers.IO) {
-            logger.d("job for rule: $ruleTitleForLog start.")
-            val runActions: suspend () -> Unit = {
-                kotlin.run loop@{
-                    logger.d("about to execute ${actionsToRun.size} actions for $ruleTitleForLog")
-                    actionsToRun.forEach {
-                        logger.d("about to execute action: ${it.typeUrl}")
-                        val evaRes = actionEvaluator.evaluate(
-                            evaluateContext = evaluateContext,
-                            action = it,
-                            contextData = contextData,
-                            localVars = localVars,
-                        )
-                        logger.d("action evaluate res: $evaRes")
-                        if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
-                            logger.e(evaRes.error, "evaluate fail")
-                            if (evaRes.shouldContinue) {
-                                logger.d("Action on error is continue execute.")
-                            } else {
-                                return@loop
-                            }
-                        } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
-                            logger.w("evaluate break!")
+        logger.d("job for rule: $ruleTitleForLog start.")
+        val runActions: suspend () -> Unit = {
+            kotlin.run loop@{
+                logger.d("about to execute ${actionsToRun.size} actions for $ruleTitleForLog")
+                actionsToRun.forEach {
+                    logger.d("about to execute action: ${it.typeUrl}")
+                    val evaRes = actionEvaluator.evaluate(
+                        evaluateContext = evaluateContext,
+                        action = it,
+                        contextData = contextData,
+                        localVars = localVars,
+                    )
+                    logger.d("action evaluate res: $evaRes")
+                    if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
+                        logger.e(evaRes.error, "evaluate fail")
+                        if (evaRes.shouldContinue) {
+                            logger.d("Action on error is continue execute.")
+                        } else {
                             return@loop
-                        } else if (evaRes is ActionEvaluator.EvaluateResult.Disabled) {
-                            logger.d("action is disabled: ${evaRes.action.typeUrl}")
                         }
-                    }
-                }
-            }
-
-            when (asyncMode) {
-                AsyncMode.AsyncMode_Async, AsyncMode.UNRECOGNIZED -> {
-                    logger.d("Run actions with Async")
-                    runActions()
-                }
-
-                AsyncMode.AsyncMode_Sync_InRule -> {
-                    logger.d("Run actions with Sync_InRule: $muteX")
-                    muteX.withLock {
-                        runActions()
-                    }
-                }
-
-                else -> {
-                    logger.d("Run actions with globalMuteX")
-                    globalMuteX.withLock {
-                        runActions()
+                    } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
+                        logger.w("evaluate break!")
+                        return@loop
+                    } else if (evaRes is ActionEvaluator.EvaluateResult.Disabled) {
+                        logger.d("action is disabled: ${evaRes.action.typeUrl}")
                     }
                 }
             }
         }
 
+        when (asyncMode) {
+            AsyncMode.AsyncMode_Async, AsyncMode.UNRECOGNIZED -> {
+                logger.d("Run actions with Async")
+                runActions()
+            }
+
+            AsyncMode.AsyncMode_Sync_InRule -> {
+                logger.d("Run actions with Sync_InRule: $muteX")
+                muteX.withLock {
+                    runActions()
+                }
+            }
+
+            else -> {
+                logger.d("Run actions with globalMuteX")
+                globalMuteX.withLock {
+                    runActions()
+                }
+            }
+        }
     }
 
     override fun evaluateActions(
@@ -607,4 +633,10 @@ class DefaultRuleEngine(
 private fun List<Rule>.filterInvalid() =
     filter { it.actionsList.isNotEmpty() || it.quit.actionsList.isNotEmpty() }
 
-data class JobRecord(val id: String, val job: Job)
+data class JobRecord(val id: String, val job: Job, val tags: Set<String> = emptySet()) {
+    fun hasTag(tag: String) = tags.contains(tag)
+}
+
+object JobTags {
+    const val RULE_QUIT_JOB = "rule.quit.job"
+}

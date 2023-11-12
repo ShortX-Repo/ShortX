@@ -65,7 +65,7 @@
   "ui.actions.hook.on.deleted.title": "被删除时",
   "ui.actions.hook.on.deleted.description": "当该自动指令被删除时会执行的动作，通常你可以做一些清理工作，例如删除不再使用的全局变量",
   "ui.rule.quit.title": "退出指令",
-  "ui.rule.quit.description": "退出指令是指在下列触发器触发，并且满足条件时，退出当前的一键指令，结束该指令的所有未完成的动作",
+  "ui.rule.quit.description": "退出指令是指在下列触发器触发，并且满足条件时，退出当前的指令，结束该指令的所有未完成的动作",
   "ui.rule.quit.action.description": "退出指令触发后，结束该指令的所有未完成的动作，除此之外，你可以添加额外动作",
   "ui.advanced.options": "进阶选项",
   "ui.actions.add": "添加动作",
