@@ -515,8 +515,12 @@ sealed interface Fact {
     // For match purpose.
     data class Notification(
         val titleRegex: String,
+        val titleMatchOptions: RegexMatchOptions,
+
         val contentRegex: String,
-        val tagRegex: String,
+        val contentMatchOptions: RegexMatchOptions,
+
+        val tag: String,
 
         val apps: List<App>,
         val pkgSets: List<PkgSet>,

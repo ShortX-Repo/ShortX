@@ -201,32 +201,12 @@ class NotificationService(shortXContext: ShortXContext) :
 
     fun removeNotificationByTag(tag: String) {
         logger.d("removeNotificationByTag: $tag")
-
-//        AppNotificationServiceProxy.cancelWithTag(context, tag)
-//        synchronized(attachedPoster) {
-//            val itemCount = attachedPoster.beginBroadcast()
-//            if (itemCount == 0) {
-//                logger.d("removeNotificationByTag, no registered poster.")
-//                return
-//            }
-//            val first = attachedPoster.getBroadcastItem(0)
-//            logger.d("removeNotificationByTag, Using poster: $first")
-//            kotlin.runCatching { first.cancelWithTag(tag) }
-//                .getOrElse {
-//                    logger.e(it, "Error call cancelWithTag")
-//                    null
-//                }
-//            attachedPoster.finishBroadcast()
-//        }
-
-        // Below logic not work, no error, no log.
         getActiveNotifications().filter { it.tag == tag }.forEach {
             val pkg = it.appsList[0]
             logger.d("removeNotificationByTag, pkg: ${pkg.appPkgToString()}, key: ${it.key}")
             nls.waitForBind()
             nls.cancelNotification(it.key)
         }
-
     }
 
     private fun Notification.contextMap() = mapOf(
@@ -259,21 +239,6 @@ internal class AppNotificationServiceProxy(context: Context, intent: Intent?) :
                     logger.e(it, "ProxyTask")
                 }
             }
-
-        })
-    }
-
-    fun cancelWithTag(tag: String) {
-        setTask(object : ProxyTask() {
-            override fun run() {
-                runCatching {
-                    logger.i("call remove: $impl")
-                    requireNotNull(impl) { "impl is null." }.cancelWithTag(tag)
-                }.onFailure {
-                    logger.e(it, "ProxyTask")
-                }
-            }
-
         })
     }
 
@@ -284,14 +249,6 @@ internal class AppNotificationServiceProxy(context: Context, intent: Intent?) :
             intent.component =
                 ComponentName.unflattenFromString("${BuildProp.APP_PACKAGE_NAME}/${BuildProp.APP_NOTIFICATION_SERVICE_NAME}")
             return AppNotificationServiceProxy(context, intent).post(postNotification)
-        }
-
-        fun cancelWithTag(context: Context, tag: String) {
-            val intent = Intent()
-            intent.setPackage(BuildProp.APP_PACKAGE_NAME)
-            intent.component =
-                ComponentName.unflattenFromString("${BuildProp.APP_PACKAGE_NAME}/${BuildProp.APP_NOTIFICATION_SERVICE_NAME}")
-            return AppNotificationServiceProxy(context, intent).cancelWithTag(tag)
         }
     }
 }

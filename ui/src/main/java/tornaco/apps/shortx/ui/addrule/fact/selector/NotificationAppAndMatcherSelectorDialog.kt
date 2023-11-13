@@ -39,7 +39,6 @@ import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.TipBody
-import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -58,7 +57,7 @@ class NotificationAppAndMatcherSelectorState(
     fun show(initialValue: Fact.Notification? = null) {
         this.titleRegex = initialValue?.titleRegex ?: ""
         this.contentRegex = initialValue?.contentRegex ?: ""
-        this.tagRegex = initialValue?.tagRegex ?: ""
+        this.tagRegex = initialValue?.tag ?: ""
 
         this.selectedApps = initialValue?.apps ?: emptyList()
         this.selectedPkgSets = initialValue?.pkgSets ?: emptyList()
@@ -97,7 +96,7 @@ fun NotificationAppAndMatcherSelectorDialog(state: NotificationAppAndMatcherSele
                                             Fact.Notification(
                                                 titleRegex = state.titleRegex,
                                                 contentRegex = state.contentRegex,
-                                                tagRegex = state.tagRegex,
+                                                tag = state.tagRegex,
                                                 apps = state.selectedApps,
                                                 pkgSets = state.selectedPkgSets
                                             )

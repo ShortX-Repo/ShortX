@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule
 
 import tornaco.apps.shortx.core.PrebuiltStablePkgSetLabel
+import tornaco.apps.shortx.core.proto.RegexMatchData
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.RegexMatchOptions
@@ -539,10 +540,15 @@ class FactMatcherImpl(private val shortXContext: () -> ShortXContext) : FactMatc
         if (rule == Notification.getDefaultInstance()) {
             return true
         }
+        // User set a tag, check tag first.
+        if (rule.tag.isNotEmpty() && rule.tag != actual.tag) {
+            logger.d("matchNotificationMatcher, false at tag.")
+            return false
+        }
+
         return emptyOrRegexMatch(
-            rule.title to actual.title,
-            rule.contentText to actual.contentText,
-            rule.tag to actual.tag,
+            RegexMatchData(rule.title, rule.titleRegexOptions) to actual.title,
+            RegexMatchData(rule.contentText, rule.contentRegexOptions) to actual.contentText,
         )
     }
 
@@ -641,11 +647,10 @@ class FactMatcherImpl(private val shortXContext: () -> ShortXContext) : FactMatc
 }
 
 fun emptyOrRegexMatch(
-    vararg ruleAndActuals: Pair<String, String>,
-    options: RegexMatchOptions = RegexMatchOptions.RegexMatchOptions_Match
+    vararg ruleAndActuals: Pair<RegexMatchData, String>,
 ) =
     ruleAndActuals.all {
-        emptyOrRegexMatch(it.first, it.second, options)
+        emptyOrRegexMatch(it.first.regex, it.second, it.first.options)
     }
 
 fun emptyOrRegexMatch(

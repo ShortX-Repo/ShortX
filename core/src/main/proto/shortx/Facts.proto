@@ -302,8 +302,13 @@ message ActivityStarted {
 }
 
 message Notification {
+  // Title or regex
   string title = 1;
+  RegexMatchOptions titleRegexOptions = 10;
+
+  // Content or regex
   string contentText = 2;
+  RegexMatchOptions contentRegexOptions = 11;
 
   repeated AppPkg apps = 3;
   repeated string pkgSets = 4;

@@ -339,7 +339,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                     pkgSets = models.second,
                     titleRegex = data.record.title,
                     contentRegex = data.record.contentText,
-                    tagRegex = data.record.tag
+                    tag = data.record.tag
                 ),
                 id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
             )
@@ -356,7 +356,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                     pkgSets = models.second,
                     titleRegex = data.record.title,
                     contentRegex = data.record.contentText,
-                    tagRegex = data.record.tag
+                    tag = data.record.tag
                 ),
                 id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
             )
@@ -373,7 +373,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                     pkgSets = models.second,
                     titleRegex = data.new.title,
                     contentRegex = data.new.contentText,
-                    tagRegex = data.new.tag
+                    tag = data.new.tag
                 ),
                 id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
             )

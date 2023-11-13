@@ -179,10 +179,6 @@ object SystemUIHook {
                     notificationPoster.invoke(n)
                 }
             }
-
-            override fun cancelWithTag(tag: String) {
-                notificationPoster.cancelNotification(tag)
-            }
         }
 
         shortx.attachNotificationPoster("SystemUI", stub)
