@@ -313,6 +313,7 @@ message Notification {
   bool isFgService = 7;
 
   string tag = 8;
+  string key = 9;
 }
 
 message NotificationPosted {

@@ -31,6 +31,7 @@ fun StatusBarNotification.androidSBNToNotification(): Notification? {
             .setTitle(getTitle(n) ?: "")
             .setContentText(getContent(n) ?: "")
             .setTag(getTag(sbn) ?: "")
+            .setKey(sbn.key ?: "")
             .setNotificationId(getId(sbn)?.toString() ?: "")
             .setIsFgService(isFgService)
             .addApps(

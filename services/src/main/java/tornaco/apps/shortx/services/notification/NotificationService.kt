@@ -1,5 +1,7 @@
 package tornaco.apps.shortx.services.notification
 
+import android.annotation.SuppressLint
+import android.app.ActivityManager
 import android.app.INotificationManager
 import android.content.ComponentName
 import android.content.Context
@@ -20,7 +22,9 @@ import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
+import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.appPkgToString
+import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.android.ServiceRetriever
@@ -61,10 +65,23 @@ class NotificationService(shortXContext: ShortXContext) :
         )
     }
 
+    private val nls = Nls(shortXContext)
     private val nms by lazy { ServiceRetriever(context.classLoader).getNMS() }
 
+    @SuppressLint("MissingPermission", "NewApi")
     override fun systemReady() {
         super.systemReady()
+
+        nls.registerAsSystemService(
+            context,
+            ComponentName(
+                OsUtils.isSOrAbove().select({ nls.javaClass.packageName },
+                    { "tornaco.apps.shortx.services.notification" }),
+                nls.javaClass.name
+            ),
+            ActivityManager.getCurrentUser()
+        )
+        logger.d("nls registered: $nls")
     }
 
     fun setPostNByAppEnabled(enable: Boolean) {
@@ -185,36 +202,31 @@ class NotificationService(shortXContext: ShortXContext) :
     fun removeNotificationByTag(tag: String) {
         logger.d("removeNotificationByTag: $tag")
 
-        AppNotificationServiceProxy.cancelWithTag(context, tag)
-
-        synchronized(attachedPoster) {
-            val itemCount = attachedPoster.beginBroadcast()
-            if (itemCount == 0) {
-                logger.d("removeNotificationByTag, no registered poster.")
-                return
-            }
-            val first = attachedPoster.getBroadcastItem(0)
-            logger.d("removeNotificationByTag, Using poster: $first")
-            kotlin.runCatching { first.cancelWithTag(tag) }
-                .getOrElse {
-                    logger.e(it, "Error call cancelWithTag")
-                    null
-                }
-            attachedPoster.finishBroadcast()
-        }
+//        AppNotificationServiceProxy.cancelWithTag(context, tag)
+//        synchronized(attachedPoster) {
+//            val itemCount = attachedPoster.beginBroadcast()
+//            if (itemCount == 0) {
+//                logger.d("removeNotificationByTag, no registered poster.")
+//                return
+//            }
+//            val first = attachedPoster.getBroadcastItem(0)
+//            logger.d("removeNotificationByTag, Using poster: $first")
+//            kotlin.runCatching { first.cancelWithTag(tag) }
+//                .getOrElse {
+//                    logger.e(it, "Error call cancelWithTag")
+//                    null
+//                }
+//            attachedPoster.finishBroadcast()
+//        }
 
         // Below logic not work, no error, no log.
-        if (false) {
-            val nms =
-                INotificationManager.Stub.asInterface(ServiceManager.getService(Context.NOTIFICATION_SERVICE))
-            requireNotNull(nms) { "Can not get nms" }
-            getActiveNotifications().filter { it.tag == tag }.forEach {
-                val pkg = it.appsList[0]
-                val id = it.notificationId.toIntOrNull() ?: 0
-                logger.d("removeNotificationByTag, pkg: ${pkg.appPkgToString()}, id: $id")
-                nms.cancelNotificationWithTag("android", "android", tag, id, pkg.userId)
-            }
+        getActiveNotifications().filter { it.tag == tag }.forEach {
+            val pkg = it.appsList[0]
+            logger.d("removeNotificationByTag, pkg: ${pkg.appPkgToString()}, key: ${it.key}")
+            nls.waitForBind()
+            nls.cancelNotification(it.key)
         }
+
     }
 
     private fun Notification.contextMap() = mapOf(
