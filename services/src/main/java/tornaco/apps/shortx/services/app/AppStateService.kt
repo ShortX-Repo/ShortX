@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.app
 import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.app.ActivityTaskManager
+import android.app.AlertDialog
 import android.app.IActivityManager
 import android.content.ComponentName
 import android.content.Context
@@ -14,6 +15,7 @@ import android.os.ParcelFileDescriptor
 import android.os.Process
 import android.os.ServiceManager
 import android.os.UserHandle
+import android.view.WindowManager
 import android.widget.Toast
 import com.topjohnwu.superuser.Shell
 import github.tornaco.android.thanos.core.app.ThanosManagerNative
@@ -142,24 +144,39 @@ class AppStateService(shortXContext: ShortXContext) :
 
     private fun onShortXRemoved() {
         logger.w("onShortXRemoved.")
-        // Reset
-        shortXContext.rule.getAllEnabledRules().map { it.id }.forEach {
-            shortXContext.rule.setRuleEnabled(it, false)
+
+        fun resetAndClearData() {
+            // Reset
+            shortXContext.rule.getAllEnabledRules().map { it.id }.forEach {
+                shortXContext.rule.setRuleEnabled(it, false)
+            }
+            shortXContext.rule.cancelJobs(shortXContext.rule.getActiveJobs())
+            systemServiceScope.launchSafety {
+                // After all file persisted.
+                delay(WRITE_DELAY + 100L)
+
+                Dirs.baseServerDir().deleteRecursively()
+                logger.w("onShortXRemoved, all file deleted!")
+                Toast.makeText(context, i18NIns["ui.shortx.removed.toast"], Toast.LENGTH_LONG)
+                    .show()
+
+            }
         }
-        shortXContext.rule.cancelJobs(shortXContext.rule.getActiveJobs())
 
+        AlertDialog.Builder(context)
+            .setTitle(i18NIns["ui.shortx.uninstalled.title"])
+            .setMessage(i18NIns["ui.shortx.uninstalled.message"])
+            .setCancelable(false)
+            .setPositiveButton(
+                i18NIns["ui.shortx.uninstalled.clear"]
+            ) { _, _ -> resetAndClearData() }
+            .setNegativeButton(i18NIns["ui.shortx.uninstalled.keep"]) { dialog, which ->
+                // Noop.
+            }
+            .create().apply {
+                window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG)
+            }.show()
 
-
-        systemServiceScope.launchSafety {
-            // After all file persisted.
-            delay(WRITE_DELAY + 100L)
-
-            Dirs.baseServerDir().deleteRecursively()
-            logger.w("onShortXRemoved, all file deleted!")
-            Toast.makeText(context, i18NIns["ui.shortx.removed.toast"], Toast.LENGTH_LONG)
-                .show()
-
-        }
     }
 
     override fun shutdown() {
