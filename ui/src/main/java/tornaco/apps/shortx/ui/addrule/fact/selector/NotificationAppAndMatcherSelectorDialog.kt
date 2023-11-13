@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.common.App
+import tornaco.apps.shortx.core.proto.common.RegexMatchOptions
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.base.AppPkgSelectorDialog
@@ -33,11 +34,13 @@ import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumSpacer
+import tornaco.apps.shortx.ui.base.RegexMatchOptionsDropdown
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -48,16 +51,23 @@ class NotificationAppAndMatcherSelectorState(
 ) : CommonDialogState() {
     var titleRegex by mutableStateOf("")
     var contentRegex by mutableStateOf("")
-    var tagRegex by mutableStateOf("")
+    var titleMatchOptions by mutableStateOf(RegexMatchOptions.RegexMatchOptions_Match)
+    var contentMatchOptions by mutableStateOf(RegexMatchOptions.RegexMatchOptions_Match)
+
+    var tag by mutableStateOf("")
 
     var selectedApps by mutableStateOf(emptyList<App>())
     var selectedPkgSets by mutableStateOf(emptyList<PkgSet>())
 
-
     fun show(initialValue: Fact.Notification? = null) {
         this.titleRegex = initialValue?.titleRegex ?: ""
         this.contentRegex = initialValue?.contentRegex ?: ""
-        this.tagRegex = initialValue?.tag ?: ""
+        this.titleMatchOptions =
+            initialValue?.titleMatchOptions ?: RegexMatchOptions.RegexMatchOptions_Match
+        this.contentMatchOptions =
+            initialValue?.contentMatchOptions ?: RegexMatchOptions.RegexMatchOptions_Match
+
+        this.tag = initialValue?.tag ?: ""
 
         this.selectedApps = initialValue?.apps ?: emptyList()
         this.selectedPkgSets = initialValue?.pkgSets ?: emptyList()
@@ -96,7 +106,9 @@ fun NotificationAppAndMatcherSelectorDialog(state: NotificationAppAndMatcherSele
                                             Fact.Notification(
                                                 titleRegex = state.titleRegex,
                                                 contentRegex = state.contentRegex,
-                                                tag = state.tagRegex,
+                                                titleMatchOptions = state.titleMatchOptions,
+                                                contentMatchOptions = state.contentMatchOptions,
+                                                tag = state.tag,
                                                 apps = state.selectedApps,
                                                 pkgSets = state.selectedPkgSets
                                             )
@@ -159,24 +171,46 @@ fun NotificationAppAndMatcherSelectorDialog(state: NotificationAppAndMatcherSele
 
 
                                 {
-                                    FieldTitle(text = LocalI18N.current["ui.fact.n.matcher.title"])
-                                    MediumSpacer()
-                                    TipBody(text = LocalI18N.current["ui.fact.n.matcher.title.message"])
-                                    MediumSpacer()
-                                    ShortXTextField(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        value = state.titleRegex,
-                                        onValueChange = { state.titleRegex = it })
+                                    Column {
+                                        FieldTitle(text = LocalI18N.current["ui.fact.n.matcher.title"])
+                                        MediumSpacer()
+                                        TipBody(text = LocalI18N.current["ui.fact.n.matcher.title.message"])
+                                        MediumSpacer()
+                                        ShortXTextField(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            value = state.titleRegex,
+                                            onValueChange = { state.titleRegex = it })
+
+                                        SmallSpacer()
+
+                                        RegexMatchOptionsDropdown(
+                                            options = state.titleMatchOptions,
+                                            onSelectNewOptions = {
+                                                state.titleMatchOptions = it
+                                            }
+                                        )
+                                    }
                                 },
                                 {
-                                    FieldTitle(text = LocalI18N.current["ui.fact.n.matcher.content"])
-                                    MediumSpacer()
-                                    TipBody(text = LocalI18N.current["ui.fact.n.matcher.content.message"])
-                                    MediumSpacer()
-                                    ShortXTextField(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        value = state.contentRegex,
-                                        onValueChange = { state.contentRegex = it })
+                                    Column {
+                                        FieldTitle(text = LocalI18N.current["ui.fact.n.matcher.content"])
+                                        MediumSpacer()
+                                        TipBody(text = LocalI18N.current["ui.fact.n.matcher.content.message"])
+                                        MediumSpacer()
+                                        ShortXTextField(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            value = state.contentRegex,
+                                            onValueChange = { state.contentRegex = it })
+
+                                        SmallSpacer()
+
+                                        RegexMatchOptionsDropdown(
+                                            options = state.contentMatchOptions,
+                                            onSelectNewOptions = {
+                                                state.contentMatchOptions = it
+                                            }
+                                        )
+                                    }
                                 },
                                 {
                                     FieldTitle(text = LocalI18N.current["ui.fact.n.matcher.tag"])
@@ -185,8 +219,8 @@ fun NotificationAppAndMatcherSelectorDialog(state: NotificationAppAndMatcherSele
                                     MediumSpacer()
                                     ShortXTextField(
                                         modifier = Modifier.fillMaxWidth(),
-                                        value = state.tagRegex,
-                                        onValueChange = { state.tagRegex = it })
+                                        value = state.tag,
+                                        onValueChange = { state.tag = it })
                                 },
 
                                 ).forEach {
