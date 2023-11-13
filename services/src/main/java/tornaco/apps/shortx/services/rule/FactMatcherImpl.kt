@@ -79,7 +79,7 @@ internal class Matcher(
 
 private val logger = Logger("FactMatcher")
 
-class FactMatcherImpl(private val shortXContext: () -> ShortXContext) : FactMatcher {
+class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : FactMatcher {
     private val factValueMatchers: MutableMap<Class<*>, Matcher> =
         mutableMapOf()
 
@@ -113,6 +113,7 @@ class FactMatcherImpl(private val shortXContext: () -> ShortXContext) : FactMatc
             val fgActual = actual as AppBecomeFg
             val fgRule = rule as AppBecomeFg
             matchWithAppOrPkgSetListFact(
+                shortXContextProvider,
                 AppBecomeFgFactWrapper(fgActual),
                 AppBecomeFgFactWrapper(fgRule)
             )
@@ -122,6 +123,7 @@ class FactMatcherImpl(private val shortXContext: () -> ShortXContext) : FactMatc
             val bgActual = actual as AppBecomeBg
             val bgRule = rule as AppBecomeBg
             matchWithAppOrPkgSetListFact(
+                shortXContextProvider,
                 AppBecomeBgFactWrapper(bgActual),
                 AppBecomeBgFactWrapper(bgRule)
             )
@@ -131,6 +133,7 @@ class FactMatcherImpl(private val shortXContext: () -> ShortXContext) : FactMatc
             val trActual = actual as TaskRemoved
             val trRule = rule as TaskRemoved
             matchWithAppOrPkgSetListFact(
+                shortXContextProvider,
                 TaskRemovedWrapper(trActual),
                 TaskRemovedWrapper(trRule)
             )
@@ -140,6 +143,7 @@ class FactMatcherImpl(private val shortXContext: () -> ShortXContext) : FactMatc
             val trActual = actual as PkgStopRunning
             val trRule = rule as PkgStopRunning
             matchWithAppOrPkgSetListFact(
+                shortXContextProvider,
                 PkgStopRunningWrapper(trActual),
                 PkgStopRunningWrapper(trRule)
             )
@@ -209,6 +213,7 @@ class FactMatcherImpl(private val shortXContext: () -> ShortXContext) : FactMatc
             val actualN = (actual as NotificationPosted).record
             val ruleN = (rule as NotificationPosted).record
             matchWithAppOrPkgSetListFact(
+                shortXContextProvider,
                 actual = NotificationWrapper(actualN),
                 rule = NotificationWrapper(ruleN)
             ) && matchNotificationMatcher(actualN, ruleN)
@@ -218,6 +223,7 @@ class FactMatcherImpl(private val shortXContext: () -> ShortXContext) : FactMatc
             val actualN = (actual as NotificationUpdated).new
             val ruleN = (rule as NotificationUpdated).new
             matchWithAppOrPkgSetListFact(
+                shortXContextProvider,
                 actual = NotificationWrapper(actualN),
                 rule = NotificationWrapper(ruleN)
             ) && matchNotificationMatcher(actualN, ruleN)
@@ -227,6 +233,7 @@ class FactMatcherImpl(private val shortXContext: () -> ShortXContext) : FactMatc
             val actualN = (actual as NotificationRemoved).record
             val ruleN = (rule as NotificationRemoved).record
             matchWithAppOrPkgSetListFact(
+                shortXContextProvider,
                 actual = NotificationWrapper(actualN),
                 rule = NotificationWrapper(ruleN)
             ) && matchNotificationMatcher(actualN, ruleN)
@@ -236,6 +243,7 @@ class FactMatcherImpl(private val shortXContext: () -> ShortXContext) : FactMatc
             val actualN = (actual as AppRemoved)
             val ruleN = (rule as AppRemoved)
             matchWithAppOrPkgSetListFact(
+                shortXContextProvider,
                 AppRemovedWrapper(actualN),
                 AppRemovedWrapper(ruleN)
             )
@@ -245,6 +253,7 @@ class FactMatcherImpl(private val shortXContext: () -> ShortXContext) : FactMatc
             val actualN = (actual as AppUpdated)
             val ruleN = (rule as AppUpdated)
             matchWithAppOrPkgSetListFact(
+                shortXContextProvider,
                 AppUpdatedWrapper(actualN),
                 AppUpdatedWrapper(ruleN)
             )
@@ -254,6 +263,7 @@ class FactMatcherImpl(private val shortXContext: () -> ShortXContext) : FactMatc
             val actualN = (actual as AudioFocusGain)
             val ruleN = (rule as AudioFocusGain)
             matchWithAppOrPkgSetListFact(
+                shortXContextProvider,
                 AudioFocusGainWrapper(actualN),
                 AudioFocusGainWrapper(ruleN)
             )
@@ -263,6 +273,7 @@ class FactMatcherImpl(private val shortXContext: () -> ShortXContext) : FactMatc
             val actualN = (actual as AudioFocusLost)
             val ruleN = (rule as AudioFocusLost)
             matchWithAppOrPkgSetListFact(
+                shortXContextProvider,
                 AudioFocusLostWrapper(actualN),
                 AudioFocusLostWrapper(ruleN)
             )
@@ -384,6 +395,7 @@ class FactMatcherImpl(private val shortXContext: () -> ShortXContext) : FactMatc
             val ruleN = (rule as OnStartOp)
 
             ruleN.opCodesList.containsAll(actual.opCodesList) && matchWithAppOrPkgSetListFact(
+                shortXContextProvider,
                 actual = OnStartOpWrapper(actualN),
                 rule = OnStartOpWrapper(ruleN)
             )
@@ -394,6 +406,7 @@ class FactMatcherImpl(private val shortXContext: () -> ShortXContext) : FactMatc
             val ruleN = (rule as OnFinishOp)
 
             ruleN.opCodesList.containsAll(actual.opCodesList) && matchWithAppOrPkgSetListFact(
+                shortXContextProvider,
                 actual = OnFinishOpWrapper(actualN),
                 rule = OnFinishOpWrapper(ruleN)
             )
@@ -505,146 +518,36 @@ class FactMatcherImpl(private val shortXContext: () -> ShortXContext) : FactMatc
         return res
     }
 
-
-    private fun matchWithAppOrPkgSetListFact(
-        actual: WithAppOrPkgSetListFact,
-        rule: WithAppOrPkgSetListFact
-    ): Boolean {
-        val pkgListActual = actual.appList
-
-        val hasAllPkgSetInRule = rule.pkgSetList.firstOrNull {
-            it == PrebuiltStablePkgSetLabel.All.name
-        } != null
-        if (hasAllPkgSetInRule) {
-            logger.d("matchWithAppOrPkgSetListFact, hasAllPkgSetInRule, assume true")
-            return true
-        }
-
-        if (rule.appList.isEmpty() && rule.pkgSetList.isEmpty()) {
-            logger.d("matchWithAppOrPkgSetListFact, appList and pkgSetList is empty, assume true")
-            return true
-        }
-
-        val pkgListRule = rule.pkgSetList.flatMap { label ->
-            shortXContext().pkgSet.getPkgSetByLabel(label)?.appPkgsList ?: emptyList()
-        } + rule.appList
-        logger.d("matchWithAppOrPkgSetListFact, pkgListActual: ${pkgListActual.map { it.appPkgToString() }}, pkgListRule: ${pkgListRule.map { it.appPkgToString() }}")
-        return pkgListRule.isNotEmpty() && pkgListRule.containsAll(pkgListActual)
-    }
-
-    private fun matchNotificationMatcher(
-        actual: Notification,
-        rule: Notification
-    ): Boolean {
-        // FAST: No matcher settings
-        if (rule == Notification.getDefaultInstance()) {
-            return true
-        }
-        // User set a tag, check tag first.
-        if (rule.tag.isNotEmpty() && rule.tag != actual.tag) {
-            logger.d("matchNotificationMatcher, false at tag.")
-            return false
-        }
-
-        return emptyOrRegexMatch(
-            RegexMatchData(rule.title, rule.titleRegexOptions) to actual.title,
-            RegexMatchData(rule.contentText, rule.contentRegexOptions) to actual.contentText,
-        )
-    }
-
-    internal interface WithAppOrPkgSetListFact {
-        val pkgSetList: List<String>
-        val appList: List<AppPkg>
-    }
-
-    class AppBecomeBgFactWrapper(private val appBecomeBg: AppBecomeBg) : WithAppOrPkgSetListFact {
-        override val pkgSetList: List<String>
-            get() = appBecomeBg.pkgSetsList ?: emptyList()
-        override val appList: List<AppPkg>
-            get() = appBecomeBg.appsList ?: emptyList()
-
-    }
-
-    class AppBecomeFgFactWrapper(private val appBecomeFg: AppBecomeFg) : WithAppOrPkgSetListFact {
-        override val pkgSetList: List<String>
-            get() = appBecomeFg.pkgSetsList ?: emptyList()
-        override val appList: List<AppPkg>
-            get() = appBecomeFg.appsList ?: emptyList()
-
-    }
-
-    class TaskRemovedWrapper(private val taskRemoved: TaskRemoved) : WithAppOrPkgSetListFact {
-        override val pkgSetList: List<String>
-            get() = taskRemoved.pkgSetsList ?: emptyList()
-        override val appList: List<AppPkg>
-            get() = taskRemoved.appsList ?: emptyList()
-
-    }
-
-    class PkgStopRunningWrapper(private val stopRunning: PkgStopRunning) : WithAppOrPkgSetListFact {
-        override val pkgSetList: List<String>
-            get() = stopRunning.pkgSetsList ?: emptyList()
-        override val appList: List<AppPkg>
-            get() = stopRunning.appsList ?: emptyList()
-
-    }
-
-    class AppRemovedWrapper(private val appRemoved: AppRemoved) : WithAppOrPkgSetListFact {
-        override val pkgSetList: List<String>
-            get() = appRemoved.pkgSetsList ?: emptyList()
-        override val appList: List<AppPkg>
-            get() = appRemoved.appsList ?: emptyList()
-
-    }
-
-    class AppUpdatedWrapper(private val appUpdated: AppUpdated) : WithAppOrPkgSetListFact {
-        override val pkgSetList: List<String>
-            get() = appUpdated.pkgSetsList ?: emptyList()
-        override val appList: List<AppPkg>
-            get() = appUpdated.appsList ?: emptyList()
-
-    }
-
-    class AudioFocusGainWrapper(private val focusGain: AudioFocusGain) : WithAppOrPkgSetListFact {
-        override val pkgSetList: List<String>
-            get() = focusGain.pkgSetsList ?: emptyList()
-        override val appList: List<AppPkg>
-            get() = focusGain.appsList ?: emptyList()
-
-    }
-
-    class AudioFocusLostWrapper(private val focusLost: AudioFocusLost) : WithAppOrPkgSetListFact {
-        override val pkgSetList: List<String>
-            get() = focusLost.pkgSetsList ?: emptyList()
-        override val appList: List<AppPkg>
-            get() = focusLost.appsList ?: emptyList()
-
-    }
-
-    class NotificationWrapper(private val n: Notification) : WithAppOrPkgSetListFact {
-        override val pkgSetList: List<String>
-            get() = n.pkgSetsList ?: emptyList()
-        override val appList: List<AppPkg>
-            get() = n.appsList ?: emptyList()
-
-    }
-
-    class OnStartOpWrapper(private val onStartOp: OnStartOp) : WithAppOrPkgSetListFact {
-        override val pkgSetList: List<String>
-            get() = onStartOp.pkgSetsList ?: emptyList()
-        override val appList: List<AppPkg>
-            get() = onStartOp.appsList ?: emptyList()
-
-    }
-
-    class OnFinishOpWrapper(private val onFinishOp: OnFinishOp) : WithAppOrPkgSetListFact {
-        override val pkgSetList: List<String>
-            get() = onFinishOp.pkgSetsList ?: emptyList()
-        override val appList: List<AppPkg>
-            get() = onFinishOp.appsList ?: emptyList()
-
-    }
 }
+
+fun matchWithAppOrPkgSetListFact(
+    // For Test.
+    shortXContextProvider: () -> ShortXContext,
+    actual: WithAppOrPkgSetListFact,
+    rule: WithAppOrPkgSetListFact
+): Boolean {
+    val pkgListActual = actual.appList
+
+    val hasAllPkgSetInRule = rule.pkgSetList.firstOrNull {
+        it == PrebuiltStablePkgSetLabel.All.name
+    } != null
+    if (hasAllPkgSetInRule) {
+        logger.d("matchWithAppOrPkgSetListFact, hasAllPkgSetInRule, assume true")
+        return true
+    }
+
+    if (rule.appList.isEmpty() && rule.pkgSetList.isEmpty()) {
+        logger.d("matchWithAppOrPkgSetListFact, appList and pkgSetList is empty, assume true")
+        return true
+    }
+
+    val pkgListRule = rule.pkgSetList.flatMap { label ->
+        shortXContextProvider().pkgSet.getPkgSetByLabel(label)?.appPkgsList ?: emptyList()
+    } + rule.appList
+    logger.d("matchWithAppOrPkgSetListFact, pkgListActual: ${pkgListActual.map { it.appPkgToString() }}, pkgListRule: ${pkgListRule.map { it.appPkgToString() }}")
+    return pkgListRule.isNotEmpty() && pkgListRule.containsAll(pkgListActual)
+}
+
 
 fun emptyOrRegexMatch(
     vararg ruleAndActuals: Pair<RegexMatchData, String>,
@@ -652,6 +555,26 @@ fun emptyOrRegexMatch(
     ruleAndActuals.all {
         emptyOrRegexMatch(it.first.regex, it.second, it.first.options)
     }
+
+fun matchNotificationMatcher(
+    actual: Notification,
+    rule: Notification
+): Boolean {
+    // FAST: No matcher settings
+    if (rule == Notification.getDefaultInstance()) {
+        return true
+    }
+    // User set a tag, check tag first.
+    if (rule.tag.isNotEmpty() && rule.tag != actual.tag) {
+        logger.d("matchNotificationMatcher, false at tag.")
+        return false
+    }
+
+    return emptyOrRegexMatch(
+        RegexMatchData(rule.title, rule.titleRegexOptions) to actual.title,
+        RegexMatchData(rule.contentText, rule.contentRegexOptions) to actual.contentText,
+    )
+}
 
 fun emptyOrRegexMatch(
     ruleField: String,
@@ -667,3 +590,97 @@ fun emptyOrRegexMatch(
     }.apply {
         logger.d("emptyOrRegexMatch, regex: $ruleField, options: $options, result: $this")
     }
+
+
+interface WithAppOrPkgSetListFact {
+    val pkgSetList: List<String>
+    val appList: List<AppPkg>
+}
+
+class AppBecomeBgFactWrapper(private val appBecomeBg: AppBecomeBg) : WithAppOrPkgSetListFact {
+    override val pkgSetList: List<String>
+        get() = appBecomeBg.pkgSetsList ?: emptyList()
+    override val appList: List<AppPkg>
+        get() = appBecomeBg.appsList ?: emptyList()
+
+}
+
+class AppBecomeFgFactWrapper(private val appBecomeFg: AppBecomeFg) : WithAppOrPkgSetListFact {
+    override val pkgSetList: List<String>
+        get() = appBecomeFg.pkgSetsList ?: emptyList()
+    override val appList: List<AppPkg>
+        get() = appBecomeFg.appsList ?: emptyList()
+
+}
+
+class TaskRemovedWrapper(private val taskRemoved: TaskRemoved) : WithAppOrPkgSetListFact {
+    override val pkgSetList: List<String>
+        get() = taskRemoved.pkgSetsList ?: emptyList()
+    override val appList: List<AppPkg>
+        get() = taskRemoved.appsList ?: emptyList()
+
+}
+
+class PkgStopRunningWrapper(private val stopRunning: PkgStopRunning) : WithAppOrPkgSetListFact {
+    override val pkgSetList: List<String>
+        get() = stopRunning.pkgSetsList ?: emptyList()
+    override val appList: List<AppPkg>
+        get() = stopRunning.appsList ?: emptyList()
+
+}
+
+class AppRemovedWrapper(private val appRemoved: AppRemoved) : WithAppOrPkgSetListFact {
+    override val pkgSetList: List<String>
+        get() = appRemoved.pkgSetsList ?: emptyList()
+    override val appList: List<AppPkg>
+        get() = appRemoved.appsList ?: emptyList()
+
+}
+
+class AppUpdatedWrapper(private val appUpdated: AppUpdated) : WithAppOrPkgSetListFact {
+    override val pkgSetList: List<String>
+        get() = appUpdated.pkgSetsList ?: emptyList()
+    override val appList: List<AppPkg>
+        get() = appUpdated.appsList ?: emptyList()
+
+}
+
+class AudioFocusGainWrapper(private val focusGain: AudioFocusGain) : WithAppOrPkgSetListFact {
+    override val pkgSetList: List<String>
+        get() = focusGain.pkgSetsList ?: emptyList()
+    override val appList: List<AppPkg>
+        get() = focusGain.appsList ?: emptyList()
+
+}
+
+class AudioFocusLostWrapper(private val focusLost: AudioFocusLost) : WithAppOrPkgSetListFact {
+    override val pkgSetList: List<String>
+        get() = focusLost.pkgSetsList ?: emptyList()
+    override val appList: List<AppPkg>
+        get() = focusLost.appsList ?: emptyList()
+
+}
+
+class NotificationWrapper(private val n: Notification) : WithAppOrPkgSetListFact {
+    override val pkgSetList: List<String>
+        get() = n.pkgSetsList ?: emptyList()
+    override val appList: List<AppPkg>
+        get() = n.appsList ?: emptyList()
+
+}
+
+class OnStartOpWrapper(private val onStartOp: OnStartOp) : WithAppOrPkgSetListFact {
+    override val pkgSetList: List<String>
+        get() = onStartOp.pkgSetsList ?: emptyList()
+    override val appList: List<AppPkg>
+        get() = onStartOp.appsList ?: emptyList()
+
+}
+
+class OnFinishOpWrapper(private val onFinishOp: OnFinishOp) : WithAppOrPkgSetListFact {
+    override val pkgSetList: List<String>
+        get() = onFinishOp.pkgSetsList ?: emptyList()
+    override val appList: List<AppPkg>
+        get() = onFinishOp.appsList ?: emptyList()
+
+}

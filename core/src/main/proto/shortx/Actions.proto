@@ -6,6 +6,7 @@ option java_multiple_files = true;
 
 import "google/protobuf/any.proto";
 import "shortx/Common.proto";
+import "shortx/Facts.proto";
 import "shortx/Conditions.proto";
 import "shortx/GlobalVars.proto";
 import "shortx/Settings.proto";
@@ -627,7 +628,9 @@ enum NavType {
 }
 
 message RemoveNotification {
-  string tag = 1;
+  string tag = 1 [deprecated = true];
+
+  Notification notification = 2;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;

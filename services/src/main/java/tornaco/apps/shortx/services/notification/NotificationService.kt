@@ -32,6 +32,9 @@ import tornaco.apps.shortx.services.app.NMSFuncs
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
+import tornaco.apps.shortx.services.rule.NotificationWrapper
+import tornaco.apps.shortx.services.rule.matchNotificationMatcher
+import tornaco.apps.shortx.services.rule.matchWithAppOrPkgSetListFact
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.util.AppServiceProxy
 import tornaco.apps.shortx.services.watchdog.launchSafety
@@ -199,14 +202,24 @@ class NotificationService(shortXContext: ShortXContext) :
         }
     }
 
-    fun removeNotificationByTag(tag: String) {
-        logger.d("removeNotificationByTag: $tag")
-        getActiveNotifications().filter { it.tag == tag }.forEach {
-            val pkg = it.appsList[0]
-            logger.d("removeNotificationByTag, pkg: ${pkg.appPkgToString()}, key: ${it.key}")
-            nls.waitForBind()
-            nls.cancelNotification(it.key)
-        }
+    fun removeNotification(notification: Notification) {
+        logger.d("removeNotification: $notification")
+        getActiveNotifications()
+            .filter {
+                it.key.isNotBlank()
+            }
+            .filter {
+                matchWithAppOrPkgSetListFact(
+                    shortXContextProvider = { shortXContext },
+                    actual = NotificationWrapper(it),
+                    rule = NotificationWrapper(notification)
+                ) && matchNotificationMatcher(it, notification)
+            }.forEach {
+                val pkg = it.appsList[0]
+                logger.d("removeNotificationByTag, pkg: ${pkg.appPkgToString()}, key: ${it.key}")
+                nls.waitForBind()
+                nls.cancelNotification(it.key)
+            }
     }
 
     private fun Notification.contextMap() = mapOf(

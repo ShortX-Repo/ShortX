@@ -149,7 +149,7 @@ fun NotificationAppAndMatcherSelectorDialog(state: NotificationAppAndMatcherSele
                                     )
                                     AppPkgSelectorDialog(state = appPkgSelectorState)
 
-                                    FieldTitle(text = LocalI18N.current["ui.dialog.title.select.app"])
+                                    FieldTitle(text = LocalI18N.current["ui.dialog.title.select.app"] + " - " + LocalI18N.current["ui.common.optional"])
                                     ListItem(
                                         icon = {
                                             RemixIcon(remixName = Remix.System.apps_2_line)

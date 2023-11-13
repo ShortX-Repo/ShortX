@@ -17,6 +17,7 @@ import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.common.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
+import tornaco.apps.shortx.core.proto.fact.Notification
 import tornaco.apps.shortx.core.proto.fact.RepeatDays
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.ui.addrule.ContextData
@@ -513,6 +514,8 @@ sealed interface Fact {
     }
 
     // For match purpose.
+    // TODO: Should move to common.
+    @Parcelize
     data class Notification(
         val titleRegex: String,
         val titleMatchOptions: RegexMatchOptions,
@@ -524,7 +527,19 @@ sealed interface Fact {
 
         val apps: List<App>,
         val pkgSets: List<PkgSet>,
-    )
+    ) : Parcelable {
+        fun toProtoNotification(): tornaco.apps.shortx.core.proto.fact.Notification {
+            return tornaco.apps.shortx.core.proto.fact.Notification.newBuilder()
+                .addAllApps(apps.map { it.pkg })
+                .addAllPkgSets(pkgSets.map { it.label })
+                .setTitle(titleRegex)
+                .setContentText(contentRegex)
+                .setTitleRegexOptions(titleMatchOptions)
+                .setContentRegexOptions(contentMatchOptions)
+                .setTag(tag)
+                .build()
+        }
+    }
 
     data class NotificationPosted(
         override val note: String = "",

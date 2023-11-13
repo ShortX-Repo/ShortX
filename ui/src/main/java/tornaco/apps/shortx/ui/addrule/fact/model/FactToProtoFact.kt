@@ -41,7 +41,6 @@ import tornaco.apps.shortx.core.proto.fact.MobileDataStatusChanged
 import tornaco.apps.shortx.core.proto.fact.NFCStatusChanged
 import tornaco.apps.shortx.core.proto.fact.NodeMatcherText
 import tornaco.apps.shortx.core.proto.fact.NodeMatcherViewId
-import tornaco.apps.shortx.core.proto.fact.Notification
 import tornaco.apps.shortx.core.proto.fact.NotificationPosted
 import tornaco.apps.shortx.core.proto.fact.NotificationRemoved
 import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
@@ -257,15 +256,7 @@ fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
         is Fact.NotificationPosted -> {
             NotificationPosted.newBuilder()
                 .setRecord(
-                    Notification.newBuilder()
-                        .addAllApps(n.apps.map { it.pkg })
-                        .addAllPkgSets(n.pkgSets.map { it.label })
-                        .setTitle(n.titleRegex)
-                        .setContentText(n.contentRegex)
-                        .setTitleRegexOptions(n.titleMatchOptions)
-                        .setContentRegexOptions(n.contentMatchOptions)
-                        .setTag(n.tag)
-                        .build()
+                    n.toProtoNotification()
                 )
                 .setId(overrideId ?: id).setNote(note).setCustomContextDataKey(customContextDataKey)
                 .build()
@@ -274,15 +265,7 @@ fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
         is Fact.NotificationRemoved -> {
             NotificationRemoved.newBuilder()
                 .setRecord(
-                    Notification.newBuilder()
-                        .addAllApps(n.apps.map { it.pkg })
-                        .addAllPkgSets(n.pkgSets.map { it.label })
-                        .setTitle(n.titleRegex)
-                        .setContentText(n.contentRegex)
-                        .setTitleRegexOptions(n.titleMatchOptions)
-                        .setContentRegexOptions(n.contentMatchOptions)
-                        .setTag(n.tag)
-                        .build()
+                    n.toProtoNotification()
                 )
                 .setId(overrideId ?: id).setNote(note).setCustomContextDataKey(customContextDataKey)
                 .build()
@@ -291,15 +274,7 @@ fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
         is Fact.NotificationUpdated -> {
             NotificationUpdated.newBuilder()
                 .setNew(
-                    Notification.newBuilder()
-                        .addAllApps(n.apps.map { it.pkg })
-                        .addAllPkgSets(n.pkgSets.map { it.label })
-                        .setTitle(n.titleRegex)
-                        .setContentText(n.contentRegex)
-                        .setTitleRegexOptions(n.titleMatchOptions)
-                        .setContentRegexOptions(n.contentMatchOptions)
-                        .setTag(n.tag)
-                        .build()
+                    n.toProtoNotification()
                 )
                 .setId(overrideId ?: id).setNote(note).setCustomContextDataKey(customContextDataKey)
                 .build()

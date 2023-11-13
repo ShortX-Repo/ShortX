@@ -35,6 +35,7 @@ import tornaco.apps.shortx.ui.addrule.ContextData
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.dats
+import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.remote.RemoteExecuteMVELAction
 import java.util.UUID
 
@@ -670,7 +671,7 @@ sealed interface Action : Parcelable {
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
-        val tag: String
+        val n: Fact.Notification
     ) : Action {
         override fun clone(
             id: String,

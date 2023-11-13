@@ -541,10 +541,7 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         }
 
         is Action.RemoveNotification -> {
-            listOf(
-                i18N["ui.action.remove.notification"],
-                action.tag,
-            )
+            listOf(i18N["ui.action.remove.notification"])
         }
 
         is Action.FromDA -> {

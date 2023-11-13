@@ -745,7 +745,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setIsDisabled(!isEnabled)
                 .setActionOnError(actionOnError)
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
-                .setTag(tag)
+                .setNotification(n.toProtoNotification())
                 .setNote(overrideNote ?: note).build()
         }
 

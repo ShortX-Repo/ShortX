@@ -15,6 +15,8 @@ import tornaco.apps.shortx.ui.addrule.base.ActionCategory
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.base.rememberCategoryState
+import tornaco.apps.shortx.ui.addrule.fact.selector.NotificationAppAndMatcherSelectorDialog
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberNotificationAppAndMatcherSelectorState
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.newIntent
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorActionOrNull
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -71,13 +73,11 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
         }
     )
 
-    val removeNotificationState = rememberTextInputState(
-        title = LocalI18N.current["ui.action.remove.notification"],
-        message = LocalI18N.current["ui.action.remove.notification.tag"],
-        onSelected = {
-            addAction(Action.RemoveNotification(tag = it))
-        })
-    TextInputDialog(state = removeNotificationState)
+    val removeNotificationState =
+        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current["ui.action.remove.notification"]) {
+            addAction(Action.RemoveNotification(n = it))
+        }
+    NotificationAppAndMatcherSelectorDialog(removeNotificationState)
 
     return { source ->
         when (source.clazz) {
@@ -150,7 +150,7 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
             }
 
             Action.RemoveNotification::class -> {
-                removeNotificationState.show(source.getActionAs<Action.RemoveNotification>()?.tag)
+                removeNotificationState.show(source.getActionAs<Action.RemoveNotification>()?.n)
                 true
             }
 

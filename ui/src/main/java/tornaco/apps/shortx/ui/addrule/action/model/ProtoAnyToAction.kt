@@ -14,6 +14,7 @@ import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
 import tornaco.apps.shortx.ui.addrule.condition.op.toOp
+import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.protoPkgsAndPkgSetsToModels
 import tornaco.apps.shortx.ui.remote.toModel
 
@@ -839,13 +840,23 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
         this is_ tornaco.apps.shortx.core.proto.action.RemoveNotification::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.action.RemoveNotification::class.java
+            val models =
+                (data.notification.appsList to data.notification.pkgSetsList).protoPkgsAndPkgSetsToModels()
             Action.RemoveNotification(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
                 customContextDataKey = data.customContextDataKey,
                 id = data.id,
                 note = data.note,
-                tag = data.tag,
+                n = Fact.Notification(
+                    apps = models.first,
+                    pkgSets = models.second,
+                    titleRegex = data.notification.title,
+                    contentRegex = data.notification.contentText,
+                    titleMatchOptions = data.notification.titleRegexOptions,
+                    contentMatchOptions = data.notification.contentRegexOptions,
+                    tag = data.notification.tag
+                ),
             )
         }
 
