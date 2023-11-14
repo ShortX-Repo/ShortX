@@ -28,12 +28,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import tornaco.apps.shortx.core.proto.common.RegexMatchOptions
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumSpacer
+import tornaco.apps.shortx.ui.base.RegexMatchOptionsDropdown
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXCard
@@ -46,11 +48,18 @@ class RegexTestDialogState(
 ) : CommonDialogState() {
 
     var regex by mutableStateOf("")
+    var options by mutableStateOf(RegexMatchOptions.RegexMatchOptions_Match)
     var target by mutableStateOf("")
     var output by mutableStateOf("")
 
     fun test() {
-        val matchRes = kotlin.runCatching { regex.toRegex().matches(target).toString() }.getOrElse {
+        val matchRes = kotlin.runCatching {
+            if (options == RegexMatchOptions.RegexMatchOptions_Match) {
+                regex.toRegex().matches(target).toString()
+            } else {
+                regex.toRegex().containsMatchIn(target).toString()
+            }
+        }.getOrElse {
             it.message
         }
         output = matchRes ?: "ERROR."
@@ -118,12 +127,21 @@ private fun RegexTest(dialogState: RegexTestDialogState) {
                 ) {
                     arrayOf<@Composable () -> Unit>(
                         {
-                            FieldTitle(text = LocalI18N.current["ui.tools.regex.test.regex"])
-                            MediumSpacer()
-                            ShortXTextField(
-                                modifier = Modifier.fillMaxWidth(),
-                                value = dialogState.regex,
-                                onValueChange = { dialogState.regex = it })
+                            Column {
+                                FieldTitle(text = LocalI18N.current["ui.tools.regex.test.regex"])
+                                MediumSpacer()
+                                ShortXTextField(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    value = dialogState.regex,
+                                    onValueChange = { dialogState.regex = it })
+
+                                MediumSpacer()
+                                RegexMatchOptionsDropdown(
+                                    options = dialogState.options,
+                                    onSelectNewOptions = {
+                                        dialogState.options = it
+                                    })
+                            }
                         },
                         {
                             FieldTitle(text = LocalI18N.current["ui.tools.regex.test.string"])
@@ -138,9 +156,11 @@ private fun RegexTest(dialogState: RegexTestDialogState) {
                                 Column {
                                     MediumSpacer()
                                     ShortXCard {
-                                        Column(modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(16.dp)) {
+                                        Column(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(16.dp)
+                                        ) {
                                             FieldTitle(text = LocalI18N.current["ui.tools.regex.test.result"])
                                             StandardSpacer()
                                             Text(dialogState.output)
