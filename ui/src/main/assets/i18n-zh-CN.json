@@ -353,7 +353,7 @@
   "ui.fact.n.matcher.content": "匹配内容",
   "ui.fact.n.matcher.content.message": "输入正则表达式来匹配通知内容(content)，留空表示匹配任意内容",
   "ui.fact.n.matcher.tag": "匹配标签",
-  "ui.fact.n.matcher.tag.message": "输入正则表达式来匹配通知标签(tag)，留空表示匹配任意标签",
+  "ui.fact.n.matcher.tag.message": "输入目标通知标签(tag)，留空表示任意标签",
   "ui.fact.n.any": "任意应用",
   "ui.fact.n": "通知",
   "ui.fact.task.removed": "任务被移除",

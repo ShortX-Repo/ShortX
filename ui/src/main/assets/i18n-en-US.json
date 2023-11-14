@@ -353,7 +353,7 @@
   "ui.fact.n.matcher.content": "Match content",
   "ui.fact.n.matcher.content.message": "Input regex to match notification content, leave blank to match any content",
   "ui.fact.n.matcher.tag": "Match tag",
-  "ui.fact.n.matcher.tag.message": "Input regex to match notification tag, leave blank to match any tag",
+  "ui.fact.n.matcher.tag.message": "Input notification tag to filter, leave blank to match any tag",
   "ui.fact.n.any": "Any app",
   "ui.fact.n": "Notification",
   "ui.fact.task.removed": "Task removed",

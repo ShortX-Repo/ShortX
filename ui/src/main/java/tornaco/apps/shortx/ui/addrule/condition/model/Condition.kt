@@ -828,7 +828,8 @@ sealed interface Condition : Parcelable {
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId(),
-        val timeString: String
+        val timeString: String,
+        val isAlarm: Boolean
     ) : Condition {
         override fun clone(
             id: String,

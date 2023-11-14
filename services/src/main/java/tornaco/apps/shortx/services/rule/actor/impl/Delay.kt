@@ -18,20 +18,29 @@ import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import java.util.UUID
+import java.util.concurrent.atomic.AtomicBoolean
 
+object DelaySchedulerHolder {
+    @SuppressLint("StaticFieldLeak")
+    lateinit var delayScheduler: DelayScheduler
+    private val isInitCalled = AtomicBoolean(false)
+
+    fun init(androidContext: Context, shortXContext: ShortXContext) {
+        if (isInitCalled.compareAndSet(false, true)) {
+            delayScheduler = DelayScheduler(androidContext, shortXContext)
+            delayScheduler.init()
+        }
+    }
+}
 
 object Delay : Actor {
-    @SuppressLint("StaticFieldLeak")
-    private lateinit var delayScheduler: DelayScheduler
-
     override fun actionsCanHandle(): Class<out Message> {
         return tornaco.apps.shortx.core.proto.action.Delay::class.java
     }
 
     override fun init(androidContext: Context, shortXContext: ShortXContext) {
         super.init(androidContext, shortXContext)
-        delayScheduler = DelayScheduler(androidContext, shortXContext)
-        delayScheduler.init()
+        DelaySchedulerHolder.init(androidContext, shortXContext)
     }
 
     override suspend fun handle(
@@ -54,13 +63,13 @@ object Delay : Actor {
             suspendCancellableCoroutine { continuation ->
                 val requestId = UUID.randomUUID().toString()
                 logger.d("delay with requestId: $requestId")
-                delayScheduler.schedule(requestId, timeLong) {
+                DelaySchedulerHolder.delayScheduler.schedule(requestId, timeLong) {
                     logger.d("delay alarm tick.")
                     continuation.resume(Unit) {}
                 }
 
                 continuation.invokeOnCancellation {
-                    delayScheduler.cancel(requestId, "invokeOnCancellation")
+                    DelaySchedulerHolder.delayScheduler.cancel(requestId, "invokeOnCancellation")
                 }
             }
         } else {

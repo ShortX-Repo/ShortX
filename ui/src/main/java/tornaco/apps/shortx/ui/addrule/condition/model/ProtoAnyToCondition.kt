@@ -431,7 +431,8 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 note = data.note,
                 isInvert = data.isInvert,
                 customContextDataKey = data.customContextDataKey,
-                timeString = data.timeString
+                timeString = data.timeString,
+                isAlarm = data.useAlarm
             )
         }
 

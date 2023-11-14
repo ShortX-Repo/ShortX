@@ -39,9 +39,9 @@ class DelayState(
         show()
     }
 
-    fun show(initialTime: String? = null) {
+    fun show(initialTime: String? = null, useAlarm: Boolean? = false) {
         this.currentValue = initialTime ?: ""
-        this.useAlarm = false
+        this.useAlarm = useAlarm ?: false
         show()
     }
 

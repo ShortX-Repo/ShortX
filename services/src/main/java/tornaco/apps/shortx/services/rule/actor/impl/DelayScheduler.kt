@@ -55,6 +55,7 @@ class DelayScheduler(
                 return
             }
             val callback = callbacks.remove(requestId)
+            logger.d("handleReceive, callback for this request: $callback")
             if (callback == null) {
                 logger.e("Callback not exists: $action")
             } else {

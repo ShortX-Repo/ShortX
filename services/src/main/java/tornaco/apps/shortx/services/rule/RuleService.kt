@@ -52,6 +52,7 @@ import tornaco.apps.shortx.services.rule.actor.PrebuiltActor
 import tornaco.apps.shortx.services.rule.actor.dummyHandlerParamsForAction
 import tornaco.apps.shortx.services.rule.actor.impl.ExecuteMVEL
 import tornaco.apps.shortx.services.rule.actor.impl.ShellCommand
+import tornaco.apps.shortx.services.rule.cond.PrebuiltCond
 import tornaco.apps.shortx.services.rule.fact.trigger.allTriggers
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
@@ -208,6 +209,12 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         PrebuiltActor.values().forEach {
             it.actor.init(context, shortXContext)
         }
+        logger.d("PrebuiltActor init complete")
+
+        PrebuiltCond.values().forEach {
+            it.cond.init(context, shortXContext)
+        }
+        logger.d("PrebuiltCond init complete")
 
         // Add guide DA
         if (getAllDirectAction().isEmpty()) {

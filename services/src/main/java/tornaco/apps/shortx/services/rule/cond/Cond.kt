@@ -14,6 +14,10 @@ interface Cond {
 
     fun condClass(): Class<out Message>
 
+    fun init(androidContext: Context, shortXContext: ShortXContext) {
+        logger.i("Cond $this init")
+    }
+
     suspend fun evaluate(param: CondParam): Result
 
     data class CondParam(

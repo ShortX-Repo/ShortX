@@ -452,6 +452,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setIsInvert(isInvert)
                 .setCustomContextDataKey(customContextDataKey)
                 .setTimeString(timeString)
+                .setUseAlarm(isAlarm)
                 .build()
         }
 
