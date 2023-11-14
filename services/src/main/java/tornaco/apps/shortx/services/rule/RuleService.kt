@@ -517,7 +517,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     fun cancelJobs(jobs: List<String>) {
         handler.postSafety {
-            engine.cancelJobs("User requested.") {
+            engine.cancelJobs("User requested(用户主动取消)") {
                 jobs.contains(it.id)
             }
         }

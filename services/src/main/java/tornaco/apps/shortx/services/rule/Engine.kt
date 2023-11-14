@@ -23,6 +23,7 @@ import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.watchdog.launchSafety
+import java.util.concurrent.CancellationException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -298,7 +299,7 @@ class DefaultRuleEngine(
                         }
 
                         ConflictStrategy.ConflictStrategy_ReplaceOld -> {
-                            cancelJobs("ConflictStrategy_ReplaceOld") { it.id == rule.id }
+                            cancelJobs("ConflictStrategy_ReplaceOld(重复策略)") { it.id == rule.id }
                             true
                         }
 
@@ -414,7 +415,7 @@ class DefaultRuleEngine(
                                 logger.d("$LOG_TAG_RULE_QUIT about to quit ${rule.title}")
 
                                 // DO NOT cancel ourself...
-                                cancelJobs("Rule quit") {
+                                cancelJobs("Rule quit(退出指令)") {
                                     it.id == rule.id
                                 }
 
@@ -517,7 +518,7 @@ class DefaultRuleEngine(
                 }
 
                 ConflictStrategy.ConflictStrategy_ReplaceOld -> {
-                    cancelJobs("ConflictStrategy_ReplaceOld") { it.id == context.srcId }
+                    cancelJobs("ConflictStrategy_ReplaceOld(重复策略，取消旧任务)") { it.id == context.srcId }
                 }
 
                 ConflictStrategy.ConflictStrategy_SkipNew -> {
@@ -594,7 +595,7 @@ class DefaultRuleEngine(
         synchronized(jobs) {
             val canceled = jobs.filter(filter).onEach {
                 logger.d("cancel job: $it, reason: $reason")
-                it.job.cancel()
+                it.job.cancel(CancellationException(reason))
                 logger.d("After call cancel, job isCanceled: ${it.job.isCancelled}, job isActive: ${it.job.isActive}")
                 onJobCancelled(it.id)
             }
