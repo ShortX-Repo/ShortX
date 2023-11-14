@@ -2,15 +2,11 @@ package tornaco.apps.shortx.services.wm
 
 import android.app.UiAutomation.OnAccessibilityEventListener
 import android.content.ClipData
-import android.content.Context
 import android.graphics.Color
 import android.graphics.Rect
 import android.os.Handler
 import android.os.Looper
-import android.util.DisplayMetrics
-import android.util.Pair
 import android.view.Surface
-import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Toast
@@ -26,6 +22,7 @@ import tornaco.apps.shortx.core.ui.TextViewNode
 import tornaco.apps.shortx.core.ui.ViewNode
 import tornaco.apps.shortx.core.ui.XRectF
 import tornaco.apps.shortx.core.util.clipboardManager
+import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.core.util.windowManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -42,7 +39,8 @@ class WindowManagerService(shortXContext: ShortXContext) :
     SystemService(shortXContext, "ShortXWMS"), OnAccessibilityEventListener {
 
     private val automationManager by lazy { UiAutomationManager(handler) }
-    private var screenSize: Pair<Int, Int>? = null
+
+    val screenSize by lazy { context.screenSize() }
 
     private val uiAutoLock = "UiAutoLock"
 
@@ -282,18 +280,6 @@ class WindowManagerService(shortXContext: ShortXContext) :
                 )
             return uiDevice.swipe(startX, startY, endX, endY, steps.toInt())
         }
-    }
-
-    fun getScreenSize(): IntArray {
-        if (screenSize == null) {
-            val displayMetrics = DisplayMetrics()
-            val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-            windowManager.defaultDisplay.getMetrics(displayMetrics)
-            val height = displayMetrics.heightPixels
-            val width = displayMetrics.widthPixels
-            screenSize = Pair(width, height)
-        }
-        return intArrayOf(screenSize!!.first, screenSize!!.second)
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {

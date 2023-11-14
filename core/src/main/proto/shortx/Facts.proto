@@ -83,6 +83,7 @@ message ChargerUnplug {
 message EdgeGesture {
   Edge edge = 1;
   Gesture gesture = 2;
+  bool isIntercept = 3;
 
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;

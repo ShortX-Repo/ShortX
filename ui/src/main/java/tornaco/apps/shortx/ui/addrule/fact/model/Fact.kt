@@ -110,7 +110,9 @@ sealed interface Fact {
     }
 
     data class EdgeGesture(
-        val edge: Edge, val gesture: Gesture,
+        val edge: Edge,
+        val gesture: Gesture,
+        val isIntercept: Boolean,
         override val note: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),

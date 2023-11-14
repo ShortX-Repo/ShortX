@@ -252,8 +252,13 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
 
         is Fact.EdgeGesture -> listOf(
             i18N["ui.fact.edge.gesture"],
-            i18N[fact.edge.displayNameKey()],
-            i18N[fact.gesture.displayNameKey()]
+            i18N[fact.edge.displayNameKey()]
+                    + " "
+                    + i18N[fact.gesture.displayNameKey()]
+                    + " "
+                    + fact.isIntercept.select(
+                i18N["ui.fact.key.event.adv.is.intercept.mode"], ""
+            )
         )
 
         is Fact.KeyEvent -> listOf(

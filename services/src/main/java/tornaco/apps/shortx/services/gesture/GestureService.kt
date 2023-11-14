@@ -1,7 +1,9 @@
 package tornaco.apps.shortx.services.gesture
 
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Color
+import android.graphics.RectF
 import android.os.SystemClock
 import android.view.InputEvent
 import android.view.KeyEvent
@@ -12,11 +14,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.fact.Edge
+import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
+import tornaco.apps.shortx.core.rule.is_
+import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -25,11 +31,11 @@ import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.input.IMSFunc
-import tornaco.apps.shortx.services.watchdog.launchSafety
-import tornaco.apps.shortx.services.watchdog.postSafety
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.GuideLineView
 import tornaco.apps.shortx.services.ui.i18NIns
+import tornaco.apps.shortx.services.watchdog.launchSafety
+import tornaco.apps.shortx.services.watchdog.postSafety
 
 
 private const val GUIDELINE_VIEW_SHOWN_TIME = 6000L
@@ -50,6 +56,9 @@ class GestureService(shortXContext: ShortXContext) :
     private val gestureRecorder by lazy { GestureRecorder(context) }
     private val gesturPlayer by lazy { GesturePlayer(context) }
 
+    private val interceptMotionPortRects = mutableListOf<RectF>()
+    private val interceptMotionLandRects = mutableListOf<RectF>()
+
     override fun start(context: Context) {
         super.start(context)
     }
@@ -60,6 +69,8 @@ class GestureService(shortXContext: ShortXContext) :
         gestureDetector = Detector(context, handler, this).also {
             it.dump()
         }
+
+        updateShouldInterceptMotionEventRect()
     }
 
     fun showEdgeHint(edgeNumber: Int) {
@@ -128,9 +139,33 @@ class GestureService(shortXContext: ShortXContext) :
             return null
         }
 
-        val gestureInterceptRes = nonNullGestureDetector.interceptEvent(input)?.also {
+        // Call nonNullGestureDetector first.
+        val gestureInterceptRes = nonNullGestureDetector.interceptEvent(input)
+
+        // Check if intercept.
+        val startTimeMillis = SystemClock.elapsedRealtimeNanos()
+        val currentOrientation = context.resources.configuration.orientation
+        val checkRects = if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
+            interceptMotionPortRects
+        } else {
+            interceptMotionLandRects
+        }
+        onDebugBuild { logger.d("filterMotionEvent, checkRects: $checkRects") }
+        val anyIntercept = checkRects.any { it.contains(input.x, input.y) }
+        val timeTaken = SystemClock.elapsedRealtimeNanos() - startTimeMillis
+        onDebugBuild {
+            logger.d("filterMotionEvent, check take time: $timeTaken(nano)")
+        }
+        if (anyIntercept) {
+            onDebugBuild {
+                logger.d("filterMotionEvent, intercept MotionEvent: $input")
+            }
+            return false
+        }
+
+        if (gestureInterceptRes != null) {
             // False, means block this event
-            if (!it) {
+            if (!gestureInterceptRes) {
                 logger.w("Send ACTION_CANCEL since we interceptEvent!")
                 val eventTime = SystemClock.uptimeMillis()
                 val cancel =
@@ -138,6 +173,7 @@ class GestureService(shortXContext: ShortXContext) :
                 IMSFunc.injectInputEvent(cancel)
             }
         }
+
         return gestureInterceptRes
     }
 
@@ -169,7 +205,10 @@ class GestureService(shortXContext: ShortXContext) :
     fun getGestureAreaWidthDp(): Int =
         maxOf(store.read(Settings.IntSettings.GestureAreaWidthDp), 12)
 
-    fun setGestureAreaWidthDp(dp: Int) = store.write(Settings.IntSettings.GestureAreaWidthDp, dp)
+    fun setGestureAreaWidthDp(dp: Int) {
+        store.write(Settings.IntSettings.GestureAreaWidthDp, dp)
+        updateShouldInterceptMotionEventRect()
+    }
 
     fun getSwipeDistanceThresholdDp(): Int =
         maxOf(store.read(Settings.IntSettings.SwipeDistanceThresholdDp), 1)
@@ -251,5 +290,49 @@ class GestureService(shortXContext: ShortXContext) :
 
     fun isGestureRecording(): Boolean {
         return gestureRecorder.isRecording
+    }
+
+    fun onRuleChanged() {
+        updateShouldInterceptMotionEventRect()
+    }
+
+    private fun updateShouldInterceptMotionEventRect() {
+        val screenSize = shortXContext.wm.screenSize
+        val portRects = mutableListOf<RectF>()
+        val landRects = mutableListOf<RectF>()
+
+        shortXContext.rule.getAllEnabledRules().forEach {
+            it.factsList.forEach { protoFact ->
+                val isEG = protoFact is_ EdgeGesture::class.java
+                if (isEG) {
+                    val eg = protoFact unpack_ EdgeGesture::class.java
+                    if (eg.isIntercept) {
+                        portRects.add(
+                            eg.edge.getRect(
+                                screenSize.x.toFloat(),
+                                screenSize.y.toFloat(),
+                                shortXContext.gesture.getGestureAreaWidthDp()._dp.toFloat()
+                            )
+                        )
+                        landRects.add(
+                            eg.edge.getRectL(
+                                screenSize.x.toFloat(),
+                                screenSize.y.toFloat(),
+                                shortXContext.gesture.getGestureAreaWidthDp()._dp.toFloat()
+                            )
+                        )
+                    }
+                }
+            }
+        }
+
+        logger.d("updateShouldInterceptMotionEventRect, portRects: $portRects")
+        logger.d("updateShouldInterceptMotionEventRect, landRects: $landRects")
+
+        this.interceptMotionLandRects.clear()
+        this.interceptMotionLandRects.addAll(landRects)
+
+        this.interceptMotionPortRects.clear()
+        this.interceptMotionPortRects.addAll(portRects)
     }
 }

@@ -49,6 +49,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.EdgeGesture(
                 edge = data.edge,
                 gesture = data.gesture,
+                isIntercept = data.isIntercept,
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note
             )

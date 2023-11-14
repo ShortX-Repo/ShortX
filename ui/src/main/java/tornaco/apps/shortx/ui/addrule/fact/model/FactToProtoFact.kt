@@ -96,7 +96,11 @@ fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
         }
 
         is Fact.EdgeGesture -> {
-            EdgeGesture.newBuilder().setEdge(edge).setGesture(gesture).setId(overrideId ?: id)
+            EdgeGesture.newBuilder()
+                .setEdge(edge)
+                .setGesture(gesture)
+                .setIsIntercept(isIntercept)
+                .setId(overrideId ?: id)
                 .setNote(note).setCustomContextDataKey(customContextDataKey)
                 .build()
         }

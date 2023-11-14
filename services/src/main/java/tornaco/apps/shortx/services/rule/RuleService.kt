@@ -468,6 +468,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             kotlin.runCatching { it.onAddOrUpdate(rule.id) }
                 .onFailure { logger.e("Call onAddOrUpdate") }
         }
+
+        shortXContext.gesture.onRuleChanged()
     }
 
     fun deleteRule(ruleId: String) {
@@ -485,6 +487,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             kotlin.runCatching { it.onDelete(ruleId) }
                 .onFailure { logger.e("Call onDelete") }
         }
+
+        shortXContext.gesture.onRuleChanged()
     }
 
     fun getRuleById(id: String): Rule? {
@@ -508,6 +512,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 if (enable) it.onRuleEnabled(ruleId) else it.onRuleDisabled(ruleId)
             }
         }
+
+        shortXContext.gesture.onRuleChanged()
 
         // Stop tasks
         cancelJobs(getActiveJobs().filter { it == ruleId })
