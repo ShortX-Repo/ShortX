@@ -514,7 +514,7 @@ class AppStateService(shortXContext: ShortXContext) :
             logger.d("${process.owner} is still running.")
         } else {
             val alreadyBroadcastStopEvent =
-                System.currentTimeMillis() - (pkgStopRunningEvents[process.owner] ?: 0L) >= 600L
+                System.currentTimeMillis() - (pkgStopRunningEvents[process.owner] ?: 0L) <= 600L
 
             if (!alreadyBroadcastStopEvent) {
                 onPkgStopRunning(process.owner)
