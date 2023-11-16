@@ -81,6 +81,8 @@ class AppStateService(shortXContext: ShortXContext) :
 
     private val homePkgs = mutableListOf<String>()
 
+    private val pkgStopRunningEvents = mutableMapOf<AppPkg, Long>()
+
     override fun systemReady() {
         super.systemReady()
         systemServiceScope.launchSafety {
@@ -461,13 +463,23 @@ class AppStateService(shortXContext: ShortXContext) :
         )
     }
 
+    @Synchronized
     fun onProcessRemoved(process: ProcessRecord) {
         logger.d("onProcessRemoved: ${process.owner.pkgName} - ${process.owner.userId} - ${process.processName}")
         val isPkgStillRunning = process.owner.isRunning()
         if (isPkgStillRunning) {
             logger.d("${process.owner} is still running.")
         } else {
-            onPkgStopRunning(process.owner)
+            val alreadyBroadcastStopEvent =
+                System.currentTimeMillis() - (pkgStopRunningEvents[process.owner] ?: 0L) >= 600L
+
+            if (!alreadyBroadcastStopEvent) {
+                onPkgStopRunning(process.owner)
+                // Cache to prevent call on stop more that 1 time with a second.
+                pkgStopRunningEvents[process.owner] = System.currentTimeMillis()
+            } else {
+                logger.i("alreadyBroadcastStopEvent skip.")
+            }
         }
     }
 
@@ -502,12 +514,13 @@ class AppStateService(shortXContext: ShortXContext) :
             "onPkgStopRunning",
             PkgStopRunning.newBuilder()
                 .addAllApps(listOf(pkg))
-                .build(),
+                .build()
+        ) {
             mapOf(
                 ContextDataMapping.PkgStopRunning.userId.name to "${pkg.userId}",
                 ContextDataMapping.PkgStopRunning.pkgName.name to pkg.pkgName,
             )
-        )
+        }
     }
 
     fun stopServices(services: List<AppComponent>) =
