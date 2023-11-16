@@ -5,6 +5,7 @@ import android.app.ActivityManager
 import android.app.ActivityTaskManager
 import android.app.AlertDialog
 import android.app.IActivityManager
+import android.app.IUidObserver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -53,6 +54,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
 import java.util.*
+
 
 class AppStateService(shortXContext: ShortXContext) :
     SystemService(shortXContext, "AppStateService") {
@@ -112,6 +114,43 @@ class AppStateService(shortXContext: ShortXContext) :
         }
 
         logger.w("AMS: $ams")
+
+
+        onDebugBuild {
+            val mUidObserver: IUidObserver = object : IUidObserver.Stub() {
+                override fun onUidGone(uid: Int, disabled: Boolean) {
+                    logger.d("onUidGone: $uid $disabled ${uidToApp(uid)}")
+                }
+
+                override fun onUidActive(uid: Int) {
+                    logger.d("onUidActive: $uid ${uidToApp(uid)}")
+                }
+
+                override fun onUidIdle(uid: Int, disabled: Boolean) {
+                    logger.d("onUidIdle: $uid $disabled")
+                }
+
+                override fun onUidStateChanged(
+                    uid: Int,
+                    procState: Int,
+                    procStateSeq: Long,
+                    capability: Int
+                ) {
+                    logger.d("onUidStateChanged: $uid $procState $procStateSeq $capability")
+                }
+
+                override fun onUidCachedChanged(uid: Int, cached: Boolean) {
+                    logger.d("onUidCachedChanged: $uid $cached")
+                }
+            }
+
+            ActivityManager.getService().registerUidObserver(
+                mUidObserver,
+                ActivityManager.UID_OBSERVER_PROCSTATE or ActivityManager.UID_OBSERVER_GONE
+                        or ActivityManager.UID_OBSERVER_IDLE or ActivityManager.UID_OBSERVER_ACTIVE,
+                ActivityManager.PROCESS_STATE_UNKNOWN, null
+            )
+        }
     }
 
     private suspend fun initPoolForUser(id: Int): PkgPool {
