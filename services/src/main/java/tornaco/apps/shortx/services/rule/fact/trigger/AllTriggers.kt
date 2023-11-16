@@ -31,4 +31,5 @@ internal fun allTriggers(context: Context, shortXContext: ShortXContext) = mutab
     AccessibilityNodeOnScreenTrigger(context, shortXContext),
     HeadsetPlugTrigger(context, shortXContext),
     ScreenRotateTrigger(context, shortXContext),
+    HotspotTrigger(context, shortXContext),
 )
