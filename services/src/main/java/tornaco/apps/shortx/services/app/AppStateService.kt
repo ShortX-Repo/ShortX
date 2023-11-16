@@ -165,20 +165,24 @@ class AppStateService(shortXContext: ShortXContext) :
             }
         }
 
-        AlertDialog.Builder(context)
-            .setTitle(i18NIns["ui.shortx.uninstalled.title"])
-            .setMessage(i18NIns["ui.shortx.uninstalled.message"])
-            .setCancelable(false)
-            .setPositiveButton(
-                i18NIns["ui.shortx.uninstalled.clear"]
-            ) { _, _ -> resetAndClearData() }
-            .setNegativeButton(i18NIns["ui.shortx.uninstalled.keep"]) { dialog, which ->
-                // Noop.
-            }
-            .create().apply {
-                window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG)
-            }.show()
+        systemServiceScope.launchSafety {
+            // Let system handle some UI changes first.
+            delay(2000)
 
+            AlertDialog.Builder(context)
+                .setTitle(i18NIns["ui.shortx.uninstalled.title"])
+                .setMessage(i18NIns["ui.shortx.uninstalled.message"])
+                .setCancelable(false)
+                .setPositiveButton(
+                    i18NIns["ui.shortx.uninstalled.clear"]
+                ) { _, _ -> resetAndClearData() }
+                .setNegativeButton(i18NIns["ui.shortx.uninstalled.keep"]) { dialog, which ->
+                    // Noop.
+                }
+                .create().apply {
+                    window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG)
+                }.show()
+        }
     }
 
     override fun shutdown() {
