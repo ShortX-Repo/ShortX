@@ -1,6 +1,8 @@
 package tornaco.apps.shortx.core.util;
 
 import android.os.Build;
+import android.os.SystemProperties;
+import android.text.TextUtils;
 
 /**
  * Created by guohao4 on 2017/10/24.
@@ -8,6 +10,10 @@ import android.os.Build;
  */
 
 public abstract class OsUtils {
+
+    public static boolean isMIUI() {
+        return !TextUtils.isEmpty(SystemProperties.get("ro.miui.ui.version.code"));
+    }
 
     public static boolean isLOS() {
         return false;
