@@ -42,8 +42,10 @@ class PkgPool(
 
         override fun onPackageRemoved(packageName: String?, uid: Int) {
             super.onPackageRemoved(packageName, uid)
+            logger.d("onPackageRemoved: $packageName")
             packageName?.let { pkgName ->
                 val removed = remove(pkgName)
+                logger.d("removed: $removed")
                 removed?.let { onPackageRemoved(it) }
             }
         }
@@ -136,10 +138,10 @@ class PkgPool(
     fun load(pkgName: String): App? {
         logger.d("load $pkgName")
         return kotlin.runCatching {
-            _allApps.remove(pkgName)
             val app = PkgUtils.getApplicationInfoAsUser(context, pkgName, userId)?.toApp()
-            app?.let {
-                _allApps.put(app.pkg.pkgName, app)
+            if (app != null) {
+                logger.d("add: $app")
+                _allApps[app.pkg.pkgName] = app
             }
             app
         }.getOrElse {
