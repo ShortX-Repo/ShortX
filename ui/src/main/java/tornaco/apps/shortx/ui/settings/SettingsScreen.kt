@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.settings
 
 import android.Manifest
 import android.os.Environment
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -74,6 +75,7 @@ import tornaco.apps.shortx.ui.subscribe.LottieLoadingView
 import tornaco.apps.shortx.ui.subscribe.SubscribeActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.BrowserUtils
+import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -812,20 +814,21 @@ private fun aboutSettings(
     viewPrivacyStatement: () -> Unit,
 ): List<Preference> {
     val context = LocalContext.current
+    val i18N = LocalI18N.current
     return listOf(
-        Preference.Category(LocalI18N.current["ui.settings.about"]),
+        Preference.Category(i18N["ui.settings.about"]),
 
         Preference.ExpandablePreference(
             icon = Remix.System.information_fill,
-            title = LocalI18N.current["ui.settings.app.info"],
+            title = i18N["ui.settings.app.info"],
             summary = "${BuildProp.APP_VERSION_NAME}\n${BuildProp.APP_VERSION_CODE}",
             preferences = listOf(
                 Preference.TextPreference(icon = Remix.Device.instance_fill,
-                    title = LocalI18N.current["ui.settings.core.info"],
+                    title = i18N["ui.settings.core.info"],
                     summary = if (state.isActivated) {
                         "${state.coreVersion.name}\n${state.coreVersion.code}"
                     } else {
-                        LocalI18N.current["ui.settings.core.info.na"]
+                        i18N["ui.settings.core.info.na"]
                     },
                     onClick = {
                     }
@@ -834,20 +837,32 @@ private fun aboutSettings(
         ),
 
         Preference.TextPreference(icon = Remix.Logos.telegram_fill,
-            title = LocalI18N.current["ui.settings.tg"],
-            summary = LocalI18N.current["ui.settings.tg.summary"],
+            title = i18N["ui.settings.tg"],
+            summary = i18N["ui.settings.tg.summary"],
             onClick = {
                 BrowserUtils.launch(context, BuildProp.TG_GROUP)
             }
         ),
+        Preference.TextPreference(icon = Remix.Logos.qq_fill,
+            title = "QQ",
+            summary = BuildProp.QQ_GROUP_1,
+            onClick = {
+                ClipboardUtils.copyToClipboard(context, "shortx qq", BuildProp.QQ_GROUP_1)
+                Toast.makeText(
+                    context,
+                    i18N["ui.common.copied.to.clipboard"],
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        ),
         Preference.TextPreference(icon = Remix.Logos.open_source_fill,
-            title = LocalI18N.current["ui.settings.open.source.license"],
+            title = i18N["ui.settings.open.source.license"],
             onClick = {
                 viewOpenSourceLicense()
             }
         ),
         Preference.TextPreference(icon = Remix.Document.sticky_note_2_fill,
-            title = LocalI18N.current["ui.settings.privacy.statement"],
+            title = i18N["ui.settings.privacy.statement"],
             onClick = {
                 viewPrivacyStatement()
             }
