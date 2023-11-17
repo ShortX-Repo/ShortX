@@ -157,6 +157,8 @@
 -dontwarn android.view.WindowManagerGlobal
 -dontwarn android.view.IWindowManager$Stub
 -dontwarn com.android.internal.inputmethod.IRemoteInputConnection
+-dontwarn android.net.wifi.WifiManager$SoftApCallback
+-dontwarn android.os.HandlerExecutor
 
 # Inroduced by a lib update, not sure if it 55d1baecdbfe02c40a147d696d8a805f43906890
 -dontwarn java.beans.BeanDescriptor
