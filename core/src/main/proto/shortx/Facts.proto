@@ -484,6 +484,7 @@ message OnQSTileClick {
 
 message SystemSettingsChanged {
   StringPair urlAndExpectedValueRegex = 1;
+  RegexMatchOptions matchOptions = 2;
 
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;

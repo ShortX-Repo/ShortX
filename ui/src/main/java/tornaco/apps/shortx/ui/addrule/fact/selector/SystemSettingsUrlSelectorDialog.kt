@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import tornaco.apps.shortx.core.proto.common.RegexMatchOptions
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
@@ -27,6 +28,7 @@ import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumSpacer
+import tornaco.apps.shortx.ui.base.RegexMatchOptionsDropdown
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
@@ -44,10 +46,12 @@ class SystemSettingsUrlSelectorState(
 ) : CommonDialogState() {
     var inputUrl by mutableStateOf("content://settings/")
     var inputValueRegex by mutableStateOf("")
+    var options by mutableStateOf(RegexMatchOptions.RegexMatchOptions_Match)
 
     fun show(initialValue: Fact.SystemSettingsChanged? = null) {
         this.inputUrl = initialValue?.urlAndValueRegex?.first ?: "content://settings/"
         this.inputValueRegex = initialValue?.urlAndValueRegex?.second ?: ""
+        this.options = initialValue?.options ?: RegexMatchOptions.RegexMatchOptions_Match
 
         show()
     }
@@ -94,7 +98,8 @@ fun SystemSettingsUrlSelectorDialog(state: SystemSettingsUrlSelectorState) {
                                                     urlAndValueRegex = StringPair.newBuilder()
                                                         .setFirst(state.inputUrl)
                                                         .setSecond(state.inputValueRegex)
-                                                        .build()
+                                                        .build(),
+                                                    options = state.options
                                                 )
                                             )
                                             state.dismiss()
@@ -145,6 +150,12 @@ fun SystemSettingsUrlSelectorDialog(state: SystemSettingsUrlSelectorState) {
                             ShortXTextField(
                                 value = state.inputValueRegex,
                                 onValueChange = { state.inputRegex(it) })
+                            MediumSpacer()
+                            RegexMatchOptionsDropdown(
+                                options = state.options,
+                                onSelectNewOptions = {
+                                    state.options = it
+                                })
 
 
                             LargeSpacer()

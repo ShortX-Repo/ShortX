@@ -426,6 +426,7 @@ fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
             SystemSettingsChanged.newBuilder().setId(overrideId ?: id).setNote(note)
                 .setCustomContextDataKey(customContextDataKey)
                 .setUrlAndExpectedValueRegex(urlAndValueRegex)
+                .setMatchOptions(options)
                 .build()
         }
 

@@ -426,7 +426,8 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
             ruleN.urlAndExpectedValueRegex.first == actualN.urlAndExpectedValueRegex.first
                     && emptyOrRegexMatch(
                 ruleN.urlAndExpectedValueRegex.second,
-                actualN.urlAndExpectedValueRegex.second
+                actualN.urlAndExpectedValueRegex.second,
+                ruleN.matchOptions
             )
         }
 

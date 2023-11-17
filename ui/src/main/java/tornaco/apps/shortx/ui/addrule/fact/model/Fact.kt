@@ -882,7 +882,8 @@ sealed interface Fact {
         override val note: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
-        val urlAndValueRegex: StringPair
+        val urlAndValueRegex: StringPair,
+        val options: RegexMatchOptions
     ) : Fact {
         override fun clone(
             id: String,

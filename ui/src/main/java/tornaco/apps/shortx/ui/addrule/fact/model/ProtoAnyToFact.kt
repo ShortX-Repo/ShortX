@@ -576,8 +576,11 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 this unpack_ tornaco.apps.shortx.core.proto.fact.SystemSettingsChanged::class.java
 
             Fact.SystemSettingsChanged(
-                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note,
-                urlAndValueRegex = data.urlAndExpectedValueRegex
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                urlAndValueRegex = data.urlAndExpectedValueRegex,
+                options = data.matchOptions
             )
         }
 
