@@ -35,7 +35,7 @@ plugins {
 androidGitVersion {
     prefix = "v"
     codeFormat = "MNPBBB"
-    baseCode = 700
+    baseCode = 1253
 }
 
 sxVersionCode = androidGitVersion.code()
