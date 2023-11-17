@@ -74,6 +74,17 @@ class SettingsStore(
         }
     }
 
+    fun clear() {
+        stringCache.clear()
+        boolCache.clear()
+        intCache.clear()
+        floatCache.clear()
+        stringMapCache.clear()
+    }
+
+    fun getAllString(): Map<String, String?> {
+        return stringCache.toMap()
+    }
 
     fun getString(key: String, defaultValue: String? = null): String? {
         return stringCache[key] ?: defaultValue
@@ -103,6 +114,11 @@ class SettingsStore(
 
     fun putString(key: String, value: String?) {
         stringCache[key] = value
+        postWrite()
+    }
+
+    fun removeString(key: String) {
+        stringCache.remove(key)
         postWrite()
     }
 

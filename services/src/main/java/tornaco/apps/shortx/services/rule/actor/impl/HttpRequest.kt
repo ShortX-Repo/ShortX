@@ -1,6 +1,6 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
-import com.google.gson.GsonBuilder
+import android.content.Context
 import com.google.protobuf.Message
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -29,29 +29,47 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.replaceLocalVarValues
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.data.SettingsStore
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
+import tornaco.apps.shortx.services.systemServiceScope
+import tornaco.apps.shortx.services.util.http.persistentcookiejar.PersistentCookieJar
+import tornaco.apps.shortx.services.util.http.persistentcookiejar.cache.SetCookieCache
+import tornaco.apps.shortx.services.util.http.persistentcookiejar.persistence.SettingsStoreCookiePersistor
 import java.util.concurrent.TimeUnit
 
 
 object HttpRequest : Actor {
-    private val logging = HttpLoggingInterceptor {
-        logger.d(it)
-    }.apply {
-        setLevel(HttpLoggingInterceptor.Level.BODY)
-    }
-    private val client by lazy {
-        OkHttpClient.Builder()
+    private lateinit var cookieJar: PersistentCookieJar
+
+    private val logging =
+        HttpLoggingInterceptor { logger.d(it) }.apply { setLevel(HttpLoggingInterceptor.Level.BODY) }
+
+    private lateinit var clientWithCookieJar: OkHttpClient
+
+    override fun init(androidContext: Context, shortXContext: ShortXContext) {
+        super.init(androidContext, shortXContext)
+        cookieJar = PersistentCookieJar(
+            SetCookieCache(),
+            SettingsStoreCookiePersistor(
+                SettingsStore(
+                    androidContext,
+                    "PersistentCookieJar",
+                    shortXContext.rule.systemServiceScope
+                )
+            )
+        )
+        logger.d("cookieJar: $cookieJar")
+
+        clientWithCookieJar = OkHttpClient.Builder()
+            .cookieJar(cookieJar)
             .writeTimeout(2, TimeUnit.MINUTES)
             .readTimeout(2, TimeUnit.MINUTES)
             .addInterceptor(logging)
             .build()
+        logger.d("client: $cookieJar")
     }
-
-    private val gson = GsonBuilder()
-        .disableHtmlEscaping()
-        .setPrettyPrinting().create()
-
 
     override fun actionsCanHandle(): Class<out Message> {
         return tornaco.apps.shortx.core.proto.action.HttpRequest::class.java
@@ -209,7 +227,7 @@ object HttpRequest : Actor {
                 }
             }
             .build()
-        return client.newCall(request).execute()
+        return clientWithCookieJar.newCall(request).execute()
     }
 
     fun ProtoAny.toHttpResponseBody(
