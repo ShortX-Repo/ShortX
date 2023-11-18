@@ -39,8 +39,8 @@ object HttpRequestLogging {
     private var filePrinter: Printer = FilePrinter.Builder(
         File(httpDir(), "log").absolutePath
     ).fileNameGenerator(ChangelessFileNameGenerator("request.log"))
-        .cleanStrategy(FileLastModifiedCleanStrategy(60 * 1000 * 60 * 24 * 7 /* 7 Days */))
-        .flattener(PatternFlattener("{HH:mm} {t}: {m}"))
+        .cleanStrategy(FileLastModifiedCleanStrategy(60 * 1000 * 60 * 24 * 2 /* 2 Days */))
+        .flattener(PatternFlattener("{d HH:mm} {t}: {m}"))
         .build()
 
     private val logger = Logger.Builder()

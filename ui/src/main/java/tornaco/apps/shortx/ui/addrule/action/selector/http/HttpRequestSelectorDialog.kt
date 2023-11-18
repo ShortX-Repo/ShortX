@@ -26,42 +26,37 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.action.HttpRequest
-import tornaco.apps.shortx.core.proto.common.HttpRequestBodyForm
 import tornaco.apps.shortx.core.proto.common.HttpRequestBodyFormItem
-import tornaco.apps.shortx.core.proto.common.HttpRequestBodyJson
 import tornaco.apps.shortx.core.proto.common.HttpRequestHeader
 import tornaco.apps.shortx.core.proto.common.HttpRequestMethod
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.core.rule.ProtoAny
-import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.pack_
-import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.curl.curlCommandToHttpRequest
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.addrule.action.model.HttpRequestAdapter
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.addrule.action.selector.KeyValueEditDialog
 import tornaco.apps.shortx.ui.addrule.action.selector.rememberKeyValueEditDialogState
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
-import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.ErrorMessageDialog
@@ -75,7 +70,6 @@ import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.MenuDialogState
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
-import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
@@ -85,8 +79,6 @@ import tornaco.apps.shortx.ui.base.SwitchRow
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.TipRow
-import tornaco.apps.shortx.ui.base.code.OutputDialog
-import tornaco.apps.shortx.ui.base.code.rememberOutputDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberErrorMessageDialogState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
@@ -97,202 +89,32 @@ import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
-internal enum class AdapterType {
-    Raw, BodyJson, HeaderBodyJson
-}
-
-enum class HttpRequestBodyType(val label: String) {
-    Json("Json"),
-    Form("Form"),
-    None("None")
-}
-
-class HttpRequestDialogState(
-    val onSelected: (Action.HttpRequest) -> Unit
-) : CommonDialogState() {
-    internal var url by mutableStateOf("")
-    internal var method by mutableStateOf(HttpRequestMethod.GET)
-    internal var headers by mutableStateOf<List<HttpRequestHeader>>(emptyList())
-
-    internal var requestBody by mutableStateOf(HttpRequestBodyType.None)
-    internal var requestBodyJson by mutableStateOf(
-        "{}"
-    )
-    internal var requestBodyForm by mutableStateOf<List<HttpRequestBodyFormItem>>(
-        emptyList()
-    )
-
-    internal var expressions by mutableStateOf(listOf<String>())
-    internal var responseAdapter by mutableStateOf(AdapterType.Raw)
-
-    internal var withCookieJar by mutableStateOf(false)
-    internal var trustAllCerts by mutableStateOf(false)
-    internal var isTesting by mutableStateOf(false)
-
-    val httpRequest
-        get() = Action.HttpRequest(
-            url = this.url,
-            method = this.method,
-            headers = this.headers,
-            requestBody = if (this.requestBody == HttpRequestBodyType.Json) {
-                HttpRequestBodyJson.newBuilder().setJson(requestBodyJson).build().pack_()
-            } else if (this.requestBody == HttpRequestBodyType.Form) {
-                HttpRequestBodyForm.newBuilder().addAllItems(this.requestBodyForm).build().pack_()
-            } else {
-                ProtoAny.getDefaultInstance()
-            },
-            adapter = when (this.responseAdapter) {
-                AdapterType.BodyJson -> {
-                    HttpRequestAdapter.BodyJsonMap(expressions = this.expressions)
-                }
-
-                AdapterType.HeaderBodyJson -> {
-                    HttpRequestAdapter.HeaderBodyJsonMap(expressions = this.expressions)
-                }
-
-                else -> {
-                    HttpRequestAdapter.Raw
-                }
-            },
-            withCookieJar = this.withCookieJar,
-            trustAllCerts = this.trustAllCerts
-        )
-
-    fun show(currentAction: Action.HttpRequest? = null) {
-        this.url = currentAction?.url ?: ""
-        this.method = currentAction?.method ?: HttpRequestMethod.GET
-        this.headers = currentAction?.headers ?: emptyList()
-        this.withCookieJar = currentAction?.withCookieJar ?: false
-        this.trustAllCerts = currentAction?.trustAllCerts ?: false
-
-        currentAction?.requestBody?.let {
-            if (it is_ HttpRequestBodyJson::class.java) {
-                val bodyJson = it unpack_ HttpRequestBodyJson::class.java
-                this.requestBody = HttpRequestBodyType.Json
-                this.requestBodyJson = bodyJson.json
-            } else if (it is_ HttpRequestBodyForm::class.java) {
-                val bodyForm = it unpack_ HttpRequestBodyForm::class.java
-                this.requestBody = HttpRequestBodyType.Form
-                this.requestBodyForm = bodyForm.itemsList
-            } else {
-                this.requestBody = HttpRequestBodyType.None
-                this.requestBodyForm = emptyList()
-                this.requestBodyJson = "{}"
-            }
-        } ?: HttpRequestBodyType.None
-
-        this.expressions = currentAction?.let {
-            when (it.adapter) {
-                is HttpRequestAdapter.BodyJsonMap -> {
-                    it.adapter.expressions
-                }
-
-                is HttpRequestAdapter.HeaderBodyJsonMap -> {
-                    it.adapter.expressions
-                }
-
-                else -> {
-                    emptyList()
-                }
-            }
-        } ?: emptyList()
-        this.responseAdapter = currentAction?.let {
-            when (it.adapter) {
-                is HttpRequestAdapter.BodyJsonMap -> AdapterType.BodyJson
-                is HttpRequestAdapter.HeaderBodyJsonMap -> AdapterType.HeaderBodyJson
-                else -> AdapterType.Raw
-            }
-        } ?: AdapterType.Raw
-
-        show()
-    }
-
-    fun setMethod(method: HttpRequestMethod) {
-        this.method = method
-    }
-
-    fun addHeader(header: HttpRequestHeader) {
-        this.headers = this.headers.toMutableList().apply {
-            add(header)
-        }
-    }
-
-    fun addHeader(header: HttpRequestHeader, index: Int) {
-        this.headers = this.headers.toMutableList().apply {
-            add(index, header)
-        }
-    }
-
-
-    fun removeHeader(index: Int) {
-        this.headers = this.headers.toMutableList().apply {
-            removeAt(index)
-        }
-    }
-
-    fun addExpression(expression: String) {
-        this.expressions = this.expressions.toMutableList().apply {
-            add(expression)
-        }
-    }
-
-    fun removeExpression(expression: Int) {
-        this.expressions = this.expressions.toMutableList().apply {
-            removeAt(expression)
-        }
-    }
-
-    fun setRequestBodyType(bodyType: HttpRequestBodyType) {
-        this.requestBody = bodyType
-        if (bodyType != HttpRequestBodyType.None && this.method == HttpRequestMethod.GET) {
-            this.method = HttpRequestMethod.POST
-        }
-    }
-
-    fun addForm(item: HttpRequestBodyFormItem) {
-        this.requestBodyForm = this.requestBodyForm.toMutableList().apply {
-            add(item)
-        }
-    }
-
-    fun addForm(item: HttpRequestBodyFormItem, index: Int) {
-        this.requestBodyForm = this.requestBodyForm.toMutableList().apply {
-            add(index, item)
-        }
-    }
-
-    fun removeForm(index: Int) {
-        this.requestBodyForm = this.requestBodyForm.toMutableList().apply {
-            removeAt(index)
-        }
+@AndroidEntryPoint
+class HttpRequestSelectorActivity : BaseSelectorActivity<Action.HttpRequest>() {
+    @Composable
+    override fun BaseSelectorActivity<Action.HttpRequest>.SelectorContent(currentAction: Action.HttpRequest?) {
+        HttpRequestSelector(currentAction)
     }
 }
 
 @Composable
-fun rememberHttpRequestDialogState(
-    onSelected: (Action.HttpRequest) -> Unit
-): HttpRequestDialogState {
-    return remember {
-        HttpRequestDialogState(onSelected)
-    }
-}
-
-@Composable
-fun HttpRequestDialog(state: HttpRequestDialogState) {
-    if (state.isShowing) {
-        ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
-            HttpRequestSelector(state)
+private fun BaseSelectorActivity<Action.HttpRequest>.HttpRequestSelector(currentAction: Action.HttpRequest?) {
+    val vm = hiltViewModel<HttpRequestSelectorViewModel>()
+    LaunchedEffect(vm) {
+        if (currentAction == null) {
+            vm.resetState()
+        } else {
+            vm.init(currentAction)
         }
     }
-}
 
-@Composable
-private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
+    val selectorState by vm.state.collectAsState()
+
     val context = LocalContext.current
 
     val outputDialogState =
-        rememberOutputDialogState(title = LocalI18N.current["ui.action.http.request"])
-    OutputDialog(state = outputDialogState)
+        rememberErrorMessageDialogState(title = LocalI18N.current["ui.action.http.request"])
+    ErrorMessageDialog(state = outputDialogState)
 
     val errorDialogState =
         rememberErrorMessageDialogState(title = LocalI18N.current["ui.common.error.view.message"])
@@ -305,7 +127,7 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
             onSelected = {
                 runCatching {
                     val request = it.curlCommandToHttpRequest()
-                    dialogState.show(request.pack_().toAction(shortXManager) as Action.HttpRequest?)
+                    vm.init(request.pack_().toAction(shortXManager) as Action.HttpRequest?)
                 }.onFailure {
                     composeLogger.e(it, "curlCommandToHttpRequest")
                     val errorMsg = it.stackTraceToString()
@@ -321,7 +143,7 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
             onSelected = {
                 runCatching {
                     val request = it.toHttpCanaryExportJson().toHttpRequest()
-                    dialogState.show(request.pack_().toAction(shortXManager) as Action.HttpRequest?)
+                    vm.init(request.pack_().toAction(shortXManager) as Action.HttpRequest?)
                 }.onFailure {
                     composeLogger.e(it, "toHttpCanaryExportJson")
                     errorDialogState.show(it.stackTraceToString())
@@ -336,7 +158,7 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
             onSelected = {
                 runCatching {
                     val request = it.toHttpCanaryExportHcy().toHttpRequest()
-                    dialogState.show(request.pack_().toAction(shortXManager) as Action.HttpRequest?)
+                    vm.init(request.pack_().toAction(shortXManager) as Action.HttpRequest?)
                 }.onFailure {
                     composeLogger.e(it, "toHttpCanaryExportHcy")
                     errorDialogState.show(it.stackTraceToString())
@@ -355,7 +177,7 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                         title = { Text(text = LocalI18N.current["ui.action.http.request"]) },
                         navigationIcon = {
                             IconButton(onClick = {
-                                dialogState.dismiss()
+                                cancelAndFinish()
                             }) {
                                 RemixIcon(remixName = Remix.System.close_line)
                             }
@@ -410,21 +232,21 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
 
                             val scope = rememberCoroutineScope()
                             IconButton(
-                                enabled = !dialogState.isTesting,
+                                enabled = !selectorState.isTesting,
                                 onClick = {
-                                    if (dialogState.url.isNotBlank()) {
-                                        val request = dialogState.httpRequest
-                                        dialogState.isTesting = true
+                                    if (selectorState.url.isNotBlank()) {
+                                        val request = selectorState.httpRequest
+                                        vm.setIsTesting(true)
                                         scope.launch {
                                             val out = withContext(Dispatchers.IO) {
                                                 shortXManager.executeHttpRequest(request.toProtoAction() as HttpRequest)
                                             }
-                                            dialogState.isTesting = false
+                                            vm.setIsTesting(false)
                                             outputDialogState.show(out.joinToString(System.lineSeparator()))
                                         }
                                     }
                                 }) {
-                                if (dialogState.isTesting) {
+                                if (selectorState.isTesting) {
                                     CircularProgressIndicator(modifier = Modifier.size(20.dp))
                                 } else {
                                     RemixIcon(remixName = Remix.Media.play_line)
@@ -432,9 +254,8 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                             }
 
                             IconButton(onClick = {
-                                if (dialogState.url.isNotBlank()) {
-                                    dialogState.onSelected(dialogState.httpRequest)
-                                    dialogState.dismiss()
+                                if (selectorState.url.isNotBlank()) {
+                                    setResultAndFinish(selectorState.httpRequest)
                                 }
                             }) {
                                 RemixIcon(remixName = Remix.System.check_line)
@@ -451,25 +272,65 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                             .padding(16.dp)
                             .verticalScroll(rememberScrollState())
                     ) {
-                        Url(dialogState)
+                        Url(selectorState.url) {
+                            vm.setUrl(it)
+                        }
                         LargeSpacer()
 
-                        Method(dialogState)
+                        Method(method = selectorState.method) {
+                            vm.setMethod(it)
+                        }
                         LargeSpacer()
 
-                        CookieJar(dialogState)
+                        CookieJar(selectorState.withCookieJar) { vm.withCookieJar(it) }
                         LargeSpacer()
 
-                        TrustAllCerts(dialogState)
+                        TrustAllCerts(selectorState.trustAllCerts) { vm.trustAllCerts(it) }
                         LargeSpacer()
 
-                        Headers(dialogState)
+                        Headers(
+                            headers = selectorState.headers,
+                            removeHeader = { vm.removeHeader(it) },
+                            addHeader = { vm.addHeader(it) },
+                            addHeaderWithIndex = { h, i ->
+                                vm.addHeader(
+                                    h, i
+                                )
+                            })
                         LargeSpacer()
 
-                        RequestBody(dialogState)
+                        RequestBody(
+                            requestBody = selectorState.requestBody,
+                            requestBodyJson = selectorState.requestBodyJson,
+                            updateRequestBodyJson = {
+                                vm.setRequestBodyJson(it)
+                            },
+                            requestBodyForm = selectorState.requestBodyForm,
+                            setRequestBodyType = {
+                                vm.setRequestBodyType(it)
+                            },
+                            removeForm = {
+                                vm.removeForm(it)
+                            },
+                            addForm = {
+                                vm.addForm(it)
+                            },
+                            addFormWithIndex = { f, i ->
+                                vm.addForm(f, i)
+                            })
                         LargeSpacer()
 
-                        ResponseAdapter(dialogState)
+                        ResponseAdapter(
+                            responseAdapter = selectorState.responseAdapter,
+                            update = {
+                                vm.setResponseAdapter(it)
+                            },
+                            expressions = selectorState.expressions,
+                            addExpression = {
+                                vm.addExpression(it)
+                            }, removeExpression = {
+                                vm.removeExpression(it)
+                            })
 
                         SectionSpacer()
                         SuggestedNavEntry()
@@ -482,45 +343,45 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
 }
 
 @Composable
-fun CookieJar(dialogState: HttpRequestDialogState) {
+fun CookieJar(withCookieJar: Boolean, update: (Boolean) -> Unit) {
     SwitchRow(
         text = LocalI18N.current["ui.action.http.request.with.cookie.jar"],
-        isChecked = dialogState.withCookieJar,
+        isChecked = withCookieJar,
         onCheckChange = {
-            dialogState.withCookieJar = it
+            update(it)
         })
     SmallSpacer()
     TipBody(text = LocalI18N.current["ui.action.http.request.with.cookie.jar.message"])
 }
 
 @Composable
-fun TrustAllCerts(dialogState: HttpRequestDialogState) {
+fun TrustAllCerts(trustAllCerts: Boolean, update: (Boolean) -> Unit) {
     SwitchRow(
         text = LocalI18N.current["ui.action.http.request.trust.all.certs"],
-        isChecked = dialogState.trustAllCerts,
+        isChecked = trustAllCerts,
         onCheckChange = {
-            dialogState.trustAllCerts = it
+            update(it)
         })
     SmallSpacer()
     TipBody(text = LocalI18N.current["ui.action.http.request.trust.all.certs.message"])
 }
 
 @Composable
-private fun Url(dialogState: HttpRequestDialogState) {
+private fun Url(url: String, update: (String) -> Unit) {
     FieldTitle(text = "Url")
     SmallSpacer()
     ShortXTextField(
         modifier = Modifier.fillMaxWidth(),
-        value = dialogState.url,
+        value = url,
         onValueChange = {
-            dialogState.url = it
+            update(it)
         },
         showSymbolButton = true
     )
 }
 
 @Composable
-private fun Method(dialogState: HttpRequestDialogState) {
+private fun Method(method: HttpRequestMethod, update: (HttpRequestMethod) -> Unit) {
     FieldTitle(text = "Method")
     val methodDropdownState = rememberDropdownSelectorState()
     SmallSpacer()
@@ -529,7 +390,7 @@ private fun Method(dialogState: HttpRequestDialogState) {
             methodDropdownState.open()
         }) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = dialogState.method.name)
+                Text(text = method.name)
                 StandardSpacer()
                 RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
             }
@@ -544,14 +405,18 @@ private fun Method(dialogState: HttpRequestDialogState) {
                     )
                 },
             onSelect = {
-                dialogState.setMethod(it.data)
+                update(it.data)
             })
     }
 }
 
 @Composable
 private fun ColumnScope.ResponseAdapter(
-    dialogState: HttpRequestDialogState,
+    responseAdapter: AdapterType,
+    update: (AdapterType) -> Unit,
+    expressions: List<String>,
+    addExpression: (String) -> Unit,
+    removeExpression: (Int) -> Unit,
 ) {
     val i18N = LocalI18N.current
     val context = LocalContext.current
@@ -581,7 +446,7 @@ private fun ColumnScope.ResponseAdapter(
                     ),
                 ),
                 onItemSelected = { data, id ->
-                    dialogState.responseAdapter = AdapterType.valueOf(id)
+                    update(AdapterType.valueOf(id))
                 }
             )
         MenuDialog(state = adapterSelectorState)
@@ -589,7 +454,7 @@ private fun ColumnScope.ResponseAdapter(
             adapterSelectorState.show()
         }) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = dialogState.responseAdapter.let {
+                Text(text = responseAdapter.let {
                     when (it) {
                         AdapterType.Raw -> {
                             LocalI18N.current["ui.action.http.request.raw"]
@@ -613,7 +478,7 @@ private fun ColumnScope.ResponseAdapter(
 
     StandardSpacer()
 
-    AnimatedVisibility(visible = dialogState.responseAdapter == AdapterType.Raw) {
+    AnimatedVisibility(visible = responseAdapter == AdapterType.Raw) {
         val contextDataKey =
             "{${ContextDataMapping.HttpRequest.httpRequestRet.name}}"
         ListItem(
@@ -636,15 +501,14 @@ private fun ColumnScope.ResponseAdapter(
     }
 
     AnimatedVisibility(
-        visible = dialogState.responseAdapter == AdapterType.BodyJson
-                || dialogState.responseAdapter == AdapterType.HeaderBodyJson
+        visible = responseAdapter == AdapterType.BodyJson || responseAdapter == AdapterType.HeaderBodyJson
     ) {
         Column {
             TipRow(text = LocalI18N.current["ui.action.http.request.json.expression.description"])
             StandardSpacer()
-            dialogState.expressions.forEachIndexed { index, s ->
+            expressions.forEachIndexed { index, s ->
                 ExpressionItem(expression = s, index = index) {
-                    dialogState.removeExpression(index)
+                    removeExpression(index)
                 }
             }
             StandardSpacer()
@@ -654,7 +518,7 @@ private fun ColumnScope.ResponseAdapter(
                 message = null,
                 onSelected = {
                     if (it.isNotBlank()) {
-                        dialogState.addExpression(it)
+                        addExpression(it)
                     }
                 })
             TextInputDialog(state = mvelInputState)
@@ -670,14 +534,19 @@ private fun ColumnScope.ResponseAdapter(
 }
 
 @Composable
-private fun Headers(dialogState: HttpRequestDialogState) {
+private fun Headers(
+    headers: List<HttpRequestHeader>,
+    removeHeader: (Int) -> Unit,
+    addHeader: (HttpRequestHeader) -> Unit,
+    addHeaderWithIndex: (HttpRequestHeader, Int) -> Unit,
+) {
     FieldTitle(text = "Headers (Optional)")
     SmallSpacer()
 
     val headerDialogState = rememberKeyValueEditDialogState("Header")
     KeyValueEditDialog(state = headerDialogState)
 
-    dialogState.headers.forEachIndexed { index, it ->
+    headers.forEachIndexed { index, it ->
         val updateIndex = rememberUpdatedState(newValue = index)
         val updateItem = rememberUpdatedState(newValue = it)
         ListItem(
@@ -687,7 +556,7 @@ private fun Headers(dialogState: HttpRequestDialogState) {
             },
             action1 = {
                 IconButton(onClick = {
-                    dialogState.removeHeader(index)
+                    removeHeader(index)
                 }) {
                     RemixIcon(remixName = Remix.System.close_line)
                 }
@@ -697,8 +566,8 @@ private fun Headers(dialogState: HttpRequestDialogState) {
                     key = updateItem.value.key,
                     value = updateItem.value.value,
                     callback = {
-                        dialogState.removeHeader(index)
-                        dialogState.addHeader(
+                        removeHeader(index)
+                        addHeaderWithIndex(
                             HttpRequestHeader.newBuilder()
                                 .setKey(it.first)
                                 .setValue(it.second)
@@ -719,7 +588,7 @@ private fun Headers(dialogState: HttpRequestDialogState) {
                     value = "",
                     callback = {
                         if (it.first.isNotEmpty()) {
-                            dialogState.addHeader(
+                            addHeader(
                                 HttpRequestHeader.newBuilder()
                                     .setKey(it.first)
                                     .setValue(it.second)
@@ -795,7 +664,16 @@ private fun ExpressionItem(
 
 
 @Composable
-private fun RequestBody(dialogState: HttpRequestDialogState) {
+private fun RequestBody(
+    requestBody: HttpRequestBodyType,
+    requestBodyJson: String,
+    updateRequestBodyJson: (String) -> Unit,
+    requestBodyForm: List<HttpRequestBodyFormItem>,
+    setRequestBodyType: (HttpRequestBodyType) -> Unit,
+    removeForm: (Int) -> Unit,
+    addForm: (item: HttpRequestBodyFormItem) -> Unit,
+    addFormWithIndex: (item: HttpRequestBodyFormItem, index: Int) -> Unit,
+) {
     FieldTitle(text = "Request body")
     SmallSpacer()
 
@@ -805,7 +683,7 @@ private fun RequestBody(dialogState: HttpRequestDialogState) {
             typeDropdownState.open()
         }) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = dialogState.requestBody.label)
+                Text(text = requestBody.label)
                 StandardSpacer()
                 RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
             }
@@ -819,18 +697,18 @@ private fun RequestBody(dialogState: HttpRequestDialogState) {
                 )
             },
             onSelect = {
-                dialogState.setRequestBodyType(it.data)
+                setRequestBodyType(it.data)
             })
     }
 
     StandardSpacer()
 
-    AnimatedVisibility(visible = dialogState.requestBody == HttpRequestBodyType.Json) {
+    AnimatedVisibility(visible = requestBody == HttpRequestBodyType.Json) {
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
-            value = dialogState.requestBodyJson,
+            value = requestBodyJson,
             onValueChange = {
-                dialogState.requestBodyJson = it
+                updateRequestBodyJson(it)
             },
             label = {
                 Text(text = "Json")
@@ -839,12 +717,12 @@ private fun RequestBody(dialogState: HttpRequestDialogState) {
         )
     }
 
-    AnimatedVisibility(visible = dialogState.requestBody == HttpRequestBodyType.Form) {
+    AnimatedVisibility(visible = requestBody == HttpRequestBodyType.Form) {
         val itemDialogState = rememberKeyValueEditDialogState("Form item")
         KeyValueEditDialog(state = itemDialogState)
 
         Column {
-            dialogState.requestBodyForm.forEachIndexed { index, it ->
+            requestBodyForm.forEachIndexed { index, it ->
                 val updateItem = rememberUpdatedState(newValue = it)
                 val updateIndex = rememberUpdatedState(newValue = index)
                 ListItem(titleLines = listOf(it.key, it.value),
@@ -853,7 +731,7 @@ private fun RequestBody(dialogState: HttpRequestDialogState) {
                     },
                     action1 = {
                         IconButton(onClick = {
-                            dialogState.removeForm(index)
+                            removeForm(index)
                         }) {
                             RemixIcon(remixName = Remix.System.close_line)
                         }
@@ -863,8 +741,8 @@ private fun RequestBody(dialogState: HttpRequestDialogState) {
                             key = updateItem.value.key,
                             value = updateItem.value.value,
                             callback = {
-                                dialogState.removeForm(index)
-                                dialogState.addForm(
+                                removeForm(index)
+                                addFormWithIndex(
                                     HttpRequestBodyFormItem.newBuilder()
                                         .setKey(it.first)
                                         .setValue(it.second)
@@ -884,7 +762,7 @@ private fun RequestBody(dialogState: HttpRequestDialogState) {
                             key = "",
                             value = "",
                             callback = {
-                                dialogState.addForm(
+                                addForm(
                                     HttpRequestBodyFormItem.newBuilder()
                                         .setKey(it.first)
                                         .setValue(it.second)

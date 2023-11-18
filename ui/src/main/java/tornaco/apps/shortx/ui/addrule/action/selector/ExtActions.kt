@@ -10,15 +10,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
-import tornaco.apps.shortx.core.rule.action.su.shellResToString
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.addrule.action.selector.http.HttpRequestDialog
-import tornaco.apps.shortx.ui.addrule.action.selector.http.rememberHttpRequestDialogState
+import tornaco.apps.shortx.ui.addrule.action.selector.http.HttpRequestSelectorActivity
 import tornaco.apps.shortx.ui.addrule.base.ActionCategory
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
@@ -140,10 +138,15 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             })
     TextInputDialog(addPkgSetDialogState)
 
-    val httpRequestDialogState = rememberHttpRequestDialogState(onSelected = {
-        addAction(it)
-    })
-    HttpRequestDialog(state = httpRequestDialogState)
+    val httpLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.toBaseSelectorActionOrNull<Action.HttpRequest>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
 
     val brkScopeSelectorState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.action.brk.scope"],
@@ -225,7 +228,13 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             }
 
             Action.HttpRequest::class -> {
-                httpRequestDialogState.show(source.getActionAs())
+                httpLauncher.launch(
+                    newIntent(
+                        context,
+                        source.getActionAs<Action.HttpRequest>(),
+                        HttpRequestSelectorActivity::class.java
+                    )
+                )
                 true
             }
 

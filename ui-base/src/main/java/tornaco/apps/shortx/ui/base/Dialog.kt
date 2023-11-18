@@ -381,7 +381,7 @@ fun ErrorMessageDialog(state: ErrorMessageDialogState) {
                                     TextButton(onClick = {
                                         ClipboardUtils.copyToClipboard(
                                             context,
-                                            "error",
+                                            "message",
                                             state.message
                                         )
                                     }) {
@@ -406,6 +406,7 @@ fun ErrorMessageDialog(state: ErrorMessageDialogState) {
                                 factory = { ctx ->
                                     return@AndroidView CodeView(ctx).apply {
                                         initView(this, isDarkTheme)
+                                        setEnableLineNumber(false)
                                         isEnabled = false
                                         setText(state.message)
                                     }

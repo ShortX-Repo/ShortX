@@ -17,7 +17,7 @@ fun initLogger(context: Context) {
             com.elvishew.xlog.printer.file.FilePrinter.Builder(logFolderPath)
                 .fileNameGenerator(DateFileNameGenerator())
                 .flattener(ClassicFlattener())
-                .cleanStrategy(FileLastModifiedCleanStrategy(60 * 1000 * 60 * 24 * 7 /* 7 Days */))
+                .cleanStrategy(FileLastModifiedCleanStrategy(60 * 1000 * 60 * 24 * 2 /* 2 Days */))
                 .build()
         XLog.init(
             com.elvishew.xlog.LogConfiguration.Builder()

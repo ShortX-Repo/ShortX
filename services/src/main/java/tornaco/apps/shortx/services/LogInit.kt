@@ -74,7 +74,7 @@ object LogInit {
             File(Dirs.baseServerLogDir(), "log").absolutePath
         )
             .fileNameGenerator(ChangelessFileNameGenerator("shortx.log"))
-            .cleanStrategy(FileLastModifiedCleanStrategy(60 * 1000 * 60 * 24 * 7 /* 7 Days */))
+            .cleanStrategy(FileLastModifiedCleanStrategy(60 * 1000 * 60 * 24 * 2 /* 2 Days */))
             .flattener(ClassicFlattener())
             .build()
         XLog.init(
