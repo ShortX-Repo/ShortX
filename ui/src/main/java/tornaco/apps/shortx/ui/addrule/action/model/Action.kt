@@ -2512,7 +2512,8 @@ sealed interface Action : Parcelable {
         val headers: List<HttpRequestHeader>,
         val requestBody: ProtoAny,
 
-        val adapter: HttpRequestAdapter
+        val adapter: HttpRequestAdapter,
+        val withCookieJar: Boolean
     ) : Action {
         override fun clone(
             id: String,

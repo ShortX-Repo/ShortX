@@ -81,6 +81,7 @@ import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.SwitchRow
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.code.OutputDialog
@@ -122,6 +123,7 @@ class HttpRequestDialogState(
     internal var expressions by mutableStateOf(listOf<String>())
     internal var responseAdapter by mutableStateOf(AdapterType.Raw)
 
+    internal var withCookieJar by mutableStateOf(false)
     internal var isTesting by mutableStateOf(false)
 
     val httpRequest
@@ -148,13 +150,15 @@ class HttpRequestDialogState(
                 else -> {
                     HttpRequestAdapter.Raw
                 }
-            }
+            },
+            withCookieJar = this.withCookieJar
         )
 
     fun show(currentAction: Action.HttpRequest? = null) {
         this.url = currentAction?.url ?: ""
         this.method = currentAction?.method ?: HttpRequestMethod.GET
         this.headers = currentAction?.headers ?: emptyList()
+        this.withCookieJar = currentAction?.withCookieJar ?: false
 
         currentAction?.requestBody?.let {
             if (it is_ HttpRequestBodyJson::class.java) {
@@ -281,7 +285,8 @@ fun HttpRequestDialog(state: HttpRequestDialogState) {
 private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
     val context = LocalContext.current
 
-    val outputDialogState = rememberOutputDialogState(title = LocalI18N.current["ui.action.http.request"])
+    val outputDialogState =
+        rememberOutputDialogState(title = LocalI18N.current["ui.action.http.request"])
     OutputDialog(state = outputDialogState)
 
     val errorDialogState =
@@ -449,6 +454,14 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                         LargeSpacer()
 
                         ResponseAdapter(dialogState)
+
+                        LargeSpacer()
+                        SwitchRow(
+                            text = "Cookie",
+                            isChecked = dialogState.withCookieJar,
+                            onCheckChange = {
+                                dialogState.withCookieJar = it
+                            })
 
                         SectionSpacer()
                         SuggestedNavEntry()

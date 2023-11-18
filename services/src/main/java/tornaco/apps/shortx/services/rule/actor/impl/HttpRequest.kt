@@ -29,6 +29,7 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.replaceLocalVarValues
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.data.SettingsStore
 import tornaco.apps.shortx.services.rule.actor.Actor
@@ -46,6 +47,7 @@ object HttpRequest : Actor {
     private val logging =
         HttpLoggingInterceptor { logger.d(it) }.apply { setLevel(HttpLoggingInterceptor.Level.BODY) }
 
+    private lateinit var client: OkHttpClient
     private lateinit var clientWithCookieJar: OkHttpClient
 
     override fun init(androidContext: Context, shortXContext: ShortXContext) {
@@ -64,6 +66,13 @@ object HttpRequest : Actor {
 
         clientWithCookieJar = OkHttpClient.Builder()
             .cookieJar(cookieJar)
+            .writeTimeout(2, TimeUnit.MINUTES)
+            .readTimeout(2, TimeUnit.MINUTES)
+            .addInterceptor(logging)
+            .build()
+        logger.d("clientWithCookieJar: $cookieJar")
+
+        client = OkHttpClient.Builder()
             .writeTimeout(2, TimeUnit.MINUTES)
             .readTimeout(2, TimeUnit.MINUTES)
             .addInterceptor(logging)
@@ -103,6 +112,7 @@ object HttpRequest : Actor {
                     .replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() }
             },
             requestBody = requestBody,
+            withCookieJar = data.withCookieJar
         )
 
         handleResponseBody(
@@ -216,6 +226,7 @@ object HttpRequest : Actor {
         method: String,
         headers: Map<String, String>,
         requestBody: RequestBody? = null,
+        withCookieJar: Boolean = true
     ): Response {
         logger.d("handleUrl: $url $method $headers $requestBody")
 
@@ -227,7 +238,7 @@ object HttpRequest : Actor {
                 }
             }
             .build()
-        return clientWithCookieJar.newCall(request).execute()
+        return withCookieJar.select(clientWithCookieJar, client).newCall(request).execute()
     }
 
     fun ProtoAny.toHttpResponseBody(

@@ -1161,7 +1161,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                     } else {
                         HttpRequestAdapter.Raw
                     }
-                }
+                },
+                withCookieJar = data.withCookieJar
             )
         }
 
