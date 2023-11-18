@@ -83,6 +83,7 @@ import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.SwitchRow
 import tornaco.apps.shortx.ui.base.TextInputDialog
+import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.code.OutputDialog
 import tornaco.apps.shortx.ui.base.code.rememberOutputDialogState
@@ -124,6 +125,7 @@ class HttpRequestDialogState(
     internal var responseAdapter by mutableStateOf(AdapterType.Raw)
 
     internal var withCookieJar by mutableStateOf(false)
+    internal var trustAllCerts by mutableStateOf(false)
     internal var isTesting by mutableStateOf(false)
 
     val httpRequest
@@ -151,7 +153,8 @@ class HttpRequestDialogState(
                     HttpRequestAdapter.Raw
                 }
             },
-            withCookieJar = this.withCookieJar
+            withCookieJar = this.withCookieJar,
+            trustAllCerts = this.trustAllCerts
         )
 
     fun show(currentAction: Action.HttpRequest? = null) {
@@ -159,6 +162,7 @@ class HttpRequestDialogState(
         this.method = currentAction?.method ?: HttpRequestMethod.GET
         this.headers = currentAction?.headers ?: emptyList()
         this.withCookieJar = currentAction?.withCookieJar ?: false
+        this.trustAllCerts = currentAction?.trustAllCerts ?: false
 
         currentAction?.requestBody?.let {
             if (it is_ HttpRequestBodyJson::class.java) {
@@ -447,6 +451,12 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                         Method(dialogState)
                         LargeSpacer()
 
+                        CookieJar(dialogState)
+                        LargeSpacer()
+
+                        TrustAllCerts(dialogState)
+                        LargeSpacer()
+
                         Headers(dialogState)
                         LargeSpacer()
 
@@ -454,14 +464,6 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                         LargeSpacer()
 
                         ResponseAdapter(dialogState)
-
-                        LargeSpacer()
-                        SwitchRow(
-                            text = "Cookie",
-                            isChecked = dialogState.withCookieJar,
-                            onCheckChange = {
-                                dialogState.withCookieJar = it
-                            })
 
                         SectionSpacer()
                         SuggestedNavEntry()
@@ -474,10 +476,35 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
 }
 
 @Composable
+fun CookieJar(dialogState: HttpRequestDialogState) {
+    SwitchRow(
+        text = LocalI18N.current["ui.action.http.request.with.cookie.jar"],
+        isChecked = dialogState.withCookieJar,
+        onCheckChange = {
+            dialogState.withCookieJar = it
+        })
+    SmallSpacer()
+    TipBody(text = LocalI18N.current["ui.action.http.request.with.cookie.jar.message"])
+}
+
+@Composable
+fun TrustAllCerts(dialogState: HttpRequestDialogState) {
+    SwitchRow(
+        text = LocalI18N.current["ui.action.http.request.trust.all.certs"],
+        isChecked = dialogState.trustAllCerts,
+        onCheckChange = {
+            dialogState.trustAllCerts = it
+        })
+    SmallSpacer()
+    TipBody(text = LocalI18N.current["ui.action.http.request.trust.all.certs.message"])
+}
+
+@Composable
 private fun Url(dialogState: HttpRequestDialogState) {
     FieldTitle(text = "Url")
     SmallSpacer()
     ShortXTextField(
+        modifier = Modifier.fillMaxWidth(),
         value = dialogState.url,
         onValueChange = {
             dialogState.url = it

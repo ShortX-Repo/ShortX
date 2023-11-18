@@ -23,6 +23,7 @@ import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.PREFIX_APP_ICON
 import tornaco.apps.shortx.ui.base.PREFIX_MD_ICON
+import java.net.URL
 import kotlin.reflect.KClass
 
 fun labelAndDescriptionForActionSelector(
@@ -672,7 +673,7 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.HttpRequest -> {
             listOf(
                 i18N["ui.action.http.request"],
-                action.url
+                runCatching { URL(action.url).host }.getOrElse { action.url }
             )
         }
 

@@ -1,6 +1,8 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
+import android.annotation.SuppressLint
 import android.content.Context
+import com.android.internal.annotations.VisibleForTesting
 import com.google.protobuf.Message
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -29,7 +31,6 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.replaceLocalVarValues
 import tornaco.apps.shortx.core.rule.unpack_
-import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.data.SettingsStore
 import tornaco.apps.shortx.services.rule.actor.Actor
@@ -37,8 +38,11 @@ import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.util.http.persistentcookiejar.PersistentCookieJar
 import tornaco.apps.shortx.services.util.http.persistentcookiejar.cache.SetCookieCache
+import tornaco.apps.shortx.services.util.http.persistentcookiejar.persistence.CookiePersistor
 import tornaco.apps.shortx.services.util.http.persistentcookiejar.persistence.SettingsStoreCookiePersistor
 import java.util.concurrent.TimeUnit
+import javax.net.ssl.SSLContext
+import javax.net.ssl.X509TrustManager
 
 
 object HttpRequest : Actor {
@@ -49,11 +53,12 @@ object HttpRequest : Actor {
 
     private lateinit var client: OkHttpClient
     private lateinit var clientWithCookieJar: OkHttpClient
+    private lateinit var clientTrustAllCerts: OkHttpClient
+    private lateinit var clientWithCookieJarTrustAllCerts: OkHttpClient
 
     override fun init(androidContext: Context, shortXContext: ShortXContext) {
         super.init(androidContext, shortXContext)
-        cookieJar = PersistentCookieJar(
-            SetCookieCache(),
+        init(
             SettingsStoreCookiePersistor(
                 SettingsStore(
                     androidContext,
@@ -61,6 +66,38 @@ object HttpRequest : Actor {
                     shortXContext.rule.systemServiceScope
                 )
             )
+        )
+    }
+
+    @VisibleForTesting
+    fun init(cookiePersistor: CookiePersistor) {
+        val trustAllCerts = arrayOf<X509TrustManager>(@SuppressLint("CustomX509TrustManager")
+        object : X509TrustManager {
+            @SuppressLint("TrustAllX509TrustManager")
+            override fun checkClientTrusted(
+                chain: Array<out java.security.cert.X509Certificate>?,
+                authType: String?
+            ) {
+            }
+
+            @SuppressLint("TrustAllX509TrustManager")
+            override fun checkServerTrusted(
+                chain: Array<out java.security.cert.X509Certificate>?,
+                authType: String?
+            ) {
+            }
+
+            override fun getAcceptedIssuers(): Array<java.security.cert.X509Certificate> {
+                return arrayOf()
+            }
+        })
+
+        val sslContext = SSLContext.getInstance("SSL")
+        sslContext.init(null, trustAllCerts, java.security.SecureRandom())
+
+        cookieJar = PersistentCookieJar(
+            SetCookieCache(),
+            cookiePersistor
         )
         logger.d("cookieJar: $cookieJar")
 
@@ -78,6 +115,25 @@ object HttpRequest : Actor {
             .addInterceptor(logging)
             .build()
         logger.d("client: $cookieJar")
+
+        clientWithCookieJarTrustAllCerts = OkHttpClient.Builder()
+            .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0])
+            .hostnameVerifier { _, _ -> true }
+            .cookieJar(cookieJar)
+            .writeTimeout(2, TimeUnit.MINUTES)
+            .readTimeout(2, TimeUnit.MINUTES)
+            .addInterceptor(logging)
+            .build()
+        logger.d("clientWithCookieJarTrustAllCerts: $cookieJar")
+
+        clientTrustAllCerts = OkHttpClient.Builder()
+            .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0])
+            .hostnameVerifier { _, _ -> true }
+            .writeTimeout(2, TimeUnit.MINUTES)
+            .readTimeout(2, TimeUnit.MINUTES)
+            .addInterceptor(logging)
+            .build()
+        logger.d("clientTrustAllCerts: $cookieJar")
     }
 
     override fun actionsCanHandle(): Class<out Message> {
@@ -226,7 +282,8 @@ object HttpRequest : Actor {
         method: String,
         headers: Map<String, String>,
         requestBody: RequestBody? = null,
-        withCookieJar: Boolean = true
+        withCookieJar: Boolean = true,
+        trustAllCerts: Boolean = false,
     ): Response {
         logger.d("handleUrl: $url $method $headers $requestBody")
 
@@ -238,7 +295,26 @@ object HttpRequest : Actor {
                 }
             }
             .build()
-        return withCookieJar.select(clientWithCookieJar, client).newCall(request).execute()
+
+        val client = if (withCookieJar) {
+            if (trustAllCerts) {
+                logger.d("Choose clientWithCookieJarTrustAllCerts")
+                clientWithCookieJarTrustAllCerts
+            } else {
+                logger.d("Choose clientWithCookieJar")
+                clientWithCookieJar
+            }
+        } else {
+            if (trustAllCerts) {
+                logger.d("Choose clientTrustAllCerts")
+                clientTrustAllCerts
+            } else {
+                logger.d("Choose client")
+                client
+            }
+        }
+
+        return client.newCall(request).execute()
     }
 
     fun ProtoAny.toHttpResponseBody(

@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.rule.actor
 
+import io.mockk.mockk
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -24,6 +25,7 @@ class HttpRequestTest {
         logAdapter = { _: Int, tag: String, msg: String ->
             println("[$tag] $msg")
         }
+        HttpRequest.init(mockk(relaxed = true))
     }
 
     @Test

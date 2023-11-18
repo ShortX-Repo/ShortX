@@ -1037,6 +1037,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .addAllHeaders(headers)
                 .setRequestBody(requestBody)
                 .setWithCookieJar(withCookieJar)
+                .setTrustAllCerts(trustAllCerts)
                 .build()
         }
 

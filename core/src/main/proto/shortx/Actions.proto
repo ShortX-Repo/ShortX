@@ -879,6 +879,7 @@ message HttpRequest {
   repeated HttpRequestHeader headers = 4;
   google.protobuf.Any requestBody = 5;
   bool withCookieJar = 6;
+  bool trustAllCerts = 7;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
