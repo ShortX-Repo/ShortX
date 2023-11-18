@@ -40,6 +40,9 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
 
         data object PostNByApp :
             BoolSettings(key = "PostNByApp", defaultValue = { false })
+
+        data object EnableHttpRequestLog :
+            BoolSettings(key = "EnableHttpRequestLog", defaultValue = { true })
     }
 
     sealed class StringSettings(key: String, defaultValue: (Context) -> String?) :

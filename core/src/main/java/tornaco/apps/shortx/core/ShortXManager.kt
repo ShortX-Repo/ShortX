@@ -132,6 +132,36 @@ class ShortXManager(val service: IShortX) {
         }
     }
 
+    fun setHttpRequestLogEnabled(enabled: Boolean) {
+        invokeService(Unit) {
+            isHttpRequestLogEnabled = enabled
+        }
+    }
+
+    fun isHttpRequestLogEnabled(): Boolean {
+        return invokeService(false) {
+            isHttpRequestLogEnabled
+        }
+    }
+
+    fun getHttpRequestLogFD(): ParcelFileDescriptor? {
+        return invokeService(null) {
+            httpRequestLogFD
+        }
+    }
+
+    fun getHttpRequestLogPath(): String {
+        return invokeService("ERROR") {
+            httpRequestLogPath
+        }
+    }
+
+    fun clearHttpRequestLogs() {
+        invokeService(Unit) {
+            clearHttpRequestLogs()
+        }
+    }
+
     fun addRule(rule: Rule) {
         invokeService(Unit) {
             addRule(ByteArrayWrapper(rule.toByteArray()))

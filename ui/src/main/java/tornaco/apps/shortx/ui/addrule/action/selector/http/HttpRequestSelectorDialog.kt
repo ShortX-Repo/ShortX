@@ -92,6 +92,7 @@ import tornaco.apps.shortx.ui.base.rememberErrorMessageDialogState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.composeLogger
+import tornaco.apps.shortx.ui.settings.log.HttpLogActivity
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.ClipboardUtils
@@ -401,6 +402,12 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                                 }
                             }
 
+                            IconButton(onClick = {
+                                HttpLogActivity.Starter.start(context)
+                            }) {
+                                RemixIcon(remixName = Remix.Document.file_text_line)
+                            }
+
                             val scope = rememberCoroutineScope()
                             IconButton(
                                 enabled = !dialogState.isTesting,
@@ -432,7 +439,6 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                             }) {
                                 RemixIcon(remixName = Remix.System.check_line)
                             }
-
                         },
                     )
                 }) { paddingValues ->

@@ -16,7 +16,7 @@ import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.logAdapter
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.handleResponseBody
-import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.toHttpResponseBody
+import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.toHttpRequestBody
 import tornaco.apps.shortx.services.rule.actor.impl.fixSpecialLetters
 
 class HttpRequestTest {
@@ -186,7 +186,7 @@ class HttpRequestTest {
                 }
             """.trimIndent()
             ).build().pack_()
-                .toHttpResponseBody(ContextData.obtain(), LocalVars.obtain()) { emptyList() },
+                .toHttpRequestBody(ContextData.obtain(), LocalVars.obtain()) { emptyList() },
         ).let {
             handleResponseBody(
                 contextData = ContextData.obtain(),

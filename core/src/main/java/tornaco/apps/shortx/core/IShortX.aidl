@@ -266,4 +266,11 @@ interface IShortX {
 
     void installApk(String packageName, in ParcelFileDescriptor fd, in ICallback onSuccess, in ICallback onFailure);
     List<ByteArrayWrapper> getInstalledShortcutApps();
+
+    // Http request log.
+    void setHttpRequestLogEnabled(boolean enabled);
+    boolean isHttpRequestLogEnabled();
+    ParcelFileDescriptor getHttpRequestLogFD();
+    String getHttpRequestLogPath();
+    void clearHttpRequestLogs();
 }

@@ -61,7 +61,7 @@ import tornaco.apps.shortx.core.util.statusBarManager
 import tornaco.apps.shortx.core.util.wifiManager
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.handleResponseBody
-import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.toHttpResponseBody
+import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.toHttpRequestBody
 import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper
 import tornaco.apps.shortx.services.rule.nextEvaluateContextSerialNumber
 import tornaco.apps.shortx.services.ui.I18NCache
@@ -490,7 +490,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                     shortXContext.rule.getAllGlobalVars()
                 }
             val requestBody =
-                data.requestBody.toHttpResponseBody(
+                data.requestBody.toHttpRequestBody(
                     ContextData.obtain(),
                     localVars
                 ) {
@@ -995,6 +995,26 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }.map {
                 ByteArrayWrapper(it.toByteArray())
             }
+        }
+
+        override fun setHttpRequestLogEnabled(enabled: Boolean) {
+            shortXContext.rule.setHttpRequestLogEnabled(enabled)
+        }
+
+        override fun isHttpRequestLogEnabled(): Boolean {
+            return shortXContext.rule.isHttpRequestLogEnabled()
+        }
+
+        override fun getHttpRequestLogFD(): ParcelFileDescriptor? {
+            return shortXContext.rule.getHttpRequestLogFD()
+        }
+
+        override fun getHttpRequestLogPath(): String {
+            return shortXContext.rule.getHttpRequestLogPath()
+        }
+
+        override fun clearHttpRequestLogs() {
+            shortXContext.rule.clearHttpRequestLogs()
         }
 
         override fun getActivities(

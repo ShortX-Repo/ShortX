@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule
 
 import android.annotation.TestApi
+import android.os.ParcelFileDescriptor
 import android.os.RemoteCallbackList
 import android.util.Log
 import android.widget.Toast
@@ -51,6 +52,7 @@ import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.rule.actor.PrebuiltActor
 import tornaco.apps.shortx.services.rule.actor.dummyHandlerParamsForAction
 import tornaco.apps.shortx.services.rule.actor.impl.ExecuteMVEL
+import tornaco.apps.shortx.services.rule.actor.impl.HttpRequestLogging
 import tornaco.apps.shortx.services.rule.actor.impl.ShellCommand
 import tornaco.apps.shortx.services.rule.cond.PrebuiltCond
 import tornaco.apps.shortx.services.rule.fact.trigger.allTriggers
@@ -215,6 +217,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             it.cond.init(context, shortXContext)
         }
         logger.d("PrebuiltCond init complete")
+
+        HttpRequestLogging.isLogEnabled = isHttpRequestLogEnabled()
 
         // Add guide DA
         if (getAllDirectAction().isEmpty()) {
@@ -967,5 +971,34 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     fun isRuleFeatureEnabled(): Boolean {
         return store.read(Settings.BoolSettings.EnableRuleFeature)
+    }
+
+    fun setHttpRequestLogEnabled(enabled: Boolean) {
+        store.write(Settings.BoolSettings.EnableHttpRequestLog, enabled)
+        HttpRequestLogging.isLogEnabled = enabled
+    }
+
+    fun isHttpRequestLogEnabled(): Boolean {
+        return store.read(Settings.BoolSettings.EnableHttpRequestLog)
+    }
+
+    fun getHttpRequestLogFD(): ParcelFileDescriptor? {
+        return kotlin.runCatching {
+            ParcelFileDescriptor.open(
+                HttpRequestLogging.logFile,
+                ParcelFileDescriptor.MODE_READ_ONLY
+            )
+        }.getOrElse {
+            logger.e(it, "getLogFD error")
+            null
+        }
+    }
+
+    fun getHttpRequestLogPath(): String {
+        return HttpRequestLogging.logFile.absolutePath
+    }
+
+    fun clearHttpRequestLogs() {
+        HttpRequestLogging.clearLogs()
     }
 }

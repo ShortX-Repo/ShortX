@@ -604,6 +604,26 @@ public interface IShortX extends android.os.IInterface
     {
       return null;
     }
+    // Http request log.
+
+    @Override public void setHttpRequestLogEnabled(boolean enabled) throws android.os.RemoteException
+    {
+    }
+    @Override public boolean isHttpRequestLogEnabled() throws android.os.RemoteException
+    {
+      return false;
+    }
+    @Override public android.os.ParcelFileDescriptor getHttpRequestLogFD() throws android.os.RemoteException
+    {
+      return null;
+    }
+    @Override public java.lang.String getHttpRequestLogPath() throws android.os.RemoteException
+    {
+      return null;
+    }
+    @Override public void clearHttpRequestLogs() throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -2347,6 +2367,52 @@ public interface IShortX extends android.os.IInterface
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getInstalledShortcutApps();
           reply.writeNoException();
           reply.writeTypedList(_result);
+          return true;
+        }
+        case TRANSACTION_setHttpRequestLogEnabled:
+        {
+          data.enforceInterface(descriptor);
+          boolean _arg0;
+          _arg0 = (0!=data.readInt());
+          this.setHttpRequestLogEnabled(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_isHttpRequestLogEnabled:
+        {
+          data.enforceInterface(descriptor);
+          boolean _result = this.isHttpRequestLogEnabled();
+          reply.writeNoException();
+          reply.writeInt(((_result)?(1):(0)));
+          return true;
+        }
+        case TRANSACTION_getHttpRequestLogFD:
+        {
+          data.enforceInterface(descriptor);
+          android.os.ParcelFileDescriptor _result = this.getHttpRequestLogFD();
+          reply.writeNoException();
+          if ((_result!=null)) {
+            reply.writeInt(1);
+            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+          }
+          else {
+            reply.writeInt(0);
+          }
+          return true;
+        }
+        case TRANSACTION_getHttpRequestLogPath:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _result = this.getHttpRequestLogPath();
+          reply.writeNoException();
+          reply.writeString(_result);
+          return true;
+        }
+        case TRANSACTION_clearHttpRequestLogs:
+        {
+          data.enforceInterface(descriptor);
+          this.clearHttpRequestLogs();
+          reply.writeNoException();
           return true;
         }
         default:
@@ -5787,6 +5853,110 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
+      // Http request log.
+
+      @Override public void setHttpRequestLogEnabled(boolean enabled) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeInt(((enabled)?(1):(0)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_setHttpRequestLogEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setHttpRequestLogEnabled(enabled);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public boolean isHttpRequestLogEnabled() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        boolean _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_isHttpRequestLogEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().isHttpRequestLogEnabled();
+          }
+          _reply.readException();
+          _result = (0!=_reply.readInt());
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      @Override public android.os.ParcelFileDescriptor getHttpRequestLogFD() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        android.os.ParcelFileDescriptor _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getHttpRequestLogFD, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getHttpRequestLogFD();
+          }
+          _reply.readException();
+          if ((0!=_reply.readInt())) {
+            _result = android.os.ParcelFileDescriptor.CREATOR.createFromParcel(_reply);
+          }
+          else {
+            _result = null;
+          }
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      @Override public java.lang.String getHttpRequestLogPath() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        java.lang.String _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getHttpRequestLogPath, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getHttpRequestLogPath();
+          }
+          _reply.readException();
+          _result = _reply.readString();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      @Override public void clearHttpRequestLogs() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_clearHttpRequestLogs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().clearHttpRequestLogs();
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -5944,6 +6114,11 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_isPostNByAppEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 152);
     static final int TRANSACTION_installApk = (android.os.IBinder.FIRST_CALL_TRANSACTION + 153);
     static final int TRANSACTION_getInstalledShortcutApps = (android.os.IBinder.FIRST_CALL_TRANSACTION + 154);
+    static final int TRANSACTION_setHttpRequestLogEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 155);
+    static final int TRANSACTION_isHttpRequestLogEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 156);
+    static final int TRANSACTION_getHttpRequestLogFD = (android.os.IBinder.FIRST_CALL_TRANSACTION + 157);
+    static final int TRANSACTION_getHttpRequestLogPath = (android.os.IBinder.FIRST_CALL_TRANSACTION + 158);
+    static final int TRANSACTION_clearHttpRequestLogs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 159);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -6176,4 +6351,11 @@ public interface IShortX extends android.os.IInterface
   public boolean isPostNByAppEnabled() throws android.os.RemoteException;
   public void installApk(java.lang.String packageName, android.os.ParcelFileDescriptor fd, tornaco.apps.shortx.core.ICallback onSuccess, tornaco.apps.shortx.core.ICallback onFailure) throws android.os.RemoteException;
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getInstalledShortcutApps() throws android.os.RemoteException;
+  // Http request log.
+
+  public void setHttpRequestLogEnabled(boolean enabled) throws android.os.RemoteException;
+  public boolean isHttpRequestLogEnabled() throws android.os.RemoteException;
+  public android.os.ParcelFileDescriptor getHttpRequestLogFD() throws android.os.RemoteException;
+  public java.lang.String getHttpRequestLogPath() throws android.os.RemoteException;
+  public void clearHttpRequestLogs() throws android.os.RemoteException;
 }

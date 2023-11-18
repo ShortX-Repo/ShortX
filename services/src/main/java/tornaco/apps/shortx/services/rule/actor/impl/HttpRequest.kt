@@ -49,7 +49,13 @@ object HttpRequest : Actor {
     private lateinit var cookieJar: PersistentCookieJar
 
     private val logging =
-        HttpLoggingInterceptor { logger.d(it) }.apply { setLevel(HttpLoggingInterceptor.Level.BODY) }
+        HttpLoggingInterceptor {
+            if (HttpRequestLogging.isLogEnabled) {
+                HttpRequestLogging.log(it)
+            } else {
+                logger.d(it)
+            }
+        }.apply { setLevel(HttpLoggingInterceptor.Level.BODY) }
 
     private lateinit var client: OkHttpClient
     private lateinit var clientWithCookieJar: OkHttpClient
@@ -153,10 +159,12 @@ object HttpRequest : Actor {
         logger.d("url: $url")
 
         val requestBody =
-            data.requestBody.toHttpResponseBody(
+            data.requestBody.toHttpRequestBody(
                 contextData,
                 localVars
             ) { shortXContext.rule.getAllGlobalVars() }
+
+        HttpRequestLogging.section("START")
 
         val response = callUrl(
             url = url,
@@ -170,6 +178,8 @@ object HttpRequest : Actor {
             requestBody = requestBody,
             withCookieJar = data.withCookieJar
         )
+
+        HttpRequestLogging.section("END")
 
         handleResponseBody(
             contextData = contextData,
@@ -317,7 +327,7 @@ object HttpRequest : Actor {
         return client.newCall(request).execute()
     }
 
-    fun ProtoAny.toHttpResponseBody(
+    fun ProtoAny.toHttpRequestBody(
         contextData: ContextData,
         localVars: LocalVars,
         globalVarsLazy: () -> List<GlobalVar>
