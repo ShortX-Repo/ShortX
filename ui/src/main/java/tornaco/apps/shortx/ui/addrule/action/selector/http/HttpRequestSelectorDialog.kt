@@ -282,12 +282,6 @@ private fun BaseSelectorActivity<Action.HttpRequest>.HttpRequestSelector(current
                         }
                         LargeSpacer()
 
-                        CookieJar(selectorState.withCookieJar) { vm.withCookieJar(it) }
-                        LargeSpacer()
-
-                        TrustAllCerts(selectorState.trustAllCerts) { vm.trustAllCerts(it) }
-                        LargeSpacer()
-
                         Headers(
                             headers = selectorState.headers,
                             removeHeader = { vm.removeHeader(it) },
@@ -331,6 +325,15 @@ private fun BaseSelectorActivity<Action.HttpRequest>.HttpRequestSelector(current
                             }, removeExpression = {
                                 vm.removeExpression(it)
                             })
+                        SectionSpacer()
+
+                        FieldTitle(text = LocalI18N.current["ui.action.misc"])
+                        SmallSpacer()
+                        CookieJar(selectorState.withCookieJar) { vm.withCookieJar(it) }
+                        LargeSpacer()
+
+                        TrustAllCerts(selectorState.trustAllCerts) { vm.trustAllCerts(it) }
+                        LargeSpacer()
 
                         SectionSpacer()
                         SuggestedNavEntry()

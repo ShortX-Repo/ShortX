@@ -22,7 +22,6 @@ package tornaco.apps.shortx.ui.base
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -31,10 +30,8 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -65,13 +62,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.amrdeveloper.codeview.CodeView
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
-import tornaco.apps.shortx.ui.base.code.codeditor.initView
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
@@ -398,22 +392,7 @@ fun ErrorMessageDialog(state: ErrorMessageDialogState) {
                                 .animateContentSize()
                                 .verticalScroll(rememberScrollState())
                         ) {
-                            val isDarkTheme = isSystemInDarkTheme()
-                            AndroidView(modifier = Modifier
-                                .fillMaxSize()
-                                .systemBarsPadding()
-                                .imePadding(),
-                                factory = { ctx ->
-                                    return@AndroidView CodeView(ctx).apply {
-                                        initView(this, isDarkTheme)
-                                        setEnableLineNumber(false)
-                                        isEnabled = false
-                                        setText(state.message)
-                                    }
-                                },
-                                update = { view ->
-
-                                })
+                            Text(text = state.message)
                         }
                     }
                 }

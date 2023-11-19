@@ -45,10 +45,10 @@ fun StandardSpacer() {
 
 @Composable
 fun LargeSpacer() {
-    Spacer(modifier = Modifier.size(20.dp))
+    Spacer(modifier = Modifier.size(24.dp))
 }
 
 @Composable
 fun SectionSpacer() {
-    Spacer(modifier = Modifier.size(32.dp))
+    Spacer(modifier = Modifier.size(36.dp))
 }

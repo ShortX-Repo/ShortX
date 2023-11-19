@@ -41,6 +41,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -55,10 +56,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.BaseActivity
-import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SwitchBar
+import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
 class HttpLogActivity : BaseActivity() {
@@ -82,74 +83,78 @@ class HttpLogActivity : BaseActivity() {
         val listState = rememberLazyListState()
         val scope = rememberCoroutineScope()
 
-        val i18N = LocalI18N.current
-        Scaffold(modifier = Modifier,
-            topBar = {
-                ShortXTopAppBar(
-                    modifier = Modifier,
-                    title = { Text(text = "Http log") },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            finish()
-                        }) {
-                            RemixIcon(remixName = Remix.System.close_line)
-                        }
-                    },
-                    actions = {
-                        MenuActions(
-                            clearLogs = { viewModel.clearLogs() },
-                            scrollToTop = {
-                                scope.launch {
-                                    listState.scrollToItem(0)
+
+        ShortXTheme {
+            Surface {
+                Scaffold(modifier = Modifier,
+                    topBar = {
+                        ShortXTopAppBar(
+                            modifier = Modifier,
+                            title = { Text(text = "Http log") },
+                            navigationIcon = {
+                                IconButton(onClick = {
+                                    finish()
+                                }) {
+                                    RemixIcon(remixName = Remix.System.close_line)
                                 }
                             },
-                            scrollToBottom = {
-                                scope.launch {
-                                    listState.scrollToItem(state.logs.size - 1)
-                                }
-                            },
-                            toggleHorizontalScroll = {
-                                viewModel.setHorizontalScrollEnabled(!state.horizontalScrollEnabled)
-                            })
-                    }
-                )
-            }) { paddingValues ->
-            val refreshing = state.isLoading
-            val refreshState = rememberPullRefreshState(refreshing, onRefresh = {
-                viewModel.refresh()
-            })
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .pullRefresh(refreshState)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                ) {
-                    SwitchBar(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .padding(top = 16.dp),
-                        isChecked = state.isLogEnabled
+                            actions = {
+                                MenuActions(
+                                    clearLogs = { viewModel.clearLogs() },
+                                    scrollToTop = {
+                                        scope.launch {
+                                            listState.scrollToItem(0)
+                                        }
+                                    },
+                                    scrollToBottom = {
+                                        scope.launch {
+                                            listState.scrollToItem(state.logs.size - 1)
+                                        }
+                                    },
+                                    toggleHorizontalScroll = {
+                                        viewModel.setHorizontalScrollEnabled(!state.horizontalScrollEnabled)
+                                    })
+                            }
+                        )
+                    }) { paddingValues ->
+                    val refreshing = state.isLoading
+                    val refreshState = rememberPullRefreshState(refreshing, onRefresh = {
+                        viewModel.refresh()
+                    })
+                    Box(
+                        Modifier
+                            .fillMaxSize()
+                            .pullRefresh(refreshState)
                     ) {
-                        viewModel.enableLog(it)
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(paddingValues)
+                        ) {
+                            SwitchBar(
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp)
+                                    .padding(top = 16.dp),
+                                isChecked = state.isLogEnabled
+                            ) {
+                                viewModel.enableLog(it)
+                            }
+
+                            LogList(
+                                horizontalScrollEnabled = state.horizontalScrollEnabled,
+                                listState = listState,
+                                state = state
+                            )
+                        }
+
+                        PullRefreshIndicator(
+                            refreshing,
+                            refreshState,
+                            Modifier.align(Alignment.TopCenter),
+                            contentColor = MaterialTheme.colorScheme.primary
+                        )
                     }
-
-                    LogList(
-                        horizontalScrollEnabled = state.horizontalScrollEnabled,
-                        listState = listState,
-                        state = state
-                    )
                 }
-
-                PullRefreshIndicator(
-                    refreshing,
-                    refreshState,
-                    Modifier.align(Alignment.TopCenter),
-                    contentColor = MaterialTheme.colorScheme.primary
-                )
             }
         }
 
