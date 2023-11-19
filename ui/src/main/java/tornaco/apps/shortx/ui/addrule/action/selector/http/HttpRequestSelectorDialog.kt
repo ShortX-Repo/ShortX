@@ -50,6 +50,7 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.curl.curlCommandToHttpRequest
+import tornaco.apps.shortx.core.util.formatJsonString
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
@@ -59,7 +60,6 @@ import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
-import tornaco.apps.shortx.ui.base.ErrorMessageDialog
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.ListItem
@@ -76,11 +76,11 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.SwitchRow
+import tornaco.apps.shortx.ui.base.TextDisplayActivity
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
-import tornaco.apps.shortx.ui.base.rememberErrorMessageDialogState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.composeLogger
@@ -111,14 +111,7 @@ private fun BaseSelectorActivity<Action.HttpRequest>.HttpRequestSelector(current
     val selectorState by vm.state.collectAsState()
 
     val context = LocalContext.current
-
-    val outputDialogState =
-        rememberErrorMessageDialogState(title = LocalI18N.current["ui.action.http.request"])
-    ErrorMessageDialog(state = outputDialogState)
-
-    val errorDialogState =
-        rememberErrorMessageDialogState(title = LocalI18N.current["ui.common.error.view.message"])
-    ErrorMessageDialog(state = errorDialogState)
+    val errorTitle = LocalI18N.current["ui.common.error.view.message"]
 
     val curlInputDialogState =
         rememberTextInputState(
@@ -131,7 +124,11 @@ private fun BaseSelectorActivity<Action.HttpRequest>.HttpRequestSelector(current
                 }.onFailure {
                     composeLogger.e(it, "curlCommandToHttpRequest")
                     val errorMsg = it.stackTraceToString()
-                    errorDialogState.show(errorMsg)
+                    TextDisplayActivity.start(
+                        context = context,
+                        title = errorTitle,
+                        text = errorMsg
+                    )
                 }
             })
     TextInputDialog(state = curlInputDialogState)
@@ -146,7 +143,11 @@ private fun BaseSelectorActivity<Action.HttpRequest>.HttpRequestSelector(current
                     vm.init(request.pack_().toAction(shortXManager) as Action.HttpRequest?)
                 }.onFailure {
                     composeLogger.e(it, "toHttpCanaryExportJson")
-                    errorDialogState.show(it.stackTraceToString())
+                    TextDisplayActivity.start(
+                        context = context,
+                        title = errorTitle,
+                        text = it.stackTraceToString()
+                    )
                 }
             })
     TextInputDialog(state = httpCanaryJsonInputDialogState)
@@ -161,7 +162,11 @@ private fun BaseSelectorActivity<Action.HttpRequest>.HttpRequestSelector(current
                     vm.init(request.pack_().toAction(shortXManager) as Action.HttpRequest?)
                 }.onFailure {
                     composeLogger.e(it, "toHttpCanaryExportHcy")
-                    errorDialogState.show(it.stackTraceToString())
+                    TextDisplayActivity.start(
+                        context = context,
+                        title = errorTitle,
+                        text = it.stackTraceToString()
+                    )
                 }
             })
     TextInputDialog(state = httpCanaryHcyInputDialogState)
@@ -231,6 +236,8 @@ private fun BaseSelectorActivity<Action.HttpRequest>.HttpRequestSelector(current
                             }
 
                             val scope = rememberCoroutineScope()
+                            val outputTitle = LocalI18N.current["ui.action.http.request"]
+
                             IconButton(
                                 enabled = !selectorState.isTesting,
                                 onClick = {
@@ -242,7 +249,17 @@ private fun BaseSelectorActivity<Action.HttpRequest>.HttpRequestSelector(current
                                                 shortXManager.executeHttpRequest(request.toProtoAction() as HttpRequest)
                                             }
                                             vm.setIsTesting(false)
-                                            outputDialogState.show(out.joinToString(System.lineSeparator()))
+
+                                            TextDisplayActivity.start(
+                                                context,
+                                                title = outputTitle,
+                                                text = out.joinToString(separator = System.lineSeparator(),
+                                                    transform = { str ->
+                                                        runCatching {
+                                                            formatJsonString(str)
+                                                        }.getOrElse { str }
+                                                    })
+                                            )
                                         }
                                     }
                                 }) {

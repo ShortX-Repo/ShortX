@@ -38,7 +38,6 @@ import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.ui.XRectF
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
-import tornaco.apps.shortx.ui.base.Loading
 
 @SuppressLint("ViewConstructor", "ClickableViewAccessibility")
 class IdViewerView(

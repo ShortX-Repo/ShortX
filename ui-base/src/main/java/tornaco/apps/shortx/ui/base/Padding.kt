@@ -9,6 +9,18 @@ import androidx.compose.ui.unit.Dp
 
 @Composable
 fun PaddingValues.copy(
+    all: (current: Dp) -> Dp = { it },
+): PaddingValues {
+    return copy(
+        start = all,
+        top = all,
+        end = all,
+        bottom = all,
+    )
+}
+
+@Composable
+fun PaddingValues.copy(
     start: (current: Dp) -> Dp = { it },
     top: (current: Dp) -> Dp = { it },
     end: (current: Dp) -> Dp = { it },

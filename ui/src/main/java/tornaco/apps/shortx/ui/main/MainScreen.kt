@@ -33,13 +33,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.ui.base.ErrorMessageDialog
 import tornaco.apps.shortx.ui.base.LocalDrawerState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.StandardSpacer
-import tornaco.apps.shortx.ui.base.rememberErrorMessageDialogState
+import tornaco.apps.shortx.ui.base.TextDisplayActivity
 import tornaco.apps.shortx.ui.discover.DiscoverScreen
 import tornaco.apps.shortx.ui.gesture.GestureRecordListActivity
 import tornaco.apps.shortx.ui.gvar.GlobalVarListActivity
@@ -101,9 +100,7 @@ fun HomeScreen() {
                         val appNavController = LocalNavHostController.current
                         val context = LocalContext.current
 
-                        val statementDialog =
-                            rememberErrorMessageDialogState(title = LocalI18N.current["ui.settings.privacy.statement"])
-                        ErrorMessageDialog(state = statementDialog)
+                        val statementTitle = LocalI18N.current["ui.settings.privacy.statement"]
 
                         SettingsScreen(
                             back = { scope.launch { drawerState.close() } },
@@ -132,8 +129,10 @@ fun HomeScreen() {
                                 appNavController.navigate(AppRoute.ViewOpenSourceLicense.name)
                             },
                             viewPrivacyStatement = {
-                                statementDialog.show(
-                                    AssetUtils.readFileToString(
+                                TextDisplayActivity.start(
+                                    context = context,
+                                    title = statementTitle,
+                                    text = AssetUtils.readFileToString(
                                         context,
                                         "privacy/privacy_agreement.html"
                                     )

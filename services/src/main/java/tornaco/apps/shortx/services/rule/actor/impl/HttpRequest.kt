@@ -176,7 +176,8 @@ object HttpRequest : Actor {
                     .replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() }
             },
             requestBody = requestBody,
-            withCookieJar = data.withCookieJar
+            withCookieJar = data.withCookieJar,
+            trustAllCerts = data.trustAllCerts
         )
 
         HttpRequestLogging.section("END")
@@ -295,7 +296,7 @@ object HttpRequest : Actor {
         withCookieJar: Boolean = true,
         trustAllCerts: Boolean = false,
     ): Response {
-        logger.d("handleUrl: $url $method $headers $requestBody")
+        logger.p("handleUrl: $url $method $headers $requestBody")
 
         val request = Request.Builder().url(url)
             .method(method, requestBody)

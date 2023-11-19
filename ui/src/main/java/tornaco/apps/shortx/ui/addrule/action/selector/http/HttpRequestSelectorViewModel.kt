@@ -112,7 +112,7 @@ class HttpRequestSelectorViewModel @Inject constructor(@ApplicationContext conte
                             is HttpRequestAdapter.HeaderBodyJsonMap -> AdapterType.HeaderBodyJson
                             else -> AdapterType.Raw
                         }
-                    } ?: AdapterType.Raw
+                    }
                 )
             }
         }

@@ -14,6 +14,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -51,10 +52,7 @@ fun LoadError(
     message: String? = null,
     refresh: (() -> Unit)? = null
 ) {
-    val errorMessageDialogState =
-        rememberErrorMessageDialogState(title = "Error")
-    ErrorMessageDialog(state = errorMessageDialogState)
-
+    val context = LocalContext.current
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
@@ -72,7 +70,9 @@ fun LoadError(
         )
 
         message?.let {
-            TextButton(onClick = { errorMessageDialogState.show(message) }) {
+            TextButton(onClick = {
+                TextDisplayActivity.start(context, "ERROR", it)
+            }) {
                 Text(
                     text = LocalI18N.current["ui.common.error.view.message"],
                     style = MaterialTheme.typography.bodySmall.copy(

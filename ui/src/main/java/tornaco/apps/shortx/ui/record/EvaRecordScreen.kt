@@ -71,7 +71,6 @@ import tornaco.apps.shortx.ui.addrule.fact.mapper.labelForFact
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
-import tornaco.apps.shortx.ui.base.ErrorMessageDialog
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LinkText
@@ -84,8 +83,8 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.SwitchBar
+import tornaco.apps.shortx.ui.base.TextDisplayActivity
 import tornaco.apps.shortx.ui.base.TipBody
-import tornaco.apps.shortx.ui.base.rememberErrorMessageDialogState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.ActionRecordColor
 import tornaco.apps.shortx.ui.theme.ConditionRecordColor
@@ -436,6 +435,7 @@ private fun ActionRecordItem(
     onShowThisSrc: (EvaluateContext) -> Unit,
 ) {
     val i18N = LocalI18N.current
+    val context = LocalContext.current
     Box {
         val actionLabel = labelLinesForAction(
             i18N,
@@ -443,10 +443,6 @@ private fun ActionRecordItem(
         ).toMutableList().apply {
             add(it.formattedTimeStr)
         }
-        val messageDialogState = rememberErrorMessageDialogState(
-            title = actionLabel[0],
-        )
-        ErrorMessageDialog(state = messageDialogState)
 
         CommonRecordListItem(
             modifier = Modifier
@@ -482,7 +478,9 @@ private fun ActionRecordItem(
                 }
             },
             onClick = {
-                if (!it.record.isSuccess) messageDialogState.show(it.record.message)
+                if (!it.record.isSuccess) {
+                    TextDisplayActivity.start(context, actionLabel[0], it.record.message)
+                }
             })
     }
 }
@@ -494,6 +492,7 @@ private fun ConditionRecordItem(
     onShowThisSrc: (EvaluateContext) -> Unit,
 ) {
     val i18N = LocalI18N.current
+    val context = LocalContext.current
     Box {
         val conditionLabel = labelForCondition(
             i18N,
@@ -504,10 +503,6 @@ private fun ConditionRecordItem(
             }
             add(it.formattedTimeStr)
         }
-        val messageDialogState = rememberErrorMessageDialogState(
-            title = conditionLabel[0],
-        )
-        ErrorMessageDialog(state = messageDialogState)
 
         CommonRecordListItem(
             modifier = Modifier
@@ -550,7 +545,9 @@ private fun ConditionRecordItem(
                 }
             },
             onClick = {
-                if (!it.record.isSuccess) messageDialogState.show(it.record.message)
+                if (!it.record.isSuccess) {
+                    TextDisplayActivity.start(context, conditionLabel[0], it.record.message)
+                }
             })
     }
 }

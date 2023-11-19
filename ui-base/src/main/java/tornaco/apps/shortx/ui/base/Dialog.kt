@@ -20,7 +20,6 @@
 package tornaco.apps.shortx.ui.base
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,17 +31,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -57,17 +52,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.takeOrElse
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
-import tornaco.apps.shortx.ui.theme.ShortXTheme
-import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 
 @Composable
@@ -325,79 +316,6 @@ fun TipDialog(state: TipDialogState) {
                 }
                 MarkdownText(markdown = state.tip, color = textColor)
             })
-    }
-}
-
-
-class ErrorMessageDialogState(
-    val title: String,
-) : CommonDialogState() {
-    var message by mutableStateOf("")
-
-    fun show(message: String) {
-        this.message = message
-        super.show()
-    }
-}
-
-@Composable
-fun rememberErrorMessageDialogState(
-    title: String
-): ErrorMessageDialogState {
-    return remember {
-        ErrorMessageDialogState(title)
-    }
-}
-
-@Composable
-fun ErrorMessageDialog(state: ErrorMessageDialogState) {
-    if (state.isShowing) {
-        ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
-            val context = LocalContext.current
-            ShortXTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
-                ) {
-                    Scaffold(
-                        modifier = Modifier,
-                        topBar = {
-                            ShortXTopAppBar(
-                                modifier = Modifier,
-                                title = { Text(state.title) },
-                                navigationIcon = {
-                                    IconButton(onClick = {
-                                        state.dismiss()
-                                    }) {
-                                        RemixIcon(remixName = Remix.System.close_line)
-                                    }
-                                },
-                                actions = {
-                                    TextButton(onClick = {
-                                        ClipboardUtils.copyToClipboard(
-                                            context,
-                                            "message",
-                                            state.message
-                                        )
-                                    }) {
-                                        Text(text = stringResource(id = android.R.string.copy))
-                                    }
-
-                                },
-                            )
-                        }) { paddingValues ->
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(paddingValues)
-                                .animateContentSize()
-                                .verticalScroll(rememberScrollState())
-                        ) {
-                            Text(text = state.message)
-                        }
-                    }
-                }
-            }
-        }
     }
 }
 
