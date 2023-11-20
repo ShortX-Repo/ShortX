@@ -51,14 +51,17 @@ class ActionEvaluateRecorder {
     private val _evaluatingActions = mutableListOf<String>()
     val evaluatingActions get() = _evaluatingActions.toList()
 
+    @Synchronized
     fun addEvaluating(actionId: String) {
         _evaluatingActions.add(actionId)
     }
 
+    @Synchronized
     fun removeEvaluating(actionId: String) {
         _evaluatingActions.remove(actionId)
     }
 
+    @Synchronized
     fun addResult(record: ActionEvaluateRecord) {
         _actionEvaluateRecords.add(record)
         if (_actionEvaluateRecords.size > MAX_ENTRY_SIZE) {
@@ -66,5 +69,6 @@ class ActionEvaluateRecorder {
         }
     }
 
+    @Synchronized
     fun clear() = _actionEvaluateRecords.clear()
 }

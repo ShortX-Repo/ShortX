@@ -41,6 +41,7 @@ class ConditionEvaluateRecorder {
 
     val conditionEvaluateRecords get() = _conditionEvaluateRecords.toList()
 
+    @Synchronized
     fun add(record: ConditionEvaluateRecord) {
         _conditionEvaluateRecords.add(record)
         if (_conditionEvaluateRecords.size > MAX_ENTRY_SIZE) {
@@ -48,5 +49,6 @@ class ConditionEvaluateRecorder {
         }
     }
 
+    @Synchronized
     fun clear() = _conditionEvaluateRecords.clear()
 }
