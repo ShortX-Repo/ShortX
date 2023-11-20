@@ -18,29 +18,29 @@ class ChargeStateTrigger(
 ) :
     Trigger {
     private val logger = Logger("ChargeStateTrigger")
-    private val _isCharging = MutableStateFlow<Boolean?>(null)
+    private val _isAnyPlug = MutableStateFlow<Boolean?>(null)
 
     private val receiver = object : SafeBroadcastReceiver(shortXContext) {
         override fun handleReceive(context: Context, intent: Intent) {
             if (intent.action == Intent.ACTION_BATTERY_CHANGED) {
                 val newState = BatteryImpl.retrieveBatteryState(intent)
                 logger.d("newState: $newState")
-                val stateChanged = (newState.isCharging != _isCharging.value)
+                val stateChanged = (newState.isAnyPlug != _isAnyPlug.value)
                 if (stateChanged) {
                     logger.d("state changed")
-                    _isCharging.value = newState.isCharging
+                    _isAnyPlug.value = newState.isAnyPlug
 
                     if (shortXContext.user.isSystemReadyTriggered) {
-                        if (newState.isCharging) {
+                        if (newState.isAnyPlug) {
                             shortXContext.rule.publishFact(
-                                reason = "Charge state changed",
+                                reason = "isAnyPlug state changed",
                                 fact = ChargerPlug.newBuilder().build(),
-                            )
+                            ) { emptyMap() }
                         } else {
                             shortXContext.rule.publishFact(
-                                reason = "Charge state changed",
+                                reason = "isAnyPlug state changed",
                                 fact = ChargerUnplug.newBuilder().build(),
-                            )
+                            ) { emptyMap() }
                         }
                     } else {
                         logger.w("isSystemReadyTriggered is false. ignore.")
