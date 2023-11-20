@@ -1,10 +1,8 @@
 package tornaco.apps.shortx.services.data
 
-import android.os.Binder
 import android.os.Environment
 import lang3.RandomStringUtils
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.util.PkgUtils
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -65,13 +63,6 @@ internal object DirInit {
     }
 
     private fun systemDir(): File {
-        val callingUid = Binder.getCallingUid()
-        if (PkgUtils.isShell(callingUid)) {
-            val dataLocalTmpFile = File("/data/local/tmp")
-            val res = File(dataLocalTmpFile, "system")
-            logger.w("Pick dir for Shell: $res")
-            return res
-        }
         val res = File(Environment.getDataDirectory(), "system")
         logger.w("Pick dir for Root: $res")
         return res

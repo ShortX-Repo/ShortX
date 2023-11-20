@@ -36,6 +36,7 @@ import tornaco.apps.shortx.services.data.SettingsStore
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.services.systemServiceScope
+import tornaco.apps.shortx.services.util.TestUtils
 import tornaco.apps.shortx.services.util.http.persistentcookiejar.PersistentCookieJar
 import tornaco.apps.shortx.services.util.http.persistentcookiejar.cache.SetCookieCache
 import tornaco.apps.shortx.services.util.http.persistentcookiejar.persistence.CookiePersistor
@@ -50,7 +51,7 @@ object HttpRequest : Actor {
 
     private val logging =
         HttpLoggingInterceptor {
-            if (HttpRequestLogging.isLogEnabled) {
+            if (!TestUtils.isUnitTestEnv && HttpRequestLogging.isLogEnabled) {
                 HttpRequestLogging.log(it)
             } else {
                 logger.d(it)

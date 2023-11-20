@@ -18,10 +18,12 @@ import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.handleResponseBody
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.toHttpRequestBody
 import tornaco.apps.shortx.services.rule.actor.impl.fixSpecialLetters
+import tornaco.apps.shortx.services.util.TestUtils
 
 class HttpRequestTest {
     @Before
     fun installLogger() {
+        TestUtils.isUnitTestEnv = true
         logAdapter = { _: Int, tag: String, msg: String ->
             println("[$tag] $msg")
         }
