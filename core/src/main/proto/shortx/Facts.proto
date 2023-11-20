@@ -446,6 +446,7 @@ message MediaStoreInsert {
   string uriString = 2;
 
   string filterPath = 3;
+  RegexMatchOptions options = 4;
 
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;

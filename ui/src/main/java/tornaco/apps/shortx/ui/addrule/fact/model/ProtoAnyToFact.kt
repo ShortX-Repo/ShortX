@@ -529,7 +529,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 this unpack_ tornaco.apps.shortx.core.proto.fact.MediaStoreInsert::class.java
             Fact.MediaStoreInsert(
                 id = data.id, customContextDataKey = data.customContextDataKey, note = data.note,
-                filterPathRegex = data.filterPath
+                filterPathRegex = data.filterPath,
+                matchOptions = data.options
             )
         }
 

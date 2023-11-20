@@ -390,6 +390,7 @@ fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
             MediaStoreInsert.newBuilder().setId(overrideId ?: id).setNote(note)
                 .setCustomContextDataKey(customContextDataKey)
                 .setFilterPath(filterPathRegex)
+                .setOptions(matchOptions)
                 .build()
         }
 

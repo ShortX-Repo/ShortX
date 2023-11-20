@@ -381,13 +381,7 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
         register(MediaStoreInsert::class.java) { actual, rule ->
             val actualN = (actual as MediaStoreInsert)
             val ruleN = (rule as MediaStoreInsert)
-
-            val filter = ruleN.filterPath
-            val path = actualN.path
-            logger.p("filter: $filter")
-            logger.p("path: $path")
-
-            filter.toRegex().matches(path)
+            emptyOrRegexMatch(ruleN.filterPath, actualN.path, ruleN.options)
         }
 
         register(OnStartOp::class.java) { actual, rule ->

@@ -236,16 +236,21 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     TextInputDialog(state = broadcastSelectorState)
 
 
-    val mediaInsertSelectorState = rememberTextInputState(
+    val mediaInsertSelectorState = rememberRegexTextInputState(
         title = LocalI18N.current["ui.fact.media.insert"],
         message = "${LocalI18N.current["ui.fact.media.insert.summary", mapOf("mediaPkgName" to PackageNames.mediaProvider)]} \n\n ${LocalI18N.current["ui.fact.media.insert.input.path"]}",
         showSymbolButton = false,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-        onSelected = { pathString ->
-            addFact(Fact.MediaStoreInsert(filterPathRegex = pathString.fallbackOnEmpty(".*")))
+        onSelected = { pathString, options ->
+            addFact(
+                Fact.MediaStoreInsert(
+                    filterPathRegex = pathString.fallbackOnEmpty(".*"),
+                    matchOptions = options
+                )
+            )
         }
     )
-    TextInputDialog(state = mediaInsertSelectorState)
+    RegexTextInputDialog(state = mediaInsertSelectorState)
 
     val onStartOpSelectorState = rememberAppOpSelectorState(
         title = LocalI18N.current["ui.fact.op.start"],
@@ -491,7 +496,10 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
             }
 
             Fact.MediaStoreInsert::class -> {
-                mediaInsertSelectorState.show(source.getFactAs<Fact.MediaStoreInsert>()?.filterPathRegex)
+                mediaInsertSelectorState.show(
+                    initialValue = source.getFactAs<Fact.MediaStoreInsert>()?.filterPathRegex,
+                    options = source.getFactAs<Fact.MediaStoreInsert>()?.matchOptions
+                )
                 true
             }
 

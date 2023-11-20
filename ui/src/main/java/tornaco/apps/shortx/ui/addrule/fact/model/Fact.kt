@@ -816,7 +816,8 @@ sealed interface Fact {
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
 
-        val filterPathRegex: String
+        val filterPathRegex: String,
+        val matchOptions: RegexMatchOptions
     ) : Fact {
         override fun clone(
             id: String,
