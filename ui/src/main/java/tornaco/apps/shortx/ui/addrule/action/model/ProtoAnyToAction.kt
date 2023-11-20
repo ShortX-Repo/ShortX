@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.ui.addrule.action.model
 
+import android.content.Intent
 import tornaco.apps.shortx.core.App
 import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.ShortXManager
@@ -1507,6 +1508,20 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 subtitle = data.subTitle,
                 allowActions = data.allowActionsList.mapNotNull { it.toAction(shortXManager) },
                 denyActions = data.denyActionsList.mapNotNull { it.toAction(shortXManager) },
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.AppShortcut::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.AppShortcut::class.java
+            Action.AppShortcut(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                intent = Intent.parseUri(data.intentUri, Intent.URI_INTENT_SCHEME),
+                label = data.label
             )
         }
 

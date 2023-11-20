@@ -281,6 +281,17 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     })
     ProcessListSelectorDialog(state = killProcessSelectorState)
 
+
+    val pickShortcutLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.toBaseSelectorActionOrNull<Action.AppShortcut>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
     return { source: ActionSelectSource ->
         when (source.clazz) {
             Action.StartActivityIntent::class -> {
@@ -452,6 +463,17 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.AppShortcut::class -> {
+                pickShortcutLauncher.launch(
+                    BaseSelectorActivity.newIntent(
+                        context,
+                        source.getActionAs<Action.AppShortcut>(),
+                        AppShortcutSelectorActivity::class.java
+                    )
+                )
+                true
+            }
+
             Action.KillProcessByName::class -> {
                 killProcessSelectorState.show(source.getActionAs<Action.KillProcessByName>()?.processList)
                 true
@@ -519,6 +541,7 @@ fun AppActions(keyword: String, subscribeState: LVLStateHolder.State, addAction:
         Action.KillProcessByName::class,
         Action.RemoveNotificationForPackage::class,
         Action.RemoveNotificationForPackageByPkg::class,
+        Action.AppShortcut::class,
     ).map {
         SelectorItem(
             type = it,

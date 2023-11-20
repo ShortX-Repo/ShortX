@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.ui.addrule.action.model
 
+import android.content.Intent
 import android.os.Parcelable
 import androidx.annotation.IntRange
 import kotlinx.parcelize.Parcelize
@@ -3206,6 +3207,35 @@ sealed interface Action : Parcelable {
         override val note: String = "",
 
         val action: MediaPlaybackAction
+    ) : Action {
+        override fun clone(
+            id: String,
+            note: String,
+            isEnabled: Boolean,
+            actionOnError: ActionOnError,
+            contextData: List<ContextData>
+        ): Action {
+            return this.copy(
+                id = id,
+                note = note,
+                isEnabled = isEnabled,
+                actionOnError = actionOnError,
+                contextData = contextData
+            )
+        }
+    }
+
+    @Parcelize
+    data class AppShortcut(
+        override val id: String = defaultNewActionId(),
+        override val isEnabled: Boolean = true,
+        override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val contextData: List<ContextData> = emptyList(),
+        override val note: String = "",
+
+        val intent: Intent,
+        val label: String
     ) : Action {
         override fun clone(
             id: String,

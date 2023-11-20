@@ -127,10 +127,6 @@ class CreateShortcutActivity : BaseActivity() {
     ): Intent {
         val info: ShortcutInfoCompat =
             ActionShortcutActivity.createShortcutInfo(context, da)
-
-        val intent: Intent = ShortcutManagerCompat.createShortcutResultIntent(context, info)
-
-
-        return intent
+        return ShortcutManagerCompat.createShortcutResultIntent(context, info)
     }
 }

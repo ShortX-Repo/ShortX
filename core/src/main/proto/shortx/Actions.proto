@@ -1201,6 +1201,16 @@ message BiometricVerify {
   string id = 100;
 }
 
+message AppShortcut {
+  string intentUri = 1;
+  string label = 2;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
 
 message PluginAction {
   string pluginId = 1;

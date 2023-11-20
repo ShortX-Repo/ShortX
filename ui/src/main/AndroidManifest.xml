@@ -190,6 +190,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="tornaco.apps.shortx.ui.addrule.action.selector.AppShortcutSelectorActivity"
+            android:exported="false" />
 
         <service
             android:name=".service.tile.Tile1"

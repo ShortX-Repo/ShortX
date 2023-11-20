@@ -15,6 +15,7 @@ import tornaco.apps.shortx.core.proto.common.VolumeDirection
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.toType
 import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.condition.mapper.labelForConditionSelector
@@ -209,6 +210,7 @@ fun labelAndDescriptionForActionSelector(
         Action.ClickTile::class -> i18N["ui.action.click.tile"] to null
         Action.MediaPlayback::class -> i18N["ui.action.media.play.back"] to null
         Action.BiometricVerify::class -> i18N["ui.action.biometric.verify"] to null
+        Action.AppShortcut::class -> i18N["ui.action.shortcut"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -612,9 +614,9 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                 labelAndDescriptionForActionSelector(i18N, it::class).first
             }
 
-            add(i18N["ui.action.if"] + " \uD83C\uDFAF " + condition + " ")
-            add(i18N["ui.action.then"] + " ➡️ " + ifAction + " ")
-            add(i18N["ui.action.else"] + " ➡️ " + elseAction + " ")
+            add(i18N["ui.action.if"] + "($condition)")
+            add(i18N["ui.action.then"] + "{ $ifAction }")
+            add(i18N["ui.action.else"] + "{ $elseAction }")
         }
 
         is Action.NoAction -> {
@@ -786,6 +788,11 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
 
         is Action.BiometricVerify -> listOf(
             i18N["ui.action.biometric.verify"]
+        )
+
+        is Action.AppShortcut -> listOf(
+            i18N["ui.action.shortcut"],
+            "${action.label}$PREFIX_APP_ICON${PkgUtils.packageNameOf(action.intent)}"
         )
     }
 }

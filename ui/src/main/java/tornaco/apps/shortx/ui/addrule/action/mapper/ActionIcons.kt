@@ -425,6 +425,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Device.server_fill
         }
 
+        Action.AppShortcut::class -> {
+            Remix.System.external_link_line
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

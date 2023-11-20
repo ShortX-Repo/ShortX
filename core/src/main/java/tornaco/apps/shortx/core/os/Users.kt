@@ -9,3 +9,7 @@ val currentUserHandle get() = UserHandle.CURRENT
 
 fun Int.isMainUser() = this == UserHandle.USER_SYSTEM
 fun Int.isMaskForAnyUser() = this == USER_MASK_ANY
+
+fun uidToUserId(uid: Int): Int {
+    return UserHandle.getUserId(uid)
+}

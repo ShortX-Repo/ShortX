@@ -115,5 +115,6 @@ val allActionClasses = listOf(
     Action.MediaPlayback::class,
     Action.SetVolume::class,
     Action.BiometricVerify::class,
+    Action.AppShortcut::class,
     Action.NoAction::class,
 )

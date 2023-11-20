@@ -455,6 +455,10 @@ enum class PrebuiltActor : ActorProvider {
             get() = tornaco.apps.shortx.services.rule.actor.impl.BiometricVerify
     },
 
+    AppShortcut {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.AppShortcut
+    },
     PluginAction {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.PluginAction
