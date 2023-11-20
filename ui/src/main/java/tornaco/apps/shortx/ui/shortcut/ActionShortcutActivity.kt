@@ -80,37 +80,42 @@ class ActionShortcutActivity : Activity() {
 
         fun addShortcut(context: Context, action: DirectActionUM) {
             if (ShortcutManagerCompat.isRequestPinShortcutSupported(context)) {
-                val actionIconDrawable = ResourcesCompat.getDrawable(
-                    context.resources,
-                    context.remixResId(action.icon),
-                    null
-                )?.apply {
-                    setTint(android.graphics.Color.WHITE)
-                }
-                val templateDrawable =
-                    ResourcesCompat.getDrawable(
-                        context.resources,
-                        R.drawable.ui_ic_shortcut_template,
-                        null
-                    )
-                val ld = templateDrawable as LayerDrawable
-                ld.setTint(Color(action.iconColor).toArgb())
-                ld.setDrawableByLayerId(R.id.settings_ic_foreground, actionIconDrawable)
 
-                val resource: Bitmap? = BitmapUtils.getBitmap(context, templateDrawable)
-                val shortcutInfoIntent = createIntent(context, action.id)
-                shortcutInfoIntent.action = Intent.ACTION_VIEW
-                val info = ShortcutInfoCompat.Builder(context, "ShortX-Action-" + action.id)
-                    .setIcon(resource?.let { IconCompat.createWithBitmap(it) })
-                    .setShortLabel(action.title)
-                    .setIntent(shortcutInfoIntent)
-                    .build()
                 ShortcutManagerCompat.requestPinShortcut(
                     context,
-                    info,
+                    createShortcutInfo(context, action),
                     ShortcutReceiver.getPinRequestAcceptedIntent(context).intentSender
                 )
             }
+        }
+
+        fun createShortcutInfo(context: Context, action: DirectActionUM): ShortcutInfoCompat {
+            val actionIconDrawable = ResourcesCompat.getDrawable(
+                context.resources,
+                context.remixResId(action.icon),
+                null
+            )?.apply {
+                setTint(android.graphics.Color.WHITE)
+            }
+            val templateDrawable =
+                ResourcesCompat.getDrawable(
+                    context.resources,
+                    R.drawable.ui_ic_shortcut_template,
+                    null
+                )
+            val ld = templateDrawable as LayerDrawable
+            ld.setTint(Color(action.iconColor).toArgb())
+            ld.setDrawableByLayerId(R.id.settings_ic_foreground, actionIconDrawable)
+
+            val resource: Bitmap? = BitmapUtils.getBitmap(context, templateDrawable)
+            val shortcutInfoIntent = createIntent(context, action.id)
+            shortcutInfoIntent.action = Intent.ACTION_VIEW
+            val info = ShortcutInfoCompat.Builder(context, "ShortX-Action-" + action.id)
+                .setIcon(resource?.let { IconCompat.createWithBitmap(it) })
+                .setShortLabel(action.title)
+                .setIntent(shortcutInfoIntent)
+                .build()
+            return info
         }
     }
 

@@ -9,4 +9,6 @@
     <string name="lvl_unlicensed_dialog_retry_body">无法访问Google Play</string>
     <string name="lvl_unlicensed_dialog_error_tips">1. 请检查你的设备网络情况，确保可以正常访问谷歌Play商店 \n2. 请检查你的谷歌服务框架，确保其处于启用状态 \n3. 请检查你的谷歌账号是否正确登录
     </string>
+
+    <string name="ui_create_shortcut">指令快捷方式</string>
 </resources>

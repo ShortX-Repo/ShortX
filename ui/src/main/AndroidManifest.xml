@@ -181,6 +181,16 @@
             android:name="tornaco.apps.shortx.ui.base.TextDisplayActivity"
             android:exported="false" />
 
+        <activity
+            android:name="tornaco.apps.shortx.ui.shortcut.CreateShortcutActivity"
+            android:exported="true"
+            android:label="@string/ui_create_shortcut">
+            <intent-filter>
+                <action android:name="android.intent.action.CREATE_SHORTCUT" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <service
             android:name=".service.tile.Tile1"
             android:exported="true"
