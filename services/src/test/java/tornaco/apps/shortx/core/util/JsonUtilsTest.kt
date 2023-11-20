@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.core.util
 
-import io.kotest.assertions.shouldFail
+import com.google.gson.JsonSyntaxException
+import io.kotest.assertions.throwables.shouldThrow
 import org.junit.Test
 
 class JsonUtilsTest {
@@ -11,7 +12,7 @@ class JsonUtilsTest {
 
     @Test
     fun testFormatNonJson() {
-        shouldFail {
+        shouldThrow<JsonSyntaxException> {
             println(
                 formatJsonString(
                     """Hello, nice to meet you,
