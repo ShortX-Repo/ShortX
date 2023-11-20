@@ -15,6 +15,15 @@
         <intent>
             <action android:name="android.intent.action.TTS_SERVICE" />
         </intent>
+        <intent>
+            <action android:name="android.intent.action.MAIN"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.SEND"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+        </intent>
     </queries>
 
     <application

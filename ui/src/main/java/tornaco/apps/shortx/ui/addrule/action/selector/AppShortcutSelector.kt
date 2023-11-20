@@ -24,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,6 +37,7 @@ import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.TextDisplayActivity
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -79,6 +81,8 @@ private fun BaseSelectorActivity<Action.AppShortcut>.AppShortcutSelector(current
         }
     )
 
+    val context = LocalContext.current
+
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -98,11 +102,20 @@ private fun BaseSelectorActivity<Action.AppShortcut>.AppShortcutSelector(current
                     )
                 }) { paddingValues ->
                 LazyColumn(contentPadding = paddingValues) {
-                    items(vmState.createShortcutIntentItems) {
-                        ListItem(title = it.label, icon = {
-                            AppIcon(modifier = Modifier.size(42.dp), pkg = it.pkg)
+                    items(vmState.createShortcutIntentItems) { intentItem ->
+                        ListItem(title = intentItem.label, icon = {
+                            AppIcon(modifier = Modifier.size(42.dp), pkg = intentItem.pkg)
                         }, onClick = {
-                            selectLauncher.launch(Intent().setComponent(PkgUtils.getComponentName(it.activity)))
+                            runCatching {
+                                selectLauncher.launch(
+                                    Intent(Intent.ACTION_CREATE_SHORTCUT).setComponent(
+                                        PkgUtils.getComponentName(intentItem.activity)
+                                    )
+                                )
+                            }.onFailure {
+                                TextDisplayActivity.start(context, "Oops!", it.stackTraceToString())
+                                composeLogger.e(it, "selectLauncher")
+                            }
                         })
                     }
                 }
