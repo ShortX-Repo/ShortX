@@ -32,6 +32,7 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.launcherApps
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
+import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.settings.TileSettingsActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import java.util.Locale
@@ -61,6 +62,15 @@ class DemoActivity : BaseActivity() {
                             .padding(16.dp)
                             .verticalScroll(rememberScrollState()),
                     ) {
+                        val all = packageManager.queryIntentActivities(
+                            Intent(Intent.ACTION_CREATE_SHORTCUT),
+                            131072
+                        )
+                        all.forEach {
+                            composeLogger.d("$it")
+                        }
+
+
                         NotificationDemo()
                         MapDemo()
                         VibrateDemo()

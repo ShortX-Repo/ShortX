@@ -520,11 +520,18 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         shortXContext.gesture.onRuleChanged()
 
         // Stop tasks
-        cancelJobs(getActiveJobs().filter { it == ruleId })
+        handler.postSafety {
+            engine.cancelJobs("Rule disabled(指令关闭)") {
+                // Do not cancel RuleHook jobs.
+                it.id == ruleId && !it.hasTag(ContextSrcEvent.ContextSrc_RuleHook)
+            }
+        }
     }
 
+    // For App
     fun getActiveJobs(): List<String> = engine.activeJobs().map { it.id }
 
+    // For App
     fun cancelJobs(jobs: List<String>) {
         handler.postSafety {
             engine.cancelJobs("User requested(用户主动取消)") {

@@ -557,7 +557,8 @@ class DefaultRuleEngine(
             }
         }
         synchronized(jobs) {
-            jobs.add(JobRecord(context.srcId, job))
+            // Add tag to identify if this is from RuleHook, it should not be canceled on Rule.Disable
+            jobs.add(JobRecord(context.srcId, job, tags = setOf(context.srcEvent)))
         }
         onJobStarted(context.srcId)
         job.invokeOnCompletion {
@@ -613,8 +614,8 @@ class DefaultRuleEngine(
 private fun List<Rule>.filterInvalid() =
     filter { it.actionsList.isNotEmpty() || it.quit.actionsList.isNotEmpty() }
 
-data class JobRecord(val id: String, val job: Job, val tags: Set<String> = emptySet()) {
-    fun hasTag(tag: String) = tags.contains(tag)
+data class JobRecord(val id: String, val job: Job, val tags: Set<Any> = emptySet()) {
+    fun hasTag(tag: Any) = tags.contains(tag)
 }
 
 object JobTags {
