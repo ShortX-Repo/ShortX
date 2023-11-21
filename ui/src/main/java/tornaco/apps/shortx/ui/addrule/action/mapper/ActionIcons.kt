@@ -201,6 +201,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Business.links_fill
         }
 
+        Action.StartActivityIntentUri::class -> {
+            Remix.Business.links_fill
+        }
+
         Action.ExpandNotification::class -> {
             Remix.System.notification_badge_fill
         }

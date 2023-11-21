@@ -719,6 +719,19 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.StartActivityIntentUri::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.StartActivityIntentUri::class.java
+            Action.StartActivityIntentUri(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                intentUri = data.intentUri
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.ExpandNotification::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.action.ExpandNotification::class.java

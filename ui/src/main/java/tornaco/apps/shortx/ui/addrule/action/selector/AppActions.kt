@@ -28,6 +28,8 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAppComponentSelector
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorActionOrNull
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.TextInputDialog
+import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 
@@ -267,6 +269,15 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     }
     StartActivityUrlSchemaDialog(state = startActivityUrlSchemaDialogState)
 
+    val startActivityIntentUrlSelectorState = rememberTextInputState(
+        title = LocalI18N.current["ui.action.start.activity.intent.uri"],
+        message = null,
+        onSelected = {
+            addAction(Action.StartActivityIntentUri(intentUri = it))
+        }
+    )
+    TextInputDialog(state = startActivityIntentUrlSelectorState)
+
 
     val stopServiceSelectorState =
         rememberComponentOrGVSelectorState(
@@ -307,6 +318,11 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
 
             Action.StartActivityUrlSchema::class -> {
                 startActivityUrlSchemaDialogState.show(source.getActionAs())
+                true
+            }
+
+            Action.StartActivityIntentUri::class -> {
+                startActivityIntentUrlSelectorState.show(source.getActionAs<Action.StartActivityIntentUri>()?.intentUri)
                 true
             }
 
@@ -516,6 +532,7 @@ fun AppActions(keyword: String, subscribeState: LVLStateHolder.State, addAction:
         Action.StartActivity::class,
         Action.StartActivityIntent::class,
         Action.StartActivityUrlSchema::class,
+        Action.StartActivityIntentUri::class,
         Action.LaunchApp::class,
         Action.LaunchAppByPkg::class,
         Action.StartLastApp::class,

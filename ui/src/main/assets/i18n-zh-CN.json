@@ -514,6 +514,7 @@
     "ui.action.start.activity": "启动活动",
     "ui.action.start.activity.intent": "启动活动（Intent）",
     "ui.action.start.activity.url.schema": "启动活动（URL Schema）",
+    "ui.action.start.activity.intent.uri": "啟動活動（Intent Uri）",
     "ui.action.set.ringer.mode": "设置铃音模式",
     "ui.action.set.ringer.mode.normal": "正常模式",
     "ui.action.set.ringer.mode.silent": "静音模式",

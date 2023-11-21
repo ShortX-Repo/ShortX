@@ -523,6 +523,7 @@
     "ui.action.start.activity": "Start activity",
     "ui.action.start.activity.intent": "Start activity (Intent)",
     "ui.action.start.activity.url.schema": "Start activity (URL Schema)",
+    "ui.action.start.activity.intent.uri": "Start activity (Intent Uri)",
     "ui.action.set.ringer.mode": "Set ringer mode",
     "ui.action.set.ringer.mode.normal": "Normal",
     "ui.action.set.ringer.mode.silent": "Silent",

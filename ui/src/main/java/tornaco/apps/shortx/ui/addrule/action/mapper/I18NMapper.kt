@@ -116,6 +116,10 @@ fun labelAndDescriptionForActionSelector(
             i18N["ui.action.start.activity.url.schema"] to null
         }
 
+        Action.StartActivityIntentUri::class -> {
+            i18N["ui.action.start.activity.intent.uri"] to null
+        }
+
         Action.DisableBT::class -> i18N["ui.action.disable", mapOf("s" to i18N["ui.action.bt"])] to null
         Action.DisableDND::class -> i18N["ui.action.disable", mapOf("s" to i18N["ui.action.dnd"])] to null
         Action.DisableLocation::class -> i18N["ui.action.disable", mapOf("s" to i18N["ui.action.gps"])] to null
@@ -445,6 +449,13 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             listOf(
                 i18N["ui.action.start.activity.url.schema"],
                 action.urlSchema
+            )
+        }
+
+        is Action.StartActivityIntentUri -> {
+            listOf(
+                i18N["ui.action.start.activity.intent.uri"],
+                action.intentUri.take(30)
             )
         }
 

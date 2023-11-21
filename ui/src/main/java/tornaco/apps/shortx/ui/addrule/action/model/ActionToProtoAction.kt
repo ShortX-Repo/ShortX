@@ -79,6 +79,7 @@ import tornaco.apps.shortx.core.proto.action.ShowToast
 import tornaco.apps.shortx.core.proto.action.SleepScreen
 import tornaco.apps.shortx.core.proto.action.StartActivity
 import tornaco.apps.shortx.core.proto.action.StartActivityIntent
+import tornaco.apps.shortx.core.proto.action.StartActivityIntentUri
 import tornaco.apps.shortx.core.proto.action.StartActivityUrlSchema
 import tornaco.apps.shortx.core.proto.action.StartAppProcess
 import tornaco.apps.shortx.core.proto.action.StartAppProcessByPkg
@@ -627,6 +628,16 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .build()
         }
 
+        is Action.StartActivityIntentUri -> {
+            StartActivityIntentUri.newBuilder().setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setIntentUri(intentUri)
+                .setNote(overrideNote ?: note)
+                .build()
+        }
+
         is Action.ExpandNotification -> {
             ExpandNotification.newBuilder().setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
@@ -1053,6 +1064,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setKeyCode(code)
                 .build()
         }
+
         is Action.InjectCombineKeyCode -> {
             InjectCombineKeyCode.newBuilder()
                 .setId(overrideId ?: id)

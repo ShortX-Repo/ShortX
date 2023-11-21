@@ -69,6 +69,17 @@ message StartActivityUrlSchema {
   string id = 100;
 }
 
+
+message StartActivityIntentUri {
+  string intentUri = 1;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message ShellCommand {
   string command = 1;
   bool singleShot = 2;
