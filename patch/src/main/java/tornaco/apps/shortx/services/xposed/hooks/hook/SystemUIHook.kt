@@ -1,6 +1,5 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
-import android.app.Application
 import android.content.ComponentName
 import android.content.Context
 import android.view.View
@@ -105,10 +104,10 @@ object SystemUIHook {
                     shortx.log("$tag - $msg")
                 }
 
-                val app: Application = param.thisObject as Application
+                val app: Context = param.thisObject as Context
                 logger.d("After onCreate: $app")
                 installShellImpl(shortx)
-                installNotificationPoster(shortx, app.applicationContext)
+                installNotificationPoster(shortx, app)
             }
         }
     }.onFailure {
