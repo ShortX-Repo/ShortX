@@ -396,6 +396,7 @@
     "ui.da.description": "Description",
     "ui.feat.label.da": "Direct Action",
     "ui.feat.label.rule": "Rule",
+    "ui.feat.label.toggles": "Toggle",
     "ui.feat.label.discover": "Discover",
     "ui.discover.select.source": "Select source",
     "ui.discover.source.prebuilt": "Prebuilt",

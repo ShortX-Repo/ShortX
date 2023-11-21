@@ -396,6 +396,7 @@
     "ui.da.description": "描述",
     "ui.feat.label.da": "一键指令",
     "ui.feat.label.rule": "自动指令",
+    "ui.feat.label.toggles": "开关",
     "ui.feat.label.discover": "发现",
     "ui.discover.select.source": "选择源",
     "ui.discover.source.prebuilt": "预置",

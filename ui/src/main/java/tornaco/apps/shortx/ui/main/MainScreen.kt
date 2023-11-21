@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package tornaco.apps.shortx.ui.main
 
 import androidx.activity.compose.BackHandler
@@ -9,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -44,6 +41,7 @@ import tornaco.apps.shortx.ui.gesture.GestureRecordListActivity
 import tornaco.apps.shortx.ui.gvar.GlobalVarListActivity
 import tornaco.apps.shortx.ui.main.da.DirectActionListScreen
 import tornaco.apps.shortx.ui.main.rule.RuleScreen
+import tornaco.apps.shortx.ui.main.toggle.ToggleListScreen
 import tornaco.apps.shortx.ui.pkgset.PkgSetListActivity
 import tornaco.apps.shortx.ui.record.AudioRecordActivity
 import tornaco.apps.shortx.ui.record.EvaRecordActivity
@@ -55,23 +53,30 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.AssetUtils
 
 enum class HomeBottomRoute {
-    Rules, DirectActions, Discover
+    Rules, DirectActions, Toggles, Discover
 }
 
 sealed class BottomNavItem(
     var title: String, var icon: String, var screenRoute: HomeBottomRoute
 ) {
-    object Rules :
+    data object Rules :
         BottomNavItem("ui.feat.label.rule", Remix.Weather.meteor_line, HomeBottomRoute.Rules)
 
-    object DirectActions :
+    data object DirectActions :
         BottomNavItem(
             "ui.feat.label.da",
             Remix.Development.command_line,
             HomeBottomRoute.DirectActions
         )
 
-    object Discover :
+    data object Toggles :
+        BottomNavItem(
+            "ui.feat.label.toggles",
+            Remix.System.toggle_fill,
+            HomeBottomRoute.Toggles
+        )
+
+    data object Discover :
         BottomNavItem(
             "ui.feat.label.discover",
             Remix.Map.compass_discover_line,
@@ -184,7 +189,10 @@ private fun BottomNavigationContent(
     navController: NavHostController,
 ) {
     val items = listOf(
-        BottomNavItem.DirectActions, BottomNavItem.Rules, BottomNavItem.Discover
+        BottomNavItem.DirectActions,
+        BottomNavItem.Rules,
+        BottomNavItem.Toggles,
+        BottomNavItem.Discover
     )
     NavigationBar(
         modifier = modifier
@@ -236,6 +244,10 @@ private fun BottomNavigationGraph(
 
         composable(BottomNavItem.Discover.screenRoute.name) {
             DiscoverScreen()
+        }
+
+        composable(BottomNavItem.Toggles.screenRoute.name) {
+            ToggleListScreen()
         }
     }
 }
