@@ -290,6 +290,9 @@ class DefaultRuleEngine(
                 // **************** Check ConflictStrategy start ******************
                 val conflictStrategy: ConflictStrategy = rule.conflictPolicy
                 val isThisRuleAlreadyRunning = synchronized(jobs) { jobs.any { it.id == rule.id } }
+                if (isThisRuleAlreadyRunning) {
+                    logger.d("isThisRuleAlreadyRunning is true, jobs: ${jobs.joinToString()}")
+                }
                 logger.d("${rule.title} conflictStrategy: $conflictStrategy, isThisRuleAlreadyRunning: $isThisRuleAlreadyRunning")
                 var shouldExecuteActions = true
                 if (isThisRuleAlreadyRunning) {
@@ -363,13 +366,13 @@ class DefaultRuleEngine(
 
                     logger.d("Created job: $job for rule: ${rule.title}")
                     synchronized(jobs) {
-                        jobs.add(JobRecord(rule.id, job))
+                        jobs.add(JobRecord(title = rule.title, id = rule.id, job = job))
                     }
                     onJobStarted(rule.id)
                     job.invokeOnCompletion {
                         logger.d("job for rule: ${rule.title} complete, err: $it")
                         synchronized(jobs) {
-                            jobs.remove(JobRecord(rule.id, job))
+                            jobs.remove(JobRecord(title = rule.title, id = rule.id, job = job))
                         }
                         contextData.recycle()
                         onJobCompleted(rule.id)
@@ -558,13 +561,22 @@ class DefaultRuleEngine(
         }
         synchronized(jobs) {
             // Add tag to identify if this is from RuleHook, it should not be canceled on Rule.Disable
-            jobs.add(JobRecord(context.srcId, job, tags = setOf(context.srcEvent)))
+            jobs.add(
+                JobRecord(
+                    title = context.srcTitle,
+                    id = context.srcId,
+                    job = job,
+                    tags = setOf(context.srcEvent)
+                )
+            )
         }
         onJobStarted(context.srcId)
         job.invokeOnCompletion {
             logger.d("job for id: ${context.srcId} complete.")
             synchronized(jobs) {
-                jobs.remove(JobRecord(context.srcId, job))
+                jobs.removeIf {
+                    it.job == job
+                }
             }
             contextData.recycle()
             onJobCompleted(context.srcId)
@@ -614,7 +626,12 @@ class DefaultRuleEngine(
 private fun List<Rule>.filterInvalid() =
     filter { it.actionsList.isNotEmpty() || it.quit.actionsList.isNotEmpty() }
 
-data class JobRecord(val id: String, val job: Job, val tags: Set<Any> = emptySet()) {
+data class JobRecord(
+    val title: String,
+    val id: String,
+    val job: Job,
+    val tags: Set<Any> = emptySet()
+) {
     fun hasTag(tag: Any) = tags.contains(tag)
 }
 

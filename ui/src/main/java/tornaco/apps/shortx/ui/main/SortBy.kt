@@ -19,3 +19,14 @@ enum class RuleSortBy {
     EnableState,
     EnableStateReverse
 }
+
+enum class ToggleSortBy {
+    Name,
+    NameReverse,
+    LastUpdateTime,
+    LastUpdateTimeReverse,
+    CreateTime,
+    CreateTimeReverse,
+    EnableState,
+    EnableStateReverse
+}

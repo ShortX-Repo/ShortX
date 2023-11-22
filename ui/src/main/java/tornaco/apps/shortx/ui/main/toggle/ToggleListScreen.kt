@@ -15,5 +15,4 @@ fun ToggleListScreen() {
     val mainViewModel = hiltViewModel<MainViewModel>()
     val mainState by mainViewModel.state.collectAsState()
 
-    EmptyList(modifier = Modifier.fillMaxSize())
 }
