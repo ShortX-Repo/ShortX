@@ -271,7 +271,6 @@ fun SettingsScreen(
                                 goToPkgSetList = goToPkgSetList,
                                 goToGV = goToGV,
                                 goToDanmuUISettings = goToDanmuUISettings,
-                                goToFeatToggle = goToFeatToggle
                             )
                         )
                         addAll(
@@ -308,6 +307,14 @@ fun SettingsScreen(
                                 mainState = subscribeState,
                                 vm = vm,
                                 manageShortcutApps = manageShortcutApps
+                            )
+                        )
+                        addAll(
+                            miscSettings(
+                                state = state,
+                                mainState = subscribeState,
+                                vm = vm,
+                                goToFeatToggle = goToFeatToggle
                             )
                         )
                         addAll(devSettings(state = state, vm = vm))
@@ -357,7 +364,6 @@ private fun generalSettings(
     goToPkgSetList: () -> Unit,
     goToGV: () -> Unit,
     goToDanmuUISettings: () -> Unit,
-    goToFeatToggle: () -> Unit,
 ): List<Preference> {
     val edgeGestureSizeSelectorState = rememberEdgeGestureSettingsSelectorState(selected = {
         vm.setGestureAreaSize(it.areaSize)
@@ -421,8 +427,22 @@ private fun generalSettings(
                 )
             }
         ),
+    )
+}
 
-        Preference.TextPreference(icon = Remix.Editor.sketching,
+@Composable
+private fun miscSettings(
+    state: SettingsState,
+    mainState: LVLStateHolder.State,
+    vm: SettingsViewModel,
+    goToFeatToggle: () -> Unit,
+): List<Preference> {
+    val subscribeDialogState = rememberShortXBottomSheetState()
+    FeatureAccessDialog(subscribeDialogState)
+
+    return listOf(
+        Preference.Category(LocalI18N.current["ui.action.misc"]),
+        Preference.TextPreference(icon = Remix.Design.magic_fill,
             title = LocalI18N.current["ui.settings.feat.toggle"],
             summary = LocalI18N.current["ui.settings.feat.toggle.summary"],
             onClick = {

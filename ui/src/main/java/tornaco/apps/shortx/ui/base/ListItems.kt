@@ -224,7 +224,7 @@ fun ListItem(
         Column(horizontalAlignment = Alignment.End) {
             overflow()
             ShortXSwitch(
-                modifier = Modifier.padding(end = 16.dp, bottom = 16.dp),
+                modifier = Modifier.padding(end = 16.dp),
                 checked = checked,
                 onCheckedChange = onCheckedChange
             )

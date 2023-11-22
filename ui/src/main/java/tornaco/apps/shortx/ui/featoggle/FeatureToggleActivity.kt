@@ -90,7 +90,7 @@ class FeatureToggleActivity : BaseActivity() {
                             title = LocalI18N.current[BottomNavItem.DirectActions.title],
                             icon = {},
                             onClick = {},
-                            checked = miscToggles.contains(FEAT_KEY_DISABLE_FEAT_DA),
+                            checked = !miscToggles.contains(FEAT_KEY_DISABLE_FEAT_DA),
                             onCheckedChange = {
                                 scope.launch {
                                     if (it) {
@@ -104,7 +104,7 @@ class FeatureToggleActivity : BaseActivity() {
                         ListItem(title = LocalI18N.current[BottomNavItem.Rules.title],
                             icon = {},
                             onClick = {},
-                            checked = miscToggles.contains(FEAT_KEY_DISABLE_FEAT_RULE),
+                            checked = !miscToggles.contains(FEAT_KEY_DISABLE_FEAT_RULE),
                             onCheckedChange = {
                                 scope.launch {
                                     if (it) {
@@ -117,7 +117,7 @@ class FeatureToggleActivity : BaseActivity() {
                         ListItem(title = LocalI18N.current[BottomNavItem.Toggles.title],
                             icon = {},
                             onClick = {},
-                            checked = miscToggles.contains(FEAT_KEY_DISABLE_FEAT_TOGGLE),
+                            checked = !miscToggles.contains(FEAT_KEY_DISABLE_FEAT_TOGGLE),
                             onCheckedChange = {
                                 scope.launch {
                                     if (it) {
@@ -130,7 +130,7 @@ class FeatureToggleActivity : BaseActivity() {
                         ListItem(title = LocalI18N.current[BottomNavItem.Discover.title],
                             icon = {},
                             onClick = {},
-                            checked = miscToggles.contains(FEAT_KEY_DISABLE_FEAT_DISCOVER),
+                            checked = !miscToggles.contains(FEAT_KEY_DISABLE_FEAT_DISCOVER),
                             onCheckedChange = {
                                 scope.launch {
                                     if (it) {
