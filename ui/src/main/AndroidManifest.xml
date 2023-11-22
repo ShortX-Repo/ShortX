@@ -16,13 +16,13 @@
             <action android:name="android.intent.action.TTS_SERVICE" />
         </intent>
         <intent>
-            <action android:name="android.intent.action.MAIN"/>
+            <action android:name="android.intent.action.MAIN" />
         </intent>
         <intent>
-            <action android:name="android.intent.action.SEND"/>
+            <action android:name="android.intent.action.SEND" />
         </intent>
         <intent>
-            <action android:name="android.intent.action.VIEW"/>
+            <action android:name="android.intent.action.VIEW" />
         </intent>
     </queries>
 
@@ -201,6 +201,9 @@
         </activity>
         <activity
             android:name="tornaco.apps.shortx.ui.addrule.action.selector.AppShortcutSelectorActivity"
+            android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.featoggle.FeatureToggleActivity"
             android:exported="false" />
 
         <service

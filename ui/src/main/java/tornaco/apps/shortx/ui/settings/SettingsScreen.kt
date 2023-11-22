@@ -91,6 +91,7 @@ fun SettingsScreen(
     viewOpenSourceLicense: () -> Unit,
     viewPrivacyStatement: () -> Unit,
     manageShortcutApps: () -> Unit,
+    goToFeatToggle: () -> Unit,
     goToSettingsCatcherRecord: () -> Unit,
 ) {
     val vm = hiltViewModel<SettingsViewModel>()
@@ -270,6 +271,7 @@ fun SettingsScreen(
                                 goToPkgSetList = goToPkgSetList,
                                 goToGV = goToGV,
                                 goToDanmuUISettings = goToDanmuUISettings,
+                                goToFeatToggle = goToFeatToggle
                             )
                         )
                         addAll(
@@ -355,6 +357,7 @@ private fun generalSettings(
     goToPkgSetList: () -> Unit,
     goToGV: () -> Unit,
     goToDanmuUISettings: () -> Unit,
+    goToFeatToggle: () -> Unit,
 ): List<Preference> {
     val edgeGestureSizeSelectorState = rememberEdgeGestureSettingsSelectorState(selected = {
         vm.setGestureAreaSize(it.areaSize)
@@ -416,6 +419,14 @@ private fun generalSettings(
                         state.swipeDistanceThreshold
                     )
                 )
+            }
+        ),
+
+        Preference.TextPreference(icon = Remix.Editor.sketching,
+            title = LocalI18N.current["ui.settings.feat.toggle"],
+            summary = LocalI18N.current["ui.settings.feat.toggle.summary"],
+            onClick = {
+                goToFeatToggle()
             }
         ),
     )

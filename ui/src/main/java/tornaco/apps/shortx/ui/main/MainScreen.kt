@@ -37,6 +37,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextDisplayActivity
 import tornaco.apps.shortx.ui.discover.DiscoverScreen
+import tornaco.apps.shortx.ui.featoggle.FeatureToggleActivity
 import tornaco.apps.shortx.ui.gesture.GestureRecordListActivity
 import tornaco.apps.shortx.ui.gvar.GlobalVarListActivity
 import tornaco.apps.shortx.ui.main.da.DirectActionListScreen
@@ -145,6 +146,9 @@ fun HomeScreen() {
                             },
                             manageShortcutApps = {
                                 ShortcutStubManageActivity.start(context)
+                            },
+                            goToFeatToggle = {
+                                FeatureToggleActivity.start(context)
                             })
 
                         BackHandler(enabled = drawerState.isOpen) {
