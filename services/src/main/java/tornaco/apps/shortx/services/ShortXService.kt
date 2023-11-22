@@ -39,11 +39,13 @@ import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleSet
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
+import tornaco.apps.shortx.core.proto.toggles.Toggle
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.rule.IDAObserver
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.rule.IPkgSetObserver
 import tornaco.apps.shortx.core.rule.IRuleObserver
+import tornaco.apps.shortx.core.rule.IToggleObserver
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.action.emptyByteArrayWrapper
@@ -1015,6 +1017,41 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun clearHttpRequestLogs() {
             shortXContext.rule.clearHttpRequestLogs()
+        }
+
+        override fun addToggle(toggle: ByteArrayWrapper) {
+            enforceCallingPermissions()
+            v(context) {
+                shortXContext.rule.addToggle(Toggle.parseFrom(toggle.byteData))
+            }
+        }
+
+        override fun deleteToggle(id: String) {
+            shortXContext.rule.deleteToggle(id)
+        }
+
+        override fun getToggleById(id: String): ByteArrayWrapper? {
+            return shortXContext.rule.getToggleById(id)?.let {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun getAllToggles(): List<ByteArrayWrapper> {
+            return shortXContext.rule.getAllToggles().map {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun getToggleCount(): Int {
+            return shortXContext.rule.getToggleCount()
+        }
+
+        override fun registerToggleObs(obs: IToggleObserver) {
+            shortXContext.rule.registerToggleObs(obs)
+        }
+
+        override fun unregisterToggleObs(obs: IToggleObserver) {
+            shortXContext.rule.unregisterToggleObs(obs)
         }
 
         override fun getActivities(

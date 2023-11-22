@@ -624,6 +624,32 @@ public interface IShortX extends android.os.IInterface
     @Override public void clearHttpRequestLogs() throws android.os.RemoteException
     {
     }
+    // Toggle start
+
+    @Override public void addToggle(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper toggle) throws android.os.RemoteException
+    {
+    }
+    @Override public void deleteToggle(java.lang.String id) throws android.os.RemoteException
+    {
+    }
+    @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getToggleById(java.lang.String id) throws android.os.RemoteException
+    {
+      return null;
+    }
+    @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllToggles() throws android.os.RemoteException
+    {
+      return null;
+    }
+    @Override public int getToggleCount() throws android.os.RemoteException
+    {
+      return 0;
+    }
+    @Override public void registerToggleObs(tornaco.apps.shortx.core.rule.IToggleObserver obs) throws android.os.RemoteException
+    {
+    }
+    @Override public void unregisterToggleObs(tornaco.apps.shortx.core.rule.IToggleObserver obs) throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -2412,6 +2438,79 @@ public interface IShortX extends android.os.IInterface
         {
           data.enforceInterface(descriptor);
           this.clearHttpRequestLogs();
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_addToggle:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
+          this.addToggle(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_deleteToggle:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          this.deleteToggle(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_getToggleById:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result = this.getToggleById(_arg0);
+          reply.writeNoException();
+          if ((_result!=null)) {
+            reply.writeInt(1);
+            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+          }
+          else {
+            reply.writeInt(0);
+          }
+          return true;
+        }
+        case TRANSACTION_getAllToggles:
+        {
+          data.enforceInterface(descriptor);
+          java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllToggles();
+          reply.writeNoException();
+          reply.writeTypedList(_result);
+          return true;
+        }
+        case TRANSACTION_getToggleCount:
+        {
+          data.enforceInterface(descriptor);
+          int _result = this.getToggleCount();
+          reply.writeNoException();
+          reply.writeInt(_result);
+          return true;
+        }
+        case TRANSACTION_registerToggleObs:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.rule.IToggleObserver _arg0;
+          _arg0 = tornaco.apps.shortx.core.rule.IToggleObserver.Stub.asInterface(data.readStrongBinder());
+          this.registerToggleObs(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_unregisterToggleObs:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.rule.IToggleObserver _arg0;
+          _arg0 = tornaco.apps.shortx.core.rule.IToggleObserver.Stub.asInterface(data.readStrongBinder());
+          this.unregisterToggleObs(_arg0);
           reply.writeNoException();
           return true;
         }
@@ -5957,6 +6056,156 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
+      // Toggle start
+
+      @Override public void addToggle(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper toggle) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          if ((toggle!=null)) {
+            _data.writeInt(1);
+            toggle.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
+          boolean _status = mRemote.transact(Stub.TRANSACTION_addToggle, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().addToggle(toggle);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public void deleteToggle(java.lang.String id) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(id);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_deleteToggle, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().deleteToggle(id);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getToggleById(java.lang.String id) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(id);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getToggleById, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getToggleById(id);
+          }
+          _reply.readException();
+          if ((0!=_reply.readInt())) {
+            _result = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(_reply);
+          }
+          else {
+            _result = null;
+          }
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllToggles() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getAllToggles, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getAllToggles();
+          }
+          _reply.readException();
+          _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      @Override public int getToggleCount() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        int _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getToggleCount, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getToggleCount();
+          }
+          _reply.readException();
+          _result = _reply.readInt();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      @Override public void registerToggleObs(tornaco.apps.shortx.core.rule.IToggleObserver obs) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeStrongBinder((((obs!=null))?(obs.asBinder()):(null)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_registerToggleObs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().registerToggleObs(obs);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public void unregisterToggleObs(tornaco.apps.shortx.core.rule.IToggleObserver obs) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeStrongBinder((((obs!=null))?(obs.asBinder()):(null)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_unregisterToggleObs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().unregisterToggleObs(obs);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -6119,6 +6368,13 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_getHttpRequestLogFD = (android.os.IBinder.FIRST_CALL_TRANSACTION + 157);
     static final int TRANSACTION_getHttpRequestLogPath = (android.os.IBinder.FIRST_CALL_TRANSACTION + 158);
     static final int TRANSACTION_clearHttpRequestLogs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 159);
+    static final int TRANSACTION_addToggle = (android.os.IBinder.FIRST_CALL_TRANSACTION + 160);
+    static final int TRANSACTION_deleteToggle = (android.os.IBinder.FIRST_CALL_TRANSACTION + 161);
+    static final int TRANSACTION_getToggleById = (android.os.IBinder.FIRST_CALL_TRANSACTION + 162);
+    static final int TRANSACTION_getAllToggles = (android.os.IBinder.FIRST_CALL_TRANSACTION + 163);
+    static final int TRANSACTION_getToggleCount = (android.os.IBinder.FIRST_CALL_TRANSACTION + 164);
+    static final int TRANSACTION_registerToggleObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 165);
+    static final int TRANSACTION_unregisterToggleObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 166);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -6358,4 +6614,13 @@ public interface IShortX extends android.os.IInterface
   public android.os.ParcelFileDescriptor getHttpRequestLogFD() throws android.os.RemoteException;
   public java.lang.String getHttpRequestLogPath() throws android.os.RemoteException;
   public void clearHttpRequestLogs() throws android.os.RemoteException;
+  // Toggle start
+
+  public void addToggle(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper toggle) throws android.os.RemoteException;
+  public void deleteToggle(java.lang.String id) throws android.os.RemoteException;
+  public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getToggleById(java.lang.String id) throws android.os.RemoteException;
+  public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllToggles() throws android.os.RemoteException;
+  public int getToggleCount() throws android.os.RemoteException;
+  public void registerToggleObs(tornaco.apps.shortx.core.rule.IToggleObserver obs) throws android.os.RemoteException;
+  public void unregisterToggleObs(tornaco.apps.shortx.core.rule.IToggleObserver obs) throws android.os.RemoteException;
 }

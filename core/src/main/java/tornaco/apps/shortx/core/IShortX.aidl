@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.rule.IGlobalVarObserver;
 import tornaco.apps.shortx.core.rule.IPkgSetObserver;
 import tornaco.apps.shortx.core.rule.IRuleObserver;
 import tornaco.apps.shortx.core.rule.IDAObserver;
+import tornaco.apps.shortx.core.rule.IToggleObserver;
 import tornaco.apps.shortx.core.IAudioRecordingListener;
 import tornaco.apps.shortx.core.rule.action.su.ISu;
 import tornaco.apps.shortx.core.notification.INotificationPoster;
@@ -273,4 +274,14 @@ interface IShortX {
     ParcelFileDescriptor getHttpRequestLogFD();
     String getHttpRequestLogPath();
     void clearHttpRequestLogs();
+
+    // Toggle start
+    void addToggle(in ByteArrayWrapper toggle);
+    void deleteToggle(String id);
+    ByteArrayWrapper getToggleById(String id);
+    List<ByteArrayWrapper> getAllToggles();
+    int getToggleCount();
+    void registerToggleObs(in IToggleObserver obs);
+    void unregisterToggleObs(in IToggleObserver obs);
+    // Toggle end
 }

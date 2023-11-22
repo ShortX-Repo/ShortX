@@ -36,10 +36,12 @@ import tornaco.apps.shortx.core.proto.rule.FactPublishRecord
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleSet
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
+import tornaco.apps.shortx.core.proto.toggles.Toggle
 import tornaco.apps.shortx.core.rule.IDAObserver
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.rule.IPkgSetObserver
 import tornaco.apps.shortx.core.rule.IRuleObserver
+import tornaco.apps.shortx.core.rule.IToggleObserver
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.settings.defaultDanmuUISettings
@@ -299,6 +301,51 @@ class ShortXManager(val service: IShortX) {
         }
         invokeService(Unit) {
             directExecuteRuleActions(ByteArrayWrapper(context.toByteArray()), ruleId)
+        }
+    }
+
+
+    fun addToggle(toggle: ByteArrayWrapper) {
+        invokeService(Unit) {
+            addToggle(toggle)
+        }
+    }
+
+    fun deleteToggle(id: String) {
+        invokeService(Unit) {
+            deleteToggle(id)
+        }
+    }
+
+    fun getToggleById(id: String): Toggle? {
+        return invokeService(null) {
+            getToggleById(id)?.let {
+                Toggle.parseFrom(it.byteData)
+            }
+        }
+    }
+
+    fun getAllToggles(): List<Toggle> {
+        return invokeService(emptyList()) {
+            allToggles.map {
+                Toggle.parseFrom(it.byteData)
+            }
+        }
+    }
+
+    fun getToggleCount(): Int {
+        return invokeService(0) { toggleCount }
+    }
+
+    fun registerToggleObs(obs: IToggleObserver) {
+        invokeService(Unit) {
+            registerToggleObs(obs)
+        }
+    }
+
+    fun unregisterToggleObs(obs: IToggleObserver) {
+        invokeService(Unit) {
+            unregisterToggleObs(obs)
         }
     }
 

@@ -1,0 +1,103 @@
+package tornaco.apps.shortx.core.store
+
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.proto.toggles.Toggle
+import tornaco.apps.shortx.core.proto.toggles.ToggleList
+import tornaco.apps.shortx.core.util.Logger
+import java.io.File
+
+open class BaseToggleSettingsStore(
+    private val scope: CoroutineScope,
+    private val storeFile: File
+) {
+    private val logger = Logger("ToggleSettingsStore")
+
+    private val togglesCache: MutableList<Toggle> = mutableListOf()
+
+    private var job: Job? = null
+
+    fun readBlocking() = runBlocking {
+        readInternal()
+    }
+
+    suspend fun read() = readInternal()
+
+    fun addToggle(da: Toggle) {
+        require(da.extrasList.isEmpty()) {
+            "Toggle extra must be cleared."
+        }
+        togglesCache.removeIf { it.id == da.id }
+        togglesCache.add(da)
+        postWrite()
+    }
+
+    fun addToggles(das: List<Toggle>, write: Boolean = true) {
+        das.forEach { da ->
+            togglesCache.removeIf { it.id == da.id }
+            togglesCache.add(da)
+        }
+        if (write) postWrite()
+    }
+
+    fun deleteToggle(id: String) {
+        togglesCache.removeIf { it.id == id }
+        postWrite()
+    }
+
+    fun getToggleById(id: String): Toggle? {
+        return togglesCache.firstOrNull { it.id == id }
+    }
+
+    fun getAllToggles(): List<Toggle> {
+        return togglesCache.toList()
+    }
+
+    fun getToggleCount() = togglesCache.size
+
+    private suspend fun readInternal() = withContext(Dispatchers.IO) {
+        if (!storeFile.exists()) {
+            logger.d("skip read no-exists file: $storeFile")
+            return@withContext
+        }
+        kotlin.runCatching {
+            val daList = storeFile.inputStream().use {
+                ToggleList.parseDelimitedFrom(it)
+            }
+            daList.run {
+                togglesCache.clear()
+                togglesCache.addAll(this.toggleList)
+            }
+        }.onFailure {
+            logger.e(it, "read error")
+        }
+    }
+
+    private fun postWrite() {
+        job?.cancel()
+        job = scope.launch {
+            delay(WRITE_DELAY)
+            write()
+        }
+    }
+
+    suspend fun write() = withContext(Dispatchers.IO) {
+        logger.d("write.")
+        val toggleList = ToggleList.newBuilder().apply {
+            addAllToggle(togglesCache)
+        }.build()
+        kotlin.runCatching {
+            storeFile.apply { parentFile.mkdirs() }.outputStream().use {
+                toggleList.writeDelimitedTo(it)
+                logger.d("write to: $storeFile")
+            }
+        }.onFailure {
+            logger.e(it, "write error")
+        }
+    }
+}

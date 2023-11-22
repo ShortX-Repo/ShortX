@@ -31,9 +31,11 @@ import tornaco.apps.shortx.core.proto.rule.FactPublishRecord
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleList
 import tornaco.apps.shortx.core.proto.rule.RuleSet
+import tornaco.apps.shortx.core.proto.toggles.Toggle
 import tornaco.apps.shortx.core.rule.IDAObserver
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.rule.IRuleObserver
+import tornaco.apps.shortx.core.rule.IToggleObserver
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.is_
@@ -47,6 +49,7 @@ import tornaco.apps.shortx.services.data.GlobalVarStore
 import tornaco.apps.shortx.services.data.RuleSetsStore
 import tornaco.apps.shortx.services.data.RuleSettingsStore
 import tornaco.apps.shortx.services.data.Settings
+import tornaco.apps.shortx.services.data.ToggleSettingsStore
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.rule.actor.PrebuiltActor
@@ -72,6 +75,10 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     }
     private val dasSettingsStore: DirectActionSettingsStore by lazy {
         DirectActionSettingsStore(systemServiceScope)
+    }
+
+    private val toggleSettingsStore by lazy {
+        ToggleSettingsStore(systemServiceScope)
     }
 
     private val ruleSetsStore by lazy {
@@ -124,6 +131,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     private val globalVarObs = RemoteCallbackList<IGlobalVarObserver>()
     private val ruleObs = RemoteCallbackList<IRuleObserver>()
     private val daObs = RemoteCallbackList<IDAObserver>()
+    private val toggleObs = RemoteCallbackList<IToggleObserver>()
 
     private val actionEvaluateRecorder = ActionEvaluateRecorder()
     private val conditionEvaluateRecorder = ConditionEvaluateRecorder()
@@ -202,6 +210,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
         ruleSettingsStore.readBlocking()
         dasSettingsStore.readBlocking()
+        toggleSettingsStore.readBlocking()
         globalVarStore.readBlocking()
         ruleSetsStore.readBlocking()
         daSetsStore.readBlocking()
@@ -648,6 +657,43 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth
             )
         }
+    }
+
+    fun addToggle(toggle: Toggle) {
+        logger.d("addToggle: $toggle")
+        toggleSettingsStore.addToggle(toggle)
+        toggleObs.broadcast {
+            kotlin.runCatching { it.onAddOrUpdate(toggle.id) }
+                .onFailure { logger.e("Call onAddOrUpdate") }
+        }
+    }
+
+    fun deleteToggle(id: String) {
+        toggleSettingsStore.deleteToggle(id)
+        toggleObs.broadcast {
+            kotlin.runCatching { it.onDelete(id) }
+                .onFailure { logger.e("Call onDelete") }
+        }
+    }
+
+    fun getToggleById(id: String): Toggle? {
+        return toggleSettingsStore.getToggleById(id)
+    }
+
+    fun getAllToggles(): List<Toggle> {
+        return toggleSettingsStore.getAllToggles()
+    }
+
+    fun getToggleCount(): Int {
+        return toggleSettingsStore.getToggleCount()
+    }
+
+    fun registerToggleObs(obs: IToggleObserver) {
+        toggleObs.register(obs)
+    }
+
+    fun unregisterToggleObs(obs: IToggleObserver) {
+        toggleObs.unregister(obs)
     }
 
     fun executeShell(command: String): String {
