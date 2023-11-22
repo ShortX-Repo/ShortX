@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.ui.base.afterNavLongDelay
+import tornaco.apps.shortx.ui.main.model.ToggleUM
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,7 +18,20 @@ class ToggleListViewModel @Inject constructor(@ApplicationContext context: Conte
             updateState { copy(isLoading = true) }
             if (delay) afterNavLongDelay()
             val allToggles = shortXManager.getAllToggles().map {
-
+                ToggleUM(
+                    id = it.id,
+                    title = it.title,
+                    description = it.description,
+                    updateTime = "",
+                    createTime = "",
+                    isEnabled = it.isEnabled,
+                    versionCode = it.versionCode,
+                    author = it.author.name,
+                    isOnlineItem = false,
+                )
+            }
+            updateState {
+                copy(isLoading = false, toggles = allToggles)
             }
         }
     }

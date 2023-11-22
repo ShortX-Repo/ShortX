@@ -1,18 +1,96 @@
 package tornaco.apps.shortx.ui.main.toggle
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.ui.base.EmptyList
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.ShortXCard
+import tornaco.apps.shortx.ui.base.TipIds
+import tornaco.apps.shortx.ui.base.UserTip
+import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
+import tornaco.apps.shortx.ui.main.MainScaffold
 import tornaco.apps.shortx.ui.main.MainViewModel
+import tornaco.apps.shortx.ui.main.model.ToggleUM
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 
 
 @Composable
 fun ToggleListScreen() {
     val mainViewModel = hiltViewModel<MainViewModel>()
     val mainState by mainViewModel.state.collectAsState()
+
+    val toggleListViewModel = hiltViewModel<ToggleListViewModel>()
+    val toggleListState by toggleListViewModel.state.collectAsState()
+
+    LaunchedEffect(toggleListViewModel) {
+        toggleListViewModel.loadToggleList(delay = true)
+    }
+
+    MainScaffold(
+        state = mainState,
+        appBarTitleKey = "ui.feat.label.toggles",
+        appBarActions = {
+        },
+        onClipboardClick = {
+
+        },
+        onFileClick = {
+        },
+        onAddClick = {
+
+        },
+        onUrlClick = {
+        },
+        onNewSetClick = {
+        },
+        acceptPrivacyStatement = {
+            mainViewModel.acceptPrivacyStatement()
+        }
+    ) {
+        CompositionLocalProvider(
+        ) {
+            if (!toggleListState.isLoading && toggleListState.toggles.isEmpty()) {
+                EmptyList(modifier = Modifier.fillMaxSize())
+            } else {
+                if (!toggleListState.isLoading) {
+                    UserTip(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        tipId = TipIds.commonRuleItem,
+                        message = LocalI18N.current["ui.common.rule.item.tip"]
+                    )
+                }
+
+                val subscribeState by LVLStateHolder.collectAsState()
+                LazyVerticalStaggeredGrid(
+                    modifier = Modifier.fillMaxSize(),
+                    columns = dynamicStaggeredGridCells(),
+                    contentPadding = PaddingValues(top = 8.dp, bottom = 72.dp)
+                ) {
+                    items(
+                        items = toggleListState.toggles,
+                        key = { listItem: ToggleUM -> listItem.id + listItem.updateTime }) { toggle ->
+                        ShortXCard(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                        ) {
+
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 }

@@ -55,7 +55,7 @@ fun RuleScreen() {
     val ruleListViewModel = hiltViewModel<RuleListViewModel>()
     val ruleListState by ruleListViewModel.state.collectAsState()
 
-    LaunchedEffect(mainViewModel) {
+    LaunchedEffect(ruleListViewModel) {
         ruleListViewModel.loadRuleList(delay = true)
     }
 

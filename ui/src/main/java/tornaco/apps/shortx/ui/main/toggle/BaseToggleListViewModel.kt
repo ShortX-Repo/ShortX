@@ -13,7 +13,7 @@ import tornaco.apps.shortx.ui.settings.RestoreEventRegistry
 import java.util.*
 
 data class ToggleListState(
-    val rules: List<ToggleUM> = emptyList(),
+    val toggles: List<ToggleUM> = emptyList(),
     val ruleSortBy: ToggleSortBy = ToggleSortBy.CreateTime,
     val isLoading: Boolean = true,
 )
