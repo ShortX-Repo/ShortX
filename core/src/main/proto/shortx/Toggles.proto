@@ -37,4 +37,16 @@ message Toggle {
   repeated google.protobuf.Any actionsOnEnabled = 11;
   repeated google.protobuf.Any actionsOnDisabled = 12;
   repeated google.protobuf.Any actionsOnDeleted = 13;
+
+  google.protobuf.Any stateHandle = 14;
+}
+
+message ToggleStateHandleByCondition {
+  repeated google.protobuf.Any conditions = 1;
+  ConditionOperator condOp = 2;
+  ConditionOperatorPayload condOpPayload = 3;
+}
+
+message ToggleStateHandleByStore {
+  // Noop.
 }

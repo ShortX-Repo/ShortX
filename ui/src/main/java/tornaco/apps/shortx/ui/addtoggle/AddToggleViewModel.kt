@@ -11,15 +11,28 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.common.StringPair
+import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.toStringPair
 import tornaco.apps.shortx.core.proto.toggles.Toggle
+import tornaco.apps.shortx.core.proto.toggles.ToggleStateHandleByCondition
+import tornaco.apps.shortx.core.proto.toggles.ToggleStateHandleByStore
+import tornaco.apps.shortx.core.rule.ProtoAny
+import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.pack_
+import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.core.util.maskAll
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
+import tornaco.apps.shortx.ui.addrule.condition.ConditionContentStateHandler
+import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
+import tornaco.apps.shortx.ui.addrule.condition.model.toProtoCondition
+import tornaco.apps.shortx.ui.addrule.condition.op.Op
+import tornaco.apps.shortx.ui.addrule.condition.op.toConditionOperator
+import tornaco.apps.shortx.ui.addrule.condition.op.toOp
+import tornaco.apps.shortx.ui.addtoggle.model.ToggleStateHandle
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import java.util.*
@@ -36,6 +49,7 @@ data class AddToggleState(
     val createTime: Long = System.currentTimeMillis(),
     val toggleChanged: Boolean = false,
     val isEnabled: Boolean = false,
+    val stateHandle: ToggleStateHandle = ToggleStateHandle.ByStore,
     val evaluatingActions: List<String> = emptyList(),
 )
 
@@ -52,6 +66,8 @@ class AddToggleViewModel @Inject constructor(@ApplicationContext context: Contex
     val actionOnEnabledStateHandler = ActionContentStateHandler()
     val actionOnDisabledStateHandler = ActionContentStateHandler()
     val actionOnDeletedStateHandler = ActionContentStateHandler()
+
+    val conditionContentStateHandler = ConditionContentStateHandler()
 
     fun setTitle(title: String) {
         if (title != state.value.title) {
@@ -75,10 +91,36 @@ class AddToggleViewModel @Inject constructor(@ApplicationContext context: Contex
         viewModelScope.launch {
             val authorPref = pref.shareAuthorInfo.first()
 
-            // Hooks
             val actionsOnEnabled = actionOnEnabledStateHandler.actions
             val actionsOnDisabled = actionOnDisabledStateHandler.actions
             val actionsOnDeleted = actionOnDeletedStateHandler.actions
+
+            val conditions = conditionContentStateHandler.conditions
+            val condOp = conditionContentStateHandler.conditionOp
+
+            val stateHandle: ProtoAny = when (state.value.stateHandle) {
+                is ToggleStateHandle.ByCondition -> {
+                    ToggleStateHandleByCondition.newBuilder()
+                        .addAllConditions(conditions.map {
+                            it.toProtoCondition().pack_()
+                        })
+                        .setCondOp(condOp.toConditionOperator())
+                        .apply {
+                            if (condOp is Op.MVEL) {
+                                condOpPayload =
+                                    ConditionOperatorPayload
+                                        .newBuilder()
+                                        .setExpression(condOp.expression)
+                                        .build()
+                            }
+                        }
+                        .build().pack_()
+                }
+
+                ToggleStateHandle.ByStore -> {
+                    ToggleStateHandleByStore.getDefaultInstance().pack_()
+                }
+            }
 
             val toggle = Toggle.newBuilder()
                 .setId(state.value.id)
@@ -104,6 +146,7 @@ class AddToggleViewModel @Inject constructor(@ApplicationContext context: Contex
                 .addAllActionsOnDeleted(actionsOnDeleted.map {
                     it.toProtoAction().pack_()
                 })
+                .setStateHandle(stateHandle)
                 .addAllExtras(mutableListOf<StringPair>().apply {
                     if (!token.isNullOrEmpty()) {
                         add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
@@ -147,6 +190,29 @@ class AddToggleViewModel @Inject constructor(@ApplicationContext context: Contex
                         createTime = tg.createTime,
                         isEnabled = tg.isEnabled,
                     )
+                }
+
+                toggle.stateHandle.let { protoAny ->
+                    if (protoAny is_ ToggleStateHandleByStore::class.java) {
+                        updateState {
+                            copy(stateHandle = ToggleStateHandle.ByStore)
+                        }
+                    } else if (protoAny is_ ToggleStateHandleByCondition::class.java) {
+                        val byCond = protoAny unpack_ ToggleStateHandleByCondition::class.java
+
+                        conditionContentStateHandler.init(
+                            conditions = byCond.conditionsList.mapNotNull {
+                                it.toCondition(
+                                    shortXManager
+                                )
+                            },
+                            conditionOp = byCond.condOp.toOp(byCond.condOpPayload)
+                        )
+
+                        updateState {
+                            copy(stateHandle = ToggleStateHandle.ByCondition)
+                        }
+                    }
                 }
 
                 actionOnEnabledStateHandler.init(

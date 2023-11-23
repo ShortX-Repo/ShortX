@@ -114,7 +114,7 @@ fun AddToggleScreen(
 
     val context = LocalContext.current
     val i18n = LocalI18N.current
-    val savedMessage = i18n["ui.toast.toggle.saved"]
+    val savedMessage = i18n["ui.toast.rule.saved"]
     val showToast = {
         Toast.makeText(context, savedMessage, Toast.LENGTH_SHORT).show()
     }
