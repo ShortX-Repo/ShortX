@@ -205,6 +205,9 @@
         <activity
             android:name="tornaco.apps.shortx.ui.featoggle.FeatureToggleActivity"
             android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.addtoggle.AddToggleActivity"
+            android:exported="false" />
 
         <service
             android:name=".service.tile.Tile1"

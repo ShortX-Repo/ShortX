@@ -305,9 +305,9 @@ class ShortXManager(val service: IShortX) {
     }
 
 
-    fun addToggle(toggle: ByteArrayWrapper) {
+    fun addToggle(toggle: Toggle) {
         invokeService(Unit) {
-            addToggle(toggle)
+            addToggle(ByteArrayWrapper(toggle.toByteArray()))
         }
     }
 

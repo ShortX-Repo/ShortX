@@ -11,9 +11,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import org.orbitmvi.orbit.compose.collectAsState
+import tornaco.apps.shortx.ui.addtoggle.AddToggleActivity
 import tornaco.apps.shortx.ui.base.EmptyList
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.ShortXCard
@@ -38,6 +40,8 @@ fun ToggleListScreen() {
         toggleListViewModel.loadToggleList(delay = true)
     }
 
+    val context = LocalContext.current
+
     MainScaffold(
         state = mainState,
         appBarTitleKey = "ui.feat.label.toggles",
@@ -49,7 +53,7 @@ fun ToggleListScreen() {
         onFileClick = {
         },
         onAddClick = {
-
+            AddToggleActivity.create(context)
         },
         onUrlClick = {
         },
