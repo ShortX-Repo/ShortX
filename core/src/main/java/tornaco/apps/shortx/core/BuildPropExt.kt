@@ -5,3 +5,9 @@ inline fun onDebugBuild(action: () -> Unit) {
         action()
     }
 }
+
+inline fun onReleaseBuild(action: () -> Unit) {
+    if (!BuildProp.APP_IS_DEBUG) {
+        action()
+    }
+}

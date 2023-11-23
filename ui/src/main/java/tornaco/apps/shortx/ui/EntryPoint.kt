@@ -4,12 +4,16 @@ import android.content.Context
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import tornaco.android.sec.net.S
 import tornaco.apps.shortx.core.isSuccess
+import tornaco.apps.shortx.core.onReleaseBuild
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.I18NCache
+import tornaco.apps.shortx.ui.featoggle.FeatureToggleActivity
+import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.util.getLVLToken
 import tornaco.apps.shortx.ui.subscribe.util.isGPToken
@@ -35,6 +39,13 @@ object EntryPoint {
         GlobalScope.launch {
             withContext(Dispatchers.IO) {
                 ShortcutHelper.cleanUp(context)
+            }
+        }
+
+        // Hide Toggle feature.
+        onReleaseBuild {
+            runBlocking {
+                Pref(context).miscUiTogglesOn(FeatureToggleActivity.FEAT_KEY_DISABLE_FEAT_TOGGLE)
             }
         }
     }
