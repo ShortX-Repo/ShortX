@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.main
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +18,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -49,6 +52,7 @@ import tornaco.apps.shortx.ui.record.EvaRecordActivity
 import tornaco.apps.shortx.ui.record.SettingsAccessRecordActivity
 import tornaco.apps.shortx.ui.settings.SettingsScreen
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsActivity
+import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.shortcut.ShortcutStubManageActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.AssetUtils
@@ -174,11 +178,26 @@ fun HomeScreen() {
                                 )
                             }
 
-                            BottomNavigationContent(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                navController = navController
-                            )
+                            val context = LocalContext.current
+                            val pref = remember { Pref(context) }
+                            val miscToggles by pref.miscUiToggles.collectAsState(initial = null)
+
+                            AnimatedVisibility(visible = miscToggles != null) {
+                                miscToggles?.let {
+                                    val items = listOfNotNull(
+                                        if (!it.contains(FeatureToggleActivity.FEAT_KEY_DISABLE_FEAT_DA)) BottomNavItem.DirectActions else null,
+                                        if (!it.contains(FeatureToggleActivity.FEAT_KEY_DISABLE_FEAT_RULE)) BottomNavItem.Rules else null,
+                                        if (!it.contains(FeatureToggleActivity.FEAT_KEY_DISABLE_FEAT_TOGGLE)) BottomNavItem.Toggles else null,
+                                        if (!it.contains(FeatureToggleActivity.FEAT_KEY_DISABLE_FEAT_DISCOVER)) BottomNavItem.Discover else null,
+                                    )
+                                    BottomNavigationContent(
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        navController = navController,
+                                        items = items,
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -191,13 +210,8 @@ fun HomeScreen() {
 private fun BottomNavigationContent(
     modifier: Modifier,
     navController: NavHostController,
+    items: List<BottomNavItem>
 ) {
-    val items = listOf(
-        BottomNavItem.DirectActions,
-        BottomNavItem.Rules,
-        BottomNavItem.Toggles,
-        BottomNavItem.Discover
-    )
     NavigationBar(
         modifier = modifier
     ) {
