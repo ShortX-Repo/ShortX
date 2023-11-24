@@ -127,7 +127,7 @@ fun AddToggleScreen(
 
     val context = LocalContext.current
     val i18n = LocalI18N.current
-    val savedMessage = i18n["ui.toast.rule.saved"]
+    val savedMessage = i18n["ui.toast.toggle.saved"]
     val showToast = {
         Toast.makeText(context, savedMessage, Toast.LENGTH_SHORT).show()
     }
@@ -332,7 +332,7 @@ private fun ToggleContent(
 
     ActionContent(
         header = {
-            FieldTitle(text = LocalI18N.current["ui.title.on.toggle.on"])
+            FieldTitle(text = getToggleOnActionFieldTitle(stateHandle = addToggleState.stateHandle))
         },
         srcId = addToggleState.id,
         actions = actionOnEnabledState.actions,
@@ -345,7 +345,7 @@ private fun ToggleContent(
 
     ActionContent(
         header = {
-            FieldTitle(text = LocalI18N.current["ui.title.on.toggle.off"])
+            FieldTitle(text = getToggleOffActionFieldTitle(stateHandle = addToggleState.stateHandle))
         },
         srcId = addToggleState.id,
         actions = actionOnDisabledState.actions,
@@ -356,21 +356,23 @@ private fun ToggleContent(
     )
     SectionSpacer()
 
-    ActionContent(
-        header = {
-            FieldTitleWithTip(
-                LocalI18N.current["ui.title.on.toggle.deleted"],
-                LocalI18N.current["ui.actions.hook.on.deleted.description"]
-            )
-        },
-        srcId = addToggleState.id,
-        actions = actionOnDeletedState.actions,
-        evaluatingActions = addToggleState.evaluatingActions,
-        handler = actionOnDeletedHandler.asActionHandler(),
-        readOnly = readOnly,
-        warnings = actionOnDeletedState.actionWarningMessages
-    )
-    SectionSpacer()
+    if (false) {
+        ActionContent(
+            header = {
+                FieldTitleWithTip(
+                    LocalI18N.current["ui.title.on.toggle.deleted"],
+                    LocalI18N.current["ui.actions.hook.on.deleted.description"]
+                )
+            },
+            srcId = addToggleState.id,
+            actions = actionOnDeletedState.actions,
+            evaluatingActions = addToggleState.evaluatingActions,
+            handler = actionOnDeletedHandler.asActionHandler(),
+            readOnly = readOnly,
+            warnings = actionOnDeletedState.actionWarningMessages
+        )
+        SectionSpacer()
+    }
 
     SectionSpacer()
     SuggestedNavEntry()
@@ -446,6 +448,34 @@ private fun getStateHandleSummary(stateHandle: ToggleStateHandle): String {
 
         ToggleStateHandle.ByStore -> {
             LocalI18N.current["ui.title.toggle.state.handle.by.store.summary"]
+        }
+    }
+}
+
+
+@Composable
+private fun getToggleOnActionFieldTitle(stateHandle: ToggleStateHandle): String {
+    return when (stateHandle) {
+        ToggleStateHandle.ByCondition -> {
+            LocalI18N.current["ui.title.on.toggle.on.cond"]
+        }
+
+        ToggleStateHandle.ByStore -> {
+            LocalI18N.current["ui.title.on.toggle.on.store"]
+        }
+    }
+}
+
+
+@Composable
+private fun getToggleOffActionFieldTitle(stateHandle: ToggleStateHandle): String {
+    return when (stateHandle) {
+        ToggleStateHandle.ByCondition -> {
+            LocalI18N.current["ui.title.on.toggle.off.cond"]
+        }
+
+        ToggleStateHandle.ByStore -> {
+            LocalI18N.current["ui.title.on.toggle.off.store"]
         }
     }
 }

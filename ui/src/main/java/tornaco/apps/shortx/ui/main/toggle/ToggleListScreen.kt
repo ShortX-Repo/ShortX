@@ -22,6 +22,7 @@ import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.TipIds
 import tornaco.apps.shortx.ui.base.UserTip
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
+import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.main.MainScaffold
 import tornaco.apps.shortx.ui.main.MainViewModel
 import tornaco.apps.shortx.ui.main.model.ToggleUM
@@ -63,7 +64,17 @@ fun ToggleListScreen() {
             mainViewModel.acceptPrivacyStatement()
         }
     ) {
+        val bottomSheetState = rememberShortXBottomSheetState()
+
+        val setHandler =
+            getLocalToggleSetItemHandler(
+                bottomSheetState = bottomSheetState,
+                vm = toggleListViewModel
+            )
+        val itemHandler = getLocalToggleItemHandler(vm = toggleListViewModel)
         CompositionLocalProvider(
+            LocalToggleItemHandler provides itemHandler,
+            LocalToggleSetItemHandler provides setHandler,
         ) {
             if (!toggleListState.isLoading && toggleListState.toggles.isEmpty()) {
                 EmptyList(modifier = Modifier.fillMaxSize())
@@ -89,7 +100,7 @@ fun ToggleListScreen() {
                             modifier = Modifier
                                 .padding(horizontal = 16.dp, vertical = 8.dp),
                         ) {
-
+                            ToggleItem(toggle = toggle, isSubscribed = subscribeState.isSubscribed)
                         }
                     }
                 }
