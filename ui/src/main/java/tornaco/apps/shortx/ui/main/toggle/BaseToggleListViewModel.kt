@@ -21,11 +21,10 @@ data class ToggleListState(
 @SuppressLint("StaticFieldLeak")
 abstract class BaseToggleListViewModel(context: Context) :
     ContextViewModel<ToggleListState>(context, { ToggleListState() }) {
-    private var loadToggleJob: Job? = null
     private val toggleObs = object : ToggleObserver() {
         override fun onToggleChanged(id: String) {
             super.onToggleChanged(id)
-            loadToggleList()
+            postLoadToggleList()
         }
     }
 
@@ -35,14 +34,14 @@ abstract class BaseToggleListViewModel(context: Context) :
         viewModelScope.launch {
             ResetEventRegistry.dataResetComplete.collect {
                 logger.d("reload data since data has been reset")
-                loadToggleList()
+                postLoadToggleList()
             }
         }
 
         viewModelScope.launch {
             RestoreEventRegistry.dataRestoreComplete.collect {
                 logger.d("reload data since data restored")
-                loadToggleList()
+                postLoadToggleList()
             }
         }
     }
@@ -52,15 +51,12 @@ abstract class BaseToggleListViewModel(context: Context) :
         shortXManager.unregisterToggleObs(toggleObs)
     }
 
-    abstract fun loadToggleList(delay: Boolean = false)
 
-    private fun delayLoadToggle(delay: Long = 200L) {
-        loadToggleJob?.cancel()
-        loadToggleJob = viewModelScope.launch {
-            delay(delay)
-            loadToggleList()
-        }
+    fun postLoadToggleList(delay: Boolean = false) {
+        loadToggleList()
     }
+
+    abstract fun loadToggleList(delay: Boolean = false)
 
     fun deleteToggle(id: String) {
         viewModelScope.launch {

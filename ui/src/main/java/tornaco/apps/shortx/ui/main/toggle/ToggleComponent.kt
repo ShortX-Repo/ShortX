@@ -29,6 +29,7 @@ import tornaco.apps.shortx.ui.base.ConfirmDialog
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.DropdownSelectorState
+import tornaco.apps.shortx.ui.base.LoadingAnimationDot
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
@@ -38,6 +39,7 @@ import tornaco.apps.shortx.ui.base.rememberClickAnimateState
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
+import tornaco.apps.shortx.ui.main.model.ToggleEnableState
 import tornaco.apps.shortx.ui.main.model.ToggleUM
 import tornaco.apps.shortx.ui.record.EvaRecordActivity
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
@@ -89,13 +91,22 @@ private fun ToggleItem(
             ToggleIcon(toggle) {
                 popMenuState.open()
             }
-            ShortXSwitch(
-                modifier = Modifier,
-                checked = toggle.isEnabled,
-                onCheckedChange = {
-                    handler.setToggleEnabled(toggle, it)
-                },
-            )
+
+            when (val enableState = toggle.enableState) {
+                is ToggleEnableState.Loaded -> {
+                    ShortXSwitch(
+                        modifier = Modifier,
+                        checked = enableState.isEnabled,
+                        onCheckedChange = {
+                            handler.setToggleEnabled(toggle, it)
+                        },
+                    )
+                }
+
+                ToggleEnableState.Loading -> {
+                    LoadingAnimationDot()
+                }
+            }
         }
 
         Column(

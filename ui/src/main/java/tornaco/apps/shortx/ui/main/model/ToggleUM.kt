@@ -6,7 +6,7 @@ data class ToggleUM(
     val description: String,
     val updateTime: String,
     val createTime: String,
-    val isEnabled: Boolean,
+    val enableState: ToggleEnableState,
     val versionCode: Long,
 
     // For online.
@@ -16,3 +16,8 @@ data class ToggleUM(
     val isInstalled: Boolean = false,
     val hasUpdate: Boolean = false,
 )
+
+sealed interface ToggleEnableState {
+    data object Loading : ToggleEnableState
+    data class Loaded(val isEnabled: Boolean) : ToggleEnableState
+}
