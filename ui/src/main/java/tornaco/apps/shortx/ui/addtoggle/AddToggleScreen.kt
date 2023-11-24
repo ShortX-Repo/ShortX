@@ -7,13 +7,16 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -27,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -41,11 +45,19 @@ import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.ActionContentState
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
+import tornaco.apps.shortx.ui.addrule.condition.ConditionContent
+import tornaco.apps.shortx.ui.addrule.condition.ConditionContentState
+import tornaco.apps.shortx.ui.addrule.condition.ConditionContentStateHandler
+import tornaco.apps.shortx.ui.addrule.condition.asConditionHandler
+import tornaco.apps.shortx.ui.addtoggle.model.ToggleStateHandle
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
 import tornaco.apps.shortx.ui.base.ConfirmDialog
+import tornaco.apps.shortx.ui.base.DropdownItem
+import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.FieldTitleWithTip
+import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalShortXProps
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -53,6 +65,7 @@ import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
+import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -128,6 +141,9 @@ fun AddToggleScreen(
             showToast()
         }
     }
+
+    val conditionHandler = remember(vm) { vm.conditionContentStateHandler }
+    val conditionContentState by conditionHandler.state.collectAsState()
 
     val actionOnEnabledHandler = remember(vm) { vm.actionOnEnabledStateHandler }
     val actionOnEnabledState by actionOnEnabledHandler.state.collectAsState()
@@ -221,6 +237,8 @@ fun AddToggleScreen(
                             addToggleState = addToggleState,
                             vm = vm,
                             readOnly = readOnly,
+                            conditionContentState = conditionContentState,
+                            conditionHandler = conditionHandler,
                             actionOnEnabledState = actionOnEnabledState,
                             actionOnEnabledHandler = actionOnEnabledHandler,
                             actionOnDisabledState = actionOnDisabledState,
@@ -240,6 +258,8 @@ private fun ToggleContent(
     addToggleState: AddToggleState,
     vm: AddToggleViewModel,
     readOnly: Boolean,
+    conditionContentState: ConditionContentState,
+    conditionHandler: ConditionContentStateHandler,
     actionOnEnabledState: ActionContentState,
     actionOnEnabledHandler: ActionContentStateHandler,
     actionOnDisabledState: ActionContentState,
@@ -249,6 +269,66 @@ private fun ToggleContent(
 ) {
     TitleAndDescription(state = addToggleState, vm = vm, readOnly = readOnly)
     SectionSpacer()
+
+    FieldTitleWithTip(
+        text = LocalI18N.current["ui.title.toggle.state.handle"],
+        tipText = LocalI18N.current["ui.title.toggle.state.handle.summary"]
+    )
+    val stateHandleDropdownState = rememberDropdownSelectorState()
+    val stateHandleLabel = getStateHandleLabel(stateHandle = addToggleState.stateHandle)
+
+    Box {
+        FilledTonalButton(
+            onClick = {
+                stateHandleDropdownState.open()
+            }) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stateHandleLabel)
+                LargeSpacer()
+                LargeSpacer()
+                RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
+            }
+        }
+        DropdownSelector(
+            state = stateHandleDropdownState,
+            items = listOf(
+                DropdownItem(
+                    labelLines = listOf(
+                        getStateHandleLabel(stateHandle = ToggleStateHandle.ByStore),
+                        getStateHandleSummary(stateHandle = ToggleStateHandle.ByCondition)
+                    ),
+                    data = ToggleStateHandle.ByStore,
+                ),
+                DropdownItem(
+                    labelLines = listOf(
+                        getStateHandleLabel(stateHandle = ToggleStateHandle.ByCondition),
+                        getStateHandleSummary(stateHandle = ToggleStateHandle.ByCondition)
+                    ),
+                    data = ToggleStateHandle.ByCondition,
+                )
+            )
+        ) {
+            vm.setStateHandle(it.data)
+        }
+    }
+    SectionSpacer()
+
+    AnimatedVisibility(visible = addToggleState.stateHandle == ToggleStateHandle.ByCondition) {
+        Column {
+            ConditionContent(
+                header = {
+                    FieldTitleWithTip(
+                        text = LocalI18N.current["ui.title.toggle.state.handle.by.condition"],
+                        tipText = LocalI18N.current["ui.title.toggle.state.handle.by.condition.summary"]
+                    )
+                },
+                state = conditionContentState,
+                readOnly = readOnly,
+                handler = conditionHandler.asConditionHandler()
+            )
+            SectionSpacer()
+        }
+    }
 
     ActionContent(
         header = {
@@ -340,5 +420,32 @@ private fun TitleAndDescription(
             onValueChange = { description ->
                 vm.setDescription(description)
             })
+    }
+}
+
+@Composable
+private fun getStateHandleLabel(stateHandle: ToggleStateHandle): String {
+    return when (stateHandle) {
+        ToggleStateHandle.ByCondition -> {
+            LocalI18N.current["ui.title.toggle.state.handle.by.condition"]
+        }
+
+        ToggleStateHandle.ByStore -> {
+            LocalI18N.current["ui.title.toggle.state.handle.by.store"]
+        }
+    }
+}
+
+
+@Composable
+private fun getStateHandleSummary(stateHandle: ToggleStateHandle): String {
+    return when (stateHandle) {
+        ToggleStateHandle.ByCondition -> {
+            LocalI18N.current["ui.title.toggle.state.handle.by.condition.summary"]
+        }
+
+        ToggleStateHandle.ByStore -> {
+            LocalI18N.current["ui.title.toggle.state.handle.by.store.summary"]
+        }
     }
 }

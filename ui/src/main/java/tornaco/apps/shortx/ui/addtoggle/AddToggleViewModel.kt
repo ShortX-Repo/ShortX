@@ -85,6 +85,12 @@ class AddToggleViewModel @Inject constructor(@ApplicationContext context: Contex
         }
     }
 
+    fun setStateHandle(handle: ToggleStateHandle) {
+        updateState {
+            copy(stateHandle = handle)
+        }
+    }
+
     // Save with token to check subscribe state.
     fun save(token: String?) {
         logger.p("save with token: ${token?.maskAll()}")

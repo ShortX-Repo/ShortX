@@ -53,7 +53,7 @@ fun FieldTitleWithTip(text: String, tipText: String) {
 
     Row(
         modifier = Modifier
-            .padding(vertical = 12.dp),
+            .padding(top = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

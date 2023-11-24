@@ -70,7 +70,7 @@ fun <T> DropdownSelector(
                 Row(verticalAlignment = CenterVertically) {
                     dropdownItem.icon.invoke()
                     Spacer(modifier = Modifier.size(8.dp))
-                    Column {
+                    Column(modifier = Modifier.padding(vertical = 4.dp)) {
                         Text(
                             text = dropdownItem.labelLines[0],
                             style = MaterialTheme.typography.titleSmall
