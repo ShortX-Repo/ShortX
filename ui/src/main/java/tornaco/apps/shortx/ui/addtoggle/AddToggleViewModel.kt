@@ -140,7 +140,6 @@ class AddToggleViewModel @Inject constructor(@ApplicationContext context: Contex
                     )
                 )
                 .setDescription(state.value.description.fallbackOnEmpty(""))
-                .setIsEnabled(state.value.isEnabled)
                 .setAuthor(authorPref)
                 .setVersionCode(state.value.versionCode)
                 .addAllActionsOnEnabled(actionsOnEnabled.map {
@@ -194,7 +193,6 @@ class AddToggleViewModel @Inject constructor(@ApplicationContext context: Contex
                         versionCode = tg.versionCode,
                         isEditToggle = true,
                         createTime = tg.createTime,
-                        isEnabled = tg.isEnabled,
                     )
                 }
 

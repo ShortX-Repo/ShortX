@@ -1026,6 +1026,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }
         }
 
+        override fun setToggleEnabled(id: String, enable: Boolean) {
+            shortXContext.rule.setToggleEnabled(id, enable)
+        }
+
+        override fun isToggleEnabled(id: String): Boolean {
+            return shortXContext.rule.isToggleEnabled(id)
+        }
+
         override fun deleteToggle(id: String) {
             shortXContext.rule.deleteToggle(id)
         }

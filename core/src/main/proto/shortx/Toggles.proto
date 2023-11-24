@@ -23,8 +23,6 @@ message Toggle {
   string title = 5;
   string description = 6;
 
-  bool isEnabled = 7;
-
   int64 versionCode = 8;
 
   // Put some extras for ext

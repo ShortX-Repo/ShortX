@@ -311,6 +311,18 @@ class ShortXManager(val service: IShortX) {
         }
     }
 
+    fun setToggleEnabled(id: String, enable: Boolean) {
+        invokeService(Unit) {
+            setToggleEnabled(id, enable)
+        }
+    }
+
+    fun isToggleEnabled(id: String): Boolean {
+        return invokeService(false) {
+            isToggleEnabled(id)
+        }
+    }
+
     fun deleteToggle(id: String) {
         invokeService(Unit) {
             deleteToggle(id)

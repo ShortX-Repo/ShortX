@@ -277,6 +277,8 @@ interface IShortX {
 
     // Toggle start
     void addToggle(in ByteArrayWrapper toggle);
+    void setToggleEnabled(String id, boolean enable);
+    boolean isToggleEnabled(String id);
     void deleteToggle(String id);
     ByteArrayWrapper getToggleById(String id);
     List<ByteArrayWrapper> getAllToggles();

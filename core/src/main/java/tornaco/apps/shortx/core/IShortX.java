@@ -629,6 +629,13 @@ public interface IShortX extends android.os.IInterface
     @Override public void addToggle(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper toggle) throws android.os.RemoteException
     {
     }
+    @Override public void setToggleEnabled(java.lang.String id, boolean enable) throws android.os.RemoteException
+    {
+    }
+    @Override public boolean isToggleEnabled(java.lang.String id) throws android.os.RemoteException
+    {
+      return false;
+    }
     @Override public void deleteToggle(java.lang.String id) throws android.os.RemoteException
     {
     }
@@ -2453,6 +2460,27 @@ public interface IShortX extends android.os.IInterface
           }
           this.addToggle(_arg0);
           reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_setToggleEnabled:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          boolean _arg1;
+          _arg1 = (0!=data.readInt());
+          this.setToggleEnabled(_arg0, _arg1);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_isToggleEnabled:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          boolean _result = this.isToggleEnabled(_arg0);
+          reply.writeNoException();
+          reply.writeInt(((_result)?(1):(0)));
           return true;
         }
         case TRANSACTION_deleteToggle:
@@ -6083,6 +6111,47 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
+      @Override public void setToggleEnabled(java.lang.String id, boolean enable) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(id);
+          _data.writeInt(((enable)?(1):(0)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_setToggleEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setToggleEnabled(id, enable);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public boolean isToggleEnabled(java.lang.String id) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        boolean _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(id);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_isToggleEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().isToggleEnabled(id);
+          }
+          _reply.readException();
+          _result = (0!=_reply.readInt());
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
       @Override public void deleteToggle(java.lang.String id) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -6369,12 +6438,14 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_getHttpRequestLogPath = (android.os.IBinder.FIRST_CALL_TRANSACTION + 158);
     static final int TRANSACTION_clearHttpRequestLogs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 159);
     static final int TRANSACTION_addToggle = (android.os.IBinder.FIRST_CALL_TRANSACTION + 160);
-    static final int TRANSACTION_deleteToggle = (android.os.IBinder.FIRST_CALL_TRANSACTION + 161);
-    static final int TRANSACTION_getToggleById = (android.os.IBinder.FIRST_CALL_TRANSACTION + 162);
-    static final int TRANSACTION_getAllToggles = (android.os.IBinder.FIRST_CALL_TRANSACTION + 163);
-    static final int TRANSACTION_getToggleCount = (android.os.IBinder.FIRST_CALL_TRANSACTION + 164);
-    static final int TRANSACTION_registerToggleObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 165);
-    static final int TRANSACTION_unregisterToggleObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 166);
+    static final int TRANSACTION_setToggleEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 161);
+    static final int TRANSACTION_isToggleEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 162);
+    static final int TRANSACTION_deleteToggle = (android.os.IBinder.FIRST_CALL_TRANSACTION + 163);
+    static final int TRANSACTION_getToggleById = (android.os.IBinder.FIRST_CALL_TRANSACTION + 164);
+    static final int TRANSACTION_getAllToggles = (android.os.IBinder.FIRST_CALL_TRANSACTION + 165);
+    static final int TRANSACTION_getToggleCount = (android.os.IBinder.FIRST_CALL_TRANSACTION + 166);
+    static final int TRANSACTION_registerToggleObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 167);
+    static final int TRANSACTION_unregisterToggleObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 168);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -6617,6 +6688,8 @@ public interface IShortX extends android.os.IInterface
   // Toggle start
 
   public void addToggle(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper toggle) throws android.os.RemoteException;
+  public void setToggleEnabled(java.lang.String id, boolean enable) throws android.os.RemoteException;
+  public boolean isToggleEnabled(java.lang.String id) throws android.os.RemoteException;
   public void deleteToggle(java.lang.String id) throws android.os.RemoteException;
   public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getToggleById(java.lang.String id) throws android.os.RemoteException;
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllToggles() throws android.os.RemoteException;

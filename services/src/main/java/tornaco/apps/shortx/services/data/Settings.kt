@@ -43,6 +43,9 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
 
         data object EnableHttpRequestLog :
             BoolSettings(key = "EnableHttpRequestLog", defaultValue = { true })
+
+        data class EnableToggle(val id: String) :
+            BoolSettings(key = "EnableToggle${id}", defaultValue = { false })
     }
 
     sealed class StringSettings(key: String, defaultValue: (Context) -> String?) :

@@ -32,6 +32,7 @@ import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleList
 import tornaco.apps.shortx.core.proto.rule.RuleSet
 import tornaco.apps.shortx.core.proto.toggles.Toggle
+import tornaco.apps.shortx.core.proto.toggles.ToggleStateHandleByStore
 import tornaco.apps.shortx.core.rule.IDAObserver
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.rule.IRuleObserver
@@ -41,6 +42,7 @@ import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.maskAll
+import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.DirectActionSetsStore
@@ -665,6 +667,46 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         toggleObs.broadcast {
             kotlin.runCatching { it.onAddOrUpdate(toggle.id) }
                 .onFailure { logger.e("Call onAddOrUpdate") }
+        }
+    }
+
+    fun isToggleEnabled(id: String): Boolean {
+        val toggle = getToggleById(id)
+        if (toggle == null) {
+            logger.e("Toggle with id: $id not exists.")
+            return false
+        }
+        val stateHandle = toggle.stateHandle
+        return if (stateHandle is_ ToggleStateHandleByStore::class.java) {
+            store.read(Settings.BoolSettings.EnableToggle(id))
+        } else {
+            false
+        }
+    }
+
+    fun setToggleEnabled(id: String, enable: Boolean) {
+        logger.d("setToggleEnabled: $id $enable")
+        val toggle = getToggleById(id)
+        if (toggle == null) {
+            logger.e("Toggle with id: $id not exists.")
+            return
+        }
+        val stateHandle = toggle.stateHandle
+        if (stateHandle is_ ToggleStateHandleByStore::class.java) {
+            store.write(Settings.BoolSettings.EnableToggle(id), enable)
+        } else {
+            val evaluateContext = EvaluateContext.newBuilder()
+                .setSrcId(id)
+                .setSrcEvent(ContextSrcEvent.ContextSrc_Rule)
+                .setSrcTitle(toggle.title)
+                .build()
+            executeActions(
+                context = evaluateContext,
+                actions = enable.select(
+                    { toggle.actionsOnEnabledList },
+                    { toggle.actionsOnDisabledList }),
+                conflictStrategy = ConflictStrategy.ConflictStrategy_ReplaceOld
+            )
         }
     }
 

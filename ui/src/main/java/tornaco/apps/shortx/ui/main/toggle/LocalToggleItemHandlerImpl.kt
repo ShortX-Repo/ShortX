@@ -66,6 +66,7 @@ fun getLocalToggleItemHandler(vm: BaseToggleListViewModel): ToggleItemHandler {
         }
 
         override fun setToggleEnabled(toggle: ToggleUM, enable: Boolean) {
+            vm.setToggleEnabled(toggle.id, enable)
         }
     }
     return handler

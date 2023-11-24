@@ -67,4 +67,10 @@ abstract class BaseToggleListViewModel(context: Context) :
             shortXManager.deleteToggle(id)
         }
     }
+
+    fun setToggleEnabled(id: String, enable: Boolean) {
+        viewModelScope.launch {
+            shortXManager.setToggleEnabled(id, enable)
+        }
+    }
 }
