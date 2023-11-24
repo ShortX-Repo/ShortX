@@ -64,6 +64,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.ShortXTextField
+import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
@@ -178,6 +179,7 @@ fun AddToggleScreen(
                 || actionOnEnabledState.isChanged
                 || actionOnDisabledState.isChanged
                 || actionOnDeletedState.isChanged
+                || conditionContentState.isChanged
     }
 
 
@@ -311,7 +313,7 @@ private fun ToggleContent(
             vm.setStateHandle(it.data)
         }
     }
-    SectionSpacer()
+    StandardSpacer()
 
     AnimatedVisibility(visible = addToggleState.stateHandle == ToggleStateHandle.ByCondition) {
         Column {
@@ -326,7 +328,7 @@ private fun ToggleContent(
                 readOnly = readOnly,
                 handler = conditionHandler.asConditionHandler()
             )
-            SectionSpacer()
+            LargeSpacer()
         }
     }
 
@@ -341,7 +343,7 @@ private fun ToggleContent(
         readOnly = readOnly,
         warnings = actionOnEnabledState.actionWarningMessages
     )
-    SectionSpacer()
+    LargeSpacer()
 
     ActionContent(
         header = {
@@ -354,7 +356,7 @@ private fun ToggleContent(
         readOnly = readOnly,
         warnings = actionOnDisabledState.actionWarningMessages
     )
-    SectionSpacer()
+    LargeSpacer()
 
     if (false) {
         ActionContent(

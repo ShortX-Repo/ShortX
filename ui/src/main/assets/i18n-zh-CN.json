@@ -75,6 +75,7 @@
     "ui.title.edit.rule": "编辑自动指令",
     "ui.title.add.rule": "创建自动指令",
     "ui.title.add.toggle": "创建开关",
+    "ui.title.edit.toggle": "编辑开关",
     "ui.toast.toggle.saved": "开关已保存",
     "ui.title.on.toggle.on.store": "开关开启后",
     "ui.title.on.toggle.off.store": "开关关闭后",

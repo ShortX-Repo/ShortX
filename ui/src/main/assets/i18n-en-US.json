@@ -75,6 +75,7 @@
     "ui.title.edit.rule": "Edit Rule",
     "ui.title.add.rule": "New Rule",
     "ui.title.add.toggle": "New Toggle",
+    "ui.title.edit.toggle": "Edit Toggle",
     "ui.toast.toggle.saved": "Toggle has been saved",
     "ui.title.on.toggle.on.store": "After toggle ON",
     "ui.title.on.toggle.off.store": "After toggle OFF",

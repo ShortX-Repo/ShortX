@@ -87,7 +87,7 @@ class AddToggleViewModel @Inject constructor(@ApplicationContext context: Contex
 
     fun setStateHandle(handle: ToggleStateHandle) {
         updateState {
-            copy(stateHandle = handle)
+            copy(stateHandle = handle, toggleChanged = true)
         }
     }
 
