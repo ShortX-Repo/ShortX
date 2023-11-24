@@ -32,6 +32,7 @@ import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleList
 import tornaco.apps.shortx.core.proto.rule.RuleSet
 import tornaco.apps.shortx.core.proto.toggles.Toggle
+import tornaco.apps.shortx.core.proto.toggles.ToggleStateHandleByCondition
 import tornaco.apps.shortx.core.proto.toggles.ToggleStateHandleByStore
 import tornaco.apps.shortx.core.rule.IDAObserver
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
@@ -41,6 +42,7 @@ import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.pack_
+import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.maskAll
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext
@@ -383,6 +385,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         initialContextData: Map<String, Any> = emptyMap(),
         localVars: LocalVars = LocalVars.obtain(),
         conflictStrategy: ConflictStrategy,
+        onComplete: () -> Unit = {}
     ) {
         logger.d("executeActions: ${context.srcEvent} ${context.srcTitle}")
         if (actions.isNotEmpty()) {
@@ -391,7 +394,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 actions = actions,
                 initialContextData = initialContextData,
                 localVars = localVars,
-                conflictStrategy = conflictStrategy
+                conflictStrategy = conflictStrategy,
+                onComplete = onComplete,
             )
         }
     }
@@ -661,7 +665,16 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         }
     }
 
-    fun addToggle(toggle: Toggle) {
+    fun addToggle(unMaskedToggle: Toggle) {
+        // Check Subscribe state.
+        val extras = unMaskedToggle.extrasList
+        val token = extras.firstOrNull { it.first == BuildProp.APP_PACKAGE_NAME }
+        logger.p("addToggle, token: ${token?.second?.maskAll()}")
+        // Check if has advanced action or facts
+
+        // Must clear rule extras!
+        val toggle = Toggle.newBuilder(unMaskedToggle).clearExtras().build()
+
         logger.d("addToggle: $toggle")
         toggleSettingsStore.addToggle(toggle)
         toggleObs.broadcast {
@@ -677,10 +690,28 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             return false
         }
         val stateHandle = toggle.stateHandle
-        return if (stateHandle is_ ToggleStateHandleByStore::class.java) {
-            store.read(Settings.BoolSettings.EnableToggle(id))
+        if (stateHandle is_ ToggleStateHandleByStore::class.java) {
+            return store.read(Settings.BoolSettings.EnableToggle(id))
+        } else if (stateHandle is_ ToggleStateHandleByCondition::class.java) {
+            val byCondition = stateHandle unpack_ ToggleStateHandleByCondition::class.java
+            val conditions = byCondition.conditionsList
+            if (conditions.isEmpty()) {
+                return false
+            }
+            val evaluateContext = EvaluateContext.newBuilder()
+                .setSrcId(id)
+                .setSrcEvent(ContextSrcEvent.ContextSrc_Rule)
+                .setSrcTitle(toggle.title)
+                .build()
+            return engine.evaluateConditions(
+                evaluateContext,
+                byCondition.condOp,
+                byCondition.condOpPayload,
+                byCondition.conditionsList,
+                emptyMap()
+            )
         } else {
-            false
+            return false
         }
     }
 
@@ -694,20 +725,34 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         val stateHandle = toggle.stateHandle
         if (stateHandle is_ ToggleStateHandleByStore::class.java) {
             store.write(Settings.BoolSettings.EnableToggle(id), enable)
+            toggleObs.broadcast {
+                kotlin.runCatching {
+                    it.onEnableStateMayChange(id)
+                }.onFailure { logger.e("Call onEnabled/onDisabled") }
+            }
         } else {
-            val evaluateContext = EvaluateContext.newBuilder()
-                .setSrcId(id)
-                .setSrcEvent(ContextSrcEvent.ContextSrc_Rule)
-                .setSrcTitle(toggle.title)
-                .build()
-            executeActions(
-                context = evaluateContext,
-                actions = enable.select(
-                    { toggle.actionsOnEnabledList },
-                    { toggle.actionsOnDisabledList }),
-                conflictStrategy = ConflictStrategy.ConflictStrategy_ReplaceOld
-            )
+            // Noop.
         }
+        val evaluateContext = EvaluateContext.newBuilder()
+            .setSrcId(id)
+            .setSrcEvent(ContextSrcEvent.ContextSrc_Rule)
+            .setSrcTitle(toggle.title)
+            .build()
+        executeActions(
+            context = evaluateContext,
+            actions = enable.select(
+                { toggle.actionsOnEnabledList },
+                { toggle.actionsOnDisabledList }),
+            conflictStrategy = ConflictStrategy.ConflictStrategy_ReplaceOld,
+            onComplete = {
+                logger.d("Toggle actions execute complete, broadcast onEnableStateMayChange")
+                toggleObs.broadcast {
+                    kotlin.runCatching {
+                        it.onEnableStateMayChange(id)
+                    }.onFailure { logger.e("Call onEnabled/onDisabled") }
+                }
+            }
+        )
     }
 
     fun deleteToggle(id: String) {

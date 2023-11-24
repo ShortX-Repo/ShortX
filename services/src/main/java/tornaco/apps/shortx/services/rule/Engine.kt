@@ -147,7 +147,8 @@ interface Engine {
         actions: List<ProtoAny>,
         initialContextData: Map<String, Any>,
         localVars: LocalVars = LocalVars.obtain(),
-        conflictStrategy: ConflictStrategy
+        conflictStrategy: ConflictStrategy,
+        onComplete: () -> Unit = {}
     )
 
     fun evaluateConditions(
@@ -508,7 +509,8 @@ class DefaultRuleEngine(
         actions: List<ProtoAny>,
         initialContextData: Map<String, Any>,
         localVars: LocalVars,
-        conflictStrategy: ConflictStrategy
+        conflictStrategy: ConflictStrategy,
+        onComplete: () -> Unit
     ) {
         val contextData = ContextData.obtain(initialContextData)
         val isAlreadyRunning = synchronized(jobs) { jobs.any { it.id == context.srcId } }
@@ -526,6 +528,7 @@ class DefaultRuleEngine(
 
                 ConflictStrategy.ConflictStrategy_SkipNew -> {
                     logger.d("Skip this rule actions since ConflictStrategy_SkipNew")
+                    onComplete()
                     return
                 }
             }
@@ -580,6 +583,7 @@ class DefaultRuleEngine(
             }
             contextData.recycle()
             onJobCompleted(context.srcId)
+            onComplete()
         }
     }
 

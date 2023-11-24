@@ -297,7 +297,7 @@ private fun ToggleContent(
                 DropdownItem(
                     labelLines = listOf(
                         getStateHandleLabel(stateHandle = ToggleStateHandle.ByStore),
-                        getStateHandleSummary(stateHandle = ToggleStateHandle.ByCondition)
+                        getStateHandleSummary(stateHandle = ToggleStateHandle.ByStore)
                     ),
                     data = ToggleStateHandle.ByStore,
                 ),

@@ -9,6 +9,10 @@ open class ToggleObserver : IToggleObserver.Stub() {
         onToggleChanged(id)
     }
 
+    override fun onEnableStateMayChange(id: String) {
+        onToggleChanged(id)
+    }
+
     override fun onSetAddOrUpdate(id: String) {
         onToggleSetChanged(id)
     }

@@ -13,6 +13,9 @@ public interface IToggleObserver extends android.os.IInterface
     @Override public void onDelete(java.lang.String id) throws android.os.RemoteException
     {
     }
+    @Override public void onEnableStateMayChange(java.lang.String id) throws android.os.RemoteException
+    {
+    }
     @Override public void onSetAddOrUpdate(java.lang.String id) throws android.os.RemoteException
     {
     }
@@ -76,6 +79,14 @@ public interface IToggleObserver extends android.os.IInterface
           java.lang.String _arg0;
           _arg0 = data.readString();
           this.onDelete(_arg0);
+          return true;
+        }
+        case TRANSACTION_onEnableStateMayChange:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          this.onEnableStateMayChange(_arg0);
           return true;
         }
         case TRANSACTION_onSetAddOrUpdate:
@@ -147,6 +158,22 @@ public interface IToggleObserver extends android.os.IInterface
           _data.recycle();
         }
       }
+      @Override public void onEnableStateMayChange(java.lang.String id) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(id);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_onEnableStateMayChange, _data, null, android.os.IBinder.FLAG_ONEWAY);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().onEnableStateMayChange(id);
+            return;
+          }
+        }
+        finally {
+          _data.recycle();
+        }
+      }
       @Override public void onSetAddOrUpdate(java.lang.String id) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -183,8 +210,9 @@ public interface IToggleObserver extends android.os.IInterface
     }
     static final int TRANSACTION_onAddOrUpdate = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
     static final int TRANSACTION_onDelete = (android.os.IBinder.FIRST_CALL_TRANSACTION + 1);
-    static final int TRANSACTION_onSetAddOrUpdate = (android.os.IBinder.FIRST_CALL_TRANSACTION + 2);
-    static final int TRANSACTION_onSetDelete = (android.os.IBinder.FIRST_CALL_TRANSACTION + 3);
+    static final int TRANSACTION_onEnableStateMayChange = (android.os.IBinder.FIRST_CALL_TRANSACTION + 2);
+    static final int TRANSACTION_onSetAddOrUpdate = (android.os.IBinder.FIRST_CALL_TRANSACTION + 3);
+    static final int TRANSACTION_onSetDelete = (android.os.IBinder.FIRST_CALL_TRANSACTION + 4);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.rule.IToggleObserver impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -204,6 +232,7 @@ public interface IToggleObserver extends android.os.IInterface
   }
   public void onAddOrUpdate(java.lang.String id) throws android.os.RemoteException;
   public void onDelete(java.lang.String id) throws android.os.RemoteException;
+  public void onEnableStateMayChange(java.lang.String id) throws android.os.RemoteException;
   public void onSetAddOrUpdate(java.lang.String id) throws android.os.RemoteException;
   public void onSetDelete(java.lang.String id) throws android.os.RemoteException;
 }
