@@ -189,14 +189,13 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                             .onFailure { logger.e(it, "call onComplete") }
                     }
                 }
-
-                if (isEvaluateRecordEnabled()) {
+                if (isEvaluateRecordEnabled(result.evaluateContext.srcId)) {
                     result.toActionEvaluateRecord()?.let { actionEvaluateRecorder.addResult(it) }
                 }
             },
             conditionEvaluateResultListener = { result ->
                 logger.d("conditionEvaluateResultListener: $result")
-                if (isEvaluateRecordEnabled()) {
+                if (isEvaluateRecordEnabled(result.evaluateContext.srcId)) {
                     conditionEvaluateRecorder.add(result.toConditionEvaluateRecord())
                 }
             }
@@ -373,7 +372,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 initialContextDataLazy = initialContextDataLazy
             )
 
-            if (anyMatch && isEvaluateRecordEnabled()) {
+            if (anyMatch) {
                 factPublishRecorder.add(fact.toFactPublishRecord(publishTimeMillis))
             }
         }
@@ -970,12 +969,12 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         clearActionEvaluateRecords()
     }
 
-    fun isEvaluateRecordEnabled(): Boolean {
-        return store.read(Settings.BoolSettings.EnableEvaluateRecorder)
+    fun isEvaluateRecordEnabled(id: String): Boolean {
+        return store.read(Settings.BoolSettings.EnableEvaluateRecorder(id))
     }
 
-    fun setEvaluateRecordEnabled(enable: Boolean) {
-        store.write(Settings.BoolSettings.EnableEvaluateRecorder, enable)
+    fun setEvaluateRecordEnabled(id: String, enable: Boolean) {
+        store.write(Settings.BoolSettings.EnableEvaluateRecorder(id), enable)
     }
 
     fun registerRuleObs(obs: IRuleObserver) {

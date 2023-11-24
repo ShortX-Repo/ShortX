@@ -125,10 +125,10 @@ public interface IShortX extends android.os.IInterface
     @Override public void clearEvaluateRecords() throws android.os.RemoteException
     {
     }
-    @Override public void setEvaluateRecordEnabled(boolean enable) throws android.os.RemoteException
+    @Override public void setEvaluateRecordEnabled(java.lang.String id, boolean enable) throws android.os.RemoteException
     {
     }
-    @Override public boolean isEvaluateRecordEnabled() throws android.os.RemoteException
+    @Override public boolean isEvaluateRecordEnabled(java.lang.String id) throws android.os.RemoteException
     {
       return false;
     }
@@ -1072,16 +1072,20 @@ public interface IShortX extends android.os.IInterface
         case TRANSACTION_setEvaluateRecordEnabled:
         {
           data.enforceInterface(descriptor);
-          boolean _arg0;
-          _arg0 = (0!=data.readInt());
-          this.setEvaluateRecordEnabled(_arg0);
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          boolean _arg1;
+          _arg1 = (0!=data.readInt());
+          this.setEvaluateRecordEnabled(_arg0, _arg1);
           reply.writeNoException();
           return true;
         }
         case TRANSACTION_isEvaluateRecordEnabled:
         {
           data.enforceInterface(descriptor);
-          boolean _result = this.isEvaluateRecordEnabled();
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          boolean _result = this.isEvaluateRecordEnabled(_arg0);
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
           return true;
@@ -3284,16 +3288,17 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
-      @Override public void setEvaluateRecordEnabled(boolean enable) throws android.os.RemoteException
+      @Override public void setEvaluateRecordEnabled(java.lang.String id, boolean enable) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(id);
           _data.writeInt(((enable)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_setEvaluateRecordEnabled, _data, _reply, 0);
           if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().setEvaluateRecordEnabled(enable);
+            getDefaultImpl().setEvaluateRecordEnabled(id, enable);
             return;
           }
           _reply.readException();
@@ -3303,16 +3308,17 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
-      @Override public boolean isEvaluateRecordEnabled() throws android.os.RemoteException
+      @Override public boolean isEvaluateRecordEnabled(java.lang.String id) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
         boolean _result;
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(id);
           boolean _status = mRemote.transact(Stub.TRANSACTION_isEvaluateRecordEnabled, _data, _reply, 0);
           if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().isEvaluateRecordEnabled();
+            return getDefaultImpl().isEvaluateRecordEnabled(id);
           }
           _reply.readException();
           _result = (0!=_reply.readInt());
@@ -6502,8 +6508,8 @@ public interface IShortX extends android.os.IInterface
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getConditionEvaluateRecords() throws android.os.RemoteException;
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getFactPublishRecords() throws android.os.RemoteException;
   public void clearEvaluateRecords() throws android.os.RemoteException;
-  public void setEvaluateRecordEnabled(boolean enable) throws android.os.RemoteException;
-  public boolean isEvaluateRecordEnabled() throws android.os.RemoteException;
+  public void setEvaluateRecordEnabled(java.lang.String id, boolean enable) throws android.os.RemoteException;
+  public boolean isEvaluateRecordEnabled(java.lang.String id) throws android.os.RemoteException;
   // Pkg Set
 
   public void addPkgSet(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper set) throws android.os.RemoteException;

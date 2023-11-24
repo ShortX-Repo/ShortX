@@ -62,6 +62,7 @@ import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
+import tornaco.apps.shortx.ui.record.EvaRecordSetting
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -277,6 +278,9 @@ private fun DAContent(
     )
     SectionSpacer()
 
+    EvaRecordSetting(id = addDirectActionState.id)
+
+    SectionSpacer()
     TextButton(onClick = {
         vm.setShowAdvancedOptions(!addDirectActionState.showAdvancedOptions)
 
@@ -284,6 +288,7 @@ private fun DAContent(
         Text(text = LocalI18N.current["ui.advanced.options"])
     }
     StandardSpacer()
+
     AnimatedVisibility(visible = addDirectActionState.showAdvancedOptions) {
         Column {
             ConflictStrategy(

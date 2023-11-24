@@ -755,6 +755,8 @@
     "ui.settings.edge.gesture.swipe.distance": "触发滑动的距离阈值",
     "ui.settings.eva.record": "指令记录",
     "ui.settings.eva.record.summary": "查看触发器、条件、动作记录",
+    "ui.settings.eva.record.enabled.count": "当前共{count}个指令启用了指令记录，你可以在指令编辑页面，开启或关闭指令记录",
+    "ui.settings.eva.record.enabled": "开启指令记录",
     "ui.settings.fact.record": "触发器记录",
     "ui.settings.fact.record.summary": "查看触发器记录",
     "ui.settings.gesture.record": "手势记录",

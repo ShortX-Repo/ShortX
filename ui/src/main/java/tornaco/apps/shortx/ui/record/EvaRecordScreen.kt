@@ -78,13 +78,14 @@ import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
-import tornaco.apps.shortx.ui.base.SwitchBar
 import tornaco.apps.shortx.ui.base.TextDisplayActivity
 import tornaco.apps.shortx.ui.base.TipBody
+import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.ActionRecordColor
 import tornaco.apps.shortx.ui.theme.ConditionRecordColor
@@ -97,7 +98,7 @@ import tornaco.apps.shortx.ui.theme.SuccessGreen
 @AndroidEntryPoint
 class EvaRecordActivity : BaseActivity() {
     companion object {
-        const val KEY_PIN_SRC_ID = "pin_src_id"
+        private const val KEY_PIN_SRC_ID = "pin_src_id"
 
         @JvmStatic
         fun start(context: Context, pinSrcId: String? = null) {
@@ -135,7 +136,7 @@ fun EvaRecordScreen(pinSrcId: String?, back: () -> Unit) {
     })
 
     DisposableEffectWithLifeCycle(onResume = {
-        vm.loadSwitch()
+        vm.loadEnabledCount()
         vm.loadRecords()
     })
 
@@ -192,12 +193,17 @@ fun EvaRecordScreen(pinSrcId: String?, back: () -> Unit) {
                             .fillMaxSize()
                     ) {
                         item {
-                            SwitchBar(
-                                modifier = Modifier.padding(16.dp),
-                                isChecked = state.isRecordEnabled,
-                                onCheckChange = {
-                                    vm.toggleRecordEnable(it)
-                                })
+                            ShortXCard(modifier = Modifier.padding(6.dp)) {
+                                Box(modifier = Modifier.padding(12.dp)) {
+                                    TipRow(
+
+                                        text = LocalI18N.current["ui.settings.eva.record.enabled.count", mapOf(
+                                            "count" to state.recordEnabledCount.toString()
+                                        )]
+                                    )
+                                }
+
+                            }
                         }
                         items(state.data) { record ->
                             when (record) {

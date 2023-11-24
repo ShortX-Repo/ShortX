@@ -67,6 +67,7 @@ import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.ui.record.EvaRecordSetting
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -356,7 +357,9 @@ private fun ToggleContent(
         readOnly = readOnly,
         warnings = actionOnDisabledState.actionWarningMessages
     )
-    LargeSpacer()
+    SectionSpacer()
+
+    EvaRecordSetting(id = addToggleState.id)
 
     if (false) {
         ActionContent(

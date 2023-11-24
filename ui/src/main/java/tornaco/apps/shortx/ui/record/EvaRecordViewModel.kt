@@ -99,7 +99,7 @@ data class EvaRecordState(
         showError = true
     ),
 
-    val isRecordEnabled: Boolean = false,
+    val recordEnabledCount: Int = 0,
     val onlyShowSrc: EvaluateContext? = null
 )
 
@@ -157,17 +157,18 @@ class EvaRecordViewModel @Inject constructor(@ApplicationContext private val con
         loadRecords()
     }
 
-    fun loadSwitch() = intent {
+    fun loadEnabledCount() = intent {
         reduce {
+            val ruleCount = shortXManager.getAllRules()
+                .filter { shortXManager.isEvaluateRecordEnabled(it.id) }.size
+            val daCount = shortXManager.getAllDirectAction()
+                .filter { shortXManager.isEvaluateRecordEnabled(it.id) }.size
+            val toggleCount = shortXManager.getAllToggles()
+                .filter { shortXManager.isEvaluateRecordEnabled(it.id) }.size
             state.copy(
-                isRecordEnabled = shortXManager.isEvaluateRecordEnabled(),
+                recordEnabledCount = ruleCount + daCount + toggleCount
             )
         }
-    }
-
-    fun toggleRecordEnable(enable: Boolean) = intent {
-        shortXManager.setEvaluateRecordEnabled(enable)
-        loadSwitch()
     }
 
     fun showFact(show: Boolean) = intent {

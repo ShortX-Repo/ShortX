@@ -756,6 +756,8 @@
     "ui.settings.edge.gesture.swipe.distance": "Edge gesture swipe distance threshold",
     "ui.settings.eva.record": "ShortX Records",
     "ui.settings.eva.record.summary": "View fact, condition and action records",
+    "ui.settings.eva.record.enabled.count": "You have enable record for {count} rules. You can enable or disable record on Rule editor page",
+    "ui.settings.eva.record.enabled": "Enable shortx record",
     "ui.settings.fact.record": "Fact record",
     "ui.settings.fact.record.summary": "View fact publish records",
     "ui.settings.gesture.record": "Gesture records",

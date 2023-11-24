@@ -717,15 +717,15 @@ class ShortXManager(val service: IShortX) {
         }
     }
 
-    fun isEvaluateRecordEnabled(): Boolean {
+    fun isEvaluateRecordEnabled(id: String): Boolean {
         return invokeService(false) {
-            isEvaluateRecordEnabled
+            isEvaluateRecordEnabled(id)
         }
     }
 
-    fun setEvaluateRecordEnabled(enable: Boolean) {
+    fun setEvaluateRecordEnabled(id: String, enable: Boolean) {
         invokeService(Unit) {
-            isEvaluateRecordEnabled = enable
+            setEvaluateRecordEnabled(id, enable)
         }
     }
 

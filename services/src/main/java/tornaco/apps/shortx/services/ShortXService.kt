@@ -725,12 +725,12 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.rule.clearEvaluateRecords()
         }
 
-        override fun isEvaluateRecordEnabled(): Boolean {
-            return shortXContext.rule.isEvaluateRecordEnabled()
+        override fun isEvaluateRecordEnabled(id: String): Boolean {
+            return shortXContext.rule.isEvaluateRecordEnabled(id)
         }
 
-        override fun setEvaluateRecordEnabled(enable: Boolean) {
-            shortXContext.rule.setEvaluateRecordEnabled(enable)
+        override fun setEvaluateRecordEnabled(id: String, enable: Boolean) {
+            shortXContext.rule.setEvaluateRecordEnabled(id, enable)
         }
 
         override fun getGestureAreaSize(): Int {

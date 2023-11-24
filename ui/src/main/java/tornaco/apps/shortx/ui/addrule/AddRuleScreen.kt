@@ -84,6 +84,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.ui.record.EvaRecordSetting
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -383,6 +384,9 @@ private fun RuleContent(
         readOnly = readOnly,
         warnings = actionContentState.actionWarningMessages
     )
+    SectionSpacer()
+
+    EvaRecordSetting(id = addRuleState.id)
     SectionSpacer()
 
     TextButton(onClick = {

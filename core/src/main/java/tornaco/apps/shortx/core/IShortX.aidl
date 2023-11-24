@@ -62,8 +62,8 @@ interface IShortX {
     List<ByteArrayWrapper> getConditionEvaluateRecords();
     List<ByteArrayWrapper> getFactPublishRecords();
     void clearEvaluateRecords();
-    void setEvaluateRecordEnabled(boolean enable);
-    boolean isEvaluateRecordEnabled();
+    void setEvaluateRecordEnabled(String id, boolean enable);
+    boolean isEvaluateRecordEnabled(String id);
 
     // Pkg Set
     void addPkgSet(in ByteArrayWrapper set);

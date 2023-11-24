@@ -2,7 +2,6 @@ package tornaco.apps.shortx.services.data
 
 import android.content.Context
 import android.os.Bundle
-import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.settings.DANMU_COLOR_AUTO
 import tornaco.apps.shortx.core.settings.DANMU_DEFAULT_ALPHA
 import tornaco.apps.shortx.core.settings.DANMU_DEFAULT_DURATION
@@ -13,11 +12,8 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
     sealed class BoolSettings(key: String, defaultValue: (Context) -> Boolean) :
         Settings<Boolean>(key, defaultValue) {
 
-        data object EnableEvaluateRecorder :
-            BoolSettings(
-                key = "EnableEvaluateRecorder",
-                defaultValue = { BuildProp.APP_IS_DEBUG }
-            )
+        data class EnableEvaluateRecorder(val id: String) :
+            BoolSettings(key = "EnableEvaluateRecorder_$id", defaultValue = { false })
 
         data object EnableKeyEventPrompt :
             BoolSettings(key = "EnableKeyEventPrompt", defaultValue = { false })

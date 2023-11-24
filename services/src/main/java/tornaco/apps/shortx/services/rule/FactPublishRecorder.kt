@@ -9,7 +9,7 @@ fun ProtoMessage.toFactPublishRecord(publishTimeMillis: Long): FactPublishRecord
         .setFact(this.pack_())
         .setTimeStamp(publishTimeMillis).build()
 
-private const val MAX_ENTRY_SIZE = 100
+private const val MAX_ENTRY_SIZE = 200
 
 class FactPublishRecorder {
     private val _records = mutableListOf<FactPublishRecord>()
