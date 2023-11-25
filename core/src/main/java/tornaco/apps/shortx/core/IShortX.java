@@ -657,6 +657,19 @@ public interface IShortX extends android.os.IInterface
     @Override public void unregisterToggleObs(tornaco.apps.shortx.core.rule.IToggleObserver obs) throws android.os.RemoteException
     {
     }
+    // Toggle end
+    // Flags, used to disable hook
+
+    @Override public boolean hasHookFlags(java.lang.String flag) throws android.os.RemoteException
+    {
+      return false;
+    }
+    @Override public void addHookFlags(java.lang.String flag) throws android.os.RemoteException
+    {
+    }
+    @Override public void removeHookFlags(java.lang.String flag) throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -2543,6 +2556,34 @@ public interface IShortX extends android.os.IInterface
           tornaco.apps.shortx.core.rule.IToggleObserver _arg0;
           _arg0 = tornaco.apps.shortx.core.rule.IToggleObserver.Stub.asInterface(data.readStrongBinder());
           this.unregisterToggleObs(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_hasHookFlags:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          boolean _result = this.hasHookFlags(_arg0);
+          reply.writeNoException();
+          reply.writeInt(((_result)?(1):(0)));
+          return true;
+        }
+        case TRANSACTION_addHookFlags:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          this.addHookFlags(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_removeHookFlags:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          this.removeHookFlags(_arg0);
           reply.writeNoException();
           return true;
         }
@@ -6281,6 +6322,68 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
+      // Toggle end
+      // Flags, used to disable hook
+
+      @Override public boolean hasHookFlags(java.lang.String flag) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        boolean _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(flag);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_hasHookFlags, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().hasHookFlags(flag);
+          }
+          _reply.readException();
+          _result = (0!=_reply.readInt());
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      @Override public void addHookFlags(java.lang.String flag) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(flag);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_addHookFlags, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().addHookFlags(flag);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public void removeHookFlags(java.lang.String flag) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(flag);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_removeHookFlags, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().removeHookFlags(flag);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -6452,6 +6555,9 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_getToggleCount = (android.os.IBinder.FIRST_CALL_TRANSACTION + 166);
     static final int TRANSACTION_registerToggleObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 167);
     static final int TRANSACTION_unregisterToggleObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 168);
+    static final int TRANSACTION_hasHookFlags = (android.os.IBinder.FIRST_CALL_TRANSACTION + 169);
+    static final int TRANSACTION_addHookFlags = (android.os.IBinder.FIRST_CALL_TRANSACTION + 170);
+    static final int TRANSACTION_removeHookFlags = (android.os.IBinder.FIRST_CALL_TRANSACTION + 171);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -6702,4 +6808,10 @@ public interface IShortX extends android.os.IInterface
   public int getToggleCount() throws android.os.RemoteException;
   public void registerToggleObs(tornaco.apps.shortx.core.rule.IToggleObserver obs) throws android.os.RemoteException;
   public void unregisterToggleObs(tornaco.apps.shortx.core.rule.IToggleObserver obs) throws android.os.RemoteException;
+  // Toggle end
+  // Flags, used to disable hook
+
+  public boolean hasHookFlags(java.lang.String flag) throws android.os.RemoteException;
+  public void addHookFlags(java.lang.String flag) throws android.os.RemoteException;
+  public void removeHookFlags(java.lang.String flag) throws android.os.RemoteException;
 }

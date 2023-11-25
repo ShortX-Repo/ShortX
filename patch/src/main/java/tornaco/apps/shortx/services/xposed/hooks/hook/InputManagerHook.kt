@@ -1,11 +1,11 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
-import android.os.Build
 import android.util.Log
 import android.view.IInputFilter
 import android.view.IInputFilterHost
 import android.view.InputEvent
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.platform.Classes.inputManagerService
 import tornaco.apps.shortx.core.platform.Methods
@@ -19,30 +19,37 @@ object InputManagerHook {
     private val logger = Logger("ShortXHook.InputManagerHook")
 
     fun hookInputManager(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
-        // Meizu android 9 volumn not work after active ShortX.
-        if (Build.MANUFACTURER == "meizu" && Build.ID == "PKQ1.190616.001") {
-            logger.w("Drop InputManagerHook.")
-            return@runCatching
-        }
-
         afterMethod(lpparam.classLoader.inputManagerService(), Methods.start) { param ->
             logger.d("inputManagerService start.")
             ServiceHolder.inputManagerService = param.thisObject
 
-            val inputFilter = Reflections.getObjectField(param.thisObject, "mInputFilter")
-            logger.d("inputFilter: $inputFilter")
+            val hasDisableGestureFlag =
+                ShortXService.serviceBinder.hasHookFlags(ShortXManager.Companion.HookFlags.FLAG_DISABLE_GESTURE_HOOK)
+            logger.i("hasDisableGestureFlag: $hasDisableGestureFlag")
+            if (!hasDisableGestureFlag) {
+                val inputFilter = Reflections.getObjectField(param.thisObject, "mInputFilter")
+                logger.d("inputFilter: $inputFilter")
 
-            // Not null means input filter is enabled.
-            if (inputFilter == null) {
-                Reflections.callMethod(
-                    ServiceHolder.inputManagerService,
-                    "setInputFilter",
-                    InputFilterImpl
-                )
-                logger.i("InputFilter installed.")
-                Reflections.setObjectField(ServiceHolder.inputManagerService, "mInputFilter", null)
-                logger.i("InputFilter removed.")
+                // Not null means input filter is enabled.
+                if (inputFilter == null) {
+                    Reflections.callMethod(
+                        ServiceHolder.inputManagerService,
+                        "setInputFilter",
+                        InputFilterImpl
+                    )
+                    logger.i("InputFilter installed.")
+                    Reflections.setObjectField(
+                        ServiceHolder.inputManagerService,
+                        "mInputFilter",
+                        null
+                    )
+                    logger.i("InputFilter removed.")
+                }
+            } else {
+                logger.w("Drop inputFilter set up since hasDisableGestureFlag is true")
             }
+
+
             logger.d("handle start complete.")
         }
 

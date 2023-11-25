@@ -286,4 +286,10 @@ interface IShortX {
     void registerToggleObs(in IToggleObserver obs);
     void unregisterToggleObs(in IToggleObserver obs);
     // Toggle end
+
+    // Flags, used to disable hook
+    boolean hasHookFlags(String flag);
+    void addHookFlags(String flag);
+    void removeHookFlags(String flag);
+    // Flags
 }

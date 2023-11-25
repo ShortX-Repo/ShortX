@@ -77,6 +77,12 @@ val shortXManager by lazy {
 class ShortXManager(val service: IShortX) {
     val isInstalled get() = kotlin.runCatching { service.fingerprint() != null }.getOrElse { false }
 
+    companion object {
+        object HookFlags {
+            const val FLAG_DISABLE_GESTURE_HOOK = "disable_gesture_hooks"
+        }
+    }
+
     val isFrameworkUpdated
         get() = kotlin.runCatching {
             isInstalled && service.fingerprint()
@@ -748,6 +754,22 @@ class ShortXManager(val service: IShortX) {
     fun setSwipeDistanceThresholdDp(dp: Int) {
         invokeService(Unit) {
             swipeDistanceThresholdDp = dp
+        }
+    }
+
+    fun hasHookFlags(flag: String): Boolean {
+        return invokeService(false) { hasHookFlags(flag) }
+    }
+
+    fun addHookFlags(flag: String) {
+        invokeService(Unit) {
+            addHookFlags(flag)
+        }
+    }
+
+    fun removeHookFlags(flag: String) {
+        invokeService(Unit) {
+            removeHookFlags(flag)
         }
     }
 

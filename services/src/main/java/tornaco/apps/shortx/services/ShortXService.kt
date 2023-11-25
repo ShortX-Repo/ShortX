@@ -1062,6 +1062,23 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.rule.unregisterToggleObs(obs)
         }
 
+        override fun hasHookFlags(flag: String): Boolean {
+            return File(Dirs.baseServerFlagsDir(), flag).exists()
+        }
+
+        override fun addHookFlags(flag: String) {
+            File(Dirs.baseServerFlagsDir(), flag).apply {
+                parentFile.mkdirs()
+                createNewFile()
+            }
+        }
+
+        override fun removeHookFlags(flag: String) {
+            File(Dirs.baseServerFlagsDir(), flag).deleteRecursively().also {
+                logger.i("removeHookFlags: $it")
+            }
+        }
+
         override fun getActivities(
             userId: Int,
             packageName: String

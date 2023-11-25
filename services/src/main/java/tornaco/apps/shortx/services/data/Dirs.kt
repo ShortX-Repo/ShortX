@@ -9,6 +9,7 @@ object Dirs {
 
     fun baseServerCacheDir() = File(baseServerDir(), "cache")
     fun baseServerRecordingDir() = File(baseServerDir(), "record")
+    fun baseServerFlagsDir() = File(baseServerDir(), "flags")
     fun picassoCacheDir() = File(baseServerCacheDir(), "picasso")
     fun jsCacheDir() = File(baseServerCacheDir(), "js")
     fun httpDir() = File(baseServerCacheDir(), "http")

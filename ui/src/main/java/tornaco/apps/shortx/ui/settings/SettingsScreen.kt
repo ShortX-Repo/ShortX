@@ -48,9 +48,6 @@ import tornaco.apps.shortx.core.proto.common.Author
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.select
-import tornaco.apps.shortx.ui.addrule.fact.selector.EdgeGestureSettings
-import tornaco.apps.shortx.ui.addrule.fact.selector.EdgeGestureSettingsSelector
-import tornaco.apps.shortx.ui.addrule.fact.selector.rememberEdgeGestureSettingsSelectorState
 import tornaco.apps.shortx.ui.backup.autoGenBackupFileName
 import tornaco.apps.shortx.ui.base.AppIcon
 import tornaco.apps.shortx.ui.base.ConfirmDialog
@@ -365,11 +362,8 @@ private fun generalSettings(
     goToGV: () -> Unit,
     goToDanmuUISettings: () -> Unit,
 ): List<Preference> {
-    val edgeGestureSizeSelectorState = rememberEdgeGestureSettingsSelectorState(selected = {
-        vm.setGestureAreaSize(it.areaSize)
-        vm.setSwipeDistanceThresold(it.swipeDistanceThreshold)
-    })
-    EdgeGestureSettingsSelector(state = edgeGestureSizeSelectorState)
+    val context = LocalContext.current
+
     val badge = if (mainState.isSubscribed) {
         null
     } else LocalI18N.current["ui.subscription.subscribed.only"]
@@ -414,17 +408,11 @@ private fun generalSettings(
             }
         ),
 
-
         Preference.TextPreference(icon = Remix.Editor.sketching,
             title = LocalI18N.current["ui.settings.edge.gesture"],
             summary = LocalI18N.current["ui.settings.edge.gesture.summary"],
             onClick = {
-                edgeGestureSizeSelectorState.show(
-                    EdgeGestureSettings(
-                        state.gestureAreaSize,
-                        state.swipeDistanceThreshold
-                    )
-                )
+                EdgeGestureSettingsActivity.start(context)
             }
         ),
     )

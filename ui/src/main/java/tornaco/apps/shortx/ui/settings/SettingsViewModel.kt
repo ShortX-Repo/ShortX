@@ -18,7 +18,6 @@ import tornaco.apps.shortx.core.RuleEngineNames
 import tornaco.apps.shortx.core.Version
 import tornaco.apps.shortx.core.proto.common.Author
 import tornaco.apps.shortx.core.proto.common.SensorUsage
-import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.ui.backup.BackupAgent
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.settings.pref.Pref
@@ -35,8 +34,6 @@ data class SettingsState(
     val isIgnoreFrameworkUpdate: Boolean = false,
     val hasFatalError: Boolean = false,
     val isKeyEventPromptEnabled: Boolean = false,
-    val gestureAreaSize: Int = 0,
-    val swipeDistanceThreshold: Int = 0,
     val isInjectedShellEnabled: Boolean = false,
     val isQSTileOptEnabled: Boolean = false,
     val isSettingsCatcherEnabled: Boolean = false,
@@ -111,8 +108,6 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 isDebugLogEnabled = shortXManager.isLogDebugEnable(),
                 logDir = shortXManager.getLogDir(),
                 hasFatalError = shortXManager.hasFatalError(),
-                gestureAreaSize = shortXManager.getGestureAreaSize(),
-                swipeDistanceThreshold = shortXManager.getSwipeDistanceThresholdDp(),
                 isKeyEventPromptEnabled = shortXManager.isKeyEventPromptEnabled(),
                 isInjectedShellEnabled = shortXManager.isInjectedShellEnabled(),
                 isQSTileOptEnabled = shortXManager.isQSTileOptEnabled(),
@@ -289,22 +284,6 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 logger.e(it, "exportLogs error")
                 _logExportPerformed.emit(ExportLogResult.Failed(it.message ?: "UNKNOWN ERR"))
             }
-        }
-    }
-
-    fun setGestureAreaSize(size: Int) {
-        viewModelScope.launch {
-            shortXManager.setGestureAreaSize(size)
-            updateState { copy(gestureAreaSize = shortXManager.getGestureAreaSize()) }
-
-            shortXManager.showEdgeHint(Edge.RightCenter)
-        }
-    }
-
-    fun setSwipeDistanceThresold(dp: Int) {
-        viewModelScope.launch {
-            shortXManager.setSwipeDistanceThresholdDp(dp)
-            updateState { copy(swipeDistanceThreshold = shortXManager.getSwipeDistanceThresholdDp()) }
         }
     }
 
