@@ -1,11 +1,13 @@
 package tornaco.apps.shortx.services.rule.actor
 
+import io.kotest.matchers.shouldBe
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
+import tornaco.apps.shortx.core.context.InternalContextDatas
 import tornaco.apps.shortx.core.context.allKeys
 import tornaco.apps.shortx.core.util.logAdapter
 import kotlin.reflect.KClass
@@ -33,6 +35,11 @@ class ContextMapTest {
                 mapOf("contentText" to "\"This is Hello.\"")
             )
         )
+    }
+
+    @Test
+    fun testInflateMapInternal() {
+        "{shortx.internal.fact.tag}".inflateContextMap(mapOf(InternalContextDatas.CONTEXT_FACT_TAG to "Test")) shouldBe "Test"
     }
 
     @Test

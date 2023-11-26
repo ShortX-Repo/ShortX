@@ -4,6 +4,7 @@ import com.google.protobuf.Message
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
+import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.proto.action.ShowDanmu
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.replaceLocalVarValues
@@ -22,13 +23,18 @@ object ShowDanmu : Actor {
     ) = with(params) {
         withContext(Dispatchers.Main) {
             val d = action unpack_ ShowDanmu::class.java
+
+            onDebugBuild {
+                logger.d("ContextData: ${contextData.map}")
+            }
+
             shortXContext.ui.showDanmu(
                 d.icon.inflateContextMap(contextData),
                 d.text.inflateContextMap(contextData)
                     .replaceLocalVarValues(localVars)
                     .replaceGlobalVarValues {
-                    shortXContext.rule.getAllGlobalVars()
-                }
+                        shortXContext.rule.getAllGlobalVars()
+                    }
             )
         }
     }
