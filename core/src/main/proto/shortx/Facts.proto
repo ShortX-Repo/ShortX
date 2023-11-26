@@ -8,6 +8,7 @@ import "shortx/Common.proto";
 import "google/protobuf/any.proto";
 
 message AnyFact {
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -16,6 +17,7 @@ message AnyFact {
 message KeyEvent {
   int32 keyCode = 1;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -26,24 +28,28 @@ message AdvancedKeyEvent {
   KeyGesture gesture = 2;
   bool isInterceptMode = 3;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
 }
 
 message ScreenOn {
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
 }
 
 message ScreenOff {
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
 }
 
 message UserPresent {
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -53,6 +59,7 @@ message BatteryLevelChanged {
   // 0 means any
   int32 level = 1;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -62,6 +69,7 @@ message BatteryTemperatureChanged {
   // 0 means any
   float temp = 1;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -69,12 +77,14 @@ message BatteryTemperatureChanged {
 
 
 message ChargerPlug {
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
 }
 
 message ChargerUnplug {
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -85,6 +95,7 @@ message EdgeGesture {
   Gesture gesture = 2;
   bool isIntercept = 3;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -136,6 +147,7 @@ message Alarm {
   TimeOfADay triggerAt = 2;
   RepeatDays repeat = 3;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -147,6 +159,7 @@ message RandomInPeriod {
 
   RepeatDays repeat = 3;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -159,6 +172,7 @@ message FixedInPeriod {
   RepeatDays repeat = 3;
   google.protobuf.Any fixedBy = 4;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -176,6 +190,7 @@ message AppBecomeFg {
   repeated AppPkg apps = 1;
   repeated string pkgSets = 2;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -185,6 +200,7 @@ message AppBecomeBg {
   repeated AppPkg apps = 1;
   repeated string pkgSets = 2;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -193,6 +209,7 @@ message AppBecomeBg {
 message BTStatusChanged {
   OnOffAny ooa = 1;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -201,6 +218,7 @@ message BTStatusChanged {
 message BTConnectedTo {
   repeated string device = 1;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -209,6 +227,7 @@ message BTConnectedTo {
 message BTDisconnectedFrom {
   repeated string device = 1;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -217,6 +236,7 @@ message BTDisconnectedFrom {
 message WifiStatusChanged {
   OnOffAny ooa = 1;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -225,6 +245,7 @@ message WifiStatusChanged {
 message WifiConnectedTo {
   repeated string ssidList = 1;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -233,6 +254,7 @@ message WifiConnectedTo {
 message WifiDisconnectedFrom {
   repeated string ssidList = 1;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -241,6 +263,7 @@ message WifiDisconnectedFrom {
 message MobileDataStatusChanged {
   OnOffAny ooa = 1;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -249,6 +272,7 @@ message MobileDataStatusChanged {
 message NFCStatusChanged {
   OnOffAny ooa = 1;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -257,6 +281,7 @@ message NFCStatusChanged {
 message FlashLightStatusChanged {
   OnOffAny ooa = 1;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -265,6 +290,7 @@ message FlashLightStatusChanged {
 message LocationStatusChanged {
   OnOffAny ooa = 1;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -273,6 +299,7 @@ message LocationStatusChanged {
 message HotSpotStatusChanged {
   OnOffAny ooa = 1;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -281,6 +308,7 @@ message HotSpotStatusChanged {
 message DarkModeStatusChanged {
   OnOffAny ooa = 1;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -289,6 +317,7 @@ message DarkModeStatusChanged {
 message DNDStatusChanged {
   OnOffAny ooa = 1;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -297,6 +326,7 @@ message DNDStatusChanged {
 message ActivityStarted {
   repeated AppComponent components = 1;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -325,6 +355,7 @@ message Notification {
 message NotificationPosted {
   Notification record = 1;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -334,6 +365,7 @@ message NotificationRemoved {
   Notification record = 1;
   bool byUser = 2;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -343,6 +375,7 @@ message NotificationUpdated {
   Notification old = 1;
   Notification new = 2;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -352,18 +385,21 @@ message TaskRemoved {
   repeated AppPkg apps = 3;
   repeated string pkgSets = 4;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
 }
 
 message SystemReady {
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
 }
 
 message AppAdded {
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -373,6 +409,7 @@ message AppRemoved {
   repeated AppPkg apps = 3;
   repeated string pkgSets = 4;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -382,6 +419,7 @@ message AppUpdated {
   repeated AppPkg apps = 3;
   repeated string pkgSets = 4;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -391,6 +429,7 @@ message PkgStopRunning {
   repeated AppPkg apps = 3;
   repeated string pkgSets = 4;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -400,6 +439,7 @@ message AudioFocusGain {
   repeated AppPkg apps = 3;
   repeated string pkgSets = 4;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -409,12 +449,14 @@ message AudioFocusLost {
   repeated AppPkg apps = 3;
   repeated string pkgSets = 4;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
 }
 
 message AudioFocusChanged {
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -424,18 +466,21 @@ message Broadcast {
   repeated string actions = 1;
   string dataSchema = 2;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
 }
 
 message VPNConnected {
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
 }
 
 message VPNDisconnected {
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -448,6 +493,7 @@ message MediaStoreInsert {
   string filterPath = 3;
   RegexMatchOptions options = 4;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -459,6 +505,7 @@ message OnStartOp {
   repeated AppPkg apps = 2;
   repeated string pkgSets = 3;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -470,6 +517,7 @@ message OnFinishOp {
   repeated AppPkg apps = 2;
   repeated string pkgSets = 3;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -478,6 +526,7 @@ message OnFinishOp {
 message OnQSTileClick {
   int32 tileNumber = 1;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -487,6 +536,7 @@ message SystemSettingsChanged {
   StringPair urlAndExpectedValueRegex = 1;
   RegexMatchOptions matchOptions = 2;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -496,6 +546,7 @@ message CallStateChanged {
   CallState callState = 1;
   string incomingNumber = 2;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -505,6 +556,7 @@ message ClipboardContentChanged {
   string content = 1;
   RegexMatchOptions matchOptions = 2;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -513,6 +565,7 @@ message ClipboardContentChanged {
 message GlobalVarChanged {
   string gvId = 1;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -524,6 +577,7 @@ message HasFoundNodeOnScreen {
   repeated google.protobuf.Any matchers = 3;
   int64 detectTimeout = 4;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -541,6 +595,7 @@ message NodeMatcherText {
 message AppProcessStarted {
   repeated ProcessName processName = 1;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -549,6 +604,7 @@ message AppProcessStarted {
 message HeadsetPlug {
   bool isPlug = 1;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -558,6 +614,7 @@ message HeadsetPlug {
 message ScreenRotate {
   ScreenRotateDegree degree = 1;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
@@ -566,6 +623,7 @@ message ScreenRotate {
 message WindowRotationChange {
   ScreenRotateDegree degree = 1;
 
+  string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;

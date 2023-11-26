@@ -35,8 +35,16 @@ const val CONDITION_WAIT_TIMEOUT = 100L
 const val LOG_TAG_RULE_QUIT = "Rule-Quit"
 
 interface FactMatcher {
-    fun match(actualFact: ProtoMessage, ruleFacts: List<ProtoAny>): Boolean
+    sealed interface MatcherResult {
+        data class Match(val factTag: String) : MatcherResult
+        data object NotMatch : MatcherResult
+    }
+
+    fun match(actualFact: ProtoMessage, ruleFacts: List<ProtoAny>): MatcherResult
 }
+
+val FactMatcher.MatcherResult.isMatch get() = this is FactMatcher.MatcherResult.Match
+
 
 interface ConditionEvaluator {
     suspend fun evaluate(
@@ -224,7 +232,7 @@ class DefaultRuleEngine(
         fact: ProtoMessage,
         rule: Rule,
         checkCondition: Boolean
-    ) = factMatcher.match(fact, rule.factsList) && (
+    ) = factMatcher.match(fact, rule.factsList).isMatch && (
             !checkCondition || (
                     runBlocking {
                         withTimeoutOrNull(CONDITION_WAIT_TIMEOUT) {
@@ -245,7 +253,7 @@ class DefaultRuleEngine(
         fact: ProtoMessage,
         rule: Rule,
         checkCondition: Boolean
-    ) = rule.quit.isEnabled && factMatcher.match(fact, rule.quit.factsList) && (
+    ) = rule.quit.isEnabled && factMatcher.match(fact, rule.quit.factsList).isMatch && (
             !checkCondition || (
                     runBlocking {
                         withTimeoutOrNull(CONDITION_WAIT_TIMEOUT) {
@@ -284,7 +292,9 @@ class DefaultRuleEngine(
         var anyMatch = false
         rules.filterInvalid().forEach { rule ->
             // Try fire for Rule.
-            if (factMatcher.match(fact, rule.factsList)) {
+            val factMatcherResult = factMatcher.match(fact, rule.factsList)
+            logger.d("factMatcherResult: $factMatcherResult")
+            if (factMatcherResult.isMatch) {
                 logger.d("fire, rule matched: ${fact.javaClass} ${rule.title}")
                 anyMatch = true
 
@@ -384,59 +394,64 @@ class DefaultRuleEngine(
                 logger.d("fire, not match for rule it self: ${fact.javaClass} ${rule.title}, will check it's quit.")
 
                 val quit = rule.quit
-                if (quit.isEnabled && factMatcher.match(fact, quit.factsList)) {
-                    logger.d("$LOG_TAG_RULE_QUIT fire, rule-quit matched: ${fact.javaClass} ${rule.title}")
-                    anyMatch = true
+                if (quit.isEnabled) {
+                    val quitFactMatcherResult = factMatcher.match(fact, quit.factsList)
+                    logger.d("quitFactMatcherResult: $quitFactMatcherResult")
+                    if (quitFactMatcherResult.isMatch) {
+                        logger.d("$LOG_TAG_RULE_QUIT fire, rule-quit matched: ${fact.javaClass} ${rule.title}")
+                        anyMatch = true
 
-                    val contextData = ContextData.obtain(initialContextDataLazy())
-                    val evaluateContext = EvaluateContext.newBuilder()
-                        .setSrcId(rule.id)
-                        .setSrcEvent(ContextSrcEvent.ContextSrc_RuleQuit)
-                        .setSrcTitle(rule.title)
-                        .setSerialNumber(nextEvaluateContextSerialNumber())
-                        .build()
-                    val localVars = LocalVars.obtain()
+                        val contextData = ContextData.obtain(initialContextDataLazy())
+                        val evaluateContext = EvaluateContext.newBuilder()
+                            .setSrcId(rule.id)
+                            .setSrcEvent(ContextSrcEvent.ContextSrc_RuleQuit)
+                            .setSrcTitle(rule.title)
+                            .setSerialNumber(nextEvaluateContextSerialNumber())
+                            .build()
+                        val localVars = LocalVars.obtain()
 
-                    coroutineScope.launchSafety {
-                        // Launch start
-                        withContext(Dispatchers.IO) {
-                            val conditionRes = if (quit.conditionsList.isEmpty()) {
-                                logger.d("$LOG_TAG_RULE_QUIT quit for rule: ${rule.title} has no condition, assume match!")
-                                true
-                            } else {
-                                conditionEvaluator.evaluate(
-                                    evaluateContext = evaluateContext,
-                                    condOp = quit.condOp,
-                                    condOpPayload = quit.condOpPayload,
-                                    conditions = quit.conditionsList,
-                                    contextData = contextData,
-                                    // No local var for a Rule condition.
-                                    localVars = LocalVars.obtain()
-                                )
-                            }
-                            logger.d("$LOG_TAG_RULE_QUIT conditionRes for  ${fact.javaClass} ${rule.title} is: $conditionRes")
-                            if (conditionRes) {
-                                logger.d("$LOG_TAG_RULE_QUIT about to quit ${rule.title}")
-
-                                // DO NOT cancel ourself...
-                                cancelJobs("Rule quit(退出指令)") {
-                                    it.id == rule.id
+                        coroutineScope.launchSafety {
+                            // Launch start
+                            withContext(Dispatchers.IO) {
+                                val conditionRes = if (quit.conditionsList.isEmpty()) {
+                                    logger.d("$LOG_TAG_RULE_QUIT quit for rule: ${rule.title} has no condition, assume match!")
+                                    true
+                                } else {
+                                    conditionEvaluator.evaluate(
+                                        evaluateContext = evaluateContext,
+                                        condOp = quit.condOp,
+                                        condOpPayload = quit.condOpPayload,
+                                        conditions = quit.conditionsList,
+                                        contextData = contextData,
+                                        // No local var for a Rule condition.
+                                        localVars = LocalVars.obtain()
+                                    )
                                 }
+                                logger.d("$LOG_TAG_RULE_QUIT conditionRes for  ${fact.javaClass} ${rule.title} is: $conditionRes")
+                                if (conditionRes) {
+                                    logger.d("$LOG_TAG_RULE_QUIT about to quit ${rule.title}")
 
-                                runActionsJob(
-                                    ruleTitleForLog = "$LOG_TAG_RULE_QUIT-${rule.title}",
-                                    asyncMode = rule.asyncMode,
-                                    muteX = rule.muteX,
-                                    actionsToRun = rule.quit.actionsList,
-                                    evaluateContext = evaluateContext,
-                                    contextData = contextData,
-                                    localVars = localVars
-                                )
+                                    // DO NOT cancel ourself...
+                                    cancelJobs("Rule quit(退出指令)") {
+                                        it.id == rule.id
+                                    }
+
+                                    runActionsJob(
+                                        ruleTitleForLog = "$LOG_TAG_RULE_QUIT-${rule.title}",
+                                        asyncMode = rule.asyncMode,
+                                        muteX = rule.muteX,
+                                        actionsToRun = rule.quit.actionsList,
+                                        evaluateContext = evaluateContext,
+                                        contextData = contextData,
+                                        localVars = localVars
+                                    )
+                                }
+                                // Launch End
                             }
-                            // Launch End
                         }
                     }
                 }
+
             }
         }
         return anyMatch

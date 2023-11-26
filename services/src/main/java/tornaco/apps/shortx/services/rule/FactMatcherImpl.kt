@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.rule
 
+import com.google.protobuf.Descriptors
 import tornaco.apps.shortx.core.PrebuiltStablePkgSetLabel
 import tornaco.apps.shortx.core.proto.RegexMatchData
 import tornaco.apps.shortx.core.proto.common.AppPkg
@@ -482,13 +483,33 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
         factValueMatchers[clazz] = Matcher(clazz.name, matcher)
     }
 
-    override fun match(actualFact: ProtoMessage, ruleFacts: List<ProtoAny>): Boolean {
-        return ruleFacts.any { it is_ AnyFact::class.java } || ruleFacts.any {
-            match(
-                actualFact,
-                it
-            )
+    override fun match(
+        actualFact: ProtoMessage,
+        ruleFacts: List<ProtoAny>
+    ): FactMatcher.MatcherResult {
+        for (ruleFact in ruleFacts) {
+            if (ruleFact is_ AnyFact::class.java) {
+                val tag = ruleFact unpack_ AnyFact::class.java
+                return FactMatcher.MatcherResult.Match(tag.tag)
+            } else {
+                val isMatch = match(
+                    actualFact,
+                    ruleFact
+                )
+                if (isMatch) {
+                    val tag = runCatching {
+                        val tagDescriptor: Descriptors.FieldDescriptor =
+                            ruleFact.descriptorForType.findFieldByName("tag")
+                        ruleFact.getField(tagDescriptor) as String
+                    }.getOrElse {
+                        logger.e(it, "get tag from ruleFact")
+                        ""
+                    }
+                    return FactMatcher.MatcherResult.Match(tag)
+                }
+            }
         }
+        return FactMatcher.MatcherResult.NotMatch
     }
 
     private fun match(actualFact: ProtoMessage, ruleFact: ProtoAny): Boolean {
