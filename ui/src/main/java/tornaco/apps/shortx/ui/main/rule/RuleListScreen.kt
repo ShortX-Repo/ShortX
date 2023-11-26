@@ -56,7 +56,7 @@ fun RuleScreen() {
     val ruleListState by ruleListViewModel.state.collectAsState()
 
     LaunchedEffect(ruleListViewModel) {
-        ruleListViewModel.loadRuleList(delay = true)
+        ruleListViewModel.loadRuleList(delay = false)
     }
 
     val context = LocalContext.current

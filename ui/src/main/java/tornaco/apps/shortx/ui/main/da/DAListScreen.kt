@@ -66,7 +66,7 @@ fun DirectActionListScreen() {
     val daListState by daListViewModel.state.collectAsState()
 
     LaunchedEffect(daListViewModel) {
-        daListViewModel.loadDAList(delay = true)
+        daListViewModel.loadDAList(delay = false)
     }
 
     val context = LocalContext.current
