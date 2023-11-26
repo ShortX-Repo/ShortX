@@ -9,6 +9,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import tornaco.apps.shortx.core.context.ContextData
+import tornaco.apps.shortx.core.context.InternalContextDatas
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
@@ -329,6 +330,12 @@ class DefaultRuleEngine(
                 if (shouldExecuteActions) {
                     // Init data
                     val contextData = ContextData.obtain(initialContextDataLazy())
+                    if (factMatcherResult is FactMatcher.MatcherResult.Match) {
+                        contextData.add(
+                            InternalContextDatas.CONTEXT_FACT_TAG,
+                            factMatcherResult.factTag
+                        )
+                    }
                     val evaluateContext = EvaluateContext.newBuilder()
                         .setSrcId(rule.id)
                         .setSrcEvent(ContextSrcEvent.ContextSrc_Rule)
@@ -402,6 +409,12 @@ class DefaultRuleEngine(
                         anyMatch = true
 
                         val contextData = ContextData.obtain(initialContextDataLazy())
+                        if (quitFactMatcherResult is FactMatcher.MatcherResult.Match) {
+                            contextData.add(
+                                InternalContextDatas.CONTEXT_FACT_TAG,
+                                quitFactMatcherResult.factTag
+                            )
+                        }
                         val evaluateContext = EvaluateContext.newBuilder()
                             .setSrcId(rule.id)
                             .setSrcEvent(ContextSrcEvent.ContextSrc_RuleQuit)

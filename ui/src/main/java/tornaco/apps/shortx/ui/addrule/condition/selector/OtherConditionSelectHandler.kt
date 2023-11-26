@@ -15,8 +15,10 @@ import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateGlobalVarSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateLocalVarSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
 import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
+import tornaco.apps.shortx.ui.base.rememberTextInputState
 
 @Composable
 fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectSource) -> Boolean {
@@ -70,6 +72,14 @@ fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSe
             })
     DelaySelectorDialog(state = delaySelectionState)
 
+    val factTagSelectorState = rememberTextInputState(
+        title = LocalI18N.current["ui.condition.fact.tag"],
+        message = null,
+        onSelected = {
+            addCondition(Condition.RequireFactTag(tag = it))
+        })
+    TextInputDialog(state = factTagSelectorState)
+
     return { source ->
         when (source.clazz) {
             Condition.MVEL::class -> {
@@ -102,6 +112,11 @@ fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSe
 
             Condition.EvaluateLocalVar::class -> {
                 evaluateLocalVarSelectorDialogState.show(source.getConditionAs())
+                true
+            }
+
+            Condition.RequireFactTag::class -> {
+                factTagSelectorState.show(source.getConditionAs<Condition.RequireFactTag>()?.tag)
                 true
             }
 

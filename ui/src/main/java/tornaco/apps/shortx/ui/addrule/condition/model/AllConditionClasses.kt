@@ -37,4 +37,5 @@ val allConditionClasses = listOf(
     Condition.RequireSensorOff::class,
     Condition.CurrentActivity::class,
     Condition.RequireTileState::class,
+    Condition.RequireFactTag::class,
 )

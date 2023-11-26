@@ -190,6 +190,11 @@ enum class PrebuiltCond : CondProvider {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.RequireTileState
     },
+
+    RequireFactTag {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.RequireFactTag
+    },
 }
 
 fun prebuiltCondFor(condition: ProtoAny): Cond? {

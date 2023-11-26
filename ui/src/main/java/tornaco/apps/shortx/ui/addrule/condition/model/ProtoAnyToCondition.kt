@@ -24,6 +24,7 @@ import tornaco.apps.shortx.core.proto.condition.PlugState
 import tornaco.apps.shortx.core.proto.condition.RequireBTConnected
 import tornaco.apps.shortx.core.proto.condition.RequireBTDisconnected
 import tornaco.apps.shortx.core.proto.condition.RequireDelay
+import tornaco.apps.shortx.core.proto.condition.RequireFactTag
 import tornaco.apps.shortx.core.proto.condition.RequireMobileDataEnabled
 import tornaco.apps.shortx.core.proto.condition.RequireScreenRotate
 import tornaco.apps.shortx.core.proto.condition.RequireSensorOff
@@ -456,6 +457,17 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 customContextDataKey = data.customContextDataKey,
                 state = data.state,
                 spec = data.tileSpec
+            )
+        }
+
+        this is_ RequireFactTag::class.java -> {
+            val data = this unpack_ RequireFactTag::class.java
+            Condition.RequireFactTag(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+                customContextDataKey = data.customContextDataKey,
+                tag = data.tag,
             )
         }
 

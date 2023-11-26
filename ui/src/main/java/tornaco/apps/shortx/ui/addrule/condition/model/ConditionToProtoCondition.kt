@@ -24,6 +24,7 @@ import tornaco.apps.shortx.core.proto.condition.PlugState
 import tornaco.apps.shortx.core.proto.condition.RequireBTConnected
 import tornaco.apps.shortx.core.proto.condition.RequireBTDisconnected
 import tornaco.apps.shortx.core.proto.condition.RequireDelay
+import tornaco.apps.shortx.core.proto.condition.RequireFactTag
 import tornaco.apps.shortx.core.proto.condition.RequireMobileDataEnabled
 import tornaco.apps.shortx.core.proto.condition.RequireScreenRotate
 import tornaco.apps.shortx.core.proto.condition.RequireSensorOff
@@ -474,6 +475,15 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setCustomContextDataKey(customContextDataKey)
                 .setState(state)
                 .setTileSpec(spec)
+                .build()
+        }
+        is Condition.RequireFactTag -> {
+            RequireFactTag.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
+                .setTag(tag)
                 .build()
         }
     }

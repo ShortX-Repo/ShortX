@@ -486,6 +486,7 @@
     "ui.action.take.screenshot": "截圖",
     "ui.title.mvel": "MVEL運算式",
     "ui.title.js": "Javascript",
+    "ui.condition.fact.tag": "触发器标签",
     "ui.condition.is.incall": "在通话中",
     "ui.condition.is.ringing": "正在响铃",
     "ui.condition.invert": "取反！",

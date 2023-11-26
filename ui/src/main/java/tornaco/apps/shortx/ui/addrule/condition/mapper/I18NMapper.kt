@@ -16,11 +16,6 @@ import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.LocalI18N
 import kotlin.reflect.KClass
 
-@Composable
-fun labelForConditionSelector(condition: KClass<out Condition>): List<String> {
-    return labelForConditionSelector(LocalI18N.current, condition)
-}
-
 fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): List<String> {
     return when (condition) {
         Condition.CurrentForegroundApp::class -> {
@@ -210,6 +205,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
         Condition.RequireTileState::class -> {
             listOf(
                 i18N["ui.conditions.tile.state"],
+            )
+        }
+
+        Condition.RequireFactTag::class -> {
+            listOf(
+                i18N["ui.condition.fact.tag"],
             )
         }
 
@@ -467,6 +468,13 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
             listOf(
                 i18N["ui.conditions.tile.state"],
                 i18N[condition.state.labelKey()]
+            )
+        }
+
+        is Condition.RequireFactTag -> {
+            listOf(
+                i18N["RequireFactTag"],
+                condition.tag
             )
         }
     }

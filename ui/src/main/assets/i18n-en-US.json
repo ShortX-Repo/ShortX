@@ -494,6 +494,7 @@
     "ui.action.take.screenshot": "Take Screenshot",
     "ui.title.mvel": "MVEL expression",
     "ui.title.js": "JS",
+    "ui.condition.fact.tag": "Fact tag",
     "ui.condition.is.incall": "Is incall",
     "ui.condition.is.ringing": "Is ringing",
     "ui.condition.invert": "Invert!",

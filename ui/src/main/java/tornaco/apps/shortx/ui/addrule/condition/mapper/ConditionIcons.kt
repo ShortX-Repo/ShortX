@@ -148,6 +148,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.Device.server_fill
         }
 
+        Condition.RequireFactTag::class -> {
+            Remix.Finance.price_tag_3_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

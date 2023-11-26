@@ -407,3 +407,13 @@ message RequireTileState {
 }
 
 
+message RequireFactTag {
+  string tag = 1;
+
+  CustomContextDataKey customContextDataKey = 97;
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}
+
+
