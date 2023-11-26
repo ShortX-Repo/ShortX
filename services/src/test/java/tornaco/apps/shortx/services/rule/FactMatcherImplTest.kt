@@ -1,7 +1,6 @@
 package tornaco.apps.shortx.services.rule
 
 import io.kotest.matchers.shouldBe
-import io.mockk.mockk
 import org.junit.Before
 import org.junit.Test
 import tornaco.apps.shortx.core.proto.fact.ActivityStarted
@@ -25,11 +24,12 @@ class FactMatcherImplTest {
             throw Error()
         }
         impl.match(
-            ActivityStarted.getDefaultInstance().pack_(), listOf(
+            actualFact = ActivityStarted.getDefaultInstance().pack_(),
+            ruleFacts = listOf(
                 AppProcessStarted.getDefaultInstance().pack_(),
-                AnyFact.getDefaultInstance().pack_()
+                AnyFact.newBuilder().setTag("Test").build().pack_()
             )
-        ) shouldBe true
+        ) shouldBe FactMatcher.MatcherResult.Match("Test")
     }
 
     @Test
@@ -41,6 +41,6 @@ class FactMatcherImplTest {
             ActivityStarted.getDefaultInstance().pack_(), listOf(
                 AppProcessStarted.getDefaultInstance().pack_(),
             )
-        ) shouldBe false
+        ) shouldBe FactMatcher.MatcherResult.NotMatch
     }
 }
