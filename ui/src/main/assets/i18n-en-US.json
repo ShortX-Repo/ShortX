@@ -224,6 +224,7 @@
     "ui.update.time": "Last update: {date}",
     "ui.common.coming.soon": "Coming soon~",
     "ui.common.note": "Note",
+    "ui.common.set.tag": "Set tag",
     "ui.common.sort": "Sort",
     "ui.common.toggle.enable.disable": "Enable/Disable",
     "ui.common.toggle.enable.disable.summary": "Disable Action will not be execute",

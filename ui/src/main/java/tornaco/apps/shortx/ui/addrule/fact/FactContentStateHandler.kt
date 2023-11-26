@@ -30,6 +30,16 @@ fun FactContentStateHandler.asFactHandler(): FactHandler {
         },
         insertBelow = { fact, anchorId ->
             insertFactBelow(fact, anchorId)
+        },
+        setNote = { id, note ->
+            facts.firstOrNull { it.id == id }?.let {
+                setNote(it, note)
+            }
+        },
+        setTag = { id, tag ->
+            facts.firstOrNull { it.id == id }?.let {
+                setTag(it, tag)
+            }
         }
     )
 }
@@ -111,6 +121,16 @@ class FactContentStateHandler(
                 }
             }, isChanged = true)
         }
+    }
+
+    fun setNote(fact: Fact, note: String) {
+        fact.toProtoFact(overrideNote = note)
+            .pack_().toFact(shortXManager)?.let { addFact(it) }
+    }
+
+    fun setTag(fact: Fact, tag: String) {
+        fact.toProtoFact(overrideTag = tag)
+            .pack_().toFact(shortXManager)?.let { addFact(it) }
     }
 
     fun init(

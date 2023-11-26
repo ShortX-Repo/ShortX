@@ -1,8 +1,13 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package tornaco.apps.shortx.ui.addrule.fact
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,7 +19,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.res.Remix
@@ -35,16 +42,24 @@ import tornaco.apps.shortx.ui.addrule.rememberContextDataInfoDialogState
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
+import tornaco.apps.shortx.ui.base.InputValidateResult
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MD3Badge
 import tornaco.apps.shortx.ui.base.MediumTitle
+import tornaco.apps.shortx.ui.base.NoteRow
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
+import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShapeXL
+import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.VerticalDivider
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.rememberClipboardDialogState
 
@@ -55,6 +70,8 @@ class FactHandler(
     val insertBelow: (fact: Fact, anchorId: String) -> Unit = { _, _ -> run {} },
     val copy: (factId: String) -> Unit = {},
     val enableDisable: (factId: String) -> Unit = {},
+    val setNote: (factId: String, note: String) -> Unit = { _, _ -> run {} },
+    val setTag: (factId: String, note: String) -> Unit = { _, _ -> run {} },
 )
 
 @Composable
@@ -126,6 +143,7 @@ private fun FactItem(
                 newFact.clone(
                     id = currentFact.id,
                     note = currentFact.note,
+                    tag = currentFact.tag,
                     customContextDataKey = currentFact.customContextDataKey
                 )
             )
@@ -136,6 +154,7 @@ private fun FactItem(
                 newFact.clone(
                     id = currentFact.id,
                     note = currentFact.note,
+                    tag = currentFact.tag,
                     customContextDataKey = currentFact.customContextDataKey
                 ).apply {
                     composeLogger.d("systemFactSelectHandler: $this")
@@ -146,6 +165,7 @@ private fun FactItem(
                 newFact.clone(
                     id = currentFact.id,
                     note = currentFact.note,
+                    tag = currentFact.tag,
                     customContextDataKey = currentFact.customContextDataKey
                 )
             )
@@ -159,57 +179,109 @@ private fun FactItem(
     Box(modifier = Modifier) {
         val clickDropdownState = rememberDropdownSelectorState()
 
-        ListItem(
-            modifier = Modifier,
-            titleLines = mutableListOf<String>().apply {
-                addAll(labelForFact(fact = fact))
-                onDebugBuild { add(currentFact.id) }
-            },
-            onClick = {
-                factHandlers.any {
-                    it(FactSelectSource.FromFact(currentFact))
-                }
-            },
-            onLongClick = {
-                clickDropdownState.open()
-            },
-            icon = {
-                FactIcon(fact) {
-                    clickDropdownState.open()
-                }
-            },
-            action1 = {
-                if (fact.contextData.isNotEmpty()) {
-                    IconButton(onClick = {
-                        contextDataInfoDialogState.show(
-                            labelAndDescriptionForFactSelector(i18N, fact::class).first,
-                            fact.contextData
-                        )
-                    }) {
-                        ContextDataIcon()
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(ShortXCardRoundedCornerShape)
+                .combinedClickable(
+                    enabled = !readOnly,
+                    onClick = {
+                        factHandlers.any {
+                            it(FactSelectSource.FromFact(currentFact))
+                        }
+                    },
+                    onLongClick = {
+                        clickDropdownState.open()
                     }
-                    VerticalDivider(modifier = Modifier.height(24.dp))
-                }
+                )
+        ) {
+            ListItem(
+                modifier = Modifier,
+                titleLines = mutableListOf<String>().apply {
+                    addAll(labelForFact(fact = fact))
+                    onDebugBuild { add(currentFact.id) }
+                },
+                icon = {
+                    FactIcon(fact) {
+                        clickDropdownState.open()
+                    }
+                },
+                action1 = {
+                    if (fact.contextData.isNotEmpty()) {
+                        IconButton(onClick = {
+                            contextDataInfoDialogState.show(
+                                labelAndDescriptionForFactSelector(i18N, fact::class).first,
+                                fact.contextData
+                            )
+                        }) {
+                            ContextDataIcon()
+                        }
+                        VerticalDivider(modifier = Modifier.height(24.dp))
+                    }
 
-                if (!readOnly) {
-                    IconButton(onClick = {
-                        handler.removeFact(currentFact)
-                    }) {
-                        RemixIcon(remixName = Remix.System.close_line)
+                    if (!readOnly) {
+                        IconButton(onClick = {
+                            handler.removeFact(currentFact)
+                        }) {
+                            RemixIcon(remixName = Remix.System.close_line)
+                        }
                     }
                 }
+            )
+
+            if (fact.tag.isNotBlank()) {
+                MD3Badge(text = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        RemixIcon(remixName = Remix.Finance.price_tag_3_line)
+                        SmallSpacer()
+                        TipBody(text = fact.tag)
+                    }
+                })
             }
-        )
+
+            if (fact.note.isNotBlank()) {
+                NoteRow(
+                    modifier = Modifier
+                        .padding(start = 68.dp, end = 16.dp)
+                        .padding(bottom = 16.dp),
+                    text = fact.note
+                )
+            }
+        }
 
         val clipboardDialogState = rememberClipboardDialogState()
         ClipboardDialog(state = clipboardDialogState)
+
+        val noteDialogState =
+            rememberTextInputState(
+                title = LocalI18N.current["ui.common.note"],
+                message = null,
+                inputValidator = {
+                    InputValidateResult.OK
+                }
+            ) {
+                handler.setNote(currentFact.id, it)
+            }
+        TextInputDialog(state = noteDialogState)
+
+        val tagDialogState =
+            rememberTextInputState(
+                title = LocalI18N.current["ui.common.set.tag"],
+                message = null,
+                inputValidator = {
+                    InputValidateResult.OK
+                }
+            ) {
+                handler.setTag(currentFact.id, it)
+            }
+        TextInputDialog(state = tagDialogState)
 
         DropdownSelector(
             state = clickDropdownState,
             items = listOf(
                 DropdownItem(
                     labelLines = listOf(LocalI18N.current["ui.common.paste.above"]),
-                    data = currentFact.id to "pa",
+                    data = currentFact.id to FactItemOptions.PasteAbove,
                     icon = {
                         RemixIcon(
                             remixName = Remix.Editor.insert_row_top,
@@ -219,7 +291,7 @@ private fun FactItem(
                 ),
                 DropdownItem(
                     labelLines = listOf(LocalI18N.current["ui.common.paste.below"]),
-                    data = currentFact.id to "pb",
+                    data = currentFact.id to FactItemOptions.PasteBelow,
                     icon = {
                         RemixIcon(
                             remixName = Remix.Editor.insert_row_bottom,
@@ -229,7 +301,7 @@ private fun FactItem(
                 ),
                 DropdownItem(
                     labelLines = listOf(LocalI18N.current["ui.common.copy"]),
-                    data = currentFact.id to "cp",
+                    data = currentFact.id to FactItemOptions.Copy,
                     icon = {
                         RemixIcon(
                             remixName = Remix.Document.file_copy_fill,
@@ -237,10 +309,30 @@ private fun FactItem(
                         )
                     }
                 ),
+                DropdownItem(
+                    labelLines = listOf(LocalI18N.current["ui.common.note"]),
+                    data = currentFact.id to FactItemOptions.Note,
+                    icon = {
+                        RemixIcon(
+                            remixName = Remix.Document.sticky_note_line,
+                            tint = colorForFact(fact::class)
+                        )
+                    }
+                ),
+                DropdownItem(
+                    labelLines = listOf(LocalI18N.current["ui.common.set.tag"]),
+                    data = currentFact.id to FactItemOptions.SetTag,
+                    icon = {
+                        RemixIcon(
+                            remixName = Remix.Finance.price_tag_3_line,
+                            tint = colorForFact(fact::class)
+                        )
+                    }
+                ),
             ),
             onSelect = { dropdownItem ->
                 when (dropdownItem.data.second) {
-                    "pa" -> {
+                    FactItemOptions.PasteAbove -> {
                         val clipboardFacts = UiClipboard.getFacts()
                         if (clipboardFacts.size == 1) {
                             handler.insertAbove(
@@ -260,7 +352,7 @@ private fun FactItem(
                         }
                     }
 
-                    "pb" -> {
+                    FactItemOptions.PasteBelow -> {
                         val clipboardFacts = UiClipboard.getFacts()
                         if (clipboardFacts.size == 1) {
                             handler.insertBelow(
@@ -280,8 +372,16 @@ private fun FactItem(
                         }
                     }
 
-                    "cp" -> {
+                    FactItemOptions.Copy -> {
                         handler.copy(dropdownItem.data.first)
+                    }
+
+                    FactItemOptions.SetTag -> {
+                        tagDialogState.show(fact.tag)
+                    }
+
+                    FactItemOptions.Note -> {
+                        noteDialogState.show(fact.note)
                     }
                 }
             })
@@ -303,4 +403,8 @@ fun FactIcon(fact: Fact, onClick: (() -> Unit)? = null) {
             tint = colorForFact(fact::class)
         )
     }
+}
+
+enum class FactItemOptions {
+    PasteAbove, PasteBelow, Copy, SetTag, Note
 }

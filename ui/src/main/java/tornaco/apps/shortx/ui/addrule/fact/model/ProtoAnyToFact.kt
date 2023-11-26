@@ -19,7 +19,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.AnyFact(
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
-                note = data.note
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -29,7 +30,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 keyCode = data.keyCode,
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
-                note = data.note
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -40,7 +42,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 gesture = data.gesture,
                 isInterceptMode = data.isInterceptMode,
                 id = data.id, customContextDataKey = data.customContextDataKey,
-                note = data.note
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -51,7 +54,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 gesture = data.gesture,
                 isIntercept = data.isIntercept,
                 id = data.id, customContextDataKey = data.customContextDataKey,
-                note = data.note
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -60,7 +64,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.ScreenOff(
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
-                note = data.note
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -69,7 +74,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.ScreenOn(
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
-                note = data.note
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -78,7 +84,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.UserPresent(
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
-                note = data.note
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -87,7 +94,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.SystemReady(
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
-                note = data.note
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -96,7 +104,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.Alarm(
                 timeOfADay = data.triggerAt,
                 repeatDays = data.repeat,
-                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -106,7 +117,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 start = data.start,
                 end = data.end,
                 repeatDays = data.repeat,
-                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -117,7 +131,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 end = data.end,
                 repeatDays = data.repeat,
                 fixedBy = data.fixedBy.toFixedBy() ?: FixedSetting.Times(0),
-                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -127,7 +144,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.AppBecomeForeground(
                 apps = models.first,
                 pkgSets = models.second,
-                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -137,7 +157,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.AppBecomeBackground(
                 apps = models.first,
                 pkgSets = models.second,
-                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -146,7 +169,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.AppAdded(
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
-                note = data.note
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -156,7 +180,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.AppRemoved(
                 apps = models.first,
                 pkgSets = models.second,
-                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -166,7 +193,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.AppUpdated(
                 apps = models.first,
                 pkgSets = models.second,
-                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -177,14 +207,16 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 Fact.AnyActivityStarted(
                     id = data.id,
                     customContextDataKey = data.customContextDataKey,
-                    note = data.note
+                    note = data.note,
+                    tag = data.tag
                 )
             } else {
                 Fact.ActivityStarted(
                     data.componentsList,
                     id = data.id,
                     customContextDataKey = data.customContextDataKey,
-                    note = data.note
+                    note = data.note,
+                    tag = data.tag
                 )
             }
         }
@@ -196,7 +228,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 data.ooa,
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
-                note = data.note
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -207,7 +240,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 ssidList = data.ssidListList,
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
-                note = data.note
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -218,7 +252,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 ssidList = data.ssidListList,
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
-                note = data.note
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -228,7 +263,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 data.ooa,
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
-                note = data.note
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -239,7 +275,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 devices = data.deviceList,
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
-                note = data.note
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -250,7 +287,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 devices = data.deviceList,
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
-                note = data.note
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -261,7 +299,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 data.ooa,
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
-                note = data.note
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -271,7 +310,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 data.ooa,
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
-                note = data.note
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -282,7 +322,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 data.ooa,
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
-                note = data.note
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -293,7 +334,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 data.ooa,
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
-                note = data.note
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -304,7 +346,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 data.ooa,
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
-                note = data.note
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -314,7 +357,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 data.ooa,
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
-                note = data.note
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -325,7 +369,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 data.ooa,
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
-                note = data.note
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -344,7 +389,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                     contentMatchOptions = data.record.contentRegexOptions,
                     tag = data.record.tag
                 ),
-                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -363,7 +411,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                     contentMatchOptions = data.record.contentRegexOptions,
                     tag = data.record.tag
                 ),
-                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -382,7 +433,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                     contentMatchOptions = data.new.contentRegexOptions,
                     tag = data.new.tag
                 ),
-                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -396,13 +450,17 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 Fact.TaskRemovedAny(
                     id = data.id,
                     customContextDataKey = data.customContextDataKey,
-                    note = data.note
+                    note = data.note,
+                    tag = data.tag
                 )
             } else {
                 Fact.TaskRemoved(
                     apps = models.first,
                     pkgSets = models.second,
-                    id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
+                    id = data.id,
+                    customContextDataKey = data.customContextDataKey,
+                    note = data.note,
+                    tag = data.tag
                 )
             }
         }
@@ -417,13 +475,17 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 Fact.PkgStopRunningAny(
                     id = data.id,
                     customContextDataKey = data.customContextDataKey,
-                    note = data.note
+                    note = data.note,
+                    tag = data.tag
                 )
             } else {
                 Fact.PkgStopRunning(
                     apps = models.first,
                     pkgSets = models.second,
-                    id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
+                    id = data.id,
+                    customContextDataKey = data.customContextDataKey,
+                    note = data.note,
+                    tag = data.tag
                 )
             }
         }
@@ -438,7 +500,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.AudioFocusGain(
                 apps = models.first,
                 pkgSets = models.second,
-                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -451,7 +516,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.AudioFocusLost(
                 apps = models.first,
                 pkgSets = models.second,
-                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -459,7 +527,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.AudioFocusChanged::class.java
             Fact.AudioFocusChanged(
-                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -467,7 +538,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.BatteryLevelChanged::class.java
             Fact.BatteryLevelChanged(
-                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note,
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag,
                 level = data.level
             )
         }
@@ -476,7 +550,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.BatteryTemperatureChanged::class.java
             Fact.BatteryTemperatureChanged(
-                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note,
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag,
                 temp = data.temp
             )
         }
@@ -485,7 +562,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.ChargerPlug::class.java
             Fact.ChargerPlug(
-                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note,
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag,
             )
         }
 
@@ -493,7 +573,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.ChargerUnplug::class.java
             Fact.ChargerUnplug(
-                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note,
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag,
             )
         }
 
@@ -504,6 +587,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                tag = data.tag,
                 actions = data.actionsList
             )
         }
@@ -512,7 +596,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.VPNConnected::class.java
             Fact.VPNConnected(
-                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -520,7 +607,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.VPNDisconnected::class.java
             Fact.VPNDisconnected(
-                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag
             )
         }
 
@@ -528,7 +618,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.MediaStoreInsert::class.java
             Fact.MediaStoreInsert(
-                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note,
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag,
                 filterPathRegex = data.filterPath,
                 matchOptions = data.options
             )
@@ -541,7 +634,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 (data.appsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
 
             Fact.OnStartOp(
-                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note,
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag,
                 codes = data.opCodesList,
                 apps = models.first,
                 pkgSets = models.second,
@@ -555,7 +651,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 (data.appsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
 
             Fact.OnFinishOp(
-                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note,
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag,
                 codes = data.opCodesList,
                 apps = models.first,
                 pkgSets = models.second,
@@ -567,7 +666,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 this unpack_ tornaco.apps.shortx.core.proto.fact.OnQSTileClick::class.java
 
             Fact.OnQSTileClick(
-                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note,
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag,
                 tile = StatusBarTile.forNumber(data.tileNumber)
             )
         }
@@ -580,6 +682,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                tag = data.tag,
                 urlAndValueRegex = data.urlAndExpectedValueRegex,
                 options = data.matchOptions
             )
@@ -592,6 +695,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.CallStateChanged(
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                tag = data.tag,
                 callState = data.callState
             )
         }
@@ -603,6 +707,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.ClipboardContentChanged(
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                tag = data.tag,
                 content = data.content,
                 options = data.matchOptions
             )
@@ -615,6 +720,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.GlobalVarChanged(
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                tag = data.tag,
                 gvId = data.gvId
             )
         }
@@ -626,6 +732,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.HeadsetPlug(
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                tag = data.tag,
                 isPlug = data.isPlug
             )
         }
@@ -637,6 +744,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.ScreenRotate(
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                tag = data.tag,
                 degree = data.degree
             )
         }
@@ -648,6 +756,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.WindowRotationChange(
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                tag = data.tag,
                 degree = data.degree
             )
         }
@@ -659,6 +768,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.AppProcessStarted(
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                tag = data.tag,
                 processNames = data.processNameList
             )
         }
@@ -671,6 +781,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                tag = data.tag,
                 packageName = data.packageName,
                 componentName = data.componentName,
                 detectTimeout = data.detectTimeout,

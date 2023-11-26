@@ -498,9 +498,10 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
                 )
                 if (isMatch) {
                     val tag = runCatching {
+                        val unpackedRuleFact = ruleFact unpack_ actualFact::class.java
                         val tagDescriptor: Descriptors.FieldDescriptor =
-                            ruleFact.descriptorForType.findFieldByName("tag")
-                        ruleFact.getField(tagDescriptor) as String
+                            unpackedRuleFact.descriptorForType.findFieldByName("tag")
+                        unpackedRuleFact.getField(tagDescriptor) as String
                     }.getOrElse {
                         logger.e(it, "get tag from ruleFact")
                         ""

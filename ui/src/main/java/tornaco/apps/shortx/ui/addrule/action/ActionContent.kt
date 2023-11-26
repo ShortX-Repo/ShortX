@@ -493,7 +493,7 @@ private fun Actions(
                                             data = currentAction.id to "note",
                                             icon = {
                                                 RemixIcon(
-                                                    remixName = Remix.Document.sticky_note_fill,
+                                                    remixName = Remix.Document.sticky_note_line,
                                                     tint = colorForAction(action::class)
                                                 )
                                             }

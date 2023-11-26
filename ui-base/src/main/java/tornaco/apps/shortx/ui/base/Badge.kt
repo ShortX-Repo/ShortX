@@ -157,3 +157,18 @@ fun MD3Badge(
         )
     }
 }
+
+@Composable
+fun MD3Badge(
+    text: @Composable () -> Unit,
+    containerColor: Color = MaterialTheme.colorScheme.primaryContainer,
+    padding: Dp = 3.dp
+) {
+    androidx.compose.material3.Badge(
+        containerColor = containerColor
+    ) {
+        Box(modifier = Modifier.padding(padding)) {
+            text()
+        }
+    }
+}
