@@ -230,13 +230,18 @@ private fun FactItem(
             )
 
             if (fact.tag.isNotBlank()) {
-                MD3Badge(text = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        RemixIcon(remixName = Remix.Finance.price_tag_3_line)
-                        SmallSpacer()
-                        TipBody(text = fact.tag)
-                    }
-                })
+                MD3Badge(modifier = Modifier
+                    .padding(start = 68.dp, end = 16.dp),
+                    text = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            RemixIcon(
+                                modifier = Modifier.size(16.dp),
+                                remixName = Remix.Finance.price_tag_3_line
+                            )
+                            SmallSpacer()
+                            TipBody(text = fact.tag)
+                        }
+                    })
             }
 
             if (fact.note.isNotBlank()) {
