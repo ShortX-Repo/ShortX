@@ -458,14 +458,15 @@ class AppStateService(shortXContext: ShortXContext) :
             "onTaskRemoved",
             TaskRemoved.newBuilder()
                 .addAllApps(listOf(task.owner))
-                .build(),
+                .build()
+        ) {
             mapOf(
                 ContextDataMapping.TaskRemoved.appLabel.name to (app?.label ?: task.owner.pkgName),
                 ContextDataMapping.TaskRemoved.taskId.name to "${task.taskId}",
                 ContextDataMapping.TaskRemoved.userId.name to "${task.owner.userId}",
                 ContextDataMapping.TaskRemoved.pkgName.name to task.owner.pkgName,
             )
-        )
+        }
     }
 
     @Synchronized
@@ -704,5 +705,13 @@ class AppStateService(shortXContext: ShortXContext) :
             context.startActivity(it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
         }
         return true
+    }
+
+    fun hasRecentTaskForPkg(
+        context: Context,
+        pkg: AppPkg,
+        ignoreNotRunning: Boolean
+    ): Boolean {
+        return TaskMapping.hasRecentTaskForPkg(context, pkg, ignoreNotRunning)
     }
 }

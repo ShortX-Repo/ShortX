@@ -49,6 +49,7 @@
     "ui.conditions.battery.percent.op": "判断条件",
     "ui.conditions.battery.percent.value": "电量值 (0-100)",
     "ui.conditions.app.has.notification": "应用有通知",
+    "ui.conditions.app.has.task": "应用有最近任务",
     "ui.conditions.tile.state": "磁贴状态",
     "ui.conditions.tile.state.QSTileState_Unavailable": "不可用",
     "ui.conditions.tile.state.QSTileState_InActive": "未启用",

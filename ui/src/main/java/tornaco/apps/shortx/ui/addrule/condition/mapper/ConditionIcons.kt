@@ -32,6 +32,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.Media.music_2_fill
         }
 
+        Condition.AppHasTask::class -> {
+            Remix.Document.task_fill
+        }
+
         Condition.MVEL::class -> {
             Remix.Development.code_fill
         }

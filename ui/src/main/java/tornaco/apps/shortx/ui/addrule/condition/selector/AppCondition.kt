@@ -29,6 +29,7 @@ fun AppConditions(
         Condition.ServiceIsRunning::class,
         Condition.CurrentActivity::class,
         Condition.AppHasNotification::class,
+        Condition.AppHasTask::class,
     ).map {
         SelectorItem(
             type = it,

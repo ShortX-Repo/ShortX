@@ -416,4 +416,15 @@ message RequireFactTag {
   string id = 100;
 }
 
+message AppHasTask {
+  repeated AppPkg pkgs = 1;
+  repeated string pkgSets = 2;
+  // Default is ALL.
+  ConditionOperator op = 3;
+
+  CustomContextDataKey customContextDataKey = 97;
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}
 

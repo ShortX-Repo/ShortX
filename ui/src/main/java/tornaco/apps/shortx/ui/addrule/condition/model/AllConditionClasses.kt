@@ -38,4 +38,5 @@ val allConditionClasses = listOf(
     Condition.CurrentActivity::class,
     Condition.RequireTileState::class,
     Condition.RequireFactTag::class,
+    Condition.AppHasTask::class,
 )

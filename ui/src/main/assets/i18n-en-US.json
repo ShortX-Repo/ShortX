@@ -49,6 +49,7 @@
     "ui.conditions.battery.percent.op": "Select op",
     "ui.conditions.battery.percent.value": "Value (0-100)",
     "ui.conditions.app.has.notification": "App has notification",
+    "ui.conditions.app.has.task": "App has recent task",
     "ui.conditions.tile.state": "QS tile state",
     "ui.conditions.tile.state.QSTileState_Unavailable": "Unavailable",
     "ui.conditions.tile.state.QSTileState_InActive": "Inactive",

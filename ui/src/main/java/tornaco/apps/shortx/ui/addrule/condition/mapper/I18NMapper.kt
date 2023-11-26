@@ -144,6 +144,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             )
         }
 
+        Condition.AppHasTask::class -> {
+            listOf(
+                i18N["ui.conditions.app.has.task"]
+            )
+        }
+
         Condition.KeyguardIsLocked::class -> {
             listOf(
                 i18N["ui.conditions.screen.locked"]
@@ -245,6 +251,12 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
 
         is Condition.AppHasNotification -> {
             mutableListOf(i18N["ui.conditions.app.has.notification"])
+                .appendConditionOp(condition.apps, condition.pkgSets, condition.op, i18N)
+                .labelLinesFromAppsAndPkgSets(condition.apps, condition.pkgSets)
+        }
+
+        is Condition.AppHasTask -> {
+            mutableListOf(i18N["ui.conditions.app.has.task"])
                 .appendConditionOp(condition.apps, condition.pkgSets, condition.op, i18N)
                 .labelLinesFromAppsAndPkgSets(condition.apps, condition.pkgSets)
         }

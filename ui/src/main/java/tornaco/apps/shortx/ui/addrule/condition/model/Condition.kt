@@ -110,6 +110,31 @@ sealed interface Condition : Parcelable {
     }
 
     @Parcelize
+    data class AppHasTask(
+        val apps: List<App>,
+        val pkgSets: List<PkgSet>,
+        val op: Op,
+        override val note: String = "",
+        override val isInvert: Boolean = false,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val id: String = defaultNewConditionId()
+    ) : Condition {
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: CustomContextDataKey
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
+        }
+    }
+
+    @Parcelize
     data class AppIsRunning(
         val apps: List<App>,
         val pkgSets: List<PkgSet>,
