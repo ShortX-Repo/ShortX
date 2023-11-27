@@ -7,10 +7,10 @@ public interface ISu extends android.os.IInterface
   /** Default implementation for ISu. */
   public static class Default implements tornaco.apps.shortx.core.rule.action.su.ISu
   {
-    @Override public void exe(java.lang.String[] command, tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver, boolean singleShot) throws android.os.RemoteException
+    @Override public void exe(java.lang.String requestId, java.lang.String[] command, tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver, boolean singleShot) throws android.os.RemoteException
     {
     }
-    @Override public void close(tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver) throws android.os.RemoteException
+    @Override public void close(java.lang.String requestId) throws android.os.RemoteException
     {
     }
     @Override
@@ -59,30 +59,27 @@ public interface ISu extends android.os.IInterface
         case TRANSACTION_exe:
         {
           data.enforceInterface(descriptor);
-          java.lang.String[] _arg0;
-          _arg0 = data.createStringArray();
-          tornaco.apps.shortx.core.os.SynchronousResultReceiver _arg1;
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          java.lang.String[] _arg1;
+          _arg1 = data.createStringArray();
+          tornaco.apps.shortx.core.os.SynchronousResultReceiver _arg2;
           if ((0!=data.readInt())) {
-            _arg1 = tornaco.apps.shortx.core.os.SynchronousResultReceiver.CREATOR.createFromParcel(data);
+            _arg2 = tornaco.apps.shortx.core.os.SynchronousResultReceiver.CREATOR.createFromParcel(data);
           }
           else {
-            _arg1 = null;
+            _arg2 = null;
           }
-          boolean _arg2;
-          _arg2 = (0!=data.readInt());
-          this.exe(_arg0, _arg1, _arg2);
+          boolean _arg3;
+          _arg3 = (0!=data.readInt());
+          this.exe(_arg0, _arg1, _arg2, _arg3);
           return true;
         }
         case TRANSACTION_close:
         {
           data.enforceInterface(descriptor);
-          tornaco.apps.shortx.core.os.SynchronousResultReceiver _arg0;
-          if ((0!=data.readInt())) {
-            _arg0 = tornaco.apps.shortx.core.os.SynchronousResultReceiver.CREATOR.createFromParcel(data);
-          }
-          else {
-            _arg0 = null;
-          }
+          java.lang.String _arg0;
+          _arg0 = data.readString();
           this.close(_arg0);
           return true;
         }
@@ -107,11 +104,12 @@ public interface ISu extends android.os.IInterface
       {
         return DESCRIPTOR;
       }
-      @Override public void exe(java.lang.String[] command, tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver, boolean singleShot) throws android.os.RemoteException
+      @Override public void exe(java.lang.String requestId, java.lang.String[] command, tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver, boolean singleShot) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(requestId);
           _data.writeStringArray(command);
           if ((receiver!=null)) {
             _data.writeInt(1);
@@ -123,7 +121,7 @@ public interface ISu extends android.os.IInterface
           _data.writeInt(((singleShot)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_exe, _data, null, android.os.IBinder.FLAG_ONEWAY);
           if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().exe(command, receiver, singleShot);
+            getDefaultImpl().exe(requestId, command, receiver, singleShot);
             return;
           }
         }
@@ -131,21 +129,15 @@ public interface ISu extends android.os.IInterface
           _data.recycle();
         }
       }
-      @Override public void close(tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver) throws android.os.RemoteException
+      @Override public void close(java.lang.String requestId) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          if ((receiver!=null)) {
-            _data.writeInt(1);
-            receiver.writeToParcel(_data, 0);
-          }
-          else {
-            _data.writeInt(0);
-          }
+          _data.writeString(requestId);
           boolean _status = mRemote.transact(Stub.TRANSACTION_close, _data, null, android.os.IBinder.FLAG_ONEWAY);
           if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().close(receiver);
+            getDefaultImpl().close(requestId);
             return;
           }
         }
@@ -174,6 +166,6 @@ public interface ISu extends android.os.IInterface
       return Stub.Proxy.sDefaultImpl;
     }
   }
-  public void exe(java.lang.String[] command, tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver, boolean singleShot) throws android.os.RemoteException;
-  public void close(tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver) throws android.os.RemoteException;
+  public void exe(java.lang.String requestId, java.lang.String[] command, tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver, boolean singleShot) throws android.os.RemoteException;
+  public void close(java.lang.String requestId) throws android.os.RemoteException;
 }

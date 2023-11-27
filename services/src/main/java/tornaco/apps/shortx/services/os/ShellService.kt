@@ -21,6 +21,8 @@ import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.enforceCallingPermissions
 import tornaco.apps.shortx.services.util.AppServiceProxy
 import java.time.Duration
+import java.util.concurrent.CancellationException
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 
 
@@ -65,11 +67,12 @@ class ShellService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         }
         val first = shellStubs.getRegisteredCallbackItem(0)
         logger.d("executeCommandByInjection Using shell: $first")
+        val requestId = ShellSerialNum.nextId().toString()
         return runCatching {
             val receiver = SynchronousResultReceiver.get()
             logger.d("executeCommandByInjection Using receiver: $receiver")
-            first.exe(arrayOf(command), receiver, singleShot)
-            logger.d("executeCommandByInjection After call exe")
+            first.exe(requestId, arrayOf(command), receiver, singleShot)
+            logger.d("executeCommandByInjection After call exe, requestId: $requestId")
             val receiverRes = receiver.awaitResultNoInterrupt(
                 Duration.ofMinutes(
                     SHELL_TIMEOUT_MINUTES
@@ -80,7 +83,12 @@ class ShellService(shortXContext: ShortXContext) : SystemService(shortXContext, 
             byteRes?.let { ShellRes.parseFrom(byteRes.byteData) }
                 ?: errorShellRes("executeCommandByInjection No shell res returned.")
         }.getOrElse {
-            logger.e(it, "executeCommandByInjection Got error call shell")
+            logger.e(it, "executeCommandByInjection Got error call shell: $it")
+            // Notify Shell to shutdown
+            if (it is CancellationException) {
+                logger.i("Shutdown shell: $requestId since it is CancellationException.")
+                first.close(requestId)
+            }
             errorShellRes(it.toString())
         }
     }
@@ -105,11 +113,17 @@ internal class AppShellServiceProxy(context: Context, intent: Intent?) :
     fun exe(command: Array<String?>, singleShot: Boolean): ShellRes? {
         logger.d("execute: $command")
         val res: AtomicReference<ShellRes> = AtomicReference()
+        val requestId = ShellSerialNum.nextId().toString()
         setTask(object : ProxyTask() {
             override fun run() {
                 runCatching {
                     val receiver = SynchronousResultReceiver.get()
-                    requireNotNull(impl) { "Impl is null." }.exe(command, receiver, singleShot)
+                    requireNotNull(impl) { "Impl is null." }.exe(
+                        requestId,
+                        command,
+                        receiver,
+                        singleShot
+                    )
                     val receiverRes =
                         runBlocking { receiver.awaitResultNoInterrupt(Duration.ofMinutes(2)) }
                     logger.d("receiver get res: $receiverRes")
@@ -141,4 +155,11 @@ internal class AppShellServiceProxy(context: Context, intent: Intent?) :
             return AppShellServiceProxy(context, intent).exe(arrayOf(command), singleShot)
         }
     }
+}
+
+
+object ShellSerialNum {
+    private val _id = AtomicInteger(0)
+
+    fun nextId() = _id.getAndIncrement()
 }

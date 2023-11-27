@@ -342,15 +342,34 @@ class Shell @Throws(NotFoundException::class) @JvmOverloads constructor(
      */
     @Synchronized
     fun shutdown() {
+        Log.w("TORNACO.Shell", "shutdown")
         try {
             write("exit")
+            Log.w("TORNACO.Shell", "Call waitFor")
             process.waitFor()
+            Log.w("TORNACO.Shell", "Call closeQuietly")
             stdin.closeQuietly()
+            Log.w("TORNACO.Shell", "Call clear")
             onStdOutListeners.clear()
             onStdErrListeners.clear()
+            Log.w("TORNACO.Shell", "Call join")
             stdoutReader.join()
             stderrReader.join()
             process.destroy()
+            Log.w("TORNACO.Shell", "Shell destroy!")
+        } catch (ignored: IOException) {
+        } finally {
+            state = State.Shutdown
+        }
+    }
+
+    fun forceShutdown() {
+        Log.w("TORNACO.Shell", "forceShutdown")
+        try {
+            onStdOutListeners.clear()
+            onStdErrListeners.clear()
+            process.destroy()
+            Log.w("TORNACO.Shell", "Shell destroy!")
         } catch (ignored: IOException) {
         } finally {
             state = State.Shutdown
@@ -720,23 +739,33 @@ class Shell @Throws(NotFoundException::class) @JvmOverloads constructor(
          */
         var onComplete: (marker: Command.Marker) -> Unit = {}
 
-        override fun run() =
-            BufferedReader(InputStreamReader(stream, StandardCharsets.UTF_8)).forEachLine { line ->
-                Log.d("ShortX-Shell", "line: $line")
-                pattern.matcher(line).let { matcher ->
-                    if (matcher.matches()) {
-                        val uuid = UUID.fromString(matcher.group(GROUP_UUID))
-                        onComplete(
-                            when (val exitCode = matcher.group(GROUP_CODE)) {
-                                null -> Command.Marker(uuid, Command.Status.INVALID)
-                                else -> Command.Marker(uuid, exitCode.toInt())
-                            }
-                        )
-                    } else {
-                        onReadLine(line)
+        override fun run() {
+            runCatching {
+                BufferedReader(
+                    InputStreamReader(
+                        stream,
+                        StandardCharsets.UTF_8
+                    )
+                ).forEachLine { line ->
+                    Log.d("ShortX-Shell", "line: $line")
+                    pattern.matcher(line).let { matcher ->
+                        if (matcher.matches()) {
+                            val uuid = UUID.fromString(matcher.group(GROUP_UUID))
+                            onComplete(
+                                when (val exitCode = matcher.group(GROUP_CODE)) {
+                                    null -> Command.Marker(uuid, Command.Status.INVALID)
+                                    else -> Command.Marker(uuid, exitCode.toInt())
+                                }
+                            )
+                        } else {
+                            onReadLine(line)
+                        }
                     }
                 }
+            }.onFailure {
+                Log.w("Tornaco.Shell[BufferedReader]", it.stackTraceToString())
             }
+        }
 
         companion object {
 
