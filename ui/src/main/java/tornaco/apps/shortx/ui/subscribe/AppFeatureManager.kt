@@ -93,6 +93,8 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
 
     Condition.AppHasAudioFocus::class,
     Condition.RequireMobileDataEnabled::class,
+    Condition.RequireFactTag::class,
+    Condition.AppHasTask::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 
     Action.LaunchAppByPkg::class,
@@ -123,6 +125,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Action.FindAndClickMatchedView::class,
     Action.ClickTile::class,
     Action.BiometricVerify::class,
+    Action.GetTextFromScreenNode::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 )
 

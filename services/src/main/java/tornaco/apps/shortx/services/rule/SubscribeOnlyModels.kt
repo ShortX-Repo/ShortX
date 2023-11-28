@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.proto.action.ClickTile
 import tornaco.apps.shortx.core.proto.action.EnableUniversalCopy
 import tornaco.apps.shortx.core.proto.action.FindAndClickMatchedView
 import tornaco.apps.shortx.core.proto.action.FindAndClickViewById
+import tornaco.apps.shortx.core.proto.action.GetTextFromScreenNode
 import tornaco.apps.shortx.core.proto.action.HttpRequest
 import tornaco.apps.shortx.core.proto.action.InjectGestureRecording
 import tornaco.apps.shortx.core.proto.action.InputSwipe
@@ -26,6 +27,8 @@ import tornaco.apps.shortx.core.proto.action.SwitchMobileDataSlot
 import tornaco.apps.shortx.core.proto.action.TTS
 import tornaco.apps.shortx.core.proto.action.ToggleGestureRecording
 import tornaco.apps.shortx.core.proto.condition.AppHasAudioFocus
+import tornaco.apps.shortx.core.proto.condition.AppHasTask
+import tornaco.apps.shortx.core.proto.condition.RequireFactTag
 import tornaco.apps.shortx.core.proto.condition.RequireMobileDataEnabled
 import tornaco.apps.shortx.core.proto.fact.AdvancedKeyEvent
 import tornaco.apps.shortx.core.proto.fact.BTConnectedTo
@@ -54,6 +57,8 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
 
         AppHasAudioFocus::class,
         RequireMobileDataEnabled::class,
+        RequireFactTag::class,
+        AppHasTask::class,
 
         LaunchAppByPkg::class,
         StopAppByPkg::class,
@@ -79,4 +84,5 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         FindAndClickMatchedView::class,
         ClickTile::class,
         BiometricVerify::class,
+        GetTextFromScreenNode::class,
     )
