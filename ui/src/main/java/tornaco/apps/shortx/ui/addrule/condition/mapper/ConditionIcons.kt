@@ -156,6 +156,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.Finance.price_tag_3_fill
         }
 
+        Condition.RequireAPMMode::class -> {
+            Remix.Map.flight_takeoff_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

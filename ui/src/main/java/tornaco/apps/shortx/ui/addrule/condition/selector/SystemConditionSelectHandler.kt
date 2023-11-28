@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.condition.selector
 
 import androidx.compose.runtime.Composable
+import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.QSTileState
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.condition.PlugType
@@ -17,9 +18,11 @@ import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateGlobalVarSelecto
 import tornaco.apps.shortx.ui.addrule.condition.rememberSIMSlotSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.fact.selector.BTDeviceSelectorDialog
+import tornaco.apps.shortx.ui.addrule.fact.selector.OnOffAnyStateSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.QSTileSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.WifiSSIDSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberBTDeviceSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberOnOffAnyStateSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberQSTileSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberWifiSSIDSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -188,6 +191,13 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     )
     QSTileSelectorDialog(state = targetTileSelectorState)
 
+    val apmModeSelectorState = rememberOnOffAnyStateSelectorState(
+        title = LocalI18N.current["ui.condition.apm.mode"],
+        options = listOf(OnOffAny.On, OnOffAny.Off),
+        selected = {
+            addCondition(Condition.RequireAPMMode(isEnableAPM = (it == OnOffAny.On)))
+        })
+    OnOffAnyStateSelectorDialog(state = apmModeSelectorState)
 
     return { source ->
         when (source.clazz) {
@@ -288,6 +298,11 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
 
             Condition.RequireTileState::class -> {
                 targetTileSelectorState.show()
+                true
+            }
+
+            Condition.RequireAPMMode::class -> {
+                apmModeSelectorState.show()
                 true
             }
 

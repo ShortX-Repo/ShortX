@@ -22,6 +22,7 @@ import tornaco.apps.shortx.core.proto.condition.KeyguardIsLocked
 import tornaco.apps.shortx.core.proto.condition.MatchJS
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.proto.condition.PlugState
+import tornaco.apps.shortx.core.proto.condition.RequireAPMMode
 import tornaco.apps.shortx.core.proto.condition.RequireBTConnected
 import tornaco.apps.shortx.core.proto.condition.RequireBTDisconnected
 import tornaco.apps.shortx.core.proto.condition.RequireDelay
@@ -499,6 +500,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setTileSpec(spec)
                 .build()
         }
+
         is Condition.RequireFactTag -> {
             RequireFactTag.newBuilder()
                 .setId(overrideId ?: id)
@@ -506,6 +508,16 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setIsInvert(isInvert)
                 .setCustomContextDataKey(customContextDataKey)
                 .setTag(tag)
+                .build()
+        }
+
+        is Condition.RequireAPMMode -> {
+            RequireAPMMode.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
+                .setIsAPMEnable(isEnableAPM)
                 .build()
         }
     }

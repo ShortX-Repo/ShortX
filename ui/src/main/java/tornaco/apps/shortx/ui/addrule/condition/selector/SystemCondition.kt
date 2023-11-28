@@ -41,6 +41,7 @@ fun SystemConditions(
         Condition.IsHeadsetPlug::class,
         Condition.RequireSensorOff::class,
         Condition.RequireTileState::class,
+        Condition.RequireAPMMode::class,
     ).map {
         SelectorItem(
             type = it,

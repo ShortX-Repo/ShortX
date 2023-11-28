@@ -39,4 +39,5 @@ val allConditionClasses = listOf(
     Condition.RequireTileState::class,
     Condition.RequireFactTag::class,
     Condition.AppHasTask::class,
+    Condition.RequireAPMMode::class,
 )

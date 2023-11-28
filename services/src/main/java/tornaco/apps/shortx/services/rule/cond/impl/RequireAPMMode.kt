@@ -1,0 +1,31 @@
+package tornaco.apps.shortx.services.rule.cond.impl
+
+import android.provider.Settings
+import com.google.protobuf.Message
+import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.services.rule.cond.Cond
+
+object RequireAPMMode : Cond {
+    override fun condClass(): Class<out Message> =
+        tornaco.apps.shortx.core.proto.condition.RequireAPMMode::class.java
+
+    override suspend fun evaluate(param: Cond.CondParam): Cond.Result {
+        return with(param) {
+            val data =
+                condition unpack_ tornaco.apps.shortx.core.proto.condition.RequireAPMMode::class.java
+            val res =
+                Settings.Global.getInt(
+                    context.contentResolver,
+                    Settings.Global.AIRPLANE_MODE_ON,
+                    0
+                ) == 1
+            Cond.Result(
+                if (data.isInvert) {
+                    !res
+                } else {
+                    res
+                }
+            )
+        }
+    }
+}

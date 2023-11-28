@@ -220,6 +220,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             )
         }
 
+        Condition.RequireAPMMode::class -> {
+            listOf(
+                i18N["ui.condition.apm.mode"],
+            )
+        }
+
         else -> {
             emptyList()
         }
@@ -485,8 +491,18 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
 
         is Condition.RequireFactTag -> {
             listOf(
-                i18N["RequireFactTag"],
+                i18N["ui.condition.fact.tag"],
                 condition.tag
+            )
+        }
+
+        is Condition.RequireAPMMode -> {
+            listOf(
+                i18N["ui.condition.apm.mode"],
+                condition.isEnableAPM.select(
+                    i18N["ui.common.on"],
+                    i18N["ui.common.off"],
+                )
             )
         }
     }

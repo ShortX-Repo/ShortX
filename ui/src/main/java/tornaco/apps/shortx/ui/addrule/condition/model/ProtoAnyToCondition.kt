@@ -22,6 +22,7 @@ import tornaco.apps.shortx.core.proto.condition.KeyguardIsLocked
 import tornaco.apps.shortx.core.proto.condition.MatchJS
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.proto.condition.PlugState
+import tornaco.apps.shortx.core.proto.condition.RequireAPMMode
 import tornaco.apps.shortx.core.proto.condition.RequireBTConnected
 import tornaco.apps.shortx.core.proto.condition.RequireBTDisconnected
 import tornaco.apps.shortx.core.proto.condition.RequireDelay
@@ -483,6 +484,17 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 isInvert = data.isInvert,
                 customContextDataKey = data.customContextDataKey,
                 tag = data.tag,
+            )
+        }
+
+        this is_ RequireAPMMode::class.java -> {
+            val data = this unpack_ RequireAPMMode::class.java
+            Condition.RequireAPMMode(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+                customContextDataKey = data.customContextDataKey,
+                isEnableAPM = data.isAPMEnable
             )
         }
 
