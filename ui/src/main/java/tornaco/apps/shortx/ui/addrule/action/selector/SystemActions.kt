@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import tornaco.apps.shortx.core.proto.action.MediaPlaybackAction
 import tornaco.apps.shortx.core.proto.action.RingerMode
+import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.VolumeDirection
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.select
@@ -26,10 +27,12 @@ import tornaco.apps.shortx.ui.addrule.condition.rememberSIMSlotSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.BrightnessValueSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.CombineKeyEventSelectorActivity
 import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
+import tornaco.apps.shortx.ui.addrule.fact.selector.OnOffAnyStateSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.QSTileSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.VibratePatternSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberBrightnessValueSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberKeyEventSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberOnOffAnyStateSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberQSTileSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberVibratePatternSelectorState
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
@@ -185,6 +188,14 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
         }
     )
 
+    val apmModeSelectorState = rememberOnOffAnyStateSelectorState(
+        title = LocalI18N.current["ui.action.set.apm.mode"],
+        options = listOf(OnOffAny.On, OnOffAny.Off),
+        selected = {
+            addAction(Action.SetAPMModeEnabled(isEnableAPM = (it == OnOffAny.On)))
+        })
+    OnOffAnyStateSelectorDialog(state = apmModeSelectorState)
+
     return { source ->
         when (source.clazz) {
             Action.MediaPlayback::class -> {
@@ -316,6 +327,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.SetAPMModeEnabled::class -> {
+                apmModeSelectorState.show()
+                true
+            }
+
             else -> false
         }
     }
@@ -359,6 +375,7 @@ fun SystemActions(
         Action.DisableDarkMode::class,
         Action.EnableAutoBrightness::class,
         Action.DisableAutoBrightness::class,
+        Action.SetAPMModeEnabled::class,
         Action.SetBrightness::class,
         Action.EnableSensorsOff::class,
         Action.DisableSensorsOff::class,

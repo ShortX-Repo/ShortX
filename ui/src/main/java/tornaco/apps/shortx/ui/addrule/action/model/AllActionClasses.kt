@@ -118,5 +118,6 @@ val allActionClasses = listOf(
     Action.SetVolume::class,
     Action.BiometricVerify::class,
     Action.AppShortcut::class,
+    Action.SetAPMModeEnabled::class,
     Action.NoAction::class,
 )

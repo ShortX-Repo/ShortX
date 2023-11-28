@@ -437,6 +437,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.System.external_link_line
         }
 
+        Action.SetAPMModeEnabled::class -> {
+            Remix.Map.flight_takeoff_line
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

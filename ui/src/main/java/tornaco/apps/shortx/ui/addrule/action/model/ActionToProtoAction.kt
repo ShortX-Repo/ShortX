@@ -48,6 +48,7 @@ import tornaco.apps.shortx.core.proto.action.RemoveNotificationForPackage
 import tornaco.apps.shortx.core.proto.action.RemoveNotificationForPackageByPkg
 import tornaco.apps.shortx.core.proto.action.RemoveTasks
 import tornaco.apps.shortx.core.proto.action.RemoveTasksByPkg
+import tornaco.apps.shortx.core.proto.action.SetAPMModeEnabled
 import tornaco.apps.shortx.core.proto.action.SetAppEnabled
 import tornaco.apps.shortx.core.proto.action.SetAppEnabledByPkg
 import tornaco.apps.shortx.core.proto.action.SetAppInactive
@@ -1379,6 +1380,17 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setNote(overrideNote ?: note)
                 .setIntentUri(intent.toUri(Intent.URI_INTENT_SCHEME))
                 .setLabel(label)
+                .build()
+        }
+
+        is Action.SetAPMModeEnabled -> {
+            SetAPMModeEnabled.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setIsEnable(isEnableAPM)
                 .build()
         }
 

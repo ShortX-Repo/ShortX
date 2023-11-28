@@ -5,46 +5,37 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.ui.addrule.fact.mapper.label
+import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.ShortXDialog
 
 class OnOffAnyStateSelectorState(
-    val title: String, val selected: (OnOffAny) -> Unit
-) {
-    private var _isShow by mutableStateOf(false)
-    val isShow get() = _isShow
-
-    fun show() {
-        _isShow = true
-    }
-
-    fun dismiss() {
-        _isShow = false
-    }
-}
+    val title: String,
+    val options: List<OnOffAny>,
+    val selected: (OnOffAny) -> Unit
+) : CommonDialogState()
 
 @Composable
 fun rememberOnOffAnyStateSelectorState(
-    title: String, selected: (OnOffAny) -> Unit
+    title: String,
+    options: List<OnOffAny> = listOf(OnOffAny.On, OnOffAny.Off, OnOffAny.Any),
+    selected: (OnOffAny) -> Unit
 ): OnOffAnyStateSelectorState {
     return remember {
-        OnOffAnyStateSelectorState(title, selected)
+        OnOffAnyStateSelectorState(title, options, selected)
     }
 }
 
 @Composable
 fun OnOffAnyStateSelectorDialog(state: OnOffAnyStateSelectorState) {
-    if (state.isShow) {
+    if (state.isShowing) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
             DialogTitle(text = state.title)
         }, buttons = {
@@ -55,7 +46,7 @@ fun OnOffAnyStateSelectorDialog(state: OnOffAnyStateSelectorState) {
             }
         }, content = {
             Column(modifier = Modifier.fillMaxWidth()) {
-                listOf(OnOffAny.On, OnOffAny.Off, OnOffAny.Any).forEach {
+                state.options.forEach {
                     ListItem(title = it.label(LocalI18N.current)) {
                         state.selected(it)
                         state.dismiss()

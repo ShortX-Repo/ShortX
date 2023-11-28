@@ -217,6 +217,7 @@ fun labelAndDescriptionForActionSelector(
         Action.BiometricVerify::class -> i18N["ui.action.biometric.verify"] to null
         Action.AppShortcut::class -> i18N["ui.action.shortcut"] to null
         Action.GetTextFromScreenNode::class -> i18N["ui.action.get.text.from.node"] to null
+        Action.SetAPMModeEnabled::class -> i18N["ui.action.set.apm.mode"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -811,6 +812,14 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.GetTextFromScreenNode -> listOf(
             i18N["ui.action.get.text.from.node"],
             action.nodeId.fallbackOnEmpty(i18N["ui.action.get.text.from.node.get.all"])
+        )
+
+        is Action.SetAPMModeEnabled -> listOf(
+            i18N["ui.action.set.apm.mode"],
+            action.isEnableAPM.select(
+                i18N["ui.common.on"],
+                i18N["ui.common.off"],
+            )
         )
     }
 }
