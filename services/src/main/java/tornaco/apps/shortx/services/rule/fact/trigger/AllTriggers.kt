@@ -32,4 +32,5 @@ internal fun allTriggers(context: Context, shortXContext: ShortXContext) = mutab
     HeadsetPlugTrigger(context, shortXContext),
     ScreenRotateTrigger(context, shortXContext),
     HotspotTrigger(context, shortXContext),
+    LogcatTrigger(context, shortXContext),
 )
