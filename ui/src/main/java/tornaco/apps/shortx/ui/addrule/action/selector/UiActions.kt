@@ -19,6 +19,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.NotificationAppAndMatcherSel
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberNotificationAppAndMatcherSelectorState
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.newIntent
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorActionOrNull
+import tornaco.apps.shortx.ui.base.InputValidateResult
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TextInputState
@@ -41,7 +42,6 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
         addAction(it)
     }
     ShowTextFieldDialogSettingsDialog(state = showTextFieldSelectorState)
-
 
     val showDialogLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
@@ -78,6 +78,16 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
             addAction(Action.RemoveNotification(n = it))
         }
     NotificationAppAndMatcherSelectorDialog(removeNotificationState)
+
+    val getNodeTextSelectorState = rememberTextInputState(
+        title = LocalI18N.current["ui.action.get.text.from.node"],
+        message = LocalI18N.current["ui.action.get.text.from.node.tip.get.all"],
+        inputValidator = { InputValidateResult.OK },
+        onSelected = {
+            addAction(Action.GetTextFromScreenNode(nodeId = it))
+        }
+    )
+    TextInputDialog(state = getNodeTextSelectorState)
 
     return { source ->
         when (source.clazz) {
@@ -219,6 +229,11 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                 true
             }
 
+            Action.GetTextFromScreenNode::class -> {
+                getNodeTextSelectorState.show(source.getActionAs<Action.GetTextFromScreenNode>()?.nodeId)
+                true
+            }
+
             else -> false
         }
     }
@@ -251,6 +266,7 @@ fun UiActions(keyword: String, subscribeState: LVLStateHolder.State, addAction: 
         Action.InjectGestureRecording::class,
         Action.EnableUniversalCopy::class,
         Action.EnableViewIdViewer::class,
+        Action.GetTextFromScreenNode::class,
     ).map {
         SelectorItem(
             it,

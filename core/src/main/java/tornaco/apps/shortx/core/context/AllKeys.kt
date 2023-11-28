@@ -21,6 +21,7 @@ val allKeys: List<String> = listOf(
     enumValues<ContextDataMapping.PkgStopRunning>().map { it.name },
     enumValues<ContextDataMapping.AudioFocusChanged>().map { it.name },
     enumValues<ContextDataMapping.ReadClipboard>().map { it.name },
+    enumValues<ContextDataMapping.GetTextFromScreenNode>().map { it.name },
     enumValues<ContextDataMapping.ShellCommand>().map { it.name },
     enumValues<ContextDataMapping.WifiConnectedTo>().map { it.name },
     enumValues<ContextDataMapping.WifiDisconnectedFrom>().map { it.name },

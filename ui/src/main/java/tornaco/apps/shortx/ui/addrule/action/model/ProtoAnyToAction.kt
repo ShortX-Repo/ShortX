@@ -34,6 +34,19 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.GetTextFromScreenNode::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.GetTextFromScreenNode::class.java
+            Action.GetTextFromScreenNode(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                nodeId = data.nodeId
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.ReadClipboard::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.ReadClipboard::class.java
             Action.ReadClipboard(
@@ -56,6 +69,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 text = data.text
             )
         }
+
 
         this is_ tornaco.apps.shortx.core.proto.action.TakeScreenshot::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.TakeScreenshot::class.java

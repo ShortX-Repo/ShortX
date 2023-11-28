@@ -129,6 +129,11 @@ object ContextDataMapping {
     }
 
     @DoNotStrip
+    enum class GetTextFromScreenNode(val description: String) {
+        textOfTheView("Text of the matched View"),
+    }
+
+    @DoNotStrip
     enum class ShellCommand(val description: String) {
         shellOut("Output message of the shell command"),
         shellErr("Error message of the shell command, error will redirect to out by default."),

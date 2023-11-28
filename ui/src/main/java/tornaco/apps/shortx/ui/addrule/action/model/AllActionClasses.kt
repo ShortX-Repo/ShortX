@@ -76,6 +76,7 @@ val allActionClasses = listOf(
     Action.IfThenElse::class,
     Action.ReadClipboard::class,
     Action.WriteClipboard::class,
+    Action.GetTextFromScreenNode::class,
     Action.CreatePkgSet::class,
     Action.SetRingerMode::class,
     Action.EnableAutoBrightness::class,

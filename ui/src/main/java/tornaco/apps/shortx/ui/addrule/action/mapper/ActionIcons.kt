@@ -297,6 +297,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Document.clipboard_fill
         }
 
+        Action.GetTextFromScreenNode::class -> {
+            Remix.Document.file_text_fill
+        }
+
         Action.CreatePkgSet::class -> {
             Remix.Document.folder_4_line
         }
