@@ -53,7 +53,7 @@ fun SwitchBar(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = 72.dp)
+            .heightIn(min = 64.dp)
             .clip(
                 RoundedCornerShape(32.dp)
             )
@@ -61,7 +61,7 @@ fun SwitchBar(
                 onCheckChange(!isChecked)
             }
             .background(color = ColorDefaults.backgroundSurfaceColor(4.dp))
-            .padding(horizontal = 16.dp, vertical = 16.dp)
+            .padding(horizontal = 12.dp, vertical = 12.dp)
     ) {
         val tipDialogState = rememberTipDialogState(
             title = text ?: "",

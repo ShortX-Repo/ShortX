@@ -3,7 +3,6 @@ package tornaco.apps.shortx.ui.base.code.codeditor
 import android.graphics.Color
 import android.view.Gravity
 import android.widget.ArrayAdapter
-import androidx.core.view.setPadding
 import com.amrdeveloper.codeview.CodeView
 import github.tornaco.shortx.ui.base.R
 import tornaco.apps.shortx.core.util._sp
@@ -22,7 +21,6 @@ fun initView(
 }
 
 fun setupCodeView(codeView: CodeView, isDarkTheme: Boolean) {
-    codeView.setPadding(48)
     codeView.background = null
     codeView.textSize = 14f
     codeView.gravity = Gravity.TOP or Gravity.START
@@ -50,8 +48,8 @@ fun setupCodeView(codeView: CodeView, isDarkTheme: Boolean) {
     pairCompleteMap['"'] = '"'
     pairCompleteMap['\''] = '\''
     codeView.setPairCompleteMap(pairCompleteMap)
-    codeView.enablePairComplete(true)
-    codeView.enablePairCompleteCenterCursor(true)
+    codeView.enablePairComplete(false)
+    codeView.enablePairCompleteCenterCursor(false)
     codeView.setHorizontallyScrolling(false)
 }
 

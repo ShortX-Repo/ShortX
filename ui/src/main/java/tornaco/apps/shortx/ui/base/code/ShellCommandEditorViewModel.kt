@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 data class ShellCommandEditorState(
     val command: String = "",
-    val isInSystemUI: Boolean = false,
+    val isInSystemUI: Boolean = true,
     val isSingleShot: Boolean = false,
     val isExecuting: Boolean = false,
 )

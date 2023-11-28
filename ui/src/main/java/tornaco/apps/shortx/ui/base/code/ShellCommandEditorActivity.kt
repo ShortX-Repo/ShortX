@@ -4,16 +4,13 @@ package tornaco.apps.shortx.ui.base.code
 
 
 import android.widget.Toast
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -47,10 +44,9 @@ import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
-import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.SwitchBar
 import tornaco.apps.shortx.ui.base.TextDisplayActivity
-import tornaco.apps.shortx.ui.base.WarningCard
+import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.code.codeditor.initView
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -94,6 +90,9 @@ fun ShellCommandEditorActivity.ShellCommandEditor(
                     title = {
                         Column {
                             Text(text = LocalI18N.current["ui.action.shell"])
+                            if (!state.isInSystemUI) {
+                                TipBody(text = LocalI18N.current["ui.action.shell.summary"])
+                            }
                         }
                     },
                     navigationIcon = {
@@ -150,26 +149,6 @@ fun ShellCommandEditorActivity.ShellCommandEditor(
                         .padding(paddingValues)
                         .verticalScroll(rememberScrollState()),
                 ) {
-                    AnimatedVisibility(visible = !state.isInSystemUI) {
-                        WarningCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp)
-                            ) {
-                                Text(
-                                    text = LocalI18N.current["ui.action.shell.summary"],
-                                    style = MaterialTheme.typography.titleSmall
-                                )
-                                StandardSpacer()
-                            }
-                        }
-                    }
-
                     SwitchBar(modifier = Modifier
                         .padding(horizontal = 16.dp)
                         .padding(top = 16.dp),
@@ -183,7 +162,6 @@ fun ShellCommandEditorActivity.ShellCommandEditor(
                     val isDarkTheme = isSystemInDarkTheme()
                     AndroidView(modifier = Modifier
                         .fillMaxSize()
-                        .systemBarsPadding()
                         .imePadding(),
                         factory = { ctx ->
                             return@AndroidView CodeView(ctx).apply {
