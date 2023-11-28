@@ -303,7 +303,9 @@ class DefaultRuleEngine(
                 val conflictStrategy: ConflictStrategy = rule.conflictPolicy
                 val isThisRuleAlreadyRunning = synchronized(jobs) { jobs.any { it.id == rule.id } }
                 if (isThisRuleAlreadyRunning) {
-                    logger.d("isThisRuleAlreadyRunning is true, jobs: ${jobs.joinToString()}")
+                    synchronized(jobs) {
+                        logger.d("isThisRuleAlreadyRunning is true, jobs: ${jobs.joinToString()}")
+                    }
                 }
                 logger.d("${rule.title} conflictStrategy: $conflictStrategy, isThisRuleAlreadyRunning: $isThisRuleAlreadyRunning")
                 var shouldExecuteActions = true
