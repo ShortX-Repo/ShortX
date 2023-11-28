@@ -19,7 +19,7 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
             BoolSettings(key = "EnableKeyEventPrompt", defaultValue = { false })
 
         data object EnableInjectedShell :
-            BoolSettings(key = "EnableInjectedShell", defaultValue = { false })
+            BoolSettings(key = "EnableInjectedShell", defaultValue = { true })
 
         data object EnableQSTileOpt :
             BoolSettings(key = "EnableQSTileOpt", defaultValue = { false })
