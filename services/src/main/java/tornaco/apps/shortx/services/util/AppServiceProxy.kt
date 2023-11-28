@@ -98,6 +98,7 @@ abstract class AppServiceProxy(
 
             onConnected(binder)
             scope.launch {
+                logger.d("Call proxy")
                 call()
             }
         }

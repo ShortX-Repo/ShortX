@@ -10,8 +10,6 @@ import android.os.IBinder
 import android.os.RemoteCallbackList
 import android.os.ServiceManager
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.notification.INotificationPoster
@@ -115,15 +113,13 @@ class NotificationService(shortXContext: ShortXContext) :
     }
 
     fun post(postNotification: PostNotification) {
-        systemServiceScope.launchSafety {
-            if (isPostNByAppEnabled()) {
-                logger.d("post by app.")
-                AppNotificationServiceProxy.post(context, postNotification)
-            } else {
-                logger.d("post by attached.")
-                if (!postByAttached(postNotification)) {
-                    fallbackNotificationPoster.invoke(postNotification)
-                }
+        if (isPostNByAppEnabled()) {
+            logger.d("post by app.")
+            AppNotificationServiceProxy.post(context, postNotification, systemServiceScope)
+        } else {
+            logger.d("post by attached.")
+            if (!postByAttached(postNotification)) {
+                fallbackNotificationPoster.invoke(postNotification)
             }
         }
     }
@@ -265,14 +261,16 @@ internal class AppNotificationServiceProxy(
     }
 
     companion object {
-        suspend fun post(context: Context, postNotification: PostNotification) {
+        fun post(
+            context: Context,
+            postNotification: PostNotification,
+            scope: CoroutineScope
+        ) {
             val intent = Intent()
             intent.setPackage(BuildProp.APP_PACKAGE_NAME)
             intent.component =
                 ComponentName.unflattenFromString("${BuildProp.APP_PACKAGE_NAME}/${BuildProp.APP_NOTIFICATION_SERVICE_NAME}")
-            return withContext(Dispatchers.Default) {
-                AppNotificationServiceProxy(context, intent, this).post(postNotification)
-            }
+            return AppNotificationServiceProxy(context, intent, scope).post(postNotification)
         }
     }
 }
