@@ -892,6 +892,7 @@
     "ui.context.data.example": "Access this variable by: {eg}",
     "ui.context.data.custom.key": "Custom Context variable key",
     "ui.context.data.custom.hint": "Custom",
+    "ui.context.data.fact.tag": "Access fact tag by: {eg}",
     "ui.subscription.subscribed": "Premium",
     "ui.subscription.subscribed.only": "Premium",
     "ui.subscription.pay": "Pay",

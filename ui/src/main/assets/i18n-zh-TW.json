@@ -891,6 +891,7 @@
     "ui.context.data.example": "通过 {eg} 来访问该变量",
     "ui.context.data.custom.key": "自定义上下文变量的key",
     "ui.context.data.custom.hint": "已自定义",
+    "ui.context.data.fact.tag": "可以在条件或动作中使用 {eg} 来获取当前触发的触发器标签",
     "ui.subscription.pay": "支付",
     "ui.subscription.subscribe.verify.code": "验证激活码",
     "ui.subscription.subscribe.verify.play": "验证Google Play",

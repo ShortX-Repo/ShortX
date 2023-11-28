@@ -52,6 +52,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.takeOrElse
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
@@ -59,6 +60,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 
 @Composable
@@ -281,21 +283,24 @@ fun RebootConfirmDialog(
 class TipDialogState(
     val title: String,
     val tip: String,
+    val textToCopy: String?
 ) : CommonDialogState()
 
 @Composable
 fun rememberTipDialogState(
     title: String,
     tip: String,
+    textToCopy: String? = null
 ): TipDialogState {
     return remember {
-        TipDialogState(title, tip)
+        TipDialogState(title, tip, textToCopy)
     }
 }
 
 @Composable
 fun TipDialog(state: TipDialogState) {
     if (state.isShowing) {
+        val context = LocalContext.current
         ShortXAlertDialog(
             onDismissRequest = {
                 state.dismiss()
@@ -303,8 +308,17 @@ fun TipDialog(state: TipDialogState) {
             confirmButton = {
                 TextButton(onClick = {
                     state.dismiss()
+                    state.textToCopy?.let {
+                        ClipboardUtils.copyToClipboard(context, "key", it)
+                    }
                 }) {
-                    Text(text = stringResource(id = android.R.string.ok))
+                    Text(
+                        text = if (state.textToCopy == null) {
+                            stringResource(id = android.R.string.ok)
+                        } else {
+                            stringResource(id = android.R.string.copy)
+                        }
+                    )
                 }
             },
             title = {

@@ -23,6 +23,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import tornaco.apps.shortx.core.context.ContextDataMapping.asAccessExample
+import tornaco.apps.shortx.core.context.GenericContextData
 import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.ClipboardDialog
@@ -57,9 +59,12 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.TipBody
+import tornaco.apps.shortx.ui.base.TipDialog
 import tornaco.apps.shortx.ui.base.VerticalDivider
+import tornaco.apps.shortx.ui.base.clickableWithRipple
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.base.rememberTipDialogState
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.rememberClipboardDialogState
 
@@ -230,8 +235,21 @@ private fun FactItem(
             )
 
             if (fact.tag.isNotBlank()) {
+                val factTagContextDataDialogState =
+                    rememberTipDialogState(
+                        title = fact.tag,
+                        textToCopy = GenericContextData.CONTEXT_FACT_TAG.asAccessExample(),
+                        tip = LocalI18N.current[LocalI18N.current["ui.context.data.fact.tag", mapOf(
+                            "eg" to GenericContextData.CONTEXT_FACT_TAG.asAccessExample()
+                        )]]
+                    )
+                TipDialog(state = factTagContextDataDialogState)
                 MD3Badge(modifier = Modifier
-                    .padding(start = 68.dp, end = 16.dp),
+                    .padding(start = 68.dp, end = 16.dp)
+                    .clip(ShortXCardRoundedCornerShape)
+                    .clickableWithRipple {
+                        factTagContextDataDialogState.show()
+                    },
                     text = {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             RemixIcon(

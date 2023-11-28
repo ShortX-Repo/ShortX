@@ -7,7 +7,7 @@ import org.junit.Test
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
-import tornaco.apps.shortx.core.context.InternalContextDatas
+import tornaco.apps.shortx.core.context.GenericContextData
 import tornaco.apps.shortx.core.context.allKeys
 import tornaco.apps.shortx.core.util.logAdapter
 import kotlin.reflect.KClass
@@ -39,7 +39,7 @@ class ContextMapTest {
 
     @Test
     fun testInflateMapInternal() {
-        "{shortx.internal.fact.tag}".inflateContextMap(mapOf(InternalContextDatas.CONTEXT_FACT_TAG to "Test")) shouldBe "Test"
+        "{factTag}".inflateContextMap(mapOf(GenericContextData.CONTEXT_FACT_TAG to "Test")) shouldBe "Test"
     }
 
     @Test
