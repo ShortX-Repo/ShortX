@@ -678,6 +678,30 @@ sealed interface Fact {
         }
     }
 
+
+    data class APMStatusChanged(
+        val state: OnOffAny,
+        override val note: String = "",
+        override val tag: String = "",
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val id: String = defaultNewFactId(),
+    ) : Fact {
+
+        override fun clone(
+            id: String,
+            note: String,
+            tag: String,
+            customContextDataKey: CustomContextDataKey
+        ): Fact {
+            return copy(
+                id = id,
+                note = note,
+                tag = tag,
+                customContextDataKey = customContextDataKey
+            )
+        }
+    }
+
     data class HotSpotStatusChanged(
         val state: OnOffAny,
         override val note: String = "",

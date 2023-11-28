@@ -50,6 +50,7 @@ fun SystemFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: 
         Fact.HotSpotStatusChanged::class,
         Fact.FlashLightStatusChanged::class,
         Fact.DarkModeStatusChanged::class,
+        Fact.APMStatusChanged::class,
 
         Fact.BatteryLevelChanged::class,
         Fact.BatteryTemperatureChanged::class,

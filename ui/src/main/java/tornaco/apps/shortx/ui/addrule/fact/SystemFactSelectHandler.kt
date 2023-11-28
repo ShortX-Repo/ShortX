@@ -150,6 +150,12 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
         }
     OnOffAnyStateSelectorDialog(dndSelectorState)
 
+    val apmSelectorState =
+        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.condition.apm.mode"]) {
+            addFact(Fact.APMStatusChanged(it))
+        }
+    OnOffAnyStateSelectorDialog(apmSelectorState)
+
     val locationSelectorState =
         rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.location.state.changed"]) {
             addFact(Fact.LocationStatusChanged(it))
@@ -425,6 +431,11 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
             Fact.DNDStatusChanged::class -> {
                 dndSelectorState.show()
+                true
+            }
+
+            Fact.APMStatusChanged::class -> {
+                apmSelectorState.show()
                 true
             }
 

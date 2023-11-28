@@ -15,6 +15,7 @@ internal fun allTriggers(context: Context, shortXContext: ShortXContext) = mutab
     LocationStateTrigger(context, shortXContext),
     UiModeStateTrigger(context, shortXContext),
     ConnectivityStateTrigger(context, shortXContext),
+    APMStateTrigger(context, shortXContext),
     TorchStateTrigger(context, shortXContext),
     DNDStateTrigger(context, shortXContext),
     PackageInstallTrigger(context, shortXContext),

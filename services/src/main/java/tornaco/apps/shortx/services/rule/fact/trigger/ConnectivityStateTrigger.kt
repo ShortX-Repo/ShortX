@@ -22,7 +22,7 @@ class ConnectivityStateTrigger(
                 MobileDataStatusChanged.newBuilder()
                     .setOoa(OnOffAny.On)
                     .build()
-            )
+            ) { emptyMap() }
         }
 
         override fun onLost(network: Network) {
@@ -32,7 +32,7 @@ class ConnectivityStateTrigger(
                 MobileDataStatusChanged.newBuilder()
                     .setOoa(OnOffAny.Off)
                     .build()
-            )
+            ) { emptyMap() }
         }
     }
 

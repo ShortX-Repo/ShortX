@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.addrule.fact.model
 
 import tornaco.apps.shortx.core.alarm.toProto
 import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.fact.APMStatusChanged
 import tornaco.apps.shortx.core.proto.fact.ActivityStarted
 import tornaco.apps.shortx.core.proto.fact.AdvancedKeyEvent
 import tornaco.apps.shortx.core.proto.fact.Alarm
@@ -238,6 +239,14 @@ fun Fact.toProtoFact(
 
         is Fact.DNDStatusChanged -> {
             DNDStatusChanged.newBuilder()
+                .setOoa(state)
+                .setId(overrideId ?: id).setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setCustomContextDataKey(customContextDataKey)
+                .build()
+        }
+
+        is Fact.APMStatusChanged -> {
+            APMStatusChanged.newBuilder()
                 .setOoa(state)
                 .setId(overrideId ?: id).setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)

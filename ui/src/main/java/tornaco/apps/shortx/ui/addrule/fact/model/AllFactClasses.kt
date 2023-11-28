@@ -35,6 +35,7 @@ val allFactClasses = listOf(
     Fact.HotSpotStatusChanged::class,
     Fact.FlashLightStatusChanged::class,
     Fact.DarkModeStatusChanged::class,
+    Fact.APMStatusChanged::class,
 
     Fact.NotificationPosted::class,
     Fact.NotificationRemoved::class,

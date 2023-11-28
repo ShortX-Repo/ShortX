@@ -323,6 +323,15 @@ message DNDStatusChanged {
   string id = 100;
 }
 
+message APMStatusChanged {
+  OnOffAny ooa = 1;
+
+  string tag = 97;
+  CustomContextDataKey customContextDataKey = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message ActivityStarted {
   repeated AppComponent components = 1;
 

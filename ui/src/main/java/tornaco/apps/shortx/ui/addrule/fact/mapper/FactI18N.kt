@@ -68,6 +68,10 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
             i18n["ui.fact.dnd.state.changed"] to null
         }
 
+        Fact.APMStatusChanged::class -> {
+            i18n["ui.condition.apm.mode"] to null
+        }
+
         Fact.DarkModeStatusChanged::class -> {
             i18n["ui.fact.dark.mode.state.changed"] to null
         }
@@ -401,6 +405,13 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         is Fact.DNDStatusChanged -> {
             listOf(
                 i18N["ui.fact.dnd.state.changed"],
+                fact.state.label(i18N)
+            )
+        }
+
+        is Fact.APMStatusChanged -> {
+            listOf(
+                i18N["ui.condition.apm.mode"],
                 fact.state.label(i18N)
             )
         }

@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.RegexMatchOptions
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
+import tornaco.apps.shortx.core.proto.fact.APMStatusChanged
 import tornaco.apps.shortx.core.proto.fact.ActivityStarted
 import tornaco.apps.shortx.core.proto.fact.AdvancedKeyEvent
 import tornaco.apps.shortx.core.proto.fact.Alarm
@@ -189,6 +190,12 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
         register(MobileDataStatusChanged::class.java) { actual, rule ->
             val actualStatus = actual as MobileDataStatusChanged
             val ruleStatus = rule as MobileDataStatusChanged
+            ruleStatus.ooa == OnOffAny.Any || ruleStatus.ooa == actualStatus.ooa
+        }
+
+        register(APMStatusChanged::class.java) { actual, rule ->
+            val actualStatus = actual as APMStatusChanged
+            val ruleStatus = rule as APMStatusChanged
             ruleStatus.ooa == OnOffAny.Any || ruleStatus.ooa == actualStatus.ooa
         }
 
