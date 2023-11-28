@@ -9,6 +9,9 @@ import android.content.Intent
 import android.os.IBinder
 import android.os.RemoteCallbackList
 import android.os.ServiceManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.notification.INotificationPoster
@@ -112,13 +115,15 @@ class NotificationService(shortXContext: ShortXContext) :
     }
 
     fun post(postNotification: PostNotification) {
-        if (isPostNByAppEnabled()) {
-            logger.d("post by app.")
-            AppNotificationServiceProxy.post(context, postNotification)
-        } else {
-            logger.d("post by attached.")
-            if (!postByAttached(postNotification)) {
-                fallbackNotificationPoster.invoke(postNotification)
+        systemServiceScope.launchSafety {
+            if (isPostNByAppEnabled()) {
+                logger.d("post by app.")
+                AppNotificationServiceProxy.post(context, postNotification)
+            } else {
+                logger.d("post by attached.")
+                if (!postByAttached(postNotification)) {
+                    fallbackNotificationPoster.invoke(postNotification)
+                }
             }
         }
     }
@@ -232,8 +237,12 @@ class NotificationService(shortXContext: ShortXContext) :
 }
 
 
-internal class AppNotificationServiceProxy(context: Context, intent: Intent?) :
-    AppServiceProxy(context, intent) {
+internal class AppNotificationServiceProxy(
+    context: Context,
+    intent: Intent,
+    scope: CoroutineScope
+) :
+    AppServiceProxy(context, intent, scope) {
     private val logger = tornaco.apps.shortx.core.util.Logger("AppNotificationServiceProxy")
     private var impl: INotificationPoster? = null
 
@@ -243,8 +252,8 @@ internal class AppNotificationServiceProxy(context: Context, intent: Intent?) :
     }
 
     fun post(postNotification: PostNotification) {
-        setTask(object : ProxyTask() {
-            override fun run() {
+        setTask(object : ProxyTask {
+            override suspend fun run() {
                 runCatching {
                     logger.i("call post: $impl")
                     requireNotNull(impl) { "impl is null." }.post(ByteArrayWrapper(postNotification.toByteArray()))
@@ -256,12 +265,14 @@ internal class AppNotificationServiceProxy(context: Context, intent: Intent?) :
     }
 
     companion object {
-        fun post(context: Context, postNotification: PostNotification) {
+        suspend fun post(context: Context, postNotification: PostNotification) {
             val intent = Intent()
             intent.setPackage(BuildProp.APP_PACKAGE_NAME)
             intent.component =
                 ComponentName.unflattenFromString("${BuildProp.APP_PACKAGE_NAME}/${BuildProp.APP_NOTIFICATION_SERVICE_NAME}")
-            return AppNotificationServiceProxy(context, intent).post(postNotification)
+            return withContext(Dispatchers.Default) {
+                AppNotificationServiceProxy(context, intent, this).post(postNotification)
+            }
         }
     }
 }

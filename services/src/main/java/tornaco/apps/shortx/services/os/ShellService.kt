@@ -5,7 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import android.os.RemoteCallbackList
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.ShellRes
@@ -53,8 +55,10 @@ class ShellService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         return isInjectedShellEnabled().select(
             t = { executeCommandByInjection(command, singleShot) },
             f = {
-                AppShellServiceProxy.exe(context, command, singleShot)
-                    ?: errorShellRes("AppShellServiceProxy error")
+                withContext(Dispatchers.IO) {
+                    AppShellServiceProxy.exe(context, command, singleShot, this)
+                        ?: errorShellRes("AppShellServiceProxy error")
+                }
             }
         )
     }
@@ -101,8 +105,8 @@ class ShellService(shortXContext: ShortXContext) : SystemService(shortXContext, 
 }
 
 
-internal class AppShellServiceProxy(context: Context, intent: Intent?) :
-    AppServiceProxy(context, intent) {
+internal class AppShellServiceProxy(context: Context, intent: Intent, scope: CoroutineScope) :
+    AppServiceProxy(context, intent, scope) {
     private val logger = tornaco.apps.shortx.core.util.Logger("AppShellServiceProxy")
     private var impl: ISu? = null
 
@@ -110,13 +114,16 @@ internal class AppShellServiceProxy(context: Context, intent: Intent?) :
         impl = ISu.Stub.asInterface(binder)
     }
 
-    fun exe(command: Array<String?>, singleShot: Boolean): ShellRes? {
+    suspend fun exe(command: Array<String?>, singleShot: Boolean): ShellRes? {
         logger.d("execute: $command")
         val res: AtomicReference<ShellRes> = AtomicReference()
         val requestId = ShellSerialNum.nextId().toString()
-        setTask(object : ProxyTask() {
-            override fun run() {
+        val timeout = 2L
+
+        setTask(object : ProxyTask {
+            override suspend fun run() {
                 runCatching {
+                    logger.d("Before call exe.")
                     val receiver = SynchronousResultReceiver.get()
                     requireNotNull(impl) { "Impl is null." }.exe(
                         requestId,
@@ -124,8 +131,8 @@ internal class AppShellServiceProxy(context: Context, intent: Intent?) :
                         receiver,
                         singleShot
                     )
-                    val receiverRes =
-                        runBlocking { receiver.awaitResultNoInterrupt(Duration.ofMinutes(2)) }
+                    logger.d("After call exe.")
+                    val receiverRes = receiver.awaitResultNoInterrupt(Duration.ofMinutes(timeout))
                     logger.d("receiver get res: $receiverRes")
                     val byteRes: ByteArrayWrapper? = receiverRes.getValue(null)
                     res.set(
@@ -136,23 +143,34 @@ internal class AppShellServiceProxy(context: Context, intent: Intent?) :
                         }
                     )
                 }.onFailure {
-                    logger.e(it, "ProxyTask")
+                    logger.e(it, "ProxyTask error")
+                    if (it is CancellationException) {
+                        logger.i("Shutdown shell: $requestId since it is CancellationException.")
+                        impl?.close(requestId)
+                    }
                     res.set(null)
                 }
             }
 
         })
-        waitForCompletion()
+        logger.d("Before waitForCompletion.")
+        waitForCompletion(Duration.ofMinutes(timeout))
+        logger.d("After waitForCompletion.")
         return res.get()
     }
 
     companion object {
-        fun exe(context: Context, command: String, singleShot: Boolean): ShellRes? {
+        suspend fun exe(
+            context: Context,
+            command: String,
+            singleShot: Boolean,
+            scope: CoroutineScope
+        ): ShellRes? {
             val intent = Intent()
             intent.setPackage(BuildProp.APP_PACKAGE_NAME)
             intent.component =
                 ComponentName.unflattenFromString("${BuildProp.APP_PACKAGE_NAME}/${BuildProp.APP_SHELL_SERVICE_NAME}")
-            return AppShellServiceProxy(context, intent).exe(arrayOf(command), singleShot)
+            return AppShellServiceProxy(context, intent, scope).exe(arrayOf(command), singleShot)
         }
     }
 }
