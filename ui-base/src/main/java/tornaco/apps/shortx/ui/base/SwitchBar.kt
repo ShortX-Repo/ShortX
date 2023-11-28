@@ -20,10 +20,12 @@ package tornaco.apps.shortx.ui.base
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -37,9 +39,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.core.I18N
+import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 
 @Composable
-fun SwitchBar(modifier: Modifier = Modifier, isChecked: Boolean, onCheckChange: (Boolean) -> Unit) {
+fun SwitchBar(
+    modifier: Modifier = Modifier,
+    isChecked: Boolean,
+    text: String? = null,
+    tip: String? = null,
+    onCheckChange: (Boolean) -> Unit
+) {
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -53,20 +63,38 @@ fun SwitchBar(modifier: Modifier = Modifier, isChecked: Boolean, onCheckChange: 
             .background(color = ColorDefaults.backgroundSurfaceColor(4.dp))
             .padding(horizontal = 16.dp, vertical = 16.dp)
     ) {
-        Text(
+        val tipDialogState = rememberTipDialogState(
+            title = text ?: "",
+            tip = tip.fallbackOnEmpty("")
+        )
+        tip?.let {
+            TipDialog(state = tipDialogState)
+        }
+        Row(
             modifier = Modifier
                 .padding(start = 16.dp)
                 .align(Alignment.CenterStart),
-            text = if (isChecked) {
-                LocalI18N.current["ui.common.on"]
-            } else {
-                LocalI18N.current["ui.common.off"]
-            },
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.W500,
-                fontSize = 18.sp
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = text ?: if (isChecked) {
+                    LocalI18N.current["ui.common.on"]
+                } else {
+                    LocalI18N.current["ui.common.off"]
+                },
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.W500,
+                    fontSize = 18.sp
+                )
             )
-        )
+            tip?.let {
+                IconButton(onClick = {
+                    tipDialogState.show()
+                }) {
+                    RemixIcon(remixName = Remix.System.information_line)
+                }
+            }
+        }
         Switch(
             modifier = Modifier
                 .padding(end = 16.dp)

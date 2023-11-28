@@ -21,6 +21,7 @@ import tornaco.apps.shortx.core.*
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.notification.INotificationPoster
+import tornaco.apps.shortx.core.os.ICancellationSignal
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.action.HttpRequest
 import tornaco.apps.shortx.core.proto.common.AppPkg
@@ -331,10 +332,13 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.media.onMediaStoreDelete(uri, path)
         }
 
-        override fun executeShellCommand(command: String): String {
+        override fun executeShellCommand(
+            command: String,
+            callback: ICallback
+        ): ICancellationSignal {
             enforceCallingPermissions()
             logger.d("executeShellCommand: $command")
-            return shortXContext.rule.executeShell(command)
+            return shortXContext.rule.executeShell(command, callback)
         }
 
         override fun getWifiScanResults(): List<String> {

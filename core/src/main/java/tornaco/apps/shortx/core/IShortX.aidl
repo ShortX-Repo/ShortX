@@ -12,6 +12,7 @@ import tornaco.apps.shortx.core.IAudioRecordingListener;
 import tornaco.apps.shortx.core.rule.action.su.ISu;
 import tornaco.apps.shortx.core.notification.INotificationPoster;
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver;
+import tornaco.apps.shortx.core.os.ICancellationSignal;
 import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener;
 import tornaco.apps.shortx.core.systemui.IQSTileHost;
 import tornaco.apps.shortx.core.ISensorUsageListener;
@@ -150,7 +151,8 @@ interface IShortX {
     void onMediaStoreInsert(in Uri uri, String path);
     void onMediaStoreDelete(in Uri uri, String path);
 
-    String executeShellCommand(String command);
+    // ICallback: ShellRes
+    ICancellationSignal executeShellCommand(String command, in ICallback callback);
 
     List<String> getWifiScanResults();
 

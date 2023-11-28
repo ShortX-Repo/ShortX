@@ -315,7 +315,9 @@ public interface IShortX extends android.os.IInterface
     @Override public void onMediaStoreDelete(android.net.Uri uri, java.lang.String path) throws android.os.RemoteException
     {
     }
-    @Override public java.lang.String executeShellCommand(java.lang.String command) throws android.os.RemoteException
+    // ICallback: ShellRes
+
+    @Override public tornaco.apps.shortx.core.os.ICancellationSignal executeShellCommand(java.lang.String command, tornaco.apps.shortx.core.ICallback callback) throws android.os.RemoteException
     {
       return null;
     }
@@ -1640,9 +1642,11 @@ public interface IShortX extends android.os.IInterface
           data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
-          java.lang.String _result = this.executeShellCommand(_arg0);
+          tornaco.apps.shortx.core.ICallback _arg1;
+          _arg1 = tornaco.apps.shortx.core.ICallback.Stub.asInterface(data.readStrongBinder());
+          tornaco.apps.shortx.core.os.ICancellationSignal _result = this.executeShellCommand(_arg0, _arg1);
           reply.writeNoException();
-          reply.writeString(_result);
+          reply.writeStrongBinder((((_result!=null))?(_result.asBinder()):(null)));
           return true;
         }
         case TRANSACTION_getWifiScanResults:
@@ -4407,20 +4411,23 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
-      @Override public java.lang.String executeShellCommand(java.lang.String command) throws android.os.RemoteException
+      // ICallback: ShellRes
+
+      @Override public tornaco.apps.shortx.core.os.ICancellationSignal executeShellCommand(java.lang.String command, tornaco.apps.shortx.core.ICallback callback) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
-        java.lang.String _result;
+        tornaco.apps.shortx.core.os.ICancellationSignal _result;
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(command);
+          _data.writeStrongBinder((((callback!=null))?(callback.asBinder()):(null)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_executeShellCommand, _data, _reply, 0);
           if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().executeShellCommand(command);
+            return getDefaultImpl().executeShellCommand(command, callback);
           }
           _reply.readException();
-          _result = _reply.readString();
+          _result = tornaco.apps.shortx.core.os.ICancellationSignal.Stub.asInterface(_reply.readStrongBinder());
         }
         finally {
           _reply.recycle();
@@ -6686,7 +6693,9 @@ public interface IShortX extends android.os.IInterface
   public boolean isKeyEventPromptEnabled() throws android.os.RemoteException;
   public void onMediaStoreInsert(android.net.Uri uri, java.lang.String path) throws android.os.RemoteException;
   public void onMediaStoreDelete(android.net.Uri uri, java.lang.String path) throws android.os.RemoteException;
-  public java.lang.String executeShellCommand(java.lang.String command) throws android.os.RemoteException;
+  // ICallback: ShellRes
+
+  public tornaco.apps.shortx.core.os.ICancellationSignal executeShellCommand(java.lang.String command, tornaco.apps.shortx.core.ICallback callback) throws android.os.RemoteException;
   public java.util.List<java.lang.String> getWifiScanResults() throws android.os.RemoteException;
   // Called by SystemUI
 

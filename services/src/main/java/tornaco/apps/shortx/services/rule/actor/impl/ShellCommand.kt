@@ -43,14 +43,14 @@ object ShellCommand : Actor {
         contextData.add(
             sc.customContextDataKey.forKey(ContextDataMapping.ShellCommand.shellErr.name)
                 .fallbackOnEmpty { ContextDataMapping.ShellCommand.shellErr.name },
-            res.errList?.joinToString().also {
+            res.errList?.joinToString(System.lineSeparator()).also {
                 logger.p("shellErr: [$it]")
             }
         )
         contextData.add(
             sc.customContextDataKey.forKey(ContextDataMapping.ShellCommand.shellOut.name)
                 .fallbackOnEmpty { ContextDataMapping.ShellCommand.shellOut.name },
-            res.outList?.joinToString().also {
+            res.outList?.joinToString(System.lineSeparator()).also {
                 logger.p("shellOut: [$it]")
             }
         )

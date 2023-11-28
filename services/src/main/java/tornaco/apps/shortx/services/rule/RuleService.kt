@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule
 
 import android.annotation.TestApi
+import android.os.IBinder
 import android.os.ParcelFileDescriptor
 import android.os.RemoteCallbackList
 import android.util.Log
@@ -8,13 +9,18 @@ import android.widget.Toast
 import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.IActionEvaluateListener
+import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.IJobStatusListener
+import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.localvar.LocalVars
+import tornaco.apps.shortx.core.os.CancellationSignal
+import tornaco.apps.shortx.core.os.ICancellationSignal
 import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.proto.action.StartActivityUrlSchema
 import tornaco.apps.shortx.core.proto.common.Author
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
+import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.da.DirectAction
@@ -40,6 +46,7 @@ import tornaco.apps.shortx.core.rule.IRuleObserver
 import tornaco.apps.shortx.core.rule.IToggleObserver
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
+import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.unpack_
@@ -69,6 +76,7 @@ import tornaco.apps.shortx.services.util.SingleKeyGestureDetector
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
 import java.util.UUID
+import java.util.concurrent.CancellationException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -782,46 +790,80 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         toggleObs.unregister(obs)
     }
 
-    fun executeShell(command: String): String {
-        var res = ""
-        runBlocking {
-            val action = tornaco.apps.shortx.core.proto.action.ShellCommand.newBuilder()
-                .setCommand(command)
-                .setSingleShot(true)
-                .setId("UI#executeShellCommand")
-                .build()
-            systemServiceScope.launchSafety {
-                val handleParams = dummyHandlerParamsForAction(
-                    androidContext = context,
-                    shortXContext = shortXContext,
-                    evaluateContext = EvaluateContext.newBuilder()
-                        .setSrcId(UUID.randomUUID().toString())
-                        .setSrcTitle("Testing Shell")
-                        .setSrcEvent(ContextSrcEvent.ContextSrc_ExecuteOnDAEditor)
-                        .setSerialNumber(nextEvaluateContextSerialNumber())
-                        .build(),
-                    action = action.pack_()
-                )
-                runCatching {
-                    ShellCommand.handle(handleParams)
-                    val code =
-                        handleParams.contextData.get(ContextDataMapping.ShellCommand.shellCode.name)
-                            .toString().toInt()
-                    val out =
-                        handleParams.contextData.get(ContextDataMapping.ShellCommand.shellOut.name)
-                            .toString()
-                    val error =
-                        handleParams.contextData.get(ContextDataMapping.ShellCommand.shellErr.name)
-                            .toString()
+    fun executeShell(command: String, callback: ICallback): ICancellationSignal {
+        val signal = CancellationSignal.createTransport()
+        val action = tornaco.apps.shortx.core.proto.action.ShellCommand.newBuilder()
+            .setCommand(command)
+            .setSingleShot(true)
+            .setId("UI#executeShellCommand")
+            .build()
 
-
-                    res = "$out${System.lineSeparator()}$error"
-                }.onFailure {
-                    res = Log.getStackTraceString(it)
-                }
-            }.join()
+        val callbackDeadReceipt = object : IBinder.DeathRecipient {
+            @DoNotStrip
+            override fun binderDied() {
+                logger.w("executeShell, callback binderDied.")
+                signal.cancel()
+            }
         }
-        return res
+
+        val job = systemServiceScope.launchSafety {
+            val handleParams = dummyHandlerParamsForAction(
+                androidContext = context,
+                shortXContext = shortXContext,
+                evaluateContext = EvaluateContext.newBuilder()
+                    .setSrcId(UUID.randomUUID().toString())
+                    .setSrcTitle("Testing Shell")
+                    .setSrcEvent(ContextSrcEvent.ContextSrc_ExecuteOnDAEditor)
+                    .setSerialNumber(nextEvaluateContextSerialNumber())
+                    .build(),
+                action = action.pack_()
+            )
+            runCatching {
+                ShellCommand.handle(handleParams)
+                val code =
+                    handleParams.contextData.get(ContextDataMapping.ShellCommand.shellCode.name)
+                        .toString().toInt()
+                val out =
+                    handleParams.contextData.get(ContextDataMapping.ShellCommand.shellOut.name)
+                        .toString()
+                val error =
+                    handleParams.contextData.get(ContextDataMapping.ShellCommand.shellErr.name)
+                        .toString()
+
+
+                runCatching {
+                    callback.receive(
+                        ByteArrayWrapper(
+                            ShellRes.newBuilder()
+                                .setCode(code)
+                                .addAllOut(listOf(out))
+                                .addAllErr(listOf(error))
+                                .build()
+                                .toByteArray()
+                        )
+                    )
+                }
+            }.onFailure {
+                logger.e(it, "ShellCommand")
+                callback.receive(
+                    ByteArrayWrapper(
+                        ShellRes.newBuilder()
+                            .setCode(-1)
+                            .addAllErr(listOf(it.stackTraceToString()))
+                            .build()
+                            .toByteArray()
+                    )
+                )
+            }
+
+            callback.asBinder().unlinkToDeath(callbackDeadReceipt, 0)
+        }
+        callback.asBinder().linkToDeath(callbackDeadReceipt, 0)
+        CancellationSignal.fromTransport(signal).setOnCancelListener {
+            logger.i("CancellationSignal cancel.")
+            job.cancel(CancellationException("User canceled(用户手动取消)"))
+        }
+        return signal
     }
 
     fun executeMVEL(expression: String): String {

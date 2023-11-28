@@ -9,6 +9,7 @@ import android.os.ParcelFileDescriptor
 import android.os.ServiceManager
 import android.telephony.SubscriptionInfo
 import com.android.internal.appwidget.IAppWidgetService
+import tornaco.apps.shortx.core.os.CancellationSignal
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.action.HttpRequest
 import tornaco.apps.shortx.core.proto.common.App
@@ -21,6 +22,7 @@ import tornaco.apps.shortx.core.proto.common.CommonApiRes
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.QSTileList
 import tornaco.apps.shortx.core.proto.common.SensorUsage
+import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.common.SystemSettingsAccessRecord
 import tornaco.apps.shortx.core.proto.common.UserInfo
@@ -785,9 +787,18 @@ class ShortXManager(val service: IShortX) {
         }
     }
 
-    fun executeShellCommand(command: String): String {
-        return invokeService("DEFAULT ERROR") {
-            executeShellCommand(command)
+    fun executeShellCommand(command: String, callback: (ShellRes) -> Unit): CancellationSignal {
+        return invokeService(CancellationSignal()) {
+            val cb = object : ICallback.Stub() {
+                override fun receive(data: ByteArrayWrapper) {
+                    val shellRes = ShellRes.parseFrom(data.byteData)
+                    callback(shellRes)
+                }
+            }
+            val signal = executeShellCommand(command, cb)
+            CancellationSignal().apply {
+                setRemote(signal)
+            }
         }
     }
 

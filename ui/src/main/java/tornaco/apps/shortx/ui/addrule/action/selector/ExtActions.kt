@@ -28,6 +28,7 @@ import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
+import tornaco.apps.shortx.ui.base.code.ShellCommandEditorActivity
 import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
@@ -40,23 +41,16 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     val i18N = LocalI18N.current
     val context = LocalContext.current
 
-    val isShellInjectionEnabled = remember { shortXManager.isInjectedShellEnabled() }
-    val shellCommandSelectorState =
-        rememberShellCommandCodeEditorState(title = LocalI18N.current["ui.action.shell"],
-            message = if (isShellInjectionEnabled) null else LocalI18N.current["ui.action.shell.summary"],
-            execute = {
-                shortXManager.executeShellCommand(it)
-            },
-            onSelected = { code, single ->
-                addAction(
-                    Action.ShellCommand(
-                        command = code.src,
-                        note = code.note,
-                        singleShot = single
-                    )
-                )
-            })
-    ShellCommandCodeEditorDialog(state = shellCommandSelectorState)
+    val shellCommandLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.toBaseSelectorActionOrNull<Action.ShellCommand>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
 
     val inputTextSelectorState = rememberTextInputState(
         title = LocalI18N.current["ui.action.input.text"],
@@ -164,9 +158,12 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     return { source ->
         when (source.clazz) {
             Action.ShellCommand::class -> {
-                shellCommandSelectorState.show(
-                    source.getActionAs<Action.ShellCommand>()?.command,
-                    source.getActionAs<Action.ShellCommand>()?.singleShot ?: false
+                shellCommandLauncher.launch(
+                    newIntent(
+                        context,
+                        source.getActionAs<Action.ShellCommand>(),
+                        ShellCommandEditorActivity::class.java
+                    )
                 )
                 true
             }

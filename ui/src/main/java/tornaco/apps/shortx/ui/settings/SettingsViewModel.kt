@@ -193,7 +193,9 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
 
             if (enable) {
                 withContext(Dispatchers.Default) {
-                    shortXManager.executeShellCommand("whoami")
+                    shortXManager.executeShellCommand("whoami") {
+                        logger.d("Test shell res: $it")
+                    }
                 }
             }
         }

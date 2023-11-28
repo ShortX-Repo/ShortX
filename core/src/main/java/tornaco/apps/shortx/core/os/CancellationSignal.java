@@ -16,7 +16,6 @@
 
 package tornaco.apps.shortx.core.os;
 
-import android.os.ICancellationSignal;
 import android.os.OperationCanceledException;
 import android.os.RemoteException;
 
@@ -26,7 +25,7 @@ import android.os.RemoteException;
 public final class CancellationSignal {
     private boolean mIsCanceled;
     private OnCancelListener mOnCancelListener;
-    private android.os.ICancellationSignal mRemote;
+    private ICancellationSignal mRemote;
     private boolean mCancelInProgress;
 
     /**
@@ -63,7 +62,7 @@ public final class CancellationSignal {
      */
     public void cancel() {
         final OnCancelListener listener;
-        final android.os.ICancellationSignal remote;
+        final ICancellationSignal remote;
         synchronized (this) {
             if (mIsCanceled) {
                 return;
@@ -135,7 +134,7 @@ public final class CancellationSignal {
      * @param remote The remote transport, or null to remove.
      * @hide
      */
-    public void setRemote(android.os.ICancellationSignal remote) {
+    public void setRemote(ICancellationSignal remote) {
         synchronized (this) {
             waitForCancelFinishedLocked();
 
@@ -169,7 +168,7 @@ public final class CancellationSignal {
      * @return The new cancellation signal transport.
      * @hide
      */
-    public static android.os.ICancellationSignal createTransport() {
+    public static ICancellationSignal createTransport() {
         return new Transport();
     }
 
@@ -180,7 +179,7 @@ public final class CancellationSignal {
      * @return The associated cancellation signal, or null if none.
      * @hide
      */
-    public static CancellationSignal fromTransport(android.os.ICancellationSignal transport) {
+    public static CancellationSignal fromTransport(ICancellationSignal transport) {
         if (transport instanceof Transport) {
             return ((Transport) transport).mCancellationSignal;
         }

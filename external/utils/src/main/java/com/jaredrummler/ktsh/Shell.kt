@@ -514,7 +514,7 @@ class Shell @Throws(NotFoundException::class) @JvmOverloads constructor(
              */
             class Builder {
                 var uuid: UUID = UUID.randomUUID()
-                var redirectErrorStream = false
+                var redirectErrorStream = true
                 var onStdOut: (line: String) -> Unit = {}
                 var onStdErr: (line: String) -> Unit = {}
                 var onCancelled: () -> Unit = {}
