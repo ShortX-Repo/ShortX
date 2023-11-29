@@ -22,14 +22,15 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.ShortXManagerNative
-import tornaco.apps.shortx.core.os.currentUserHandle
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.util.launcherApps
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.composeLogger
@@ -76,14 +77,17 @@ class DemoActivity : BaseActivity() {
                         VibrateDemo()
 
                         val context = LocalContext.current
+                        val scope = rememberCoroutineScope()
 
                         Button(onClick = {
-                            val launcher = context.launcherApps
-                            launcher.getShortcutConfigActivityList(null, currentUserHandle).apply {
-                                Logger().d("${this.joinToString()}")
+                            scope.launch {
+                                while (true) {
+                                    ShortXManagerNative.shortX?.log("Test log: ${System.currentTimeMillis()}")
+                                    delay(20)
+                                }
                             }
                         }) {
-                            Text(text = "getShortcutConfigActivityList")
+                            Text(text = "A lot of log")
                         }
 
 

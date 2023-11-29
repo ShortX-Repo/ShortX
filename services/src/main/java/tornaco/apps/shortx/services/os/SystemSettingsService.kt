@@ -7,9 +7,9 @@ import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
-import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.runClearCallingIdentity
 import tornaco.apps.shortx.services.systemServiceScope
+import tornaco.apps.shortx.services.watchdog.launchSafety
 
 
 class SystemSettingsService(shortXContext: ShortXContext) :
@@ -22,6 +22,8 @@ class SystemSettingsService(shortXContext: ShortXContext) :
         super.systemReady()
         // For better performance.
         setSettingsCatcherEnabled(false)
+
+        getMinScreenOffTimeout()
     }
 
     fun setPointerLocationEnabled(enable: Boolean) {
@@ -79,5 +81,17 @@ class SystemSettingsService(shortXContext: ShortXContext) :
 
     fun clearReadSettingsRecord() {
         recorder.clearReadRecords()
+    }
+
+    fun getMinScreenOffTimeout(): Long {
+        return runCatching {
+            context.resources.getInteger(
+                com.android.internal.R.integer.config_minimumScreenOffTimeout
+            ).toLong().also {
+                logger.i("getMinScreenOffTimeout: $it")
+            }
+        }.getOrElse {
+            10000L
+        }
     }
 }
