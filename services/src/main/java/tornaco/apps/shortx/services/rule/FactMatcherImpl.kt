@@ -60,6 +60,7 @@ import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.fact.SystemSettingsChanged
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
 import tornaco.apps.shortx.core.proto.fact.UserPresent
+import tornaco.apps.shortx.core.proto.fact.UserPresentAtTheFirstTime
 import tornaco.apps.shortx.core.proto.fact.VPNConnected
 import tornaco.apps.shortx.core.proto.fact.VPNDisconnected
 import tornaco.apps.shortx.core.proto.fact.WifiConnectedTo
@@ -306,6 +307,9 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
             true
         }
         register(UserPresent::class.java) { _, _ ->
+            true
+        }
+        register(UserPresentAtTheFirstTime::class.java) { _, _ ->
             true
         }
         register(AppAdded::class.java) { _, _ ->

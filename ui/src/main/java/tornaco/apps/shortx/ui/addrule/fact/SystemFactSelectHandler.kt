@@ -367,6 +367,11 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
                 true
             }
 
+            Fact.UserPresentAtTheFirstTime::class -> {
+                addFact(Fact.UserPresentAtTheFirstTime())
+                true
+            }
+
             Fact.SystemReady::class -> {
                 addFact(Fact.SystemReady())
                 true

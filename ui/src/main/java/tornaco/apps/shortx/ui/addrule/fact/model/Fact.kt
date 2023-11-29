@@ -241,6 +241,28 @@ sealed interface Fact {
         }
     }
 
+    data class UserPresentAtTheFirstTime(
+        override val note: String = "",
+        override val tag: String = "",
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val id: String = defaultNewFactId(),
+    ) : Fact {
+
+        override fun clone(
+            id: String,
+            note: String,
+            tag: String,
+            customContextDataKey: CustomContextDataKey
+        ): Fact {
+            return copy(
+                id = id,
+                note = note,
+                tag = tag,
+                customContextDataKey = customContextDataKey
+            )
+        }
+    }
+
     data class SystemReady(
         override val note: String = "",
         override val tag: String = "",

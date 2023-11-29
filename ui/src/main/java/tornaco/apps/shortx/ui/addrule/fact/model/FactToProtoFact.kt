@@ -57,6 +57,7 @@ import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.fact.SystemSettingsChanged
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
 import tornaco.apps.shortx.core.proto.fact.UserPresent
+import tornaco.apps.shortx.core.proto.fact.UserPresentAtTheFirstTime
 import tornaco.apps.shortx.core.proto.fact.VPNConnected
 import tornaco.apps.shortx.core.proto.fact.VPNDisconnected
 import tornaco.apps.shortx.core.proto.fact.WifiConnectedTo
@@ -131,6 +132,12 @@ fun Fact.toProtoFact(
 
         is Fact.UserPresent -> {
             UserPresent.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setTag(overrideTag ?: tag)
+                .setCustomContextDataKey(customContextDataKey).build()
+        }
+
+        is Fact.UserPresentAtTheFirstTime -> {
+            UserPresentAtTheFirstTime.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }

@@ -55,6 +55,13 @@ message UserPresent {
   string id = 100;
 }
 
+message UserPresentAtTheFirstTime {
+  string tag = 97;
+  CustomContextDataKey customContextDataKey = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message BatteryLevelChanged {
   // 0 means any
   int32 level = 1;

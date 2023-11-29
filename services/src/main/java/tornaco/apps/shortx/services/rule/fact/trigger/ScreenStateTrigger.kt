@@ -7,13 +7,18 @@ import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
 import tornaco.apps.shortx.core.proto.fact.UserPresent
+import tornaco.apps.shortx.core.proto.fact.UserPresentAtTheFirstTime
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.util.SafeBroadcastReceiver
+import java.util.concurrent.atomic.AtomicBoolean
 
 // Android 31+ screen on/off is handled by ActiveServicesHook.
 class ScreenStateTrigger(override val context: Context, override val shortXContext: ShortXContext) :
     Trigger {
+    companion object {
+        val firstTimeUserPresentTriggered = AtomicBoolean(false)
+    }
 
     private val receiver = object : SafeBroadcastReceiver(shortXContext) {
         override fun handleReceive(context: Context, intent: Intent) {
@@ -42,6 +47,13 @@ class ScreenStateTrigger(override val context: Context, override val shortXConte
                             "ACTION_USER_PRESENT",
                             UserPresent.newBuilder().build()
                         ) { emptyMap() }
+
+                        if (firstTimeUserPresentTriggered.compareAndSet(false, true)) {
+                            shortXContext.rule.publishFact(
+                                "ACTION_USER_PRESENT 1st time",
+                                UserPresentAtTheFirstTime.newBuilder().build()
+                            ) { emptyMap() }
+                        }
                     }
                 }
             }

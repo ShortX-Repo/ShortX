@@ -11,6 +11,7 @@ val allFactClasses = listOf(
     Fact.ScreenOn::class,
     Fact.ScreenOff::class,
     Fact.UserPresent::class,
+    Fact.UserPresentAtTheFirstTime::class,
     Fact.SystemReady::class,
 
     Fact.Alarm::class,

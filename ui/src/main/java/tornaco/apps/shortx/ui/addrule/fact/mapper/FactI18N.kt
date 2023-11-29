@@ -41,6 +41,7 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
         Fact.ScreenOff::class -> i18n["ui.fact.screen.off"] to null
         Fact.ScreenOn::class -> i18n["ui.fact.screen.on"] to null
         Fact.UserPresent::class -> i18n["ui.fact.screen.user.present"] to null
+        Fact.UserPresentAtTheFirstTime::class -> i18n["ui.fact.screen.user.present.at.the.first.time"] to null
         Fact.SystemReady::class -> i18n["ui.fact.system.ready"] to null
         Fact.Alarm::class -> i18n["ui.fact.time.of.a.day"] to null
         Fact.RandomInPeriod::class -> i18n["ui.fact.time.of.a.day.random"] to null
@@ -281,6 +282,7 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         is Fact.ScreenOff -> listOf(i18N["ui.fact.screen.off"])
         is Fact.ScreenOn -> listOf(i18N["ui.fact.screen.on"])
         is Fact.UserPresent -> listOf(i18N["ui.fact.screen.user.present"])
+        is Fact.UserPresentAtTheFirstTime -> listOf(i18N["ui.fact.screen.user.present.at.the.first.time"])
         is Fact.SystemReady -> listOf(i18N["ui.fact.system.ready"])
 
         is Fact.Alarm -> {
