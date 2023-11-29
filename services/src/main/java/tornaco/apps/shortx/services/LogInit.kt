@@ -11,7 +11,7 @@ import com.elvishew.xlog.printer.AndroidPrinter
 import com.elvishew.xlog.printer.Printer
 import com.elvishew.xlog.printer.file.FilePrinter
 import com.elvishew.xlog.printer.file.clean.FileLastModifiedCleanStrategy
-import com.elvishew.xlog.printer.file.naming.ChangelessFileNameGenerator
+import com.elvishew.xlog.printer.file.naming.DateFileNameGenerator
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.Logger
@@ -73,9 +73,9 @@ object LogInit {
         val filePrinter: Printer = FilePrinter.Builder(
             File(Dirs.baseServerLogDir(), "log").absolutePath
         )
-            .fileNameGenerator(ChangelessFileNameGenerator("shortx.log"))
-            .cleanStrategy(FileLastModifiedCleanStrategy(60 * 1000 * 60 * 24 * 2 /* 2 Days */))
+            .fileNameGenerator(DateFileNameGenerator())
             .flattener(ClassicFlattener())
+            .cleanStrategy(FileLastModifiedCleanStrategy(60 * 1000 * 60 * 24 * 3 /* 3 Days */))
             .build()
         XLog.init(
             LogConfiguration.Builder()
