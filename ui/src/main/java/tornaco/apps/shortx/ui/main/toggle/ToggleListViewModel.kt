@@ -9,6 +9,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.ShortXManager
+import tornaco.apps.shortx.core.proto.toggles.Toggle
 import tornaco.apps.shortx.core.proto.toggles.ToggleStateHandleByStore
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.ui.base.afterNavLongDelay
@@ -31,23 +33,7 @@ class ToggleListViewModel @Inject constructor(@ApplicationContext context: Conte
             if (delay) afterNavLongDelay()
             val allToggles = withContext(Dispatchers.IO) {
                 shortXManager.getAllToggles().map {
-                    ToggleUM(
-                        id = it.id,
-                        title = it.title,
-                        description = it.description,
-                        updateTime = "",
-                        createTime = "",
-                        enableState = if (it.stateHandle is_ ToggleStateHandleByStore::class.java) {
-                            ToggleEnableState.Loaded(
-                                shortXManager.isToggleEnabled(it.id)
-                            )
-                        } else {
-                            ToggleEnableState.Loading
-                        },
-                        versionCode = it.versionCode,
-                        author = it.author.name,
-                        isOnlineItem = false,
-                    )
+                    it.toggleToToggleUM(shortXManager)
                 }
             }
             updateState {
@@ -56,6 +42,9 @@ class ToggleListViewModel @Inject constructor(@ApplicationContext context: Conte
 
             // Load toggle state for By cond.
             withContext(Dispatchers.IO) {
+                shortXManager.getAllStatusBarTileSettings().forEach {
+                    shortXManager.updateQSTileActiveState(it.tile.number)
+                }
                 allToggles.filter { it.enableState is ToggleEnableState.Loading }
                     .forEach { toggle ->
                         if (isActive) {
@@ -83,3 +72,21 @@ class ToggleListViewModel @Inject constructor(@ApplicationContext context: Conte
         }
     }
 }
+
+fun Toggle.toggleToToggleUM(shortXManager: ShortXManager) = ToggleUM(
+    id = this.id,
+    title = this.title,
+    description = this.description,
+    updateTime = "",
+    createTime = "",
+    enableState = if (this.stateHandle is_ ToggleStateHandleByStore::class.java) {
+        ToggleEnableState.Loaded(
+            shortXManager.isToggleEnabled(this.id)
+        )
+    } else {
+        ToggleEnableState.Loading
+    },
+    versionCode = this.versionCode,
+    author = this.author.name,
+    isOnlineItem = false,
+)

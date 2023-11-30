@@ -16,12 +16,19 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.main.model.RuleUM
+import tornaco.apps.shortx.ui.main.model.ToggleUM
 import tornaco.apps.shortx.ui.main.model.ruleToRuleUM
+import tornaco.apps.shortx.ui.main.toggle.toggleToToggleUM
 import javax.inject.Inject
+
+sealed interface TileUsageOwner {
+    data class RuleOwner(val ruleUM: RuleUM) : TileUsageOwner
+    data class ToggleOwner(val toggleUM: ToggleUM) : TileUsageOwner
+}
 
 data class TileSettingsState(
     val tiles: List<StatusBarTileSetting> = emptyList(),
-    val usages: Map<StatusBarTile, MutableList<RuleUM>> = emptyMap(),
+    val usages: Map<StatusBarTile, MutableList<TileUsageOwner>> = emptyMap(),
     val isLoading: Boolean = false
 )
 
@@ -53,7 +60,7 @@ class TileSettingsViewModel @Inject constructor(@ApplicationContext context: Con
             withContext(Dispatchers.IO) {
                 val gvs = shortXManager.getAllGlobalVars()
                 val tiles = shortXManager.getAllStatusBarTileSettings().sortedBy { it.tile.number }
-                val usages = mutableMapOf<StatusBarTile, MutableList<RuleUM>>()
+                val usages = mutableMapOf<StatusBarTile, MutableList<TileUsageOwner>>()
                 shortXManager.getAllRules().forEach { rule ->
                     val tileFacts = rule.factsList.filter { it is_ OnQSTileClick::class.java }
                     if (tileFacts.isNotEmpty()) {
@@ -62,9 +69,18 @@ class TileSettingsViewModel @Inject constructor(@ApplicationContext context: Con
                             val onQSTileClick = it unpack_ OnQSTileClick::class.java
                             val tile = StatusBarTile.forNumber(onQSTileClick.tileNumber)
                             val currentList = usages[tile] ?: mutableListOf()
-                            currentList.add(ruleUM)
+                            currentList.add(TileUsageOwner.RuleOwner(ruleUM))
                             usages[tile] = currentList
                         }
+                    }
+                }
+                shortXManager.getAllToggles().forEach { toggle ->
+                    if (toggle.hasTileSetting()) {
+                        val toggleUM = toggle.toggleToToggleUM(shortXManager)
+                        val tile = StatusBarTile.forNumber(toggle.tileSetting.bondToTileNumber)
+                        val currentList = usages[tile] ?: mutableListOf()
+                        currentList.add(TileUsageOwner.ToggleOwner(toggleUM))
+                        usages[tile] = currentList
                     }
                 }
 

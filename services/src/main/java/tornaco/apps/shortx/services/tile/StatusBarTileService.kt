@@ -37,8 +37,9 @@ class StatusBarTileService(shortXContext: ShortXContext) :
         shortXContext.rule.registerToggleObs(object : ToggleObserver() {
             override fun onToggleChanged(id: String) {
                 super.onToggleChanged(id)
-                val tileSetting = shortXContext.rule.getToggleById(id)?.tileSetting
-                if (tileSetting != null) {
+                val toggle = shortXContext.rule.getToggleById(id)
+                if (toggle != null && toggle.hasTileSetting()) {
+                    val tileSetting = toggle.tileSetting
                     logger.d("onToggleChanged: $id, update tile state for number: ${tileSetting.bondToTileNumber}")
                     systemServiceScope.launchSafety {
                         withContext(Dispatchers.IO) {
@@ -114,8 +115,7 @@ class StatusBarTileService(shortXContext: ShortXContext) :
     fun onTileClick(tileNumber: Int) {
         // find toggles bond to a tile.
         val bondToggle = shortXContext.rule.getAllToggles().firstOrNull {
-            val tile = it.tileSetting
-            tile != null && tile.bondToTileNumber == tileNumber
+            it.hasTileSetting() && it.tileSetting.bondToTileNumber == tileNumber
         }
         logger.d("onTileClick, bondToggle: $bondToggle")
 
@@ -138,8 +138,7 @@ class StatusBarTileService(shortXContext: ShortXContext) :
 
     fun updateQSTileActiveState(tileNumber: Int) {
         val bondToggle = shortXContext.rule.getAllToggles().firstOrNull {
-            val tile = it.tileSetting
-            tile != null && tile.bondToTileNumber == tileNumber
+            it.hasTileSetting() && it.tileSetting.bondToTileNumber == tileNumber
         }
         logger.d("updateQSTileActiveState, bondToggle: $bondToggle")
         bondToggle?.let {

@@ -1,9 +1,12 @@
 package tornaco.apps.shortx.ui.addtoggle
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
@@ -64,10 +67,12 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.ShortXTextField
+import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.record.EvaRecordSetting
+import tornaco.apps.shortx.ui.settings.TileSettingsActivity
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -357,6 +362,38 @@ private fun ToggleContent(
         readOnly = readOnly,
         warnings = actionOnDisabledState.actionWarningMessages
     )
+    SectionSpacer()
+
+    val qsTileSelectState = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = {
+            if (it.resultCode == Activity.RESULT_OK) {
+                val tileNum = it.data?.getIntExtra("tile", 0) ?: 0
+                vm.bondToQSTile(tileNum)
+            }
+        }
+    )
+
+    val context = LocalContext.current
+    FieldTitle(text = LocalI18N.current["ui.settings.sb.bond.to.toggle"])
+    SmallSpacer()
+    FilledTonalButton(onClick = {
+        qsTileSelectState.launch(
+            TileSettingsActivity.intent(
+                context,
+                true
+            )
+        )
+    }) {
+        Text(
+            text = if (addToggleState.bondToTile == null) {
+                LocalI18N.current["ui.settings.sb.bond.to.toggle.pick"]
+            } else {
+                addToggleState.bondToTile.label
+            }
+        )
+    }
+
     SectionSpacer()
 
     EvaRecordSetting(id = addToggleState.id)

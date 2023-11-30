@@ -10,12 +10,14 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.toStringPair
 import tornaco.apps.shortx.core.proto.toggles.Toggle
 import tornaco.apps.shortx.core.proto.toggles.ToggleStateHandleByCondition
 import tornaco.apps.shortx.core.proto.toggles.ToggleStateHandleByStore
+import tornaco.apps.shortx.core.proto.toggles.ToggleTileSetting
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.pack_
@@ -46,6 +48,7 @@ data class AddToggleState(
     val description: String = "",
     val versionCode: Long = 1L,
     val isEditToggle: Boolean = false,
+    val bondToTile: StatusBarTileSetting? = null,
     val createTime: Long = System.currentTimeMillis(),
     val toggleChanged: Boolean = false,
     val isEnabled: Boolean = false,
@@ -88,6 +91,18 @@ class AddToggleViewModel @Inject constructor(@ApplicationContext context: Contex
     fun setStateHandle(handle: ToggleStateHandle) {
         updateState {
             copy(stateHandle = handle, toggleChanged = true)
+        }
+    }
+
+    fun bondToQSTile(number: Int) {
+        val tileSetting = shortXManager.getStatusBarTileSettingsByNumber(number)
+        tileSetting?.let {
+            updateState {
+                copy(
+                    bondToTile = it,
+                    toggleChanged = true
+                )
+            }
         }
     }
 
@@ -152,6 +167,13 @@ class AddToggleViewModel @Inject constructor(@ApplicationContext context: Contex
                     it.toProtoAction().pack_()
                 })
                 .setStateHandle(stateHandle)
+                .apply {
+                    state.value.bondToTile?.let {
+                        tileSetting =
+                            ToggleTileSetting.newBuilder().setBondToTileNumber(it.tile.number)
+                                .build()
+                    }
+                }
                 .addAllExtras(mutableListOf<StringPair>().apply {
                     if (!token.isNullOrEmpty()) {
                         add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
@@ -193,6 +215,11 @@ class AddToggleViewModel @Inject constructor(@ApplicationContext context: Contex
                         versionCode = tg.versionCode,
                         isEditToggle = true,
                         createTime = tg.createTime,
+                        bondToTile = if (tg.hasTileSetting()) {
+                            shortXManager.getStatusBarTileSettingsByNumber(tg.tileSetting.bondToTileNumber)
+                        } else {
+                            null
+                        }
                     )
                 }
 

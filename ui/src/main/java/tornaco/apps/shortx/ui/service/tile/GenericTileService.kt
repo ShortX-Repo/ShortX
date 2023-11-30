@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.ui.service.tile
 
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.service.quicksettings.Tile
@@ -12,6 +13,7 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.select
+import tornaco.apps.shortx.ui.base.i18NIns
 
 abstract class GenericTileService : TileService() {
     abstract val tileIndex: StatusBarTile
@@ -23,6 +25,7 @@ abstract class GenericTileService : TileService() {
     private val onTileSettingsChangeListener =
         object : IStatusBarTileSettingsChangeListener.Stub() {
             override fun onTileSettingsChange(tileNumber: Int) {
+                logger.d("onTileSettingsChange: $tileNumber")
                 handler.runCatching {
                     if (tileNumber == tileIndex.number) {
                         updateTile()
@@ -38,8 +41,13 @@ abstract class GenericTileService : TileService() {
             qsTile.label = it.label
             val resName = Remix.allFlat[it.iconName]
             qsTile.icon = appRes.getIcon(resName)
-            qsTile.updateTile()
             qsTile.state = it.isActive.select(Tile.STATE_ACTIVE, Tile.STATE_INACTIVE)
+            if (it.isActive) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    qsTile.subtitle = i18NIns["ui.common.on"]
+                }
+            }
+            qsTile.updateTile()
         }
     }
 

@@ -42,6 +42,7 @@ import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.AddRuleActivity
+import tornaco.apps.shortx.ui.addtoggle.AddToggleActivity
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
@@ -61,7 +62,6 @@ import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberMDIconSelectorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
-import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
@@ -181,7 +181,7 @@ fun TileSettings(back: () -> Unit, onTileClick: (StatusBarTile) -> Unit) {
 @Composable
 private fun TileItem(
     tile: StatusBarTileSetting,
-    usage: List<RuleUM>,
+    usage: List<TileUsageOwner>,
     onClick: () -> Unit,
     rename: (StatusBarTile, String) -> Unit,
     setIcon: (StatusBarTile, String) -> Unit,
@@ -241,9 +241,28 @@ private fun TileItem(
 
                         } else {
                             usage.forEach {
-                                LinkText(text = LocalI18N.current["ui.settings.sb.used", mapOf("title" to it.title)]) {
-                                    AddRuleActivity.edit(context, it.id)
+                                when (it) {
+                                    is TileUsageOwner.RuleOwner -> {
+                                        LinkText(
+                                            text = LocalI18N.current["ui.settings.sb.used", mapOf(
+                                                "title" to it.ruleUM.title
+                                            )]
+                                        ) {
+                                            AddRuleActivity.edit(context, it.ruleUM.id)
+                                        }
+                                    }
+
+                                    is TileUsageOwner.ToggleOwner -> {
+                                        LinkText(
+                                            text = LocalI18N.current["ui.settings.sb.used", mapOf(
+                                                "title" to it.toggleUM.title
+                                            )]
+                                        ) {
+                                            AddToggleActivity.edit(context, it.toggleUM.id)
+                                        }
+                                    }
                                 }
+
                             }
                         }
 

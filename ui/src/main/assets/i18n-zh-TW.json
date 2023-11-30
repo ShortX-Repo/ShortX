@@ -754,6 +754,8 @@
     "ui.settings.sb.tile.tip": "你可以在指令触发器中引用这些磁贴；磁贴的标签和图标可以在当前页面进行修改\n\n受限于系统绑定策略，有时候点击一个磁贴可能需要几秒钟的时间才会有反应，你可以尝试开启ShortX设置中的 磁贴点击优化",
     "ui.settings.sb.unused": "未使用",
     "ui.settings.sb.used": "被 {title} 指令使用",
+    "ui.settings.sb.bond.to.toggle": "绑定状态栏磁贴",
+    "ui.settings.sb.bond.to.toggle.pick": "选择磁贴",
     "ui.settings.sb.tile.opt": "磁贴点击优化",
     "ui.settings.sb.tile.opt.summary": "尝试对快速设置磁贴点击的响应速度进行优化，需要你勾选System UI作用域，如果你发现优化无效，请将该问题以及日志文件报告给开发者",
     "ui.settings.danmu": "弹幕设置",
