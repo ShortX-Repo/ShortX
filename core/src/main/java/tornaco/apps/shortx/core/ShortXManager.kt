@@ -960,6 +960,12 @@ class ShortXManager(val service: IShortX) {
         }
     }
 
+    fun updateQSTileActiveState(number: Int) {
+        invokeService(Unit) {
+            updateQSTileActiveState(number)
+        }
+    }
+
     fun registerStatusBarTileSettingsChangeListener(listener: IStatusBarTileSettingsChangeListener) {
         invokeService(Unit) {
             registerStatusBarTileSettingsChangeListener(listener)

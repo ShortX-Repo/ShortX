@@ -294,4 +294,6 @@ interface IShortX {
     void addHookFlags(String flag);
     void removeHookFlags(String flag);
     // Flags
+
+    void updateQSTileActiveState(int number);
 }

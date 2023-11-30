@@ -1,10 +1,18 @@
 package tornaco.apps.shortx.services.tile
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.os.RemoteCallbackList
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
+import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
+import tornaco.apps.shortx.core.rule.ToggleObserver
 import tornaco.apps.shortx.core.settings.defaultStatusBarTileSetting
+import tornaco.apps.shortx.core.util.OsUtils
+import tornaco.apps.shortx.core.util.statusBarManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.Settings
@@ -12,6 +20,7 @@ import tornaco.apps.shortx.services.data.StatusBarTileSettingsStore
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.systemServiceScope
+import tornaco.apps.shortx.services.watchdog.launchSafety
 
 
 class StatusBarTileService(shortXContext: ShortXContext) :
@@ -21,6 +30,31 @@ class StatusBarTileService(shortXContext: ShortXContext) :
         StatusBarTileSettingsStore(systemServiceScope)
     }
     private val settingsChangeListeners = RemoteCallbackList<IStatusBarTileSettingsChangeListener>()
+
+    override fun start(context: Context) {
+        super.start(context)
+
+        shortXContext.rule.registerToggleObs(object : ToggleObserver() {
+            override fun onToggleChanged(id: String) {
+                super.onToggleChanged(id)
+                val tileSetting = shortXContext.rule.getToggleById(id)?.tileSetting
+                if (tileSetting != null) {
+                    logger.d("onToggleChanged: $id, update tile state for number: ${tileSetting.bondToTileNumber}")
+                    systemServiceScope.launchSafety {
+                        withContext(Dispatchers.IO) {
+                            val isEnabled = shortXContext.rule.isToggleEnabled(id)
+                            val currentTileSetting =
+                                getStatusBarTileSettingsByNumber(tileSetting.bondToTileNumber)
+                            val updateSetting = StatusBarTileSetting.newBuilder(currentTileSetting)
+                                .setIsActive(isEnabled).build()
+                            logger.d("updateSetting: $updateSetting")
+                            updateStatusBarTileSetting(updateSetting)
+                        }
+                    }
+                }
+            }
+        })
+    }
 
     override fun systemReady() {
         super.systemReady()
@@ -76,4 +110,50 @@ class StatusBarTileService(shortXContext: ShortXContext) :
         }
     }
 
+    @SuppressLint("MissingPermission")
+    fun onTileClick(tileNumber: Int) {
+        // find toggles bond to a tile.
+        val bondToggle = shortXContext.rule.getAllToggles().firstOrNull {
+            val tile = it.tileSetting
+            tile != null && tile.bondToTileNumber == tileNumber
+        }
+        logger.d("onTileClick, bondToggle: $bondToggle")
+
+        if (bondToggle != null) {
+            val isCurrentEnabled = shortXContext.rule.isToggleEnabled(bondToggle.id)
+            logger.d("setToggleEnabled since tile click: ${bondToggle.title}, current enabled: $isCurrentEnabled")
+            shortXContext.rule.setToggleEnabled(bondToggle.id, !isCurrentEnabled)
+        } else {
+            shortXContext.rule.publishFact(
+                reason = "onTileClick-$tileNumber",
+                fact = OnQSTileClick.newBuilder().setTileNumber(tileNumber).build()
+            ) { emptyMap() }
+            if (OsUtils.isQOrAbove()) {
+                systemServiceScope.launchSafety {
+                    context.statusBarManager.collapsePanels()
+                }
+            }
+        }
+    }
+
+    fun updateQSTileActiveState(tileNumber: Int) {
+        val bondToggle = shortXContext.rule.getAllToggles().firstOrNull {
+            val tile = it.tileSetting
+            tile != null && tile.bondToTileNumber == tileNumber
+        }
+        logger.d("updateQSTileActiveState, bondToggle: $bondToggle")
+        bondToggle?.let {
+            systemServiceScope.launchSafety {
+                withContext(Dispatchers.IO) {
+                    val isEnabled = shortXContext.rule.isToggleEnabled(it.id)
+                    val currentTileSetting =
+                        getStatusBarTileSettingsByNumber(tileNumber)
+                    val updateSetting = StatusBarTileSetting.newBuilder(currentTileSetting)
+                        .setIsActive(isEnabled).build()
+                    logger.d("updateSetting: $updateSetting")
+                    updateStatusBarTileSetting(updateSetting)
+                }
+            }
+        }
+    }
 }

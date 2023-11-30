@@ -690,6 +690,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         }
     }
 
+    // Note: This API may block current thread.
     fun isToggleEnabled(id: String): Boolean {
         val toggle = getToggleById(id)
         if (toggle == null) {

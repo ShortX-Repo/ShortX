@@ -292,6 +292,7 @@ message StatusBarTileSetting {
   StatusBarTile tile = 1;
   string label = 2;
   string iconName = 3;
+  bool isActive = 4;
 }
 
 message StatusBarTileSettingList {

@@ -37,6 +37,12 @@ message Toggle {
   repeated google.protobuf.Any actionsOnDeleted = 13;
 
   google.protobuf.Any stateHandle = 14;
+
+  ToggleTileSetting tileSetting = 15;
+}
+
+message ToggleTileSetting {
+  int32 bondToTileNumber = 1;
 }
 
 message ToggleStateHandleByCondition {

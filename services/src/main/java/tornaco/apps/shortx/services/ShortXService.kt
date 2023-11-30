@@ -32,7 +32,6 @@ import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.common.UserInfo
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
-import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
@@ -57,10 +56,8 @@ import tornaco.apps.shortx.core.systemui.IQSTileHost
 import tornaco.apps.shortx.core.util.ApkUtils
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.DateUtils
-import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.UserHandleUtils.userIdToUserHandle
 import tornaco.apps.shortx.core.util.powerManager
-import tornaco.apps.shortx.core.util.statusBarManager
 import tornaco.apps.shortx.core.util.wifiManager
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.handleResponseBody
@@ -610,18 +607,8 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.tile.unregisterStatusBarTileSettingsChangeListener(listener)
         }
 
-        @SuppressLint("MissingPermission")
         override fun onTileClick(tileNumber: Int) {
-            shortXContext.rule.publishFact(
-                reason = "onTileClick-$tileNumber",
-                fact = OnQSTileClick.newBuilder().setTileNumber(tileNumber).build(),
-                initialContextData = emptyMap()
-            )
-            if (OsUtils.isQOrAbove()) {
-                systemServiceScope.launchSafety {
-                    context.statusBarManager.collapsePanels()
-                }
-            }
+            shortXContext.tile.onTileClick(tileNumber)
         }
 
         override fun isQSTileOptEnabled(): Boolean {
@@ -1081,6 +1068,10 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             File(Dirs.baseServerFlagsDir(), flag).deleteRecursively().also {
                 logger.i("removeHookFlags: $it")
             }
+        }
+
+        override fun updateQSTileActiveState(number: Int) {
+            shortXContext.tile.updateQSTileActiveState(number)
         }
 
         override fun getActivities(

@@ -11,6 +11,7 @@ import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.select
 
 abstract class GenericTileService : TileService() {
     abstract val tileIndex: StatusBarTile
@@ -38,7 +39,7 @@ abstract class GenericTileService : TileService() {
             val resName = Remix.allFlat[it.iconName]
             qsTile.icon = appRes.getIcon(resName)
             qsTile.updateTile()
-            qsTile.state = Tile.STATE_INACTIVE
+            qsTile.state = it.isActive.select(Tile.STATE_ACTIVE, Tile.STATE_INACTIVE)
         }
     }
 
@@ -47,6 +48,7 @@ abstract class GenericTileService : TileService() {
         logger.d("onStartListening")
         updateTile()
 
+        shortXManager.updateQSTileActiveState(tileIndex.number)
         shortXManager.unregisterStatusBarTileSettingsChangeListener(onTileSettingsChangeListener)
         shortXManager.registerStatusBarTileSettingsChangeListener(onTileSettingsChangeListener)
     }
