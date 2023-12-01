@@ -46,6 +46,10 @@ abstract class GenericTileService : TileService() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     qsTile.subtitle = i18NIns["ui.common.on"]
                 }
+            } else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    qsTile.subtitle = i18NIns["ui.common.off"]
+                }
             }
             qsTile.updateTile()
         }
