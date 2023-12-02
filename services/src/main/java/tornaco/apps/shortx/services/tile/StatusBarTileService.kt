@@ -44,6 +44,7 @@ class StatusBarTileService(shortXContext: ShortXContext) :
                     systemServiceScope.launchSafety {
                         withContext(Dispatchers.IO) {
                             val isEnabled = shortXContext.rule.isToggleEnabled(id)
+                            logger.d("onToggleChanged, updated isEnabled: $isEnabled")
                             val currentTileSetting =
                                 getStatusBarTileSettingsByNumber(tileSetting.bondToTileNumber)
                             val updateSetting = StatusBarTileSetting.newBuilder(currentTileSetting)
