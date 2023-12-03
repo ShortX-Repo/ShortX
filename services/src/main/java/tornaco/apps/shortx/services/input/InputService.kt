@@ -7,6 +7,7 @@ import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.android.ServiceRetriever
 import tornaco.apps.shortx.services.watchdog.postSafety
 import util.Reflections
+import java.util.concurrent.atomic.AtomicBoolean
 
 class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, "InputService") {
     private val imeService by lazy {
@@ -14,6 +15,8 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     }
 
     private val _onClipboardListener = mutableListOf<(String) -> Unit>()
+
+    private val isIMEShown = AtomicBoolean(false)
 
     fun addOnClipboardListener(listener: (String) -> Unit) {
         _onClipboardListener.add(listener)
@@ -57,5 +60,21 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
             requireNotNull(mCurInputConnection) { "No Input context. (no focused TextField?)" }
         logger.d("submitText, inputConnection: $inputConnection")
         InputConnectionCompat.commitText(inputConnection, text)
+    }
+
+    fun onHideCurrentInput() {
+        if (isIMEShown.compareAndSet(true, false)) {
+            imeVisibilityChanged()
+        }
+    }
+
+    fun onShowCurrentInput() {
+        if (isIMEShown.compareAndSet(false, true)) {
+            imeVisibilityChanged()
+        }
+    }
+
+    private fun imeVisibilityChanged() {
+        logger.d("imeVisibilityChanged, isIMEShown? ${isIMEShown.get()}")
     }
 }

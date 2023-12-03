@@ -21,6 +21,7 @@ import tornaco.apps.shortx.core.proto.fact.ScreenRotate
 import tornaco.apps.shortx.core.ui.TextViewNode
 import tornaco.apps.shortx.core.ui.ViewNode
 import tornaco.apps.shortx.core.ui.XRectF
+import tornaco.apps.shortx.core.util.appPkgToString
 import tornaco.apps.shortx.core.util.clipboardManager
 import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.core.util.windowManager
@@ -569,6 +570,13 @@ class WindowManagerService(shortXContext: ShortXContext) :
                     }
                 }
             }
+        }
+    }
+
+    fun onWindowFocusChanged(ownerUid: Int) {
+        systemServiceScope.launchSafety {
+            val app = shortXContext.appState.uidToApp(ownerUid)
+            logger.d("onWindowFocusChanged: $ownerUid - ${app?.pkg?.appPkgToString()}")
         }
     }
 }
