@@ -160,6 +160,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.Map.flight_takeoff_fill
         }
 
+        Condition.RequireIMEVisibility::class -> {
+            Remix.Device.keyboard_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

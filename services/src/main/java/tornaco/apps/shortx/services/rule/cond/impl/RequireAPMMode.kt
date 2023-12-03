@@ -14,7 +14,7 @@ object RequireAPMMode : Cond {
         return with(param) {
             val data =
                 condition unpack_ tornaco.apps.shortx.core.proto.condition.RequireAPMMode::class.java
-            val res = context.isAPMModeEnabled()
+            val res = data.isAPMEnable == context.isAPMModeEnabled()
             Cond.Result(
                 if (data.isInvert) {
                     !res

@@ -27,6 +27,7 @@ import tornaco.apps.shortx.core.proto.condition.RequireBTConnected
 import tornaco.apps.shortx.core.proto.condition.RequireBTDisconnected
 import tornaco.apps.shortx.core.proto.condition.RequireDelay
 import tornaco.apps.shortx.core.proto.condition.RequireFactTag
+import tornaco.apps.shortx.core.proto.condition.RequireIMEVisibility
 import tornaco.apps.shortx.core.proto.condition.RequireMobileDataEnabled
 import tornaco.apps.shortx.core.proto.condition.RequireScreenRotate
 import tornaco.apps.shortx.core.proto.condition.RequireSensorOff
@@ -518,6 +519,16 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setIsInvert(isInvert)
                 .setCustomContextDataKey(customContextDataKey)
                 .setIsAPMEnable(isEnableAPM)
+                .build()
+        }
+
+        is Condition.RequireIMEVisibility -> {
+            RequireIMEVisibility.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
+                .setIsShown(isShown)
                 .build()
         }
     }

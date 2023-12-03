@@ -199,6 +199,26 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
         })
     OnOffAnyStateSelectorDialog(state = apmModeSelectorState)
 
+    val imeVisibilitySelectorState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.condition.ime.visibility"],
+        menuItems = listOf(
+            MenuDialogItem(
+                id = true.toString(),
+                title = LocalI18N.current["ui.fact.ime.visibility.show"],
+            ),
+            MenuDialogItem(
+                id = false.toString(),
+                title = LocalI18N.current["ui.fact.ime.visibility.hide"],
+            ),
+        ),
+        onItemSelected = { data, id ->
+            val isShow = id.toBoolean()
+            addCondition(Condition.RequireIMEVisibility(isShown = isShow))
+        }
+    )
+    MenuDialog(state = imeVisibilitySelectorState)
+
+
     return { source ->
         when (source.clazz) {
             Condition.IsHeadsetPlug::class -> {
@@ -303,6 +323,11 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
 
             Condition.RequireAPMMode::class -> {
                 apmModeSelectorState.show()
+                true
+            }
+
+            Condition.RequireIMEVisibility::class -> {
+                imeVisibilitySelectorState.show()
                 true
             }
 

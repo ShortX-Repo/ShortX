@@ -226,6 +226,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             )
         }
 
+        Condition.RequireIMEVisibility::class -> {
+            listOf(
+                i18N["ui.condition.ime.visibility"],
+            )
+        }
+
         else -> {
             emptyList()
         }
@@ -502,6 +508,16 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
                 condition.isEnableAPM.select(
                     i18N["ui.common.on"],
                     i18N["ui.common.off"],
+                )
+            )
+        }
+
+        is Condition.RequireIMEVisibility -> {
+            listOf(
+                i18N["ui.condition.ime.visibility"],
+                condition.isShown.select(
+                    i18N["ui.fact.ime.visibility.show"],
+                    i18N["ui.fact.ime.visibility.hide"],
                 )
             )
         }

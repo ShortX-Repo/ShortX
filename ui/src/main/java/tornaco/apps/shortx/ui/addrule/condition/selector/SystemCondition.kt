@@ -42,6 +42,7 @@ fun SystemConditions(
         Condition.RequireSensorOff::class,
         Condition.RequireTileState::class,
         Condition.RequireAPMMode::class,
+        Condition.RequireIMEVisibility::class,
     ).map {
         SelectorItem(
             type = it,

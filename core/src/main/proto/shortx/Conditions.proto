@@ -436,3 +436,13 @@ message RequireAPMMode {
   string note = 99;
   string id = 100;
 }
+
+
+message RequireIMEVisibility {
+  bool isShown = 1;
+
+  CustomContextDataKey customContextDataKey = 97;
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}

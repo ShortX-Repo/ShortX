@@ -40,4 +40,5 @@ val allConditionClasses = listOf(
     Condition.RequireFactTag::class,
     Condition.AppHasTask::class,
     Condition.RequireAPMMode::class,
+    Condition.RequireIMEVisibility::class,
 )

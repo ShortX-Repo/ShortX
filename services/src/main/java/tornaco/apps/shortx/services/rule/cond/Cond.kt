@@ -203,6 +203,10 @@ enum class PrebuiltCond : CondProvider {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.RequireAPMMode
     },
+    RequireIMEVisibility {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.RequireIMEVisibility
+    },
 }
 
 fun prebuiltCondFor(condition: ProtoAny): Cond? {
