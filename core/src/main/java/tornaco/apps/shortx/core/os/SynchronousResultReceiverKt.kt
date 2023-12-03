@@ -90,7 +90,7 @@ class SynchronousResultReceiver : Parcelable {
 
         private constructor(`in`: Parcel) {
             mObject =
-                `in`.readParcelable<Parcelable>(ByteArrayWrapper::class.java.classLoader) as ByteArrayWrapper
+                `in`.readParcelable<Parcelable>(ByteArrayWrapper::class.java.classLoader) as ByteArrayWrapper?
             mErrorMessage = `in`.readString()
         }
 
@@ -112,6 +112,7 @@ class SynchronousResultReceiver : Parcelable {
     private fun complete(result: Result) {
         check(!mIsCompleted) { "Receiver has already been completed" }
         mIsCompleted = true
+        logger.d("complete: $result mLocal = $mLocal")
         if (mLocal) {
             mFuture.set(result)
         } else {
@@ -143,6 +144,7 @@ class SynchronousResultReceiver : Parcelable {
      */
     fun propagateException(e: RuntimeException) {
         Objects.requireNonNull(e, "RuntimeException cannot be null")
+        logger.d("propagateException")
         complete(Result(Log.getStackTraceString(e)))
     }
 
@@ -181,6 +183,7 @@ class SynchronousResultReceiver : Parcelable {
     private class MyResultReceiver(val receiver: SynchronousResultReceiver) :
         ISynchronousResultReceiver.Stub() {
         override fun send(result: Result) {
+            logger.d("MyResultReceiver send: $result")
             receiver.mFuture.set(result)
         }
     }
