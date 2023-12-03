@@ -4,6 +4,7 @@ import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.condition.AppHasAudioFocus
 import tornaco.apps.shortx.core.proto.condition.AppHasNotification
 import tornaco.apps.shortx.core.proto.condition.AppHasTask
+import tornaco.apps.shortx.core.proto.condition.AppHasWindowFocus
 import tornaco.apps.shortx.core.proto.condition.AppIsNotRunning
 import tornaco.apps.shortx.core.proto.condition.AppIsRunning
 import tornaco.apps.shortx.core.proto.condition.BatteryPercent
@@ -191,6 +192,27 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
 
         is Condition.AppHasAudioFocus -> {
             AppHasAudioFocus.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
+                .addAllPkgs(
+                    apps.map { app ->
+                        AppPkg.newBuilder()
+                            .setPkgName(app.pkg.pkgName)
+                            .setUserId(app.pkg.userId)
+                            .build()
+                    }
+                )
+                .addAllPkgSets(pkgSets.map {
+                    it.label
+                })
+                .setOp(op.toConditionOperator())
+                .build()
+        }
+
+        is Condition.AppHasWindowFocus -> {
+            AppHasWindowFocus.newBuilder()
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)

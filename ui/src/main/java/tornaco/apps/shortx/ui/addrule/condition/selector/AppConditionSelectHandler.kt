@@ -153,6 +153,28 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
             })
     ConditionAppPkgSelectorDialog(appHasAudioFocusSelectorState)
 
+    val appHasWindowFocusSelectorState =
+        rememberConditionAppPkgSelectorState(
+            onAppListSelected = { appList, op ->
+                addCondition(
+                    Condition.AppHasWindowFocus(
+                        apps = appList,
+                        pkgSets = emptyList(),
+                        op
+                    )
+                )
+            },
+            onPkgSetSelected = { pkgSets, op ->
+                addCondition(
+                    Condition.AppHasWindowFocus(
+                        apps = emptyList(),
+                        pkgSets = pkgSets,
+                        op
+                    )
+                )
+            })
+    ConditionAppPkgSelectorDialog(appHasWindowFocusSelectorState)
+
     val serviceIsRunningSelectorState = rememberComponentOrGVSelectorState(
         types = listOf(ComponentType.Service),
         onSelected = { it, op ->
@@ -256,6 +278,15 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
                     source.getConditionAs<Condition.AppHasAudioFocus>()?.apps,
                     source.getConditionAs<Condition.AppHasAudioFocus>()?.pkgSets,
                     source.getConditionAs<Condition.AppHasAudioFocus>()?.op,
+                )
+                true
+            }
+
+            Condition.AppHasWindowFocus::class -> {
+                appHasWindowFocusSelectorState.show(
+                    source.getConditionAs<Condition.AppHasWindowFocus>()?.apps,
+                    source.getConditionAs<Condition.AppHasWindowFocus>()?.pkgSets,
+                    source.getConditionAs<Condition.AppHasWindowFocus>()?.op,
                 )
                 true
             }

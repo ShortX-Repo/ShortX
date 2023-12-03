@@ -101,6 +101,10 @@ enum class PrebuiltCond : CondProvider {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.AppHasAudioFocus
     },
+    AppHasWindowFocus {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.AppHasWindowFocus
+    },
     ServiceIsRunning {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.ServiceIsRunning

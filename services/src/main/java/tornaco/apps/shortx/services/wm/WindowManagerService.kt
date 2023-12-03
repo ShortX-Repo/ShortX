@@ -56,7 +56,8 @@ class WindowManagerService(shortXContext: ShortXContext) :
         Handler(Looper.getMainLooper())
     }
 
-    private var currentFocusedWindowOwner: AppPkg = unKnownPkg
+    private var _currentFocusedWindowOwner: AppPkg = unKnownPkg
+    val currentFocusedWindowOwner get() = _currentFocusedWindowOwner
 
     var screenRotateDegree: ScreenRotateDegree = ScreenRotateDegree.ScreenRotateDegree_0
         set(value) {
@@ -584,11 +585,11 @@ class WindowManagerService(shortXContext: ShortXContext) :
             val app = shortXContext.appState.uidToApp(ownerUid)
             app?.let {
                 val newAppPkg = app.pkg
-                if (currentFocusedWindowOwner != newAppPkg) {
+                if (_currentFocusedWindowOwner != newAppPkg) {
                     // Lost current
                     shortXContext.rule.publishFact(
                         "onWindowFocusChanged", AppLostWindowFocus.newBuilder()
-                            .addApps(currentFocusedWindowOwner)
+                            .addApps(_currentFocusedWindowOwner)
                             .build()
                     ) { emptyMap() }
 
@@ -599,8 +600,8 @@ class WindowManagerService(shortXContext: ShortXContext) :
                             .build()
                     ) { emptyMap() }
 
-                    currentFocusedWindowOwner = newAppPkg
-                    logger.d("onWindowFocusChanged: $ownerUid - ${currentFocusedWindowOwner.appPkgToString()}")
+                    _currentFocusedWindowOwner = newAppPkg
+                    logger.d("onWindowFocusChanged: $ownerUid - ${_currentFocusedWindowOwner.appPkgToString()}")
                 }
             }
         }

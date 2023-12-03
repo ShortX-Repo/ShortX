@@ -164,6 +164,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.Device.keyboard_fill
         }
 
+        Condition.AppHasWindowFocus::class -> {
+            Remix.Design.focus_2_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

@@ -46,6 +46,10 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             listOf(i18N["ui.conditions.has.audio.focus"])
         }
 
+        Condition.AppHasWindowFocus::class -> {
+            listOf(i18N["ui.condition.app.has.window.focus"])
+        }
+
         Condition.MVEL::class -> {
             listOf(i18N["ui.title.mvel"])
         }
@@ -281,6 +285,12 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
 
         is Condition.AppHasAudioFocus -> {
             mutableListOf(i18N["ui.conditions.has.audio.focus"])
+                .appendConditionOp(condition.apps, condition.pkgSets, condition.op, i18N)
+                .labelLinesFromAppsAndPkgSets(condition.apps, condition.pkgSets)
+        }
+
+        is Condition.AppHasWindowFocus -> {
+            mutableListOf(i18N["ui.condition.app.has.window.focus"])
                 .appendConditionOp(condition.apps, condition.pkgSets, condition.op, i18N)
                 .labelLinesFromAppsAndPkgSets(condition.apps, condition.pkgSets)
         }
