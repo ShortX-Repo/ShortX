@@ -476,6 +476,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetAPMModeEnabled
     },
+    SetScreenTimeout {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.SetScreenTimeout
+    },
 
 
     ;

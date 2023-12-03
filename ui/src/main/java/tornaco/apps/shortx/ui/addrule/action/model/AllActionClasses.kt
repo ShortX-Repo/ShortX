@@ -119,5 +119,6 @@ val allActionClasses = listOf(
     Action.BiometricVerify::class,
     Action.AppShortcut::class,
     Action.SetAPMModeEnabled::class,
+    Action.SetScreenTimeout::class,
     Action.NoAction::class,
 )

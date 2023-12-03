@@ -7,6 +7,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import okhttp3.internal.toLongOrDefault
 import tornaco.apps.shortx.core.proto.action.MediaPlaybackAction
 import tornaco.apps.shortx.core.proto.action.RingerMode
 import tornaco.apps.shortx.core.proto.common.OnOffAny
@@ -196,6 +197,16 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
         })
     OnOffAnyStateSelectorDialog(state = apmModeSelectorState)
 
+    val screenTimeoutInputDialogState = rememberTextInputState(
+        title = LocalI18N.current["ui.action.set.screen.timeout"],
+        message = LocalI18N.current["ui.action.set.screen.timeout.message"],
+        onSelected = {
+            val timeoutLong = it.toLongOrDefault(15 * 1000)
+            addAction(Action.SetScreenTimeout(timeout = timeoutLong))
+        }
+    )
+    TextInputDialog(state = screenTimeoutInputDialogState)
+
     return { source ->
         when (source.clazz) {
             Action.MediaPlayback::class -> {
@@ -332,6 +343,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.SetScreenTimeout::class -> {
+                screenTimeoutInputDialogState.show(source.getActionAs<Action.SetScreenTimeout>()?.timeout?.toString())
+                true
+            }
+
             else -> false
         }
     }
@@ -385,7 +401,8 @@ fun SystemActions(
         Action.SwitchMobileDataSlot::class,
         Action.SetWallpaper::class,
         Action.ClickTile::class,
-        Action.BiometricVerify::class
+        Action.BiometricVerify::class,
+        Action.SetScreenTimeout::class
     ).map {
         SelectorItem(
             type = it,

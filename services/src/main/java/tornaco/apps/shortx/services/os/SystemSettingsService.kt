@@ -94,4 +94,14 @@ class SystemSettingsService(shortXContext: ShortXContext) :
             10000L
         }
     }
+
+    fun setScreenOffTimeout(timeout: Long) {
+        val checkedOut = maxOf(getMinScreenOffTimeout(), timeout)
+        logger.d("setScreenOffTimeout: $timeout")
+        Settings.System.putLong(
+            context.contentResolver,
+            Settings.System.SCREEN_OFF_TIMEOUT,
+            checkedOut
+        )
+    }
 }

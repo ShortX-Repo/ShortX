@@ -441,6 +441,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Map.flight_takeoff_line
         }
 
+        Action.SetScreenTimeout::class -> {
+            Remix.System.brightness_5_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

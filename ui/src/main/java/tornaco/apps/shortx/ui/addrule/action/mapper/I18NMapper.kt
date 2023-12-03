@@ -218,6 +218,7 @@ fun labelAndDescriptionForActionSelector(
         Action.AppShortcut::class -> i18N["ui.action.shortcut"] to null
         Action.GetTextFromScreenNode::class -> i18N["ui.action.get.text.from.node"] to null
         Action.SetAPMModeEnabled::class -> i18N["ui.action.set.apm.mode"] to null
+        Action.SetScreenTimeout::class -> i18N["ui.action.set.screen.timeout"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -820,6 +821,11 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                 i18N["ui.common.on"],
                 i18N["ui.common.off"],
             )
+        )
+
+        is Action.SetScreenTimeout -> listOf(
+            i18N["ui.action.set.screen.timeout"],
+            "${action.timeout}"
         )
     }
 }
