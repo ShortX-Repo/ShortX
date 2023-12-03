@@ -1273,3 +1273,18 @@ message SetScreenRotate {
   string note = 99;
   string id = 100;
 }
+
+message ScrollViewTo {
+  ScrollViewToLocation location = 1;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
+enum ScrollViewToLocation {
+  Top = 0;
+  Bottom = 1;
+}

@@ -7,9 +7,11 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import tornaco.apps.shortx.core.proto.action.ScrollViewToLocation
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
+import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.base.ActionCategory
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
@@ -21,8 +23,11 @@ import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.newIntent
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorActionOrNull
 import tornaco.apps.shortx.ui.base.InputValidateResult
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MenuDialog
+import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TextInputState
+import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
@@ -88,6 +93,20 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
         }
     )
     TextInputDialog(state = getNodeTextSelectorState)
+
+    val scrollToSelectorState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.action.scroll.view.to"],
+        menuItems = ScrollViewToLocation.values()
+            .filterNot { it == ScrollViewToLocation.UNRECOGNIZED }
+            .map {
+                MenuDialogItem(id = it.name, title = LocalI18N.current[it.labelKey()])
+            },
+        onItemSelected = { _, id ->
+            addAction(Action.ScrollViewTo(location = ScrollViewToLocation.valueOf(id)))
+        }
+    )
+    MenuDialog(state = scrollToSelectorState)
+
 
     return { source ->
         when (source.clazz) {
@@ -234,6 +253,11 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                 true
             }
 
+            Action.ScrollViewTo::class -> {
+                scrollToSelectorState.show()
+                true
+            }
+
             else -> false
         }
     }
@@ -267,6 +291,7 @@ fun UiActions(keyword: String, subscribeState: LVLStateHolder.State, addAction: 
         Action.EnableUniversalCopy::class,
         Action.EnableViewIdViewer::class,
         Action.GetTextFromScreenNode::class,
+        Action.ScrollViewTo::class,
     ).map {
         SelectorItem(
             it,

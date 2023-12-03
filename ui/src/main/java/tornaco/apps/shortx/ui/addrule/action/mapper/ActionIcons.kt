@@ -449,6 +449,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Design.clockwise_fill
         }
 
+        Action.ScrollViewTo::class -> {
+            Remix.Arrows.expand_up_down_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

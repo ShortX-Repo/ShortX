@@ -9,6 +9,7 @@ import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.proto.action.MediaPlaybackAction
 import tornaco.apps.shortx.core.proto.action.NavType
 import tornaco.apps.shortx.core.proto.action.RingerMode
+import tornaco.apps.shortx.core.proto.action.ScrollViewToLocation
 import tornaco.apps.shortx.core.proto.common.ActionOnError
 import tornaco.apps.shortx.core.proto.common.AudioSource
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
@@ -221,6 +222,7 @@ fun labelAndDescriptionForActionSelector(
         Action.SetAPMModeEnabled::class -> i18N["ui.action.set.apm.mode"] to null
         Action.SetScreenTimeout::class -> i18N["ui.action.set.screen.timeout"] to null
         Action.SetScreenRotate::class -> i18N["ui.action.set.screen.rotate"] to null
+        Action.ScrollViewTo::class -> i18N["ui.action.scroll.view.to"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -834,8 +836,20 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             i18N["ui.action.set.screen.rotate"],
             i18N[action.degree.actionLabelKey()]
         )
+
+        is Action.ScrollViewTo -> listOf(
+            i18N["ui.action.scroll.view.to"],
+            i18N[action.location.labelKey()],
+        )
     }
 }
+
+fun ScrollViewToLocation.labelKey() =
+    when (this) {
+        ScrollViewToLocation.Top -> "ui.action.scroll.view.to.top"
+        ScrollViewToLocation.Bottom -> "ui.action.scroll.view.to.bottom"
+        ScrollViewToLocation.UNRECOGNIZED -> "N/A"
+    }
 
 fun RingerMode.labelKey() = when (this) {
     RingerMode.silent -> "ui.action.set.ringer.mode.silent"
