@@ -89,6 +89,9 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Fact.FixedInPeriod::class,
     Fact.OnQSTileClick::class,
     Fact.HasFoundNodeOnScreen::class,
+    Fact.AppGainWindowFocus::class,
+    Fact.AppLostWindowFocus::class,
+    Fact.IMEVisibilityChange::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 
     Condition.AppHasAudioFocus::class,

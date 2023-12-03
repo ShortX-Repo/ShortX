@@ -31,10 +31,13 @@ import tornaco.apps.shortx.core.proto.condition.AppHasTask
 import tornaco.apps.shortx.core.proto.condition.RequireFactTag
 import tornaco.apps.shortx.core.proto.condition.RequireMobileDataEnabled
 import tornaco.apps.shortx.core.proto.fact.AdvancedKeyEvent
+import tornaco.apps.shortx.core.proto.fact.AppGainWindowFocus
+import tornaco.apps.shortx.core.proto.fact.AppLostWindowFocus
 import tornaco.apps.shortx.core.proto.fact.BTConnectedTo
 import tornaco.apps.shortx.core.proto.fact.BTDisconnectedFrom
 import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen
+import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
 import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
 import tornaco.apps.shortx.core.proto.fact.VPNConnected
@@ -54,6 +57,9 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         FixedInPeriod::class,
         OnQSTileClick::class,
         HasFoundNodeOnScreen::class,
+        AppGainWindowFocus::class,
+        AppLostWindowFocus::class,
+        IMEVisibilityChange::class,
 
         AppHasAudioFocus::class,
         RequireMobileDataEnabled::class,
