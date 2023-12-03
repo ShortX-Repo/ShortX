@@ -98,6 +98,8 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Condition.RequireMobileDataEnabled::class,
     Condition.RequireFactTag::class,
     Condition.AppHasTask::class,
+    Condition.AppHasWindowFocus::class,
+    Condition.RequireIMEVisibility::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 
     Action.LaunchAppByPkg::class,

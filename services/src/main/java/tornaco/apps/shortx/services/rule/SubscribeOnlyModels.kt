@@ -28,7 +28,9 @@ import tornaco.apps.shortx.core.proto.action.TTS
 import tornaco.apps.shortx.core.proto.action.ToggleGestureRecording
 import tornaco.apps.shortx.core.proto.condition.AppHasAudioFocus
 import tornaco.apps.shortx.core.proto.condition.AppHasTask
+import tornaco.apps.shortx.core.proto.condition.AppHasWindowFocus
 import tornaco.apps.shortx.core.proto.condition.RequireFactTag
+import tornaco.apps.shortx.core.proto.condition.RequireIMEVisibility
 import tornaco.apps.shortx.core.proto.condition.RequireMobileDataEnabled
 import tornaco.apps.shortx.core.proto.fact.AdvancedKeyEvent
 import tornaco.apps.shortx.core.proto.fact.AppGainWindowFocus
@@ -65,6 +67,8 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         RequireMobileDataEnabled::class,
         RequireFactTag::class,
         AppHasTask::class,
+        AppHasWindowFocus::class,
+        RequireIMEVisibility::class,
 
         LaunchAppByPkg::class,
         StopAppByPkg::class,
