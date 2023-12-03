@@ -16,11 +16,13 @@ import androidx.test.uiautomator.imp.adapter.InstrumentationAdapter
 import github.tornaco.android.thanos.core.app.ThanosManagerNative
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.onDebugBuild
+import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.fact.ScreenRotate
 import tornaco.apps.shortx.core.ui.TextViewNode
 import tornaco.apps.shortx.core.ui.ViewNode
 import tornaco.apps.shortx.core.ui.XRectF
+import tornaco.apps.shortx.core.unKnownPkg
 import tornaco.apps.shortx.core.util.appPkgToString
 import tornaco.apps.shortx.core.util.clipboardManager
 import tornaco.apps.shortx.core.util.screenSize
@@ -51,6 +53,8 @@ class WindowManagerService(shortXContext: ShortXContext) :
     private val mainHandler by lazy {
         Handler(Looper.getMainLooper())
     }
+
+    private var currentFocusedWindowOwner: AppPkg = unKnownPkg
 
     var screenRotateDegree: ScreenRotateDegree = ScreenRotateDegree.ScreenRotateDegree_0
         set(value) {
@@ -576,7 +580,12 @@ class WindowManagerService(shortXContext: ShortXContext) :
     fun onWindowFocusChanged(ownerUid: Int) {
         systemServiceScope.launchSafety {
             val app = shortXContext.appState.uidToApp(ownerUid)
-            logger.d("onWindowFocusChanged: $ownerUid - ${app?.pkg?.appPkgToString()}")
+            app?.let {
+                if (currentFocusedWindowOwner != app.pkg) {
+                    currentFocusedWindowOwner = app.pkg
+                    logger.d("onWindowFocusChanged: $ownerUid - ${currentFocusedWindowOwner.appPkgToString()}")
+                }
+            }
         }
     }
 }

@@ -74,6 +74,8 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         }
     }
 
+    fun isIMEShown() = isIMEShown.get()
+
     private fun imeVisibilityChanged() {
         logger.d("imeVisibilityChanged, isIMEShown? ${isIMEShown.get()}")
     }
