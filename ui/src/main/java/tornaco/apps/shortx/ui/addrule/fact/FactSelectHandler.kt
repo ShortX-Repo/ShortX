@@ -38,6 +38,24 @@ fun appFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean
             })
     AppPkgSelectorDialog(appFgPkgSelectorState)
 
+    val appGainWindowFocusSelectorState =
+        rememberAppPkgSelectorState(
+            onAppListSelected = { pkg ->
+                setFact(Fact.AppGainWindowFocus(apps = pkg))
+            }, onPkgSetSelected = {
+                setFact(Fact.AppGainWindowFocus(pkgSets = it))
+            })
+    AppPkgSelectorDialog(appGainWindowFocusSelectorState)
+
+    val appLostWindowFocusSelectorState =
+        rememberAppPkgSelectorState(
+            onAppListSelected = { pkg ->
+                setFact(Fact.AppLostWindowFocus(apps = pkg))
+            }, onPkgSetSelected = {
+                setFact(Fact.AppLostWindowFocus(pkgSets = it))
+            })
+    AppPkgSelectorDialog(appLostWindowFocusSelectorState)
+
     val activityStartAppComponentSelectorState = rememberAppComponentSelectorState(
         types = listOf(ComponentType.Activity),
         onAppComponentSelected = { infoList ->
@@ -201,6 +219,22 @@ fun appFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean
                 appFgPkgSelectorState.show(
                     source.getFactAs<Fact.AppBecomeForeground>()?.apps,
                     source.getFactAs<Fact.AppBecomeForeground>()?.pkgSets
+                )
+                true
+            }
+
+            Fact.AppGainWindowFocus::class -> {
+                appGainWindowFocusSelectorState.show(
+                    source.getFactAs<Fact.AppGainWindowFocus>()?.apps,
+                    source.getFactAs<Fact.AppGainWindowFocus>()?.pkgSets
+                )
+                true
+            }
+
+            Fact.AppLostWindowFocus::class -> {
+                appLostWindowFocusSelectorState.show(
+                    source.getFactAs<Fact.AppLostWindowFocus>()?.apps,
+                    source.getFactAs<Fact.AppLostWindowFocus>()?.pkgSets
                 )
                 true
             }

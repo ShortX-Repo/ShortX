@@ -229,6 +229,14 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
             i18n["ui.fact.ime.visibility.change"] to null
         }
 
+        Fact.AppGainWindowFocus::class -> {
+            i18n["ui.fact.app.gain.window.focus"] to null
+        }
+
+        Fact.AppLostWindowFocus::class -> {
+            i18n["ui.fact.app.lost.window.focus"] to null
+        }
+
         else -> "N/A" to null
     }
 }
@@ -672,6 +680,18 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
                     i18N["ui.fact.ime.visibility.hide"]
                 )
             )
+        }
+
+        is Fact.AppGainWindowFocus -> {
+            mutableListOf(
+                i18N["ui.fact.app.gain.window.focus"]
+            ).labelLinesFromAppsAndPkgSets(fact.apps, fact.pkgSets)
+        }
+
+        is Fact.AppLostWindowFocus -> {
+            mutableListOf(
+                i18N["ui.fact.app.lost.window.focus"]
+            ).labelLinesFromAppsAndPkgSets(fact.apps, fact.pkgSets)
         }
     }
 }

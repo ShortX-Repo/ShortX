@@ -18,6 +18,8 @@ import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
+import tornaco.apps.shortx.core.proto.fact.AppGainWindowFocus
+import tornaco.apps.shortx.core.proto.fact.AppLostWindowFocus
 import tornaco.apps.shortx.core.proto.fact.ScreenRotate
 import tornaco.apps.shortx.core.ui.TextViewNode
 import tornaco.apps.shortx.core.ui.ViewNode
@@ -581,8 +583,23 @@ class WindowManagerService(shortXContext: ShortXContext) :
         systemServiceScope.launchSafety {
             val app = shortXContext.appState.uidToApp(ownerUid)
             app?.let {
-                if (currentFocusedWindowOwner != app.pkg) {
-                    currentFocusedWindowOwner = app.pkg
+                val newAppPkg = app.pkg
+                if (currentFocusedWindowOwner != newAppPkg) {
+                    // Lost current
+                    shortXContext.rule.publishFact(
+                        "onWindowFocusChanged", AppLostWindowFocus.newBuilder()
+                            .addApps(currentFocusedWindowOwner)
+                            .build()
+                    ) { emptyMap() }
+
+                    // Gain new
+                    shortXContext.rule.publishFact(
+                        "onWindowFocusChanged", AppGainWindowFocus.newBuilder()
+                            .addApps(newAppPkg)
+                            .build()
+                    ) { emptyMap() }
+
+                    currentFocusedWindowOwner = newAppPkg
                     logger.d("onWindowFocusChanged: $ownerUid - ${currentFocusedWindowOwner.appPkgToString()}")
                 }
             }

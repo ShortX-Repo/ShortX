@@ -44,6 +44,9 @@ fun AppFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: (Fa
         Fact.AudioFocusLost::class,
         Fact.AudioFocusChanged::class,
 
+        Fact.AppGainWindowFocus::class,
+        Fact.AppLostWindowFocus::class,
+
         Fact.HasFoundNodeOnScreen::class,
     ).map {
         SelectorItem(

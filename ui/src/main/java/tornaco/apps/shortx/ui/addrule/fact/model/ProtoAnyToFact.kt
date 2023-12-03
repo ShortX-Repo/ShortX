@@ -175,6 +175,34 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.fact.AppGainWindowFocus::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.AppGainWindowFocus::class.java
+            val models = (data.appsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
+            Fact.AppGainWindowFocus(
+                apps = models.first,
+                pkgSets = models.second,
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.fact.AppLostWindowFocus::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.AppLostWindowFocus::class.java
+            val models = (data.appsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
+            Fact.AppLostWindowFocus(
+                apps = models.first,
+                pkgSets = models.second,
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.fact.AppAdded::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.fact.AppAdded::class.java
             Fact.AppAdded(

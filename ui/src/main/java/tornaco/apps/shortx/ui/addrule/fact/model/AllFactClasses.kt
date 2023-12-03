@@ -84,5 +84,9 @@ val allFactClasses = listOf(
     Fact.ScreenRotate::class,
     Fact.WindowRotationChange::class,
     Fact.IMEVisibilityChange::class,
+    Fact.AppGainWindowFocus::class,
+    Fact.AppLostWindowFocus::class,
+
+
     Fact.AnyFact::class,
 )

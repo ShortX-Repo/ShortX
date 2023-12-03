@@ -15,6 +15,8 @@ import tornaco.apps.shortx.core.proto.fact.AnyFact
 import tornaco.apps.shortx.core.proto.fact.AppAdded
 import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
+import tornaco.apps.shortx.core.proto.fact.AppGainWindowFocus
+import tornaco.apps.shortx.core.proto.fact.AppLostWindowFocus
 import tornaco.apps.shortx.core.proto.fact.AppProcessStarted
 import tornaco.apps.shortx.core.proto.fact.AppRemoved
 import tornaco.apps.shortx.core.proto.fact.AppUpdated
@@ -492,6 +494,26 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
             ruleN.isShown == actualN.isShown
         }
 
+        register(AppGainWindowFocus::class.java) { actual, rule ->
+            val actualN = (actual as AppGainWindowFocus)
+            val ruleN = (rule as AppGainWindowFocus)
+            matchWithAppOrPkgSetListFact(
+                shortXContextProvider,
+                AppGainWindowFocusWrapper(actualN),
+                AppGainWindowFocusWrapper(ruleN)
+            )
+        }
+
+        register(AppLostWindowFocus::class.java) { actual, rule ->
+            val actualN = (actual as AppLostWindowFocus)
+            val ruleN = (rule as AppLostWindowFocus)
+            matchWithAppOrPkgSetListFact(
+                shortXContextProvider,
+                AppLostWindowFocusWrapper(actualN),
+                AppLostWindowFocusWrapper(ruleN)
+            )
+        }
+
         logger.i("Init complete.")
     }
 
@@ -645,6 +667,24 @@ class AppBecomeFgFactWrapper(private val appBecomeFg: AppBecomeFg) : WithAppOrPk
         get() = appBecomeFg.pkgSetsList ?: emptyList()
     override val appList: List<AppPkg>
         get() = appBecomeFg.appsList ?: emptyList()
+
+}
+
+class AppGainWindowFocusWrapper(private val appGainWindowFocus: AppGainWindowFocus) :
+    WithAppOrPkgSetListFact {
+    override val pkgSetList: List<String>
+        get() = appGainWindowFocus.pkgSetsList ?: emptyList()
+    override val appList: List<AppPkg>
+        get() = appGainWindowFocus.appsList ?: emptyList()
+
+}
+
+class AppLostWindowFocusWrapper(private val appLostWindowFocus: AppLostWindowFocus) :
+    WithAppOrPkgSetListFact {
+    override val pkgSetList: List<String>
+        get() = appLostWindowFocus.pkgSetsList ?: emptyList()
+    override val appList: List<AppPkg>
+        get() = appLostWindowFocus.appsList ?: emptyList()
 
 }
 

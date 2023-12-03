@@ -1519,6 +1519,54 @@ sealed interface Fact {
         }
     }
 
+    data class AppGainWindowFocus(
+        override val note: String = "",
+        override val tag: String = "",
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val id: String = defaultNewFactId(),
+
+        val apps: List<App> = emptyList(),
+        val pkgSets: List<PkgSet> = emptyList()
+    ) : Fact {
+        override fun clone(
+            id: String,
+            note: String,
+            tag: String,
+            customContextDataKey: CustomContextDataKey
+        ): Fact {
+            return copy(
+                id = id,
+                note = note,
+                tag = tag,
+                customContextDataKey = customContextDataKey
+            )
+        }
+    }
+
+    data class AppLostWindowFocus(
+        override val note: String = "",
+        override val tag: String = "",
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val id: String = defaultNewFactId(),
+
+        val apps: List<App> = emptyList(),
+        val pkgSets: List<PkgSet> = emptyList()
+    ) : Fact {
+        override fun clone(
+            id: String,
+            note: String,
+            tag: String,
+            customContextDataKey: CustomContextDataKey
+        ): Fact {
+            return copy(
+                id = id,
+                note = note,
+                tag = tag,
+                customContextDataKey = customContextDataKey
+            )
+        }
+    }
+
     // END SEAL CLASS
 }
 

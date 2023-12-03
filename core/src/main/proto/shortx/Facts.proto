@@ -653,3 +653,23 @@ message IMEVisibilityChange {
   string note = 99;
   string id = 100;
 }
+
+message AppGainWindowFocus {
+  repeated AppPkg apps = 1;
+  repeated string pkgSets = 2;
+
+  string tag = 97;
+  CustomContextDataKey customContextDataKey = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message AppLostWindowFocus {
+  repeated AppPkg apps = 1;
+  repeated string pkgSets = 2;
+
+  string tag = 97;
+  CustomContextDataKey customContextDataKey = 98;
+  string note = 99;
+  string id = 100;
+}

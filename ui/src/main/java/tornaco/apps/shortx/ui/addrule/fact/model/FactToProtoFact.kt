@@ -10,6 +10,8 @@ import tornaco.apps.shortx.core.proto.fact.AnyFact
 import tornaco.apps.shortx.core.proto.fact.AppAdded
 import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
+import tornaco.apps.shortx.core.proto.fact.AppGainWindowFocus
+import tornaco.apps.shortx.core.proto.fact.AppLostWindowFocus
 import tornaco.apps.shortx.core.proto.fact.AppProcessStarted
 import tornaco.apps.shortx.core.proto.fact.AppRemoved
 import tornaco.apps.shortx.core.proto.fact.AppUpdated
@@ -191,6 +193,24 @@ fun Fact.toProtoFact(
 
         is Fact.AppBecomeForeground -> {
             AppBecomeFg.newBuilder().addAllApps(apps.map {
+                AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
+            }).addAllPkgSets(pkgSets.map { it.label }).setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
+                .setTag(overrideTag ?: tag)
+                .setCustomContextDataKey(customContextDataKey).build()
+        }
+
+        is Fact.AppGainWindowFocus -> {
+            AppGainWindowFocus.newBuilder().addAllApps(apps.map {
+                AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
+            }).addAllPkgSets(pkgSets.map { it.label }).setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
+                .setTag(overrideTag ?: tag)
+                .setCustomContextDataKey(customContextDataKey).build()
+        }
+
+        is Fact.AppLostWindowFocus -> {
+            AppLostWindowFocus.newBuilder().addAllApps(apps.map {
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
             }).addAllPkgSets(pkgSets.map { it.label }).setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
