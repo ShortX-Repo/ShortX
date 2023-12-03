@@ -35,6 +35,7 @@ import tornaco.apps.shortx.core.proto.fact.GlobalVarChanged
 import tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen
 import tornaco.apps.shortx.core.proto.fact.HeadsetPlug
 import tornaco.apps.shortx.core.proto.fact.HotSpotStatusChanged
+import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.fact.LocationStatusChanged
 import tornaco.apps.shortx.core.proto.fact.MediaStoreInsert
@@ -137,7 +138,8 @@ fun Fact.toProtoFact(
         }
 
         is Fact.UserPresentAtTheFirstTime -> {
-            UserPresentAtTheFirstTime.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+            UserPresentAtTheFirstTime.newBuilder().setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }
@@ -565,6 +567,14 @@ fun Fact.toProtoFact(
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .setDegree(degree)
+                .build()
+        }
+
+        is Fact.IMEVisibilityChange -> {
+            IMEVisibilityChange.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setTag(overrideTag ?: tag)
+                .setCustomContextDataKey(customContextDataKey)
+                .setIsShown(isShown)
                 .build()
         }
 

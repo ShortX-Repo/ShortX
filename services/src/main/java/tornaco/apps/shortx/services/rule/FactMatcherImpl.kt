@@ -39,6 +39,7 @@ import tornaco.apps.shortx.core.proto.fact.FlashLightStatusChanged
 import tornaco.apps.shortx.core.proto.fact.GlobalVarChanged
 import tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen
 import tornaco.apps.shortx.core.proto.fact.HotSpotStatusChanged
+import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.fact.LocationStatusChanged
 import tornaco.apps.shortx.core.proto.fact.MediaStoreInsert
@@ -483,6 +484,12 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
             val actualN = (actual as WindowRotationChange)
             val ruleN = (rule as WindowRotationChange)
             ruleN.degree == ScreenRotateDegree.ScreenRotateDegree_Any || ruleN.degree == actualN.degree
+        }
+
+        register(IMEVisibilityChange::class.java) { actual, rule ->
+            val actualN = (actual as IMEVisibilityChange)
+            val ruleN = (rule as IMEVisibilityChange)
+            ruleN.isShown == actualN.isShown
         }
 
         logger.i("Init complete.")

@@ -1496,6 +1496,29 @@ sealed interface Fact {
         }
     }
 
+    data class IMEVisibilityChange(
+        override val note: String = "",
+        override val tag: String = "",
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val id: String = defaultNewFactId(),
+
+        val isShown: Boolean
+    ) : Fact {
+        override fun clone(
+            id: String,
+            note: String,
+            tag: String,
+            customContextDataKey: CustomContextDataKey
+        ): Fact {
+            return copy(
+                id = id,
+                note = note,
+                tag = tag,
+                customContextDataKey = customContextDataKey
+            )
+        }
+    }
+
     // END SEAL CLASS
 }
 

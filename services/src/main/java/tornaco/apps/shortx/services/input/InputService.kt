@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.input
 
 import com.android.internal.view.IInputContext
+import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -78,5 +79,9 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
 
     private fun imeVisibilityChanged() {
         logger.d("imeVisibilityChanged, isIMEShown? ${isIMEShown.get()}")
+        shortXContext.rule.publishFact(
+            "imeVisibilityChanged",
+            IMEVisibilityChange.newBuilder().setIsShown(isIMEShown.get()).build()
+        ) { emptyMap() }
     }
 }

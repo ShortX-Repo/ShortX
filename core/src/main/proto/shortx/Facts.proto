@@ -644,3 +644,12 @@ message WindowRotationChange {
   string note = 99;
   string id = 100;
 }
+
+message IMEVisibilityChange {
+  bool isShown = 1;
+
+  string tag = 97;
+  CustomContextDataKey customContextDataKey = 98;
+  string note = 99;
+  string id = 100;
+}

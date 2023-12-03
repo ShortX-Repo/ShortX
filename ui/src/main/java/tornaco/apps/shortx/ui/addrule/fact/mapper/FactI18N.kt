@@ -225,6 +225,10 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
             i18n["ui.fact.window.rotate"] to null
         }
 
+        Fact.IMEVisibilityChange::class -> {
+            i18n["ui.fact.ime.visibility.change"] to null
+        }
+
         else -> "N/A" to null
     }
 }
@@ -657,6 +661,16 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
             listOf(
                 i18N["ui.fact.window.rotate"],
                 i18N[fact.degree.labelKey()]
+            )
+        }
+
+        is Fact.IMEVisibilityChange -> {
+            listOf(
+                i18N["ui.fact.ime.visibility.change"],
+                fact.isShown.select(
+                    i18N["ui.fact.ime.visibility.show"],
+                    i18N["ui.fact.ime.visibility.hide"]
+                )
             )
         }
     }

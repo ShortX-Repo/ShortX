@@ -68,6 +68,8 @@ fun SystemFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: 
         Fact.SystemSettingsChanged::class,
         Fact.CallStateChanged::class,
         Fact.ClipboardContentChanged::class,
+
+        Fact.IMEVisibilityChange::class,
     ).map {
         SelectorItem(
             type = it,

@@ -68,6 +68,7 @@ fun imageVectorForFact(fact: KClass<out Fact>): String {
         Fact.ScreenRotate::class -> Remix.Device.smartphone_fill
         Fact.WindowRotationChange::class -> Remix.Device.smartphone_fill
         Fact.APMStatusChanged::class -> Remix.Map.flight_takeoff_fill
+        Fact.IMEVisibilityChange::class -> Remix.Device.keyboard_fill
 
         else -> {
             Remix.Document.file_unknow_fill

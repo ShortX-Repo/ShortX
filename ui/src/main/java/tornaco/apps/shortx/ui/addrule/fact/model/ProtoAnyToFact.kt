@@ -795,6 +795,19 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange::class.java
+
+            Fact.IMEVisibilityChange(
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag,
+                isShown = data.isShown
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen::class.java

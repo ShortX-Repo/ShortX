@@ -331,6 +331,26 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     )
     MenuDialog(state = windowRotateSelectorState)
 
+
+    val imeVisibilitySelectorState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.fact.ime.visibility.change"],
+        menuItems = listOf(
+            MenuDialogItem(
+                id = true.toString(),
+                title = LocalI18N.current["ui.fact.ime.visibility.show"],
+            ),
+            MenuDialogItem(
+                id = false.toString(),
+                title = LocalI18N.current["ui.fact.ime.visibility.hide"],
+            ),
+        ),
+        onItemSelected = { data, id ->
+            val isShow = id.toBoolean()
+            addFact(Fact.IMEVisibilityChange(isShown = isShow))
+        }
+    )
+    MenuDialog(state = imeVisibilitySelectorState)
+
     return { source ->
         when (source.clazz) {
             Fact.KeyEvent::class -> {
@@ -573,6 +593,11 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
             Fact.WindowRotationChange::class -> {
                 windowRotateSelectorState.show()
+                true
+            }
+
+            Fact.IMEVisibilityChange::class -> {
+                imeVisibilitySelectorState.show()
                 true
             }
 
