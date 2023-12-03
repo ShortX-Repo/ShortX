@@ -16,7 +16,7 @@ import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.rememberBatteryPercentSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateGlobalVarSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberSIMSlotSelectorState
-import tornaco.apps.shortx.ui.addrule.fact.mapper.labelKey
+import tornaco.apps.shortx.ui.addrule.fact.mapper.factLabelKey
 import tornaco.apps.shortx.ui.addrule.fact.selector.BTDeviceSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.OnOffAnyStateSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.QSTileSelectorDialog
@@ -121,7 +121,7 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
         menuItems = ScreenRotateDegree.values()
             .filterNot { it == ScreenRotateDegree.UNRECOGNIZED || it == ScreenRotateDegree.ScreenRotateDegree_Any }
             .map {
-                MenuDialogItem(it.name, title = LocalI18N.current[it.labelKey()])
+                MenuDialogItem(it.name, title = LocalI18N.current[it.factLabelKey()])
             },
         onItemSelected = { data, id ->
             val degree = ScreenRotateDegree.valueOf(id)
@@ -135,7 +135,7 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
         menuItems = ScreenRotateDegree.values()
             .filterNot { it == ScreenRotateDegree.UNRECOGNIZED || it == ScreenRotateDegree.ScreenRotateDegree_Any }
             .map {
-                MenuDialogItem(it.name, title = LocalI18N.current[it.labelKey()])
+                MenuDialogItem(it.name, title = LocalI18N.current[it.factLabelKey()])
             },
         onItemSelected = { data, id ->
             val degree = ScreenRotateDegree.valueOf(id)

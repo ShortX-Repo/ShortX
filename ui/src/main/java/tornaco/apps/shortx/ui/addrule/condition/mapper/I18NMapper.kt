@@ -10,7 +10,7 @@ import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
-import tornaco.apps.shortx.ui.addrule.fact.mapper.labelKey
+import tornaco.apps.shortx.ui.addrule.fact.mapper.factLabelKey
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppComponents
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -470,14 +470,14 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
         is Condition.RequireScreenRotate -> {
             listOf(
                 i18N["ui.fact.screen.rotate"],
-                i18N[condition.degree.labelKey()]
+                i18N[condition.degree.factLabelKey()]
             )
         }
 
         is Condition.RequireWindowRotation -> {
             listOf(
                 i18N["ui.fact.window.rotate"],
-                i18N[condition.degree.labelKey()]
+                i18N[condition.degree.factLabelKey()]
             )
         }
 

@@ -11,6 +11,7 @@ import tornaco.apps.shortx.core.proto.action.NavType
 import tornaco.apps.shortx.core.proto.action.RingerMode
 import tornaco.apps.shortx.core.proto.common.ActionOnError
 import tornaco.apps.shortx.core.proto.common.AudioSource
+import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.common.VolumeDirection
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.toType
@@ -21,7 +22,6 @@ import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.condition.mapper.labelForConditionSelector
 import tornaco.apps.shortx.ui.addrule.fact.mapper.getLabelForKeyCode
-import tornaco.apps.shortx.ui.addrule.fact.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.PREFIX_APP_ICON
@@ -832,7 +832,7 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
 
         is Action.SetScreenRotate -> listOf(
             i18N["ui.action.set.screen.rotate"],
-            i18N[action.degree.labelKey()]
+            i18N[action.degree.actionLabelKey()]
         )
     }
 }
@@ -929,4 +929,8 @@ fun Int.streamTypeLabelKey(): String {
         AudioManager.STREAM_NOTIFICATION -> "ui.action.audio.stream.notification"
         else -> "N/A"
     }
+}
+
+fun ScreenRotateDegree.actionLabelKey(): String {
+    return "ui.action.screen.rotate.degree.${name.lowercase()}"
 }

@@ -11,7 +11,7 @@ import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.core.util.select
-import tornaco.apps.shortx.ui.addrule.fact.mapper.labelKey
+import tornaco.apps.shortx.ui.addrule.fact.mapper.factLabelKey
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.selector.AdvancedKeyEventSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.AlarmSelector
@@ -309,7 +309,7 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
         title = LocalI18N.current["ui.fact.screen.rotate"],
         menuItems = ScreenRotateDegree.values().filterNot { it == ScreenRotateDegree.UNRECOGNIZED }
             .map {
-                MenuDialogItem(it.name, title = LocalI18N.current[it.labelKey()])
+                MenuDialogItem(it.name, title = LocalI18N.current[it.factLabelKey()])
             },
         onItemSelected = { data, id ->
             val degree = ScreenRotateDegree.valueOf(id)
@@ -322,7 +322,7 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
         title = LocalI18N.current["ui.fact.window.rotate"],
         menuItems = ScreenRotateDegree.values().filterNot { it == ScreenRotateDegree.UNRECOGNIZED }
             .map {
-                MenuDialogItem(it.name, title = LocalI18N.current[it.labelKey()])
+                MenuDialogItem(it.name, title = LocalI18N.current[it.factLabelKey()])
             },
         onItemSelected = { data, id ->
             val degree = ScreenRotateDegree.valueOf(id)

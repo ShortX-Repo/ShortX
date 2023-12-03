@@ -661,14 +661,14 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         is Fact.ScreenRotate -> {
             listOf(
                 i18N["ui.fact.screen.rotate"],
-                i18N[fact.degree.labelKey()]
+                i18N[fact.degree.factLabelKey()]
             )
         }
 
         is Fact.WindowRotationChange -> {
             listOf(
                 i18N["ui.fact.window.rotate"],
-                i18N[fact.degree.labelKey()]
+                i18N[fact.degree.factLabelKey()]
             )
         }
 
@@ -785,6 +785,6 @@ fun Int.opsIconName(): String {
     }
 }
 
-fun ScreenRotateDegree.labelKey(): String {
+fun ScreenRotateDegree.factLabelKey(): String {
     return "ui.fact.screen.rotate.degree.${name.lowercase()}"
 }

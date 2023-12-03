@@ -15,6 +15,7 @@ import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.common.VolumeDirection
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.select
+import tornaco.apps.shortx.ui.addrule.action.mapper.actionLabelKey
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
@@ -26,7 +27,6 @@ import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.base.rememberCategoryState
 import tornaco.apps.shortx.ui.addrule.condition.SIMSlotSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.rememberSIMSlotSelectorState
-import tornaco.apps.shortx.ui.addrule.fact.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.fact.selector.BrightnessValueSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.CombineKeyEventSelectorActivity
 import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
@@ -213,7 +213,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
         title = LocalI18N.current["ui.action.set.screen.rotate"],
         menuItems = ScreenRotateDegree.values().filterNot { it == ScreenRotateDegree.UNRECOGNIZED }
             .map {
-                MenuDialogItem(id = it.name, title = LocalI18N.current[it.labelKey()])
+                MenuDialogItem(id = it.name, title = LocalI18N.current[it.actionLabelKey()])
             },
         onItemSelected = { data, id ->
             val degree = ScreenRotateDegree.valueOf(id)
