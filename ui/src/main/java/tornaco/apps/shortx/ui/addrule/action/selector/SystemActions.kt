@@ -11,6 +11,7 @@ import okhttp3.internal.toLongOrDefault
 import tornaco.apps.shortx.core.proto.action.MediaPlaybackAction
 import tornaco.apps.shortx.core.proto.action.RingerMode
 import tornaco.apps.shortx.core.proto.common.OnOffAny
+import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.common.VolumeDirection
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.select
@@ -25,6 +26,7 @@ import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.base.rememberCategoryState
 import tornaco.apps.shortx.ui.addrule.condition.SIMSlotSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.rememberSIMSlotSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.fact.selector.BrightnessValueSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.CombineKeyEventSelectorActivity
 import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
@@ -207,6 +209,19 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     )
     TextInputDialog(state = screenTimeoutInputDialogState)
 
+    val screenRotateSelectorState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.action.set.screen.rotate"],
+        menuItems = ScreenRotateDegree.values().filterNot { it == ScreenRotateDegree.UNRECOGNIZED }
+            .map {
+                MenuDialogItem(id = it.name, title = LocalI18N.current[it.labelKey()])
+            },
+        onItemSelected = { data, id ->
+            val degree = ScreenRotateDegree.valueOf(id)
+            addAction(Action.SetScreenRotate(degree = degree))
+        }
+    )
+    MenuDialog(state = screenRotateSelectorState)
+
     return { source ->
         when (source.clazz) {
             Action.MediaPlayback::class -> {
@@ -348,6 +363,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.SetScreenRotate::class -> {
+                screenRotateSelectorState.show()
+                true
+            }
+
             else -> false
         }
     }
@@ -402,7 +422,8 @@ fun SystemActions(
         Action.SetWallpaper::class,
         Action.ClickTile::class,
         Action.BiometricVerify::class,
-        Action.SetScreenTimeout::class
+        Action.SetScreenTimeout::class,
+        Action.SetScreenRotate::class
     ).map {
         SelectorItem(
             type = it,

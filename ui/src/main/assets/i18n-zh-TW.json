@@ -440,6 +440,7 @@
     "ui.action.get.text.from.node": "读取视图文本",
     "ui.action.get.text.from.node.tip.get.all": "输入视图ID，留空表示读取页面上全部的视图文本",
     "ui.action.get.text.from.node.get.all": "读取全部文本",
+    "ui.action.set.screen.rotate": "屏幕旋转",
     "ui.action.set.screen.timeout": "设置屏幕超时",
     "ui.action.set.screen.timeout.message": "请输入屏幕超时的毫秒数，通常最低不得小于10000毫秒（即10s）",
     "ui.action.biometric.verify": "生物识别验证",

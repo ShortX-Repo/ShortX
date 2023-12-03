@@ -120,5 +120,6 @@ val allActionClasses = listOf(
     Action.AppShortcut::class,
     Action.SetAPMModeEnabled::class,
     Action.SetScreenTimeout::class,
+    Action.SetScreenRotate::class,
     Action.NoAction::class,
 )

@@ -480,6 +480,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetScreenTimeout
     },
+    SetScreenRotate {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.SetScreenRotate
+    },
 
 
     ;

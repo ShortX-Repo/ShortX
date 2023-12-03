@@ -67,6 +67,7 @@ import tornaco.apps.shortx.core.proto.action.SetLocationEnabled
 import tornaco.apps.shortx.core.proto.action.SetNFCEnabled
 import tornaco.apps.shortx.core.proto.action.SetRingerMode
 import tornaco.apps.shortx.core.proto.action.SetRuleEnabled
+import tornaco.apps.shortx.core.proto.action.SetScreenRotate
 import tornaco.apps.shortx.core.proto.action.SetScreenTimeout
 import tornaco.apps.shortx.core.proto.action.SetSensorsOffEnabled
 import tornaco.apps.shortx.core.proto.action.SetVolume
@@ -1403,6 +1404,17 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setNote(overrideNote ?: note)
                 .setTimeoutMillis(timeout)
+                .build()
+        }
+
+        is Action.SetScreenRotate -> {
+            SetScreenRotate.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setDegree(degree)
                 .build()
         }
 

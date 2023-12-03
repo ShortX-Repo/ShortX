@@ -445,6 +445,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.System.brightness_5_fill
         }
 
+        Action.SetScreenRotate::class -> {
+            Remix.Design.clockwise_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

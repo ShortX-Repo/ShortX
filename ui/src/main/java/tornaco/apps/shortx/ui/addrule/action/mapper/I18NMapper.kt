@@ -21,6 +21,7 @@ import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.condition.mapper.labelForConditionSelector
 import tornaco.apps.shortx.ui.addrule.fact.mapper.getLabelForKeyCode
+import tornaco.apps.shortx.ui.addrule.fact.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.PREFIX_APP_ICON
@@ -219,6 +220,7 @@ fun labelAndDescriptionForActionSelector(
         Action.GetTextFromScreenNode::class -> i18N["ui.action.get.text.from.node"] to null
         Action.SetAPMModeEnabled::class -> i18N["ui.action.set.apm.mode"] to null
         Action.SetScreenTimeout::class -> i18N["ui.action.set.screen.timeout"] to null
+        Action.SetScreenRotate::class -> i18N["ui.action.set.screen.rotate"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -826,6 +828,11 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.SetScreenTimeout -> listOf(
             i18N["ui.action.set.screen.timeout"],
             "${action.timeout}"
+        )
+
+        is Action.SetScreenRotate -> listOf(
+            i18N["ui.action.set.screen.rotate"],
+            i18N[action.degree.labelKey()]
         )
     }
 }
