@@ -3,11 +3,13 @@ package tornaco.apps.shortx.services.wm
 import android.app.UiAutomation.OnAccessibilityEventListener
 import android.content.ClipData
 import android.graphics.Rect
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.Surface
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_TO_POSITION
 import android.widget.Toast
 import androidx.test.uiautomator.imp.UiDevice
 import androidx.test.uiautomator.imp.UiSelector
@@ -591,23 +593,84 @@ class WindowManagerService(shortXContext: ShortXContext) :
 
     suspend fun scrollToTop(): Boolean {
         logger.d("scrollToTop")
-        return performScrollAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD, true)
+        return performScrollAction { scrollable ->
+            val scrollToPositionSuccess =
+                scrollable.performAction(ACTION_SCROLL_TO_POSITION.id, Bundle().apply {
+                    putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_ROW_INT, 0)
+                })
+            if (scrollToPositionSuccess) {
+                true
+            } else {
+                val bounds = scrollable.boundsInScreen
+                val centerX = bounds.centerX()
+                val centerY = bounds.centerY()
+                val endX = centerX
+                val endY = centerY + 500
+                var loopCount = 0
+                var result = false
+                while (loopCount < MAX_VIEW_SCROLL_COUNT && scrollable.performAction(
+                        AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD
+                    )
+                ) {
+                    // Inject swipe to make it faster.
+                    swipe(centerX, centerY, endX, endY, SCROLL_DELAY)
+
+                    loopCount += 1
+                    result = true
+                    delay(SCROLL_DELAY)
+                }
+                result
+            }
+        }
     }
+
 
     suspend fun scrollToBottom(): Boolean {
         logger.d("scrollToBottom")
-        return performScrollAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD, true)
+        return performScrollAction { scrollable ->
+            val scrollToPositionSuccess =
+                scrollable.performAction(ACTION_SCROLL_TO_POSITION.id, Bundle().apply {
+                    putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_ROW_INT, Int.MAX_VALUE)
+                })
+            if (scrollToPositionSuccess) {
+                true
+            } else {
+                val bounds = scrollable.boundsInScreen
+                val centerX = bounds.centerX()
+                val centerY = bounds.centerY()
+                val endX = centerX
+                val endY = centerY - 500
+                var loopCount = 0
+                var result = false
+                while (loopCount < MAX_VIEW_SCROLL_COUNT && scrollable.performAction(
+                        AccessibilityNodeInfo.ACTION_SCROLL_FORWARD
+                    )
+                ) {
+                    // Inject swipe to make it faster.
+                    swipe(centerX, centerY, endX, endY, SCROLL_DELAY)
+
+                    loopCount += 1
+                    result = true
+                    delay(SCROLL_DELAY)
+                }
+                result
+            }
+        }
     }
 
     // Down
     suspend fun scrollForward(): Boolean =
-        performScrollAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD, false)
+        performScrollAction {
+            it.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD)
+        }
 
     // Up
     suspend fun scrollBackward(): Boolean =
-        performScrollAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD, false)
+        performScrollAction {
+            it.performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD)
+        }
 
-    private suspend fun performScrollAction(action: Int, toTheEnd: Boolean): Boolean {
+    private suspend fun performScrollAction(action: suspend (AccessibilityNodeInfo) -> Boolean): Boolean {
         val root: AccessibilityNodeInfo? = automationManager.rootInActiveWindow
         logger.d("performScrollAction, rootInActiveWindow: $root")
         if (root == null) return false
@@ -623,35 +686,11 @@ class WindowManagerService(shortXContext: ShortXContext) :
 
         if (scrollableView.isEmpty()) return false
 
-        val scrollable = scrollableView[0]
-
-        var result = false
-        var loopCount = 0
-        if (toTheEnd) {
-            val bounds = scrollable.boundsInScreen
-            val centerX = bounds.centerX()
-            val centerY = bounds.centerY()
-            val endX = centerX
-            val endY = if (action == AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD) {
-                centerY + 500
-            } else {
-                centerY - 500
-            }
-            while (loopCount < MAX_VIEW_SCROLL_COUNT && scrollable.performAction(action)) {
-                // Inject swipe to make it faster.
-                swipe(centerX, centerY, endX, endY, SCROLL_DELAY)
-
-                loopCount += 1
-                result = true
-                delay(SCROLL_DELAY)
-            }
-        } else {
-            result = scrollable.performAction(action)
-        }
-
+        val scrollable: AccessibilityNodeInfo = scrollableView[0]
+        val result = action(scrollable)
         root.recycle()
 
-        logger.d("performScrollAction, loopCount: $loopCount, result: $result")
+        logger.d("performScrollAction, result: $result")
 
         return result
     }
