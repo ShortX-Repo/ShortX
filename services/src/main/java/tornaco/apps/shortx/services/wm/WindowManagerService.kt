@@ -585,66 +585,79 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
     }
 
-    fun scrollToTop(): Boolean {
+    suspend fun scrollToTop(): Boolean {
         logger.d("scrollToTop")
-        var isSuccess = false
-        while (scrollBackward()) {
-            isSuccess = true
-        }
-        return isSuccess
+        return performScrollAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD, true)
     }
 
-    fun scrollToBottom(): Boolean {
+    suspend fun scrollToBottom(): Boolean {
         logger.d("scrollToBottom")
-        var isSuccess = false
-        while (scrollForward()) {
-            isSuccess = true
-        }
-        return isSuccess
+        return performScrollAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD, true)
     }
 
     // Down
-    fun scrollForward(): Boolean = performScrollAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD)
+    suspend fun scrollForward(): Boolean =
+        performScrollAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD, false)
 
     // Up
-    fun scrollBackward(): Boolean =
-        performScrollAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD)
+    suspend fun scrollBackward(): Boolean =
+        performScrollAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD, false)
 
-    fun performScrollAction(action: Int): Boolean {
+    private suspend fun performScrollAction(action: Int, loop: Boolean): Boolean {
         val root: AccessibilityNodeInfo? = automationManager.rootInActiveWindow
         logger.d("performScrollAction, rootInActiveWindow: $root")
         if (root == null) return false
 
         val scrollableView = findScrollableView(root)
-        logger.d("performScrollAction, scrollableView: $scrollableView")
-        if (scrollableView == null) return false
+            .sortedWith(compareBy {
+                it.className.contains("ViewPager") // 将 "ViewPager" 视为最大值
+            })
 
-        val result =
-            scrollableView.performAction(action)
-        root.recycle()
-        return result.also {
-            logger.d("performScrollAction: $result")
+        onDebugBuild {
+            logger.d("performScrollAction, scrollableView: ${scrollableView.joinToString(System.lineSeparator())}")
         }
+
+        if (scrollableView.isEmpty()) return false
+
+        var result = false
+        var loopCount = 0
+        if (loop) {
+            while (scrollableView[0].performAction(action)) {
+                loopCount += 1
+                result = true
+                delay(100)
+            }
+        } else {
+            result = scrollableView[0].performAction(action)
+        }
+
+        root.recycle()
+
+        logger.d("performScrollAction, loopCount: $loopCount, result: $result")
+
+        return result
     }
 
-    private fun findScrollableView(rootNode: AccessibilityNodeInfo): AccessibilityNodeInfo? {
-        return findScrollableViewRecursive(rootNode)
+    private fun findScrollableView(rootNode: AccessibilityNodeInfo): List<AccessibilityNodeInfo> {
+        val list = mutableListOf<AccessibilityNodeInfo>()
+        findScrollableViewRecursive(rootNode, list)
+        return list
     }
 
-    private fun findScrollableViewRecursive(node: AccessibilityNodeInfo): AccessibilityNodeInfo? {
+    private fun findScrollableViewRecursive(
+        node: AccessibilityNodeInfo,
+        list: MutableList<AccessibilityNodeInfo>
+    ) {
         if (isScrollableView(node)) {
-            return node
+            list.add(node)
         }
 
         for (i in 0 until node.childCount) {
             val child = node.getChild(i)
-            val scrollableView = findScrollableViewRecursive(child)
-            if (scrollableView != null) {
-                return scrollableView
+            child?.let {
+                findScrollableViewRecursive(it, list)
             }
         }
-
-        return null
     }
 
     private fun isScrollableView(node: AccessibilityNodeInfo): Boolean {
