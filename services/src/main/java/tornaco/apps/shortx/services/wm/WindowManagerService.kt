@@ -2,7 +2,6 @@ package tornaco.apps.shortx.services.wm
 
 import android.app.UiAutomation.OnAccessibilityEventListener
 import android.content.ClipData
-import android.graphics.Color
 import android.graphics.Rect
 import android.os.Handler
 import android.os.Looper
@@ -580,6 +579,44 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
     }
 
+    fun scrollToTop() {
+        val root: AccessibilityNodeInfo? = automationManager.rootInActiveWindow
+        logger.d("scrollToTop, rootInActiveWindow: $root")
+
+        root?.let {
+            val scrollableView = findScrollableView(it)
+            logger.d("scrollableView: $scrollableView")
+            scrollableView?.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD)?.apply {
+                logger.d("ACTION_SCROLL_FORWARD: $this")
+            }
+            it.recycle()
+        }
+    }
+
+    private fun findScrollableView(rootNode: AccessibilityNodeInfo): AccessibilityNodeInfo? {
+        return findScrollableViewRecursive(rootNode)
+    }
+
+    private fun findScrollableViewRecursive(node: AccessibilityNodeInfo): AccessibilityNodeInfo? {
+        if (isScrollableView(node)) {
+            return node
+        }
+
+        for (i in 0 until node.childCount) {
+            val child = node.getChild(i)
+            val scrollableView = findScrollableViewRecursive(child)
+            if (scrollableView != null) {
+                return scrollableView
+            }
+        }
+
+        return null
+    }
+
+    private fun isScrollableView(node: AccessibilityNodeInfo): Boolean {
+        return node.isScrollable
+    }
+
     fun onWindowFocusChanged(ownerUid: Int) {
         systemServiceScope.launchSafety {
             val app = shortXContext.appState.uidToApp(ownerUid)
@@ -608,42 +645,3 @@ class WindowManagerService(shortXContext: ShortXContext) :
     }
 }
 
-
-private val ColorPalette = arrayOf(
-    // MTR
-    Color(0xffAE213B),
-    Color(0xff11254A),
-    Color(0xffFF0000),
-    Color(0xff1A9431),
-    Color(0xff0860A8),
-    Color(0xffB5BD00),
-    Color(0xffFE7F1D),
-    Color(0xffF550A6),
-    Color(0xff1C7670),
-    Color(0xff5EB6E4),
-    Color(0xffA40084),
-    Color(0xff9A3B26),
-
-    // Nintendo Switch
-    Color(0xffFF5145),
-    Color(0xff00BBDF),
-    Color(0xffF8B62E),
-    Color(0xffBAD600),
-    Color(0xff19D719),
-    Color(0xffF02D7D),
-    Color(0xffFFDC00),
-    Color(0xffC88C32),
-
-    // Google
-    Color(0xff4586F3),
-    Color(0xffEB4334),
-    Color(0xffFBBD06),
-    Color(0xff35AA53),
-)
-
-private fun Color(colorValue: Long) = Color.argb(
-    (colorValue shr 24).toInt(),
-    ((colorValue shr 16) and 0xFF).toInt(),
-    ((colorValue shr 8) and 0xFF).toInt(),
-    (colorValue and 0xFF).toInt()
-)
