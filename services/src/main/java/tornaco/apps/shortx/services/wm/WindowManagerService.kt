@@ -41,6 +41,10 @@ import tornaco.apps.shortx.ui.overlay.UniversalCopyView
 
 class WindowManagerService(shortXContext: ShortXContext) :
     SystemService(shortXContext, "ShortXWMS"), OnAccessibilityEventListener {
+    companion object {
+        const val MAX_VIEW_SCROLL_COUNT = 300
+        const val SCROLL_DELAY = 10L
+    }
 
     private val automationManager by lazy { UiAutomationManager(handler) }
 
@@ -603,7 +607,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
     suspend fun scrollBackward(): Boolean =
         performScrollAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD, false)
 
-    private suspend fun performScrollAction(action: Int, loop: Boolean): Boolean {
+    private suspend fun performScrollAction(action: Int, toTheEnd: Boolean): Boolean {
         val root: AccessibilityNodeInfo? = automationManager.rootInActiveWindow
         logger.d("performScrollAction, rootInActiveWindow: $root")
         if (root == null) return false
@@ -619,16 +623,30 @@ class WindowManagerService(shortXContext: ShortXContext) :
 
         if (scrollableView.isEmpty()) return false
 
+        val scrollable = scrollableView[0]
+
         var result = false
         var loopCount = 0
-        if (loop) {
-            while (scrollableView[0].performAction(action)) {
+        if (toTheEnd) {
+            val bounds = scrollable.boundsInScreen
+            val centerX = bounds.centerX()
+            val centerY = bounds.centerY()
+            val endX = centerX
+            val endY = if (action == AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD) {
+                centerY + 500
+            } else {
+                centerY - 500
+            }
+            while (loopCount < MAX_VIEW_SCROLL_COUNT && scrollable.performAction(action)) {
+                // Inject swipe to make it faster.
+                swipe(centerX, centerY, endX, endY, SCROLL_DELAY)
+
                 loopCount += 1
                 result = true
-                delay(100)
+                delay(SCROLL_DELAY)
             }
         } else {
-            result = scrollableView[0].performAction(action)
+            result = scrollable.performAction(action)
         }
 
         root.recycle()
