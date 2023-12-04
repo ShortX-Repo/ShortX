@@ -1287,4 +1287,6 @@ message ScrollViewTo {
 enum ScrollViewToLocation {
   Top = 0;
   Bottom = 1;
+  Forward = 2;
+  Backward = 3;
 }

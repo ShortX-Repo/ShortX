@@ -849,6 +849,8 @@ fun ScrollViewToLocation.labelKey() =
         ScrollViewToLocation.Top -> "ui.action.scroll.view.to.top"
         ScrollViewToLocation.Bottom -> "ui.action.scroll.view.to.bottom"
         ScrollViewToLocation.UNRECOGNIZED -> "N/A"
+        ScrollViewToLocation.Forward -> "ui.action.scroll.view.to.fw"
+        ScrollViewToLocation.Backward -> "ui.action.scroll.view.to.bw"
     }
 
 fun RingerMode.labelKey() = when (this) {

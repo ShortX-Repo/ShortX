@@ -307,6 +307,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
             discoverTextFromAccessibilityNode(screenTexts, root)
         }
         logger.d("discoverTextFromAccessibilityNode take ${System.currentTimeMillis() - discoverStartTimeMillis}ms")
+        root?.recycle()
         return screenTexts
     }
 
@@ -319,6 +320,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
             discoverViewIdFromAccessibilityNode(nodes, root)
         }
         logger.d("discoverViewIdFromAccessibilityNode take ${System.currentTimeMillis() - discoverStartTimeMillis}ms")
+        root?.recycle()
         return nodes.also {
             onDebugBuild { HasNodeOnScreen.logger.d("getAllNodesFromScreen allNodes: $it") }
         }
@@ -353,6 +355,8 @@ class WindowManagerService(shortXContext: ShortXContext) :
             logger.p("enableUniversalCopy, time taken: ${System.currentTimeMillis() - discoverStartTimeMillis}ms")
             logger.p("enableUniversalCopy, screenTexts: $screenTexts")
 
+            root?.recycle()
+
             mainHandler.postSafety {
                 guideLineView.loadComplete()
             }
@@ -384,6 +388,8 @@ class WindowManagerService(shortXContext: ShortXContext) :
             }
             logger.p("enableIdViewer, time taken: ${System.currentTimeMillis() - discoverStartTimeMillis}ms")
             logger.p("enableIdViewer, screenTexts: $idNodes")
+
+            root?.recycle()
 
             mainHandler.postSafety {
                 guideLineView.attach(idNodes)
@@ -579,17 +585,45 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
     }
 
-    fun scrollToTop() {
-        val root: AccessibilityNodeInfo? = automationManager.rootInActiveWindow
-        logger.d("scrollToTop, rootInActiveWindow: $root")
+    fun scrollToTop(): Boolean {
+        logger.d("scrollToTop")
+        var isSuccess = false
+        while (scrollBackward()) {
+            isSuccess = true
+        }
+        return isSuccess
+    }
 
-        root?.let {
-            val scrollableView = findScrollableView(it)
-            logger.d("scrollableView: $scrollableView")
-            scrollableView?.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD)?.apply {
-                logger.d("ACTION_SCROLL_FORWARD: $this")
-            }
-            it.recycle()
+    fun scrollToBottom(): Boolean {
+        logger.d("scrollToBottom")
+        var isSuccess = false
+        while (scrollForward()) {
+            isSuccess = true
+        }
+        return isSuccess
+    }
+
+    // Down
+    fun scrollForward(): Boolean = performScrollAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD)
+
+    // Up
+    fun scrollBackward(): Boolean =
+        performScrollAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD)
+
+    fun performScrollAction(action: Int): Boolean {
+        val root: AccessibilityNodeInfo? = automationManager.rootInActiveWindow
+        logger.d("performScrollAction, rootInActiveWindow: $root")
+        if (root == null) return false
+
+        val scrollableView = findScrollableView(root)
+        logger.d("performScrollAction, scrollableView: $scrollableView")
+        if (scrollableView == null) return false
+
+        val result =
+            scrollableView.performAction(action)
+        root.recycle()
+        return result.also {
+            logger.d("performScrollAction: $result")
         }
     }
 
