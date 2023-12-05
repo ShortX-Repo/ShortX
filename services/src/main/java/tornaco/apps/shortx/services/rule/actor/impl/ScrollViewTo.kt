@@ -20,19 +20,19 @@ object ScrollViewTo : Actor {
         shortXContext.wm.withUiAutomation("ScrollViewTo") {
             when (location) {
                 ScrollViewToLocation.Top -> {
-                    it.scrollToTop()
+                    it.viewScroller.scrollToTop()
                 }
 
                 ScrollViewToLocation.Bottom -> {
-                    it.scrollToBottom()
+                    it.viewScroller.scrollToBottom()
                 }
 
                 ScrollViewToLocation.Forward -> {
-                    it.scrollForward()
+                    it.viewScroller.scrollForward()
                 }
 
                 ScrollViewToLocation.Backward -> {
-                    it.scrollBackward()
+                    it.viewScroller.scrollBackward()
                 }
 
                 ScrollViewToLocation.UNRECOGNIZED -> {
