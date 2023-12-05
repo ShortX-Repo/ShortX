@@ -1292,3 +1292,16 @@ enum ScrollViewToLocation {
   Forward = 4;
   Backward = 5;
 }
+
+message WaitUtilConditionMatch {
+  repeated google.protobuf.Any condition = 1;
+  ConditionOperator conditionOp = 2;
+  ConditionOperatorPayload condOpPayload = 3;
+  int64 timeout = 4;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}

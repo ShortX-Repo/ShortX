@@ -223,6 +223,7 @@ fun labelAndDescriptionForActionSelector(
         Action.SetScreenTimeout::class -> i18N["ui.action.set.screen.timeout"] to null
         Action.SetScreenRotate::class -> i18N["ui.action.set.screen.rotate"] to null
         Action.ScrollViewTo::class -> i18N["ui.action.scroll.view.to"] to null
+        Action.WaitUtilConditionMatch::class -> i18N["ui.action.wait.util.condition.match"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -637,6 +638,13 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             add(i18N["ui.action.then"] + "{ $ifAction }")
             add(i18N["ui.action.else"] + "{ $elseAction }")
         }
+
+        is Action.WaitUtilConditionMatch -> listOf(
+            i18N["ui.action.wait.util.condition.match"],
+            action.conditions.joinToString {
+                labelForConditionSelector(i18N, it::class).joinToString()
+            }
+        )
 
         is Action.NoAction -> {
             listOf(i18N["ui.action.no.action"])

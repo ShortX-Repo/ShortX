@@ -453,6 +453,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Arrows.expand_up_down_fill
         }
 
+        Action.WaitUtilConditionMatch::class -> {
+            Remix.System.eye_2_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

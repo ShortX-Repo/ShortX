@@ -103,6 +103,7 @@ import tornaco.apps.shortx.core.proto.action.TakeScreenshot
 import tornaco.apps.shortx.core.proto.action.ToggleGestureRecording
 import tornaco.apps.shortx.core.proto.action.Vibrate
 import tornaco.apps.shortx.core.proto.action.WaitForIdle
+import tornaco.apps.shortx.core.proto.action.WaitUtilConditionMatch
 import tornaco.apps.shortx.core.proto.action.WakeupScreen
 import tornaco.apps.shortx.core.proto.action.WhileLoop
 import tornaco.apps.shortx.core.proto.action.WriteClipboard
@@ -860,6 +861,27 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .build()
         }
 
+        is Action.WaitUtilConditionMatch -> {
+            WaitUtilConditionMatch.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .addAllCondition(conditions.map { it.toProtoCondition().pack_() })
+                .setConditionOp(op.toConditionOperator())
+                .apply {
+                    if (op is Op.MVEL) {
+                        condOpPayload =
+                            ConditionOperatorPayload
+                                .newBuilder()
+                                .setExpression(op.expression)
+                                .build()
+                    }
+                }
+                .build()
+        }
+
         is Action.ReadClipboard -> {
             ReadClipboard.newBuilder()
                 .setId(overrideId ?: id)
@@ -1418,6 +1440,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setDegree(degree)
                 .build()
         }
+
         is Action.ScrollViewTo -> {
             ScrollViewTo.newBuilder()
                 .setId(overrideId ?: id)

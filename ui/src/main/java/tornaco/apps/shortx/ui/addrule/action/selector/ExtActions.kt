@@ -113,6 +113,16 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         }
     )
 
+    val waitUtilLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.toBaseSelectorActionOrNull<Action.WaitUtilConditionMatch>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
     val whileLoopSelectorState = rememberWhileLoopDialogState {
         addAction(it)
     }
@@ -214,6 +224,17 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.WaitUtilConditionMatch::class -> {
+                waitUtilLauncher.launch(
+                    newIntent(
+                        context,
+                        source.getActionAs<Action.WaitUtilConditionMatch>(),
+                        WaitUtilConditionMatchSelectorActivity::class.java
+                    )
+                )
+                true
+            }
+
             Action.WhileLoop::class -> {
                 whileLoopSelectorState.show(source.getActionAs())
                 true
@@ -257,6 +278,7 @@ fun ExtActions(keyword: String, subscribeState: LVLStateHolder.State, addAction:
         Action.CreatePkgSet::class,
         Action.IfThenElse::class,
         Action.WhileLoop::class,
+        Action.WaitUtilConditionMatch::class,
         Action.HttpRequest::class,
         Action.ExecuteJS::class,
     ).map {

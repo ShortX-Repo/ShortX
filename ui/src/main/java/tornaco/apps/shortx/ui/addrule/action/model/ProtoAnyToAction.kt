@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.action.HttpRequestHeaderBodyJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.IfThenElse
+import tornaco.apps.shortx.core.proto.action.WaitUtilConditionMatch
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
@@ -1002,6 +1003,23 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 ifConditionOp = data.ifCondOp.toOp(data.ifCondOpPayload),
                 ifActions = data.ifActionsList.mapNotNull { it.toAction(shortXManager) },
                 elseActions = data.elseActionsList.mapNotNull { it.toAction(shortXManager) },
+            )
+        }
+
+        this is_ WaitUtilConditionMatch::class.java -> {
+            val data = this unpack_ WaitUtilConditionMatch::class.java
+            Action.WaitUtilConditionMatch(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                conditions = data.conditionList.mapNotNull {
+                    it.toCondition(
+                        shortXManager
+                    )
+                },
+                op = data.conditionOp.toOp(data.condOpPayload),
             )
         }
 
