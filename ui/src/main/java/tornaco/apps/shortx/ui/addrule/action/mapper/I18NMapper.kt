@@ -851,7 +851,12 @@ fun ScrollViewToLocation.labelKey() =
         ScrollViewToLocation.UNRECOGNIZED -> "N/A"
         ScrollViewToLocation.Forward -> "ui.action.scroll.view.to.fw"
         ScrollViewToLocation.Backward -> "ui.action.scroll.view.to.bw"
+        ScrollViewToLocation.TopForce -> "ui.action.scroll.view.to.top.force"
+        ScrollViewToLocation.BottomForce -> "ui.action.scroll.view.to.bottom.force"
     }
+
+fun ScrollViewToLocation.summaryKey() = "${this.labelKey()}.summary"
+
 
 fun RingerMode.labelKey() = when (this) {
     RingerMode.silent -> "ui.action.set.ringer.mode.silent"

@@ -5,8 +5,7 @@ import android.graphics.Point
 import android.view.Display
 
 fun Context.screenSize(): Point {
-    val wm = windowManager
-    val display: Display = wm.defaultDisplay
+    val display = defaultDisplay()
     val point = Point()
     display.getRealSize(point)
     return point

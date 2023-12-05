@@ -1,10 +1,15 @@
 package tornaco.apps.shortx.services.wm
 
 import android.os.Bundle
+import android.os.SystemClock
+import android.view.InputDevice
+import android.view.MotionEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.services.ctrl.PointersState
+import tornaco.apps.shortx.services.input.IMSFunc
 
 class ViewScroller(private val windowManagerService: WindowManagerService) {
     companion object {
@@ -13,6 +18,76 @@ class ViewScroller(private val windowManagerService: WindowManagerService) {
     }
 
     private val logger = Logger("ShortXWMS")
+
+    private val pointerProperties =
+        arrayOfNulls<MotionEvent.PointerProperties>(PointersState.MAX_POINTERS)
+    private val pointerCoords = arrayOfNulls<MotionEvent.PointerCoords>(PointersState.MAX_POINTERS)
+
+    init {
+        initPointers()
+    }
+
+    private fun initPointers() {
+        for (i in 0 until PointersState.MAX_POINTERS) {
+            val props = MotionEvent.PointerProperties()
+            props.toolType = MotionEvent.TOOL_TYPE_FINGER
+            val coords = MotionEvent.PointerCoords()
+            coords.orientation = 0f
+            coords.size = 0f
+            pointerProperties[i] = props
+            pointerCoords[i] = coords
+        }
+    }
+
+    suspend fun scrollToForce(hS: Float = 0f, vS: Float = 0f): Boolean {
+        logger.d("scrollToForce: $hS $vS")
+        val screenSize = windowManagerService.screenSize
+        val x = screenSize.x / 2
+        val y = screenSize.y / 2
+
+        val now = SystemClock.uptimeMillis()
+        val props = pointerProperties[0]
+        if (props == null) {
+            logger.e("props[0] is null")
+            return false
+        }
+
+        props.id = 0
+
+        val coords = pointerCoords[0]
+        if (coords == null) {
+            logger.e("coords[0] is null")
+            return false
+        }
+
+        coords.x = x.toFloat()
+        coords.y = y.toFloat()
+        coords.setAxisValue(MotionEvent.AXIS_HSCROLL, hS)
+        coords.setAxisValue(MotionEvent.AXIS_VSCROLL, vS)
+
+        val event = MotionEvent
+            .obtain(
+                now,
+                now,
+                MotionEvent.ACTION_SCROLL,
+                1,
+                pointerProperties,
+                pointerCoords,
+                0,
+                0,
+                1f,
+                1f,
+                0,
+                0,
+                InputDevice.SOURCE_MOUSE,
+                0
+            )
+        logger.d("scrollToForce: $event")
+
+        IMSFunc.injectInputEvent(event)
+
+        return true
+    }
 
     suspend fun scrollToTop(): Boolean {
         logger.d("scrollToTop")

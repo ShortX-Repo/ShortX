@@ -109,7 +109,7 @@ private fun ItemContent(
                         color = textColor ?: Color.Unspecified
                     )
                 }
-                summary?.let {
+                summary?.takeIf { it.isNotBlank() }?.let {
                     Column {
                         TinySpacer()
                         MarkdownText(

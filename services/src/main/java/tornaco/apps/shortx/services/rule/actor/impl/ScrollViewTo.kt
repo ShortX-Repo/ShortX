@@ -13,32 +13,46 @@ object ScrollViewTo : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ) = with(params) {
+    ): Unit = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.ScrollViewTo::class.java
         val location: ScrollViewToLocation = d.location
         logger.d("location = $location")
-        shortXContext.wm.withUiAutomation("ScrollViewTo") {
-            when (location) {
-                ScrollViewToLocation.Top -> {
+
+        when (location) {
+            ScrollViewToLocation.Top -> {
+                shortXContext.wm.withUiAutomation("ScrollViewTo") {
                     it.viewScroller.scrollToTop()
                 }
+            }
 
-                ScrollViewToLocation.Bottom -> {
+            ScrollViewToLocation.Bottom -> {
+                shortXContext.wm.withUiAutomation("ScrollViewTo") {
                     it.viewScroller.scrollToBottom()
                 }
+            }
 
-                ScrollViewToLocation.Forward -> {
+            ScrollViewToLocation.Forward -> {
+                shortXContext.wm.withUiAutomation("ScrollViewTo") {
                     it.viewScroller.scrollForward()
                 }
+            }
 
-                ScrollViewToLocation.Backward -> {
+            ScrollViewToLocation.Backward -> {
+                shortXContext.wm.withUiAutomation("ScrollViewTo") {
                     it.viewScroller.scrollBackward()
                 }
+            }
 
-                ScrollViewToLocation.UNRECOGNIZED -> {
-                    throw Error("UNRECOGNIZED")
-                }
+            ScrollViewToLocation.UNRECOGNIZED -> {
+                throw Error("UNRECOGNIZED")
+            }
 
+            ScrollViewToLocation.TopForce -> {
+                shortXContext.wm.viewScroller.scrollToForce(vS = 100000f)
+            }
+
+            ScrollViewToLocation.BottomForce -> {
+                shortXContext.wm.viewScroller.scrollToForce(vS = -100000f)
             }
         }
     }

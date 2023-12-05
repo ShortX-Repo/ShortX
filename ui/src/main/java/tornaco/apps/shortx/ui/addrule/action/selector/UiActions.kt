@@ -12,6 +12,7 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
+import tornaco.apps.shortx.ui.addrule.action.mapper.summaryKey
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.base.ActionCategory
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
@@ -99,7 +100,11 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
         menuItems = ScrollViewToLocation.values()
             .filterNot { it == ScrollViewToLocation.UNRECOGNIZED }
             .map {
-                MenuDialogItem(id = it.name, title = LocalI18N.current[it.labelKey()])
+                MenuDialogItem(
+                    id = it.name,
+                    title = LocalI18N.current[it.labelKey()],
+                    summary = LocalI18N.current.get(it.summaryKey(), fallback = "")
+                )
             },
         onItemSelected = { _, id ->
             addAction(Action.ScrollViewTo(location = ScrollViewToLocation.valueOf(id)))
