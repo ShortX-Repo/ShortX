@@ -1,5 +1,3 @@
-
-
 plugins {
     alias(libs.plugins.agp.lib)
     alias(libs.plugins.kotlin.android)
@@ -50,4 +48,7 @@ dependencies {
 
     implementation(project(":core"))
     implementation(project(":ui-base"))
+    implementation(project(":external:drawbox"))
+    // Color picker
+    implementation(libs.rang.vikalp)
 }

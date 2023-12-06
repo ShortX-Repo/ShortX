@@ -117,6 +117,8 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":external:utils"))
 
+    debugImplementation(project(":services-ui"))
+
     kover(project(":core"))
     kover(project(":services"))
 
