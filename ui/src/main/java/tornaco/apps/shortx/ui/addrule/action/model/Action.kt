@@ -6,6 +6,7 @@ import androidx.annotation.IntRange
 import kotlinx.parcelize.Parcelize
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
+import tornaco.apps.shortx.core.proto.action.ContextMenuAction
 import tornaco.apps.shortx.core.proto.action.DialogMenuItem
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.proto.action.MediaPlaybackAction
@@ -126,6 +127,33 @@ sealed interface Action : Parcelable {
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "", val text: String
+    ) : Action {
+        override fun clone(
+            id: String,
+            note: String,
+            isEnabled: Boolean,
+            actionOnError: ActionOnError,
+            contextData: List<ContextData>
+        ): Action {
+            return this.copy(
+                id = id,
+                note = note,
+                isEnabled = isEnabled,
+                actionOnError = actionOnError,
+                contextData = contextData
+            )
+        }
+    }
+
+    @Parcelize
+    data class PerformContextMenuAction(
+        override val id: String = defaultNewActionId(),
+        override val isEnabled: Boolean = true,
+        override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val contextData: List<ContextData> = emptyList(),
+        override val note: String = "",
+        val action: ContextMenuAction
     ) : Action {
         override fun clone(
             id: String,

@@ -1305,3 +1305,25 @@ message WaitUtilConditionMatch {
   string note = 99;
   string id = 100;
 }
+
+message PerformContextMenuAction {
+  ContextMenuAction action = 1;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
+enum ContextMenuAction {
+  ContextMenuAction_SelectAll = 0;
+  ContextMenuAction_Cut = 1;
+  ContextMenuAction_Copy = 2;
+  ContextMenuAction_Paste = 3;
+  ContextMenuAction_Undo = 4;
+  ContextMenuAction_Redo = 5;
+  ContextMenuAction_StartSelectingText = 6;
+  ContextMenuAction_StopSelectingText = 7;
+  ContextMenuAction_CopyUrl = 8;
+}

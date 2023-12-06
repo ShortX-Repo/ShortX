@@ -11,4 +11,11 @@ object InputContextV33 {
             1
         )
     }
+
+    fun performContextMenuAction(input: IInputContext, action: Int) {
+        input.performContextMenuAction(
+            InputConnectionCommandHeader(0),
+            action
+        )
+    }
 }

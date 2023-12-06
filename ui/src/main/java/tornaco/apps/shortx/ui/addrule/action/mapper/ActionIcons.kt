@@ -457,6 +457,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.System.eye_2_fill
         }
 
+        Action.PerformContextMenuAction::class -> {
+            Remix.Design.edit_box_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

@@ -51,15 +51,6 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         }
     )
 
-
-    val inputTextSelectorState = rememberTextInputState(
-        title = LocalI18N.current["ui.action.input.text"],
-        message = null,
-        onSelected = {
-            addAction(Action.InputText(text = it))
-        })
-    TextInputDialog(state = inputTextSelectorState)
-
     val delaySelectionState =
         rememberDelayState(
             canUseAlarm = true,
@@ -178,11 +169,6 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
-            Action.InputText::class -> {
-                inputTextSelectorState.show(source.getActionAs<Action.InputText>()?.text)
-                true
-            }
-
             Action.Delay::class -> {
                 delaySelectionState.show(source.getActionAs())
                 true
@@ -271,7 +257,6 @@ fun ExtActions(keyword: String, subscribeState: LVLStateHolder.State, addAction:
         Action.FromDA::class,
         Action.SetRuleEnabled::class,
         Action.ShellCommand::class,
-        Action.InputText::class,
         Action.Delay::class,
         Action.MVEL::class,
         Action.Brk::class,

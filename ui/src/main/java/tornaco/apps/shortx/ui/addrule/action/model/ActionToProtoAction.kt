@@ -41,6 +41,7 @@ import tornaco.apps.shortx.core.proto.action.MapNav
 import tornaco.apps.shortx.core.proto.action.MapQueryBus
 import tornaco.apps.shortx.core.proto.action.MediaPlayback
 import tornaco.apps.shortx.core.proto.action.NoAction
+import tornaco.apps.shortx.core.proto.action.PerformContextMenuAction
 import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.proto.action.ReadClipboard
 import tornaco.apps.shortx.core.proto.action.RemoveNotification
@@ -151,6 +152,15 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setActionOnError(actionOnError)
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setText(text)
+                .setNote(overrideNote ?: note).build()
+        }
+
+        is Action.PerformContextMenuAction -> {
+            PerformContextMenuAction.newBuilder().setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setAction(action)
                 .setNote(overrideNote ?: note).build()
         }
 

@@ -7,12 +7,14 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import tornaco.apps.shortx.core.proto.action.ContextMenuAction
 import tornaco.apps.shortx.core.proto.action.ScrollViewToLocation
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.action.mapper.summaryKey
+import tornaco.apps.shortx.ui.addrule.action.mapper.toAndroidContextMenuActionLabelKey
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.base.ActionCategory
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
@@ -112,6 +114,30 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
     )
     MenuDialog(state = scrollToSelectorState)
 
+    val inputTextSelectorState = rememberTextInputState(
+        title = LocalI18N.current["ui.action.input.text"],
+        message = null,
+        onSelected = {
+            addAction(Action.InputText(text = it))
+        })
+    TextInputDialog(state = inputTextSelectorState)
+
+
+    val performContextMenuSelectorState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.action.perform.context.menu.action"],
+        menuItems = ContextMenuAction.values()
+            .filterNot { it == ContextMenuAction.UNRECOGNIZED }
+            .map {
+                MenuDialogItem(
+                    id = it.name,
+                    title = LocalI18N.current[it.toAndroidContextMenuActionLabelKey()],
+                )
+            },
+        onItemSelected = { _, id ->
+            addAction(Action.PerformContextMenuAction(action = ContextMenuAction.valueOf(id)))
+        }
+    )
+    MenuDialog(state = performContextMenuSelectorState)
 
     return { source ->
         when (source.clazz) {
@@ -263,6 +289,16 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                 true
             }
 
+            Action.InputText::class -> {
+                inputTextSelectorState.show(source.getActionAs<Action.InputText>()?.text)
+                true
+            }
+
+            Action.PerformContextMenuAction::class -> {
+                performContextMenuSelectorState.show()
+                true
+            }
+
             else -> false
         }
     }
@@ -297,6 +333,8 @@ fun UiActions(keyword: String, subscribeState: LVLStateHolder.State, addAction: 
         Action.EnableViewIdViewer::class,
         Action.GetTextFromScreenNode::class,
         Action.ScrollViewTo::class,
+        Action.InputText::class,
+        Action.PerformContextMenuAction::class,
     ).map {
         SelectorItem(
             it,

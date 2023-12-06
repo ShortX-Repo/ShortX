@@ -12,4 +12,12 @@ object InputContextCompat {
             input.commitText(text, 1)
         }
     }
+
+    fun performContextMenuAction(input: IInputContext, action: Int) {
+        if (Build.VERSION.SDK_INT >= 33) {
+            InputContextV33.performContextMenuAction(input, action)
+        } else {
+            input.performContextMenuAction(action)
+        }
+    }
 }

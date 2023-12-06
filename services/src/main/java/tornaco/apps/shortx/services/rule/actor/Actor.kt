@@ -298,6 +298,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.WaitUtilConditionMatch
     },
+    PerformContextMenuAction {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.PerformContextMenuAction
+    },
     ReadClipboard {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.ReadClipboard

@@ -5,6 +5,7 @@ import android.media.AudioManager
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
+import tornaco.apps.shortx.core.proto.action.ContextMenuAction
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.proto.action.MediaPlaybackAction
 import tornaco.apps.shortx.core.proto.action.NavType
@@ -224,6 +225,7 @@ fun labelAndDescriptionForActionSelector(
         Action.SetScreenRotate::class -> i18N["ui.action.set.screen.rotate"] to null
         Action.ScrollViewTo::class -> i18N["ui.action.scroll.view.to"] to null
         Action.WaitUtilConditionMatch::class -> i18N["ui.action.wait.util.condition.match"] to null
+        Action.PerformContextMenuAction::class -> i18N["ui.action.perform.context.menu.action"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -849,6 +851,11 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             i18N["ui.action.scroll.view.to"],
             i18N[action.location.labelKey()],
         )
+
+        is Action.PerformContextMenuAction -> listOf(
+            i18N["ui.action.perform.context.menu.action"],
+            i18N[action.action.toAndroidContextMenuActionLabelKey()],
+        )
     }
 }
 
@@ -962,4 +969,8 @@ fun Int.streamTypeLabelKey(): String {
 
 fun ScreenRotateDegree.actionLabelKey(): String {
     return "ui.action.screen.rotate.degree.${name.lowercase()}"
+}
+
+fun ContextMenuAction.toAndroidContextMenuActionLabelKey(): String {
+    return "ui.action.perform.context.menu.${this.name.lowercase()}"
 }

@@ -123,5 +123,6 @@ val allActionClasses = listOf(
     Action.SetScreenRotate::class,
     Action.ScrollViewTo::class,
     Action.WaitUtilConditionMatch::class,
+    Action.PerformContextMenuAction::class,
     Action.NoAction::class,
 )

@@ -31,6 +31,36 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         }
     }
 
+    fun performContextMenuAction(action: Int) {
+        if (OsUtils.isUOrAbove()) {
+            performContextMenuActionAndroid14(action)
+        } else {
+            performContextMenuActionAndroid14Below(action)
+        }
+    }
+
+    private fun performContextMenuActionAndroid14Below(action: Int) {
+        logger.d("performContextMenuActionAndroid14Below, imeService: $imeService")
+        val mCurInputContext =
+            Reflections.getObjectField(imeService, "mCurInputContext")
+        logger.d("performContextMenuActionAndroid14Below, mCurInputContext: $mCurInputContext")
+        val inputContext: IInputContext =
+            requireNotNull(mCurInputContext) { "No Input context. (no focused TextField?)" } as IInputContext
+        logger.d("performContextMenuActionAndroid14Below, inputContext: $inputContext")
+        InputContextCompat.performContextMenuAction(inputContext, action)
+    }
+
+    private fun performContextMenuActionAndroid14(action: Int) {
+        logger.d("performContextMenuActionAndroid14Below, imeService: $imeService")
+        val mCurInputConnection =
+            Reflections.getObjectField(imeService, "mCurInputConnection")
+        logger.d("performContextMenuActionAndroid14Below, mCurInputConnection: $mCurInputConnection")
+        val inputConnection =
+            requireNotNull(mCurInputConnection) { "No Input context. (no focused TextField?)" }
+        logger.d("performContextMenuActionAndroid14Below, inputConnection: $inputConnection")
+        InputConnectionCompat.performContextMenuAction(inputConnection, action)
+    }
+
     fun submitText(text: String) {
         if (OsUtils.isUOrAbove()) {
             submitTextAndroid14(text)
@@ -41,7 +71,7 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
 
     private fun submitTextAndroid14Below(text: String) {
         logger.d("submitText, imeService: $imeService")
-        @Suppress("UNCHECKED_CAST") val mCurInputContext =
+        val mCurInputContext =
             Reflections.getObjectField(imeService, "mCurInputContext")
         logger.d("submitText, mCurInputContext: $mCurInputContext")
         val inputContext: IInputContext =
@@ -54,7 +84,7 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     // https://github.com/ProjectMatrixx/android_frameworks_base/commit/7165fae4a959efa5023f4a66d23e53de65b3ed02
     private fun submitTextAndroid14(text: String) {
         logger.d("submitText, imeService: $imeService")
-        @Suppress("UNCHECKED_CAST") val mCurInputConnection =
+        val mCurInputConnection =
             Reflections.getObjectField(imeService, "mCurInputConnection")
         logger.d("submitText, mCurInputConnection: $mCurInputConnection")
         val inputConnection =

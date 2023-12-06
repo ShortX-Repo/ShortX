@@ -11,4 +11,11 @@ object InputConnectionV34 {
             1
         )
     }
+
+    fun performContextMenuAction(input: Any, action: Int) {
+        (input as IRemoteInputConnection).performContextMenuAction(
+            InputConnectionCommandHeader(0),
+            action
+        )
+    }
 }

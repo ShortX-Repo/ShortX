@@ -6,4 +6,8 @@ object InputConnectionCompat {
     fun commitText(input: Any, text: String) {
         InputConnectionV34.commitText(input, text)
     }
+
+    fun performContextMenuAction(input: Any, action: Int) {
+        InputConnectionV34.performContextMenuAction(input, action)
+    }
 }
