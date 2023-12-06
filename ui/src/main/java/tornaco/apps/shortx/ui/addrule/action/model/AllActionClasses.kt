@@ -124,5 +124,6 @@ val allActionClasses = listOf(
     Action.ScrollViewTo::class,
     Action.WaitUtilConditionMatch::class,
     Action.PerformContextMenuAction::class,
+    Action.ShowDrawBoard::class,
     Action.NoAction::class,
 )

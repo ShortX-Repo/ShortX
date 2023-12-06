@@ -461,6 +461,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Design.edit_box_fill
         }
 
+        Action.ShowDrawBoard::class -> {
+            Remix.Design.markup_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

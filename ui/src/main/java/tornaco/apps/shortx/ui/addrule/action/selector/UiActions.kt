@@ -299,6 +299,11 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                 true
             }
 
+            Action.ShowDrawBoard::class -> {
+                addAction(Action.ShowDrawBoard())
+                true
+            }
+
             else -> false
         }
     }
@@ -335,6 +340,7 @@ fun UiActions(keyword: String, subscribeState: LVLStateHolder.State, addAction: 
         Action.ScrollViewTo::class,
         Action.InputText::class,
         Action.PerformContextMenuAction::class,
+        Action.ShowDrawBoard::class,
     ).map {
         SelectorItem(
             it,

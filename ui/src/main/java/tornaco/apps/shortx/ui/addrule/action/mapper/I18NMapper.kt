@@ -226,6 +226,7 @@ fun labelAndDescriptionForActionSelector(
         Action.ScrollViewTo::class -> i18N["ui.action.scroll.view.to"] to null
         Action.WaitUtilConditionMatch::class -> i18N["ui.action.wait.util.condition.match"] to null
         Action.PerformContextMenuAction::class -> i18N["ui.action.perform.context.menu.action"] to null
+        Action.ShowDrawBoard::class -> i18N["ui.action.draw.board"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -855,6 +856,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.PerformContextMenuAction -> listOf(
             i18N["ui.action.perform.context.menu.action"],
             i18N[action.action.toAndroidContextMenuActionLabelKey()],
+        )
+
+        is Action.ShowDrawBoard -> listOf(
+            i18N["ui.action.show.draw.board"],
         )
     }
 }

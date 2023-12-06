@@ -78,6 +78,7 @@ import tornaco.apps.shortx.core.proto.action.SetWifiEnabled
 import tornaco.apps.shortx.core.proto.action.ShellCommand
 import tornaco.apps.shortx.core.proto.action.ShowAlertDialog
 import tornaco.apps.shortx.core.proto.action.ShowDanmu
+import tornaco.apps.shortx.core.proto.action.ShowDrawBoard
 import tornaco.apps.shortx.core.proto.action.ShowMenuDialog
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.action.ShowTextFieldDialog
@@ -1302,6 +1303,16 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
 
         is Action.EnableUniversalCopy -> {
             EnableUniversalCopy.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .build()
+        }
+
+        is Action.ShowDrawBoard -> {
+            ShowDrawBoard.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
                 .setActionOnError(actionOnError)
