@@ -9,6 +9,7 @@ import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.fact.WindowRotationChange
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.displayIdCompat
 import tornaco.apps.shortx.services.ShortXContext
 
 class ScreenRotateTrigger(
@@ -40,7 +41,7 @@ class ScreenRotateTrigger(
     }
 
     override fun register() {
-        wm.watchRotation(watcher, context.displayId)
+        wm.watchRotation(watcher, context.displayIdCompat)
     }
 
     override fun unRegister() {

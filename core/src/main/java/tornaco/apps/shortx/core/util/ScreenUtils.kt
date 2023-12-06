@@ -19,3 +19,9 @@ fun Context.defaultDisplay(): Display {
         return wm.defaultDisplay
     }
 }
+
+val Context.displayIdCompat: Int
+    get() = OsUtils.isSOrAbove().select(
+        displayId,
+        Display.DEFAULT_DISPLAY
+    )
