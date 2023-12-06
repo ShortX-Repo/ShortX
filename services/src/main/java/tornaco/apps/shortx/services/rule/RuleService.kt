@@ -73,6 +73,7 @@ import tornaco.apps.shortx.services.rule.fact.trigger.allTriggers
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.util.SingleKeyGestureDetector
+import tornaco.apps.shortx.services.util.callIfAlive
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
 import java.util.UUID
@@ -807,6 +808,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             }
         }
 
+        val asBinder = callback.asBinder()
         val job = systemServiceScope.launchSafety {
             val handleParams = dummyHandlerParamsForAction(
                 androidContext = context,
@@ -833,33 +835,37 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
 
                 runCatching {
+                    callback.callIfAlive {
+                        callback.receive(
+                            ByteArrayWrapper(
+                                ShellRes.newBuilder()
+                                    .setCode(code)
+                                    .addAllOut(listOf(out))
+                                    .addAllErr(listOf(error))
+                                    .build()
+                                    .toByteArray()
+                            )
+                        )
+                    }
+                }
+            }.onFailure { err ->
+                logger.e(err, "ShellCommand")
+                callback.callIfAlive {
                     callback.receive(
                         ByteArrayWrapper(
                             ShellRes.newBuilder()
-                                .setCode(code)
-                                .addAllOut(listOf(out))
-                                .addAllErr(listOf(error))
+                                .setCode(-1)
+                                .addAllErr(listOf(err.stackTraceToString()))
                                 .build()
                                 .toByteArray()
                         )
                     )
                 }
-            }.onFailure {
-                logger.e(it, "ShellCommand")
-                callback.receive(
-                    ByteArrayWrapper(
-                        ShellRes.newBuilder()
-                            .setCode(-1)
-                            .addAllErr(listOf(it.stackTraceToString()))
-                            .build()
-                            .toByteArray()
-                    )
-                )
             }
 
-            callback.asBinder().unlinkToDeath(callbackDeadReceipt, 0)
+            asBinder.unlinkToDeath(callbackDeadReceipt, 0)
         }
-        callback.asBinder().linkToDeath(callbackDeadReceipt, 0)
+        asBinder.linkToDeath(callbackDeadReceipt, 0)
         CancellationSignal.fromTransport(signal).setOnCancelListener {
             logger.i("CancellationSignal cancel.")
             job.cancel(CancellationException("User canceled(用户手动取消)"))
