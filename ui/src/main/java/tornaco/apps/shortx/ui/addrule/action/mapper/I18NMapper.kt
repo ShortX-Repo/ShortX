@@ -972,5 +972,5 @@ fun ScreenRotateDegree.actionLabelKey(): String {
 }
 
 fun ContextMenuAction.toAndroidContextMenuActionLabelKey(): String {
-    return "ui.action.perform.context.menu.action.${this.name}"
+    return "ui.action.perform.context.menu.action.${this.name.lowercase()}"
 }

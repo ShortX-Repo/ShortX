@@ -188,56 +188,57 @@ fun AddRuleScreen(
         }
     }
 
-    val backConfirmDialogState = rememberConfirmDialogState()
-    ConfirmDialog(
-        title = i18n["ui.edit.discard.dialog.title"],
-        messageHint = {
-            i18n["ui.edit.discard.dialog.message"]
-        },
-        confirmButton = i18n["ui.edit.discard.dialog.discard"],
-        dismissButton = i18n["ui.edit.discard.dialog.stay"],
-        state = backConfirmDialogState,
-        data = "",
-        onConfirm = {
-            back(false)
-        })
-
-    val hasAnyChanges = remember(
-        addRuleState,
-        factContentState,
-        actionContentState,
-        conditionContentState,
-        actionOnEnabledState,
-        actionOnDisabledState,
-        actionOnDeletedState,
-        quitFactContentState,
-        quitConditionContentState,
-        quitActionState
-    ) {
-        addRuleState.ruleChanged
-                || factContentState.isChanged
-                || actionContentState.isChanged
-                || conditionContentState.isChanged
-                || actionOnEnabledState.isChanged
-                || actionOnDisabledState.isChanged
-                || actionOnDeletedState.isChanged
-                || quitFactContentState.isChanged
-                || quitConditionContentState.isChanged
-                || quitActionState.isChanged
-    }
-
-    BackHandler {
-        if (hasAnyChanges) {
-            backConfirmDialogState.show()
-        } else {
-            back(false)
-        }
-    }
-
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
+
+            val backConfirmDialogState = rememberConfirmDialogState()
+            ConfirmDialog(
+                title = i18n["ui.edit.discard.dialog.title"],
+                messageHint = {
+                    i18n["ui.edit.discard.dialog.message"]
+                },
+                confirmButton = i18n["ui.edit.discard.dialog.discard"],
+                dismissButton = i18n["ui.edit.discard.dialog.stay"],
+                state = backConfirmDialogState,
+                data = "",
+                onConfirm = {
+                    back(false)
+                })
+
+            val hasAnyChanges = remember(
+                addRuleState,
+                factContentState,
+                actionContentState,
+                conditionContentState,
+                actionOnEnabledState,
+                actionOnDisabledState,
+                actionOnDeletedState,
+                quitFactContentState,
+                quitConditionContentState,
+                quitActionState
+            ) {
+                addRuleState.ruleChanged
+                        || factContentState.isChanged
+                        || actionContentState.isChanged
+                        || conditionContentState.isChanged
+                        || actionOnEnabledState.isChanged
+                        || actionOnDisabledState.isChanged
+                        || actionOnDeletedState.isChanged
+                        || quitFactContentState.isChanged
+                        || quitConditionContentState.isChanged
+                        || quitActionState.isChanged
+            }
+
+            BackHandler {
+                if (hasAnyChanges) {
+                    backConfirmDialogState.show()
+                } else {
+                    back(false)
+                }
+            }
+
             val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
             Scaffold(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),

@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import tornaco.apps.shortx.ui.theme.NoteTextColor
 import tornaco.apps.shortx.ui.util.BrowserUtils
 
 @Composable
@@ -115,7 +116,7 @@ private fun ItemContent(
                         MarkdownText(
                             markdown = summary,
                             fontSize = 12.sp,
-                            color = textColor ?: Color.Unspecified,
+                            color = textColor ?: NoteTextColor,
                             onLinkClicked = {
                                 BrowserUtils.launch(context, it)
                             },

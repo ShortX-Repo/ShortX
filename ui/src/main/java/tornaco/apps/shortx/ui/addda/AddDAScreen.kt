@@ -143,36 +143,36 @@ fun AddDirectActionScreen(
     val actionContentState by actionContentStateHandler.state.collectAsState()
     val shortXProps = LocalShortXProps.current
 
-    val backConfirmDialogState = rememberConfirmDialogState()
-    ConfirmDialog(
-        title = i18n["ui.edit.discard.dialog.title"],
-        messageHint = {
-            i18n["ui.edit.discard.dialog.message"]
-        },
-        confirmButton = i18n["ui.edit.discard.dialog.discard"],
-        dismissButton = i18n["ui.edit.discard.dialog.stay"],
-        state = backConfirmDialogState,
-        data = "",
-        onConfirm = {
-            back(false)
-        })
-
-    val hasAnyChanges = remember(addDirectActionState, actionContentState) {
-        addDirectActionState.daChanged || actionContentState.isChanged
-    }
-
-    BackHandler {
-        if (hasAnyChanges) {
-            backConfirmDialogState.show()
-        } else {
-            back(false)
-        }
-    }
-
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
+            val backConfirmDialogState = rememberConfirmDialogState()
+            ConfirmDialog(
+                title = i18n["ui.edit.discard.dialog.title"],
+                messageHint = {
+                    i18n["ui.edit.discard.dialog.message"]
+                },
+                confirmButton = i18n["ui.edit.discard.dialog.discard"],
+                dismissButton = i18n["ui.edit.discard.dialog.stay"],
+                state = backConfirmDialogState,
+                data = "",
+                onConfirm = {
+                    back(false)
+                })
+
+            val hasAnyChanges = remember(addDirectActionState, actionContentState) {
+                addDirectActionState.daChanged || actionContentState.isChanged
+            }
+
+            BackHandler {
+                if (hasAnyChanges) {
+                    backConfirmDialogState.show()
+                } else {
+                    back(false)
+                }
+            }
+
             val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
             Scaffold(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
