@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import io.ak1.drawbox.DrawBox
 import io.ak1.drawbox.rememberDrawController
@@ -24,17 +25,14 @@ fun DrawBoard(modifier: Modifier = Modifier, controlBarState: CommonDialogState)
     val colorBarVisibility = remember { mutableStateOf(false) }
     val sizeBarVisibility = remember { mutableStateOf(false) }
     val currentColor = remember { mutableStateOf(defaultSelectedColor) }
-    val bg = MaterialTheme.colors.background
-    val currentBgColor = remember { mutableStateOf(bg) }
     val currentSize = remember { mutableStateOf(10) }
-    val colorIsBg = remember { mutableStateOf(false) }
     val drawController = rememberDrawController()
 
     Box(modifier = modifier) {
         Column {
             DrawBox(
                 drawController = drawController,
-                backgroundColor = currentBgColor.value,
+                backgroundColor = Color.Transparent,
                 modifier = Modifier
                     .fillMaxSize()
                     .weight(1f, fill = false),
@@ -49,12 +47,7 @@ fun DrawBoard(modifier: Modifier = Modifier, controlBarState: CommonDialogState)
                 ControlsBar(
                     drawController = drawController,
                     onColorClick = {
-                        colorBarVisibility.value = when (colorBarVisibility.value) {
-                            false -> true
-                            colorIsBg.value -> true
-                            else -> false
-                        }
-                        colorIsBg.value = false
+                        colorBarVisibility.value = !colorBarVisibility.value
                         sizeBarVisibility.value = false
                     },
                     onSizeClick = {
@@ -71,13 +64,8 @@ fun DrawBoard(modifier: Modifier = Modifier, controlBarState: CommonDialogState)
             }
 
             RangVikalp(isVisible = colorBarVisibility.value, showShades = true) {
-                if (colorIsBg.value) {
-                    currentBgColor.value = it
-                    drawController.changeBgColor(it)
-                } else {
-                    currentColor.value = it
-                    drawController.changeColor(it)
-                }
+                currentColor.value = it
+                drawController.changeColor(it)
             }
             CustomSeekbar(
                 isVisible = sizeBarVisibility.value,

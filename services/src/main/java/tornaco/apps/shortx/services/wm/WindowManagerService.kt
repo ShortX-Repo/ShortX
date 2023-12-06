@@ -36,6 +36,7 @@ import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
+import tornaco.apps.shortx.ui.draw.DrawBoardView
 import tornaco.apps.shortx.ui.overlay.IdViewerView
 import tornaco.apps.shortx.ui.overlay.UniversalCopyView
 
@@ -49,6 +50,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
 
     private val showingUCHints: MutableSet<UniversalCopyView> = mutableSetOf()
     private val showingIVHints: MutableSet<IdViewerView> = mutableSetOf()
+    private val showingDrawerBoard: MutableSet<DrawBoardView> = mutableSetOf()
 
     private val mainHandler by lazy {
         Handler(Looper.getMainLooper())
@@ -328,14 +330,14 @@ class WindowManagerService(shortXContext: ShortXContext) :
     }
 
     fun enableUniversalCopy() {
-        disableUniversalCopy {
+        disableAllOverlayViews {
             val screenTexts = mutableListOf<TextViewNode>()
 
             val guideLineView =
                 UniversalCopyView(
                     context = context,
                     onClick = { x, y ->
-                        disableUniversalCopy {
+                        disableAllOverlayViews {
                             lookUpTextFromClick(screenTexts, x, y)
                         }
                     }
@@ -364,15 +366,26 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
     }
 
+    fun enableDrawBoard() {
+        disableAllOverlayViews {
+            val guideLineView =
+                DrawBoardView(context = context)
+            showingDrawerBoard.add(guideLineView)
+            mainHandler.postSafety {
+                guideLineView.attach()
+            }
+        }
+    }
+
     fun enableIdViewer() {
-        disableIVViewer {
+        disableAllOverlayViews {
             val idNodes = mutableListOf<ViewNode>()
 
             val guideLineView =
                 IdViewerView(
                     context = context,
                     onClick = { x, y ->
-                        disableIVViewer {
+                        disableAllOverlayViews {
                             lookUpViewNodeFromClick(idNodes, x, y)
                         }
                     }
@@ -465,26 +478,26 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
     }
 
-    private fun disableUniversalCopy(action: suspend () -> Unit) {
+    private fun disableAllOverlayViews(action: suspend () -> Unit) {
         mainHandler.postSafety {
+            showingDrawerBoard.forEach {
+                kotlin.runCatching { it.detach() }
+                    .onFailure { logger.e(it, "disableDrawBoard detach fail") }
+            }
+            showingDrawerBoard.clear()
+
             showingUCHints.forEach {
                 kotlin.runCatching { it.detach() }
                     .onFailure { logger.e(it, "disableUniversalCopy detach fail") }
             }
             showingUCHints.clear()
-            systemServiceScope.launchSafety {
-                action()
-            }
-        }
-    }
 
-    private fun disableIVViewer(action: suspend () -> Unit) {
-        mainHandler.postSafety {
             showingIVHints.forEach {
                 kotlin.runCatching { it.detach() }
                     .onFailure { logger.e(it, "disableIVViewer detach fail") }
             }
             showingIVHints.clear()
+
             systemServiceScope.launchSafety {
                 action()
             }

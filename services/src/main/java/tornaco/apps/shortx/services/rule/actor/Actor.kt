@@ -439,6 +439,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.EnableUniversalCopy
     },
+    ShowDrawBoard {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ShowDrawBoard
+    },
     EnableViewIdViewer {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.EnableViewIdViewer

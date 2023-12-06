@@ -2,7 +2,6 @@ package  tornaco.apps.shortx.ui.demo
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
@@ -63,10 +62,6 @@ class ComposeDemoActivity : ComponentActivity() {
                     controlBarState.show()
                 }
 
-                BackHandler {
-                    controlBarState.dismiss()
-                }
-
                 val requester = remember { FocusRequester() }
 
                 DrawBoard(
@@ -75,6 +70,9 @@ class ComposeDemoActivity : ComponentActivity() {
                         .onKeyEvent {
                             if (it.key == Key.VolumeDown) {
                                 controlBarState.show()
+                            }
+                            if (it.key == Key.Back) {
+                                finish()
                             }
                             true
                         }
