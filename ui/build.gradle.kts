@@ -118,6 +118,8 @@ dependencies {
     implementation(libs.mmkv)
     implementation(libs.jotp)
 
+    implementation(libs.sardine.android)
+
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
