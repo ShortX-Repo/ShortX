@@ -220,6 +220,9 @@
         <activity
             android:name="tornaco.apps.shortx.ui.dav.DavSettingsActivity"
             android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.addrule.action.selector.ForEachPkgSetSelectorActivity"
+            android:exported="false" />
 
         <service
             android:name=".service.tile.Tile1"

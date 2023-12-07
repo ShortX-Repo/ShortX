@@ -303,6 +303,17 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         }
     )
 
+    val foreachPkgSetLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.toBaseSelectorActionOrNull<Action.ForEachPkgSet>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
+
     return { source: ActionSelectSource ->
         when (source.clazz) {
             Action.StartActivityIntent::class -> {
@@ -520,6 +531,17 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.ForEachPkgSet::class -> {
+                foreachPkgSetLauncher.launch(
+                    BaseSelectorActivity.newIntent(
+                        context,
+                        source.getActionAs<Action.ForEachPkgSet>(),
+                        ForEachPkgSetSelectorActivity::class.java
+                    )
+                )
+                true
+            }
+
             else -> false
         }
     }
@@ -559,6 +581,7 @@ fun AppActions(keyword: String, subscribeState: LVLStateHolder.State, addAction:
         Action.RemoveNotificationForPackage::class,
         Action.RemoveNotificationForPackageByPkg::class,
         Action.AppShortcut::class,
+        Action.ForEachPkgSet::class,
     ).map {
         SelectorItem(
             type = it,

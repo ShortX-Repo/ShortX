@@ -509,6 +509,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.StayAwake
     },
+    ForEachPkgSet {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ForEachPkgSet
+    },
 
 
     ;

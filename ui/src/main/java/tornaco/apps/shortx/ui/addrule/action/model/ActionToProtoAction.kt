@@ -21,6 +21,7 @@ import tornaco.apps.shortx.core.proto.action.ExpandNotification
 import tornaco.apps.shortx.core.proto.action.FindAndClickMatchedView
 import tornaco.apps.shortx.core.proto.action.FindAndClickViewById
 import tornaco.apps.shortx.core.proto.action.FindAndClickViewByText
+import tornaco.apps.shortx.core.proto.action.ForEachPkgSet
 import tornaco.apps.shortx.core.proto.action.FromDA
 import tornaco.apps.shortx.core.proto.action.GetTextFromScreenNode
 import tornaco.apps.shortx.core.proto.action.HideOverlayButton
@@ -685,6 +686,17 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                                 .build()
                     }
                 }
+                .setNote(overrideNote ?: note).build()
+        }
+
+        is Action.ForEachPkgSet -> {
+            ForEachPkgSet.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .addAllAction(actions.map { it.toProtoAction().pack_() })
+                .setPkgSet(pkgSet.label)
                 .setNote(overrideNote ?: note).build()
         }
 

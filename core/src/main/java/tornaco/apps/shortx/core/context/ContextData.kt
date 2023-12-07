@@ -33,6 +33,11 @@ class ContextData private constructor(initialData: Map<String, Any> = emptyMap()
         map[key] = value
     }
 
+    fun override(key: String, value: Any?) {
+        logger.p("override $key $value")
+        map[key] = value
+    }
+
     fun add(map: Map<String, Any?>) {
         logger.p("add $map")
         map.forEach { (s, any) ->

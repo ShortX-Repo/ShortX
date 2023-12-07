@@ -228,4 +228,11 @@ object ContextDataMapping {
         sourceNodeId("sourceNodeId of the AccessibilityNodeInfo"),
         windowId("windowId of the AccessibilityNodeInfo"),
     }
+
+    @DoNotStrip
+    enum class ForEachPkgSet(val description: String) {
+        loopAppLabel("App label of current loop"),
+        loopAppPkgName("App package name of current loop"),
+        loopAppUserId("App user id of current loop"),
+    }
 }

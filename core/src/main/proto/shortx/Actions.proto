@@ -1355,3 +1355,14 @@ message StayAwake {
   string note = 99;
   string id = 100;
 }
+
+message ForEachPkgSet {
+  string pkgSet = 1;
+  repeated google.protobuf.Any action = 2;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}

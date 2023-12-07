@@ -9,6 +9,7 @@ import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.IfThenElse
 import tornaco.apps.shortx.core.proto.action.WaitUtilConditionMatch
 import tornaco.apps.shortx.core.proto.common.GestureRecord
+import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
@@ -784,6 +785,19 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 conditions = data.conditionsList.mapNotNull { it.toCondition(shortXManager) },
                 actions = data.actionsList.mapNotNull { it.toAction(shortXManager) },
                 op = data.condOp.toOp(data.condOpPayload)
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.ForEachPkgSet::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.action.ForEachPkgSet::class.java
+            Action.ForEachPkgSet(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                actions = data.actionList.mapNotNull { it.toAction(shortXManager) },
+                pkgSet = shortXManager.getPkgSetByLabel(data.pkgSet) ?: PkgSet.getDefaultInstance()
             )
         }
 
