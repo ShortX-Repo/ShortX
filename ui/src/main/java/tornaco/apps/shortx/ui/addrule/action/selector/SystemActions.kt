@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.proto.action.RingerMode
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.common.VolumeDirection
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.action.mapper.actionLabelKey
@@ -33,11 +34,13 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.OnOffAnyStateSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.QSTileSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.VibratePatternSelector
+import tornaco.apps.shortx.ui.addrule.fact.selector.WifiSSIDSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberBrightnessValueSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberKeyEventSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberOnOffAnyStateSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberQSTileSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberVibratePatternSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberWifiSSIDSelectorState
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorActionOrNull
 import tornaco.apps.shortx.ui.base.InputValidateResult
@@ -222,6 +225,20 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     )
     MenuDialog(state = screenRotateSelectorState)
 
+    val wifiConnectedSelectorState = rememberWifiSSIDSelectorState(
+        title = LocalI18N.current["ui.action.connect.wifi"],
+        message = LocalI18N.current["ui.fact.wifi.connect.to.input.ssid"],
+        loadSSID = {
+            shortXManager.getPrivilegedConfiguredNetworks().filterNot { it.isBlank() }
+        },
+        showSymbolButton = false,
+        onSelected = {
+            addAction(Action.ConnectWifi(ssid = it))
+        }
+    )
+    WifiSSIDSelectorDialog(state = wifiConnectedSelectorState)
+
+
     return { source ->
         when (source.clazz) {
             Action.MediaPlayback::class -> {
@@ -312,6 +329,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
 
             Action.SetWallpaper::class -> {
                 wallpaperFileSelectorState.show(source.getActionAs())
+                true
+            }
+
+            Action.ConnectWifi::class -> {
+                wifiConnectedSelectorState.show(source.getActionAs<Action.ConnectWifi>()?.ssid)
                 true
             }
 
@@ -423,7 +445,8 @@ fun SystemActions(
         Action.ClickTile::class,
         Action.BiometricVerify::class,
         Action.SetScreenTimeout::class,
-        Action.SetScreenRotate::class
+        Action.SetScreenRotate::class,
+        Action.ConnectWifi::class,
     ).map {
         SelectorItem(
             type = it,

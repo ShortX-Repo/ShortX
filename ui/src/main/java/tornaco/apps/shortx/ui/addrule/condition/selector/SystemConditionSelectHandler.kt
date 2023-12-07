@@ -5,6 +5,7 @@ import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.QSTileState
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.condition.PlugType
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.condition.BatteryPercentSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.ConditionSelectSource
@@ -82,6 +83,9 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     val wifiConnectedToSelectorState = rememberWifiSSIDSelectorState(
         title = LocalI18N.current["ui.conditions.wifi.connected"],
         message = LocalI18N.current["ui.conditions.wifi.connected.target"],
+        loadSSID = {
+            shortXManager.getWifiScanResults().filterNot { it.isBlank() }
+        },
         showSymbolButton = false,
         onSelected = {
             addCondition(Condition.RequireWifiConnected(requiredSSID = it))

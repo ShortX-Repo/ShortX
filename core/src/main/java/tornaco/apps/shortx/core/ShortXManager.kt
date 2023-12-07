@@ -26,6 +26,7 @@ import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.common.SystemSettingsAccessRecord
 import tornaco.apps.shortx.core.proto.common.UserInfo
+import tornaco.apps.shortx.core.proto.common.WifiConfig
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.core.proto.fact.Edge
@@ -824,6 +825,10 @@ class ShortXManager(val service: IShortX) {
 
     fun getWifiScanResults(): List<String> = invokeService(emptyList()) {
         wifiScanResults
+    }
+
+    fun getPrivilegedConfiguredNetworks(): List<String> = invokeService(emptyList()) {
+        privilegedConfiguredNetworks.mapNotNull { WifiConfig.parseFrom(it.byteData).ssid }
     }
 
     fun getBTBondedDevices(): List<BTBondedDevice> = invokeService(emptyList()) {

@@ -465,6 +465,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Design.markup_fill
         }
 
+        Action.ConnectWifi::class -> {
+            Remix.Device.wifi_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

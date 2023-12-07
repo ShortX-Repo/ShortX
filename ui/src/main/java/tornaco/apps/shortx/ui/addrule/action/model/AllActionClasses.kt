@@ -125,5 +125,6 @@ val allActionClasses = listOf(
     Action.WaitUtilConditionMatch::class,
     Action.PerformContextMenuAction::class,
     Action.ShowDrawBoard::class,
+    Action.ConnectWifi::class,
     Action.NoAction::class,
 )

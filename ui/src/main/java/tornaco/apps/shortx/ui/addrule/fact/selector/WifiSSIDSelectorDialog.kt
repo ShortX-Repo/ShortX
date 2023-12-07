@@ -14,17 +14,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DialogMessage
@@ -43,6 +40,7 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 class WifiSSIDSelectorState(
     val title: String,
     val message: String?,
+    val loadSSID: () -> List<String>,
     val showSymbolButton: Boolean,
     val keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     val inputValidator: ((String) -> Pair<Boolean, String>),
@@ -74,6 +72,7 @@ class WifiSSIDSelectorState(
 fun rememberWifiSSIDSelectorState(
     title: String,
     message: String?,
+    loadSSID: () -> List<String>,
     showSymbolButton: Boolean = true,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     inputValidator: ((String) -> Pair<Boolean, String>) = { it.isNotEmpty() to "" },
@@ -83,6 +82,7 @@ fun rememberWifiSSIDSelectorState(
         WifiSSIDSelectorState(
             title,
             message,
+            loadSSID,
             showSymbolButton,
             keyboardOptions,
             inputValidator,
@@ -159,7 +159,7 @@ fun WifiSSIDSelectorDialog(state: WifiSSIDSelectorState) {
 
                             FieldTitle(text = LocalI18N.current["ui.fact.wifi.choose.ssid"])
                             val ssidList = remember {
-                                shortXManager.getWifiScanResults().filterNot { it.isBlank() }
+                                state.loadSSID()
                             }
                             ssidList.forEach {
                                 tornaco.apps.shortx.ui.base.ListItem(

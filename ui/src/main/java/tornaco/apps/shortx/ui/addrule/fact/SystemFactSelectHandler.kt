@@ -103,6 +103,9 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     val wifiConnectedToSelectorState = rememberWifiSSIDSelectorState(
         title = LocalI18N.current["ui.fact.wifi.connect.to"],
         message = LocalI18N.current["ui.fact.wifi.connect.to.input.ssid"],
+        loadSSID = {
+            shortXManager.getWifiScanResults().filterNot { it.isBlank() }
+        },
         showSymbolButton = false,
         onSelected = {
             addFact(Fact.WifiConnectedTo(ssidList = listOf(it)))
@@ -113,6 +116,9 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     val wifiDisconnectedFromSelectorState = rememberWifiSSIDSelectorState(
         title = LocalI18N.current["ui.fact.wifi.disconnected.from"],
         message = LocalI18N.current["ui.fact.wifi.disconnected.from.input.ssid"],
+        loadSSID = {
+            shortXManager.getWifiScanResults().filterNot { it.isBlank() }
+        },
         showSymbolButton = false,
         onSelected = {
             addFact(Fact.WifiDisconnectedFrom(ssidList = listOf(it)))
