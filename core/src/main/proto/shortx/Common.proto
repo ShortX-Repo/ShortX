@@ -360,3 +360,8 @@ enum RegexMatchOptions {
   RegexMatchOptions_Match = 0;
   RegexMatchOptions_ContainsMatchIn = 1;
 }
+
+message WifiConfig {
+  int32 networkId = 1;
+  string ssid = 2;
+}

@@ -296,4 +296,6 @@ interface IShortX {
     // Flags
 
     void updateQSTileActiveState(int number);
+
+    List<ByteArrayWrapper> getPrivilegedConfiguredNetworks();
 }

@@ -29,6 +29,7 @@ import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.common.UserInfo
+import tornaco.apps.shortx.core.proto.common.WifiConfig
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
@@ -330,6 +331,13 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                     context.wifiManager.scanResults.mapNotNull { it.SSID }
                 }
             } ?: emptyList()
+        }
+
+        override fun getPrivilegedConfiguredNetworks(): List<ByteArrayWrapper> {
+            enforceCallingPermissions()
+            return shortXContext.network.getPrivilegedConfiguredNetworks().map {
+                ByteArrayWrapper(it.toByteArray())
+            }
         }
 
         override fun attachSUImpl(from: String?, su: ISu?) {

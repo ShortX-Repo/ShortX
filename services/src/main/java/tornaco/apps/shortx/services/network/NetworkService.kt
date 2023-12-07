@@ -9,15 +9,19 @@ import android.net.wifi.WifiManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.proto.common.WifiConfig
 import tornaco.apps.shortx.core.proto.fact.VPNConnected
 import tornaco.apps.shortx.core.proto.fact.VPNDisconnected
 import tornaco.apps.shortx.core.proto.fact.WifiConnectedTo
 import tornaco.apps.shortx.core.proto.fact.WifiDisconnectedFrom
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
+import tornaco.apps.shortx.core.util.wifiManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.rule.fact.trigger.wifi.WifiState
 import tornaco.apps.shortx.services.rule.fact.trigger.wifi.WifiStatusTracker
+import tornaco.apps.shortx.services.runClearCallingIdentity
+import tornaco.apps.shortx.services.v.v
 import java.util.concurrent.atomic.AtomicReference
 
 class NetworkService(shortXContext: ShortXContext) :
@@ -138,5 +142,15 @@ class NetworkService(shortXContext: ShortXContext) :
     override fun shutdown() {
         super.shutdown()
         context.unregisterReceiver(wifiStatusReceiver)
+    }
+
+    fun getPrivilegedConfiguredNetworks(): List<WifiConfig> {
+        return v(context) {
+            runClearCallingIdentity {
+                context.wifiManager.privilegedConfiguredNetworks.mapNotNull {
+                    WifiConfig.newBuilder().setNetworkId(it.networkId).setSsid(it.SSID).build()
+                }
+            }
+        } ?: emptyList()
     }
 }
