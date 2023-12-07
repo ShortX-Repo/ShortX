@@ -454,7 +454,7 @@ fun imageVectorForAction(action: KClass<out Action>): String {
         }
 
         Action.WaitUtilConditionMatch::class -> {
-            Remix.System.eye_2_fill
+            Remix.System.loader_2_fill
         }
 
         Action.PerformContextMenuAction::class -> {
@@ -467,6 +467,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
 
         Action.ConnectWifi::class -> {
             Remix.Device.wifi_fill
+        }
+
+        Action.StayAwake::class -> {
+            Remix.System.eye_2_fill
         }
 
         else -> {

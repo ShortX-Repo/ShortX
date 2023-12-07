@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.proto.action.RingerMode
 import tornaco.apps.shortx.core.proto.action.ScrollViewToLocation
 import tornaco.apps.shortx.core.proto.common.ActionOnError
 import tornaco.apps.shortx.core.proto.common.AudioSource
+import tornaco.apps.shortx.core.proto.common.OnOffToggle
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.common.VolumeDirection
 import tornaco.apps.shortx.core.res.Remix
@@ -228,6 +229,7 @@ fun labelAndDescriptionForActionSelector(
         Action.PerformContextMenuAction::class -> i18N["ui.action.perform.context.menu.action"] to null
         Action.ShowDrawBoard::class -> i18N["ui.action.draw.board"] to null
         Action.ConnectWifi::class -> i18N["ui.action.connect.wifi"] to null
+        Action.StayAwake::class -> i18N["ui.action.stay.awake"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -867,6 +869,11 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             i18N["ui.action.connect.wifi"],
             action.ssid
         )
+
+        is Action.StayAwake -> listOf(
+            i18N["ui.action.stay.awake"],
+            i18N[action.stay.labelKey()]
+        )
     }
 }
 
@@ -940,6 +947,13 @@ fun ActionOnError.labelKey() = when (this) {
     ActionOnError.UNRECOGNIZED -> {
         ""
     }
+}
+
+fun OnOffToggle.labelKey() = when (this) {
+    OnOffToggle.OnOffToggle_On -> "ui.common.on"
+    OnOffToggle.OnOffToggle_Off -> "ui.common.off"
+    OnOffToggle.OnOffToggle_Toggle -> "ui.common.toggle"
+    OnOffToggle.UNRECOGNIZED -> "UNRECOGNIZED"
 }
 
 fun NavType.labelKey() = when (this) {

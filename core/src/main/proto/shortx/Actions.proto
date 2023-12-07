@@ -1345,3 +1345,13 @@ message ConnectWifi {
   string note = 99;
   string id = 100;
 }
+
+message StayAwake {
+  OnOffToggle isStay = 1;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}

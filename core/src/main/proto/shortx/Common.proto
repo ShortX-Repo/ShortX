@@ -58,6 +58,12 @@ enum OnOffAny {
   Any = 2;
 }
 
+enum OnOffToggle {
+  OnOffToggle_On = 0;
+  OnOffToggle_Off = 1;
+  OnOffToggle_Toggle = 2;
+}
+
 message CommonApiRes {
   int32 result = 1;
   string msg = 2;

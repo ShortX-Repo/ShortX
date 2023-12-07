@@ -126,5 +126,6 @@ val allActionClasses = listOf(
     Action.PerformContextMenuAction::class,
     Action.ShowDrawBoard::class,
     Action.ConnectWifi::class,
+    Action.StayAwake::class,
     Action.NoAction::class,
 )

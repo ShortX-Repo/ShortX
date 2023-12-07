@@ -24,6 +24,7 @@ import tornaco.apps.shortx.core.proto.common.CustomContextDataKey
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.HttpRequestHeader
 import tornaco.apps.shortx.core.proto.common.HttpRequestMethod
+import tornaco.apps.shortx.core.proto.common.OnOffToggle
 import tornaco.apps.shortx.core.proto.common.ProcessName
 import tornaco.apps.shortx.core.proto.common.QSTile
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
@@ -3518,6 +3519,34 @@ sealed interface Action : Parcelable {
         override val note: String = "",
 
         val ssid: String
+    ) : Action {
+        override fun clone(
+            id: String,
+            note: String,
+            isEnabled: Boolean,
+            actionOnError: ActionOnError,
+            contextData: List<ContextData>
+        ): Action {
+            return this.copy(
+                id = id,
+                note = note,
+                isEnabled = isEnabled,
+                actionOnError = actionOnError,
+                contextData = contextData
+            )
+        }
+    }
+
+    @Parcelize
+    data class StayAwake(
+        override val id: String = defaultNewActionId(),
+        override val isEnabled: Boolean = true,
+        override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val contextData: List<ContextData> = emptyList(),
+        override val note: String = "",
+
+        val stay: OnOffToggle
     ) : Action {
         override fun clone(
             id: String,

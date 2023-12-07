@@ -94,6 +94,7 @@ import tornaco.apps.shortx.core.proto.action.StartAppProcessByPkg
 import tornaco.apps.shortx.core.proto.action.StartGestureRecording
 import tornaco.apps.shortx.core.proto.action.StartLastApp
 import tornaco.apps.shortx.core.proto.action.StartService
+import tornaco.apps.shortx.core.proto.action.StayAwake
 import tornaco.apps.shortx.core.proto.action.StopApp
 import tornaco.apps.shortx.core.proto.action.StopAppByPkg
 import tornaco.apps.shortx.core.proto.action.StopAudioRecording
@@ -1482,6 +1483,17 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setNote(overrideNote ?: note)
                 .setSsid(ssid)
+                .build()
+        }
+
+        is Action.StayAwake -> {
+            StayAwake.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setIsStay(stay)
                 .build()
         }
 

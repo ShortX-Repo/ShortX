@@ -11,6 +11,7 @@ import okhttp3.internal.toLongOrDefault
 import tornaco.apps.shortx.core.proto.action.MediaPlaybackAction
 import tornaco.apps.shortx.core.proto.action.RingerMode
 import tornaco.apps.shortx.core.proto.common.OnOffAny
+import tornaco.apps.shortx.core.proto.common.OnOffToggle
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.common.VolumeDirection
 import tornaco.apps.shortx.core.shortXManager
@@ -225,6 +226,19 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     )
     MenuDialog(state = screenRotateSelectorState)
 
+    val stayAwakeSelectorState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.action.stay.awake"],
+        menuItems = OnOffToggle.values().filterNot { it == OnOffToggle.UNRECOGNIZED }
+            .map {
+                MenuDialogItem(id = it.name, title = LocalI18N.current[it.labelKey()])
+            },
+        onItemSelected = { data, id ->
+            val stay = OnOffToggle.valueOf(id)
+            addAction(Action.StayAwake(stay = stay))
+        }
+    )
+    MenuDialog(state = stayAwakeSelectorState)
+
     val wifiConnectedSelectorState = rememberWifiSSIDSelectorState(
         title = LocalI18N.current["ui.action.connect.wifi"],
         message = LocalI18N.current["ui.fact.wifi.connect.to.input.ssid"],
@@ -390,6 +404,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.StayAwake::class -> {
+                stayAwakeSelectorState.show()
+                true
+            }
+
             else -> false
         }
     }
@@ -405,6 +424,7 @@ fun SystemActions(
     val actionItems = listOfNotNull(
         Action.WakeupScreen::class,
         Action.SleepScreen::class,
+        Action.StayAwake::class,
         Action.InjectKeyCode::class,
         Action.InjectCombineKeyCode::class,
         Action.MediaPlayback::class,
