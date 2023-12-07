@@ -13,6 +13,7 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.compose.foundation.border
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -21,9 +22,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -35,7 +42,8 @@ import tornaco.apps.shortx.core.util.OsUtils
 @SuppressLint("ViewConstructor", "ClickableViewAccessibility")
 class UniversalCopyView(
     context: Context,
-    onClick: (Float, Float) -> Unit
+    onClick: (Float, Float) -> Unit,
+    private val onDetach: (UniversalCopyView) -> Unit
 ) :
     LinearLayout(context) {
 
@@ -84,7 +92,9 @@ class UniversalCopyView(
         val composeView = ComposeView(contextWrapper).apply {
             setContent {
                 CompositionLocalProvider(LocalContext provides appContext) {
-                    UCVContent(isLoading)
+                    UCVContent(isLoading) {
+                        detach()
+                    }
                 }
             }
             isFocusable = false
@@ -116,6 +126,7 @@ class UniversalCopyView(
         if (isAttached) {
             windowManager.removeViewImmediate(this)
             isAttached = false
+            onDetach(this)
         }
     }
 
@@ -141,11 +152,22 @@ class UniversalCopyView(
 open class OnGestureListenerAdapter : GestureDetector.SimpleOnGestureListener()
 
 @Composable
-fun UCVContent(isLoading: Boolean) {
+private fun UCVContent(isLoading: Boolean, onBack: () -> Unit) {
+    val requester = remember { FocusRequester() }
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .border(4.dp, color = MaterialTheme.colorScheme.primary),
+            .border(4.dp, color = MaterialTheme.colorScheme.primary)
+            .onKeyEvent {
+                if (it.key == Key.VolumeDown || it.key == Key.VolumeUp) {
+                }
+                if (it.key == Key.Back) {
+                    onBack()
+                }
+                true
+            }
+            .focusRequester(requester)
+            .focusable(),
         contentAlignment = Alignment.Center
     ) {
         if (isLoading) {

@@ -9,7 +9,6 @@ import android.os.Binder
 import android.os.Bundle
 import android.os.Parcel
 import android.os.ParcelFileDescriptor
-import android.os.ServiceManager
 import android.os.ShellCommand
 import android.os.UserHandle
 import android.telephony.SubscriptionInfo
@@ -73,8 +72,6 @@ import java.io.File
 
 @SuppressLint("StaticFieldLeak")
 object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
-    private val serviceLifecycle by lazy { ServiceLifecycle(shortXContext) }
-
     fun main() {
         LogInit.initEarlyLogging()
     }
@@ -82,7 +79,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
     override fun start(context: Context) {
         super.start(context)
         LogInit.initStartedLogging()
-        serviceLifecycle.start(context)
+        shortXContext.serviceLifecycle.start(context)
     }
 
     override fun systemReady() {
@@ -94,19 +91,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         I18NCache.init(appRes.appContext, localeName)
         val testRes = i18NIns["ui.common.delete"]
         logger.d("testRes: $testRes")
-        serviceLifecycle.systemReady()
-    }
-
-    private fun publishBinderService() {
-        ServiceManager.waitForService(PROXY_SERVICE_NAME)?.let { orig ->
-            logger.w("publishBinderService, originService: $orig")
-            kotlin.runCatching {
-                ServiceManager.addService(PROXY_SERVICE_NAME, newBinderProxy(orig as Binder))
-                logger.w("publishBinderService, add success.")
-            }.onFailure { error ->
-                logger.e(error, "Fail to addService")
-            }
-        }
+        shortXContext.serviceLifecycle.systemReady()
     }
 
     private fun newBinderProxy(orig: Binder): tornaco.apps.shortx.services.util.BinderProxy {
@@ -352,7 +337,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
             systemServiceScope.launchSafety {
                 // Sometimes SystemUI attached before system ready called, something has not been initilised...
-                while (!serviceLifecycle.isSystemReadyCalled) {
+                while (!shortXContext.serviceLifecycle.isSystemReadyCalled) {
                     delay(1000)
                     logger.w("attachSUImpl, Wait 1s until serviceLifecycle.isSystemReadyCalled.")
                 }

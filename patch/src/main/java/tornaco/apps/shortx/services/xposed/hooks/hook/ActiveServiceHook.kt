@@ -21,10 +21,10 @@ object ActiveServiceHook {
                 val isScreenOn = param.args[0] as Boolean
                 logger.d("updateScreenStateLocked: ${param.args.map { it }}")
                 if (isScreenOn) {
-                    ShortXService.shortXContext.user.onScreenOn()
+                    ShortXService.shortXContext.serviceLifecycle.screenOn()
 
                 } else {
-                    ShortXService.shortXContext.user.onScreenOff()
+                    ShortXService.shortXContext.serviceLifecycle.screenOff()
                 }
             }
         }

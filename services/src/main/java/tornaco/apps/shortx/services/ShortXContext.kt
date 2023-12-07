@@ -42,6 +42,8 @@ interface ShortXContext {
     val tile: StatusBarTileService
     val dev: DevService
 
+    val serviceLifecycle: ServiceLifecycle
+
     val allServices
         get() = mutableListOf(
             appState,
@@ -87,4 +89,6 @@ class ShortXContextImpl : ShortXContext {
     override val shell = ShellService(this)
     override val tile = StatusBarTileService(this)
     override val dev = DevService(this)
+
+    override val serviceLifecycle = ServiceLifecycle(this)
 }

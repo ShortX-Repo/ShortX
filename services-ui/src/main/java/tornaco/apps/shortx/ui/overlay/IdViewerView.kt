@@ -15,6 +15,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -23,12 +24,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -42,7 +49,8 @@ import tornaco.apps.shortx.core.util.OsUtils
 @SuppressLint("ViewConstructor", "ClickableViewAccessibility")
 class IdViewerView(
     context: Context,
-    onClick: (Float, Float) -> Unit
+    onClick: (Float, Float) -> Unit,
+    private val onDetach: (IdViewerView) -> Unit
 ) :
     LinearLayout(context) {
 
@@ -91,7 +99,9 @@ class IdViewerView(
         val composeView = ComposeView(contextWrapper).apply {
             setContent {
                 CompositionLocalProvider(LocalContext provides appContext) {
-                    IVVContent(isLoading = isLoading, nodes = nodes)
+                    IVVContent(isLoading = isLoading, nodes = nodes) {
+                        detach()
+                    }
                 }
             }
             isFocusable = false
@@ -123,6 +133,7 @@ class IdViewerView(
         if (isAttached) {
             windowManager.removeViewImmediate(this)
             isAttached = false
+            onDetach(this)
         }
     }
 
@@ -146,11 +157,26 @@ class IdViewerView(
 }
 
 @Composable
-private fun IVVContent(isLoading: Boolean, nodes: List<tornaco.apps.shortx.core.ui.ViewNode>) {
+private fun IVVContent(
+    isLoading: Boolean,
+    nodes: List<tornaco.apps.shortx.core.ui.ViewNode>,
+    onBack: () -> Unit
+) {
+    val requester = remember { FocusRequester() }
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .border(4.dp, color = MaterialTheme.colorScheme.primary),
+            .border(4.dp, color = MaterialTheme.colorScheme.primary)
+            .onKeyEvent {
+                if (it.key == Key.VolumeDown || it.key == Key.VolumeUp) {
+                }
+                if (it.key == Key.Back) {
+                    onBack()
+                }
+                true
+            }
+            .focusRequester(requester)
+            .focusable(),
         contentAlignment = Alignment.Center
     ) {
         if (isLoading) {

@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.draw
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Slider
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
@@ -39,44 +41,50 @@ fun ControlsBar(
     redoVisibility: MutableState<Boolean>,
     colorValue: MutableState<Color>,
 ) {
-    Row(modifier = Modifier.padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
-        MenuItems(
-            Remix.Arrows.arrow_go_back_fill,
-            if (undoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant
-        ) {
-            if (undoVisibility.value) drawController.unDo()
-        }
-        MenuItems(
-            Remix.Arrows.arrow_go_forward_fill,
-            if (redoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant
-        ) {
-            if (redoVisibility.value) drawController.reDo()
-        }
-        MenuItems(
-            Remix.System.delete_bin_7_line,
-            if (redoVisibility.value || undoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant
-        ) {
-            drawController.reset()
-        }
-        MenuItems(
-            Remix.Design.palette_line,
-            colorValue.value
-        ) {
-            onColorClick()
-        }
-        MenuItems(
-            Remix.System.checkbox_blank_circle_line,
-            MaterialTheme.colors.primary
-        ) {
-            onSizeClick()
-        }
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(androidx.compose.material3.MaterialTheme.colorScheme.surface)
+    ) {
+        Row(modifier = Modifier.padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
+            MenuItems(
+                Remix.Arrows.arrow_go_back_fill,
+                if (undoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant
+            ) {
+                if (undoVisibility.value) drawController.unDo()
+            }
+            MenuItems(
+                Remix.Arrows.arrow_go_forward_fill,
+                if (redoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant
+            ) {
+                if (redoVisibility.value) drawController.reDo()
+            }
+            MenuItems(
+                Remix.System.delete_bin_7_line,
+                if (redoVisibility.value || undoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant
+            ) {
+                drawController.reset()
+            }
+            MenuItems(
+                Remix.Design.palette_line,
+                colorValue.value
+            ) {
+                onColorClick()
+            }
+            MenuItems(
+                Remix.System.checkbox_blank_circle_line,
+                MaterialTheme.colors.primary
+            ) {
+                onSizeClick()
+            }
 
-        StandardSpacer()
-        MenuItems(
-            Remix.Arrows.arrow_drop_down_line,
-            MaterialTheme.colors.primary
-        ) {
-            onHideControlsBarClick()
+            StandardSpacer()
+            MenuItems(
+                Remix.Arrows.arrow_drop_down_line,
+                MaterialTheme.colors.primary
+            ) {
+                onHideControlsBarClick()
+            }
         }
     }
 }

@@ -12,6 +12,7 @@ class ServiceLifecycle(private val shortXContext: ShortXContext) {
         private set
 
     fun start(context: Context) {
+        logger.d("start")
         exe.execute {
             shortXContext.allServices.forEach {
                 val startTime = System.currentTimeMillis()
@@ -23,14 +24,39 @@ class ServiceLifecycle(private val shortXContext: ShortXContext) {
     }
 
     fun systemReady() {
-       exe.execute {
-           shortXContext.allServices.forEach {
-               val startTime = System.currentTimeMillis()
-               it.systemReady()
-               val taken = System.currentTimeMillis() - startTime
-               logger.i("systemReady---> $it take $taken(ms)")
-           }
-           isSystemReadyCalled = true
-       }
+        logger.d("systemReady")
+        exe.execute {
+            shortXContext.allServices.forEach {
+                val startTime = System.currentTimeMillis()
+                it.systemReady()
+                val taken = System.currentTimeMillis() - startTime
+                logger.i("systemReady---> $it take $taken(ms)")
+            }
+            isSystemReadyCalled = true
+        }
+    }
+
+    fun screenOn() {
+        logger.d("screenOn")
+        exe.execute {
+            shortXContext.allServices.forEach {
+                val startTime = System.currentTimeMillis()
+                it.screenOn()
+                val taken = System.currentTimeMillis() - startTime
+                logger.i("screenOn---> $it take $taken(ms)")
+            }
+        }
+    }
+
+    fun screenOff() {
+        logger.d("screenOff")
+        exe.execute {
+            shortXContext.allServices.forEach {
+                val startTime = System.currentTimeMillis()
+                it.screenOff()
+                val taken = System.currentTimeMillis() - startTime
+                logger.i("screenOff---> $it take $taken(ms)")
+            }
+        }
     }
 }

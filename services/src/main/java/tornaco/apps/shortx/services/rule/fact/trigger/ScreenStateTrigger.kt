@@ -4,8 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import tornaco.apps.shortx.core.compat.ContextCompat
-import tornaco.apps.shortx.core.proto.fact.ScreenOff
-import tornaco.apps.shortx.core.proto.fact.ScreenOn
 import tornaco.apps.shortx.core.proto.fact.UserPresent
 import tornaco.apps.shortx.core.proto.fact.UserPresentAtTheFirstTime
 import tornaco.apps.shortx.core.util.OsUtils
@@ -26,19 +24,13 @@ class ScreenStateTrigger(override val context: Context, override val shortXConte
                 when (it) {
                     Intent.ACTION_SCREEN_OFF -> {
                         if (!OsUtils.isSOrAbove()) {
-                            shortXContext.rule.publishFact(
-                                "ACTION_SCREEN_OFF",
-                                ScreenOff.newBuilder().build()
-                            ) { emptyMap() }
+                            shortXContext.serviceLifecycle.screenOff()
                         }
                     }
 
                     Intent.ACTION_SCREEN_ON -> {
                         if (!OsUtils.isSOrAbove()) {
-                            shortXContext.rule.publishFact(
-                                "ACTION_SCREEN_ON",
-                                ScreenOn.newBuilder().build()
-                            ) { emptyMap() }
+                            shortXContext.serviceLifecycle.screenOn()
                         }
                     }
 

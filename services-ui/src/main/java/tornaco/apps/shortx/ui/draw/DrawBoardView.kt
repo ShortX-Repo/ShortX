@@ -36,6 +36,7 @@ import tornaco.apps.shortx.ui.overlay.addToLifecycle
 @SuppressLint("ViewConstructor")
 class DrawBoardView(
     context: Context,
+    private val onDetach: (DrawBoardView) -> Unit
 ) :
     LinearLayout(context) {
 
@@ -99,6 +100,7 @@ class DrawBoardView(
         if (isAttached) {
             windowManager.removeViewImmediate(this)
             isAttached = false
+            onDetach(this)
         }
     }
 
@@ -136,7 +138,7 @@ private fun DrawBoardContent(onBack: () -> Unit) {
             modifier = Modifier
                 .fillMaxSize()
                 .onKeyEvent {
-                    if (it.key == Key.VolumeDown) {
+                    if (it.key == Key.VolumeDown || it.key == Key.VolumeUp) {
                         controlBarState.show()
                     }
                     if (it.key == Key.Back) {

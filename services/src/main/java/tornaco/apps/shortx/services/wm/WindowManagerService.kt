@@ -82,6 +82,12 @@ class WindowManagerService(shortXContext: ShortXContext) :
             }
     }
 
+    override fun screenOff() {
+        super.screenOff()
+        logger.d("disableAllOverlayViews since screen off.")
+        disableAllOverlayViews { }
+    }
+
     private fun registerListeners() {
 
     }
@@ -340,6 +346,9 @@ class WindowManagerService(shortXContext: ShortXContext) :
                         disableAllOverlayViews {
                             lookUpTextFromClick(screenTexts, x, y)
                         }
+                    },
+                    onDetach = {
+                        showingUCHints.remove(it)
                     }
                 )
 
@@ -369,7 +378,9 @@ class WindowManagerService(shortXContext: ShortXContext) :
     fun enableDrawBoard() {
         disableAllOverlayViews {
             val guideLineView =
-                DrawBoardView(context = context)
+                DrawBoardView(context = context) {
+                    showingDrawerBoard.remove(it)
+                }
             showingDrawerBoard.add(guideLineView)
             mainHandler.postSafety {
                 guideLineView.attach()
@@ -388,6 +399,9 @@ class WindowManagerService(shortXContext: ShortXContext) :
                         disableAllOverlayViews {
                             lookUpViewNodeFromClick(idNodes, x, y)
                         }
+                    },
+                    onDetach = {
+                        showingIVHints.remove(it)
                     }
                 )
 

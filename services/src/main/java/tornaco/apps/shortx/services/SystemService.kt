@@ -59,6 +59,14 @@ abstract class SystemService(val shortXContext: ShortXContext, val serviceName: 
         systemServiceScope.cancel("System shutdown.")
     }
 
+    open fun screenOff() {
+
+    }
+
+    open fun screenOn() {
+
+    }
+
     internal fun <T> getTag(key: String): T? {
         synchronized(bagOfTags) {
             @Suppress("UNCHECKED_CAST") return bagOfTags[key] as T

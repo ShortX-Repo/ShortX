@@ -18,8 +18,8 @@ import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.userManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
-import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.systemServiceScope
+import tornaco.apps.shortx.services.watchdog.launchSafety
 import java.util.concurrent.atomic.AtomicBoolean
 
 sealed interface UserEvent {
@@ -115,30 +115,6 @@ class UserService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             userBroadcastReceiver,
             userFilter,
             ContextCompat.RECEIVER_EXPORTED
-        )
-    }
-
-    fun onScreenOn() {
-        logger.d("onScreenOn")
-        if (!isSystemReadyTriggered) {
-            logger.i("onScreenOn, drop since isSystemReadyTriggered is false.")
-            return
-        }
-        shortXContext.rule.publishFact(
-            "onScreenOn",
-            ScreenOn.newBuilder().build()
-        )
-    }
-
-    fun onScreenOff() {
-        logger.d("onScreenOff")
-        if (!isSystemReadyTriggered) {
-            logger.i("onScreenOff, drop since isSystemReadyTriggered is false.")
-            return
-        }
-        shortXContext.rule.publishFact(
-            "onScreenOff",
-            ScreenOff.newBuilder().build()
         )
     }
 

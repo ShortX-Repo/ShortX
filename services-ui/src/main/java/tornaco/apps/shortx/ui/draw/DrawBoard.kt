@@ -31,45 +31,46 @@ fun DrawBoard(modifier: Modifier = Modifier, controlBarState: CommonDialogState)
     val drawController = rememberDrawController()
 
     Box(modifier = modifier) {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
-        ) {
-            Column {
-                DrawBox(
+        Column {
+            DrawBox(
+                drawController = drawController,
+                backgroundColor = Color.Transparent,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f, fill = false),
+            ) { undoCount, redoCount ->
+                sizeBarVisibility.value = false
+                colorBarVisibility.value = false
+                undoVisibility.value = undoCount != 0
+                redoVisibility.value = redoCount != 0
+                controlBarState.dismiss()
+            }
+
+            AnimatedVisibility(visible = controlBarState.isShowing) {
+                ControlsBar(
                     drawController = drawController,
-                    backgroundColor = Color.Transparent,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f, fill = false),
-                ) { undoCount, redoCount ->
-                    sizeBarVisibility.value = false
-                    colorBarVisibility.value = false
-                    undoVisibility.value = undoCount != 0
-                    redoVisibility.value = redoCount != 0
-                }
+                    onColorClick = {
+                        colorBarVisibility.value = !colorBarVisibility.value
+                        sizeBarVisibility.value = false
+                    },
+                    onSizeClick = {
+                        sizeBarVisibility.value = !sizeBarVisibility.value
+                        colorBarVisibility.value = false
+                    },
+                    onHideControlsBarClick = {
+                        controlBarState.dismiss()
+                    },
+                    undoVisibility = undoVisibility,
+                    redoVisibility = redoVisibility,
+                    colorValue = currentColor,
+                )
+            }
 
-                AnimatedVisibility(visible = controlBarState.isShowing) {
-                    ControlsBar(
-                        drawController = drawController,
-                        onColorClick = {
-                            colorBarVisibility.value = !colorBarVisibility.value
-                            sizeBarVisibility.value = false
-                        },
-                        onSizeClick = {
-                            sizeBarVisibility.value = !sizeBarVisibility.value
-                            colorBarVisibility.value = false
-                        },
-                        onHideControlsBarClick = {
-                            controlBarState.dismiss()
-                        },
-                        undoVisibility = undoVisibility,
-                        redoVisibility = redoVisibility,
-                        colorValue = currentColor,
-                    )
-                }
-
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.surface)
+            ) {
                 RangVikalp(isVisible = colorBarVisibility.value, showShades = true) {
                     currentColor.value = it
                     drawController.changeColor(it)
@@ -82,6 +83,7 @@ fun DrawBoard(modifier: Modifier = Modifier, controlBarState: CommonDialogState)
                     drawController.changeStrokeWidth(it.toFloat())
                 }
             }
+
         }
     }
 }

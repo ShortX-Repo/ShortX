@@ -28,6 +28,8 @@ import tornaco.apps.shortx.core.proto.da.DirectActionList
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
+import tornaco.apps.shortx.core.proto.fact.ScreenOff
+import tornaco.apps.shortx.core.proto.fact.ScreenOn
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.rule.ActionEvaluateRecord
 import tornaco.apps.shortx.core.proto.rule.ConditionEvaluateRecord
@@ -1188,5 +1190,23 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     fun clearHttpRequestLogs() {
         HttpRequestLogging.clearLogs()
+    }
+
+    override fun screenOn() {
+        super.screenOn()
+        logger.d("onScreenOn")
+        shortXContext.rule.publishFact(
+            "onScreenOn",
+            ScreenOn.newBuilder().build()
+        ) { emptyMap() }
+    }
+
+    override fun screenOff() {
+        super.screenOff()
+        logger.d("screenOff")
+        shortXContext.rule.publishFact(
+            "onScreenOff",
+            ScreenOff.newBuilder().build()
+        ) { emptyMap() }
     }
 }
