@@ -149,7 +149,7 @@ class NetworkService(shortXContext: ShortXContext) :
             runClearCallingIdentity {
                 context.wifiManager.privilegedConfiguredNetworks.mapNotNull {
                     WifiConfig.newBuilder().setNetworkId(it.networkId).setSsid(it.SSID).build()
-                }
+                }.distinct()
             }
         } ?: emptyList()
     }
