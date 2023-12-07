@@ -58,6 +58,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.res.Remix
@@ -108,6 +109,7 @@ private class ExpandState(
 @Composable
 fun OverlayContent(
     action: ShowOverlayButton,
+    localVars: LocalVars,
     onButtonClick: (OverlayButtonSetting) -> Unit,
     onButtonLongClick: (OverlayButtonSetting) -> Unit,
     onCollapse: () -> Unit,
@@ -115,8 +117,8 @@ fun OverlayContent(
     dragHandleMotionEvent: (MotionEvent) -> Unit
 ) {
     val vm = viewModel<OverlayViewModel>()
-    LaunchedEffect(action) {
-        vm.init(action)
+    LaunchedEffect(action, localVars) {
+        vm.init(action, localVars)
     }
     val state by vm.state.collectAsState()
 

@@ -54,6 +54,7 @@ class OverlayService(shortXContext: ShortXContext) :
         val overlayIns = ComposeOverlay(
             context = context,
             action = action,
+            localVars = localVars,
             initialPos = posX to posY,
             onPosChange = { x, y ->
                 handler.postSafety {

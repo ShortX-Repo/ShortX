@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.*
 import androidx.lifecycle.*
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.res.AppResources
@@ -31,6 +32,7 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 class ComposeOverlay(
     context: Context,
     private val action: ShowOverlayButton,
+    private val localVars: LocalVars,
     private val initialPos: Pair<Int, Int>,
     private val onPosChange: (Int, Int) -> Unit,
     private val onButtonClick: (OverlayButtonSetting) -> Unit,
@@ -139,6 +141,7 @@ class ComposeOverlay(
                     ) {
                         OverlayContent(
                             action = action,
+                            localVars = localVars,
                             dragHandleMotionEvent = {
                                 touchListener.onTouch(
                                     this@ComposeOverlay, it

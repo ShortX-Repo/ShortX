@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
@@ -308,6 +309,7 @@ private fun Content(
         }
         OverlayContent(
             action = action.value as ShowOverlayButton,
+            localVars = LocalVars.obtain(),
             onButtonClick = {},
             onButtonLongClick = {},
             dragHandleMotionEvent = {},
