@@ -82,6 +82,11 @@
     java.lang.Object readResolve();
 }
 
+# https://github.com/thegrizzlylabs/sardine-android/issues/70
+-dontwarn org.xmlpull.v1.**
+-keep class org.xmlpull.v1.** { *; }
+-dontwarn android.content.res.XmlResourceParser
+
 # Please add these rules to your existing keep rules in order to suppress warnings.
 # This is generated automatically by the Android Gradle plugin.
 -dontwarn android.accessibilityservice.IAccessibilityServiceClient$Stub
