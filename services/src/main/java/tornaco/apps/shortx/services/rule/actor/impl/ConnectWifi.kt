@@ -4,6 +4,7 @@ import android.net.wifi.WifiManager.ActionListener
 import com.google.protobuf.Message
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
+import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.maskAll
 import tornaco.apps.shortx.core.util.wifiManager
@@ -63,19 +64,21 @@ object ConnectWifi : Actor {
 
         val isSuccessToReason: Pair<Boolean, Int> =
             suspendCancellableCoroutine { continuation ->
-                androidContext.wifiManager.connect(config.networkId, object : ActionListener {
-                    override fun onSuccess() {
-                        logger.d("onSuccess")
-                        continuation.resume(true to -1) {}
+                androidContext.wifiManager.connect(config.networkId,
+                    @DoNotStrip
+                    object : ActionListener {
+                        override fun onSuccess() {
+                            logger.d("onSuccess")
+                            continuation.resume(true to -1) {}
 
-                    }
+                        }
 
-                    override fun onFailure(reason: Int) {
-                        logger.d("onFailure: $reason")
-                        continuation.resume(false to reason) {}
+                        override fun onFailure(reason: Int) {
+                            logger.d("onFailure: $reason")
+                            continuation.resume(false to reason) {}
 
-                    }
-                })
+                        }
+                    })
             }
         logger.d("isSuccessToReason: $isSuccessToReason")
 
