@@ -466,6 +466,8 @@
     "ui.action.shortcut": "应用快捷方式",
     "ui.action.show.toast": "顯示吐司",
     "ui.action.start.last.app": "打开上一个应用",
+    "ui.action.sync": "同步",
+    "ui.action.lock.screen": "锁屏",
     "ui.action.screen.off": "息屏",
     "ui.action.screen.on": "亮屏",
     "ui.action.stop.current.foreground.app": "结束前台应用",

@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.draw
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -16,6 +17,10 @@ import androidx.compose.material.Slider
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -25,8 +30,7 @@ import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.StandardSpacer
-import tornaco.apps.shortx.ui.base.TipDialog
-import tornaco.apps.shortx.ui.base.rememberTipDialogState
+import tornaco.apps.shortx.ui.base.TipRow
 
 
 /**
@@ -49,56 +53,63 @@ fun ControlsBar(
             .fillMaxWidth()
             .background(androidx.compose.material3.MaterialTheme.colorScheme.surface)
     ) {
-        val tipDialog = rememberTipDialogState(
-            title = LocalI18N.current["ui.action.show.draw.board"],
-            tip = LocalI18N.current["ui.action.show.draw.board.tip"]
-        )
-        TipDialog(state = tipDialog)
+        Column {
+            var showTip by remember {
+                mutableStateOf(false)
+            }
+            AnimatedVisibility(visible = showTip) {
+                Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    TipRow(LocalI18N.current["ui.action.show.draw.board.tip"])
+                }
+            }
+            Row(
+                modifier = Modifier.padding(12.dp),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                MenuItems(
+                    Remix.Arrows.arrow_go_back_fill,
+                    if (undoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant
+                ) {
+                    if (undoVisibility.value) drawController.unDo()
+                }
+                MenuItems(
+                    Remix.Arrows.arrow_go_forward_fill,
+                    if (redoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant
+                ) {
+                    if (redoVisibility.value) drawController.reDo()
+                }
+                MenuItems(
+                    Remix.System.delete_bin_7_line,
+                    if (redoVisibility.value || undoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant
+                ) {
+                    drawController.reset()
+                }
+                MenuItems(
+                    Remix.Design.palette_line,
+                    colorValue.value
+                ) {
+                    onColorClick()
+                }
+                MenuItems(
+                    Remix.System.checkbox_blank_circle_line,
+                    MaterialTheme.colors.primary
+                ) {
+                    onSizeClick()
+                }
+                MenuItems(
+                    Remix.System.information_fill,
+                    MaterialTheme.colors.primary
+                ) {
+                    showTip = !showTip
+                }
 
-        Row(modifier = Modifier.padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
-            MenuItems(
-                Remix.Arrows.arrow_go_back_fill,
-                if (undoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant
-            ) {
-                if (undoVisibility.value) drawController.unDo()
-            }
-            MenuItems(
-                Remix.Arrows.arrow_go_forward_fill,
-                if (redoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant
-            ) {
-                if (redoVisibility.value) drawController.reDo()
-            }
-            MenuItems(
-                Remix.System.delete_bin_7_line,
-                if (redoVisibility.value || undoVisibility.value) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant
-            ) {
-                drawController.reset()
-            }
-            MenuItems(
-                Remix.Design.palette_line,
-                colorValue.value
-            ) {
-                onColorClick()
-            }
-            MenuItems(
-                Remix.System.checkbox_blank_circle_line,
-                MaterialTheme.colors.primary
-            ) {
-                onSizeClick()
-            }
-            MenuItems(
-                Remix.System.information_fill,
-                MaterialTheme.colors.primary
-            ) {
-                tipDialog.show()
-            }
-
-            StandardSpacer()
-            MenuItems(
-                Remix.Arrows.arrow_drop_down_line,
-                MaterialTheme.colors.primary
-            ) {
-                onHideControlsBarClick()
+                StandardSpacer()
+                MenuItems(
+                    Remix.Arrows.arrow_drop_down_line,
+                    MaterialTheme.colors.primary
+                ) {
+                    onHideControlsBarClick()
+                }
             }
         }
     }

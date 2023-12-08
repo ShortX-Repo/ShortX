@@ -448,6 +448,8 @@
     "ui.action.shortcut": "Shortcut",
     "ui.action.show.toast": "Show toast",
     "ui.action.start.last.app": "Launch last app",
+    "ui.action.sync": "Sync",
+    "ui.action.lock.screen": "Lock screen",
     "ui.action.screen.off": "Turn screen off",
     "ui.action.screen.on": "Turn screen on",
     "ui.action.stop.current.foreground.app": "Stop foreground app",
