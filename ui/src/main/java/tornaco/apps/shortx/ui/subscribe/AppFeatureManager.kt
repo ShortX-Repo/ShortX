@@ -131,6 +131,14 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Action.ClickTile::class,
     Action.BiometricVerify::class,
     Action.GetTextFromScreenNode::class,
+    Action.ForEachPkgSet::class,
+    Action.LockDeviceNow::class,
+    Action.ConnectWifi::class,
+    Action.ScrollViewTo::class,
+    Action.ShowDrawBoard::class,
+    Action.PerformContextMenuAction::class,
+    Action.WaitUtilConditionMatch::class,
+    Action.SetScreenTimeout::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 )
 

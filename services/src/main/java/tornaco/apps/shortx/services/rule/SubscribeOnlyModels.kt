@@ -4,9 +4,11 @@ import com.google.protobuf.GeneratedMessageV3
 import tornaco.apps.shortx.core.proto.action.AudioRecording
 import tornaco.apps.shortx.core.proto.action.BiometricVerify
 import tornaco.apps.shortx.core.proto.action.ClickTile
+import tornaco.apps.shortx.core.proto.action.ConnectWifi
 import tornaco.apps.shortx.core.proto.action.EnableUniversalCopy
 import tornaco.apps.shortx.core.proto.action.FindAndClickMatchedView
 import tornaco.apps.shortx.core.proto.action.FindAndClickViewById
+import tornaco.apps.shortx.core.proto.action.ForEachPkgSet
 import tornaco.apps.shortx.core.proto.action.GetTextFromScreenNode
 import tornaco.apps.shortx.core.proto.action.HttpRequest
 import tornaco.apps.shortx.core.proto.action.InjectGestureRecording
@@ -14,11 +16,16 @@ import tornaco.apps.shortx.core.proto.action.InputSwipe
 import tornaco.apps.shortx.core.proto.action.InputTap
 import tornaco.apps.shortx.core.proto.action.InputText
 import tornaco.apps.shortx.core.proto.action.LaunchAppByPkg
+import tornaco.apps.shortx.core.proto.action.LockDeviceNow
+import tornaco.apps.shortx.core.proto.action.PerformContextMenuAction
 import tornaco.apps.shortx.core.proto.action.RemoveNotificationForPackageByPkg
+import tornaco.apps.shortx.core.proto.action.ScrollViewTo
 import tornaco.apps.shortx.core.proto.action.SetAppEnabled
 import tornaco.apps.shortx.core.proto.action.SetAppEnabledByPkg
 import tornaco.apps.shortx.core.proto.action.SetAppSuspend
 import tornaco.apps.shortx.core.proto.action.SetAppSuspendByPkg
+import tornaco.apps.shortx.core.proto.action.SetScreenTimeout
+import tornaco.apps.shortx.core.proto.action.ShowDrawBoard
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.action.StartGestureRecording
 import tornaco.apps.shortx.core.proto.action.StopAppByPkg
@@ -26,6 +33,7 @@ import tornaco.apps.shortx.core.proto.action.StopGestureRecording
 import tornaco.apps.shortx.core.proto.action.SwitchMobileDataSlot
 import tornaco.apps.shortx.core.proto.action.TTS
 import tornaco.apps.shortx.core.proto.action.ToggleGestureRecording
+import tornaco.apps.shortx.core.proto.action.WaitUtilConditionMatch
 import tornaco.apps.shortx.core.proto.condition.AppHasAudioFocus
 import tornaco.apps.shortx.core.proto.condition.AppHasTask
 import tornaco.apps.shortx.core.proto.condition.AppHasWindowFocus
@@ -95,4 +103,12 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         ClickTile::class,
         BiometricVerify::class,
         GetTextFromScreenNode::class,
+        ForEachPkgSet::class,
+        LockDeviceNow::class,
+        ConnectWifi::class,
+        ScrollViewTo::class,
+        ShowDrawBoard::class,
+        PerformContextMenuAction::class,
+        WaitUtilConditionMatch::class,
+        SetScreenTimeout::class,
     )
