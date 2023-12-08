@@ -239,6 +239,19 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     )
     MenuDialog(state = stayAwakeSelectorState)
 
+    val setMasterSyncSelectorState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.action.sync"],
+        menuItems = OnOffToggle.values().filterNot { it == OnOffToggle.UNRECOGNIZED }
+            .map {
+                MenuDialogItem(id = it.name, title = LocalI18N.current[it.labelKey()])
+            },
+        onItemSelected = { data, id ->
+            val sync = OnOffToggle.valueOf(id)
+            addAction(Action.SetMasterSync(sync = sync))
+        }
+    )
+    MenuDialog(state = setMasterSyncSelectorState)
+
     val wifiConnectedSelectorState = rememberWifiSSIDSelectorState(
         title = LocalI18N.current["ui.action.connect.wifi"],
         message = LocalI18N.current["ui.fact.wifi.connect.to.input.ssid"],
@@ -414,6 +427,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.SetMasterSync::class -> {
+                setMasterSyncSelectorState.show()
+                true
+            }
+
             else -> false
         }
     }
@@ -473,6 +491,7 @@ fun SystemActions(
         Action.SetScreenTimeout::class,
         Action.SetScreenRotate::class,
         Action.ConnectWifi::class,
+        Action.SetMasterSync::class,
     ).map {
         SelectorItem(
             type = it,

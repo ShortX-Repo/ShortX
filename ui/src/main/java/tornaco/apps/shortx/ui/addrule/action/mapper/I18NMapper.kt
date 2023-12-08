@@ -232,6 +232,7 @@ fun labelAndDescriptionForActionSelector(
         Action.StayAwake::class -> i18N["ui.action.stay.awake"] to null
         Action.ForEachPkgSet::class -> i18N["ui.action.for.each.pkg.set"] to null
         Action.LockDeviceNow::class -> i18N["ui.action.lock.device"] to null
+        Action.SetMasterSync::class -> i18N["ui.action.sync"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -884,6 +885,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
 
         is Action.LockDeviceNow -> listOf(
             i18N["ui.action.lock.device"],
+        )
+
+        is Action.SetMasterSync -> listOf(
+            i18N["ui.action.sync"],
         )
     }
 }

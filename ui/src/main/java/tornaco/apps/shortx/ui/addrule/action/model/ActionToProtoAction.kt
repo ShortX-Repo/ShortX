@@ -69,6 +69,7 @@ import tornaco.apps.shortx.core.proto.action.SetDataEnabled
 import tornaco.apps.shortx.core.proto.action.SetFlashLightEnabled
 import tornaco.apps.shortx.core.proto.action.SetHotSpotEnabled
 import tornaco.apps.shortx.core.proto.action.SetLocationEnabled
+import tornaco.apps.shortx.core.proto.action.SetMasterSync
 import tornaco.apps.shortx.core.proto.action.SetNFCEnabled
 import tornaco.apps.shortx.core.proto.action.SetRingerMode
 import tornaco.apps.shortx.core.proto.action.SetRuleEnabled
@@ -1517,6 +1518,17 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setActionOnError(actionOnError)
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setNote(overrideNote ?: note)
+                .build()
+        }
+
+        is Action.SetMasterSync -> {
+            SetMasterSync.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setSync(sync)
                 .build()
         }
 
