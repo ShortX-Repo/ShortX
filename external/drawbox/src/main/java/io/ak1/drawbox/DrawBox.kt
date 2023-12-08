@@ -27,7 +27,8 @@ fun DrawBox(
     drawController: DrawController,
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colors.background,
-    trackHistory: (undoCount: Int, redoCount: Int) -> Unit = { _, _ -> }
+    trackHistory: (undoCount: Int, redoCount: Int) -> Unit = { _, _ -> },
+    onTap: () -> Unit = { },
 ) = AndroidView(
     factory = {
         ComposeView(it).apply {
@@ -45,6 +46,7 @@ fun DrawBox(
                                 drawController.insertNewPath(offset)
                                 drawController.updateLatestPath(offset)
                                 drawController.pathList
+                                onTap()
                             }
                         )
                     }

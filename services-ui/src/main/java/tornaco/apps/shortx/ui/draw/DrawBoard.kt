@@ -38,13 +38,16 @@ fun DrawBoard(modifier: Modifier = Modifier, controlBarState: CommonDialogState)
                 modifier = Modifier
                     .fillMaxSize()
                     .weight(1f, fill = false),
-            ) { undoCount, redoCount ->
-                sizeBarVisibility.value = false
-                colorBarVisibility.value = false
-                undoVisibility.value = undoCount != 0
-                redoVisibility.value = redoCount != 0
-                controlBarState.dismiss()
-            }
+                trackHistory = { undoCount, redoCount ->
+                    sizeBarVisibility.value = false
+                    colorBarVisibility.value = false
+                    undoVisibility.value = undoCount != 0
+                    redoVisibility.value = redoCount != 0
+                },
+                onTap = {
+                    controlBarState.dismiss()
+                }
+            )
 
             AnimatedVisibility(visible = controlBarState.isShowing) {
                 ControlsBar(
