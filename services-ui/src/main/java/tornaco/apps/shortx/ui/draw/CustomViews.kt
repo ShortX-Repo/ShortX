@@ -22,8 +22,11 @@ import androidx.compose.ui.unit.dp
 import io.ak1.drawbox.DrawController
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.ColoredIcon
+import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.TipDialog
+import tornaco.apps.shortx.ui.base.rememberTipDialogState
 
 
 /**
@@ -46,6 +49,12 @@ fun ControlsBar(
             .fillMaxWidth()
             .background(androidx.compose.material3.MaterialTheme.colorScheme.surface)
     ) {
+        val tipDialog = rememberTipDialogState(
+            title = LocalI18N.current["ui.action.show.draw.board"],
+            tip = LocalI18N.current["ui.action.show.draw.board.tip"]
+        )
+        TipDialog(state = tipDialog)
+
         Row(modifier = Modifier.padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
             MenuItems(
                 Remix.Arrows.arrow_go_back_fill,
@@ -76,6 +85,12 @@ fun ControlsBar(
                 MaterialTheme.colors.primary
             ) {
                 onSizeClick()
+            }
+            MenuItems(
+                Remix.System.information_fill,
+                MaterialTheme.colors.primary
+            ) {
+                tipDialog.show()
             }
 
             StandardSpacer()

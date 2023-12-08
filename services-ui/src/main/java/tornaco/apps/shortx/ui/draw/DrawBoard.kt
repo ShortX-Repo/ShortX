@@ -44,7 +44,7 @@ fun DrawBoard(modifier: Modifier = Modifier, controlBarState: CommonDialogState)
                     undoVisibility.value = undoCount != 0
                     redoVisibility.value = redoCount != 0
                 },
-                onTap = {
+                onTapOrDrag = {
                     controlBarState.dismiss()
                 }
             )

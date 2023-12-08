@@ -27,15 +27,18 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
+import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.overlay.addToLifecycle
 
 @SuppressLint("ViewConstructor")
 class DrawBoardView(
     context: Context,
+    private val i18N: I18N,
     private val onDetach: (DrawBoardView) -> Unit
 ) :
     LinearLayout(context) {
@@ -73,7 +76,10 @@ class DrawBoardView(
         val composeView = ComposeView(contextWrapper).apply {
             addToLifecycle()
             setContent {
-                CompositionLocalProvider(LocalContext provides localContextWrapper) {
+                CompositionLocalProvider(
+                    LocalContext provides localContextWrapper,
+                    LocalI18N provides i18N
+                ) {
                     DrawBoardContent {
                         detach()
                     }

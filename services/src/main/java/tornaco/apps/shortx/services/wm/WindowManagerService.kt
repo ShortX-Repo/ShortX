@@ -378,7 +378,10 @@ class WindowManagerService(shortXContext: ShortXContext) :
     fun enableDrawBoard() {
         disableAllOverlayViews {
             val guideLineView =
-                DrawBoardView(context = context) {
+                DrawBoardView(
+                    context = context,
+                    i18N = i18NIns
+                ) {
                     showingDrawerBoard.remove(it)
                 }
             showingDrawerBoard.add(guideLineView)
