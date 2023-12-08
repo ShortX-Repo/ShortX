@@ -641,6 +641,8 @@
     "ui.action.post.notification.on.click": "点击动作",
     "ui.action.remove.notification": "移除通知",
     "ui.action.remove.notification.tag": "输入通知的标签（tag）",
+    "ui.action.for.each.pkg.set": "遍历应用集",
+    "ui.action.for.each.pkg.set.context.data.tip": "遍历应用集中的每个应用，你可以在每个循环动作中使用这些上下文变量来访问当前应用的信息",
     "ui.action.while.loop": "While 循环",
     "ui.action.while.loop.repeat": "重复次数",
     "ui.action.while.loop.repeat.message": "设定循环的次数，0表示无限循环",

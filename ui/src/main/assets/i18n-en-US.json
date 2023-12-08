@@ -650,6 +650,8 @@
     "ui.action.post.notification.on.click": "Click action",
     "ui.action.remove.notification": "Remove notification",
     "ui.action.remove.notification.tag": "Input notification tag to remove",
+    "ui.action.for.each.pkg.set": "For each application set",
+    "ui.action.for.each.pkg.set.context.data.tip": "Iterate through each application in the application set. You can use these context variables in each loop action to access information about the current application",
     "ui.action.while.loop": "While loop",
     "ui.action.while.loop.repeat": "Repeat",
     "ui.action.while.loop.repeat.message": "Repeat times in Loop, 0 means infinite loop",

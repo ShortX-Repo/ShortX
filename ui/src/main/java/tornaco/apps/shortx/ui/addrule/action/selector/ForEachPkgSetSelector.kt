@@ -99,7 +99,7 @@ class ForEachPkgSetSelectorViewModel : StateViewModel<ForEachPkgSetSelectorDialo
 
         currentSettings?.let {
             updateState {
-                copy(id = currentSettings.id, note = currentSettings.note)
+                copy(id = currentSettings.id, note = currentSettings.note, pkgSet = it.pkgSet)
             }
             actionHandler.init(currentSettings.actions)
         }
