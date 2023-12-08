@@ -188,6 +188,16 @@ fun String.replaceGlobalVarValues(globalVarsLazy: () -> List<GlobalVar>): String
         // In case name override: globalVarOf$applist and globalVarOf$app
         .sortedByDescending { it.name.length }
         .forEach { entry ->
+            if (entry.isList()) {
+                val listValue = entry.valueList(noValueReturn = { emptyList() })
+                listValue.forEachIndexed { index, value ->
+                    strWithGValue =
+                        strWithGValue.replaceLazy(GLOBAL_VAR_REF_PREFIX + entry.name + "[$index]", {
+                            value
+                        })
+                }
+            }
+
             strWithGValue =
                 strWithGValue.replaceLazy(GLOBAL_VAR_REF_PREFIX + entry.name, {
                     val valueItems = entry.valueList(noValueReturn = { emptyList() })

@@ -62,4 +62,49 @@ class GlobalVarTest {
         }
         Assert.assertEquals("hello world Nick, Guo", res)
     }
+
+    @Test
+    fun testReplaceGlobalVarWithListValue_0() {
+        val res = "hello world globalVarOf\$name[0]".replaceGlobalVarValues {
+            listOf(
+                GlobalVar.newBuilder().setName("name")
+                    .setType(StringListVar.getDefaultInstance().pack_())
+                    .setVar(
+                        StringListVar.newBuilder().addValues("Nick").addValues("Guo").build()
+                            .pack_()
+                    ).build()
+            )
+        }
+        Assert.assertEquals("hello world Nick", res)
+    }
+
+    @Test
+    fun testReplaceGlobalVarWithListValue_OutofBounds() {
+        val res = "hello world globalVarOf\$name[2]".replaceGlobalVarValues {
+            listOf(
+                GlobalVar.newBuilder().setName("name")
+                    .setType(StringListVar.getDefaultInstance().pack_())
+                    .setVar(
+                        StringListVar.newBuilder().addValues("Nick").addValues("Guo").build()
+                            .pack_()
+                    ).build()
+            )
+        }
+        Assert.assertEquals("hello world Nick, Guo[2]", res)
+    }
+
+    @Test
+    fun testReplaceGlobalVarWithListValue_0_NoVaue() {
+        val res = "hello world globalVarOf\$name[0]".replaceGlobalVarValues {
+            listOf(
+                GlobalVar.newBuilder().setName("name")
+                    .setType(StringListVar.getDefaultInstance().pack_())
+                    .setVar(
+                        StringListVar.newBuilder().build()
+                            .pack_()
+                    ).build()
+            )
+        }
+        Assert.assertEquals("hello world [0]", res)
+    }
 }
