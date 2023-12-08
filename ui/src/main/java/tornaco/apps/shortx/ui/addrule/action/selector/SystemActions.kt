@@ -409,6 +409,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.LockDeviceNow::class -> {
+                addAction(Action.LockDeviceNow())
+                true
+            }
+
             else -> false
         }
     }
@@ -424,6 +429,7 @@ fun SystemActions(
     val actionItems = listOfNotNull(
         Action.WakeupScreen::class,
         Action.SleepScreen::class,
+        Action.LockDeviceNow::class,
         Action.StayAwake::class,
         Action.InjectKeyCode::class,
         Action.InjectCombineKeyCode::class,

@@ -231,6 +231,7 @@ fun labelAndDescriptionForActionSelector(
         Action.ConnectWifi::class -> i18N["ui.action.connect.wifi"] to null
         Action.StayAwake::class -> i18N["ui.action.stay.awake"] to null
         Action.ForEachPkgSet::class -> i18N["ui.action.for.each.pkg.set"] to null
+        Action.LockDeviceNow::class -> i18N["ui.action.lock.device"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -879,6 +880,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.ForEachPkgSet -> listOf(
             i18N["ui.action.for.each.pkg.set"],
             action.pkgSet.label.fallbackOnEmpty("N/A")
+        )
+
+        is Action.LockDeviceNow -> listOf(
+            i18N["ui.action.lock.device"],
         )
     }
 }

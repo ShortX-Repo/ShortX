@@ -477,6 +477,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.System.loop_right_fill
         }
 
+        Action.LockDeviceNow::class -> {
+            Remix.System.lock_2_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

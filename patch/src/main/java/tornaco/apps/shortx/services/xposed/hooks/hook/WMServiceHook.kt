@@ -2,8 +2,10 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.platform.Classes.windowManagerServiceClass
+import tornaco.apps.shortx.core.platform.Methods.systemReady
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXService
+import tornaco.apps.shortx.services.android.ServiceHolder
 import util.ReflectionUtils
 import util.Reflections
 import java.lang.reflect.Method
@@ -12,10 +14,24 @@ object WMServiceHook {
     private val logger = Logger("ShortXHook.WMServiceHook")
 
     fun hook(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
+        hookSystemReady(lpparam)
         hookNotifyFocusChanged(lpparam)
     }.onFailure {
         logger.e(it, "hookClipboardService")
     }
+
+    private fun hookSystemReady(lpparam: XC_LoadPackage.LoadPackageParam) =
+        kotlin.runCatching {
+            afterMethod(
+                lpparam.classLoader.windowManagerServiceClass(),
+                systemReady
+            ) { param ->
+                logger.d("systemReady: ${param.thisObject}")
+                ServiceHolder.windowManagerService = param.thisObject
+            }
+        }.onFailure {
+            logger.e(it, "hookSystemReady")
+        }
 
     private fun hookNotifyFocusChanged(lpparam: XC_LoadPackage.LoadPackageParam) =
         kotlin.runCatching {

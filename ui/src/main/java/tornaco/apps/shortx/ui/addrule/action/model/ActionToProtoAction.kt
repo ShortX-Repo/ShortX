@@ -39,6 +39,7 @@ import tornaco.apps.shortx.core.proto.action.InputText
 import tornaco.apps.shortx.core.proto.action.KillProcessByName
 import tornaco.apps.shortx.core.proto.action.LaunchApp
 import tornaco.apps.shortx.core.proto.action.LaunchAppByPkg
+import tornaco.apps.shortx.core.proto.action.LockDeviceNow
 import tornaco.apps.shortx.core.proto.action.MapNav
 import tornaco.apps.shortx.core.proto.action.MapQueryBus
 import tornaco.apps.shortx.core.proto.action.MediaPlayback
@@ -1506,6 +1507,16 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setNote(overrideNote ?: note)
                 .setIsStay(stay)
+                .build()
+        }
+
+        is Action.LockDeviceNow -> {
+            LockDeviceNow.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
                 .build()
         }
 

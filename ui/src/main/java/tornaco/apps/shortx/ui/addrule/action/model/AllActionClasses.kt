@@ -128,5 +128,6 @@ val allActionClasses = listOf(
     Action.ConnectWifi::class,
     Action.StayAwake::class,
     Action.ForEachPkgSet::class,
+    Action.LockDeviceNow::class,
     Action.NoAction::class,
 )

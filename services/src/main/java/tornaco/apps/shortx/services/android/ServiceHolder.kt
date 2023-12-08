@@ -10,4 +10,10 @@ object ServiceHolder {
             field = value
             logger.w("Set inputManagerService: $value")
         }
+
+    var windowManagerService: Any? = null
+        set(value) {
+            field = value
+            logger.w("Set windowManagerService: $value")
+        }
 }
