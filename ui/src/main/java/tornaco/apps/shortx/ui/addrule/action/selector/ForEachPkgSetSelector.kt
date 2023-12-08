@@ -27,16 +27,22 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.IActionEvaluateListener
+import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.proto.common.CustomContextDataKey
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.ui.addrule.ContextDataInfoDialog
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
+import tornaco.apps.shortx.ui.addrule.dats
+import tornaco.apps.shortx.ui.addrule.rememberContextDataInfoDialogState
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.FieldTitle
+import tornaco.apps.shortx.ui.base.LinkText
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -124,11 +130,12 @@ private fun BaseSelectorActivity<Action.ForEachPkgSet>.ForEachPkgSetSelectorDial
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
+            val i18N = LocalI18N.current
             Scaffold(modifier = Modifier,
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(LocalI18N.current["ui.action.for.each.pkg.set"]) },
+                        title = { Text(i18N["ui.action.for.each.pkg.set"]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 cancelAndFinish()
@@ -170,7 +177,7 @@ private fun BaseSelectorActivity<Action.ForEachPkgSet>.ForEachPkgSetSelectorDial
                     PkgSetSelectorDialog(state = pkgSetSelectorState)
 
                     FieldTitle(
-                        text = LocalI18N.current["ui.pkg.set.title"]
+                        text = i18N["ui.pkg.set.title"]
                     )
                     MediumSpacer()
                     FilledTonalButton(onClick = {
@@ -179,7 +186,7 @@ private fun BaseSelectorActivity<Action.ForEachPkgSet>.ForEachPkgSetSelectorDial
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 text = dialogState.pkgSet?.label
-                                    ?: LocalI18N.current["ui.common.unselected"]
+                                    ?: i18N["ui.common.unselected"]
                             )
                             StandardSpacer()
                             RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
@@ -187,6 +194,19 @@ private fun BaseSelectorActivity<Action.ForEachPkgSet>.ForEachPkgSetSelectorDial
                     }
                     StandardSpacer()
 
+                    val contextDataInfoDialogState = rememberContextDataInfoDialogState()
+                    ContextDataInfoDialog(state = contextDataInfoDialogState)
+
+                    LinkText(text = i18N["ui.action.for.each.pkg.set.context.data.tip"]) {
+                        contextDataInfoDialogState.show(
+                            objName = i18N["ui.action.for.each.pkg.set"],
+                            contextData = dats<ContextDataMapping.ForEachPkgSet>(
+                                CustomContextDataKey.getDefaultInstance()
+                            ),
+                            canSetCustomKey = false,
+                        )
+                    }
+                    StandardSpacer()
 
                     tornaco.apps.shortx.ui.addrule.action.ActionContent(
                         actions = actionState.actions,
