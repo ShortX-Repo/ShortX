@@ -641,6 +641,7 @@
     "ui.action.post.notification.button": "通知按钮",
     "ui.action.post.notification.button.text": "按钮文本",
     "ui.action.post.notification.on.click": "点击动作",
+    "ui.action.click.notification": "点击通知",
     "ui.action.remove.notification": "移除通知",
     "ui.action.remove.notification.tag": "输入通知的标签（tag）",
     "ui.action.for.each.pkg.set": "遍历应用集",

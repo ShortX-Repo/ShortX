@@ -14,6 +14,7 @@ import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.notification.INotificationPoster
 import tornaco.apps.shortx.core.notification.NotificationPoster
+import tornaco.apps.shortx.core.notification.androidSBNToNotification
 import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.fact.Notification
@@ -217,10 +218,52 @@ class NotificationService(shortXContext: ShortXContext) :
                 ) && matchNotificationMatcher(it, notification)
             }.forEach {
                 val pkg = it.appsList[0]
-                logger.d("removeNotificationByTag, pkg: ${pkg.appPkgToString()}, key: ${it.key}")
+                logger.d("removeNotification, pkg: ${pkg.appPkgToString()}, key: ${it.key}")
                 nls.waitForBind()
                 nls.cancelNotification(it.key)
             }
+    }
+
+    fun clickNotification(ruleN: Notification) {
+        logger.d("clickNotification: $ruleN")
+        nls.waitForBind()
+        nls.activeNotifications.map {
+            it to it.androidSBNToNotification()
+        }.filter { it.second != null }.filter {
+            val protoN = it.second
+            protoN != null && matchWithAppOrPkgSetListFact(
+                shortXContextProvider = { shortXContext },
+                actual = NotificationWrapper(protoN),
+                rule = NotificationWrapper(ruleN)
+            ) && matchNotificationMatcher(protoN, ruleN)
+        }.forEach {
+            logger.d("clickNotification, ${it.second?.appsList?.get(0)}")
+            val sbn = it.first
+            val contentIntent = sbn.notification.contentIntent
+            logger.d("contentIntent: $contentIntent")
+            contentIntent.send()
+        }
+    }
+
+    fun clickNotificationButton(ruleN: Notification) {
+        logger.d("clickNotificationButton: $ruleN")
+        nls.waitForBind()
+        nls.activeNotifications.map {
+            it to it.androidSBNToNotification()
+        }.filter { it.second != null }.filter {
+            val protoN = it.second
+            protoN != null && matchWithAppOrPkgSetListFact(
+                shortXContextProvider = { shortXContext },
+                actual = NotificationWrapper(protoN),
+                rule = NotificationWrapper(ruleN)
+            ) && matchNotificationMatcher(protoN, ruleN)
+        }.forEach {
+            logger.d("clickNotification, ${it.second?.appsList?.get(0)}")
+            val sbn = it.first
+            val contentIntent = sbn.notification.contentIntent
+            logger.d("contentIntent: $contentIntent")
+            contentIntent.send()
+        }
     }
 
     private fun Notification.contextMap() = mapOf(

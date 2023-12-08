@@ -130,5 +130,6 @@ val allActionClasses = listOf(
     Action.ForEachPkgSet::class,
     Action.LockDeviceNow::class,
     Action.SetMasterSync::class,
+    Action.ClickNotification::class,
     Action.NoAction::class,
 )

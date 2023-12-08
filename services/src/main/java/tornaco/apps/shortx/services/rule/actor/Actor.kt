@@ -262,6 +262,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.RemoveNotification
     },
+    ClickNotification {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ClickNotification
+    },
     FromDA {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.FromDA

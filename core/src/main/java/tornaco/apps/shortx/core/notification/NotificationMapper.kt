@@ -53,7 +53,7 @@ fun StatusBarNotification.androidSBNToNotification(): Notification? {
     }
 }
 
-private fun getTitle(notification: android.app.Notification): String? {
+fun getTitle(notification: android.app.Notification): String? {
     val extras = notification.extras
     if (extras != null) {
         // android.text.SpannableString cannot be cast to java.lang.String
@@ -93,7 +93,7 @@ fun getId(sbn: StatusBarNotification): Int? {
     }
 }
 
-private fun getNormalizedUserId(sbn: StatusBarNotification): Int {
+fun getNormalizedUserId(sbn: StatusBarNotification): Int {
     var userId = sbn.userId
     if (userId == UserHandle.USER_ALL) {
         userId = UserHandle.USER_SYSTEM

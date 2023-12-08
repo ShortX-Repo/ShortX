@@ -87,6 +87,12 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
         }
     NotificationAppAndMatcherSelectorDialog(removeNotificationState)
 
+    val clickNotificationState =
+        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current["ui.action.click.notification"]) {
+            addAction(Action.ClickNotification(n = it))
+        }
+    NotificationAppAndMatcherSelectorDialog(clickNotificationState)
+
     val getNodeTextSelectorState = rememberTextInputState(
         title = LocalI18N.current["ui.action.get.text.from.node"],
         message = LocalI18N.current["ui.action.get.text.from.node.tip.get.all"],
@@ -214,6 +220,11 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                 true
             }
 
+            Action.ClickNotification::class -> {
+                clickNotificationState.show(source.getActionAs<Action.ClickNotification>()?.n)
+                true
+            }
+
             Action.FindAndClickViewByText::class -> {
                 subSelectorStates.findAndClickViewByTextSelectorState.show(source.getActionAs())
                 true
@@ -320,6 +331,7 @@ fun UiActions(keyword: String, subscribeState: LVLStateHolder.State, addAction: 
         Action.ExpandNotification::class,
         Action.PostNotification::class,
         Action.RemoveNotification::class,
+        Action.ClickNotification::class,
         Action.ShowOverlay::class,
         Action.HideOverlay::class,
         Action.HideAllOverlay::class,

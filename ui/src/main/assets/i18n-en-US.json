@@ -650,6 +650,7 @@
     "ui.action.post.notification.button": "Notification button",
     "ui.action.post.notification.button.text": "Button text",
     "ui.action.post.notification.on.click": "Click action",
+    "ui.action.click.notification": "Click notification",
     "ui.action.remove.notification": "Remove notification",
     "ui.action.remove.notification.tag": "Input notification tag to remove",
     "ui.action.for.each.pkg.set": "For each application set",

@@ -916,6 +916,29 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.ClickNotification::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.ClickNotification::class.java
+            val models =
+                (data.notification.appsList to data.notification.pkgSetsList).protoPkgsAndPkgSetsToModels()
+            Action.ClickNotification(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                n = Fact.Notification(
+                    apps = models.first,
+                    pkgSets = models.second,
+                    titleRegex = data.notification.title,
+                    contentRegex = data.notification.contentText,
+                    titleMatchOptions = data.notification.titleRegexOptions,
+                    contentMatchOptions = data.notification.contentRegexOptions,
+                    tag = data.notification.tag
+                ),
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.FromDA::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.FromDA::class.java
             val da = shortXManager.getDirectActionById(data.daId)
