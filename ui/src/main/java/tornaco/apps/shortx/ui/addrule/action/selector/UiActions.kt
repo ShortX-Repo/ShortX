@@ -266,6 +266,11 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                 true
             }
 
+            Action.ShowClipboardView::class -> {
+                addAction(Action.ShowClipboardView())
+                true
+            }
+
             else -> false
         }
     }
@@ -300,6 +305,7 @@ fun UiActions(keyword: String, subscribeState: LVLStateHolder.State, addAction: 
         Action.InputText::class,
         Action.PerformContextMenuAction::class,
         Action.ShowDrawBoard::class,
+        Action.ShowClipboardView::class,
     ).map {
         SelectorItem(
             it,

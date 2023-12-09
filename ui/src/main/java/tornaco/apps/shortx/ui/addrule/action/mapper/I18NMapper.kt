@@ -235,6 +235,7 @@ fun labelAndDescriptionForActionSelector(
         Action.ForEachPkgSet::class -> i18N["ui.action.for.each.pkg.set"] to null
         Action.LockDeviceNow::class -> i18N["ui.action.lock.screen"] to null
         Action.SetMasterSync::class -> i18N["ui.action.sync"] to null
+        Action.ShowClipboardView::class -> i18N["ui.action.show.clip.board"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -899,6 +900,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
 
         is Action.SetMasterSync -> listOf(
             i18N["ui.action.sync"],
+        )
+
+        is Action.ShowClipboardView -> listOf(
+            i18N["ui.action.show.clip.board"],
         )
     }
 }

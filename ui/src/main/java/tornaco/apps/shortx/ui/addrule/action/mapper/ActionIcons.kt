@@ -473,6 +473,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Design.markup_fill
         }
 
+        Action.ShowDrawBoard::class -> {
+            Remix.Document.clipboard_fill
+        }
+
         Action.ConnectWifi::class -> {
             Remix.Device.wifi_fill
         }

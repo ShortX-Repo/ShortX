@@ -83,6 +83,7 @@ import tornaco.apps.shortx.core.proto.action.SetWallpaper
 import tornaco.apps.shortx.core.proto.action.SetWifiEnabled
 import tornaco.apps.shortx.core.proto.action.ShellCommand
 import tornaco.apps.shortx.core.proto.action.ShowAlertDialog
+import tornaco.apps.shortx.core.proto.action.ShowClipboardView
 import tornaco.apps.shortx.core.proto.action.ShowDanmu
 import tornaco.apps.shortx.core.proto.action.ShowDrawBoard
 import tornaco.apps.shortx.core.proto.action.ShowMenuDialog
@@ -1352,6 +1353,16 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
 
         is Action.ShowDrawBoard -> {
             ShowDrawBoard.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .build()
+        }
+
+        is Action.ShowClipboardView -> {
+            ShowClipboardView.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
                 .setActionOnError(actionOnError)

@@ -36,6 +36,7 @@ import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
+import tornaco.apps.shortx.ui.clipbord.ClipboardView
 import tornaco.apps.shortx.ui.draw.DrawBoardView
 import tornaco.apps.shortx.ui.overlay.IdViewerView
 import tornaco.apps.shortx.ui.overlay.UniversalCopyView
@@ -51,6 +52,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
     private val showingUCHints: MutableSet<UniversalCopyView> = mutableSetOf()
     private val showingIVHints: MutableSet<IdViewerView> = mutableSetOf()
     private val showingDrawerBoard: MutableSet<DrawBoardView> = mutableSetOf()
+    private val showingClipboard: MutableSet<ClipboardView> = mutableSetOf()
 
     private val mainHandler by lazy {
         Handler(Looper.getMainLooper())
@@ -391,6 +393,23 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
     }
 
+    fun showClipboard() {
+        disableAllOverlayViews {
+            val guideLineView =
+                ClipboardView(
+                    context = context,
+                    i18N = i18NIns,
+                    onDetach = {
+                        showingClipboard.remove(it)
+                    }
+                )
+            showingClipboard.add(guideLineView)
+            mainHandler.postSafety {
+                guideLineView.attach()
+            }
+        }
+    }
+
     fun enableIdViewer() {
         disableAllOverlayViews {
             val idNodes = mutableListOf<ViewNode>()
@@ -514,6 +533,12 @@ class WindowManagerService(shortXContext: ShortXContext) :
                     .onFailure { logger.e(it, "disableIVViewer detach fail") }
             }
             showingIVHints.clear()
+
+            showingClipboard.forEach {
+                kotlin.runCatching { it.detach() }
+                    .onFailure { logger.e(it, "disableClipboard detach fail") }
+            }
+            showingClipboard.clear()
 
             systemServiceScope.launchSafety {
                 action()

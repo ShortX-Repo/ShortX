@@ -132,5 +132,6 @@ val allActionClasses = listOf(
     Action.SetMasterSync::class,
     Action.ClickNotification::class,
     Action.ClickNotificationActionButton::class,
+    Action.ShowClipboardView::class,
     Action.NoAction::class,
 )
