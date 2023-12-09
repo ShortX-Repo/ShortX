@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.proto.action.AudioRecording
 import tornaco.apps.shortx.core.proto.action.BiometricVerify
 import tornaco.apps.shortx.core.proto.action.BreakActionExecute
 import tornaco.apps.shortx.core.proto.action.ClickNotification
+import tornaco.apps.shortx.core.proto.action.ClickNotificationActionButton
 import tornaco.apps.shortx.core.proto.action.ClickTile
 import tornaco.apps.shortx.core.proto.action.ConnectWifi
 import tornaco.apps.shortx.core.proto.action.CreateGlobalVar
@@ -803,6 +804,17 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setActionOnError(actionOnError)
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setNotification(n.toProtoNotification())
+                .setNote(overrideNote ?: note).build()
+        }
+
+        is Action.ClickNotificationActionButton -> {
+            ClickNotificationActionButton.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNotification(n.toProtoNotification())
+                .setButton(button)
                 .setNote(overrideNote ?: note).build()
         }
 

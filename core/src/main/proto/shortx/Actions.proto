@@ -660,6 +660,17 @@ message ClickNotification {
   string id = 100;
 }
 
+message ClickNotificationActionButton {
+  Notification notification = 1;
+  NotificationButton button = 2;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message PostNotification {
   string tag = 1;
   string  title = 2;
@@ -686,6 +697,9 @@ message NotificationButton {
   string id = 1;
   repeated google.protobuf.Any action = 2;
   string label = 3;
+
+  // For matcher purpose.
+  RegexMatchOptions labelRegexOptions = 4;
 }
 
 message FromDA {

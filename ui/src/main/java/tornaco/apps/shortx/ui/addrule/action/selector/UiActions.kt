@@ -82,16 +82,27 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
     )
 
     val removeNotificationState =
-        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current["ui.action.remove.notification"]) {
+        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current["ui.action.remove.notification"]) { it, _ ->
             addAction(Action.RemoveNotification(n = it))
         }
     NotificationAppAndMatcherSelectorDialog(removeNotificationState)
 
     val clickNotificationState =
-        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current["ui.action.click.notification"]) {
+        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current["ui.action.click.notification"]) { it, _ ->
             addAction(Action.ClickNotification(n = it))
         }
     NotificationAppAndMatcherSelectorDialog(clickNotificationState)
+
+    val clickNotificationButtonState =
+        rememberNotificationAppAndMatcherSelectorState(
+            LocalI18N.current["ui.action.click.notification.button"],
+            canMatchTitle = false,
+            canMatchContent = false,
+            canMatchButtonTitle = true
+        ) { it, button ->
+            addAction(Action.ClickNotificationActionButton(n = it, button = button))
+        }
+    NotificationAppAndMatcherSelectorDialog(clickNotificationButtonState)
 
     val getNodeTextSelectorState = rememberTextInputState(
         title = LocalI18N.current["ui.action.get.text.from.node"],
@@ -225,6 +236,14 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                 true
             }
 
+            Action.ClickNotificationActionButton::class -> {
+                clickNotificationButtonState.show(
+                    source.getActionAs<Action.ClickNotificationActionButton>()?.n,
+                    source.getActionAs<Action.ClickNotificationActionButton>()?.button
+                )
+                true
+            }
+
             Action.FindAndClickViewByText::class -> {
                 subSelectorStates.findAndClickViewByTextSelectorState.show(source.getActionAs())
                 true
@@ -332,6 +351,7 @@ fun UiActions(keyword: String, subscribeState: LVLStateHolder.State, addAction: 
         Action.PostNotification::class,
         Action.RemoveNotification::class,
         Action.ClickNotification::class,
+        Action.ClickNotificationActionButton::class,
         Action.ShowOverlay::class,
         Action.HideOverlay::class,
         Action.HideAllOverlay::class,

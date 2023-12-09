@@ -182,6 +182,7 @@ fun labelAndDescriptionForActionSelector(
         Action.PostNotification::class -> i18N["ui.action.post.notification"] to null
         Action.RemoveNotification::class -> i18N["ui.action.remove.notification"] to null
         Action.ClickNotification::class -> i18N["ui.action.click.notification"] to null
+        Action.ClickNotificationActionButton::class -> i18N["ui.action.click.notification.button"] to null
         Action.FromDA::class -> i18N["ui.action.from.da"] to null
         Action.FindAndClickViewByText::class -> i18N["ui.action.find.click.view.by.text"] to null
         Action.FindAndClickViewById::class -> i18N["ui.action.find.click.view.by.id"] to null
@@ -579,6 +580,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
 
         is Action.ClickNotification -> {
             listOf(i18N["ui.action.click.notification"])
+        }
+
+        is Action.ClickNotificationActionButton -> {
+            listOf(i18N["ui.action.click.notification.button"], action.button.label)
         }
 
         is Action.FromDA -> {

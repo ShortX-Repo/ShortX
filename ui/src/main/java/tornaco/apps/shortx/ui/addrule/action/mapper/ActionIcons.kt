@@ -218,7 +218,11 @@ fun imageVectorForAction(action: KClass<out Action>): String {
         }
 
         Action.ClickNotification::class -> {
-            Remix.Communication.chat_smile_3_fill
+            Remix.System.notification_badge_fill
+        }
+
+        Action.ClickNotificationActionButton::class -> {
+            Remix.System.function_fill
         }
 
         Action.RemoteMVEL::class -> {

@@ -15,6 +15,7 @@ import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.notification.INotificationPoster
 import tornaco.apps.shortx.core.notification.NotificationPoster
 import tornaco.apps.shortx.core.notification.androidSBNToNotification
+import tornaco.apps.shortx.core.proto.action.NotificationButton
 import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.fact.Notification
@@ -26,6 +27,7 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.appPkgToString
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -35,7 +37,9 @@ import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.rule.NotificationWrapper
-import tornaco.apps.shortx.services.rule.matchNotificationMatcher
+import tornaco.apps.shortx.services.rule.emptyOrRegexMatch
+import tornaco.apps.shortx.services.rule.matchNotificationTag
+import tornaco.apps.shortx.services.rule.matchNotificationTagTitleContent
 import tornaco.apps.shortx.services.rule.matchWithAppOrPkgSetListFact
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.util.AppServiceProxy
@@ -215,7 +219,7 @@ class NotificationService(shortXContext: ShortXContext) :
                     shortXContextProvider = { shortXContext },
                     actual = NotificationWrapper(it),
                     rule = NotificationWrapper(notification)
-                ) && matchNotificationMatcher(it, notification)
+                ) && matchNotificationTagTitleContent(it, notification)
             }.forEach {
                 val pkg = it.appsList[0]
                 logger.d("removeNotification, pkg: ${pkg.appPkgToString()}, key: ${it.key}")
@@ -235,7 +239,7 @@ class NotificationService(shortXContext: ShortXContext) :
                 shortXContextProvider = { shortXContext },
                 actual = NotificationWrapper(protoN),
                 rule = NotificationWrapper(ruleN)
-            ) && matchNotificationMatcher(protoN, ruleN)
+            ) && matchNotificationTagTitleContent(protoN, ruleN)
         }.forEach {
             logger.d("clickNotification, ${it.second?.appsList?.get(0)}")
             val sbn = it.first
@@ -245,25 +249,39 @@ class NotificationService(shortXContext: ShortXContext) :
         }
     }
 
-    fun clickNotificationButton(ruleN: Notification) {
-        logger.d("clickNotificationButton: $ruleN")
+    fun clickNotificationButton(ruleN: Notification, ruleButton: NotificationButton) {
+        logger.d("clickNotificationButton: $ruleN $ruleButton")
         nls.waitForBind()
-        nls.activeNotifications.map {
-            it to it.androidSBNToNotification()
-        }.filter { it.second != null }.filter {
-            val protoN = it.second
-            protoN != null && matchWithAppOrPkgSetListFact(
-                shortXContextProvider = { shortXContext },
-                actual = NotificationWrapper(protoN),
-                rule = NotificationWrapper(ruleN)
-            ) && matchNotificationMatcher(protoN, ruleN)
-        }.forEach {
-            logger.d("clickNotification, ${it.second?.appsList?.get(0)}")
-            val sbn = it.first
-            val contentIntent = sbn.notification.contentIntent
-            logger.d("contentIntent: $contentIntent")
-            contentIntent.send()
-        }
+        nls.activeNotifications
+            .filter { it.notification != null && it.notification.actions != null }
+            .map {
+                it to it.androidSBNToNotification()
+            }.filter { it.second != null }.filter {
+                val protoN = it.second
+                protoN != null && matchWithAppOrPkgSetListFact(
+                    shortXContextProvider = { shortXContext },
+                    actual = NotificationWrapper(protoN),
+                    rule = NotificationWrapper(ruleN)
+                ) && matchNotificationTag(protoN, ruleN)
+            }.forEach { pair ->
+                logger.d("clickNotificationButton, ${pair.second?.appsList?.get(0)}")
+                val sbn = pair.first
+                val action = sbn.notification?.actions?.firstOrNull {
+                    val title = it.title?.toString().fallbackOnEmpty("")
+                    logger.d("Check title: ${it.title} rule: ${ruleButton.label} ")
+                    emptyOrRegexMatch(
+                        ruleField = ruleButton.label,
+                        actualField = title,
+                        ruleButton.labelRegexOptions
+                    )
+                }
+                logger.d("action to click: $action")
+                action?.let {
+                    val intent = it.actionIntent
+                    logger.d("actionIntent to send: $intent")
+                    intent.send()
+                }
+            }
     }
 
     private fun Notification.contextMap() = mapOf(

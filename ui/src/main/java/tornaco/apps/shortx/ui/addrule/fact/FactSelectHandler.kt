@@ -133,20 +133,20 @@ fun appFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean
     AppPkgSelectorDialog(audioFocusLostSelectorState)
 
     val notificationPostedSelectorState =
-        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current["ui.fact.n.posted"]) {
+        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current["ui.fact.n.posted"]) { it, _ ->
             setFact(Fact.NotificationPosted(n = it))
         }
     NotificationAppAndMatcherSelectorDialog(notificationPostedSelectorState)
 
     val notificationUpdatedSelectorState =
-        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current["ui.fact.n.updated"]) {
+        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current["ui.fact.n.updated"]) { it, _ ->
             setFact(Fact.NotificationUpdated(n = it))
         }
     NotificationAppAndMatcherSelectorDialog(notificationUpdatedSelectorState)
 
 
     val notificationRemovedSelectorState =
-        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current["ui.fact.n.removed"]) {
+        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current["ui.fact.n.removed"]) { it, _ ->
             setFact(Fact.NotificationRemoved(n = it))
         }
     NotificationAppAndMatcherSelectorDialog(notificationRemovedSelectorState)

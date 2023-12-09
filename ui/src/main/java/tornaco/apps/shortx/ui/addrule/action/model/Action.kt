@@ -777,6 +777,35 @@ sealed interface Action : Parcelable {
         }
     }
 
+
+    @Parcelize
+    data class ClickNotificationActionButton(
+        override val id: String = defaultNewActionId(),
+        override val isEnabled: Boolean = true,
+        override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val contextData: List<ContextData> = emptyList(),
+        override val note: String = "",
+        val n: Fact.Notification,
+        val button: NotificationButton
+    ) : Action {
+        override fun clone(
+            id: String,
+            note: String,
+            isEnabled: Boolean,
+            actionOnError: ActionOnError,
+            contextData: List<ContextData>
+        ): Action {
+            return this.copy(
+                id = id,
+                note = note,
+                isEnabled = isEnabled,
+                actionOnError = actionOnError,
+                contextData = contextData
+            )
+        }
+    }
+
     @Parcelize
     data class StartAppProcess(
         override val id: String = defaultNewActionId(),

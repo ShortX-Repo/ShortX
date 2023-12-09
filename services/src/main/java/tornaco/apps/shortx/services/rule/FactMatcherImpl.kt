@@ -228,7 +228,7 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
                 shortXContextProvider,
                 actual = NotificationWrapper(actualN),
                 rule = NotificationWrapper(ruleN)
-            ) && matchNotificationMatcher(actualN, ruleN)
+            ) && matchNotificationTagTitleContent(actualN, ruleN)
         }
 
         register(NotificationUpdated::class.java) { actual, rule ->
@@ -238,7 +238,7 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
                 shortXContextProvider,
                 actual = NotificationWrapper(actualN),
                 rule = NotificationWrapper(ruleN)
-            ) && matchNotificationMatcher(actualN, ruleN)
+            ) && matchNotificationTagTitleContent(actualN, ruleN)
         }
 
         register(NotificationRemoved::class.java) { actual, rule ->
@@ -248,7 +248,7 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
                 shortXContextProvider,
                 actual = NotificationWrapper(actualN),
                 rule = NotificationWrapper(ruleN)
-            ) && matchNotificationMatcher(actualN, ruleN)
+            ) && matchNotificationTagTitleContent(actualN, ruleN)
         }
 
         register(AppRemoved::class.java) { actual, rule ->
@@ -613,7 +613,7 @@ fun emptyOrRegexMatch(
         emptyOrRegexMatch(it.first.regex, it.second, it.first.options)
     }
 
-fun matchNotificationMatcher(
+fun matchNotificationTagTitleContent(
     actual: Notification,
     rule: Notification
 ): Boolean {
@@ -631,6 +631,23 @@ fun matchNotificationMatcher(
         RegexMatchData(rule.title, rule.titleRegexOptions) to actual.title,
         RegexMatchData(rule.contentText, rule.contentRegexOptions) to actual.contentText,
     )
+}
+
+fun matchNotificationTag(
+    actual: Notification,
+    rule: Notification
+): Boolean {
+    // FAST: No matcher settings
+    if (rule == Notification.getDefaultInstance()) {
+        return true
+    }
+    // User set a tag, check tag first.
+    if (rule.tag.isNotEmpty() && rule.tag != actual.tag) {
+        logger.d("matchNotificationMatcher, false at tag.")
+        return false
+    }
+
+    return true
 }
 
 fun emptyOrRegexMatch(

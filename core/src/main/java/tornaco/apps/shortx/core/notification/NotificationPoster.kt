@@ -60,7 +60,9 @@ class NotificationPoster(
     private val onButtonClick: (NotificationButton) -> Unit = {},
     private val onPostNotificationClick: (PostNotification) -> Unit = {},
 ) {
-    private val logger = Logger("NotificationPoster")
+    private val logger by lazy {
+        Logger("NotificationPoster#${hashCode()}")
+    }
 
     init {
         ContextCompat.registerReceiver(
