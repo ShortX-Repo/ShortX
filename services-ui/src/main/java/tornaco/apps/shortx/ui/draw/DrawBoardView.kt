@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -18,6 +17,7 @@ import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.ui.BaseComposeView
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
+import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @SuppressLint("ViewConstructor")
 class DrawBoardView(
@@ -34,7 +34,7 @@ class DrawBoardView(
 
     @Composable
     private fun DrawBoardContent(onBack: () -> Unit) {
-        MaterialTheme {
+        ShortXTheme {
             val controlBarState = rememberCommonDialogState()
             LaunchedEffect(controlBarState) {
                 delay(250)
