@@ -43,6 +43,7 @@ enum class ActionCategory(val i18NKey: String, val icon: String) {
     Recent("ui.action.recent", Remix.System.history_line),
     Ui("UI", Remix.Design.layout_2_fill),
     Apps("ui.action.category.app", Remix.System.apps_2_fill),
+    Notifications("ui.action.category.notification", Remix.System.notification_badge_fill),
     Settings("ui.action.system.settings", Remix.System.settings_2_fill),
     Life("ui.action.life", Remix.Map.riding_fill),
     Advanced("ui.action.advanced", Remix.System.function_fill),
@@ -146,6 +147,9 @@ private fun AllActions(
         StandardSpacer()
 
         AppActions(searchBarState.keyword, subscribeState, addAction = addAction)
+        StandardSpacer()
+
+        NotificationActions(searchBarState.keyword, subscribeState, addAction = addAction)
         StandardSpacer()
 
         SystemActions(searchBarState.keyword, subscribeState, addAction = addAction)

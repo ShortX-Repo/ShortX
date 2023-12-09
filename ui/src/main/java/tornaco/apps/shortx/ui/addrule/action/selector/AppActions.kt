@@ -203,25 +203,6 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         })
     PackageNameAndUserSelectorDialog(state = unsuspendAppByPkgSelectorState)
 
-    val removeNotificationDialogState =
-        rememberAppPkgSelectorState(
-            onAppListSelected = {
-                val action = Action.RemoveNotificationForPackage(apps = it)
-                addAction(action)
-            },
-            onPkgSetSelected = {
-                val action = Action.RemoveNotificationForPackage(pkgSets = it)
-                addAction(action)
-            })
-    AppPkgSelectorDialog(state = removeNotificationDialogState)
-
-    val removeNotificationByPkgSelectorState = rememberPkgAndUserListSelectorDialogState(
-        title = LocalI18N.current["ui.action.remove.app.notification.by.pkg"],
-        onSelected = {
-            addAction(Action.RemoveNotificationForPackageByPkg(stringPairs = it))
-        })
-    PackageNameAndUserSelectorDialog(state = removeNotificationByPkgSelectorState)
-
     val startActivityIntentLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
@@ -516,21 +497,6 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
-            Action.RemoveNotificationForPackage::class -> {
-                removeNotificationDialogState.show(
-                    source.getActionAs<Action.RemoveNotificationForPackage>()?.apps,
-                    source.getActionAs<Action.RemoveNotificationForPackage>()?.pkgSets
-                )
-                true
-            }
-
-            Action.RemoveNotificationForPackageByPkg::class -> {
-                removeNotificationByPkgSelectorState.show(
-                    source.getActionAs<Action.RemoveNotificationForPackageByPkg>()?.stringPairs
-                )
-                true
-            }
-
             Action.ForEachPkgSet::class -> {
                 foreachPkgSetLauncher.launch(
                     BaseSelectorActivity.newIntent(
@@ -578,8 +544,6 @@ fun AppActions(keyword: String, subscribeState: LVLStateHolder.State, addAction:
         Action.RemoveTasks::class,
         Action.RemoveTasksByPkg::class,
         Action.KillProcessByName::class,
-        Action.RemoveNotificationForPackage::class,
-        Action.RemoveNotificationForPackageByPkg::class,
         Action.AppShortcut::class,
         Action.ForEachPkgSet::class,
     ).map {

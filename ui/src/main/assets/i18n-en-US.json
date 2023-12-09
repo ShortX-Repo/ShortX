@@ -585,6 +585,7 @@
     "ui.action.show.orientation.land": "Landscape",
     "ui.action.show.add.button": "Add button",
     "ui.action.category.app": "Apps",
+    "ui.action.category.notification": "Notifications",
     "ui.action.launch.app": "Launch app",
     "ui.action.launch.app.by.pkg": "Launch app (Input)",
     "ui.action.start.activity": "Start activity",

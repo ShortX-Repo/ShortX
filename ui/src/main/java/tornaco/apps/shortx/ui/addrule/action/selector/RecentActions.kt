@@ -36,6 +36,7 @@ fun RecentActions(
     val selectHandlers = listOf(
         uiActionSelectHandler(addAction = addAction),
         appActionSelectHandler(addAction = addAction),
+        notificationActionSelectHandler(addAction = addAction),
         systemActionSelectHandler(addAction = addAction),
         lifeActionSelectHandler(addAction = addAction),
         extActionSelectHandler(addAction = addAction),

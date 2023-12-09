@@ -20,8 +20,6 @@ import tornaco.apps.shortx.ui.addrule.base.ActionCategory
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.base.rememberCategoryState
-import tornaco.apps.shortx.ui.addrule.fact.selector.NotificationAppAndMatcherSelectorDialog
-import tornaco.apps.shortx.ui.addrule.fact.selector.rememberNotificationAppAndMatcherSelectorState
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.newIntent
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorActionOrNull
 import tornaco.apps.shortx.ui.base.InputValidateResult
@@ -71,38 +69,6 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
         }
     )
 
-    val postNotificationLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = { result ->
-            val action = result.toBaseSelectorActionOrNull<Action.PostNotification>()
-            action?.let {
-                addAction(it)
-            }
-        }
-    )
-
-    val removeNotificationState =
-        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current["ui.action.remove.notification"]) { it, _ ->
-            addAction(Action.RemoveNotification(n = it))
-        }
-    NotificationAppAndMatcherSelectorDialog(removeNotificationState)
-
-    val clickNotificationState =
-        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current["ui.action.click.notification"]) { it, _ ->
-            addAction(Action.ClickNotification(n = it))
-        }
-    NotificationAppAndMatcherSelectorDialog(clickNotificationState)
-
-    val clickNotificationButtonState =
-        rememberNotificationAppAndMatcherSelectorState(
-            LocalI18N.current["ui.action.click.notification.button"],
-            canMatchTitle = false,
-            canMatchContent = false,
-            canMatchButtonTitle = true
-        ) { it, button ->
-            addAction(Action.ClickNotificationActionButton(n = it, button = button))
-        }
-    NotificationAppAndMatcherSelectorDialog(clickNotificationButtonState)
 
     val getNodeTextSelectorState = rememberTextInputState(
         title = LocalI18N.current["ui.action.get.text.from.node"],
@@ -210,40 +176,6 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                 true
             }
 
-            Action.ExpandNotification::class -> {
-                addAction(Action.ExpandNotification())
-                true
-            }
-
-            Action.PostNotification::class -> {
-                postNotificationLauncher.launch(
-                    newIntent(
-                        context,
-                        source.getActionAs<Action.PostNotification>(),
-                        PostNotificationSelectorActivity::class.java
-                    )
-                )
-                true
-            }
-
-            Action.RemoveNotification::class -> {
-                removeNotificationState.show(source.getActionAs<Action.RemoveNotification>()?.n)
-                true
-            }
-
-            Action.ClickNotification::class -> {
-                clickNotificationState.show(source.getActionAs<Action.ClickNotification>()?.n)
-                true
-            }
-
-            Action.ClickNotificationActionButton::class -> {
-                clickNotificationButtonState.show(
-                    source.getActionAs<Action.ClickNotificationActionButton>()?.n,
-                    source.getActionAs<Action.ClickNotificationActionButton>()?.button
-                )
-                true
-            }
-
             Action.FindAndClickViewByText::class -> {
                 subSelectorStates.findAndClickViewByTextSelectorState.show(source.getActionAs())
                 true
@@ -347,11 +279,6 @@ fun UiActions(keyword: String, subscribeState: LVLStateHolder.State, addAction: 
         Action.TakeScreenshot::class,
         Action.ShowToast::class,
         Action.ShowDanmu::class,
-        Action.ExpandNotification::class,
-        Action.PostNotification::class,
-        Action.RemoveNotification::class,
-        Action.ClickNotification::class,
-        Action.ClickNotificationActionButton::class,
         Action.ShowOverlay::class,
         Action.HideOverlay::class,
         Action.HideAllOverlay::class,

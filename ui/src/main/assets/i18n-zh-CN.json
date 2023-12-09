@@ -576,6 +576,7 @@
     "ui.action.show.orientation.land": "横向展示",
     "ui.action.show.add.button": "添加按钮",
     "ui.action.category.app": "应用",
+    "ui.action.category.notification": "通知",
     "ui.action.launch.app": "打开应用",
     "ui.action.launch.app.by.pkg": "打开应用（动态）",
     "ui.action.start.activity": "启动活动",
