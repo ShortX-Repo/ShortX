@@ -114,8 +114,7 @@ public class PkgUtils {
     }
 
     public static List<ApplicationInfo> getInstalledApplicationsAsUser(Context context, int userId) {
-        int flags = OsUtils.isNOrAbove() ? PackageManager.MATCH_UNINSTALLED_PACKAGES | PackageManager.GET_META_DATA
-                : PackageManager.GET_UNINSTALLED_PACKAGES | PackageManager.GET_META_DATA;
+        int flags = PackageManager.GET_META_DATA;
         if (!OsUtils.isOOrAbove()) {
             return getInstalledApplications(context, flags);
         }

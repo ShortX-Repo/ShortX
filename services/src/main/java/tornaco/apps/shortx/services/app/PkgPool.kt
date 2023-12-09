@@ -122,6 +122,13 @@ class PkgPool(
         val apps =
             PkgUtils.getInstalledApplicationsAsUser(context, userId)
                 .mapNotNull { applicationInfo ->
+                    logger.p(
+                        "loadLocked, applicationInfo: ${applicationInfo.packageName} ${
+                            UserHandle.getUserId(
+                                applicationInfo.uid
+                            )
+                        }"
+                    )
                     kotlin.runCatching { applicationInfo.toApp() }.getOrElse {
                         logger.e(it, "applicationInfo toApp error.")
                         null
