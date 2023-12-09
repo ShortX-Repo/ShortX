@@ -2,19 +2,10 @@ package tornaco.apps.shortx.ui.draw
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.ContextWrapper
-import android.content.res.Resources
-import android.graphics.PixelFormat
-import android.view.Gravity
-import android.view.ViewGroup
-import android.view.WindowManager
-import android.widget.FrameLayout
-import android.widget.LinearLayout
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -23,142 +14,56 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.delay
-import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.I18N
-import tornaco.apps.shortx.core.res.AppResources
-import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.util.OsUtils
-import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.BaseComposeView
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
-import tornaco.apps.shortx.ui.overlay.addToLifecycle
 
 @SuppressLint("ViewConstructor")
 class DrawBoardView(
     context: Context,
-    private val i18N: I18N,
-    private val onDetach: (DrawBoardView) -> Unit
-) :
-    LinearLayout(context) {
-
-    private val logger = Logger(DrawBoardView::class.java.simpleName)
-    private val windowManager: WindowManager by lazy {
-        context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    i18N: I18N,
+    onDetach: (BaseComposeView) -> Unit
+) : BaseComposeView(context, i18N, onDetach) {
+    @Composable
+    override fun ComposeContent() {
+        DrawBoardContent {
+            detach()
+        }
     }
 
-    private var isAttached = false
-
-    fun attach() {
-        val wrapContent = FrameLayout.LayoutParams(
-            LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT
-        )
-
-        val appResources = AppResources(context, BuildProp.APP_PACKAGE_NAME)
-        val appContext = appResources.appContext
-
-        // WTF?
-        // ERROR: Attempt to invoke virtual method 'void android.content.Context.registerComponentCallbacks(android.content.ComponentCallbacks)'
-        // on a null object reference
-        val localContextWrapper = object : ContextWrapper(appContext) {
-            override fun getApplicationContext(): Context {
-                return context
+    @Composable
+    private fun DrawBoardContent(onBack: () -> Unit) {
+        MaterialTheme {
+            val controlBarState = rememberCommonDialogState()
+            LaunchedEffect(controlBarState) {
+                delay(250)
+                controlBarState.show()
             }
-        }
 
-        val contextWrapper = object : ContextWrapper(context) {
-            override fun getResources(): Resources {
-                return appContext.resources
-            }
-        }
+            val requester = remember { FocusRequester() }
 
-        val composeView = ComposeView(contextWrapper).apply {
-            addToLifecycle()
-            setContent {
-                CompositionLocalProvider(
-                    LocalContext provides localContextWrapper,
-                    LocalI18N provides i18N
-                ) {
-                    DrawBoardContent {
-                        detach()
+            DrawBoard(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .onKeyEvent {
+                        if (it.key == Key.VolumeDown || it.key == Key.VolumeUp) {
+                            controlBarState.show()
+                        }
+                        if (it.key == Key.Back) {
+                            onBack()
+                        }
+                        true
                     }
-                }
+                    .focusRequester(requester)
+                    .focusable(),
+                controlBarState
+            )
+
+            LaunchedEffect(Unit) {
+                requester.requestFocus()
             }
-            isFocusable = true
-            isClickable = true
         }
-        addView(composeView, wrapContent)
-
-        isFocusable = true
-        isClickable = true
-
-        val lp = createLayoutParams()
-        lp.title = "DrawBoardView"
-        windowManager.addView(this, lp)
-
-        isAttached = true
-        logger.d("attach")
-    }
-
-    fun detach() {
-        logger.d("detach")
-        if (isAttached) {
-            windowManager.removeViewImmediate(this)
-            isAttached = false
-            onDetach(this)
-        }
-    }
-
-    private fun createLayoutParams(): WindowManager.LayoutParams {
-        val lp = WindowManager.LayoutParams()
-        lp.gravity = Gravity.START or Gravity.TOP
-        lp.width = ViewGroup.LayoutParams.MATCH_PARENT
-        lp.height = ViewGroup.LayoutParams.MATCH_PARENT
-        lp.format = PixelFormat.RGBA_8888
-        lp.flags =
-            (WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN)
-        if (OsUtils.isROrAbove()) {
-            lp.layoutInDisplayCutoutMode =
-                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
-        }
-        lp.type = WindowManager.LayoutParams.TYPE_PHONE
-        lp.packageName = context.packageName
-        lp.windowAnimations = android.R.style.Animation_Toast
-        return lp
     }
 }
 
-@Composable
-private fun DrawBoardContent(onBack: () -> Unit) {
-    MaterialTheme {
-        val controlBarState = rememberCommonDialogState()
-        LaunchedEffect(controlBarState) {
-            delay(200)
-            controlBarState.show()
-        }
-
-        val requester = remember { FocusRequester() }
-
-        DrawBoard(
-            modifier = Modifier
-                .fillMaxSize()
-                .onKeyEvent {
-                    if (it.key == Key.VolumeDown || it.key == Key.VolumeUp) {
-                        controlBarState.show()
-                    }
-                    if (it.key == Key.Back) {
-                        onBack()
-                    }
-                    true
-                }
-                .focusRequester(requester)
-                .focusable(),
-            controlBarState
-        )
-
-        LaunchedEffect(Unit) {
-            requester.requestFocus()
-        }
-    }
-}
