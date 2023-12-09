@@ -74,8 +74,6 @@ fun notificationActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectS
     val clickNotificationButtonState =
         rememberNotificationAppAndMatcherSelectorState(
             LocalI18N.current["ui.action.click.notification.button"],
-            canMatchTitle = false,
-            canMatchContent = false,
             canMatchButtonTitle = true
         ) { it, button ->
             addAction(Action.ClickNotificationActionButton(n = it, button = button))

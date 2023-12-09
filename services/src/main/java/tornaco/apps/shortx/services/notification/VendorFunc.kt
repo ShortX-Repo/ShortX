@@ -16,12 +16,13 @@ object VendorFunc {
     object ColorOS {
         private val logger = Logger("VendorFunc.ColorOS")
 
-        const val ACTION_NOTIFICATION_ACTION_CLICK = "oppo.intent.action.NOTIFICATION_ACTION_CLICK"
-        const val ENTRY_KEY = "entryKey"
-        const val PACKAGE_NAME = "packageName"
-        const val PENDING_INTENT = "pendingIntent"
-        const val UID = "uId"
-        const val USER_ID = "userId"
+        private const val ACTION_NOTIFICATION_ACTION_CLICK =
+            "oppo.intent.action.NOTIFICATION_ACTION_CLICK"
+        private const val ENTRY_KEY = "entryKey"
+        private const val PACKAGE_NAME = "packageName"
+        private const val PENDING_INTENT = "pendingIntent"
+        private const val UID = "uId"
+        private const val USER_ID = "userId"
 
         val pipReplyText = listOf(
             "浮窗回复",

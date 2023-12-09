@@ -39,7 +39,6 @@ import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.rule.NotificationWrapper
 import tornaco.apps.shortx.services.rule.emptyOrRegexMatch
-import tornaco.apps.shortx.services.rule.matchNotificationTag
 import tornaco.apps.shortx.services.rule.matchNotificationTagTitleContent
 import tornaco.apps.shortx.services.rule.matchWithAppOrPkgSetListFact
 import tornaco.apps.shortx.services.systemServiceScope
@@ -267,7 +266,7 @@ class NotificationService(shortXContext: ShortXContext) :
                     shortXContextProvider = { shortXContext },
                     actual = NotificationWrapper(protoN),
                     rule = NotificationWrapper(ruleN)
-                ) && matchNotificationTag(protoN, ruleN)
+                ) && matchNotificationTagTitleContent(protoN, ruleN)
             }.forEach { pair ->
                 logger.d("clickNotificationButton, ${pair.second?.appsList?.get(0)}")
                 val sbn = pair.first
