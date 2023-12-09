@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.notification
 import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.app.INotificationManager
+import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -243,9 +244,13 @@ class NotificationService(shortXContext: ShortXContext) :
         }.forEach {
             logger.d("clickNotification, ${it.second?.appsList?.get(0)}")
             val sbn = it.first
-            val contentIntent = sbn.notification.contentIntent
-            logger.d("contentIntent: $contentIntent")
-            contentIntent.send()
+            var pendingIntent: PendingIntent? = sbn.notification.contentIntent
+            if (pendingIntent == null) {
+                pendingIntent = sbn.notification.fullScreenIntent
+            }
+            logger.d("clickNotification, pendingIntent: $pendingIntent")
+            requireNotNull(pendingIntent) { "No click intent" }
+            pendingIntent.send()
         }
     }
 
@@ -253,7 +258,7 @@ class NotificationService(shortXContext: ShortXContext) :
         logger.d("clickNotificationButton: $ruleN $ruleButton")
         nls.waitForBind()
         nls.activeNotifications
-            .filter { it.notification != null && it.notification.actions != null }
+            .filter { it.notification != null }
             .map {
                 it to it.androidSBNToNotification()
             }.filter { it.second != null }.filter {
@@ -276,10 +281,16 @@ class NotificationService(shortXContext: ShortXContext) :
                     )
                 }
                 logger.d("action to click: $action")
-                action?.let {
-                    val intent = it.actionIntent
+
+                if (action != null) {
+                    val intent = action.actionIntent
                     logger.d("actionIntent to send: $intent")
                     intent.send()
+                } else {
+                    logger.d("action not found. trying vendor func.")
+                    if (VendorFunc.ColorOS.pipReplyText.contains(ruleButton.label)) {
+                        VendorFunc.ColorOS.colorOsPipReply(context, sbn)
+                    }
                 }
             }
     }

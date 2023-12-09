@@ -4,6 +4,8 @@ import android.os.Build;
 import android.os.SystemProperties;
 import android.text.TextUtils;
 
+import util.Reflections;
+
 /**
  * Created by guohao4 on 2017/10/24.
  * Email: Tornaco@163.com
@@ -13,6 +15,15 @@ public abstract class OsUtils {
 
     public static boolean isMIUI() {
         return !TextUtils.isEmpty(SystemProperties.get("ro.miui.ui.version.code"));
+    }
+
+    public static boolean isColorOS() {
+        try {
+            Reflections.findClass("android.app.OplusActivityManager", ClassLoader.getSystemClassLoader());
+            return true;
+        } catch (Throwable e) {
+            return false;
+        }
     }
 
     public static boolean isLOS() {
