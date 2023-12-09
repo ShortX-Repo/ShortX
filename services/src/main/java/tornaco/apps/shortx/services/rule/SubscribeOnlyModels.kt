@@ -3,6 +3,8 @@ package tornaco.apps.shortx.services.rule
 import com.google.protobuf.GeneratedMessageV3
 import tornaco.apps.shortx.core.proto.action.AudioRecording
 import tornaco.apps.shortx.core.proto.action.BiometricVerify
+import tornaco.apps.shortx.core.proto.action.ClickNotification
+import tornaco.apps.shortx.core.proto.action.ClickNotificationActionButton
 import tornaco.apps.shortx.core.proto.action.ClickTile
 import tornaco.apps.shortx.core.proto.action.ConnectWifi
 import tornaco.apps.shortx.core.proto.action.EnableUniversalCopy
@@ -111,4 +113,6 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         PerformContextMenuAction::class,
         WaitUtilConditionMatch::class,
         SetScreenTimeout::class,
+        ClickNotification::class,
+        ClickNotificationActionButton::class,
     )

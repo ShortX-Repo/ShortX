@@ -139,6 +139,8 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Action.PerformContextMenuAction::class,
     Action.WaitUtilConditionMatch::class,
     Action.SetScreenTimeout::class,
+    Action.ClickNotification::class,
+    Action.ClickNotificationActionButton::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 )
 
