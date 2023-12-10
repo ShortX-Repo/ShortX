@@ -18,9 +18,9 @@ class ComposeDemoActivity : ComponentActivity() {
                 LocalI18N provides i18NIns
             ) {
                 ClipboardView(
-                    applicationContext,
-                    i18NIns,
-                    listOf(
+                    context = applicationContext,
+                    i18N = i18NIns,
+                    clips = listOf(
                         ClipboardItem.newBuilder().setId(UUID.randomUUID().toString()).setValue(
                             "Set privacy boundaries\n" +
                                     "\n" +
@@ -38,10 +38,11 @@ class ComposeDemoActivity : ComponentActivity() {
                                     "We'd like to ask you a few questions about your experience to help us improve our website. It should take about a minute."
                         ).build(),
                     ),
-                    {},
-                    {},
-                    {},
-                    {}).ComposeContent()
+                    onDetach = {},
+                    inputText = {},
+                    addText = {},
+                    removeText = {},
+                    clearAll = {}).ComposeContent()
             }
         }
     }

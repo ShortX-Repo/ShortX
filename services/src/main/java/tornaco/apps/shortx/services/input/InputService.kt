@@ -1,7 +1,6 @@
 package tornaco.apps.shortx.services.input
 
 import com.android.internal.view.IInputContext
-import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.proto.clipboard.ClipboardItem
 import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
 import tornaco.apps.shortx.core.util.OsUtils
@@ -67,6 +66,11 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
                     .build()
             )
         }
+    }
+
+    fun addClipboardText(text: ClipboardItem) {
+        logger.p("addClipboardText: $text")
+        clipboardStore.addText(text)
     }
 
     fun removeClipboardText(id: String) {

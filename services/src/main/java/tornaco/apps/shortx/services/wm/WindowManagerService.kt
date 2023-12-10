@@ -407,6 +407,9 @@ class WindowManagerService(shortXContext: ShortXContext) :
                     removeText = {
                         shortXContext.input.removeClipboardText(it)
                     },
+                    addText = {
+                        shortXContext.input.addClipboardText(it)
+                    },
                     inputText = { text ->
                         systemServiceScope.launchSafety {
                             logger.d("ClipboardView input text: $text")

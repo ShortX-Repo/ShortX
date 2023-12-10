@@ -4,6 +4,7 @@ package tornaco.apps.shortx.ui.clipbord
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -52,10 +53,12 @@ import tornaco.apps.shortx.ui.BaseComposeView
 import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortXTextField
+import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.theme.PrefIcon
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import java.util.UUID
 
 @SuppressLint("ViewConstructor")
 class ClipboardView(
@@ -64,6 +67,7 @@ class ClipboardView(
     val clips: List<ClipboardItem>,
     onDetach: (BaseComposeView) -> Unit,
     val inputText: (String) -> Unit,
+    val addText: (ClipboardItem) -> Unit,
     val removeText: (id: String) -> Unit,
     val clearAll: () -> Unit,
 ) : BaseComposeView(context, i18N, onDetach) {
@@ -106,29 +110,30 @@ class ClipboardView(
                     shadowElevation = 4.dp,
                 ) {
                     var clipState by remember { mutableStateOf(clips) }
+                    var inputState by remember { mutableStateOf("") }
+                    var isShowInput by remember { mutableStateOf(false) }
 
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight(fraction = 0.3f),
+                            .fillMaxHeight(fraction = 0.33f),
                         contentPadding = PaddingValues(bottom = 32.dp)
                     ) {
 
-                        stickyHeader {
+                        item {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(64.dp)
+                                    .height(54.dp)
                                     .background(ColorDefaults.backgroundSurfaceColor(elevation = 4.dp))
                                     .padding(horizontal = 16.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                MediumTitle(
+                                SmallTitle(
                                     text = LocalI18N.current["ui.action.show.clip.board"],
                                     color = MaterialTheme.colorScheme.onSurface,
                                 )
-
 
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     TextButton(onClick = {
@@ -139,14 +144,14 @@ class ClipboardView(
                                     }
 
                                     IconButton(onClick = {
-                                        detach()
+                                        isShowInput = true
                                     }) {
                                         ColoredIcon(
                                             size = 28.dp,
                                             color = MaterialTheme.colorScheme.primary
                                         ) {
                                             RemixIcon(
-                                                Remix.Arrows.arrow_drop_down_line,
+                                                Remix.System.add_fill,
                                                 modifier = Modifier.size(20.dp),
                                                 tint = Color.White
                                             )
@@ -155,8 +160,40 @@ class ClipboardView(
 
                                 }
                             }
+                        }
 
-
+                        item {
+                            AnimatedVisibility(visible = isShowInput) {
+                                ShortXTextField(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp),
+                                    showSymbolButton = false,
+                                    value = inputState,
+                                    onValueChange = {
+                                        inputState = it
+                                    }, trailingIcon = {
+                                        IconButton(onClick = {
+                                            val item = ClipboardItem.newBuilder()
+                                                .setCreateAt(System.currentTimeMillis())
+                                                .setId(UUID.randomUUID().toString())
+                                                .setValue(inputState)
+                                                .build()
+                                            addText(item)
+                                            clipState = clipState.toMutableList().apply {
+                                                add(0, item)
+                                            }
+                                            isShowInput = false
+                                            inputState = ""
+                                        }) {
+                                            RemixIcon(
+                                                modifier = Modifier.size(18.dp),
+                                                remixName = Remix.System.check_line,
+                                                tint = MaterialTheme.colorScheme.onSurface,
+                                            )
+                                        }
+                                    })
+                            }
                         }
 
                         items(clipState) { clip: ClipboardItem ->
