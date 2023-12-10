@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -42,6 +43,8 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.BaseComposeView
 import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.ColoredIcon
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.theme.PrefIcon
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -51,6 +54,8 @@ class ClipboardView(
     context: Context,
     i18N: I18N,
     onDetach: (BaseComposeView) -> Unit,
+    val inputText: (String) -> Unit,
+    val clearAll: () -> Unit,
 ) : BaseComposeView(context, i18N, onDetach) {
 
     @Composable
@@ -94,48 +99,68 @@ class ClipboardView(
                         modifier = Modifier
                             .fillMaxWidth()
                             .fillMaxHeight(fraction = 0.3f),
-                        contentPadding = PaddingValues(horizontal = 16.dp)
+                        contentPadding = PaddingValues(
+                            start = 16.dp,
+                            end = 16.dp,
+                            bottom = 32.dp
+                        )
                     ) {
 
                         stickyHeader {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .height(64.dp)
                                     .background(ColorDefaults.backgroundSurfaceColor()),
-                                horizontalArrangement = Arrangement.End
+                                horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                TextButton(onClick = { }) {
-                                    Text(text = "CLEAR ALL")
-                                }
+                                MediumTitle(
+                                    text = LocalI18N.current["ui.action.show.clip.board"],
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                )
 
-                                IconButton(onClick = {
-                                    detach()
-                                }) {
-                                    ColoredIcon(
-                                        size = 28.dp,
-                                        color = MaterialTheme.colorScheme.primary
-                                    ) {
-                                        RemixIcon(
-                                            Remix.Arrows.arrow_drop_down_line,
-                                            modifier = Modifier.size(20.dp),
-                                            tint = Color.White
-                                        )
+
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    TextButton(onClick = { }) {
+                                        Text(text = LocalI18N.current["ui.action.show.clip.board.clear.all"])
                                     }
-                                }
 
+                                    IconButton(onClick = {
+                                        detach()
+                                    }) {
+                                        ColoredIcon(
+                                            size = 28.dp,
+                                            color = MaterialTheme.colorScheme.primary
+                                        ) {
+                                            RemixIcon(
+                                                Remix.Arrows.arrow_drop_down_line,
+                                                modifier = Modifier.size(20.dp),
+                                                tint = Color.White
+                                            )
+                                        }
+                                    }
+
+                                }
                             }
+
+
                         }
 
                         items(20) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .heightIn(min = 48.dp),
+                                    .heightIn(min = 48.dp)
+                                    .clickable {
+                                        detach()
+                                        inputText("hahaha")
+                                    },
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
                                     modifier = Modifier.weight(1f, fill = false),
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     text = "This is text $it"
                                 )
 

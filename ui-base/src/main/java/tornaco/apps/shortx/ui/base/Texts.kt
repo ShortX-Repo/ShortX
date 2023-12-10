@@ -58,10 +58,11 @@ fun LargeTitle(text: String) {
 }
 
 @Composable
-fun MediumTitle(text: String) {
+fun MediumTitle(text: String, color: Color = Color.Unspecified) {
     Text(
         modifier = Modifier.padding(vertical = 12.dp),
         text = text,
+        color = color,
         style = MaterialTheme.typography.titleMedium.copy(
             fontWeight = FontWeight.W500,
             fontSize = 17.sp

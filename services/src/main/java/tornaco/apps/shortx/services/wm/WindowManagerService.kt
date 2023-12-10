@@ -401,6 +401,26 @@ class WindowManagerService(shortXContext: ShortXContext) :
                     i18N = i18NIns,
                     onDetach = {
                         showingClipboard.remove(it)
+                    },
+                    inputText = { text ->
+                        systemServiceScope.launchSafety {
+                            logger.d("ClipboardView input text: $text")
+                            var isSuccess = false
+                            var retryCount = 0
+                            while (!isSuccess && retryCount < 10) {
+                                retryCount++
+                                runCatching {
+                                    shortXContext.input.submitText(text)
+                                    isSuccess = true
+                                }.onFailure {
+                                    logger.d("Input fail, will try again.")
+                                    delay(100)
+                                }
+                            }
+                        }
+                    },
+                    clearAll = {
+
                     }
                 )
             showingClipboard.add(guideLineView)

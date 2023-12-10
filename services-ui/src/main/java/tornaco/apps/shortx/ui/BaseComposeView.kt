@@ -109,7 +109,6 @@ abstract class BaseComposeView(
         }
         lp.type = WindowManager.LayoutParams.TYPE_PHONE
         lp.packageName = context.packageName
-        lp.windowAnimations = android.R.style.Animation_Toast
         return lp
     }
 

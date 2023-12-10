@@ -515,6 +515,8 @@
     "ui.action.get.text.from.node.get.all": "Read all the text",
     "ui.action.show.draw.board": "Draw board",
     "ui.action.show.draw.board.tip": "Press back to exit, press volume buttons to show tool bar",
+    "ui.action.show.clip.board": "Universal clipboard ",
+    "ui.action.show.clip.board.clear.all": "Clear",
     "ui.action.connect.wifi": "Connect wifi",
     "ui.action.stay.awake": "Stay awake",
     "ui.action.show.danmu": "Show danmu",

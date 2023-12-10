@@ -507,6 +507,8 @@
     "ui.action.custom.keycode": "自定义keycode",
     "ui.action.show.draw.board": "屏幕画板",
     "ui.action.show.draw.board.tip": "按返回键退出，音量键展示工具栏",
+    "ui.action.show.clip.board": "全局剪贴板",
+    "ui.action.show.clip.board.clear.all": "清除全部",
     "ui.action.connect.wifi": "连接wifi",
     "ui.action.stay.awake": "保持屏幕常亮",
     "ui.action.show.danmu": "显示弹幕",
