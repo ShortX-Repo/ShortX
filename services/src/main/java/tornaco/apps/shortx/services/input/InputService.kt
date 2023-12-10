@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.input
 
 import com.android.internal.view.IInputContext
+import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.proto.clipboard.ClipboardItem
 import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
 import tornaco.apps.shortx.core.util.OsUtils
@@ -47,6 +48,12 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         }
 
         clipboardStore.readBlocking()
+
+//        onDebugBuild {
+//            repeat(10000) {
+//                addClipboardText("We'd like to ask you a few questions about your experience to help us improve our website. It should take about a minute. - $it")
+//            }
+//        }
     }
 
     fun addClipboardText(string: String) {

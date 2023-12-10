@@ -11,17 +11,19 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Divider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -42,6 +44,7 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.proto.clipboard.ClipboardItem
 import tornaco.apps.shortx.core.res.Remix
@@ -108,11 +111,7 @@ class ClipboardView(
                         modifier = Modifier
                             .fillMaxWidth()
                             .fillMaxHeight(fraction = 0.3f),
-                        contentPadding = PaddingValues(
-                            start = 16.dp,
-                            end = 16.dp,
-                            bottom = 32.dp
-                        )
+                        contentPadding = PaddingValues(bottom = 32.dp)
                     ) {
 
                         stickyHeader {
@@ -120,7 +119,9 @@ class ClipboardView(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(64.dp)
-                                    .background(ColorDefaults.backgroundSurfaceColor()),
+                                    .background(ColorDefaults.backgroundSurfaceColor(elevation = 4.dp))
+                                    .padding(horizontal = 16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 MediumTitle(
@@ -159,35 +160,46 @@ class ClipboardView(
                         }
 
                         items(clipState) { clip: ClipboardItem ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .heightIn(min = 48.dp)
-                                    .clickable {
-                                        detach()
-                                        inputText(clip.value)
-                                    },
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    modifier = Modifier.weight(1f, fill = false),
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    text = clip.value
-                                )
-
-                                IconButton(onClick = {
-                                    removeText(clip.id)
-                                    clipState = clipState.toMutableList().apply {
-                                        removeIf { it.id == clip.id }
-                                    }
-                                }) {
-                                    RemixIcon(
-                                        modifier = Modifier.size(18.dp),
-                                        remixName = Remix.System.close_fill,
-                                        tint = PrefIcon
+                            Column {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            detach()
+                                            inputText(clip.value)
+                                        }
+                                        .padding(horizontal = 16.dp)
+                                        .padding(vertical = 4.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        modifier = Modifier.weight(1f, fill = false),
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        text = clip.value,
+                                        maxLines = 3,
+                                        fontSize = 12.5.sp
                                     )
+
+                                    IconButton(onClick = {
+                                        removeText(clip.id)
+                                        clipState = clipState.toMutableList().apply {
+                                            removeIf { it.id == clip.id }
+                                        }
+                                    }) {
+                                        RemixIcon(
+                                            modifier = Modifier.size(18.dp),
+                                            remixName = Remix.System.close_fill,
+                                            tint = PrefIcon
+                                        )
+                                    }
                                 }
+                                Divider(
+                                    modifier = Modifier
+                                        .padding(horizontal = 16.dp)
+                                        .padding(end = 64.dp),
+                                    thickness = 0.5.dp
+                                )
                             }
                         }
                     }
