@@ -196,47 +196,61 @@ class ClipboardView(
                             }
                         }
 
-                        items(clipState) { clip: ClipboardItem ->
-                            Column {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            detach()
-                                            inputText(clip.value)
+                        if (clipState.isNotEmpty()) {
+                            items(clipState) { clip: ClipboardItem ->
+                                Column {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                detach()
+                                                inputText(clip.value)
+                                            }
+                                            .padding(horizontal = 16.dp)
+                                            .padding(vertical = 4.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            modifier = Modifier.weight(1f, fill = false),
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            text = clip.value,
+                                            maxLines = 3,
+                                            fontSize = 12.5.sp
+                                        )
+
+                                        IconButton(onClick = {
+                                            removeText(clip.id)
+                                            clipState = clipState.toMutableList().apply {
+                                                removeIf { it.id == clip.id }
+                                            }
+                                        }) {
+                                            RemixIcon(
+                                                modifier = Modifier.size(18.dp),
+                                                remixName = Remix.System.close_fill,
+                                                tint = PrefIcon
+                                            )
                                         }
-                                        .padding(horizontal = 16.dp)
-                                        .padding(vertical = 4.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
+                                    }
+                                    Divider(
+                                        modifier = Modifier
+                                            .padding(horizontal = 16.dp)
+                                            .padding(end = 64.dp),
+                                        thickness = 0.5.dp
+                                    )
+                                }
+                            }
+                        } else {
+                            item {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
                                 ) {
                                     Text(
-                                        modifier = Modifier.weight(1f, fill = false),
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        text = clip.value,
-                                        maxLines = 3,
-                                        fontSize = 12.5.sp
+                                        text = "\uD83E\uDDD0",
+                                        style = MaterialTheme.typography.displayLarge
                                     )
-
-                                    IconButton(onClick = {
-                                        removeText(clip.id)
-                                        clipState = clipState.toMutableList().apply {
-                                            removeIf { it.id == clip.id }
-                                        }
-                                    }) {
-                                        RemixIcon(
-                                            modifier = Modifier.size(18.dp),
-                                            remixName = Remix.System.close_fill,
-                                            tint = PrefIcon
-                                        )
-                                    }
                                 }
-                                Divider(
-                                    modifier = Modifier
-                                        .padding(horizontal = 16.dp)
-                                        .padding(end = 64.dp),
-                                    thickness = 0.5.dp
-                                )
                             }
                         }
                     }
