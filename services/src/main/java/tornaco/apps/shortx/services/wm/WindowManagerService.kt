@@ -394,13 +394,18 @@ class WindowManagerService(shortXContext: ShortXContext) :
     }
 
     fun showClipboard() {
+        logger.p("showClipboard: ${shortXContext.input.getAllClipboardText()}")
         disableAllOverlayViews {
             val guideLineView =
                 ClipboardView(
                     context = context,
                     i18N = i18NIns,
+                    clips = shortXContext.input.getAllClipboardText().reversed(),
                     onDetach = {
                         showingClipboard.remove(it)
+                    },
+                    removeText = {
+                        shortXContext.input.removeClipboardText(it)
                     },
                     inputText = { text ->
                         systemServiceScope.launchSafety {
@@ -420,7 +425,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
                         }
                     },
                     clearAll = {
-
+                        shortXContext.input.clearAllClipboardText()
                     }
                 )
             showingClipboard.add(guideLineView)

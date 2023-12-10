@@ -1,13 +1,20 @@
 package tornaco.apps.shortx.services.input
 
 import com.android.internal.view.IInputContext
+import tornaco.apps.shortx.core.proto.clipboard.ClipboardItem
 import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.android.ServiceRetriever
+import tornaco.apps.shortx.services.data.ClipboardStore
+import tornaco.apps.shortx.services.data.Settings
+import tornaco.apps.shortx.services.data.read
+import tornaco.apps.shortx.services.data.write
+import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.watchdog.postSafety
 import util.Reflections
+import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
 
 class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, "InputService") {
@@ -18,6 +25,54 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     private val _onClipboardListener = mutableListOf<(String) -> Unit>()
 
     private val isIMEShown = AtomicBoolean(false)
+
+    private val clipboardStore by lazy {
+        ClipboardStore(
+            scope = systemServiceScope,
+            encKey = requireNotNull(
+                store.read(
+                    Settings.StringSettings.ServiceIns
+                )
+            ) {
+                "ServiceIns is null"
+            })
+    }
+
+    override fun systemReady() {
+        super.systemReady()
+        // Install ServiceIns store
+        if (store.read(Settings.StringSettings.ServiceIns).isNullOrBlank()) {
+            store.write(Settings.StringSettings.ServiceIns, UUID.randomUUID().toString())
+            logger.i("Service Ins installed.")
+        }
+
+        clipboardStore.readBlocking()
+    }
+
+    fun addClipboardText(string: String) {
+        logger.p("addClipboardText: $string")
+        string.takeIf { it.isNotBlank() }?.let {
+            clipboardStore.addText(
+                ClipboardItem.newBuilder()
+                    .setId(UUID.randomUUID().toString())
+                    .setValue(string)
+                    .setCreateAt(System.currentTimeMillis())
+                    .build()
+            )
+        }
+    }
+
+    fun removeClipboardText(id: String) {
+        logger.p("removeClipboardText: $id")
+        clipboardStore.deleteText(id)
+    }
+
+    fun getAllClipboardText() = clipboardStore.getAllText()
+
+    fun clearAllClipboardText() {
+        logger.w("clearAllClipboardText")
+        clipboardStore.clearAllText()
+    }
 
     fun addOnClipboardListener(listener: (String) -> Unit) {
         _onClipboardListener.add(listener)

@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -28,7 +29,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -39,6 +43,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.I18N
+import tornaco.apps.shortx.core.proto.clipboard.ClipboardItem
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.BaseComposeView
 import tornaco.apps.shortx.ui.base.ColorDefaults
@@ -53,8 +58,10 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 class ClipboardView(
     context: Context,
     i18N: I18N,
+    val clips: List<ClipboardItem>,
     onDetach: (BaseComposeView) -> Unit,
     val inputText: (String) -> Unit,
+    val removeText: (id: String) -> Unit,
     val clearAll: () -> Unit,
 ) : BaseComposeView(context, i18N, onDetach) {
 
@@ -95,6 +102,8 @@ class ClipboardView(
                     color = ColorDefaults.backgroundSurfaceColor(),
                     shadowElevation = 4.dp,
                 ) {
+                    var clipState by remember { mutableStateOf(clips) }
+
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -121,7 +130,10 @@ class ClipboardView(
 
 
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    TextButton(onClick = { }) {
+                                    TextButton(onClick = {
+                                        clearAll()
+                                        clipState = emptyList()
+                                    }) {
                                         Text(text = LocalI18N.current["ui.action.show.clip.board.clear.all"])
                                     }
 
@@ -146,14 +158,14 @@ class ClipboardView(
 
                         }
 
-                        items(20) {
+                        items(clipState) { clip: ClipboardItem ->
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .heightIn(min = 48.dp)
                                     .clickable {
                                         detach()
-                                        inputText("hahaha")
+                                        inputText(clip.value)
                                     },
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
@@ -161,10 +173,15 @@ class ClipboardView(
                                 Text(
                                     modifier = Modifier.weight(1f, fill = false),
                                     color = MaterialTheme.colorScheme.onSurface,
-                                    text = "This is text $it"
+                                    text = clip.value
                                 )
 
-                                IconButton(onClick = { }) {
+                                IconButton(onClick = {
+                                    removeText(clip.id)
+                                    clipState = clipState.toMutableList().apply {
+                                        removeIf { it.id == clip.id }
+                                    }
+                                }) {
                                     RemixIcon(
                                         modifier = Modifier.size(18.dp),
                                         remixName = Remix.System.close_fill,
@@ -173,8 +190,6 @@ class ClipboardView(
                                 }
                             }
                         }
-
-
                     }
                 }
 

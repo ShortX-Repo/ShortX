@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option java_package = "tornaco.apps.shortx.core.proto.clipboard";
+option java_outer_classname = "OuterClipboardItem";
+option java_multiple_files = true;
+
+import "google/protobuf/any.proto";
+import "shortx/Common.proto";
+
+message ClipboardItemList {
+  repeated ClipboardItem item = 1;
+}
+
+message ClipboardItem {
+  string id = 1;
+  int64 createAt = 2;
+  string value = 3;
+}
+

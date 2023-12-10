@@ -26,6 +26,8 @@ class ClipboardTrigger(override val context: Context, override val shortXContext
                     fact = ClipboardContentChanged.newBuilder().setContent(clipText).build(),
                     initialContextData = mapOf(ContextDataMapping.ClipboardContentChanged.clipboardContent.name to clipText)
                 )
+
+                shortXContext.input.addClipboardText(clipText)
             } else {
                 logger.d("Ignore dup clipboard content request.")
             }

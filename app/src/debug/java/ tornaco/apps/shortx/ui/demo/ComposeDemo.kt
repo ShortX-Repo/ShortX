@@ -15,7 +15,14 @@ class ComposeDemoActivity : ComponentActivity() {
             CompositionLocalProvider(
                 LocalI18N provides i18NIns
             ) {
-                ClipboardView(applicationContext, i18NIns, {}, {}, {}).ComposeContent()
+                ClipboardView(
+                    applicationContext,
+                    i18NIns,
+                    emptyList(),
+                    {},
+                    {},
+                    {},
+                    {}).ComposeContent()
             }
         }
     }
