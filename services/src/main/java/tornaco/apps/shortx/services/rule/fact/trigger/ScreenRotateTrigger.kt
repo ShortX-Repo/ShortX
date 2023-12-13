@@ -41,7 +41,9 @@ class ScreenRotateTrigger(
     }
 
     override fun register() {
-        wm.watchRotation(watcher, context.displayIdCompat)
+        wm.watchRotation(watcher, context.displayIdCompat.also {
+            logger.i("watchRotation for display: $it")
+        })
     }
 
     override fun unRegister() {

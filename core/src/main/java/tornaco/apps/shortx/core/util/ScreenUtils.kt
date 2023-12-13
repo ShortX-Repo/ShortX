@@ -22,6 +22,6 @@ fun Context.defaultDisplay(): Display {
 
 val Context.displayIdCompat: Int
     get() = OsUtils.isSOrAbove().select(
-        displayId,
-        Display.DEFAULT_DISPLAY
+        t = { displayId },
+        f = { Display.DEFAULT_DISPLAY }
     )
