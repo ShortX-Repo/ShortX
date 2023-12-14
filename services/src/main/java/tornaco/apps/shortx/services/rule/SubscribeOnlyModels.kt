@@ -27,6 +27,7 @@ import tornaco.apps.shortx.core.proto.action.SetAppEnabledByPkg
 import tornaco.apps.shortx.core.proto.action.SetAppSuspend
 import tornaco.apps.shortx.core.proto.action.SetAppSuspendByPkg
 import tornaco.apps.shortx.core.proto.action.SetScreenTimeout
+import tornaco.apps.shortx.core.proto.action.ShowClipboardView
 import tornaco.apps.shortx.core.proto.action.ShowDrawBoard
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.action.StartGestureRecording
@@ -115,4 +116,5 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         SetScreenTimeout::class,
         ClickNotification::class,
         ClickNotificationActionButton::class,
+        ShowClipboardView::class,
     )

@@ -32,6 +32,12 @@ abstract class GenericTileService : TileService() {
             }
         }
 
+    override fun onTileAdded() {
+        super.onTileAdded()
+        logger.d("onTileAdded")
+        updateTile()
+    }
+
     private fun updateTile() {
         shortXManager.getStatusBarTileSettingsByNumber(tileIndex.number)?.let {
             logger.d("updateTile: $it")
