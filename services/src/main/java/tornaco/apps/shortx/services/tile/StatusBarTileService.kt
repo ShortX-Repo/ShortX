@@ -102,12 +102,14 @@ class StatusBarTileService(shortXContext: ShortXContext) :
     }
 
     private fun notifySettingChanged(tileSetting: StatusBarTileSetting) {
-        settingsChangeListeners.broadcast {
-            runCatching { it.onTileSettingsChange(tileSetting.tile.number) }.onFailure {
-                logger.e(
-                    it,
-                    "call onTileSettingsChange"
-                )
+        synchronized(settingsChangeListeners) {
+            settingsChangeListeners.broadcast {
+                runCatching { it.onTileSettingsChange(tileSetting.tile.number) }.onFailure {
+                    logger.e(
+                        it,
+                        "call onTileSettingsChange"
+                    )
+                }
             }
         }
     }
