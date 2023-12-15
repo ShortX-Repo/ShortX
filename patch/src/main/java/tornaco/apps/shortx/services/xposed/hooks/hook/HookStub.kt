@@ -44,5 +44,6 @@ object HookStub {
         DisplayRotationHook.hookOnProposedRotationChanged(lpparam)
         IMEServiceHook.hook(lpparam)
         WMServiceHook.hook(lpparam)
+        AccManagerHook.hook(lpparam)
     }
 }
