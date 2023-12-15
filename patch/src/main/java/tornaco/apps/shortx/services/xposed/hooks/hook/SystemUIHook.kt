@@ -198,27 +198,31 @@ class QSTileHostImpl(private val hostObj: Any, private val shortx: IShortX) : IQ
             onEachTiles { spec, tile ->
                 if (spec == tileSpec) {
                     logger.d("click: $spec")
-                    // Normal android
-                    // click(View v);
+                    val isCustomTile = tile.javaClass.name.endsWith("CustomTile")
+                    logger.d("Tile class: ${tile.javaClass.name}")
+                    if (isCustomTile) {
+                        // void handleClick(@Nullable View view)
+                        Reflections.callMethod(tile, "handleClick", arrayOf(View::class.java), null)
+                    } else {
+                        // Normal android
+                        // click(View v);
 
-                    // Flyme:
-                    //   @Override // com.android.systemui.plugins.qs.QSTile
-                    //    public void click() {
-                    //        this.mMetricsLogger.write(populate(new LogMaker(925).setType(4).addTaggedData(1592, Integer.valueOf(this.mStatusBarStateController.getState()))));
-                    //        this.mUiEventLogger.logWithInstanceId(QSEvent.QS_ACTION_CLICK, 0, getMetricsSpec(), getInstanceId());
-                    //        this.mQSLogger.logTileClick(this.mTileSpec, this.mStatusBarStateController.getState(), this.mState.state);
-                    //        this.mHandler.sendEmptyMessage(2);
-                    //        SystemUIMobEventUtils.collectClickNumberOfShortCut(this.mContext, this.mTileSpec);
-                    //    }
-
-
-                    runCatching {
-                        Reflections.callMethod(tile, "click", arrayOf(View::class.java), null)
-                    }.onFailure {
-                        logger.w("Call click(view) fail, try click()")
-                        Reflections.callMethod(tile, "click")
+                        // Flyme:
+                        //   @Override // com.android.systemui.plugins.qs.QSTile
+                        //    public void click() {
+                        //        this.mMetricsLogger.write(populate(new LogMaker(925).setType(4).addTaggedData(1592, Integer.valueOf(this.mStatusBarStateController.getState()))));
+                        //        this.mUiEventLogger.logWithInstanceId(QSEvent.QS_ACTION_CLICK, 0, getMetricsSpec(), getInstanceId());
+                        //        this.mQSLogger.logTileClick(this.mTileSpec, this.mStatusBarStateController.getState(), this.mState.state);
+                        //        this.mHandler.sendEmptyMessage(2);
+                        //        SystemUIMobEventUtils.collectClickNumberOfShortCut(this.mContext, this.mTileSpec);
+                        //    }
+                        runCatching {
+                            Reflections.callMethod(tile, "click", arrayOf(View::class.java), null)
+                        }.onFailure {
+                            logger.w("Call click(view) fail, try click()")
+                            Reflections.callMethod(tile, "click")
+                        }
                     }
-
                 }
             }
         }.onFailure {
