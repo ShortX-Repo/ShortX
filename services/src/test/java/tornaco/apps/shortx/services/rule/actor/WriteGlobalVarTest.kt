@@ -6,6 +6,7 @@ import org.junit.Before
 import org.junit.Test
 import tornaco.apps.shortx.core.proto.action.WriteGlobalVarOp
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
+import tornaco.apps.shortx.core.proto.gv.Int64Var
 import tornaco.apps.shortx.core.proto.gv.StringListVar
 import tornaco.apps.shortx.core.proto.gv.StringVar
 import tornaco.apps.shortx.core.rule.pack_
@@ -24,6 +25,12 @@ class WriteGlobalVarTest {
     private val originalStringGV = GlobalVar.newBuilder()
         .setType(StringVar.newBuilder().build().pack_())
         .setVar(StringVar.newBuilder().setValue("Hello").build().pack_())
+        .setName("Test")
+        .build()
+
+    private val originalIntGV = GlobalVar.newBuilder()
+        .setType(Int64Var.newBuilder().build().pack_())
+        .setVar(Int64Var.newBuilder().setValue(12345678).build().pack_())
         .setName("Test")
         .build()
 
@@ -229,5 +236,60 @@ class WriteGlobalVarTest {
                 "Value will not be used"
             )
         updatedGV.valueList() shouldBe listOf("Nice", "Hello")
+    }
+
+    @Test
+    fun testListRemoveAt() {
+        val updatedGV =
+            WriteGlobalVar.handleGVOp(
+                originalStringListGV,
+                WriteGlobalVarOp.WriteGlobalVarOp_RemoveAtIndex,
+                "1"
+            )
+        updatedGV.valueList() shouldBe listOf("Hello")
+    }
+
+    @Test
+    fun testPlus1() {
+        val updatedGV =
+            WriteGlobalVar.handleGVOp(
+                originalIntGV,
+                WriteGlobalVarOp.WriteGlobalVarOp_Plus1,
+                ""
+            )
+        updatedGV.valueList() shouldBe listOf("12345679")
+    }
+
+    @Test
+    fun testMinus1() {
+        val updatedGV =
+            WriteGlobalVar.handleGVOp(
+                originalIntGV,
+                WriteGlobalVarOp.WriteGlobalVarOp_Minus1,
+                ""
+            )
+        updatedGV.valueList() shouldBe listOf("12345677")
+    }
+
+    @Test
+    fun testPlusDelta() {
+        val updatedGV =
+            WriteGlobalVar.handleGVOp(
+                originalIntGV,
+                WriteGlobalVarOp.WriteGlobalVarOp_PlusDelta,
+                "1"
+            )
+        updatedGV.valueList() shouldBe listOf("12345679")
+    }
+
+    @Test
+    fun testMinusDelta() {
+        val updatedGV =
+            WriteGlobalVar.handleGVOp(
+                originalIntGV,
+                WriteGlobalVarOp.WriteGlobalVarOp_MinusDelta,
+                "8"
+            )
+        updatedGV.valueList() shouldBe listOf("12345670")
     }
 }

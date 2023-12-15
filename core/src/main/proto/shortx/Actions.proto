@@ -567,6 +567,12 @@ enum WriteGlobalVarOp {
   WriteGlobalVarOp_Clear = 7;
   WriteGlobalVarOp_Reverse = 8;
   WriteGlobalVarOp_Shuffle = 9;
+  WriteGlobalVarOp_Plus1 = 10;
+  WriteGlobalVarOp_Minus1 = 11;
+  WriteGlobalVarOp_Invert = 12;
+  WriteGlobalVarOp_PlusDelta = 13;
+  WriteGlobalVarOp_MinusDelta = 14;
+  WriteGlobalVarOp_RemoveAtIndex = 15;
 }
 
 message CreateGlobalVar {

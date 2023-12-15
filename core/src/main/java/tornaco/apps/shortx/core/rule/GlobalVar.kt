@@ -123,6 +123,14 @@ fun GlobalVar.isList(): Boolean = listOf(
     GlobalVarType.BoolList
 ).contains(this.type.toType())
 
+fun GlobalVar.isBool(): Boolean = listOf(
+    GlobalVarType.Bool
+).contains(this.type.toType())
+
+fun GlobalVar.isInt(): Boolean = listOf(
+    GlobalVarType.Int
+).contains(this.type.toType())
+
 fun String.toVarValueNotList(type: GlobalVarType?): ProtoAny? {
     return when (type) {
         GlobalVarType.Int -> {
@@ -318,6 +326,7 @@ private val listOnlyOps = listOf(
     WriteGlobalVarOp.WriteGlobalVarOp_DeleteFirst,
     WriteGlobalVarOp.WriteGlobalVarOp_Reverse,
     WriteGlobalVarOp.WriteGlobalVarOp_Shuffle,
+    WriteGlobalVarOp.WriteGlobalVarOp_RemoveAtIndex,
 )
 private val needInputValueOps = listOf(
     WriteGlobalVarOp.WriteGlobalVarOp_Auto,
@@ -325,4 +334,6 @@ private val needInputValueOps = listOf(
     WriteGlobalVarOp.WriteGlobalVarOp_AppendToLast,
     WriteGlobalVarOp.WriteGlobalVarOp_Override,
     WriteGlobalVarOp.WriteGlobalVarOp_DeleteValue,
+    WriteGlobalVarOp.WriteGlobalVarOp_PlusDelta,
+    WriteGlobalVarOp.WriteGlobalVarOp_MinusDelta,
 )

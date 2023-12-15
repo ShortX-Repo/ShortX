@@ -8,6 +8,8 @@ import tornaco.apps.shortx.core.proto.action.WriteGlobalVar
 import tornaco.apps.shortx.core.proto.action.WriteGlobalVarOp
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.rule.addOrUpdateValue
+import tornaco.apps.shortx.core.rule.isBool
+import tornaco.apps.shortx.core.rule.isInt
 import tornaco.apps.shortx.core.rule.isList
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.replaceLocalVarValues
@@ -129,6 +131,15 @@ object WriteGlobalVar : Actor {
                 })
             }
 
+            WriteGlobalVarOp.WriteGlobalVarOp_RemoveAtIndex -> {
+                globalVar.throwIfNotList(op)
+                val indexToRemove = stringValueToWrite.toInt()
+                val currentValue = globalVar.valueList()
+                globalVar.setValue(currentValue.toMutableList().apply {
+                    removeAt(indexToRemove)
+                })
+            }
+
             WriteGlobalVarOp.WriteGlobalVarOp_Clear -> {
                 globalVar.setValue(emptyList())
             }
@@ -148,6 +159,69 @@ object WriteGlobalVar : Actor {
             WriteGlobalVarOp.UNRECOGNIZED -> {
                 throw UnsupportedOperationException("WriteGlobalVar: UNRECOGNIZED op")
             }
+
+            WriteGlobalVarOp.WriteGlobalVarOp_Plus1 -> {
+                globalVar.throwIfNotGenericType(op)
+                val currentValue = globalVar.valueList()
+                val newValueInt: Long = if (currentValue.isEmpty()) {
+                    1
+                } else {
+                    currentValue[0].toLong() + 1
+                }
+                globalVar.setValue(listOf(newValueInt.toString()))
+            }
+
+            WriteGlobalVarOp.WriteGlobalVarOp_Minus1 -> {
+                globalVar.throwIfNotGenericType(op)
+                val currentValue = globalVar.valueList()
+                val newValueInt: Long = if (currentValue.isEmpty()) {
+                    0
+                } else {
+                    currentValue[0].toLong() - 1
+                }
+                globalVar.setValue(listOf(newValueInt.toString()))
+            }
+
+            WriteGlobalVarOp.WriteGlobalVarOp_Invert -> {
+                if (globalVar.isList()) {
+                    val currentValue = globalVar.valueList()
+                    globalVar.setValue(currentValue.reversed())
+                } else if (globalVar.isBool()) {
+                    val currentValue = globalVar.valueList()
+                    val newValueBool = if (currentValue.isEmpty()) {
+                        false
+                    } else {
+                        !currentValue[0].toBoolean()
+                    }
+                    globalVar.setValue(listOf(newValueBool.toString()))
+                } else {
+                    globalVar
+                }
+            }
+
+            WriteGlobalVarOp.WriteGlobalVarOp_PlusDelta -> {
+                globalVar.throwIfNotIntType(op)
+                val currentValue = globalVar.valueList()
+                val intDelta = stringValueToWrite.trim().toLong()
+                val newValueInt: Long = if (currentValue.isEmpty()) {
+                    intDelta
+                } else {
+                    currentValue[0].toLong() + intDelta
+                }
+                globalVar.setValue(listOf(newValueInt.toString()))
+            }
+
+            WriteGlobalVarOp.WriteGlobalVarOp_MinusDelta -> {
+                globalVar.throwIfNotIntType(op)
+                val currentValue = globalVar.valueList()
+                val intDelta = stringValueToWrite.trim().toLong()
+                val newValueInt: Long = if (currentValue.isEmpty()) {
+                    -intDelta
+                } else {
+                    currentValue[0].toLong() - intDelta
+                }
+                globalVar.setValue(listOf(newValueInt.toString()))
+            }
         }
 
         onDebugBuild {
@@ -161,6 +235,18 @@ object WriteGlobalVar : Actor {
     private fun GlobalVar.throwIfNotList(op: WriteGlobalVarOp) {
         require(isList()) {
             "$op can only be applied to List type."
+        }
+    }
+
+    private fun GlobalVar.throwIfNotGenericType(op: WriteGlobalVarOp) {
+        require(!isList()) {
+            "$op can only be applied to generic type."
+        }
+    }
+
+    private fun GlobalVar.throwIfNotIntType(op: WriteGlobalVarOp) {
+        require(isInt()) {
+            "$op can only be applied to Int type."
         }
     }
 }
