@@ -116,6 +116,7 @@ dependencies {
     implementation(project(":patch"))
     implementation(project(":core"))
     implementation(project(":external:utils"))
+    implementation(project(":external:codeditor"))
 
     debugImplementation(project(":services-ui"))
 

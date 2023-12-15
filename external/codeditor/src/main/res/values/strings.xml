@@ -1,0 +1,87 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~    sora-editor - the awesome code editor for Android
+  ~    https://github.com/Rosemoe/sora-editor
+  ~    Copyright (C) 2020-2023  Rosemoe
+  ~
+  ~     This library is free software; you can redistribute it and/or
+  ~     modify it under the terms of the GNU Lesser General Public
+  ~     License as published by the Free Software Foundation; either
+  ~     version 2.1 of the License, or (at your option) any later version.
+  ~
+  ~     This library is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  ~     Lesser General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU Lesser General Public
+  ~     License along with this library; if not, write to the Free Software
+  ~     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  ~     USA
+  ~
+  ~     Please contact Rosemoe by email 2073412493@qq.com if you need
+  ~     additional information or have any questions
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<resources>
+    <string name="layout_tv_last">Last</string>
+    <string name="layout_tv_next">Next</string>
+    <string name="layout_tv_replace">Replace</string>
+    <string name="layout_tv_replaceAll">Replace All</string>
+    <string name="text_to_search">Text to search</string>
+    <string name="replacement">Replacement</string>
+    <string name="cursor_actions">Cursor Actions</string>
+    <string name="go_to_end">Go To End</string>
+    <string name="move_up">Move Up</string>
+    <string name="move_down">Move Down</string>
+    <string name="move_left">Move Left</string>
+    <string name="move_right">Move Right</string>
+    <string name="home">Home</string>
+    <string name="end">End</string>
+    <string name="text_actions">Text Actions</string>
+    <string name="switch_color_scheme">Switch Color Scheme</string>
+    <string name="undo">Undo</string>
+    <string name="redo">Redo</string>
+    <string name="search_text">Search Text</string>
+    <string name="action_mode">Action Mode</string>
+    <string name="search_panel">Search Panel</string>
+    <string name="code_navigation">Code Navigation</string>
+    <string name="switch_language">Switch Language</string>
+    <string name="format">Format</string>
+    <string name="code_navi">Code Navigation</string>
+    <string name="navi_err_msg">Code navigation not prepared or unsupported</string>
+    <string name="color_scheme">Color Scheme</string>
+    <string name="err_crash">"Unexpected exception occurred. Crash log is saved to crash-journal.log in private files directory. "</string>
+    <string name="wordwrap">Wordwrap</string>
+    <string name="show_crash_log">Open crash log</string>
+    <string name="clear_crash_log">Clear crash log</string>
+    <string name="line_number_visibility">Show line number</string>
+    <string name="pin_line_number">Pin LineNumber</string>
+    <string name="feature_switches">Feature Switches</string>
+    <string name="magnifier">Magnifier</string>
+    <string name="use_icu_library">Use ICU library</string>
+    <string name="open_new_activity">Open new activity</string>
+    <string name="open_completion_window_animation">Completion Window Animation</string>
+    <string name="open_lsp_activity">Open lsp activity</string>
+    <string name="not_supported">Not supported</string>
+    <string name="dialog_api_warning_msg">LSP works only on Android O or above</string>
+    <string name="line_info_panel_position">Line Info Panel Position</string>
+    <string name="fixed">Fixed</string>
+    <string name="follow_scrollbar">Follow scrollbar</string>
+    <string name="top">Top</string>
+    <string name="bottom">Bottom</string>
+    <string name="left">Left</string>
+    <string name="right">Right</string>
+    <string name="center">Center</string>
+    <string name="top_left">Top left</string>
+    <string name="top_right">Top right</string>
+    <string name="bottom_left">Bottom left</string>
+    <string name="bottom_right">Bottom right</string>
+    <string name="open_debug_document">Open View.java</string>
+    <string name="debug">Debug</string>
+    <string name="layout_tv_search_options">Options</string>
+    <string name="search_option_regex">Regex</string>
+    <string name="search_option_whole_word">Whole Word</string>
+    <string name="search_option_match_case">Match Case</string>
+    <string name="enable_soft_keyboard">Enable soft keyboard</string>
+    <string name="hide_soft_kbd_if_hard_kbd_available">Hide soft kbd if hard kbd available</string>
+</resources>

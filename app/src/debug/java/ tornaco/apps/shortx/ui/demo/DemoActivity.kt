@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import io.github.rosemoe.sora.app.CEActivity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.ShortXManagerNative
@@ -92,7 +93,7 @@ class DemoActivity : BaseActivity() {
 
 
                         FilledTonalButton(onClick = {
-                            throw IllegalArgumentException()
+                            startActivity(Intent(this@DemoActivity, CEActivity::class.java))
                         }) {
                             Text(text = "Crash")
                         }

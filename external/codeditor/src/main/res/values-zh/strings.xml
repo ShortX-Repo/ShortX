@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?><!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~    sora-editor - the awesome code editor for Android
+  ~    https://github.com/Rosemoe/sora-editor
+  ~    Copyright (C) 2020-2023  Rosemoe
+  ~
+  ~     This library is free software; you can redistribute it and/or
+  ~     modify it under the terms of the GNU Lesser General Public
+  ~     License as published by the Free Software Foundation; either
+  ~     version 2.1 of the License, or (at your option) any later version.
+  ~
+  ~     This library is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  ~     Lesser General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU Lesser General Public
+  ~     License along with this library; if not, write to the Free Software
+  ~     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  ~     USA
+  ~
+  ~     Please contact Rosemoe by email 2073412493@qq.com if you need
+  ~     additional information or have any questions
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<resources>
+    <string name="layout_tv_last">上个</string>
+    <string name="layout_tv_next">下个</string>
+    <string name="layout_tv_replace">替换</string>
+    <string name="layout_tv_replaceAll">全部</string>
+    <string name="text_to_search">查找文本</string>
+    <string name="replacement">替换到的文本</string>
+    <string name="cursor_actions">光标操作</string>
+    <string name="go_to_end">到全文末尾</string>
+    <string name="move_up">上移</string>
+    <string name="move_down">下移</string>
+    <string name="move_left">左移</string>
+    <string name="move_right">右移</string>
+    <string name="home">行首</string>
+    <string name="end">行末</string>
+    <string name="text_actions">文本操作</string>
+    <string name="switch_color_scheme">颜色风格</string>
+    <string name="undo">撤销</string>
+    <string name="redo">重做</string>
+    <string name="search_text">搜索文本</string>
+    <string name="action_mode">标题栏模式</string>
+    <string name="search_panel">搜索面板</string>
+    <string name="code_navigation">代码导航</string>
+    <string name="switch_language">调节程序语言</string>
+    <string name="format">格式化</string>
+    <string name="code_navi">代码导航</string>
+    <string name="navi_err_msg">代码导航没有准备好或者该语言不支持</string>
+    <string name="color_scheme">颜色风格</string>
+    <string name="err_crash">应用程序已发生错误，错误日志已保存至应用私有文件夹的crash-journal.log</string>
+    <string name="wordwrap">自动换行</string>
+    <string name="show_crash_log">打开崩溃日志</string>
+    <string name="clear_crash_log">清除崩溃日志</string>
+    <string name="line_number_visibility">显示行号</string>
+    <string name="pin_line_number">固定显示行号</string>
+    <string name="feature_switches">功能开关</string>
+    <string name="magnifier">放大镜</string>
+    <string name="open_completion_window_animation">自动补全窗口动画</string>
+    <string name="use_icu_library">使用ICU</string>
+    <string name="open_new_activity">打开新界面</string>
+    <string name="open_lsp_activity">打开LSP测试界面</string>
+    <string name="not_supported">此项操作不受支持</string>
+    <string name="dialog_api_warning_msg">LSP只能在Android O或更新的系统上运行</string>
+    <string name="line_info_panel_position">行号面板位置</string>
+    <string name="fixed">固定</string>
+    <string name="follow_scrollbar">跟随滚动条</string>
+    <string name="top">上方</string>
+    <string name="bottom">下方</string>
+    <string name="left">左侧</string>
+    <string name="right">右侧</string>
+    <string name="center">中间</string>
+    <string name="top_left">左上方</string>
+    <string name="top_right">右上方</string>
+    <string name="bottom_left">左下方</string>
+    <string name="bottom_right">右下方</string>
+    <string name="layout_tv_search_options">选项</string>
+    <string name="search_option_regex">正则表达式</string>
+    <string name="search_option_whole_word">全词匹配</string>
+    <string name="search_option_match_case">区分大小写</string>
+    <string name="enable_soft_keyboard">启用软键盘</string>
+    <string name="hide_soft_kbd_if_hard_kbd_available">自动隐藏软键盘</string>
+</resources>
