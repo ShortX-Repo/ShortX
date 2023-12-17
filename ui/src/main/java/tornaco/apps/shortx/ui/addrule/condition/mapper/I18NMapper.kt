@@ -349,11 +349,13 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
         }
 
         is Condition.EvaluateGlobalVar -> listOf(
-            i18N["ui.conditions.eva.global.var"]
+            i18N["ui.conditions.eva.global.var"],
+            condition.varName
         )
 
         is Condition.EvaluateLocalVar -> listOf(
-            i18N["ui.conditions.eva.local.var"]
+            i18N["ui.conditions.eva.local.var"],
+            condition.varName
         )
 
         is Condition.BatteryPercent -> {
