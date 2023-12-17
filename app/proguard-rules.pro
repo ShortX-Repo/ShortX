@@ -187,3 +187,4 @@
 -dontwarn java.beans.Introspector
 -dontwarn java.beans.PropertyDescriptor
 -dontwarn javax.lang.model.SourceVersion
+-dontwarn java.beans.FeatureDescriptor

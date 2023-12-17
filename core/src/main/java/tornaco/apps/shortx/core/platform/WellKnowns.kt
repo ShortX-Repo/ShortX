@@ -64,6 +64,14 @@ object Classes {
     }
 
     @Throws(ClassNotFoundException::class)
+    fun ClassLoader.accProxyManager(): Class<*> {
+        return Reflections.findClass(
+            "com.android.server.accessibility.AccessibilityUserState",
+            this
+        )
+    }
+
+    @Throws(ClassNotFoundException::class)
     fun ClassLoader.windowManagerServiceClass(): Class<*> =
         Reflections.findClass("com.android.server.wm.WindowManagerService", this)
 
