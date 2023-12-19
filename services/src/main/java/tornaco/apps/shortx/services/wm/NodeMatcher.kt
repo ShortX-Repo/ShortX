@@ -7,85 +7,73 @@ import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.ui.ViewNode
 import tornaco.apps.shortx.core.util.Logger
 
-data class NodeMatcherRes(
-    val matchViewIdContextData: String,
-    val matchTextContextData: String,
-    val matchIsRegexContextData: Boolean,
-    val sourceNodeId: Long,
-    val windowId: Int,
+
+sealed interface NodeMatcherRes {
     val isMatched: Boolean
-)
+
+    data class MatchByText(
+        val matchTextContextData: String,
+        val matchIsRegexContextData: Boolean,
+        val sourceNodeId: Long,
+        val windowId: Int,
+    ) : NodeMatcherRes {
+        override val isMatched: Boolean = true
+    }
+
+    data class MatchById(
+        val matchViewIdContextData: String,
+        val sourceNodeId: Long,
+        val windowId: Int,
+    ) : NodeMatcherRes {
+        override val isMatched: Boolean = true
+    }
+
+    data object NotMatch : NodeMatcherRes {
+        override val isMatched: Boolean = false
+    }
+}
 
 object NodeMatcher {
     private val logger = Logger("NodeMatcher")
 
-    fun matchNodes(matcherAny: Any, allNodes: List<ViewNode>): NodeMatcherRes {
-        var matchViewIdContextData = ""
-        var matchTextContextData = ""
-        var matchIsRegexContextData = false
-        var sourceNodeId = 0L
-        var windowId = 0
-
-        return when (matcherAny) {
+    fun matchNode(matcherAny: Any, viewNode: ViewNode): NodeMatcherRes {
+        val res = when (matcherAny) {
             is NodeMatcherViewId -> {
                 val isMatch =
-                    allNodes.any { viewNode ->
-                        (viewNode.viewId == matcherAny.id || viewNode.shortViewId == matcherAny.id).also {
-                            if (it) {
-                                sourceNodeId = viewNode.sourceNodeId
-                                windowId = viewNode.windowId
-                                matchViewIdContextData = viewNode.viewId
-                            }
-                        }
-                    }
+                    (viewNode.viewId == matcherAny.id || viewNode.shortViewId == matcherAny.id)
                 if (isMatch) {
-                    logger.d("Match viewId: $matchViewIdContextData $sourceNodeId")
+                    NodeMatcherRes.MatchById(
+                        sourceNodeId = viewNode.sourceNodeId,
+                        windowId = viewNode.windowId,
+                        matchViewIdContextData = viewNode.viewId
+                    )
+                } else {
+                    NodeMatcherRes.NotMatch
                 }
-                NodeMatcherRes(
-                    matchViewIdContextData = matchViewIdContextData,
-                    matchTextContextData = "",
-                    matchIsRegexContextData = false,
-                    sourceNodeId = sourceNodeId,
-                    windowId = windowId,
-                    isMatched = isMatch
-                )
             }
 
             is NodeMatcherText -> {
                 val isMatch =
-                    allNodes.any { viewNode ->
-                        matchTextOrRegex(viewNode.text, matcherAny).also {
-                            matchTextContextData = matcherAny.text
-                            matchIsRegexContextData = matcherAny.isRegex
-                            sourceNodeId = viewNode.sourceNodeId
-                            windowId = viewNode.windowId
-                        }
-                    }
+                    matchTextOrRegex(viewNode.text, matcherAny)
                 if (isMatch) {
-                    logger.d("Match text: $matchTextContextData $sourceNodeId")
+                    NodeMatcherRes.MatchByText(
+                        matchTextContextData = matcherAny.text,
+                        matchIsRegexContextData = matcherAny.isRegex,
+                        sourceNodeId = viewNode.sourceNodeId,
+                        windowId = viewNode.windowId
+                    )
+                } else {
+                    NodeMatcherRes.NotMatch
                 }
-                NodeMatcherRes(
-                    matchViewIdContextData = "",
-                    matchTextContextData = matchTextContextData,
-                    matchIsRegexContextData = matchIsRegexContextData,
-                    sourceNodeId = sourceNodeId,
-                    windowId = windowId,
-                    isMatched = isMatch
-                )
             }
 
-            else -> NodeMatcherRes(
-                matchViewIdContextData = "",
-                matchTextContextData = "",
-                matchIsRegexContextData = false,
-                sourceNodeId = 0,
-                windowId = 0,
-                isMatched = false
-            )
+            else -> NodeMatcherRes.NotMatch
         }
 
-    }
+        logger.d("Match $viewNode result: $res")
 
+        return res
+    }
 
     fun List<com.google.protobuf.Any>.extractMatchers(): MatcherList {
         val matchers = mutableListOf<Any>()

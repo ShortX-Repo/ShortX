@@ -20,13 +20,13 @@ object HasNodeOnScreen : Cond {
             }
         }
 
-        val allNodes = param.shortXContext.wm.getAllNodesFromScreen()
-
         val matchers = data.matchersList.extractMatchers()
         logger.d("HasNodeOnScreen, matchers: $matchers")
 
-        val isMatched = matchers.matchers.any {
-            NodeMatcher.matchNodes(it, allNodes).isMatched
+        val isMatched = param.shortXContext.wm.hasFoundNodeOnScreen { node ->
+            matchers.matchers.any { matcher ->
+                NodeMatcher.matchNode(matcher, node).isMatched
+            }
         }
 
         return if (data.isInvert) {

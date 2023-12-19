@@ -332,9 +332,20 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
         logger.d("discoverViewIdFromAccessibilityNode take ${System.currentTimeMillis() - discoverStartTimeMillis}ms")
         root?.recycle()
-        return nodes.also {
-            onDebugBuild { HasNodeOnScreen.logger.d("getAllNodesFromScreen allNodes: $it") }
+        return nodes
+    }
+
+    fun hasFoundNodeOnScreen(check: (ViewNode) -> Boolean): Boolean {
+        val root: AccessibilityNodeInfo? = automationManager.rootInActiveWindow
+        logger.d("hasFoundNodeOnScreen rootInActiveWindow: $root")
+        val discoverStartTimeMillis = System.currentTimeMillis()
+        var result = false
+        if (root != null) {
+            result = hasFoundViewNode(root, check)
+            root.recycle()
         }
+        logger.d("hasFoundNodeOnScreen take ${System.currentTimeMillis() - discoverStartTimeMillis}ms")
+        return result
     }
 
     fun enableUniversalCopy() {
@@ -637,27 +648,12 @@ class WindowManagerService(shortXContext: ShortXContext) :
         root: AccessibilityNodeInfo
     ) {
         if (root.isVisibleToUser) {
-            val viewId: String = root.viewIdResourceName ?: ""
-            val rect = root.boundsInScreen ?: Rect(0, 0, 0, 0)
             val index = list.size
             list.add(
-                ViewNode(
-                    viewId = viewId,
-                    className = root.className?.toString() ?: "",
-                    text = root.text ?: root.contentDescription ?: "",
-                    rootPackageName = root.packageName?.toString() ?: "android",
-                    sourceNodeId = root.sourceNodeId,
-                    windowId = root.windowId,
-                    position = XRectF(
-                        rect.left.toFloat(),
-                        rect.top.toFloat(),
-                        rect.right.toFloat(),
-                        rect.bottom.toFloat()
-                    ),
+                root.toBasicViewNode().copy(
                     color = ColorPalette[index % ColorPalette.size]
                 )
             )
-
             if (root.childCount > 0) {
                 for (i in 0 until root.childCount) {
                     val child = root.getChild(i)
@@ -669,6 +665,29 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
     }
 
+    private fun hasFoundViewNode(
+        root: AccessibilityNodeInfo,
+        check: (ViewNode) -> Boolean
+    ): Boolean {
+        if (!root.isVisibleToUser) {
+            return false
+        }
+        val node = root.toBasicViewNode()
+        if (check(node)) {
+            return true
+        }
+        if (root.childCount > 0) {
+            for (i in 0 until root.childCount) {
+                val child = root.getChild(i)
+                if (child != null && child != root) {
+                    if (hasFoundViewNode(child, check)) {
+                        return true
+                    }
+                }
+            }
+        }
+        return false
+    }
 
     fun onWindowFocusChanged(ownerUid: Int) {
         systemServiceScope.launchSafety {
