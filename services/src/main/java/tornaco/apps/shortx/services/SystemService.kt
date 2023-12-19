@@ -67,6 +67,10 @@ abstract class SystemService(val shortXContext: ShortXContext, val serviceName: 
 
     }
 
+    open fun userPresent(isFirstTime: Boolean) {
+
+    }
+
     internal fun <T> getTag(key: String): T? {
         synchronized(bagOfTags) {
             @Suppress("UNCHECKED_CAST") return bagOfTags[key] as T

@@ -110,6 +110,7 @@ class GestureService(shortXContext: ShortXContext) :
     }
 
     fun filterInput(input: InputEvent?): Boolean? {
+        shortXContext.input.setHasReceivedInputFilterCallback()
         if (!isSystemReady) return null
         if (input == null) return null
         if (input is MotionEvent) {

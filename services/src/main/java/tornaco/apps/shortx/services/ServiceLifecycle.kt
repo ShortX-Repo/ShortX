@@ -59,4 +59,16 @@ class ServiceLifecycle(private val shortXContext: ShortXContext) {
             }
         }
     }
+
+    fun userPresent(isFirstTime: Boolean) {
+        logger.d("userPresent: $isFirstTime")
+        exe.execute {
+            shortXContext.allServices.forEach {
+                val startTime = System.currentTimeMillis()
+                it.userPresent(isFirstTime)
+                val taken = System.currentTimeMillis() - startTime
+                logger.i("userPresent---> $it take $taken(ms)")
+            }
+        }
+    }
 }

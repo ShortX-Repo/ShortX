@@ -1,10 +1,12 @@
 package tornaco.apps.shortx.services.input
 
 import com.android.internal.view.IInputContext
+import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.proto.clipboard.ClipboardItem
 import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.ShortXService
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.android.ServiceRetriever
 import tornaco.apps.shortx.services.data.ClipboardStore
@@ -12,6 +14,7 @@ import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.systemServiceScope
+import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
 import util.Reflections
 import java.util.UUID
@@ -25,6 +28,11 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     private val _onClipboardListener = mutableListOf<(String) -> Unit>()
 
     private val isIMEShown = AtomicBoolean(false)
+    private val hasEverReceivedInputFilterCallback = AtomicBoolean(false)
+
+    private val inputFilterInstaller by lazy {
+        InputFilterInstaller(ShortXService)
+    }
 
     private val clipboardStore by lazy {
         ClipboardStore(
@@ -47,12 +55,25 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         }
 
         clipboardStore.readBlocking()
+    }
 
-//        onDebugBuild {
-//            repeat(10000) {
-//                addClipboardText("We'd like to ask you a few questions about your experience to help us improve our website. It should take about a minute. - $it")
-//            }
-//        }
+    override fun userPresent(isFirstTime: Boolean) {
+        super.userPresent(isFirstTime)
+        if (isFirstTime) {
+            systemServiceScope.launchSafety {
+                delay(2000)
+                if (!hasEverReceivedInputFilterCallback.get()) {
+                    inputFilterInstaller.installInputFilter()
+                } else {
+                    logger.w("Won't install InputFilter since hasEverReceivedInputFilterCallback is true")
+                }
+            }
+        }
+    }
+
+    fun setHasReceivedInputFilterCallback() {
+        logger.i("setHasReceivedInputFilterCallback")
+        hasEverReceivedInputFilterCallback.set(true)
     }
 
     fun addClipboardText(string: String) {

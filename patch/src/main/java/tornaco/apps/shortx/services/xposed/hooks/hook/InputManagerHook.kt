@@ -22,35 +22,6 @@ object InputManagerHook {
         afterMethod(lpparam.classLoader.inputManagerService(), Methods.start) { param ->
             logger.d("inputManagerService start.")
             ServiceHolder.inputManagerService = param.thisObject
-
-            val hasDisableGestureFlag =
-                ShortXService.serviceBinder.hasHookFlags(ShortXManager.Companion.HookFlags.FLAG_DISABLE_GESTURE_HOOK)
-            logger.i("hasDisableGestureFlag: $hasDisableGestureFlag")
-            if (!hasDisableGestureFlag) {
-                val inputFilter = Reflections.getObjectField(param.thisObject, "mInputFilter")
-                logger.d("inputFilter: $inputFilter")
-
-                // Not null means input filter is enabled.
-                if (inputFilter == null) {
-                    Reflections.callMethod(
-                        ServiceHolder.inputManagerService,
-                        "setInputFilter",
-                        InputFilterImpl
-                    )
-                    logger.i("InputFilter installed.")
-                    Reflections.setObjectField(
-                        ServiceHolder.inputManagerService,
-                        "mInputFilter",
-                        null
-                    )
-                    logger.i("InputFilter removed.")
-                }
-            } else {
-                logger.w("Drop inputFilter set up since hasDisableGestureFlag is true")
-            }
-
-
-            logger.d("handle start complete.")
         }
 
         beforeMethod(lpparam.classLoader.inputManagerService(), Methods.filterInputEvent) { param ->
@@ -119,21 +90,5 @@ object InputManagerHook {
 
     }.onFailure {
         logger.e(it, "debugHooks")
-    }
-}
-
-object InputFilterImpl : IInputFilter.Stub() {
-    private val logger = Logger("InputFilterImpl")
-
-    override fun install(host: IInputFilterHost) {
-        logger.d("install: $host")
-    }
-
-    override fun uninstall() {
-        logger.d("uninstall")
-    }
-
-    override fun filterInputEvent(event: InputEvent, policyFlags: Int) {
-        throw IllegalStateException("filterInputEvent should not be called")
     }
 }

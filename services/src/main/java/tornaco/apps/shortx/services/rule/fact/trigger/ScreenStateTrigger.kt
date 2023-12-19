@@ -45,6 +45,10 @@ class ScreenStateTrigger(override val context: Context, override val shortXConte
                                 "ACTION_USER_PRESENT 1st time",
                                 UserPresentAtTheFirstTime.newBuilder().build()
                             ) { emptyMap() }
+
+                            shortXContext.serviceLifecycle.userPresent(true)
+                        } else {
+                            shortXContext.serviceLifecycle.userPresent(false)
                         }
                     }
                 }
