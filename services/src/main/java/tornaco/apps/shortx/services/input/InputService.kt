@@ -28,7 +28,7 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     private val _onClipboardListener = mutableListOf<(String) -> Unit>()
 
     private val isIMEShown = AtomicBoolean(false)
-    private val hasEverReceivedInputFilterCallback = AtomicBoolean(false)
+    private var hasEverReceivedInputFilterCallback = false
 
     private val inputFilterInstaller by lazy {
         InputFilterInstaller(ShortXService)
@@ -62,7 +62,7 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         if (isFirstTime) {
             systemServiceScope.launchSafety {
                 delay(2000)
-                if (!hasEverReceivedInputFilterCallback.get()) {
+                if (!hasEverReceivedInputFilterCallback) {
                     inputFilterInstaller.installInputFilter()
                 } else {
                     logger.w("Won't install InputFilter since hasEverReceivedInputFilterCallback is true")
@@ -72,8 +72,10 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     }
 
     fun setHasReceivedInputFilterCallback() {
-        logger.i("setHasReceivedInputFilterCallback")
-        hasEverReceivedInputFilterCallback.set(true)
+        if (!hasEverReceivedInputFilterCallback) {
+            logger.i("setHasReceivedInputFilterCallback")
+            hasEverReceivedInputFilterCallback = true
+        }
     }
 
     fun addClipboardText(string: String) {
