@@ -12,7 +12,7 @@ object AccManagerHook {
 
     fun hook(lpparam: XC_LoadPackage.LoadPackageParam) {
         hookSuppressingAccessibilityServices(lpparam)
-        hookProxyManager(lpparam)
+        // hookProxyManager(lpparam)
     }
 
     private fun hookSuppressingAccessibilityServices(lpparam: XC_LoadPackage.LoadPackageParam) =
