@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -47,6 +48,7 @@ import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.proto.common.Author
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.OsUtils
+import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.backup.autoGenBackupFileName
 import tornaco.apps.shortx.ui.base.AppIcon
@@ -66,6 +68,7 @@ import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.LottieLoadingView
@@ -173,6 +176,9 @@ fun SettingsScreen(
                     }
 
                     val i18N = LocalI18N.current
+                    val context = LocalContext.current
+                    val backupErrorTitle = i18N["ui.settings.backup.error.title"]
+                    val backupErrorAction = i18N["ui.settings.backup.error.action"]
                     LaunchedEffect(vm) {
                         vm.backupPerformed.collectLatest {
                             when (it) {
@@ -186,9 +192,19 @@ fun SettingsScreen(
 
                                 is BackupResult.Failed -> {
                                     scope.launch {
-                                        snackbarHostState.showSnackbar(
-                                            i18N["ui.settings.toast.backup.error", mapOf("err" to it.error)],
+                                        val res = snackbarHostState.showSnackbar(
+                                            message = backupErrorTitle,
+                                            actionLabel = backupErrorAction,
+                                            withDismissAction = true
                                         )
+                                        if (res == SnackbarResult.ActionPerformed) {
+                                            kotlin.runCatching {
+                                                PkgUtils.launchPkgSettings(
+                                                    context,
+                                                    BuildProp.APP_PACKAGE_NAME
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -216,6 +232,10 @@ fun SettingsScreen(
                             }
                         }
                     }
+                    val exportLogErrorTitle =
+                        i18N["ui.settings.export.log.error.title"]
+                    val exportLogErrorAction =
+                        i18N["ui.settings.export.log.error.action"]
 
                     LaunchedEffect(vm) {
                         vm.logExportPerformed.collectLatest {
@@ -230,9 +250,20 @@ fun SettingsScreen(
 
                                 is ExportLogResult.Failed -> {
                                     scope.launch {
-                                        snackbarHostState.showSnackbar(
-                                            it.error
+                                        composeLogger.e(it.error)
+                                        val res = snackbarHostState.showSnackbar(
+                                            message = exportLogErrorTitle,
+                                            actionLabel = exportLogErrorAction,
+                                            withDismissAction = true
                                         )
+                                        if (res == SnackbarResult.ActionPerformed) {
+                                            kotlin.runCatching {
+                                                PkgUtils.launchPkgSettings(
+                                                    context,
+                                                    BuildProp.APP_PACKAGE_NAME
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }
