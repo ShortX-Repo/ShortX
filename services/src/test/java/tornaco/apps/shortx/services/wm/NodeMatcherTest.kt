@@ -18,84 +18,65 @@ class NodeMatcherTest {
     }
 
     @Test
-    fun should_match_nodes_id_with_result_false_when_node_is_empty() {
-        val matcher = NodeMatcherViewId.newBuilder().setId("id:123").build()
-        val res = NodeMatcher.matchNodes(matcher, emptyList())
-        res shouldBe NodeMatcherRes(
-            matchViewIdContextData = "",
-            matchTextContextData = "",
-            matchIsRegexContextData = false,
-            sourceNodeId = 0,
-            windowId = 0,
-            isMatched = false
+    fun should_match_nodes_id_with_result_false_when_node_not_match() {
+        val matcher = NodeMatcherViewId.newBuilder().setId("id:123456").build()
+        val res = NodeMatcher.matchNode(
+            matcher, ViewNode(
+                rootPackageName = "android",
+                viewId = "id:123",
+                className = "ClassName",
+                text = "Hello",
+                sourceNodeId = 123,
+                windowId = 2,
+                position = mockk(),
+                color = 1
+            )
         )
-    }
-
-    @Test
-    fun should_match_nodes_text_with_result_false_when_node_is_empty() {
-        val matcher = NodeMatcherText.newBuilder().setText("haha").setIsRegex(true).build()
-        val res = NodeMatcher.matchNodes(matcher, emptyList())
-        res shouldBe NodeMatcherRes(
-            matchViewIdContextData = "",
-            matchTextContextData = "",
-            matchIsRegexContextData = false,
-            sourceNodeId = 0,
-            windowId = 0,
-            isMatched = false
-        )
+        res shouldBe NodeMatcherRes.NotMatch
     }
 
     @Test
     fun should_match_nodes_id_with_result_true_when_node_has_same_id() {
         val matcher = NodeMatcherViewId.newBuilder().setId("id:123").build()
-        val res = NodeMatcher.matchNodes(
-            matcher, listOf(
-                ViewNode(
-                    rootPackageName = "android",
-                    viewId = "id:123",
-                    className = "ClassName",
-                    text = "Hello",
-                    sourceNodeId = 123,
-                    windowId = 2,
-                    position = mockk(),
-                    color = 1
-                )
+        val res = NodeMatcher.matchNode(
+            matcher, ViewNode(
+                rootPackageName = "android",
+                viewId = "id:123",
+                className = "ClassName",
+                text = "Hello",
+                sourceNodeId = 123,
+                windowId = 2,
+                position = mockk(),
+                color = 1
             )
         )
-        res shouldBe NodeMatcherRes(
+        res shouldBe NodeMatcherRes.MatchById(
             matchViewIdContextData = "id:123",
-            matchTextContextData = "",
-            matchIsRegexContextData = false,
             sourceNodeId = 123,
             windowId = 2,
-            isMatched = true
         )
     }
 
     @Test
     fun should_match_nodes_text_with_result_true_when_node_has_same_text() {
         val matcher = NodeMatcherText.newBuilder().setText("Hello").setIsRegex(true).build()
-        val res = NodeMatcher.matchNodes(
-            matcher, listOf(
-                ViewNode(
-                    rootPackageName = "android",
-                    viewId = "id:123",
-                    className = "ClassName",
-                    text = "Hello",
-                    sourceNodeId = 123,
-                    windowId = 2,
-                    position = mockk(),
-                    color = 1
-                )
+        val res = NodeMatcher.matchNode(
+            matcher, ViewNode(
+                rootPackageName = "android",
+                viewId = "id:123",
+                className = "ClassName",
+                text = "Hello",
+                sourceNodeId = 123,
+                windowId = 2,
+                position = mockk(),
+                color = 1
             )
         )
-        res shouldBe NodeMatcherRes(
-            matchViewIdContextData = "",
+        res shouldBe NodeMatcherRes.MatchByText(
             matchTextContextData = "Hello",
             matchIsRegexContextData = true,
             sourceNodeId = 123,
             windowId = 2,
-            isMatched = true
         )
     }
 }
