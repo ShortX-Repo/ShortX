@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
@@ -29,6 +28,7 @@ import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
 import tornaco.apps.shortx.ui.base.code.ShellCommandEditorActivity
+import tornaco.apps.shortx.ui.base.code.mvel.MVELEditorActivity
 import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
@@ -59,16 +59,15 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             })
     DelaySelectorDialog(state = delaySelectionState)
 
-    val mvelSelectorState = rememberCodeEditorState(
-        title = LocalI18N.current["ui.title.mvel"],
-        guideTextAndLink = LocalI18N.current["ui.user.guide"] to BuildProp.WIKI_URL_MVEL,
-        execute = {
-            shortXManager.executeMVEL(it)
+    val mvelEditorLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.toBaseSelectorActionOrNull<Action.MVEL>()
+            action?.let {
+                addAction(it)
+            }
         }
-    ) { expression ->
-        addAction(Action.MVEL(expression = expression.src))
-    }
-    CodeEditorDialog(state = mvelSelectorState)
+    )
 
     val jsSelectorState = rememberCodeEditorState(
         title = LocalI18N.current["ui.title.js"],
@@ -175,7 +174,13 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             }
 
             Action.MVEL::class -> {
-                mvelSelectorState.show(source.getActionAs<Action.MVEL>()?.expression)
+                mvelEditorLauncher.launch(
+                    newIntent(
+                        context,
+                        source.getActionAs<Action.MVEL>(),
+                        MVELEditorActivity::class.java
+                    )
+                )
                 true
             }
 
