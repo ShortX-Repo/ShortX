@@ -51,6 +51,8 @@
             android:name=".shortcut.ActionShortcutActivity"
             android:excludeFromRecents="true"
             android:exported="true"
+            android:launchMode="singleTask"
+            android:taskAffinity="ui.shortcut"
             android:theme="@style/UiTheme.Shortcut">
 
             <intent-filter>
