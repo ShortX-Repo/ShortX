@@ -81,12 +81,12 @@
     </item>
     <item
         android:id="@+id/text_undo"
-        android:icon="@drawable/undo"
+        android:icon="@drawable/ic_code_editor_undo"
         android:title="@string/undo"
         app:showAsAction="always" />
     <item
         android:id="@+id/text_redo"
-        android:icon="@drawable/redo"
+        android:icon="@drawable/ic_code_editor_redo"
         android:title="@string/redo"
         app:showAsAction="always" />
 </menu>

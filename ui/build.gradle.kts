@@ -77,6 +77,7 @@ dependencies {
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.tooling)
+    implementation(libs.compose.ui.viewbinding)
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.compose.material3)
     implementation(libs.compose.material)
@@ -114,6 +115,7 @@ dependencies {
     implementation(project(":external:sec_net"))
     implementation(project(":external:dex-maker"))
     implementation(project(":external:apkbuilder"))
+    implementation(project(":external:codeditor"))
 
     implementation(libs.mmkv)
     implementation(libs.jotp)

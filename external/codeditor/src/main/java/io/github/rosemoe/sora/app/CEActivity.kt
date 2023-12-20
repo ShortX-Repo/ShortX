@@ -34,7 +34,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.PopupMenu
 import androidx.appcompat.app.AppCompatActivity
-import io.github.rosemoe.sora.app.databinding.ActivityMainBinding
+import io.github.rosemoe.sora.app.databinding.ActivityCodeEditorBinding
 import io.github.rosemoe.sora.event.ContentChangeEvent
 import io.github.rosemoe.sora.event.EditorKeyEvent
 import io.github.rosemoe.sora.event.KeyBindingEvent
@@ -59,7 +59,7 @@ import java.util.regex.PatternSyntaxException
 
 
 class CEActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityCodeEditorBinding
     private lateinit var searchMenu: PopupMenu
     private var searchOptions = SearchOptions(false, false)
     private var undo: MenuItem? = null
@@ -67,7 +67,7 @@ class CEActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityCodeEditorBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)

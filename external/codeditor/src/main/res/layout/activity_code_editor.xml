@@ -114,10 +114,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="56dp"
-        android:scrollbarThumbHorizontal="@drawable/scrollbar_thumb"
-        android:scrollbarThumbVertical="@drawable/scrollbar_thumb"
-        android:scrollbarTrackHorizontal="@drawable/scrollbar_track"
-        android:scrollbarTrackVertical="@drawable/scrollbar_track"
+        android:scrollbarThumbHorizontal="@drawable/ic_code_editor_scrollbar_thumb"
+        android:scrollbarThumbVertical="@drawable/ic_code_editor_scrollbar_thumb"
+        android:scrollbarTrackHorizontal="@drawable/ic_code_editor_scrollbar_track"
+        android:scrollbarTrackVertical="@drawable/ic_code_editor_scrollbar_track"
         app:lnPanelPosition="center"
         app:lnPanelPositionMode="follow" />
 
