@@ -48,6 +48,7 @@ dependencies {
 
     implementation(project(":core"))
     implementation(project(":ui-base"))
+    implementation(project(":external:dateformatter"))
     implementation(project(":external:drawbox"))
     // Color picker
     implementation(libs.rang.vikalp)

@@ -1,11 +1,8 @@
-@file:OptIn(ExperimentalFoundationApi::class)
-
 package tornaco.apps.shortx.ui.clipbord
 
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
@@ -22,14 +19,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -44,20 +40,29 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.proto.clipboard.ClipboardItem
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.ui.BaseComposeView
 import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.ColoredIcon
+import tornaco.apps.shortx.ui.base.DropdownItem
+import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MD3Badge
+import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTextField
-import tornaco.apps.shortx.ui.base.SmallTitle
+import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.theme.PrefIcon
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import java.util.Date
 import java.util.UUID
 
 @SuppressLint("ViewConstructor")
@@ -107,16 +112,18 @@ class ClipboardView(
                         topEnd = 24.dp
                     ),
                     color = ColorDefaults.backgroundSurfaceColor(),
-                    shadowElevation = 4.dp,
+                    shadowElevation = 8.dp,
                 ) {
                     var clipState by remember { mutableStateOf(clips) }
                     var inputState by remember { mutableStateOf("") }
                     var isShowInput by remember { mutableStateOf(false) }
 
+                    val i18N = LocalI18N.current
+
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight(fraction = 0.33f),
+                            .fillMaxHeight(fraction = 0.4f),
                         contentPadding = PaddingValues(bottom = 32.dp)
                     ) {
 
@@ -130,19 +137,13 @@ class ClipboardView(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                SmallTitle(
-                                    text = LocalI18N.current["ui.action.show.clip.board"],
+                                MediumTitle(
+                                    text = i18N["ui.action.show.clip.board"] + "(${clipState.size})",
                                     color = MaterialTheme.colorScheme.onSurface,
                                 )
 
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    TextButton(onClick = {
-                                        clearAll()
-                                        clipState = emptyList()
-                                    }) {
-                                        Text(text = LocalI18N.current["ui.action.show.clip.board.clear.all"])
-                                    }
-
+                                    // Add
                                     IconButton(onClick = {
                                         isShowInput = true
                                     }) {
@@ -158,6 +159,31 @@ class ClipboardView(
                                         }
                                     }
 
+                                    // More
+                                    val dropdownState = rememberDropdownSelectorState()
+                                    Box {
+                                        DropdownSelector(
+                                            state = dropdownState, items = listOf(
+                                                DropdownItem(labelLines = listOf(i18N["ui.action.show.clip.board.clear.all"]),
+                                                    data = "clearAll",
+                                                    icon = {
+                                                        RemixIcon(Remix.System.delete_bin_5_line)
+                                                    })
+                                            )
+                                        ) {
+                                            clearAll()
+                                            clipState = emptyList()
+                                        }
+
+                                        IconButton(onClick = {
+                                            dropdownState.open()
+                                        }) {
+                                            RemixIcon(
+                                                Remix.System.more_2_fill,
+                                                tint = MaterialTheme.colorScheme.onSurface
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -196,8 +222,23 @@ class ClipboardView(
                             }
                         }
 
+
                         if (clipState.isNotEmpty()) {
-                            items(clipState) { clip: ClipboardItem ->
+                            itemsIndexed(clipState) { index, clip: ClipboardItem ->
+                                val context = LocalContext.current
+                                val formatTime = remember {
+                                    if (System.currentTimeMillis() - clip.createAt < java.time.Duration.ofHours(
+                                            12
+                                        ).toMillis()
+                                    ) {
+                                        FuzzyDateTimeFormatter.getTimeAgo(
+                                            context,
+                                            Date(clip.createAt)
+                                        )
+                                    } else {
+                                        DateUtils.formatLongForMessageTime(clip.createAt)
+                                    }
+                                }
                                 Column {
                                     Row(
                                         modifier = Modifier
@@ -211,13 +252,36 @@ class ClipboardView(
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
-                                        Text(
-                                            modifier = Modifier.weight(1f, fill = false),
-                                            color = MaterialTheme.colorScheme.onSurface,
-                                            text = clip.value,
-                                            maxLines = 3,
-                                            fontSize = 12.5.sp
-                                        )
+                                        Row(
+                                            verticalAlignment = Alignment.Top,
+                                            modifier = Modifier.weight(1f, fill = false)
+                                        ) {
+                                            MD3Badge(text = {
+                                                Text(
+                                                    color = MaterialTheme.colorScheme.onSurface,
+                                                    text = index.toString(),
+                                                    fontSize = 10.5.sp
+                                                )
+                                            })
+
+                                            TinySpacer()
+
+                                            Column {
+                                                Text(
+                                                    color = MaterialTheme.colorScheme.onSurface,
+                                                    text = clip.value,
+                                                    maxLines = 3,
+                                                    fontSize = 12.5.sp
+                                                )
+                                                Text(
+                                                    color = MaterialTheme.colorScheme.onSurface.copy(
+                                                        alpha = 0.8f
+                                                    ),
+                                                    text = formatTime,
+                                                    fontSize = 10.5.sp
+                                                )
+                                            }
+                                        }
 
                                         IconButton(onClick = {
                                             removeText(clip.id)
@@ -234,8 +298,7 @@ class ClipboardView(
                                     }
                                     Divider(
                                         modifier = Modifier
-                                            .padding(horizontal = 16.dp)
-                                            .padding(end = 64.dp),
+                                            .padding(horizontal = 16.dp),
                                         thickness = 0.5.dp
                                     )
                                 }
@@ -243,7 +306,9 @@ class ClipboardView(
                         } else {
                             item {
                                 Box(
-                                    modifier = Modifier.fillMaxSize(),
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(top = 72.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
