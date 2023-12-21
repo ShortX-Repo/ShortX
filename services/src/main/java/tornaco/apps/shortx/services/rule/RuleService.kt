@@ -352,6 +352,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 )
             }
         }
+        logger.d("allTriggers registered.(or posted.)")
     }
 
     // Quick check.

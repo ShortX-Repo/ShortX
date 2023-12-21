@@ -6,7 +6,6 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
 import android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
-import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen
@@ -15,6 +14,8 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.systemServiceScope
+import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.wm.NodeMatcher
 import tornaco.apps.shortx.services.wm.NodeMatcher.extractMatchers
 import tornaco.apps.shortx.services.wm.NodeMatcherRes
@@ -67,6 +68,13 @@ class AccessibilityNodeOnScreenTrigger(
     }
 
     override fun register() {
+        shortXContext.rule.systemServiceScope.launchSafety {
+            doRegister()
+        }
+    }
+
+    private suspend fun doRegister() {
+        logger.i("doRegister")
         nodeMatchers.clear()
 
         shortXContext.rule.getAllEnabledRules().forEach { rule ->
@@ -92,99 +100,100 @@ class AccessibilityNodeOnScreenTrigger(
         if (nodeMatchers.isEmpty()) {
             shortXContext.wm.setOnAccessibilityEvent(null)
         } else {
-            runBlocking {
-                shortXContext.wm.withUiAutomation("Has node matcher.") {
-                }
-            }
-
-            shortXContext.wm.setOnAccessibilityEvent { event ->
-                if (event.eventType == TYPE_WINDOW_STATE_CHANGED) {
-                    val eventPackageName = event.packageName?.toString()
-                    val eventClassName = event.className?.toString()
-                    if (eventPackageName != null && eventClassName != null) {
-                        val componentName = ComponentName(eventPackageName, eventClassName)
-                        val activityInfo = tryGetActivity(context, componentName)
-                        val isActivity = activityInfo != null
-                        if (isActivity) {
-                            onDebugBuild { logger.d("isActivity, componentName: $componentName") }
-                            if (currentClassName != componentName.className) {
-                                currentClassName = componentName.className
-                                currentClassTimeMillis = System.currentTimeMillis()
-                            }
-                        }
-                    }
-                } else if (event.eventType == TYPE_WINDOW_CONTENT_CHANGED) {
-                    val timePassed = System.currentTimeMillis() - currentClassTimeMillis
-
-                    val rootPkgName = event.packageName
-                    onDebugBuild { logger.d("TYPE_WINDOW_CONTENT_CHANGED currentClassName: $currentClassName timePassed: $timePassed") }
-
-                    val matcherForThisPackage =
-                        nodeMatchers
-                            .filterKeys { it.packageName == rootPkgName || it.packageName.isEmpty() || it.packageName == "*" }
-                            .filterKeys { it.componentName == null || it.componentName.className == currentClassName }
-                            .filterKeys { it.timeout < 0 || it.timeout >= timePassed }
-
-                    val shouldCheckEvent = matcherForThisPackage.isNotEmpty()
-                    if (shouldCheckEvent) {
-                        matcherForThisPackage.forEach { (brief, matcherList) ->
-                            // Handle every Fact
-                            matcherList.matchers.forEach FE@{ matcherAny ->
-                                val hasFoundNode =
-                                    shortXContext.wm.hasFoundNodeOnScreen { viewNode ->
-                                        val matchRes =
-                                            NodeMatcher.matchNode(matcherAny, viewNode)
-                                        when (matchRes) {
-                                            is NodeMatcherRes.MatchById -> {
-                                                shortXContext.rule.publishFact(
-                                                    reason = "Match MatchById",
-                                                    fact = HasFoundNodeOnScreen.newBuilder()
-                                                        .setId(brief.id)
-                                                        .build(),
-                                                    initialContextDataLazy = {
-                                                        mapOf(
-                                                            ContextDataMapping.HasFoundNodeOnScreen.matchedViewId.name to matchRes.matchViewIdContextData,
-                                                            ContextDataMapping.HasFoundNodeOnScreen.sourceNodeId.name to matchRes.sourceNodeId,
-                                                            ContextDataMapping.HasFoundNodeOnScreen.windowId.name to matchRes.windowId,
-                                                        )
-                                                    }
-                                                )
-                                            }
-
-                                            is NodeMatcherRes.MatchByText -> {
-                                                shortXContext.rule.publishFact(
-                                                    reason = "Match MatchByText",
-                                                    fact = HasFoundNodeOnScreen.newBuilder()
-                                                        .setId(brief.id)
-                                                        .build(),
-                                                    initialContextDataLazy = {
-                                                        mapOf(
-                                                            ContextDataMapping.HasFoundNodeOnScreen.matchedViewText.name to matchRes.matchTextContextData,
-                                                            ContextDataMapping.HasFoundNodeOnScreen.matchedViewTextIsRegex.name to matchRes.matchIsRegexContextData,
-                                                            ContextDataMapping.HasFoundNodeOnScreen.sourceNodeId.name to matchRes.sourceNodeId,
-                                                            ContextDataMapping.HasFoundNodeOnScreen.windowId.name to matchRes.windowId,
-                                                        )
-                                                    }
-                                                )
-                                            }
-
-                                            NodeMatcherRes.NotMatch -> {
-
-                                            }
-                                        }
-                                        matchRes.isMatched
-                                    }
-                                logger.d("brief: $brief $hasFoundNode")
-                                if (hasFoundNode) {
-                                    return@FE
+            shortXContext.wm.withUiAutomation("Has node matcher.") { wms ->
+                wms.setOnAccessibilityEvent { event ->
+                    if (event.eventType == TYPE_WINDOW_STATE_CHANGED) {
+                        val eventPackageName = event.packageName?.toString()
+                        val eventClassName = event.className?.toString()
+                        if (eventPackageName != null && eventClassName != null) {
+                            val componentName = ComponentName(eventPackageName, eventClassName)
+                            val activityInfo = tryGetActivity(context, componentName)
+                            val isActivity = activityInfo != null
+                            if (isActivity) {
+                                onDebugBuild { logger.d("isActivity, componentName: $componentName") }
+                                if (currentClassName != componentName.className) {
+                                    currentClassName = componentName.className
+                                    currentClassTimeMillis = System.currentTimeMillis()
                                 }
                             }
                         }
-                    } else {
-                        logger.p("No need to check, shouldCheckEvent is false.")
+                    } else if (event.eventType == TYPE_WINDOW_CONTENT_CHANGED) {
+                        val timePassed = System.currentTimeMillis() - currentClassTimeMillis
+
+                        val rootPkgName = event.packageName
+                        onDebugBuild { logger.d("TYPE_WINDOW_CONTENT_CHANGED currentClassName: $currentClassName timePassed: $timePassed") }
+
+                        // Ignore some packages.
+                        if (rootPkgName != "android") {
+                            val matcherForThisPackage =
+                                nodeMatchers
+                                    .filterKeys { it.packageName == rootPkgName || it.packageName.isEmpty() || it.packageName == "*" }
+                                    .filterKeys { it.componentName == null || it.componentName.className == currentClassName }
+                                    .filterKeys { it.timeout < 0 || it.timeout >= timePassed }
+
+                            val shouldCheckEvent = matcherForThisPackage.isNotEmpty()
+                            if (shouldCheckEvent) {
+                                matcherForThisPackage.forEach { (brief, matcherList) ->
+                                    // Handle every Fact
+                                    matcherList.matchers.forEach FE@{ matcherAny ->
+                                        val hasFoundNode =
+                                            shortXContext.wm.hasFoundNodeOnScreen { viewNode ->
+                                                val matchRes =
+                                                    NodeMatcher.matchNode(matcherAny, viewNode)
+                                                when (matchRes) {
+                                                    is NodeMatcherRes.MatchById -> {
+                                                        shortXContext.rule.publishFact(
+                                                            reason = "Match MatchById",
+                                                            fact = HasFoundNodeOnScreen.newBuilder()
+                                                                .setId(brief.id)
+                                                                .build(),
+                                                            initialContextDataLazy = {
+                                                                mapOf(
+                                                                    ContextDataMapping.HasFoundNodeOnScreen.matchedViewId.name to matchRes.matchViewIdContextData,
+                                                                    ContextDataMapping.HasFoundNodeOnScreen.sourceNodeId.name to matchRes.sourceNodeId,
+                                                                    ContextDataMapping.HasFoundNodeOnScreen.windowId.name to matchRes.windowId,
+                                                                )
+                                                            }
+                                                        )
+                                                    }
+
+                                                    is NodeMatcherRes.MatchByText -> {
+                                                        shortXContext.rule.publishFact(
+                                                            reason = "Match MatchByText",
+                                                            fact = HasFoundNodeOnScreen.newBuilder()
+                                                                .setId(brief.id)
+                                                                .build(),
+                                                            initialContextDataLazy = {
+                                                                mapOf(
+                                                                    ContextDataMapping.HasFoundNodeOnScreen.matchedViewText.name to matchRes.matchTextContextData,
+                                                                    ContextDataMapping.HasFoundNodeOnScreen.matchedViewTextIsRegex.name to matchRes.matchIsRegexContextData,
+                                                                    ContextDataMapping.HasFoundNodeOnScreen.sourceNodeId.name to matchRes.sourceNodeId,
+                                                                    ContextDataMapping.HasFoundNodeOnScreen.windowId.name to matchRes.windowId,
+                                                                )
+                                                            }
+                                                        )
+                                                    }
+
+                                                    NodeMatcherRes.NotMatch -> {
+
+                                                    }
+                                                }
+                                                matchRes.isMatched
+                                            }
+                                        logger.d("brief: $brief $hasFoundNode")
+                                        if (hasFoundNode) {
+                                            return@FE
+                                        }
+                                    }
+                                }
+                            } else {
+                                logger.p("No need to check, shouldCheckEvent is false.")
+                            }
+                        }
                     }
                 }
             }
+
         }
     }
 

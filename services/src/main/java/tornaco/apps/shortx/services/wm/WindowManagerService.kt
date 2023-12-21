@@ -2,7 +2,6 @@ package tornaco.apps.shortx.services.wm
 
 import android.app.UiAutomation.OnAccessibilityEventListener
 import android.content.ClipData
-import android.graphics.Rect
 import android.os.Handler
 import android.os.Looper
 import android.view.Surface
@@ -14,7 +13,6 @@ import androidx.test.uiautomator.imp.UiSelector
 import androidx.test.uiautomator.imp.adapter.InstrumentationAdapter
 import github.tornaco.android.thanos.core.app.ThanosManagerNative
 import kotlinx.coroutines.delay
-import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.fact.AppGainWindowFocus
@@ -30,7 +28,6 @@ import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.core.util.windowManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
-import tornaco.apps.shortx.services.rule.cond.impl.HasNodeOnScreen
 import tornaco.apps.shortx.services.rule.fact.trigger.rotationToDegree
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
@@ -71,6 +68,8 @@ class WindowManagerService(shortXContext: ShortXContext) :
 
     val viewScroller by lazy { ViewScroller(this) }
 
+    private var hasUserPresentBeenCalled: Boolean = false
+
     fun setOnAccessibilityEvent(onAccessibilityEvent: ((AccessibilityEvent) -> Unit)?) {
         this.onAccessibilityEvent = onAccessibilityEvent
     }
@@ -82,6 +81,11 @@ class WindowManagerService(shortXContext: ShortXContext) :
             context.windowManager.defaultDisplay.rotation.rotationToDegree().apply {
                 logger.i("systemReady, set screenRotateDegree to: $this")
             }
+    }
+
+    override fun userPresent(isFirstTime: Boolean) {
+        super.userPresent(isFirstTime)
+        hasUserPresentBeenCalled = true
     }
 
     override fun screenOff() {
@@ -115,9 +119,25 @@ class WindowManagerService(shortXContext: ShortXContext) :
     }
 
     suspend fun withUiAutomation(reason: String, action: suspend (WindowManagerService) -> Unit) {
+        ensureUserPresent()
         ensureAutomationConnected(reason)
         waitUntilConnected()
         action.invoke(this)
+    }
+
+    private suspend fun ensureUserPresent() {
+        // Note: We must not registerUiAutomation before switchUser of AccManagerService called, or it will
+        // not trigger Acc List update.
+        // Missing below call:
+        // ProxyList [main] clear: java.lang.Throwable
+        //	at tornaco.apps.shortx.services.xposed.hooks.hook.ProxyList.clear(Unknown Source:4)
+        //	at com.android.server.accessibility.AccessibilityManagerService.readInstalledAccessibilityServiceLocked(AccessibilityManagerService.java:2109)
+        //	at com.android.server.accessibility.AccessibilityManagerService.readConfigurationForUserStateLocked(AccessibilityManagerService.java:2854)
+        //	at com.android.server.accessibility.AccessibilityManagerService.switchUser(AccessibilityManagerService.java:1820)
+        while (!isSystemReady || !hasUserPresentBeenCalled) {
+            delay(1000)
+            logger.d("ensureUserPresent, user not present, wait.")
+        }
     }
 
     suspend fun waitUntilConnected(timeout: Long = 3000): Boolean {
