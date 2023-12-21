@@ -7,7 +7,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -62,7 +65,10 @@ enum class HomeBottomRoute {
 }
 
 sealed class BottomNavItem(
-    var title: String, var icon: String, var screenRoute: HomeBottomRoute
+    val title: String,
+    val icon: String,
+    val screenRoute: HomeBottomRoute,
+    val isExperimental: Boolean = false,
 ) {
     data object Rules :
         BottomNavItem("ui.feat.label.rule", Remix.Weather.meteor_line, HomeBottomRoute.Rules)
@@ -78,7 +84,8 @@ sealed class BottomNavItem(
         BottomNavItem(
             "ui.feat.label.toggles",
             Remix.System.toggle_fill,
-            HomeBottomRoute.Toggles
+            HomeBottomRoute.Toggles,
+            true
         )
 
     data object Discover :
@@ -206,6 +213,7 @@ fun HomeScreen() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BottomNavigationContent(
     modifier: Modifier,
@@ -219,7 +227,17 @@ private fun BottomNavigationContent(
         val currentRoute = navBackStackEntry?.destination?.route
         items.forEach { item ->
             NavigationBarItem(icon = {
-                RemixIcon(remixName = item.icon)
+                if (item.isExperimental) {
+                    BadgedBox(badge = {
+                        Badge {
+                            Text(text = LocalI18N.current["ui.common.experimental"])
+                        }
+                    }) {
+                        RemixIcon(remixName = item.icon)
+                    }
+                } else {
+                    RemixIcon(remixName = item.icon)
+                }
             },
                 label = {
                     Text(text = LocalI18N.current[item.title], fontSize = 9.sp)

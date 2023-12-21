@@ -237,6 +237,7 @@
     "ui.fact.global.var.changed": "全局变量变更",
     "ui.update.time": "更新时间：{date}",
     "ui.common.coming.soon": "功能完善中，请耐心等待",
+    "ui.common.experimental": "实验",
     "ui.common.unselected": "请选择",
     "ui.common.insert.above": "在上方插入",
     "ui.common.paste.above": "在上方粘贴",

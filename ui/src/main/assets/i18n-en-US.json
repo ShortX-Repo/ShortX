@@ -237,6 +237,7 @@
     "ui.fact.global.var.changed": "Globalvar changed",
     "ui.update.time": "Last update: {date}",
     "ui.common.coming.soon": "Coming soon~",
+    "ui.common.experimental": "EXP",
     "ui.common.note": "Note",
     "ui.common.set.tag": "Set tag",
     "ui.common.sort": "Sort",
