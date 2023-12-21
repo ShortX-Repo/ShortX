@@ -164,11 +164,10 @@ class ClipboardView(
                                     Box {
                                         DropdownSelector(
                                             state = dropdownState, items = listOf(
-                                                DropdownItem(labelLines = listOf(i18N["ui.action.show.clip.board.clear.all"]),
-                                                    data = "clearAll",
-                                                    icon = {
-                                                        RemixIcon(Remix.System.delete_bin_5_line)
-                                                    })
+                                                DropdownItem(
+                                                    labelLines = listOf(i18N["ui.action.show.clip.board.clear.all"]),
+                                                    data = "clearAll"
+                                                )
                                             )
                                         ) {
                                             clearAll()
@@ -259,7 +258,7 @@ class ClipboardView(
                                             MD3Badge(text = {
                                                 Text(
                                                     color = MaterialTheme.colorScheme.onSurface,
-                                                    text = index.toString(),
+                                                    text = (index + 1).toString(),
                                                     fontSize = 10.5.sp
                                                 )
                                             })
