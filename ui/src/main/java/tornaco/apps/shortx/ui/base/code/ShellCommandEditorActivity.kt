@@ -46,6 +46,7 @@ import tornaco.apps.shortx.ui.base.SwitchColumn
 import tornaco.apps.shortx.ui.base.TextDisplayActivity
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.composeLogger
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
@@ -147,6 +148,7 @@ fun ShellCommandEditorActivity.ShellCommandEditor(
                         .fillMaxSize()
                         .padding(paddingValues),
                 ) {
+                    val subscribeState by LVLStateHolder.collectAsState()
 
                     if (!state.isInSystemUI) {
                         Box(modifier = Modifier.padding(horizontal = 8.dp)) {
@@ -158,7 +160,11 @@ fun ShellCommandEditorActivity.ShellCommandEditor(
                         factory = { inflater: LayoutInflater, parent: ViewGroup, attachToParent: Boolean ->
                             CodeEditorComposeBinding.inflate(inflater, parent, attachToParent)
                                 .apply {
-                                    CEComposeBinding(this, currentAction?.command ?: "") {
+                                    CEComposeBinding(
+                                        binding = this,
+                                        showToolbar = subscribeState.isSubscribed,
+                                        initialText = currentAction?.command ?: ""
+                                    ) {
                                         composeLogger.p("Content change: $it")
                                         vm.updateCommand(it)
                                     }.onCreate()
@@ -168,7 +174,11 @@ fun ShellCommandEditorActivity.ShellCommandEditor(
                             .fillMaxSize()
                             .imePadding(),
                         onRelease = {
-                            CEComposeBinding(this, "").onDestroy()
+                            CEComposeBinding(
+                                binding = this,
+                                showToolbar = subscribeState.isSubscribed,
+                                initialText = ""
+                            ).onDestroy()
                         }
                     )
                 }

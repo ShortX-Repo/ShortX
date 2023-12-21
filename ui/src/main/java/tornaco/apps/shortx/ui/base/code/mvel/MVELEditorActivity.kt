@@ -47,6 +47,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.TextDisplayActivity
 import tornaco.apps.shortx.ui.composeLogger
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.BrowserUtils
 
@@ -139,12 +140,17 @@ fun MVELEditorActivity.MVELEditor(
                         .fillMaxSize()
                         .padding(paddingValues),
                 ) {
+                    val subscribeState by LVLStateHolder.collectAsState()
 
                     AndroidViewBinding(
                         factory = { inflater: LayoutInflater, parent: ViewGroup, attachToParent: Boolean ->
                             CodeEditorComposeBinding.inflate(inflater, parent, attachToParent)
                                 .apply {
-                                    CEComposeBinding(this, currentAction?.expression ?: "") {
+                                    CEComposeBinding(
+                                        binding = this,
+                                        showToolbar = subscribeState.isSubscribed,
+                                        initialText = currentAction?.expression ?: ""
+                                    ) {
                                         composeLogger.p("Content change: $it")
                                         vm.updateExpression(it)
                                     }.onCreate()
@@ -154,7 +160,11 @@ fun MVELEditorActivity.MVELEditor(
                             .fillMaxSize()
                             .imePadding(),
                         onRelease = {
-                            CEComposeBinding(this, "").onDestroy()
+                            CEComposeBinding(
+                                binding = this,
+                                showToolbar = subscribeState.isSubscribed,
+                                initialText = ""
+                            ).onDestroy()
                         }
                     )
                 }

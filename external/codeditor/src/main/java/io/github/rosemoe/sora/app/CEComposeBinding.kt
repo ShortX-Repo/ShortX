@@ -1,6 +1,7 @@
 package io.github.rosemoe.sora.app
 
 import android.graphics.Typeface
+import androidx.core.view.isVisible
 import io.github.rosemoe.sora.app.databinding.CodeEditorComposeBinding
 import io.github.rosemoe.sora.event.ContentChangeEvent
 import io.github.rosemoe.sora.event.EditorKeyEvent
@@ -25,6 +26,7 @@ import org.eclipse.tm4e.core.registry.IThemeSource
 
 class CEComposeBinding(
     private val binding: CodeEditorComposeBinding,
+    private val showToolbar: Boolean,
     private val initialText: String,
     private val onContentChange: (String) -> Unit = {}
 ) {
@@ -100,6 +102,8 @@ class CEComposeBinding(
                 binding.editor.redo()
             }
         }
+
+        binding.editorTools.isVisible = showToolbar
 
 
         loadDefaultThemes()
