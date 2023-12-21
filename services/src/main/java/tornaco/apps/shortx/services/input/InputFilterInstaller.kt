@@ -4,6 +4,7 @@ import android.view.IInputFilter
 import android.view.IInputFilterHost
 import android.view.InputEvent
 import tornaco.apps.shortx.core.ShortXManager
+import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXService
 import tornaco.apps.shortx.services.android.ServiceHolder
@@ -44,7 +45,8 @@ class InputFilterInstaller(private val root: ShortXService) {
     }
 }
 
-
+// abstract method "void android.view.IInputFilter.install(android.view.IInputFilterHost)"
+@DoNotStrip
 object InputFilterImpl : IInputFilter.Stub() {
     private val logger = Logger("InputFilterImpl")
 
