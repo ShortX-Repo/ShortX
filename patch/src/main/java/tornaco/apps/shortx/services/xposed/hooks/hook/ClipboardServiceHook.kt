@@ -31,10 +31,23 @@ object ClipboardServiceHook {
     }
 
     private fun handleSetPrimary(param: XC_MethodHook.MethodHookParam) {
-        val clip: ClipData = param.args[0] as ClipData
-        logger.d("setPrimaryClip: $clip")
-        val text = clip.getItemAt(0)?.text?.toString() ?: ""
-        ShortXService.shortXContext.input.onClipboardChange(text)
+        val clip: ClipData? = param.args[0] as ClipData?
+        clip?.let {
+            logger.p("setPrimaryClip: $clip item count: ${clip.itemCount}")
+            if (clip.itemCount > 0) {
+                repeat(clip.itemCount) { index ->
+                    val description = clip.description
+                    val mime = description.getMimeType(index)
+                    logger.p("setPrimaryClip@$index: $clip $description $mime")
+                    val text = clip.getItemAt(index)?.text?.toString() ?: ""
+                    if (text.isNotBlank()) {
+                        ShortXService.shortXContext.input.onClipboardChange(text)
+                    }
+                }
+
+            }
+
+        }
     }
 
     private fun hookSetPrimaryClipAsPackage(lpparam: XC_LoadPackage.LoadPackageParam) =
