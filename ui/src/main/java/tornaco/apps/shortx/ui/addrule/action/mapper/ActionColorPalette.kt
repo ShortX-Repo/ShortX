@@ -5,12 +5,9 @@ import androidx.compose.ui.graphics.Color
 val ActionColorPalette = arrayOf(
     // MTR
     Color(0xffAE213B),
-    Color(0xff11254A),
     Color(0xffFF0000),
     Color(0xff1A9431),
-    Color(0xff0860A8),
     Color(0xffB5BD00),
-    Color(0xff6B208B),
     Color(0xffFE7F1D),
     Color(0xffF550A6),
     Color(0xff1C7670),
@@ -36,5 +33,5 @@ val ActionColorPalette = arrayOf(
     Color(0xff35AA53),
 )
 
-const val ActionColorBgAlpha = 0.07f
-const val ActionColorBgAlphaLarge = 0.1f
+const val ActionColorBgAlpha = 0.08f
+const val ActionColorBgAlphaLarge = 0.11f
