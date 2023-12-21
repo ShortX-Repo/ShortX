@@ -163,7 +163,9 @@ class ClipboardView(
                                     val dropdownState = rememberDropdownSelectorState()
                                     Box {
                                         DropdownSelector(
-                                            state = dropdownState, items = listOf(
+                                            widthFraction = 0.4f,
+                                            state = dropdownState,
+                                            items = listOf(
                                                 DropdownItem(
                                                     labelLines = listOf(i18N["ui.action.show.clip.board.clear.all"]),
                                                     data = "clearAll"
