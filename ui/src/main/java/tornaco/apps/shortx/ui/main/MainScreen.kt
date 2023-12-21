@@ -57,6 +57,7 @@ import tornaco.apps.shortx.ui.settings.SettingsScreen
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsActivity
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.shortcut.ShortcutStubManageActivity
+import tornaco.apps.shortx.ui.theme.ExperimentalYellow
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.AssetUtils
 
@@ -229,7 +230,7 @@ private fun BottomNavigationContent(
             NavigationBarItem(icon = {
                 if (item.isExperimental) {
                     BadgedBox(badge = {
-                        Badge {
+                        Badge(containerColor = ExperimentalYellow) {
                             Text(text = LocalI18N.current["ui.common.experimental"])
                         }
                     }) {
