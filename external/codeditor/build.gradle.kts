@@ -31,7 +31,6 @@ dependencies {
     implementation(platform("io.github.Rosemoe.sora-editor:bom:0.22.2"))
     implementation("io.github.Rosemoe.sora-editor:editor")
     implementation("io.github.Rosemoe.sora-editor:language-java")
-    implementation("io.github.Rosemoe.sora-editor:language-textmate")
 
     implementation(libs.appcompat)
     implementation(libs.material)
