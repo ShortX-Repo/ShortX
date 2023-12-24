@@ -66,7 +66,9 @@ object SetWallpaper : Actor {
         logger.d("Set with: $tmpFile")
         FileInputStream(tmpFile).use {
             val wallpaperManager = androidContext.wallpaperManager
-            val rawBitmap = BitmapFactory.decodeStream(it)
+            val rawBitmap = requireNotNull(BitmapFactory.decodeStream(it)) {
+                "Can not decode wallpaper stream: $tmpFile"
+            }
             val wallpaperBitmap = if (d.crop) {
                 logger.i("crop wallpaper image.")
                 cropBitmapToSize(
