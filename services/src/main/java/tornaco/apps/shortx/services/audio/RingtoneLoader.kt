@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.media.RingtoneManager
 import android.net.Uri
 import android.provider.MediaStore
+import okhttp3.internal.closeQuietly
 import tornaco.apps.shortx.core.proto.common.Ringtone
 import tornaco.apps.shortx.core.util.Logger
 
@@ -33,6 +34,7 @@ class RingtoneLoader(private val context: Context) {
                 )
             } while (cursor.moveToNext())
         }
+        cursor.closeQuietly()
         return res
     }
 
