@@ -10,7 +10,9 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_demo"
             android:label="Demo"
-            android:roundIcon="@mipmap/ic_launcher_demo_round">
+            android:launchMode="singleTask"
+            android:roundIcon="@mipmap/ic_launcher_demo_round"
+            android:taskAffinity="ui.demo">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -18,6 +20,13 @@
         </activity>
         <activity
             android:name=".ui.demo.ComposeDemoActivity"
+            android:exported="false"
+            android:icon="@mipmap/ic_launcher_demo"
+            android:label="Demo"
+            android:roundIcon="@mipmap/ic_launcher_demo_round" />
+
+        <activity
+            android:name=".ui.demo.PickRingtoneActivity"
             android:exported="false"
             android:icon="@mipmap/ic_launcher_demo"
             android:label="Demo"

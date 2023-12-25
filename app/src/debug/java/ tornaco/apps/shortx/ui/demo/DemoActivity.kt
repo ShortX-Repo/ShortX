@@ -20,11 +20,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import io.github.rosemoe.sora.app.CEActivity
@@ -33,7 +31,7 @@ import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.BaseActivity
-import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
+import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.settings.TileSettingsActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -46,10 +44,9 @@ class DemoActivity : BaseActivity() {
             Surface(
                 modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
             ) {
-                val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-                Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                Scaffold(modifier = Modifier,
                     topBar = {
-                        ShortXMediumTopAppBar(
+                        ShortXTopAppBar(
                             title = {
                                 Text(
                                     text = "Demos"
@@ -148,6 +145,12 @@ class DemoActivity : BaseActivity() {
                             context.startActivity(Intent(context, ComposeDemoActivity::class.java))
                         }) {
                             Text(text = "Compose demo")
+                        }
+
+                        Button(onClick = {
+                            context.startActivity(Intent(context, PickRingtoneActivity::class.java))
+                        }) {
+                            Text(text = "Pick ringtone demo")
                         }
 
                         Button(onClick = {
