@@ -9,8 +9,11 @@ dependencies {
     compileOnly(files("lib/service-ui-stubs18.jar"))
 
     implementation(project(":core"))
+    implementation(project(":services-28"))
     implementation(project(":services-29"))
     implementation(project(":services-30"))
+    implementation(project(":services-31"))
+    implementation(project(":services-32"))
     implementation(project(":services-33"))
     implementation(project(":services-34"))
     implementation(project(":external:utils"))

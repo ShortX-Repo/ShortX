@@ -23,8 +23,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
-import tornaco.apps.shortx.core.*
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.onDebugBuild
+import tornaco.apps.shortx.core.os.UidObserverCompat
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AppComponentInfo
@@ -36,23 +38,31 @@ import tornaco.apps.shortx.core.proto.fact.AppProcessStarted
 import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
 import tornaco.apps.shortx.core.store.WRITE_DELAY
+import tornaco.apps.shortx.core.toAppComponent
+import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.activityManager
 import tornaco.apps.shortx.core.util.appPkgToString
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
-import tornaco.apps.shortx.services.*
+import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.android.ServiceRetriever
-import tornaco.apps.shortx.services.app.pm.*
+import tornaco.apps.shortx.services.app.pm.ComponentMapper
+import tornaco.apps.shortx.services.app.pm.ComponentUtil
+import tornaco.apps.shortx.services.app.pm.PMSFuncs
+import tornaco.apps.shortx.services.app.pm.PmSetAppEnabledApplicationPackageEnabler
+import tornaco.apps.shortx.services.app.pm.PmSuspendApplicationPackageEnabler
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.os.UserEvent
+import tornaco.apps.shortx.services.runClearCallingIdentity
+import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
-import java.util.*
 
 
 class AppStateService(shortXContext: ShortXContext) :
@@ -109,6 +119,36 @@ class AppStateService(shortXContext: ShortXContext) :
                         pkgPools.removeIf { it.userId == event.userId }
                     }
                 }
+            }
+        }
+
+        onDebugBuild {
+            systemServiceScope.launchSafety {
+                UidObserverRegisterCompat.register(object : UidObserverCompat {
+                    override fun onUidActive(uid: Int) {
+                        super.onUidActive(uid)
+                        val app = uidToApp(uid)
+                        logger.d("onUidActive: $uid ${app?.pkg?.appPkgToString()}")
+                    }
+
+                    override fun onUidGone(uid: Int) {
+                        super.onUidGone(uid)
+                        val app = uidToApp(uid)
+                        logger.d("onUidGone: $uid ${app?.pkg?.appPkgToString()}")
+                    }
+
+                    override fun onUidIdle(uid: Int) {
+                        super.onUidIdle(uid)
+                        val app = uidToApp(uid)
+                        logger.d("onUidIdle: $uid ${app?.pkg?.appPkgToString()}")
+                    }
+
+                    override fun onUidStateChanged(uid: Int, procState: Int) {
+                        super.onUidStateChanged(uid, procState)
+                        val app = uidToApp(uid)
+                        logger.d("onUidStateChanged: $uid $procState ${app?.pkg?.appPkgToString()}")
+                    }
+                })
             }
         }
 

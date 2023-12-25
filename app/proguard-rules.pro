@@ -180,6 +180,8 @@
 -dontwarn android.os.HandlerExecutor
 -dontwarn android.net.wifi.WifiManager$ActionListener
 -dontwarn org.jspecify.annotations.NullMarked
+-dontwarn android.app.IUidObserver$Stub
+-dontwarn android.app.IUidObserver
 
 # Inroduced by a lib update, not sure if it 55d1baecdbfe02c40a147d696d8a805f43906890
 -dontwarn java.beans.BeanDescriptor
