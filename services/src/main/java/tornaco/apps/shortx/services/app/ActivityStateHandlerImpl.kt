@@ -78,7 +78,22 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
     }
 
     private fun onActivityStateChanged() {
-        val topVisibleActivities = func.getTopVisibleActivities()
+        // WTF? Reported on MIUI android33 sometimes.
+        // topVisibleActivities: [tv.danmaku.bili-tv.danmaku.bili.MainActivityV2 u0,
+        // com.miui.home-com.miui.home.launcher.Launcher u0,
+        // com.rdstory.miuiperfsaver-com.rdstory.miuiperfsaver.ui.MainActivity u0,
+        // bin.mt.plus-bin.mt.plus.MainLightIcon u0, tornaco.apps.shortx-tornaco.apps.shortx.ui.main.MainActivity u0,
+        // com.sulisong.uperf-com.sulisong.uperf.MainActivity u0,
+        // com.ss.android.ugc.aweme-com.ss.android.ugc.aweme.splash.SplashActivity u0,
+        // com.tencent.mm-com.tencent.mm.ui.LauncherUI u0, com.coolapk.market-com.coolapk.market.view.main.MainActivity u0,
+        // com.miui.securitycenter-com.miui.powercenter.PowerMainActivity u0, com.paget96.batteryguru-activities.MainActivity u0,
+        // com.xiaomi.misettings-com.xiaomi.misettings.display.AntiFlickerMode.AntiFlickerActivity u0,
+        // com.tencent.mobileqq-com.tencent.mobileqq.activity.SplashActivity u0,
+        // com.miui.calculator-com.miui.calculator.cal.CalculatorActivity u0,
+        // com.sevtinge.cemiuiler-com.sevtinge.cemiuiler.ui.HideAppActivity u0,
+        // com.miui.home-com.miui.home.launcher.AddItemActivity u0,
+
+        val topVisibleActivities = func.getTopVisibleActivities().take(2)
         val topVisibleApps = topVisibleActivities.map { it.pkg }.distinct()
         logger.d("topVisibleActivities: ${topVisibleActivities.map { it.appComponentToString() }}")
         logger.d("topVisibleApps: ${topVisibleApps.map { it.appPkgToString() }}")
