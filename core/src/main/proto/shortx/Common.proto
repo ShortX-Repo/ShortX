@@ -371,3 +371,9 @@ message WifiConfig {
   int32 networkId = 1;
   string ssid = 2;
 }
+
+message Ringtone {
+  string title = 1;
+  string uri = 2;
+  int32 type = 3;
+}

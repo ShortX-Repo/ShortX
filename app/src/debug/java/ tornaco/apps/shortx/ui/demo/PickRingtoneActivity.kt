@@ -1,29 +1,30 @@
 package tornaco.apps.shortx.ui.demo
 
-import android.content.Intent
 import android.media.RingtoneManager
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import tornaco.apps.shortx.core.util.Logger
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import tornaco.apps.shortx.services.audio.RingtoneLoader
+import tornaco.apps.shortx.ui.base.BaseActivity
+import tornaco.apps.shortx.ui.composeLogger
 
-class PickRingtoneActivity : AppCompatActivity() {
 
-    private val RINGTONE_PICKER_REQUEST_CODE = 123
+class PickRingtoneActivity : BaseActivity() {
+    @Composable
+    override fun Content() {
+        val context = LocalContext.current
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER)
-        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALL)
-        startActivityForResult(intent, RINGTONE_PICKER_REQUEST_CODE)
-    }
+        LaunchedEffect(Unit) {
+            RingtoneLoader(context).load(RingtoneManager.TYPE_ALARM).forEach {
+                composeLogger.d("TYPE_ALARM: $it")
+            }
+            RingtoneLoader(context).load(RingtoneManager.TYPE_NOTIFICATION).forEach {
+                composeLogger.d("TYPE_NOTIFICATION: $it")
+            }
+            RingtoneLoader(context).load(RingtoneManager.TYPE_RINGTONE).forEach {
+                composeLogger.d("TYPE_RINGTONE: $it")
+            }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == RINGTONE_PICKER_REQUEST_CODE && resultCode == RESULT_OK) {
-            val uri =
-                data?.getParcelableExtra<android.net.Uri>(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
-            // 使用选择的铃声 URI 进行其他操作
-            Logger().w("onActivityResult= $uri")
         }
     }
 }
