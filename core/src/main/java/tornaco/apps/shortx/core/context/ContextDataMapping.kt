@@ -44,6 +44,7 @@ object ContextDataMapping {
     @DoNotStrip
     enum class ActivityStarted(val description: String) {
         pkgName("App package name of the started Activity"),
+        userId("App user id the started Activity"),
         componentName("Short string of the started Activity component name"),
         appLabel("The app label"),
         activityIntentUri("Intent to uri")
@@ -52,12 +53,14 @@ object ContextDataMapping {
     @DoNotStrip
     enum class AppBecomeFg(val description: String) {
         pkgName("App package name of the FG Activity"),
+        userId("App user id the FG Activity"),
         appLabel("The app label")
     }
 
     @DoNotStrip
     enum class AppBecomeBg(val description: String) {
         pkgName("App package name of the BG Activity"),
+        userId("App user id the BG Activity"),
         appLabel("The app label")
     }
 

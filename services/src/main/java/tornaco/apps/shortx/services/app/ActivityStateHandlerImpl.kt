@@ -62,6 +62,7 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
             initialContextData = mapOf(
                 ContextDataMapping.ActivityStarted.activityIntentUri.name to intentUri,
                 ContextDataMapping.ActivityStarted.pkgName.name to activity.pkg.pkgName,
+                ContextDataMapping.ActivityStarted.userId.name to activity.pkg.userId,
                 ContextDataMapping.ActivityStarted.componentName.name to componentName.flattenToShortString(),
                 ContextDataMapping.ActivityStarted.appLabel.name to (shortXContext.appState.getAppLabel(
                     activity.pkg
@@ -117,6 +118,7 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
                 fact = AppBecomeFg.newBuilder().addApps(it).build(),
                 initialContextData = mapOf(
                     ContextDataMapping.AppBecomeFg.pkgName.name to it.pkgName,
+                    ContextDataMapping.AppBecomeFg.userId.name to it.userId,
                     ContextDataMapping.AppBecomeFg.appLabel.name to (shortXContext.appState.getAppLabel(
                         it
                     ) ?: it.pkgName),
@@ -131,6 +133,7 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
                 fact = AppBecomeBg.newBuilder().addApps(it).build(),
                 initialContextData = mapOf(
                     ContextDataMapping.AppBecomeBg.pkgName.name to it.pkgName,
+                    ContextDataMapping.AppBecomeBg.userId.name to it.userId,
                     ContextDataMapping.AppBecomeBg.appLabel.name to (shortXContext.appState.getAppLabel(
                         it
                     )
