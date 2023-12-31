@@ -40,6 +40,7 @@ import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.fact.FlashLightStatusChanged
 import tornaco.apps.shortx.core.proto.fact.GlobalVarChanged
 import tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen
+import tornaco.apps.shortx.core.proto.fact.HeadsetPlug
 import tornaco.apps.shortx.core.proto.fact.HotSpotStatusChanged
 import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
@@ -318,6 +319,11 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
         register(AppAdded::class.java) { _, _ ->
             true
         }
+        register(HeadsetPlug::class.java) { actual, rule ->
+            val actualN = (actual as HeadsetPlug)
+            val ruleN = (rule as HeadsetPlug)
+            actualN.isPlug == ruleN.isPlug
+        }
 
         register(BatteryLevelChanged::class.java) { actual, rule ->
             val actualN = (actual as BatteryLevelChanged)
@@ -563,9 +569,11 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
     }
 
     private fun match0(actual: ProtoMessage, rule: ProtoMessage): Boolean {
-        val matcher = factValueMatchers[actual.javaClass]
+        val matcher = requireNotNull(factValueMatchers[actual.javaClass]) {
+            "No matcher found for class: ${actual.javaClass}, pls report to the developer."
+        }
         val res = runCatching {
-            matcher?.impl?.invoke(actual, rule) ?: (actual == rule)
+            matcher.impl.invoke(actual, rule) ?: (actual == rule)
         }.getOrElse {
             logger.e(it, "Matcher error")
             false

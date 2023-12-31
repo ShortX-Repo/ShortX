@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.rule.fact.trigger
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.media.AudioManager
 import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.fact.HeadsetPlug
 import tornaco.apps.shortx.core.util.Logger
@@ -18,7 +19,8 @@ class HeadsetPlugTrigger(
 
     private val receiver = object : SafeBroadcastReceiver(shortXContext) {
         override fun handleReceive(context: Context, intent: Intent) {
-            if (intent.action == Intent.ACTION_HEADSET_PLUG) {
+            logger.d("handleReceive: $intent")
+            if (intent.action == AudioManager.ACTION_HEADSET_PLUG) {
                 when (intent.getIntExtra("state", -1)) {
                     0 -> {
                         logger.d("Headset unplugged")
@@ -47,7 +49,7 @@ class HeadsetPlugTrigger(
     }
 
     override fun register() {
-        val filter = IntentFilter(Intent.ACTION_HEADSET_PLUG)
+        val filter = IntentFilter(AudioManager.ACTION_HEADSET_PLUG)
         ContextCompat.registerReceiver(context, receiver, filter, ContextCompat.RECEIVER_EXPORTED)
     }
 
