@@ -3,7 +3,9 @@ package tornaco.apps.shortx.ui.main.rule
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.proto.common.StringPair
@@ -33,7 +35,8 @@ import tornaco.apps.shortx.ui.settings.RestoreEventRegistry
 import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.addShareContentHeader
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
-import java.util.*
+import java.util.UUID
+
 fun defaultNewRuleSetId() = "RS-${UUID.randomUUID()}"
 
 data class RuleListState(
@@ -217,8 +220,10 @@ abstract class BaseRuleListViewModel(context: Context) :
     }
 
     fun moveToSet(rule: RuleUM, id: String, token: String?) {
+        // Should load new Rule here, because it maybe changed after Rule list is loaded.
+        val originalRule = shortXManager.getRuleById(rule.id) ?: return
         shortXManager.addRule(
-            Rule.newBuilder(rule.rule).setRuleSetId(id)
+            Rule.newBuilder(originalRule).setRuleSetId(id)
                 .addAllExtras(mutableListOf<StringPair>().apply {
                     if (!token.isNullOrEmpty()) {
                         add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
@@ -229,8 +234,10 @@ abstract class BaseRuleListViewModel(context: Context) :
     }
 
     fun moveOutSet(rule: Rule, token: String?) {
+        // Should load new Rule here, because it maybe changed after Rule list is loaded.
+        val originalRule = shortXManager.getRuleById(rule.id) ?: return
         shortXManager.addRule(
-            Rule.newBuilder(rule).setRuleSetId("")
+            Rule.newBuilder(originalRule).setRuleSetId("")
                 .addAllExtras(mutableListOf<StringPair>().apply {
                     if (!token.isNullOrEmpty()) {
                         add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())

@@ -3,8 +3,10 @@ package tornaco.apps.shortx.ui.main.da
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.proto.common.StringPair
@@ -30,7 +32,7 @@ import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.addShareContentHeader
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
-import java.util.*
+import java.util.UUID
 
 fun defaultNewDASetId() = "DS-${UUID.randomUUID()}"
 
@@ -219,8 +221,10 @@ abstract class BaseDAListViewModel(context: Context) :
     }
 
     fun moveToSet(da: DirectActionUM, setId: String, token: String?) {
+        // Should load new da here, because it maybe changed after DA list is loaded.
+        val originalDA = shortXManager.getDirectActionById(da.id) ?: return
         shortXManager.addDirectAction(
-            DirectAction.newBuilder(da.directAction).setDirectActionSetId(setId)
+            DirectAction.newBuilder(originalDA).setDirectActionSetId(setId)
                 .addAllExtras(mutableListOf<StringPair>().apply {
                     if (!token.isNullOrEmpty()) {
                         add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
@@ -231,8 +235,10 @@ abstract class BaseDAListViewModel(context: Context) :
     }
 
     fun moveOutSet(da: DirectAction, token: String?) {
+        // Should load new da here, because it maybe changed after DA list is loaded.
+        val originalDA = shortXManager.getDirectActionById(da.id) ?: return
         shortXManager.addDirectAction(
-            DirectAction.newBuilder(da).setDirectActionSetId("")
+            DirectAction.newBuilder(originalDA).setDirectActionSetId("")
                 .addAllExtras(mutableListOf<StringPair>().apply {
                     if (!token.isNullOrEmpty()) {
                         add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
