@@ -40,7 +40,7 @@ fun miscFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolea
         title = i18N["ui.fact.deeplink.call"],
         message = {
             val uri = createUrl(it)
-            i18N["ui.fact.deeplink.call.message", mapOf("uri" to uri)]
+            i18N["ui.fact.deeplink.call.message", mapOf("url" to uri)]
         },
         textToCopy = {
             val uri = createUrl(it)
