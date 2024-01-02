@@ -1182,6 +1182,12 @@ class ShortXManager(val service: IShortX) {
         }
     }
 
+    fun deepLinkTriggerCalled(tag: String) {
+        invokeService(Unit) {
+            deepLinkTriggerCalled(tag)
+        }
+    }
+
     private inline fun <T> invokeService(defaultValue: T, onService: IShortX.() -> T): T {
         return kotlin.runCatching {
             onService(service)

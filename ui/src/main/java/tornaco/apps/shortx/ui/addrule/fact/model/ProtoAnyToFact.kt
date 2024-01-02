@@ -836,6 +836,19 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.fact.DeepLinkCall::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.DeepLinkCall::class.java
+
+            Fact.DeepLinkCall(
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag,
+                deepLinkTag = data.deepLinkTag
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen::class.java

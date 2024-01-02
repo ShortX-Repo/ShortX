@@ -87,6 +87,8 @@ val allFactClasses = listOf(
     Fact.AppGainWindowFocus::class,
     Fact.AppLostWindowFocus::class,
 
+    Fact.DeepLinkCall::class,
+
 
     Fact.AnyFact::class,
 )

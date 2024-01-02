@@ -16,7 +16,16 @@ import android.telephony.SubscriptionManager
 import android.util.Log
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import tornaco.apps.shortx.core.*
+import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.IActionEvaluateListener
+import tornaco.apps.shortx.core.IAudioRecordingListener
+import tornaco.apps.shortx.core.ICallback
+import tornaco.apps.shortx.core.IJobStatusListener
+import tornaco.apps.shortx.core.IPC_CODE
+import tornaco.apps.shortx.core.ISensorUsageListener
+import tornaco.apps.shortx.core.IShortX
+import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener
+import tornaco.apps.shortx.core.Version
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.notification.INotificationPoster
@@ -29,9 +38,9 @@ import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.common.UserInfo
-import tornaco.apps.shortx.core.proto.common.WifiConfig
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
+import tornaco.apps.shortx.core.proto.fact.DeepLinkCall
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
@@ -337,6 +346,16 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             enforceCallingPermissions()
             return shortXContext.network.getPrivilegedConfiguredNetworks().map {
                 ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun deepLinkTriggerCalled(tag: String) {
+            enforceCallingPermissions()
+            shortXContext.rule.publishFact(
+                "deepLinkTriggerCalled",
+                DeepLinkCall.newBuilder().setDeepLinkTag(tag).build()
+            ) {
+                emptyMap()
             }
         }
 

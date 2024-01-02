@@ -237,6 +237,10 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
             i18n["ui.fact.app.lost.window.focus"] to null
         }
 
+        Fact.DeepLinkCall::class -> {
+            i18n["ui.fact.deeplink.call"] to null
+        }
+
         else -> "N/A" to null
     }
 }
@@ -692,6 +696,13 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
             mutableListOf(
                 i18N["ui.fact.app.lost.window.focus"]
             ).labelLinesFromAppsAndPkgSets(fact.apps, fact.pkgSets)
+        }
+
+        is Fact.DeepLinkCall -> {
+            listOf(
+                i18N["ui.fact.deeplink.call"],
+                fact.deepLinkTag
+            )
         }
     }
 }
