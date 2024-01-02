@@ -533,6 +533,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetMasterSync
     },
+    PlayRingtone {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.PlayRingtone
+    },
 
 
     ;

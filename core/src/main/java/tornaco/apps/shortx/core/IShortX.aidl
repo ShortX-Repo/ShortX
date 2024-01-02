@@ -300,4 +300,6 @@ interface IShortX {
     List<ByteArrayWrapper> getPrivilegedConfiguredNetworks();
 
     void deepLinkTriggerCalled(String tag);
+
+   List<ByteArrayWrapper> getAllRingtones();
 }

@@ -359,6 +359,12 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }
         }
 
+        override fun getAllRingtones(): List<ByteArrayWrapper> {
+            return shortXContext.audio.getAllRingtones().map {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
         override fun attachSUImpl(from: String?, su: ISu?) {
             shortXContext.shell.attachSUImpl(from, su)
 

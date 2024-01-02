@@ -1422,3 +1422,13 @@ message ShowClipboardView {
   string note = 99;
   string id = 100;
 }
+
+message PlayRingtone {
+  Ringtone ringtone = 1;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}

@@ -236,6 +236,7 @@ fun labelAndDescriptionForActionSelector(
         Action.LockDeviceNow::class -> i18N["ui.action.lock.screen"] to null
         Action.SetMasterSync::class -> i18N["ui.action.sync"] to null
         Action.ShowClipboardView::class -> i18N["ui.action.show.clip.board"] to null
+        Action.PlayRingtone::class -> i18N["ui.action.ringtone"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -904,6 +905,11 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
 
         is Action.ShowClipboardView -> listOf(
             i18N["ui.action.show.clip.board"],
+        )
+
+        is Action.PlayRingtone -> listOf(
+            i18N["ui.action.ringtone"],
+            action.ringtone.title
         )
     }
 }

@@ -47,6 +47,7 @@ import tornaco.apps.shortx.core.proto.action.MapQueryBus
 import tornaco.apps.shortx.core.proto.action.MediaPlayback
 import tornaco.apps.shortx.core.proto.action.NoAction
 import tornaco.apps.shortx.core.proto.action.PerformContextMenuAction
+import tornaco.apps.shortx.core.proto.action.PlayRingtone
 import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.proto.action.ReadClipboard
 import tornaco.apps.shortx.core.proto.action.RemoveNotification
@@ -1563,6 +1564,17 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setNote(overrideNote ?: note)
                 .setSync(sync)
+                .build()
+        }
+
+        is Action.PlayRingtone -> {
+            PlayRingtone.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setRingtone(ringtone)
                 .build()
         }
 

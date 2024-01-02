@@ -684,6 +684,10 @@ public interface IShortX extends android.os.IInterface
     @Override public void deepLinkTriggerCalled(java.lang.String tag) throws android.os.RemoteException
     {
     }
+    @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllRingtones() throws android.os.RemoteException
+    {
+      return null;
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -2627,6 +2631,14 @@ public interface IShortX extends android.os.IInterface
           _arg0 = data.readString();
           this.deepLinkTriggerCalled(_arg0);
           reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_getAllRingtones:
+        {
+          data.enforceInterface(descriptor);
+          java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllRingtones();
+          reply.writeNoException();
+          reply.writeTypedList(_result);
           return true;
         }
         default:
@@ -6489,6 +6501,26 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
+      @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllRingtones() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getAllRingtones, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getAllRingtones();
+          }
+          _reply.readException();
+          _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -6666,6 +6698,7 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_updateQSTileActiveState = (android.os.IBinder.FIRST_CALL_TRANSACTION + 172);
     static final int TRANSACTION_getPrivilegedConfiguredNetworks = (android.os.IBinder.FIRST_CALL_TRANSACTION + 173);
     static final int TRANSACTION_deepLinkTriggerCalled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 174);
+    static final int TRANSACTION_getAllRingtones = (android.os.IBinder.FIRST_CALL_TRANSACTION + 175);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -6929,4 +6962,5 @@ public interface IShortX extends android.os.IInterface
   public void updateQSTileActiveState(int number) throws android.os.RemoteException;
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getPrivilegedConfiguredNetworks() throws android.os.RemoteException;
   public void deepLinkTriggerCalled(java.lang.String tag) throws android.os.RemoteException;
+  public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllRingtones() throws android.os.RemoteException;
 }

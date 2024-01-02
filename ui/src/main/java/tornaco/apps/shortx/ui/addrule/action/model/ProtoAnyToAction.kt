@@ -1771,6 +1771,19 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.PlayRingtone::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.PlayRingtone::class.java
+            Action.PlayRingtone(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                ringtone = data.ringtone
+            )
+        }
+
         else -> null
     }
 }

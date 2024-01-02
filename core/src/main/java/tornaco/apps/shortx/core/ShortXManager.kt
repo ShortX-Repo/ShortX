@@ -21,6 +21,7 @@ import tornaco.apps.shortx.core.proto.common.BTBondedDevice
 import tornaco.apps.shortx.core.proto.common.CommonApiRes
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.QSTileList
+import tornaco.apps.shortx.core.proto.common.Ringtone
 import tornaco.apps.shortx.core.proto.common.SensorUsage
 import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
@@ -1185,6 +1186,14 @@ class ShortXManager(val service: IShortX) {
     fun deepLinkTriggerCalled(tag: String) {
         invokeService(Unit) {
             deepLinkTriggerCalled(tag)
+        }
+    }
+
+    fun getAllRingtones(): List<Ringtone> {
+        return invokeService(emptyList()) {
+            allRingtones.map {
+                Ringtone.parseFrom(it.byteData)
+            }
         }
     }
 
