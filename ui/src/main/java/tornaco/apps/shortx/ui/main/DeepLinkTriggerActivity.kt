@@ -10,7 +10,7 @@ import tornaco.apps.shortx.core.util.Logger
 class DeepLinkTriggerActivity : Activity() {
 
     companion object {
-        // shortx://trigger/tag=""
+        // shortx://trigger?tag=""
         const val TAG = "tag"
     }
 
@@ -28,10 +28,12 @@ class DeepLinkTriggerActivity : Activity() {
 
         if (tag == null) {
             Toast.makeText(this, "Tag is null", Toast.LENGTH_SHORT).show()
+            finishAffinity()
             return
         }
 
         shortXManager.deepLinkTriggerCalled(tag)
+        finishAffinity()
     }
 
 }
