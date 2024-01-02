@@ -60,6 +60,8 @@ object RuleEngineFactory {
         isRuleFeatureEnabled: () -> Boolean = { shortXContext.rule.isRuleFeatureEnabled() },
         isSystemReadyPublished: () -> Boolean = { shortXContext.user.isSystemReadyTriggered },
     ) = DefaultRuleEngine(
+        androidContext = androidContext,
+        shortXContext = shortXContext,
         factMatcher = factMatcher,
         conditionEvaluator = conditionEvaluator,
         actionEvaluator = actionEvaluator,

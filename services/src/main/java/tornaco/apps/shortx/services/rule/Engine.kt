@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.rule
 
+import android.content.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -20,9 +21,13 @@ import tornaco.apps.shortx.core.proto.rule.AsyncMode
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.proto.rule.RuleInstanceIdGenerator_Static
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
+import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.select
+import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import java.util.concurrent.CancellationException
 import java.util.concurrent.ConcurrentHashMap
@@ -137,6 +142,9 @@ interface Engine {
     val factMatcher: FactMatcher
     val coroutineScope: CoroutineScope
 
+    val androidContext: Context
+    val shortXContext: ShortXContext
+
     fun shouldFire(
         rules: List<Rule>,
         fact: ProtoMessage,
@@ -174,6 +182,8 @@ interface Engine {
 }
 
 class DefaultRuleEngine(
+    override val androidContext: Context,
+    override val shortXContext: ShortXContext,
     override val coroutineScope: CoroutineScope,
     override val factMatcher: FactMatcher,
     override val conditionEvaluator: ConditionEvaluator,
@@ -299,9 +309,33 @@ class DefaultRuleEngine(
                 logger.d("fire, rule matched: ${fact.javaClass} ${rule.title}")
                 anyMatch = true
 
+                // Prepare initial context data
+                val contextData = ContextData.obtain(initialContextDataLazy())
+                if (factMatcherResult is FactMatcher.MatcherResult.Match) {
+                    contextData.add(
+                        GenericContextData.CONTEXT_FACT_TAG,
+                        factMatcherResult.factTag
+                    )
+                }
+
+                // Rule Instance ID
+                val ruleInsIdGen: ProtoAny = rule.hasRuleInstanceIdGenerator()
+                    .select({ rule.ruleInstanceIdGenerator },
+                        {
+                            RuleInstanceIdGenerator_Static.newBuilder().setInsId(rule.id).build()
+                                .pack_()
+                        })
+                logger.d("ruleInsIdGen: $ruleInsIdGen")
+                val ruleInstanceId = with(RuleInstanceIdGenerator) {
+                    ruleInsIdGen.generate(androidContext, shortXContext, contextData)
+                } ?: "FALLBACK_${rule.id}"
+                logger.d("ruleInstanceId: $ruleInstanceId")
+
+
                 // **************** Check ConflictStrategy start ******************
                 val conflictStrategy: ConflictStrategy = rule.conflictPolicy
-                val isThisRuleAlreadyRunning = synchronized(jobs) { jobs.any { it.id == rule.id } }
+                val isThisRuleAlreadyRunning =
+                    synchronized(jobs) { jobs.any { it.srcId == rule.id && it.instanceId == ruleInstanceId } }
                 if (isThisRuleAlreadyRunning) {
                     synchronized(jobs) {
                         logger.d("isThisRuleAlreadyRunning is true, jobs: ${jobs.joinToString()}")
@@ -316,7 +350,7 @@ class DefaultRuleEngine(
                         }
 
                         ConflictStrategy.ConflictStrategy_ReplaceOld -> {
-                            cancelJobs("ConflictStrategy_ReplaceOld(重复策略)") { it.id == rule.id }
+                            cancelJobs("ConflictStrategy_ReplaceOld(重复策略)") { it.srcId == rule.id }
                             true
                         }
 
@@ -330,14 +364,6 @@ class DefaultRuleEngine(
                 // ****************** Check ConflictStrategy end ***************************
 
                 if (shouldExecuteActions) {
-                    // Init data
-                    val contextData = ContextData.obtain(initialContextDataLazy())
-                    if (factMatcherResult is FactMatcher.MatcherResult.Match) {
-                        contextData.add(
-                            GenericContextData.CONTEXT_FACT_TAG,
-                            factMatcherResult.factTag
-                        )
-                    }
                     val evaluateContext = EvaluateContext.newBuilder()
                         .setSrcId(rule.id)
                         .setSrcEvent(ContextSrcEvent.ContextSrc_Rule)
@@ -384,15 +410,29 @@ class DefaultRuleEngine(
                         // Launch END.
                     }
 
-                    logger.d("Created job: $job for rule: ${rule.title}")
+                    logger.d("Created job(ins: $ruleInstanceId): $job for rule: ${rule.title}")
                     synchronized(jobs) {
-                        jobs.add(JobRecord(title = rule.title, id = rule.id, job = job))
+                        jobs.add(
+                            JobRecord(
+                                title = rule.title,
+                                srcId = rule.id,
+                                instanceId = ruleInstanceId,
+                                job = job
+                            )
+                        )
                     }
                     onJobStarted(rule.id)
                     job.invokeOnCompletion {
-                        logger.d("job for rule: ${rule.title} complete, err: $it")
+                        logger.d("job(ins: $ruleInstanceId) for rule: ${rule.title} complete, err: $it")
                         synchronized(jobs) {
-                            jobs.remove(JobRecord(title = rule.title, id = rule.id, job = job))
+                            jobs.remove(
+                                JobRecord(
+                                    title = rule.title,
+                                    srcId = rule.id,
+                                    instanceId = ruleInstanceId,
+                                    job = job
+                                )
+                            )
                         }
                         contextData.recycle()
                         onJobCompleted(rule.id)
@@ -403,6 +443,7 @@ class DefaultRuleEngine(
                 logger.d("fire, not match for rule it self: ${fact.javaClass} ${rule.title}, will check it's quit.")
 
                 val quit = rule.quit
+
                 if (quit.isEnabled) {
                     val quitFactMatcherResult = factMatcher.match(fact, quit.factsList)
                     logger.d("quitFactMatcherResult: $quitFactMatcherResult")
@@ -424,6 +465,20 @@ class DefaultRuleEngine(
                             .setSerialNumber(nextEvaluateContextSerialNumber())
                             .build()
                         val localVars = LocalVars.obtain()
+
+                        // Rule Instance ID
+                        val ruleInsIdGen: ProtoAny = rule.hasRuleInstanceIdGenerator()
+                            .select({ rule.ruleInstanceIdGenerator },
+                                {
+                                    RuleInstanceIdGenerator_Static.newBuilder().setInsId(rule.id)
+                                        .build()
+                                        .pack_()
+                                })
+                        logger.d("quit, ruleInsIdGen: $ruleInsIdGen")
+                        val ruleInstanceId = with(RuleInstanceIdGenerator) {
+                            ruleInsIdGen.generate(androidContext, shortXContext, contextData)
+                        } ?: "FALLBACK_${rule.id}"
+                        logger.d("quit, ruleInstanceId: $ruleInstanceId")
 
                         coroutineScope.launchSafety {
                             // Launch start
@@ -448,7 +503,7 @@ class DefaultRuleEngine(
 
                                     // DO NOT cancel ourself...
                                     cancelJobs("Rule quit(退出指令)") {
-                                        it.id == rule.id
+                                        it.srcId == rule.id && it.instanceId == ruleInstanceId
                                     }
 
                                     runActionsJob(
@@ -543,7 +598,7 @@ class DefaultRuleEngine(
         onComplete: () -> Unit
     ) {
         val contextData = ContextData.obtain(initialContextData)
-        val isAlreadyRunning = synchronized(jobs) { jobs.any { it.id == context.srcId } }
+        val isAlreadyRunning = synchronized(jobs) { jobs.any { it.srcId == context.srcId } }
         logger.d("evaluateActions, ${context.srcTitle} conflictStrategy: $conflictStrategy, isAlreadyRunning: $isAlreadyRunning")
 
         if (isAlreadyRunning) {
@@ -553,7 +608,7 @@ class DefaultRuleEngine(
                 }
 
                 ConflictStrategy.ConflictStrategy_ReplaceOld -> {
-                    cancelJobs("ConflictStrategy_ReplaceOld(重复策略，取消旧任务)") { it.id == context.srcId }
+                    cancelJobs("ConflictStrategy_ReplaceOld(重复策略，取消旧任务)") { it.srcId == context.srcId }
                 }
 
                 ConflictStrategy.ConflictStrategy_SkipNew -> {
@@ -597,7 +652,8 @@ class DefaultRuleEngine(
             jobs.add(
                 JobRecord(
                     title = context.srcTitle,
-                    id = context.srcId,
+                    srcId = context.srcId,
+                    instanceId = context.srcId,
                     job = job,
                     tags = setOf(context.srcEvent)
                 )
@@ -644,7 +700,7 @@ class DefaultRuleEngine(
                 logger.d("cancel job: $it, reason: $reason")
                 it.job.cancel(CancellationException(reason))
                 logger.d("After call cancel, job isCanceled: ${it.job.isCancelled}, job isActive: ${it.job.isActive}")
-                onJobCancelled(it.id)
+                onJobCancelled(it.srcId)
             }
             jobs.removeAll(canceled)
         }
@@ -662,7 +718,9 @@ private fun List<Rule>.filterInvalid() =
 
 data class JobRecord(
     val title: String,
-    val id: String,
+    // Rule or DA id.
+    val srcId: String,
+    val instanceId: String,
     val job: Job,
     val tags: Set<Any> = emptySet()
 ) {

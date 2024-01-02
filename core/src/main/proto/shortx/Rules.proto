@@ -56,6 +56,25 @@ message Rule {
   repeated StringPair extras = 19;
 
   string ruleSetId = 20;
+
+  // Geeks options
+  google.protobuf.Any ruleInstanceIdGenerator = 21;
+}
+
+message RuleInstanceIdGenerator_Static {
+  string insId = 1;
+}
+
+message RuleInstanceIdGenerator_String {
+  string insId = 1;
+}
+
+message RuleInstanceIdGenerator_MVEL {
+  string expression = 1;
+}
+
+message RuleInstanceIdGenerator_JS {
+  string expression = 1;
 }
 
 message RuleHook {
