@@ -244,6 +244,9 @@
         <activity
             android:name="tornaco.apps.shortx.ui.base.code.mvel.MVELEditorActivity"
             android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.base.code.js.JSEditorActivity"
+            android:exported="false" />
 
         <service
             android:name=".service.tile.Tile1"

@@ -67,8 +67,8 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 @AndroidEntryPoint
 class StartServiceSelectorActivity : BaseSelectorActivity<Action.StartService>() {
     @Composable
-    override fun BaseSelectorActivity<Action.StartService>.SelectorContent(currentAction: Action.StartService?) {
-        StartServiceSelector(currentAction)
+    override fun BaseSelectorActivity<Action.StartService>.SelectorContent(currentData: Action.StartService?) {
+        StartServiceSelector(currentData)
     }
 }
 

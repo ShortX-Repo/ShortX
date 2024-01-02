@@ -39,8 +39,8 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 class CombineKeyEventSelectorActivity : BaseSelectorActivity<Action.InjectCombineKeyCode>() {
 
     @Composable
-    override fun BaseSelectorActivity<Action.InjectCombineKeyCode>.SelectorContent(currentAction: Action.InjectCombineKeyCode?) {
-        CombineKeyEventSelector(currentAction)
+    override fun BaseSelectorActivity<Action.InjectCombineKeyCode>.SelectorContent(currentData: Action.InjectCombineKeyCode?) {
+        CombineKeyEventSelector(currentData)
     }
 
     @Composable
@@ -75,7 +75,7 @@ class CombineKeyEventSelectorActivity : BaseSelectorActivity<Action.InjectCombin
                                     )
                                     setResult(
                                         RESULT_OK, Intent().putExtra(
-                                            INTENT_EXTRA_KEY_ACTION, action
+                                            INTENT_EXTRA_KEY_CURRENT, action
                                         )
                                     )
                                     finish()

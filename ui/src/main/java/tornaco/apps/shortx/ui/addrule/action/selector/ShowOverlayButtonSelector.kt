@@ -67,8 +67,8 @@ import kotlin.math.roundToInt
 @AndroidEntryPoint
 class ShowOverlayButtonSelectorActivity : BaseSelectorActivity<Action.ShowOverlay>() {
     @Composable
-    override fun BaseSelectorActivity<Action.ShowOverlay>.SelectorContent(currentAction: Action.ShowOverlay?) {
-        ShowOverlayButtonSelector(currentAction)
+    override fun BaseSelectorActivity<Action.ShowOverlay>.SelectorContent(currentData: Action.ShowOverlay?) {
+        ShowOverlayButtonSelector(currentData)
     }
 
 }

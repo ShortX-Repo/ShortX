@@ -54,8 +54,8 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 @AndroidEntryPoint
 class PostNotificationSelectorActivity : BaseSelectorActivity<Action.PostNotification>() {
     @Composable
-    override fun BaseSelectorActivity<Action.PostNotification>.SelectorContent(currentAction: Action.PostNotification?) {
-        PostNotificationSelector(currentAction)
+    override fun BaseSelectorActivity<Action.PostNotification>.SelectorContent(currentData: Action.PostNotification?) {
+        PostNotificationSelector(currentData)
     }
 }
 

@@ -44,8 +44,8 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 @AndroidEntryPoint
 class AppShortcutSelectorActivity : BaseSelectorActivity<Action.AppShortcut>() {
     @Composable
-    override fun BaseSelectorActivity<Action.AppShortcut>.SelectorContent(currentAction: Action.AppShortcut?) {
-        AppShortcutSelector(currentAction)
+    override fun BaseSelectorActivity<Action.AppShortcut>.SelectorContent(currentData: Action.AppShortcut?) {
+        AppShortcutSelector(currentData)
     }
 }
 

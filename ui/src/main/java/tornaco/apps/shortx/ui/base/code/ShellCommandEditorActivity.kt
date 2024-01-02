@@ -52,8 +52,8 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 @AndroidEntryPoint
 class ShellCommandEditorActivity : BaseSelectorActivity<Action.ShellCommand>() {
     @Composable
-    override fun BaseSelectorActivity<Action.ShellCommand>.SelectorContent(currentAction: Action.ShellCommand?) {
-        ShellCommandEditor(currentAction)
+    override fun BaseSelectorActivity<Action.ShellCommand>.SelectorContent(currentData: Action.ShellCommand?) {
+        ShellCommandEditor(currentData)
     }
 }
 

@@ -42,8 +42,8 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 @AndroidEntryPoint
 class BiometricVerifySelectorActivity : BaseSelectorActivity<Action.BiometricVerify>() {
     @Composable
-    override fun BaseSelectorActivity<Action.BiometricVerify>.SelectorContent(currentAction: Action.BiometricVerify?) {
-        BiometricVerifySelector(currentAction)
+    override fun BaseSelectorActivity<Action.BiometricVerify>.SelectorContent(currentData: Action.BiometricVerify?) {
+        BiometricVerifySelector(currentData)
     }
 }
 

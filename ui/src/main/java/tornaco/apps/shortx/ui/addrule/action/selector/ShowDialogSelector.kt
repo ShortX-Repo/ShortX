@@ -53,8 +53,8 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 class ShowDialogSelectorActivity : BaseSelectorActivity<Action.ShowAlertDialog>() {
 
     @Composable
-    override fun BaseSelectorActivity<Action.ShowAlertDialog>.SelectorContent(currentAction: Action.ShowAlertDialog?) {
-        ShowDialogSelector(currentAction)
+    override fun BaseSelectorActivity<Action.ShowAlertDialog>.SelectorContent(currentData: Action.ShowAlertDialog?) {
+        ShowDialogSelector(currentData)
     }
 
     @Composable
@@ -102,7 +102,7 @@ class ShowDialogSelectorActivity : BaseSelectorActivity<Action.ShowAlertDialog>(
                                     )
                                     setResult(
                                         Activity.RESULT_OK, Intent().putExtra(
-                                            INTENT_EXTRA_KEY_ACTION, action
+                                            INTENT_EXTRA_KEY_CURRENT, action
                                         )
                                     )
                                     finish()
