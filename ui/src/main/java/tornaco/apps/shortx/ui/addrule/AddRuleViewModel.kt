@@ -44,7 +44,7 @@ import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import java.net.URL
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 
 fun defaultNewRuleId() = "rule-" + UUID.randomUUID().toString()
@@ -59,11 +59,14 @@ data class AddRuleState(
     val ruleChanged: Boolean = false,
     val isEnabled: Boolean = false,
     val showAdvancedOptions: Boolean = false,
+    val showGeeksOptions: Boolean = false,
     val isQuitEnabled: Boolean = false,
     val asyncMode: AsyncMode = AsyncMode.AsyncMode_Async,
     val conflictStrategy: ConflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
     val ruleSetId: String = "",
     val evaluatingActions: List<String> = emptyList(),
+    // Geeks options
+    val instanceIdGen: RuleInstanceIdGen? = null,
     // For online.
     val onlineDALoadState: LoadState<Unit> = LoadState.Success(Unit),
     val securityCheckRes: Boolean = true
@@ -133,6 +136,10 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
 
     fun setShowAdvancedOptions(show: Boolean) {
         updateState { copy(showAdvancedOptions = show) }
+    }
+
+    fun setShowGeeksOptions(show: Boolean) {
+        updateState { copy(showGeeksOptions = show) }
     }
 
     fun setAsyncMode(asyncMode: AsyncMode) {
@@ -349,6 +356,9 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                             || quitConditionContentStateHandler.conditions.isNotEmpty()
                 logger.d("hasAnyHookActions: $hasAnyHookActions")
 
+                val hasAnyGeeksOptions: Boolean = state.value.instanceIdGen != null
+                logger.d("hasAnyGeeksOptions: $hasAnyGeeksOptions")
+
                 val evaluatingActions = shortXManager.getEvaluatingActions()
 
                 updateState {
@@ -361,6 +371,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         createTime = r.createTime,
                         isEnabled = r.isEnabled,
                         showAdvancedOptions = hasAnyHookActions,
+                        showGeeksOptions = hasAnyGeeksOptions,
                         isQuitEnabled = r.quit.isEnabled,
                         asyncMode = r.asyncMode,
                         conflictStrategy = r.conflictPolicy,
