@@ -23,7 +23,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -63,6 +62,7 @@ import tornaco.apps.shortx.ui.base.ConfirmDialog
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.ErrorCard
+import tornaco.apps.shortx.ui.base.ExpandableSectionBar
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.FieldTitleWithTip
 import tornaco.apps.shortx.ui.base.LargeSpacer
@@ -389,12 +389,14 @@ private fun RuleContent(
 
     EvaRecordSetting(id = addRuleState.id)
     SectionSpacer()
+    StandardSpacer()
 
-    TextButton(onClick = {
+    ExpandableSectionBar(
+        isExpand = addRuleState.showAdvancedOptions,
+        text = LocalI18N.current["ui.advanced.options"],
+        iconName = Remix.Media.equalizer_fill
+    ) {
         vm.setShowAdvancedOptions(!addRuleState.showAdvancedOptions)
-
-    }) {
-        Text(text = LocalI18N.current["ui.advanced.options"])
     }
     StandardSpacer()
     AnimatedVisibility(visible = addRuleState.showAdvancedOptions) {
@@ -557,13 +559,15 @@ private fun RuleContent(
             SectionSpacer()
         }
     }
+    SectionSpacer()
     StandardSpacer()
 
-    TextButton(onClick = {
+    ExpandableSectionBar(
+        isExpand = addRuleState.showGeeksOptions,
+        text = LocalI18N.current["ui.geeks.options"],
+        iconName = Remix.UserAndFaces.aliens_fill
+    ) {
         vm.setShowGeeksOptions(!addRuleState.showGeeksOptions)
-
-    }) {
-        Text(text = LocalI18N.current["ui.geeks.options"])
     }
     StandardSpacer()
     AnimatedVisibility(visible = addRuleState.showGeeksOptions) {

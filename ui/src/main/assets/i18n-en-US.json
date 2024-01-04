@@ -1015,7 +1015,7 @@
     "ui.shortx.uninstalled.message": "Do you want to clear ShortX data or keep it?",
     "ui.shortx.uninstalled.keep": "Keep",
     "ui.shortx.uninstalled.clear": "Clear",
-    "ui.geek.options": "Geek options",
+    "ui.geeks.options": "Geek options",
     "ui.rule.ins.id.gen": "Rule instance ID",
     "ui.rule.ins.id.gen.description": "Rule instance ID",
     "ui.rule.ins.id.gen.edit": "Edit",
