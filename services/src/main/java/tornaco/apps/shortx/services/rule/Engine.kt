@@ -350,7 +350,7 @@ class DefaultRuleEngine(
                         }
 
                         ConflictStrategy.ConflictStrategy_ReplaceOld -> {
-                            cancelJobs("ConflictStrategy_ReplaceOld(重复策略)") { it.srcId == rule.id }
+                            cancelJobs("ConflictStrategy_ReplaceOld(重复策略)") { it.srcId == rule.id && it.instanceId == ruleInstanceId }
                             true
                         }
 

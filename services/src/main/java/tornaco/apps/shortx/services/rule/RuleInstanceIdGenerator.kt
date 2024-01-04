@@ -27,6 +27,7 @@ object RuleInstanceIdGenerator {
         contextData: ContextData,
     ): String? {
         // RuleInstanceIdGenerator
+        logger.d("generate: contextData= ${contextData.map}")
 
         if (this is_ RuleInstanceIdGenerator_Static::class.java) {
             val d = this unpack_ RuleInstanceIdGenerator_Static::class.java
@@ -37,6 +38,8 @@ object RuleInstanceIdGenerator {
             val d = this unpack_ RuleInstanceIdGenerator_String::class.java
             return d.insId.inflateContextMap(contextData).replaceGlobalVarValues {
                 shortXContext.rule.getAllGlobalVars()
+            }.apply {
+                logger.d("generate: RuleInstanceIdGenerator_String: $this")
             }
         }
 

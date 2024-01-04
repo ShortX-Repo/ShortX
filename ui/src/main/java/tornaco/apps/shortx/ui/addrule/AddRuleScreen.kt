@@ -573,7 +573,7 @@ private fun RuleContent(
     AnimatedVisibility(visible = addRuleState.showGeeksOptions) {
         Column {
             RuleInstanceIdGenSelector(addRuleState.instanceIdGen, readOnly) {
-
+                vm.setInsGen(it)
             }
         }
     }

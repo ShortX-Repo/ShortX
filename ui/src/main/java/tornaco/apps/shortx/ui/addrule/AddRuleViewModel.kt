@@ -142,6 +142,10 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
         updateState { copy(showGeeksOptions = show) }
     }
 
+    fun setInsGen(gen: RuleInstanceIdGen) {
+        updateState { copy(showGeeksOptions = true, instanceIdGen = gen, ruleChanged = true) }
+    }
+
     fun setAsyncMode(asyncMode: AsyncMode) {
         updateState { copy(asyncMode = asyncMode, ruleChanged = true) }
     }
@@ -173,6 +177,8 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
             val quitConditions = quitConditionContentStateHandler.conditions
             val quitCondOp = quitConditionContentStateHandler.conditionOp
             val quitActions = quitActionStateHandler.actions
+
+            val ruleInsGenProtoOrNull = state.value.instanceIdGen.toProto()
 
             val rule = Rule.newBuilder()
                 .setId(state.value.id)
@@ -247,6 +253,13 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                     }
                 })
                 .setRuleSetId(state.value.ruleSetId)
+                .apply {
+                    if (ruleInsGenProtoOrNull == null) {
+                        clearRuleInstanceIdGenerator()
+                    } else {
+                        setRuleInstanceIdGenerator(ruleInsGenProtoOrNull)
+                    }
+                }
                 .build()
 
             shortXManager.addRule(rule)
