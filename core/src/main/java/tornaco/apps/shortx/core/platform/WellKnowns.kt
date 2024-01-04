@@ -43,6 +43,11 @@ object Classes {
     }
 
     @Throws(ClassNotFoundException::class)
+    fun ClassLoader.activityMetricsLoggerClass(): Class<*> {
+        return Reflections.findClass("com.android.server.wm.ActivityMetricsLogger", this)
+    }
+
+    @Throws(ClassNotFoundException::class)
     fun ClassLoader.inputManagerService(): Class<*> {
         return Reflections.findClass("com.android.server.input.InputManagerService", this)
     }

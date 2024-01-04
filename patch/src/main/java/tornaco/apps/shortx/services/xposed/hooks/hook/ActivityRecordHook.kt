@@ -46,12 +46,13 @@ object ActivityRecordHook {
             logger.e("activityResumedLocked, can not get intent or uid for activityRecord: $activityRecord")
             return
         }
+        val displayId = ActivityRecordUtils.getDisplayId(activityRecord)
         val intentUri = runCatching {
             intent.toUri(Intent.URI_INTENT_SCHEME)
         }.getOrElse {
             it.toString()
         }
-        logger.i("activityResumedLocked, user: $uid, intent: $intent, intentUri: $intentUri")
+        logger.i("activityResumedLocked, user: $uid, displayId: $displayId, intent: $intent, intentUri: $intentUri")
 
         val componentName = intent.component
         if (componentName == null) {
@@ -114,7 +115,8 @@ object ActivityRecordHook {
                 logger.e("activityStopped, can not get intent or user for activityRecord: $activityRecord")
                 return@afterMethod
             }
-            logger.i("activityStopped, uid: $uid, intent: $intent")
+            val displayId = ActivityRecordUtils.getDisplayId(activityRecord)
+            logger.i("activityStopped, uid: $uid, displayId: $displayId, intent: $intent")
 
             val componentName = intent.component
             if (componentName == null) {

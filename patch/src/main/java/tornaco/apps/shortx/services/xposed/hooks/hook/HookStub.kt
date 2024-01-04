@@ -45,5 +45,6 @@ object HookStub {
         IMEServiceHook.hook(lpparam)
         WMServiceHook.hook(lpparam)
         AccManagerHook.hook(lpparam)
+        ActivityMetricsLoggerHook.hook(lpparam)
     }
 }

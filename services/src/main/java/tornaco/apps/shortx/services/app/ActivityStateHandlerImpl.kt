@@ -42,9 +42,17 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
     }
 
     fun isFront(appPkg: AppPkg): Boolean {
-        val topVisibleActivities = func.getTopVisibleActivities().also { appComponents ->
-            logger.d("Check isFront, topVisibleActivities: ${appComponents.map { it.appComponentToString() }}")
-        }
+        val topVisibleActivities = func.getTopVisibleActivities()
+            .filter {
+                val isInDefaultDisplay = it.isInDefaultDisplay
+                if (!isInDefaultDisplay) {
+                    logger.w("Ignore isFront in display: ${it.displayId} ${it.content.appComponentToString()}")
+                }
+                isInDefaultDisplay
+            }.map { it.content }
+            .also { appComponents ->
+                logger.d("Check isFront, topVisibleActivities: ${appComponents.map { it.appComponentToString() }}")
+            }
         return topVisibleActivities.any { it.pkg == appPkg }
     }
 
@@ -94,7 +102,53 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
         // com.sevtinge.cemiuiler-com.sevtinge.cemiuiler.ui.HideAppActivity u0,
         // com.miui.home-com.miui.home.launcher.AddItemActivity u0,
 
-        val topVisibleActivities = func.getTopVisibleActivities().take(2)
+
+        // OPLUS Preload feature
+        // ActivityStateHandlerImpl [binder:2977_6] ---->
+        // Update _currentResumedActivities to: [com.android.launcher-com.android.launcher.Launcher u0, me.zhanghai.android.files-me.zhanghai.android.files.filelist.FileListActivity u0]
+        //  ActivityStateHandlerImpl [main] onActivityResumed: ComponentInfo{android/com.android.server.wm.OplusActivityPreloadFakeActivity} userId: 0,
+        //  intentUri: intent:#Intent;launchFlags=0x10800000;component=android/com.android.server.wm.OplusActivityPreloadFakeActivity;end
+        //  ActivityStateHandlerImpl [main] topVisibleActivities: [com.android.launcher-com.android.launcher.Launcher u0, android-com.android.server.wm.OplusActivityPreloadFakeActivity u0]
+        //  ActivityStateHandlerImpl [main] topVisibleApps: [com.android.launcher-u0, android-u0]
+        //  ActivityStateHandlerImpl [main] currentResumedActivities: [com.android.launcher-com.android.launcher.Launcher u0, me.zhanghai.android.files-me.zhanghai.android.files.filelist.FileListActivity u0]
+        //  ActivityStateHandlerImpl [main] currentResumedApps: [com.android.launcher-u0, me.zhanghai.android.files-u0]
+        //  ActivityStateHandlerImpl [main] addedApps: [android-u0]
+        //  ActivityStateHandlerImpl [main] removedApps: [me.zhanghai.android.files-u0]
+        //  ActivityStateHandlerImpl [main] +++++++++> Pkg to FRONT: pkgName: "android"
+        //  ActivityStateHandlerImpl [main] ---------> Pkg to BACKGROUND: pkgName: "me.zhanghai.android.files"
+        //  ActivityStateHandlerImpl [main] ----> Update _currentResumedActivities to: [com.android.launcher-com.android.launcher.Launcher u0, android-com.android.server.wm.OplusActivityPreloadFakeActivity u0]
+        // public int startActivityInPreloadDisplay(int displayId) {
+        //        int duration;
+        //        if (this.mPreloadPendingIntent == null) {
+        //            Slog.e(TAG, "startActivityInPreloadDisplay Intent null!");
+        //            this.mHistoryLog.addKeyInfo("ERROR_UNEXPECTED_NOPRELOADING");
+        //            return -5;
+        //        }
+        //        ActivityOptions options = ActivityOptions.makeBasic();
+        //        options.setLaunchDisplayId(displayId);
+        //        Slog.i(TAG, "startActivityInPreloadDisplay(" + displayId + "),intent: " + this.mPreloadPendingIntent);
+        //        this.mContext.startActivity(this.mPreloadPendingIntent, options.toBundle());
+        //        this.mHistoryLog.addKeyInfo("startActivity " + this.mPreloadPendingIntent.getComponent());
+        //        if (this.mPreloadingDuration > 0) {
+        //            duration = this.mPreloadingDuration;
+        //        } else {
+        //            duration = this.mIsGameActivity ? this.mGameAcPreloadDur : this.mAcPreloadDur;
+        //        }
+        //        Message msg = this.mAcPHandler.obtainMessage(101);
+        //        this.mAcPHandler.sendMessageDelayed(msg, duration);
+        //        return 0;
+        //    }
+
+        val topVisibleActivities =
+            func.getTopVisibleActivities()
+                .filter {
+                    val isInDefaultDisplay = it.isInDefaultDisplay
+                    if (!isInDefaultDisplay) {
+                        logger.w("Ignore topVisibleActivity in display: ${it.displayId} ${it.content.appComponentToString()}")
+                    }
+                    isInDefaultDisplay
+                }.map { it.content }
+                .take(2)
         val topVisibleApps = topVisibleActivities.map { it.pkg }.distinct()
         logger.d("topVisibleActivities: ${topVisibleActivities.map { it.appComponentToString() }}")
         logger.d("topVisibleApps: ${topVisibleApps.map { it.appPkgToString() }}")
@@ -147,7 +201,7 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
 }
 
 private interface Funs {
-    fun getTopVisibleActivities(): List<AppComponent>
+    fun getTopVisibleActivities(): List<InDisplay<AppComponent>>
 }
 
 // http://aospxref.com/android-10.0.0_r47/xref/frameworks/base/services/core/java/com/android/server/wm/ActivityTaskManagerService.java#6125
@@ -157,7 +211,7 @@ private class FuncV29(val context: Context) : Funs {
         ServiceRetriever(context.classLoader).getATMSInternal().also { logger.w("atmsInt=$it") }
     }
 
-    override fun getTopVisibleActivities(): List<AppComponent> {
+    override fun getTopVisibleActivities(): List<InDisplay<AppComponent>> {
         return ATMSFuncs.getTopVisibleActivities(requireNotNull(atmsInt) { "atmsInt is null." })
     }
 }
@@ -169,7 +223,7 @@ private class FuncV28(val context: Context) : Funs {
         ServiceRetriever(context.classLoader).getAMSInternal().also { logger.w("amsInt=$it") }
     }
 
-    override fun getTopVisibleActivities(): List<AppComponent> {
+    override fun getTopVisibleActivities(): List<InDisplay<AppComponent>> {
         return AMSIntFuncs.getTopVisibleActivities(requireNotNull(amsInt) { "amsInt is null." })
     }
 }

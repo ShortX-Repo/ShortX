@@ -59,7 +59,6 @@ public class ReflectionsExt {
         return -1;
     }
 
-    // @RequiresApi(api = Build.VERSION_CODES.O)
     public static int getFirstArgIndexLikeTypeForMethod(Method method, String classNameOrSimpleName) {
         try {
             Parameter[] parameters = method.getParameters();
@@ -130,30 +129,5 @@ public class ReflectionsExt {
             }
         }
         return null;
-    }
-
-    /**
-     * This may not work on Android class, param name may not present.
-     */
-    public static int getParamIndex(Class<?> clazz, Method method, String paramName, int defaultValue) {
-        try {
-            String cacheKey = clazz.getName() + method.toString();
-            Integer cachedIndex = METHOD_PARAM_INDEX_CACHE.get(cacheKey);
-            if (cachedIndex != null) return cachedIndex;
-
-            Parameter[] parameters = method.getParameters();
-            for (int i = 0; i < parameters.length; i++) {
-                Parameter p = parameters[i];
-                if (p.isNamePresent() && paramName.equals(p.getName())) {
-                    METHOD_PARAM_INDEX_CACHE.put(cacheKey, i);
-                    return i;
-                }
-            }
-
-            METHOD_PARAM_INDEX_CACHE.put(cacheKey, defaultValue);
-            return defaultValue;
-        } catch (Throwable e) {
-            return defaultValue;
-        }
     }
 }

@@ -11,7 +11,7 @@ import util.Reflections
 object AMSIntFuncs {
     private val logger = Logger("AMSIntFuncs")
 
-    fun getTopVisibleActivities(atmsInt: Any): List<AppComponent> {
+    fun getTopVisibleActivities(atmsInt: Any): List<InDisplay<AppComponent>> {
         @Suppress("UNCHECKED_CAST")
         val top = Reflections.callMethod(atmsInt, "getTopVisibleActivities") as List<Any>
         // ActivityAssistInfo or IBinder
@@ -22,12 +22,13 @@ object AMSIntFuncs {
                 ActivityRecordUtils.forTokenLocked(it as IBinder, atmsInt.javaClass.classLoader)
             val uid = ActivityRecordUtils.getUid(ar)
             val intent = ActivityRecordUtils.getIntent(ar)
+            val displayId = ActivityRecordUtils.getDisplayId(ar)
 
             if (uid < 0 || intent == null) {
                 logger.e("getTopVisibleActivities, uid or intent is null.")
                 null
             } else {
-                intent.component.toAppComponent(UserHandle.getUserId(uid))
+                intent.component.toAppComponent(UserHandle.getUserId(uid)).inDisplay(displayId)
             }
         }
     }
