@@ -1014,5 +1014,19 @@
     "ui.shortx.uninstalled.title": "ShortX uninstalled",
     "ui.shortx.uninstalled.message": "Do you want to clear ShortX data or keep it?",
     "ui.shortx.uninstalled.keep": "Keep",
-    "ui.shortx.uninstalled.clear": "Clear"
+    "ui.shortx.uninstalled.clear": "Clear",
+    "ui.geek.options": "Geek options",
+    "ui.rule.ins.id.gen": "Rule instance ID",
+    "ui.rule.ins.id.gen.description": "Rule instance ID",
+    "ui.rule.ins.id.gen.edit": "Edit",
+    "ui.rule.ins.id.gen.js": "Javascript",
+    "ui.rule.ins.id.gen.mvel": "MVEL",
+    "ui.rule.ins.id.gen.default": "Default",
+    "ui.rule.ins.id.gen.static": "Static string",
+    "ui.rule.ins.id.gen.string": "Dynamic string",
+    "ui.rule.ins.id.gen.js.description": "Generate rule id with Javascript",
+    "ui.rule.ins.id.gen.mvel.description": "Generate rule id with MVEL",
+    "ui.rule.ins.id.gen.static.description": "Static string id",
+    "ui.rule.ins.id.gen.default.description": "By default, same rule use the same unique id",
+    "ui.rule.ins.id.gen.string.description": "Dynamic string, support global var and context data"
 }

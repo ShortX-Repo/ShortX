@@ -9,7 +9,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import tornaco.apps.shortx.core.proto.rule.RuleInstanceIdGenerator_JS
+import tornaco.apps.shortx.core.proto.rule.RuleInstanceIdGenerator_MVEL
+import tornaco.apps.shortx.core.proto.rule.RuleInstanceIdGenerator_Static
+import tornaco.apps.shortx.core.proto.rule.RuleInstanceIdGenerator_String
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.rule.ProtoAny
+import tornaco.apps.shortx.core.rule.is_
+import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.DropdownItem
@@ -25,14 +32,33 @@ import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import kotlin.reflect.KClass
 
 sealed interface RuleInstanceIdGen {
+    data object RuleInstanceIdGenDefault : RuleInstanceIdGen
     data class RuleInstanceIdGenStatic(val insId: String) : RuleInstanceIdGen
     data class RuleInstanceIdGenString(val insId: String) : RuleInstanceIdGen
     data class RuleInstanceIdGenMVEL(val expression: String) : RuleInstanceIdGen
     data class RuleInstanceIdGenJS(val expression: String) : RuleInstanceIdGen
 }
 
+fun ProtoAny.toRuleInstanceIdGen(): RuleInstanceIdGen {
+    return if (this is_ RuleInstanceIdGenerator_Static::class.java) {
+        val gen = this unpack_ RuleInstanceIdGenerator_Static::class.java
+        RuleInstanceIdGen.RuleInstanceIdGenStatic(gen.insId)
+    } else if (this is_ RuleInstanceIdGenerator_String::class.java) {
+        val gen = this unpack_ RuleInstanceIdGenerator_String::class.java
+        RuleInstanceIdGen.RuleInstanceIdGenString(gen.insId)
+    } else if (this is_ RuleInstanceIdGenerator_JS::class.java) {
+        val gen = this unpack_ RuleInstanceIdGenerator_JS::class.java
+        RuleInstanceIdGen.RuleInstanceIdGenJS(gen.expression)
+    } else if (this is_ RuleInstanceIdGenerator_MVEL::class.java) {
+        val gen = this unpack_ RuleInstanceIdGenerator_MVEL::class.java
+        RuleInstanceIdGen.RuleInstanceIdGenMVEL(gen.expression)
+    } else {
+        RuleInstanceIdGen.RuleInstanceIdGenDefault
+    }
+}
+
 @Composable
-private fun RuleInstanceIdGenSelector(
+fun RuleInstanceIdGenSelector(
     gen: RuleInstanceIdGen,
     readOnly: Boolean,
     setGen: (RuleInstanceIdGen) -> Unit
@@ -116,6 +142,10 @@ private fun RuleInstanceIdGenSelector(
 
 fun KClass<*>.labelKey(): String {
     return when (this) {
+        RuleInstanceIdGen.RuleInstanceIdGenDefault::class -> {
+            "ui.rule.ins.id.gen.default"
+        }
+
         RuleInstanceIdGen.RuleInstanceIdGenJS::class -> {
             "ui.rule.ins.id.gen.js"
         }
@@ -141,6 +171,10 @@ fun KClass<*>.labelKey(): String {
 
 fun KClass<*>.descriptionKey(): String {
     return when (this) {
+        RuleInstanceIdGen.RuleInstanceIdGenDefault::class -> {
+            "ui.rule.ins.id.gen.default.description"
+        }
+
         RuleInstanceIdGen.RuleInstanceIdGenJS::class -> {
             "ui.rule.ins.id.gen.js.description"
         }
@@ -166,6 +200,10 @@ fun KClass<*>.descriptionKey(): String {
 
 fun KClass<*>.iconName(): String {
     return when (this) {
+        RuleInstanceIdGen.RuleInstanceIdGenDefault::class -> {
+            Remix.System.refresh_fill
+        }
+
         RuleInstanceIdGen.RuleInstanceIdGenJS::class -> {
             Remix.Development.javascript_fill
         }

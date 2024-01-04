@@ -1013,5 +1013,19 @@
     "ui.shortx.uninstalled.title": "ShortX已卸载",
     "ui.shortx.uninstalled.message": "你想保留ShortX的数据吗？",
     "ui.shortx.uninstalled.keep": "保留",
-    "ui.shortx.uninstalled.clear": "清除"
+    "ui.shortx.uninstalled.clear": "清除",
+    "ui.geek.options": "极客选项",
+    "ui.rule.ins.id.gen": "指令实例ID",
+    "ui.rule.ins.id.gen.description": "指令实例ID",
+    "ui.rule.ins.id.gen.edit": "修改",
+    "ui.rule.ins.id.gen.js": "Javascript",
+    "ui.rule.ins.id.gen.mvel": "MVEL",
+    "ui.rule.ins.id.gen.default": "Default",
+    "ui.rule.ins.id.gen.static": "静态字符串",
+    "ui.rule.ins.id.gen.string": "动态字符串",
+    "ui.rule.ins.id.gen.js.description": "通过Javascript生成实例ID",
+    "ui.rule.ins.id.gen.mvel.description": "通过MVEL生成实例ID",
+    "ui.rule.ins.id.gen.static.description": "固定ID",
+    "ui.rule.ins.id.gen.default.description": "自动为每个指令分配固定的独一无二的ID",
+    "ui.rule.ins.id.gen.string.description": "动态ID，支持引用变量"
 }

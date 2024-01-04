@@ -568,7 +568,9 @@ private fun RuleContent(
     StandardSpacer()
     AnimatedVisibility(visible = addRuleState.showGeeksOptions) {
         Column {
-            RuleInstanceIdGenSelector(addRuleState.instanceIdGen)
+            RuleInstanceIdGenSelector(addRuleState.instanceIdGen, readOnly) {
+
+            }
         }
     }
 

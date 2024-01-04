@@ -66,7 +66,7 @@ data class AddRuleState(
     val ruleSetId: String = "",
     val evaluatingActions: List<String> = emptyList(),
     // Geeks options
-    val instanceIdGen: RuleInstanceIdGen? = null,
+    val instanceIdGen: RuleInstanceIdGen = RuleInstanceIdGen.RuleInstanceIdGenDefault,
     // For online.
     val onlineDALoadState: LoadState<Unit> = LoadState.Success(Unit),
     val securityCheckRes: Boolean = true
@@ -356,7 +356,8 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                             || quitConditionContentStateHandler.conditions.isNotEmpty()
                 logger.d("hasAnyHookActions: $hasAnyHookActions")
 
-                val hasAnyGeeksOptions: Boolean = state.value.instanceIdGen != null
+
+                val hasAnyGeeksOptions: Boolean = r.hasRuleInstanceIdGenerator()
                 logger.d("hasAnyGeeksOptions: $hasAnyGeeksOptions")
 
                 val evaluatingActions = shortXManager.getEvaluatingActions()
@@ -372,6 +373,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         isEnabled = r.isEnabled,
                         showAdvancedOptions = hasAnyHookActions,
                         showGeeksOptions = hasAnyGeeksOptions,
+                        instanceIdGen = r.ruleInstanceIdGenerator.toRuleInstanceIdGen(),
                         isQuitEnabled = r.quit.isEnabled,
                         asyncMode = r.asyncMode,
                         conflictStrategy = r.conflictPolicy,
