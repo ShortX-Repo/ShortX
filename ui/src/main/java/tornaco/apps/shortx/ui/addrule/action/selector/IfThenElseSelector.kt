@@ -49,8 +49,8 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 @AndroidEntryPoint
 class IfThenElseSelectorActivity : BaseSelectorActivity<Action.IfThenElse>() {
     @Composable
-    override fun BaseSelectorActivity<Action.IfThenElse>.SelectorContent(currentAction: Action.IfThenElse?) {
-        IfThenElseSelectorDialogSelector(currentAction)
+    override fun BaseSelectorActivity<Action.IfThenElse>.SelectorContent(currentData: Action.IfThenElse?) {
+        IfThenElseSelectorDialogSelector(currentData)
     }
 }
 

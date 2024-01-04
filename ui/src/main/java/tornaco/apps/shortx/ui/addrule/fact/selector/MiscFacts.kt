@@ -20,6 +20,7 @@ fun MiscFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: (F
     val i18N = LocalI18N.current
     val items = mutableListOf(
         Fact.OnQSTileClick::class,
+        Fact.DeepLinkCall::class,
         Fact.GlobalVarChanged::class,
     ).apply {
         onDebugBuild {

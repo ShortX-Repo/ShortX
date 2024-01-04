@@ -71,6 +71,7 @@ fun imageVectorForFact(fact: KClass<out Fact>): String {
         Fact.IMEVisibilityChange::class -> Remix.Device.keyboard_fill
         Fact.AppGainWindowFocus::class -> Remix.Design.focus_2_fill
         Fact.AppLostWindowFocus::class -> Remix.Design.focus_2_line
+        Fact.DeepLinkCall::class -> Remix.System.external_link_fill
 
         else -> {
             Remix.Document.file_unknow_fill

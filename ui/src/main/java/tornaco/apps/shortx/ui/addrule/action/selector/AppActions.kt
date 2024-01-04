@@ -26,7 +26,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.AppComponentSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.ComponentType
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAppComponentSelectorState
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
-import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorActionOrNull
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorCurrentDataOrNull
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberTextInputState
@@ -206,7 +206,7 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     val startActivityIntentLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toBaseSelectorActionOrNull<Action.StartActivityIntent>()
+            val action = result.toBaseSelectorCurrentDataOrNull<Action.StartActivityIntent>()
             action?.let {
                 addAction(it)
             }
@@ -216,7 +216,7 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     val startServiceLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toBaseSelectorActionOrNull<Action.StartService>()
+            val action = result.toBaseSelectorCurrentDataOrNull<Action.StartService>()
             action?.let {
                 addAction(it)
             }
@@ -277,7 +277,7 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     val pickShortcutLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toBaseSelectorActionOrNull<Action.AppShortcut>()
+            val action = result.toBaseSelectorCurrentDataOrNull<Action.AppShortcut>()
             action?.let {
                 addAction(it)
             }
@@ -287,7 +287,7 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     val foreachPkgSetLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toBaseSelectorActionOrNull<Action.ForEachPkgSet>()
+            val action = result.toBaseSelectorCurrentDataOrNull<Action.ForEachPkgSet>()
             action?.let {
                 addAction(it)
             }

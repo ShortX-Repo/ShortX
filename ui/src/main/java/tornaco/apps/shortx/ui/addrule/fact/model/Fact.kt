@@ -1567,6 +1567,29 @@ sealed interface Fact {
         }
     }
 
+    data class DeepLinkCall(
+        override val note: String = "",
+        override val tag: String = "",
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val id: String = defaultNewFactId(),
+
+        val deepLinkTag: String
+    ) : Fact {
+        override fun clone(
+            id: String,
+            note: String,
+            tag: String,
+            customContextDataKey: CustomContextDataKey
+        ): Fact {
+            return copy(
+                id = id,
+                note = note,
+                tag = tag,
+                customContextDataKey = customContextDataKey
+            )
+        }
+    }
+
     // END SEAL CLASS
 }
 

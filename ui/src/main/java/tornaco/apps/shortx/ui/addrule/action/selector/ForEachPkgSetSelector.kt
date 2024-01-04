@@ -59,8 +59,8 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 @AndroidEntryPoint
 class ForEachPkgSetSelectorActivity : BaseSelectorActivity<Action.ForEachPkgSet>() {
     @Composable
-    override fun BaseSelectorActivity<Action.ForEachPkgSet>.SelectorContent(currentAction: Action.ForEachPkgSet?) {
-        ForEachPkgSetSelectorDialogSelector(currentAction)
+    override fun BaseSelectorActivity<Action.ForEachPkgSet>.SelectorContent(currentData: Action.ForEachPkgSet?) {
+        ForEachPkgSetSelectorDialogSelector(currentData)
     }
 }
 

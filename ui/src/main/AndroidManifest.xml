@@ -69,6 +69,27 @@
         </activity>
 
         <activity
+            android:name=".main.DeepLinkTriggerActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:taskAffinity="ui.deeplink"
+            android:theme="@style/UiTheme.Shortcut">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="trigger"
+                    android:scheme="shortx" />
+            </intent-filter>
+
+        </activity>
+
+        <activity
             android:name="tornaco.apps.shortx.ui.share.ViewerActivity"
             android:excludeFromRecents="true"
             android:exported="true">
@@ -222,6 +243,9 @@
             android:exported="false" />
         <activity
             android:name="tornaco.apps.shortx.ui.base.code.mvel.MVELEditorActivity"
+            android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.base.code.js.JSEditorActivity"
             android:exported="false" />
 
         <service

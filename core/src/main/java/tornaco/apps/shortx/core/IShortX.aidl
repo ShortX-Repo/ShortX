@@ -298,4 +298,8 @@ interface IShortX {
     void updateQSTileActiveState(int number);
 
     List<ByteArrayWrapper> getPrivilegedConfiguredNetworks();
+
+    void deepLinkTriggerCalled(String tag);
+
+   List<ByteArrayWrapper> getAllRingtones();
 }

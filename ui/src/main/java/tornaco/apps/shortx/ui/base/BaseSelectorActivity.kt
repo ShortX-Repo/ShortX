@@ -4,45 +4,45 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Parcelable
 import androidx.activity.result.ActivityResult
 import androidx.compose.runtime.Composable
-import tornaco.apps.shortx.ui.addrule.action.model.Action
 
 
-abstract class BaseSelectorActivity<T : Action> : BaseActivity() {
+abstract class BaseSelectorActivity<T : Parcelable> : BaseActivity() {
     companion object {
-        const val INTENT_EXTRA_KEY_ACTION = "selector.action"
+        const val INTENT_EXTRA_KEY_CURRENT = "selector.current"
 
-        inline fun <reified T : Action> ActivityResult.toBaseSelectorActionOrNull(): T? {
+        inline fun <reified T : Parcelable> ActivityResult.toBaseSelectorCurrentDataOrNull(): T? {
             return if (this.resultCode == Activity.RESULT_OK) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     this.data?.getParcelableExtra(
-                        INTENT_EXTRA_KEY_ACTION,
+                        INTENT_EXTRA_KEY_CURRENT,
                         T::class.java
                     )
                 } else {
-                    (this.data?.getParcelableExtra(INTENT_EXTRA_KEY_ACTION)) as T?
+                    (this.data?.getParcelableExtra(INTENT_EXTRA_KEY_CURRENT)) as T?
                 }
             } else {
                 null
             }
         }
 
-        inline fun <reified T : Action> newIntent(
+        inline fun <reified T : Parcelable> newIntent(
             context: Context,
-            currentAction: T? = null,
+            currentData: T? = null,
             clazz: Class<out Activity>
         ): Intent {
             return Intent(context, clazz).apply {
-                currentAction?.let {
-                    putExtra(INTENT_EXTRA_KEY_ACTION, it)
+                currentData?.let {
+                    putExtra(INTENT_EXTRA_KEY_CURRENT, it)
                 }
             }
         }
     }
 
-    private fun Intent.toBaseSelectorActionOrNull(): T? {
-        return (this.getParcelableExtra(INTENT_EXTRA_KEY_ACTION)) as T?
+    private fun Intent.toBaseSelectorDataOrNull(): T? {
+        return (this.getParcelableExtra(INTENT_EXTRA_KEY_CURRENT)) as T?
     }
 
     fun cancelAndFinish() {
@@ -51,16 +51,16 @@ abstract class BaseSelectorActivity<T : Action> : BaseActivity() {
     }
 
     fun setResultAndFinish(action: T) {
-        setResult(Activity.RESULT_OK, Intent().putExtra(INTENT_EXTRA_KEY_ACTION, action))
+        setResult(Activity.RESULT_OK, Intent().putExtra(INTENT_EXTRA_KEY_CURRENT, action))
         finish()
     }
 
     @Composable
     override fun Content() {
-        val current = intent.toBaseSelectorActionOrNull()
+        val current = intent.toBaseSelectorDataOrNull()
         SelectorContent(current)
     }
 
     @Composable
-    abstract fun BaseSelectorActivity<T>.SelectorContent(currentAction: T?)
+    abstract fun BaseSelectorActivity<T>.SelectorContent(currentData: T?)
 }

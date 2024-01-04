@@ -493,6 +493,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.System.lock_2_fill
         }
 
+        Action.PlayRingtone::class -> {
+            Remix.Media.music_2_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

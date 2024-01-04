@@ -50,12 +50,14 @@ class ActionShortcutActivity : Activity() {
 
         if (id == null) {
             Toast.makeText(this, "Id is null", Toast.LENGTH_SHORT).show()
+            finishAffinity()
             return
         }
 
         val da = shortXManager.getDirectActionById(id)
         if (da == null) {
             Toast.makeText(this, i18NIns["ui.action.from.da.not.found"], Toast.LENGTH_SHORT).show()
+            finishAffinity()
             return
         }
 

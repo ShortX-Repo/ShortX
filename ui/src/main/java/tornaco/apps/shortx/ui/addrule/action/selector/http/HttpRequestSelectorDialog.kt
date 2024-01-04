@@ -92,8 +92,8 @@ import tornaco.apps.shortx.ui.util.ClipboardUtils
 @AndroidEntryPoint
 class HttpRequestSelectorActivity : BaseSelectorActivity<Action.HttpRequest>() {
     @Composable
-    override fun BaseSelectorActivity<Action.HttpRequest>.SelectorContent(currentAction: Action.HttpRequest?) {
-        HttpRequestSelector(currentAction)
+    override fun BaseSelectorActivity<Action.HttpRequest>.SelectorContent(currentData: Action.HttpRequest?) {
+        HttpRequestSelector(currentData)
     }
 }
 

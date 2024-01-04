@@ -419,7 +419,7 @@ private fun RuleContent(
                 }
                 DropdownSelector(
                     state = asyncModeDropdownState,
-                    items = AsyncMode.values()
+                    items = AsyncMode.entries
                         .filterNot { it == AsyncMode.UNRECOGNIZED }.map {
                             DropdownItem(
                                 labelLines = listOf(
@@ -557,6 +557,20 @@ private fun RuleContent(
             SectionSpacer()
         }
     }
+    StandardSpacer()
+
+    TextButton(onClick = {
+        vm.setShowGeeksOptions(!addRuleState.showGeeksOptions)
+
+    }) {
+        Text(text = LocalI18N.current["ui.geeks.options"])
+    }
+    StandardSpacer()
+    AnimatedVisibility(visible = addRuleState.showGeeksOptions) {
+        Column {
+            RuleInstanceIdGenSelector(addRuleState.instanceIdGen)
+        }
+    }
 
     SectionSpacer()
     SuggestedNavEntry()
@@ -586,7 +600,7 @@ fun ConflictStrategy(
         }
         DropdownSelector(
             state = conflictStrategyModeDropdownState,
-            items = ConflictStrategy.values()
+            items = ConflictStrategy.entries
                 .filterNot { it == ConflictStrategy.UNRECOGNIZED }.map {
                     DropdownItem(
                         labelLines = listOf(

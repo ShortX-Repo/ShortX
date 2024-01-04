@@ -9,7 +9,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
-import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
@@ -21,15 +20,16 @@ import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.base.rememberCategoryState
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.newIntent
-import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorActionOrNull
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorCurrentDataOrNull
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.TextInputDialog
-import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
+import tornaco.apps.shortx.ui.base.code.ParcelableCode
 import tornaco.apps.shortx.ui.base.code.ShellCommandEditorActivity
+import tornaco.apps.shortx.ui.base.code.js.JSEditorActivity
 import tornaco.apps.shortx.ui.base.code.mvel.MVELEditorActivity
-import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
+import tornaco.apps.shortx.ui.base.code.toParcelableCodeOrNull
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
@@ -44,7 +44,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     val shellCommandLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toBaseSelectorActionOrNull<Action.ShellCommand>()
+            val action = result.toBaseSelectorCurrentDataOrNull<Action.ShellCommand>()
             action?.let {
                 addAction(it)
             }
@@ -62,22 +62,22 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     val mvelEditorLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toBaseSelectorActionOrNull<Action.MVEL>()
+            val action = result.toBaseSelectorCurrentDataOrNull<ParcelableCode>()
             action?.let {
-                addAction(it)
+                addAction(Action.MVEL(expression = it.expression))
             }
         }
     )
 
-    val jsSelectorState = rememberCodeEditorState(
-        title = LocalI18N.current["ui.title.js"],
-        execute = {
-            shortXManager.executeJS(it)
+    val jsEditorLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.toBaseSelectorCurrentDataOrNull<ParcelableCode>()
+            action?.let {
+                addAction(Action.ExecuteJS(expression = it.expression))
+            }
         }
-    ) { expression ->
-        addAction(Action.ExecuteJS(expression = expression.src))
-    }
-    CodeEditorDialog(state = jsSelectorState)
+    )
 
     val fromDASelectorState = rememberFromDADialogState {
         addAction(it)
@@ -96,7 +96,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     val ifThenElseLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toBaseSelectorActionOrNull<Action.IfThenElse>()
+            val action = result.toBaseSelectorCurrentDataOrNull<Action.IfThenElse>()
             action?.let {
                 addAction(it)
             }
@@ -106,7 +106,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     val waitUtilLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toBaseSelectorActionOrNull<Action.WaitUtilConditionMatch>()
+            val action = result.toBaseSelectorCurrentDataOrNull<Action.WaitUtilConditionMatch>()
             action?.let {
                 addAction(it)
             }
@@ -135,7 +135,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     val httpLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toBaseSelectorActionOrNull<Action.HttpRequest>()
+            val action = result.toBaseSelectorCurrentDataOrNull<Action.HttpRequest>()
             action?.let {
                 addAction(it)
             }
@@ -177,7 +177,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 mvelEditorLauncher.launch(
                     newIntent(
                         context,
-                        source.getActionAs<Action.MVEL>(),
+                        source.getActionAs<Action.MVEL>()?.expression?.toParcelableCodeOrNull(),
                         MVELEditorActivity::class.java
                     )
                 )
@@ -185,7 +185,13 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             }
 
             Action.ExecuteJS::class -> {
-                jsSelectorState.show(source.getActionAs<Action.ExecuteJS>()?.expression)
+                jsEditorLauncher.launch(
+                    newIntent(
+                        context,
+                        source.getActionAs<Action.ExecuteJS>()?.expression.toParcelableCodeOrNull(),
+                        JSEditorActivity::class.java
+                    )
+                )
                 true
             }
 

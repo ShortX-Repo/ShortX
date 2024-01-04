@@ -38,7 +38,6 @@ import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.LinkText
 import tornaco.apps.shortx.ui.base.Loading
@@ -46,22 +45,23 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.TextDisplayActivity
+import tornaco.apps.shortx.ui.base.code.ParcelableCode
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.BrowserUtils
 
 @AndroidEntryPoint
-class MVELEditorActivity : BaseSelectorActivity<Action.MVEL>() {
+class MVELEditorActivity : BaseSelectorActivity<ParcelableCode>() {
     @Composable
-    override fun BaseSelectorActivity<Action.MVEL>.SelectorContent(currentAction: Action.MVEL?) {
-        MVELEditor(currentAction)
+    override fun BaseSelectorActivity<ParcelableCode>.SelectorContent(currentData: ParcelableCode?) {
+        MVELEditor(currentData)
     }
 }
 
 @Composable
 fun MVELEditorActivity.MVELEditor(
-    currentAction: Action.MVEL?,
+    currentAction: ParcelableCode?,
 ) {
     val outputTitle = LocalI18N.current["ui.title.mvel"]
     val context = LocalContext.current
@@ -125,9 +125,7 @@ fun MVELEditorActivity.MVELEditor(
 
                         IconButton(onClick = {
                             setResultAndFinish(
-                                Action.MVEL(
-                                    expression = state.expression,
-                                )
+                                ParcelableCode(expression = state.expression)
                             )
                         }) {
                             Icon(imageVector = Icons.Outlined.Check, contentDescription = "Done")

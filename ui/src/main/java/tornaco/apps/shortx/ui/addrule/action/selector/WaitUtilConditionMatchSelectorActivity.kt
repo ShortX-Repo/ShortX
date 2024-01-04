@@ -44,8 +44,8 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 @AndroidEntryPoint
 class WaitUtilConditionMatchSelectorActivity : BaseSelectorActivity<Action.WaitUtilConditionMatch>() {
     @Composable
-    override fun BaseSelectorActivity<Action.WaitUtilConditionMatch>.SelectorContent(currentAction: Action.WaitUtilConditionMatch?) {
-        WaitUtilConditionMatchSelectorDialogSelector(currentAction)
+    override fun BaseSelectorActivity<Action.WaitUtilConditionMatch>.SelectorContent(currentData: Action.WaitUtilConditionMatch?) {
+        WaitUtilConditionMatchSelectorDialogSelector(currentData)
     }
 }
 

@@ -19,7 +19,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -67,8 +66,8 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 @AndroidEntryPoint
 class StartActivityIntentSelectorActivity : BaseSelectorActivity<Action.StartActivityIntent>() {
     @Composable
-    override fun BaseSelectorActivity<Action.StartActivityIntent>.SelectorContent(currentAction: Action.StartActivityIntent?) {
-        StartActivityIntentSelector(currentAction)
+    override fun BaseSelectorActivity<Action.StartActivityIntent>.SelectorContent(currentData: Action.StartActivityIntent?) {
+        StartActivityIntentSelector(currentData)
     }
 }
 

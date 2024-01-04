@@ -35,6 +35,7 @@ import tornaco.apps.shortx.core.proto.fact.ChargerUnplug
 import tornaco.apps.shortx.core.proto.fact.ClipboardContentChanged
 import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
+import tornaco.apps.shortx.core.proto.fact.DeepLinkCall
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.fact.FlashLightStatusChanged
@@ -518,6 +519,12 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
                 AppLostWindowFocusWrapper(actualN),
                 AppLostWindowFocusWrapper(ruleN)
             )
+        }
+
+        register(DeepLinkCall::class.java) { actual, rule ->
+            val actualN = (actual as DeepLinkCall)
+            val ruleN = (rule as DeepLinkCall)
+            actualN.deepLinkTag == ruleN.deepLinkTag
         }
 
         logger.i("Init complete.")

@@ -30,6 +30,7 @@ import tornaco.apps.shortx.core.proto.fact.ChargerUnplug
 import tornaco.apps.shortx.core.proto.fact.ClipboardContentChanged
 import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
+import tornaco.apps.shortx.core.proto.fact.DeepLinkCall
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.fact.FlashLightStatusChanged
@@ -595,6 +596,14 @@ fun Fact.toProtoFact(
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .setIsShown(isShown)
+                .build()
+        }
+
+        is Fact.DeepLinkCall -> {
+            DeepLinkCall.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setTag(overrideTag ?: tag)
+                .setCustomContextDataKey(customContextDataKey)
+                .setDeepLinkTag(deepLinkTag)
                 .build()
         }
 

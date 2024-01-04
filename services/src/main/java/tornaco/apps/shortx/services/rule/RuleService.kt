@@ -549,19 +549,19 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         handler.postSafety {
             engine.cancelJobs("Rule disabled(指令关闭)") {
                 // Do not cancel RuleHook jobs.
-                it.id == ruleId && !it.hasTag(ContextSrcEvent.ContextSrc_RuleHook)
+                it.srcId == ruleId && !it.hasTag(ContextSrcEvent.ContextSrc_RuleHook)
             }
         }
     }
 
     // For App
-    fun getActiveJobs(): List<String> = engine.activeJobs().map { it.id }
+    fun getActiveJobs(): List<String> = engine.activeJobs().map { it.srcId }
 
     // For App
     fun cancelJobs(jobs: List<String>) {
         handler.postSafety {
             engine.cancelJobs("User requested(用户主动取消)") {
-                jobs.contains(it.id)
+                jobs.contains(it.srcId)
             }
         }
     }

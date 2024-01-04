@@ -43,7 +43,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.rememberQSTileSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberVibratePatternSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberWifiSSIDSelectorState
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
-import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorActionOrNull
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorCurrentDataOrNull
 import tornaco.apps.shortx.ui.base.InputValidateResult
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MenuDialog
@@ -55,6 +55,8 @@ import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberSelectionDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.base.rememberTipDialogState
+import tornaco.apps.shortx.ui.ringtone.RingtonePickerDialog
+import tornaco.apps.shortx.ui.ringtone.rememberRingtonePickerState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 import kotlin.reflect.full.createInstance
@@ -101,7 +103,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     val injectCombineKeyCodeLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toBaseSelectorActionOrNull<Action.InjectCombineKeyCode>()
+            val action = result.toBaseSelectorCurrentDataOrNull<Action.InjectCombineKeyCode>()
             action?.let {
                 addAction(it)
             }
@@ -168,7 +170,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
 
     val mediaPlayMenuDialogState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.action.media.play.back"],
-        menuItems = MediaPlaybackAction.values()
+        menuItems = MediaPlaybackAction.entries
             .filter { it != MediaPlaybackAction.UNRECOGNIZED }
             .map {
                 MenuDialogItem(id = it.name, title = LocalI18N.current[it.labelKey()])
@@ -188,7 +190,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     val biometricVerifyLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toBaseSelectorActionOrNull<Action.BiometricVerify>()
+            val action = result.toBaseSelectorCurrentDataOrNull<Action.BiometricVerify>()
             action?.let {
                 addAction(it)
             }
@@ -215,7 +217,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
 
     val screenRotateSelectorState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.action.set.screen.rotate"],
-        menuItems = ScreenRotateDegree.values().filterNot { it == ScreenRotateDegree.UNRECOGNIZED }
+        menuItems = ScreenRotateDegree.entries.filterNot { it == ScreenRotateDegree.UNRECOGNIZED }
             .map {
                 MenuDialogItem(id = it.name, title = LocalI18N.current[it.actionLabelKey()])
             },
@@ -228,7 +230,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
 
     val stayAwakeSelectorState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.action.stay.awake"],
-        menuItems = OnOffToggle.values().filterNot { it == OnOffToggle.UNRECOGNIZED }
+        menuItems = OnOffToggle.entries.filterNot { it == OnOffToggle.UNRECOGNIZED }
             .map {
                 MenuDialogItem(id = it.name, title = LocalI18N.current[it.labelKey()])
             },
@@ -241,7 +243,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
 
     val setMasterSyncSelectorState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.action.sync"],
-        menuItems = OnOffToggle.values().filterNot { it == OnOffToggle.UNRECOGNIZED }
+        menuItems = OnOffToggle.entries.filterNot { it == OnOffToggle.UNRECOGNIZED }
             .map {
                 MenuDialogItem(id = it.name, title = LocalI18N.current[it.labelKey()])
             },
@@ -265,6 +267,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     )
     WifiSSIDSelectorDialog(state = wifiConnectedSelectorState)
 
+    val ringtonePickerState =
+        rememberRingtonePickerState(title = LocalI18N.current["ui.action.ringtone"]) {
+            addAction(Action.PlayRingtone(ringtone = it))
+        }
+    RingtonePickerDialog(state = ringtonePickerState)
 
     return { source ->
         when (source.clazz) {
@@ -432,6 +439,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.PlayRingtone::class -> {
+                ringtonePickerState.show()
+                true
+            }
+
             else -> false
         }
     }
@@ -482,6 +494,7 @@ fun SystemActions(
         Action.EnableSensorsOff::class,
         Action.DisableSensorsOff::class,
         Action.Vibrate::class,
+        Action.PlayRingtone::class,
         OsUtils.isQOrAbove().select(Action.AudioRecording::class, null),
         OsUtils.isQOrAbove().select(Action.StopAudioRecording::class, null),
         Action.SwitchMobileDataSlot::class,

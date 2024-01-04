@@ -5,15 +5,19 @@ import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.media.AudioPlaybackConfiguration.PLAYER_STATE_STARTED
 import android.media.MediaRecorder
+import android.media.RingtoneManager
+import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.os.RemoteCallbackList
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.IAudioRecordingListener
 import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AudioRecordFile
 import tornaco.apps.shortx.core.proto.common.AudioSource
+import tornaco.apps.shortx.core.proto.common.Ringtone
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.audioManager
@@ -29,9 +33,9 @@ import tornaco.apps.shortx.services.audio.recorder.ScreenRecordingAudioSource
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.data.Dirs.baseServerRecordingDir
 import tornaco.apps.shortx.services.enforceCallingPermissions
-import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.runClearCallingIdentity
 import tornaco.apps.shortx.services.systemServiceScope
+import tornaco.apps.shortx.services.watchdog.launchSafety
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Files
@@ -315,6 +319,51 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         }.onFailure {
             shortXContext.watchDog.onFatalError(it, "handlePlaybackConfigChanged")
         }
+
+
+    // java.lang.SecurityException: Given calling package android does not match caller's uid 10162
+    // at android.os.Parcel.createException(Parcel.java:2072)
+    // at android.os.Parcel.readException(Parcel.java:2040)
+    // at android.os.Parcel.readException(Parcel.java:1988)
+    // at tornaco.apps.shortx.core.IShortX$Stub$Proxy.getAllRingtones(IShortX.java:6515)
+    // at tornaco.apps.shortx.core.ShortXManager.getAllRingtones(ShortXManager.kt:1194)
+    // at tornaco.apps.shortx.ui.ringtone.RingtoneListViewModel$loadState$1.invokeSuspend(RingtonePickerViewModel.kt:30)
+    // at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+    // at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:108)
+    // at kotlinx.coroutines.internal.LimitedDispatcher$Worker.run(LimitedDispatcher.kt:115)
+    // at kotlinx.coroutines.scheduling.TaskImpl.run(Tasks.kt:103)
+    // at kotlinx.coroutines.scheduling.CoroutineScheduler.runSafely(CoroutineScheduler.kt:584)
+    // at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.executeTask(CoroutineScheduler.kt:793)
+    // at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.runWorker(CoroutineScheduler.kt:697)
+    // at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.run(CoroutineScheduler.kt:684)
+    //     Caused by: android.os.RemoteException: Remote stack trace:
+    // at com.android.server.am.ActivityManagerService.getContentProvider(ActivityManagerService.java:7311)
+    // at android.app.ActivityThread.acquireProvider(ActivityThread.java:6566)
+    // at android.app.ContextImpl$ApplicationContentResolver.acquireUnstableProvider(ContextImpl.java:2725)
+    // at android.content.ContentResolver.acquireUnstableProvider(ContentResolver.java:2120)
+    // at android.content.ContentResolver.query(ContentResolver.java:930)
+    fun getAllRingtones(): List<Ringtone> {
+        val res = mutableListOf<Ringtone>()
+        runBlocking {
+            systemServiceScope.launchSafety {
+                val all = RingtoneLoader(context).load(RingtoneManager.TYPE_ALARM) + RingtoneLoader(
+                    context
+                ).load(
+                    RingtoneManager.TYPE_NOTIFICATION
+                ) + RingtoneLoader(context).load(RingtoneManager.TYPE_RINGTONE)
+                res.addAll(all)
+            }.join()
+        }
+        return res
+    }
+
+    fun playRingtone(ringtone: Ringtone) {
+        val androidRingtone = RingtoneManager.getRingtone(context, Uri.parse(ringtone.uri))
+        requireNotNull(androidRingtone) {
+            "Ringtone not exists: ${ringtone.title}"
+        }
+        androidRingtone.play()
+    }
 }
 
 /** @hide

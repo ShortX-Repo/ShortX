@@ -1,7 +1,9 @@
 package tornaco.apps.shortx.ui.addrule.condition.selector
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import tornaco.apps.shortx.core.shortXManager
+import androidx.compose.ui.platform.LocalContext
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.selector.DelaySelectorDialog
 import tornaco.apps.shortx.ui.addrule.action.selector.SetRuleEnabledSelectorDialog
@@ -14,31 +16,37 @@ import tornaco.apps.shortx.ui.addrule.condition.getConditionAs
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateGlobalVarSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateLocalVarSelectorState
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorCurrentDataOrNull
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.TextInputDialog
-import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
-import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
+import tornaco.apps.shortx.ui.base.code.ParcelableCode
+import tornaco.apps.shortx.ui.base.code.js.JSEditorActivity
+import tornaco.apps.shortx.ui.base.code.mvel.MVELEditorActivity
+import tornaco.apps.shortx.ui.base.code.toParcelableCodeOrNull
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 
 @Composable
 fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectSource) -> Boolean {
-    val mvelConditionSelectorState =
-        rememberCodeEditorState(title = LocalI18N.current["ui.title.mvel"],
-            execute = {
-                shortXManager.executeMVEL(it)
-            }) { expression ->
-            addCondition(Condition.MVEL(expression.src))
+    val mvelEditorLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.toBaseSelectorCurrentDataOrNull<ParcelableCode>()
+            action?.let {
+                addCondition(Condition.MVEL(it.expression))
+            }
         }
-    CodeEditorDialog(state = mvelConditionSelectorState)
+    )
 
-    val jsConditionSelectorState =
-        rememberCodeEditorState(title = LocalI18N.current["ui.title.js"],
-            execute = {
-                shortXManager.executeJS(it)
-            }) { expression ->
-            addCondition(Condition.JS(expression.src))
+    val jsEditorLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.toBaseSelectorCurrentDataOrNull<ParcelableCode>()
+            action?.let {
+                addCondition(Condition.JS(it.expression))
+            }
         }
-    CodeEditorDialog(state = jsConditionSelectorState)
+    )
 
     val evaluateGlobalVarSelectorDialogState = rememberEvaluateGlobalVarSelectorState {
         addCondition(it)
@@ -80,15 +88,29 @@ fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSe
         })
     TextInputDialog(state = factTagSelectorState)
 
+    val context = LocalContext.current
+
     return { source ->
         when (source.clazz) {
             Condition.MVEL::class -> {
-                mvelConditionSelectorState.show(source.getConditionAs<Condition.MVEL>()?.expression)
+                mvelEditorLauncher.launch(
+                    BaseSelectorActivity.newIntent(
+                        context,
+                        source.getConditionAs<Condition.MVEL>()?.expression?.toParcelableCodeOrNull(),
+                        MVELEditorActivity::class.java
+                    )
+                )
                 true
             }
 
             Condition.JS::class -> {
-                jsConditionSelectorState.show(source.getConditionAs<Condition.JS>()?.expression)
+                jsEditorLauncher.launch(
+                    BaseSelectorActivity.newIntent(
+                        context,
+                        source.getConditionAs<Condition.JS>()?.expression?.toParcelableCodeOrNull(),
+                        JSEditorActivity::class.java
+                    )
+                )
                 true
             }
 

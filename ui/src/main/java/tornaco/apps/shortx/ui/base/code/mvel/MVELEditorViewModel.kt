@@ -10,7 +10,7 @@ import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
 import tornaco.apps.shortx.core.shortXManager
-import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.base.code.ParcelableCode
 import javax.inject.Inject
 
 data class MVELEditorState(
@@ -26,10 +26,10 @@ class MVELEditorViewModel @Inject constructor() : ViewModel(),
         initialState = MVELEditorState()
     )
 
-    fun initWith(shellCommand: Action.MVEL?) = intent {
+    fun initWith(code: ParcelableCode?) = intent {
         reduce {
             state.copy(
-                expression = shellCommand?.expression ?: "",
+                expression = code?.expression ?: "",
                 isExecuting = false
             )
         }
