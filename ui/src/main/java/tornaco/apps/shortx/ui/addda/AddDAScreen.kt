@@ -21,7 +21,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,6 +49,7 @@ import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
 import tornaco.apps.shortx.ui.base.ConfirmDialog
 import tornaco.apps.shortx.ui.base.ErrorCard
+import tornaco.apps.shortx.ui.base.ExpandableSectionBar
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LoadError
 import tornaco.apps.shortx.ui.base.LoadState
@@ -281,14 +281,16 @@ private fun DAContent(
     EvaRecordSetting(id = addDirectActionState.id)
 
     SectionSpacer()
-    TextButton(onClick = {
-        vm.setShowAdvancedOptions(!addDirectActionState.showAdvancedOptions)
-
-    }) {
-        Text(text = LocalI18N.current["ui.advanced.options"])
-    }
     StandardSpacer()
 
+    ExpandableSectionBar(
+        isExpand = addDirectActionState.showAdvancedOptions,
+        text = LocalI18N.current["ui.advanced.options"],
+        iconName = Remix.Media.equalizer_fill
+    ) {
+        vm.setShowAdvancedOptions(!addDirectActionState.showAdvancedOptions)
+    }
+    StandardSpacer()
     AnimatedVisibility(visible = addDirectActionState.showAdvancedOptions) {
         Column {
             ConflictStrategy(

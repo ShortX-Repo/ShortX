@@ -55,7 +55,7 @@ fun ExpandableSectionBar(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = 64.dp)
+            .heightIn(min = 48.dp)
             .clip(
                 RoundedCornerShape(32.dp)
             )

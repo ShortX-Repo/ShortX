@@ -22,10 +22,10 @@ import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
+import tornaco.apps.shortx.ui.base.FieldTitleWithTip
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
-import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
@@ -114,9 +114,9 @@ fun RuleInstanceIdGenSelector(
 
     val opSelectorState = rememberDropdownSelectorState()
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-        SmallTitle(
-            modifier = Modifier.padding(vertical = 12.dp),
-            i18N["ui.rule.ins.id.gen"]
+        FieldTitleWithTip(
+            i18N["ui.rule.ins.id.gen"],
+            i18N["ui.rule.ins.id.gen.description"]
         )
         ListItem(
             modifier = Modifier,

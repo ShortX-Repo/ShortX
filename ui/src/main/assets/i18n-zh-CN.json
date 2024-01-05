@@ -1016,7 +1016,7 @@
     "ui.shortx.uninstalled.clear": "清除",
     "ui.geeks.options": "极客选项",
     "ui.rule.ins.id.gen": "指令实例ID",
-    "ui.rule.ins.id.gen.description": "指令实例ID",
+    "ui.rule.ins.id.gen.description": "指令实例是指指令触发时，执行指令动作的任务实例；对于每一个任务实例，都会有一个ID来标识这个任务，你可以设置不同的指令ID的生成方式，用来实现任务的管理。通常，进阶选项中的重复策略、退出指令，都会根据指令ID来执行。\n更多关于指令实例ID的讲解可关注视频教程",
     "ui.rule.ins.id.gen.edit": "修改",
     "ui.rule.ins.id.gen.js": "Javascript",
     "ui.rule.ins.id.gen.mvel": "MVEL",

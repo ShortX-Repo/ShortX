@@ -1017,7 +1017,7 @@
     "ui.shortx.uninstalled.clear": "Clear",
     "ui.geeks.options": "Geek options",
     "ui.rule.ins.id.gen": "Rule instance ID",
-    "ui.rule.ins.id.gen.description": "Rule instance ID",
+    "ui.rule.ins.id.gen.description": "Rule instance refers to the task instance that executes the rule action when the rule is triggered. For each task instance, there is an ID to identify the task. You can set different ways to generate rule IDs for task management. Typically, advanced options such as conflict strategy and Quit in the advanced settings are executed based on the rule ID. For more information about rule instance IDs, please refer to the video tutorial.",
     "ui.rule.ins.id.gen.edit": "Edit",
     "ui.rule.ins.id.gen.js": "Javascript",
     "ui.rule.ins.id.gen.mvel": "MVEL",
