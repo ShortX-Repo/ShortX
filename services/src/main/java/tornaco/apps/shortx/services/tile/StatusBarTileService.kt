@@ -62,7 +62,7 @@ class StatusBarTileService(shortXContext: ShortXContext) :
         super.systemReady()
         tileSettingsStore.readBlocking()
         // Init default settings.
-        StatusBarTile.values().filterNot { it == StatusBarTile.UNRECOGNIZED }.forEach {
+        StatusBarTile.entries.filterNot { it == StatusBarTile.UNRECOGNIZED }.forEach {
             val setting = getStatusBarTileSettingsByNumber(it.number)
             logger.d("Tile: $it, setting: $setting")
             if (setting == null) {

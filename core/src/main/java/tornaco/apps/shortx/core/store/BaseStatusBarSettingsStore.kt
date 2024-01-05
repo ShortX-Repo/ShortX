@@ -31,29 +31,39 @@ open class BaseStatusBarSettingsStore(
 
     fun addAllSettings(records: List<StatusBarTileSetting>, write: Boolean = true) {
         records.forEach { record ->
-            tileSettingsCache.removeIf { it.tile == record.tile }
-            tileSettingsCache.add(record)
+            synchronized(tileSettingsCache) {
+                tileSettingsCache.removeIf { it.tile == record.tile }
+                tileSettingsCache.add(record)
+            }
         }
         if (write) postWrite()
     }
 
     fun addSetting(setting: StatusBarTileSetting) {
-        tileSettingsCache.removeIf { setting.tile == it.tile }
-        tileSettingsCache.add(setting)
+        synchronized(tileSettingsCache) {
+            tileSettingsCache.removeIf { setting.tile == it.tile }
+            tileSettingsCache.add(setting)
+        }
         postWrite()
     }
 
     fun deleteSetting(tile: StatusBarTile) {
-        tileSettingsCache.removeIf { it.tile == tile }
+        synchronized(tileSettingsCache) {
+            tileSettingsCache.removeIf { it.tile == tile }
+        }
         postWrite()
     }
 
     fun getSettingByTile(tile: StatusBarTile): StatusBarTileSetting? {
-        return tileSettingsCache.firstOrNull { it.tile == tile }
+        synchronized(tileSettingsCache) {
+            return tileSettingsCache.firstOrNull { it.tile == tile }
+        }
     }
 
     fun getAllSettings(): List<StatusBarTileSetting> {
-        return tileSettingsCache.toList()
+        synchronized(tileSettingsCache) {
+            return tileSettingsCache.toList()
+        }
     }
 
     private suspend fun readInternal() = withContext(Dispatchers.IO) {
@@ -65,8 +75,10 @@ open class BaseStatusBarSettingsStore(
             val tileSettingList = storeFile.inputStream().use {
                 StatusBarTileSettingList.parseDelimitedFrom(it)
             }
-            tileSettingsCache.clear()
-            tileSettingsCache.addAll(tileSettingList.settingsList)
+            synchronized(tileSettingsCache) {
+                tileSettingsCache.clear()
+                tileSettingsCache.addAll(tileSettingList.settingsList)
+            }
         }.onFailure {
             logger.e(it, "read error")
         }
@@ -83,16 +95,18 @@ open class BaseStatusBarSettingsStore(
     suspend fun write() = withContext(Dispatchers.IO) {
         logger.d("write.")
 
-        val statusBarTileSettingList = StatusBarTileSettingList.newBuilder().apply {
-            addAllSettings(tileSettingsCache)
-        }.build()
-        kotlin.runCatching {
-            storeFile.apply { parentFile.mkdirs() }.outputStream().use {
-                statusBarTileSettingList.writeDelimitedTo(it)
-                logger.d("write to: $storeFile")
+        synchronized(tileSettingsCache) {
+            val statusBarTileSettingList = StatusBarTileSettingList.newBuilder().apply {
+                addAllSettings(tileSettingsCache)
+            }.build()
+            kotlin.runCatching {
+                storeFile.apply { parentFile.mkdirs() }.outputStream().use {
+                    statusBarTileSettingList.writeDelimitedTo(it)
+                    logger.d("write to: $storeFile")
+                }
+            }.onFailure {
+                logger.e(it, "write error")
             }
-        }.onFailure {
-            logger.e(it, "write error")
         }
     }
 }
