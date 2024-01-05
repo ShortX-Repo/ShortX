@@ -258,8 +258,8 @@ private fun DAContent(
                 modifier = Modifier
                     .padding(vertical = 16.dp),
                 iconName = Remix.UserAndFaces.skull_2_fill,
-                title = "Suspicious Action found!!!",
-                warnings = listOf("Suspicious Action found in this Rule, please carefully review all Actions, especially for MVEL/Shell related Actions")
+                title = LocalI18N.current["ui.rule.action.secure.warning.title"],
+                warnings = listOf(LocalI18N.current["ui.rule.action.secure.warning.message"])
             )
             LargeSpacer()
         }
