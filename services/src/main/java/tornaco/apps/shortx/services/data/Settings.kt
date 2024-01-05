@@ -53,11 +53,11 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
 
     sealed class IntSettings(key: String, defaultValue: (Context) -> Int) :
         Settings<Int>(key, defaultValue) {
-        data object OverlayButtonPosX :
-            IntSettings(key = "OverlayButtonPosX", defaultValue = { -1 })
+        data class OverlayButtonPosX(val tag: String) :
+            IntSettings(key = "OverlayButtonPosX_$tag", defaultValue = { -1 })
 
-        data object OverlayButtonPosY :
-            IntSettings(key = "OverlayButtonPosY", defaultValue = { -1 })
+        data class OverlayButtonPosY(val tag: String) :
+            IntSettings(key = "OverlayButtonPosY_$tag", defaultValue = { -1 })
 
         data object DanmuBgColor :
             IntSettings(key = "DanmuBgColor", defaultValue = { DANMU_COLOR_AUTO })

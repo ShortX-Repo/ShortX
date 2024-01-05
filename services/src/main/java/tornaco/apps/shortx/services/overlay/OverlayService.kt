@@ -48,8 +48,8 @@ class OverlayService(shortXContext: ShortXContext) :
             return@postSafety
         }
 
-        val posX = store.read(Settings.IntSettings.OverlayButtonPosX)
-        val posY = store.read(Settings.IntSettings.OverlayButtonPosY)
+        val posX = store.read(Settings.IntSettings.OverlayButtonPosX(action.tag))
+        val posY = store.read(Settings.IntSettings.OverlayButtonPosY(action.tag))
 
         val overlayIns = ComposeOverlay(
             context = context,
@@ -59,8 +59,8 @@ class OverlayService(shortXContext: ShortXContext) :
             onPosChange = { x, y ->
                 handler.postSafety {
                     logger.d("onPosChange, write settings: $x-$y")
-                    store.write(Settings.IntSettings.OverlayButtonPosX, x)
-                    store.write(Settings.IntSettings.OverlayButtonPosY, y)
+                    store.write(Settings.IntSettings.OverlayButtonPosX(action.tag), x)
+                    store.write(Settings.IntSettings.OverlayButtonPosY(action.tag), y)
                 }
             },
             onButtonClick = { button: OverlayButtonSetting ->
