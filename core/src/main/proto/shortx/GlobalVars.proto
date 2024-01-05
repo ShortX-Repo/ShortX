@@ -30,6 +30,14 @@ message GlobalVar {
 
   bool isSecret = 5;
   string note = 6;
+
+  google.protobuf.Any createdBy = 7;
+}
+
+message GlobalVarCreatedBy_User {}
+
+message GlobalVarCreatedBy_Rule {
+  string srcId = 1;
 }
 
 enum VarOp {

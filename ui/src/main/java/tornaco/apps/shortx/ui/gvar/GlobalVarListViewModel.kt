@@ -8,16 +8,57 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
+import tornaco.apps.shortx.core.proto.gv.GlobalVarCreatedBy_Rule
+import tornaco.apps.shortx.core.proto.gv.GlobalVarCreatedBy_User
 import tornaco.apps.shortx.core.proto.toProto
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
+import tornaco.apps.shortx.core.rule.ProtoAny
+import tornaco.apps.shortx.core.rule.is_
+import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.main.model.DirectActionUM
+import tornaco.apps.shortx.ui.main.model.RuleUM
+import tornaco.apps.shortx.ui.main.model.daToDirectActionUM
+import tornaco.apps.shortx.ui.main.model.ruleToRuleUM
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 import java.nio.charset.Charset
 import javax.inject.Inject
 
+data class GlobalVarUiItem(val globalVar: GlobalVar, val createdBy: CreatedBy)
+
+sealed interface CreatedBy {
+    fun getLabel(i18n: I18N): String
+
+    data object Unknown : CreatedBy {
+        override fun getLabel(i18n: I18N): String {
+            return "Unknown"
+        }
+    }
+
+    data object User : CreatedBy {
+        override fun getLabel(i18n: I18N): String {
+            return i18n["ui.global.var.created.by.user"]
+        }
+    }
+
+    data class DA(val da: DirectActionUM) : CreatedBy {
+        override fun getLabel(i18n: I18N): String {
+            return i18n["ui.global.var.created.by.rule", mapOf("rule" to da.title)]
+        }
+    }
+
+    data class Rule(val rule: RuleUM) : CreatedBy {
+        override fun getLabel(i18n: I18N): String {
+            return i18n["ui.global.var.created.by.rule", mapOf("rule" to rule.title)]
+        }
+    }
+}
+
 data class GlobalVarListState(
-    val globalVars: List<GlobalVar> = emptyList()
+    val globalVars: List<GlobalVarUiItem> = emptyList()
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -40,7 +81,11 @@ class GlobalVarListViewModel @Inject constructor(@ApplicationContext context: Co
 
     fun loadState() {
         viewModelScope.launch(Dispatchers.IO) {
-            val globalVars = shortXManager.getAllGlobalVars()
+            val globalVars = shortXManager.getAllGlobalVars().map {
+                val createdByProto: ProtoAny? = it.hasCreatedBy().select(it.createdBy, null)
+                val createdBy: CreatedBy = createdByProto.protoAnyToCreateBy()
+                GlobalVarUiItem(it, createdBy)
+            }
             viewModelScope.launch {
                 updateState {
                     copy(globalVars = globalVars)
@@ -96,11 +141,36 @@ class GlobalVarListViewModel @Inject constructor(@ApplicationContext context: Co
             val externalVar =
                 GlobalVar.parseFrom(GlobalVar.newBuilder().toProto(this).toByteArray())
             var checkedName = externalVar.name
-            while (state.value.globalVars.any { it.name == checkedName }) {
+            while (state.value.globalVars.any { it.globalVar.name == checkedName }) {
                 checkedName += "(2)"
             }
             GlobalVar.newBuilder(externalVar).setName(checkedName).build()
         }.getOrNull()
         return gv
+    }
+
+    private fun ProtoAny?.protoAnyToCreateBy(): CreatedBy {
+        if (this == null) {
+            return CreatedBy.Unknown
+        }
+        if (this is_ GlobalVarCreatedBy_User::class.java) {
+            return CreatedBy.User
+        }
+
+        if (this is_ GlobalVarCreatedBy_Rule::class.java) {
+            val srcId = (this unpack_ GlobalVarCreatedBy_Rule::class.java).srcId
+            val ruleOrNull = shortXManager.getRuleById(srcId)
+            if (ruleOrNull != null) {
+                return CreatedBy.Rule(ruleToRuleUM(ruleOrNull, emptyList(), emptyList()))
+            } else {
+                val daOrNull = shortXManager.getDirectActionById(srcId)
+                if (daOrNull != null) {
+                    return CreatedBy.DA(daToDirectActionUM(daOrNull, emptyList(), emptyList()))
+                }
+            }
+            return CreatedBy.Unknown
+        } else {
+            return CreatedBy.Unknown
+        }
     }
 }

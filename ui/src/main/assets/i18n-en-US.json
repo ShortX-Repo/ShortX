@@ -951,6 +951,8 @@
     "ui.global.var.access.help.message": "You can access it via {name} in UI actions or MVEL expressions",
     "ui.global.var.secrets.title": "Secret var",
     "ui.global.var.secrets.message": "A secret Global var will be encryped on peristent, and it can not backup/restore",
+    "ui.global.var.created.by.user": "Manually",
+    "ui.global.var.created.by.rule": "By {rule}",
     "ui.local.var.title": "Global var",
     "ui.local.var.name": "Var name",
     "ui.local.var.name.description": "Please use English name, name will be used when Write/read a var\nName is unique",
@@ -1017,7 +1019,7 @@
     "ui.shortx.uninstalled.clear": "Clear",
     "ui.geeks.options": "Geek options",
     "ui.rule.ins.id.gen": "Rule instance ID",
-    "ui.rule.ins.id.gen.description": "Rule instance refers to the task instance that executes the rule action when the rule is triggered. For each task instance, there is an ID to identify the task. You can set different ways to generate rule IDs for task management. Typically, advanced options such as conflict strategy and Quit in the advanced settings are executed based on the rule ID. For more information about rule instance IDs, please refer to the video tutorial.",
+    "ui.rule.ins.id.gen.description": "Rule instance refers to the task instance that executes the rule action when the rule is triggered. For each task instance, there is an ID to identify the task. You can set different ways to generate rule IDs for task management. Typically, advanced options such as conflict strategy and Quit in the advanced settings are executed based on the rule ID. \n\n\nFor more information about rule instance IDs, please refer to the video tutorial.",
     "ui.rule.ins.id.gen.edit": "Edit",
     "ui.rule.ins.id.gen.js": "Javascript",
     "ui.rule.ins.id.gen.mvel": "MVEL",
@@ -1028,5 +1030,7 @@
     "ui.rule.ins.id.gen.mvel.description": "Generate rule id with MVEL",
     "ui.rule.ins.id.gen.static.description": "Static string id",
     "ui.rule.ins.id.gen.default.description": "By default, same rule use the same unique id",
-    "ui.rule.ins.id.gen.string.description": "Dynamic string, support global var and context data"
+    "ui.rule.ins.id.gen.string.description": "Dynamic string, support global var and context data",
+    "ui.rule.action.secure.warning.title": "Suggest checking the action",
+    "ui.rule.action.secure.warning.message": ""
 }

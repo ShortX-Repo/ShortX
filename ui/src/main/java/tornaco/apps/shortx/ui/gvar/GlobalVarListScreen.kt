@@ -34,20 +34,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
+import tornaco.apps.shortx.core.proto.gv.GlobalVarCreatedBy_User
 import tornaco.apps.shortx.core.proto.toJson
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.label
+import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.toType
 import tornaco.apps.shortx.core.rule.valueString
+import tornaco.apps.shortx.ui.addda.AddDirectActionActivity
+import tornaco.apps.shortx.ui.addrule.AddRuleActivity
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.ColoredIcon
@@ -56,6 +62,7 @@ import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.DropdownSelectorState
 import tornaco.apps.shortx.ui.base.FabState
+import tornaco.apps.shortx.ui.base.LinkText
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.MultiFabItem
@@ -68,6 +75,7 @@ import tornaco.apps.shortx.ui.base.ShareDialog
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
+import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
@@ -122,7 +130,11 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
         ) {
             val addGlobalVarDialogState =
                 rememberNewGlobalVarState {
-                    vm.createGlobalVar(it.toGlobalVar())
+                    vm.createGlobalVar(
+                        it.toGlobalVar(
+                            GlobalVarCreatedBy_User.newBuilder().build().pack_()
+                        )
+                    )
                 }
             NewGlobalVarDialog(addGlobalVarDialogState)
 
@@ -185,13 +197,13 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                         columns = dynamicStaggeredGridCells(),
                     ) {
                         items(state.globalVars.filter {
-                            searchBarState.keyword.isBlank() || it.name.contains(
+                            searchBarState.keyword.isBlank() || it.globalVar.name.contains(
                                 searchBarState.keyword,
                                 ignoreCase = true
                             )
                         }) { globalVar ->
                             val globalVarAccessHelpDialogState =
-                                rememberGlobalVarAccessHelpDialogState(globalVar = globalVar)
+                                rememberGlobalVarAccessHelpDialogState(globalVar = globalVar.globalVar)
                             GlobalVarAccessHelpDialog(state = globalVarAccessHelpDialogState)
 
                             androidx.compose.material.Card(
@@ -203,7 +215,7 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                             ) {
                                 Box {
                                     val menuState = listItemOverflowMenu(
-                                        globalVar = globalVar,
+                                        globalVar = globalVar.globalVar,
                                         onDelete = {
                                             vm.delete(it.name)
                                         },
@@ -212,16 +224,17 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
 
                                     GlobalVarListItem(
                                         modifier = Modifier,
-                                        name = globalVar.name,
-                                        value = globalVar.valueString(),
-                                        note = globalVar.note.takeIf { it.isNotEmpty() },
-                                        type = globalVar.type.toType()?.label() ?: "?",
-                                        isSecret = globalVar.isSecret,
+                                        name = globalVar.globalVar.name,
+                                        value = globalVar.globalVar.valueString(),
+                                        note = globalVar.globalVar.note.takeIf { it.isNotEmpty() },
+                                        type = globalVar.globalVar.type.toType()?.label() ?: "?",
+                                        createdBy = globalVar.createdBy,
+                                        isSecret = globalVar.globalVar.isSecret,
                                         onInfoClick = {
                                             globalVarAccessHelpDialogState.show()
                                         },
                                         onClick = {
-                                            goToDetail(globalVar.name)
+                                            goToDetail(globalVar.globalVar.name)
                                         },
                                         onLongClick = {
                                             menuState.open()
@@ -245,11 +258,18 @@ private fun GlobalVarListItem(
     value: String? = null,
     note: String? = null,
     type: String,
+    createdBy: CreatedBy,
     isSecret: Boolean,
     onInfoClick: () -> Unit,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
 ) {
+    val i18N = LocalI18N.current
+    val context = LocalContext.current
+
+    val createdByLabel = remember(createdBy) {
+        createdBy.getLabel(i18N)
+    }
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -278,6 +298,29 @@ private fun GlobalVarListItem(
                 "****"
             }, fontSize = 12.sp, maxLines = 3
         )
+
+        when (createdBy) {
+            is CreatedBy.DA -> {
+                LinkText(text = createdByLabel) {
+                    AddDirectActionActivity.edit(context, createdBy.da.id)
+                }
+            }
+
+            is CreatedBy.Rule -> {
+                LinkText(text = createdByLabel) {
+                    AddRuleActivity.edit(context, createdBy.rule.id)
+                }
+            }
+
+            CreatedBy.Unknown -> {
+
+            }
+
+            CreatedBy.User -> {
+                TipBody(text = createdByLabel)
+            }
+        }
+
         note?.let { NoteRow(text = it) }
 
         if (isSecret) {

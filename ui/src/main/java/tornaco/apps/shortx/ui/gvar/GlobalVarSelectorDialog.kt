@@ -108,11 +108,11 @@ private fun GlobalVarSelector(selectorState: GlobalVarSelectorState) {
                 ) {
                     items(state.globalVars) {
                         GlobalVarListItem(modifier = Modifier,
-                            name = it.name,
-                            value = it.valueString(),
-                            type = it.type.toType()?.label() ?: "?",
+                            name = it.globalVar.name,
+                            value = it.globalVar.valueString(),
+                            type = it.globalVar.type.toType()?.label() ?: "?",
                             onClick = {
-                                selectorState.onGlobalVarSelected(it)
+                                selectorState.onGlobalVarSelected(it.globalVar)
                                 selectorState.dismiss()
                             })
                     }

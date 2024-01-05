@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -26,6 +25,7 @@ import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.GLOBAL_VAR_REF_PREFIX
 import tornaco.apps.shortx.core.rule.GlobalVarType
+import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.label
 import tornaco.apps.shortx.core.rule.toProtoType
 import tornaco.apps.shortx.ui.base.CommonDialogState
@@ -41,7 +41,6 @@ import tornaco.apps.shortx.ui.base.ShortXDialog
 import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
-import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.UnderlineSmallText
@@ -82,13 +81,18 @@ fun rememberNewGlobalVarState(
     }
 }
 
-fun NewGlobalVar.toGlobalVar(): GlobalVar =
+fun NewGlobalVar.toGlobalVar(createdBy: ProtoAny? = null): GlobalVar =
     GlobalVar
         .newBuilder()
         .setName(name)
         .setNote(note)
         .setType(type.toProtoType())
         .setIsSecret(isSecret)
+        .apply {
+            createdBy?.let {
+                setCreatedBy(it)
+            }
+        }
         .build()
 
 @Composable

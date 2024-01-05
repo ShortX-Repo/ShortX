@@ -950,6 +950,8 @@
     "ui.global.var.access.help.message": "你可以通过 {name} 在UI动作中或MVEL表达式中访问该全局变量的值",
     "ui.global.var.secrets.title": "隐私全局变量",
     "ui.global.var.secrets.message": "隐私全局变量会被加密存储，且不能备份还原",
+    "ui.global.var.created.by.user": "手动创建",
+    "ui.global.var.created.by.rule": "由{rule}创建",
     "ui.local.var.title": "局部变量",
     "ui.local.var.name": "变量名称",
     "ui.local.var.name.description": "尽量使用英文，当你需要读取、写入某个变量时，会用到这个名称\n名称具有唯一性，两个变量名称不能一样",
@@ -1016,7 +1018,7 @@
     "ui.shortx.uninstalled.clear": "清除",
     "ui.geeks.options": "极客选项",
     "ui.rule.ins.id.gen": "指令实例ID",
-    "ui.rule.ins.id.gen.description": "指令实例是指指令触发时，执行指令动作的任务实例；对于每一个任务实例，都会有一个ID来标识这个任务，你可以设置不同的指令ID的生成方式，用来实现任务的管理。通常，进阶选项中的重复策略、退出指令，都会根据指令ID来执行。\n更多关于指令实例ID的讲解可关注视频教程",
+    "ui.rule.ins.id.gen.description": "指令实例是指指令触发时，执行指令动作的任务实例；对于每一个任务实例，都会有一个ID来标识这个任务，你可以设置不同的指令ID的生成方式，用来实现任务的管理。通常，进阶选项中的重复策略、退出指令，都会根据指令ID来执行。\n\n\n更多关于指令实例ID的讲解可关注视频教程",
     "ui.rule.ins.id.gen.edit": "修改",
     "ui.rule.ins.id.gen.js": "Javascript",
     "ui.rule.ins.id.gen.mvel": "MVEL",
@@ -1027,5 +1029,7 @@
     "ui.rule.ins.id.gen.mvel.description": "通过MVEL生成实例ID",
     "ui.rule.ins.id.gen.static.description": "固定ID",
     "ui.rule.ins.id.gen.default.description": "自动为每个指令分配固定的独一无二的ID",
-    "ui.rule.ins.id.gen.string.description": "动态ID，支持引用变量"
+    "ui.rule.ins.id.gen.string.description": "动态ID，支持引用变量",
+    "ui.rule.action.secure.warning.title": "建议检查动作",
+    "ui.rule.action.secure.warning.message": "请仔细检查每个动作是否包含恶意操作，尤其是MVEL，Shell，JS动作"
 }
