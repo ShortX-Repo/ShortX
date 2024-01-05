@@ -82,6 +82,7 @@ class NetworkService(shortXContext: ShortXContext) :
     private fun registerWifiReceiver() = kotlin.runCatching {
         wifiStatusTracker = WifiStatusTracker(context) {
             checkWifiStateChange()
+            checkWifiSignalChange()
         }
 
         wifiStatusTracker.setListening(true)
