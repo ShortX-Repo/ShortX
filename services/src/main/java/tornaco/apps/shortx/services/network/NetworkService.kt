@@ -18,6 +18,7 @@ import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.core.util.wifiManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
+import tornaco.apps.shortx.services.rule.fact.trigger.wifi.WifiSignalState
 import tornaco.apps.shortx.services.rule.fact.trigger.wifi.WifiState
 import tornaco.apps.shortx.services.rule.fact.trigger.wifi.WifiStatusTracker
 import tornaco.apps.shortx.services.runClearCallingIdentity
@@ -31,6 +32,11 @@ class NetworkService(shortXContext: ShortXContext) :
     private lateinit var wifiStatusTracker: WifiStatusTracker
     private val _connectedWifiSSID: AtomicReference<String?> = AtomicReference(null)
     val connectedWifiSSID get() = _connectedWifiSSID.get()
+
+    private val _wifiSignalState: AtomicReference<WifiSignalState> = AtomicReference(
+        WifiSignalState(0, 0)
+    )
+    val wifiSignalState get() = _wifiSignalState.get()
 
     private val wifiStatusReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -75,51 +81,7 @@ class NetworkService(shortXContext: ShortXContext) :
 
     private fun registerWifiReceiver() = kotlin.runCatching {
         wifiStatusTracker = WifiStatusTracker(context) {
-            val ws = WifiState(
-                enabled = wifiStatusTracker.enabled,
-                statusLabel = wifiStatusTracker.statusLabel,
-                // Workaround to remove ssid extra ""HELLO-KITTY""
-                ssid = wifiStatusTracker.ssid?.replace("\"", "")
-            )
-            logger.d("WifiStatusTracker callback.run, ws: $ws")
-
-            val lastConnectedSSID = _connectedWifiSSID.get()
-
-            if (ws.ssid != null && lastConnectedSSID != ws.ssid) {
-                logger.i("Connect changed to: ${ws.ssid}")
-                shortXContext.rule.publishFact(
-                    reason = "Wifi SSID changed.",
-                    fact = WifiConnectedTo.newBuilder()
-                        .addAllSsidList(listOf(ws.ssid)).build(),
-                    initialContextData = mapOf(
-                        ContextDataMapping.WifiConnectedTo.ssid.name to ws.ssid.fallbackOnEmpty(""),
-                        ContextDataMapping.WifiConnectedTo.isWifiEnabled.name to ws.enabled.toString(),
-                        ContextDataMapping.WifiConnectedTo.wifiStatusLabel.name to ws.statusLabel.fallbackOnEmpty(
-                            ""
-                        )
-                    )
-                )
-            }
-
-            if (ws.ssid == null && lastConnectedSSID != null) {
-                logger.i("Disconnected from: $lastConnectedSSID")
-                shortXContext.rule.publishFact(
-                    reason = "Wifi disconnected.",
-                    fact = WifiDisconnectedFrom.newBuilder()
-                        .addAllSsidList(listOf(lastConnectedSSID)).build(),
-                    initialContextData = mapOf(
-                        ContextDataMapping.WifiDisconnectedFrom.ssid.name to lastConnectedSSID.fallbackOnEmpty(
-                            ""
-                        ),
-                        ContextDataMapping.WifiDisconnectedFrom.isWifiEnabled.name to ws.enabled.toString(),
-                        ContextDataMapping.WifiDisconnectedFrom.wifiStatusLabel.name to ws.statusLabel.fallbackOnEmpty(
-                            ""
-                        )
-                    )
-                )
-            }
-
-            _connectedWifiSSID.set(ws.ssid)
+            checkWifiStateChange()
         }
 
         wifiStatusTracker.setListening(true)
@@ -137,6 +99,65 @@ class NetworkService(shortXContext: ShortXContext) :
         )
     }.onFailure {
         logger.e(it, "registerWifiReceiver")
+    }
+
+    private fun checkWifiSignalChange() {
+        val signalState =
+            WifiSignalState(level = wifiStatusTracker.level, rssi = wifiStatusTracker.rssi)
+        logger.d("WifiStatusTracker callback.run checkWifiSignalChange, ss: $signalState")
+        val lastSignalState = wifiSignalState
+        if (lastSignalState != signalState) {
+            logger.d("Wifi signal changed.")
+            _wifiSignalState.set(signalState)
+        }
+    }
+
+    private fun checkWifiStateChange() {
+        val ws = WifiState(
+            enabled = wifiStatusTracker.enabled,
+            statusLabel = wifiStatusTracker.statusLabel,
+            // Workaround to remove ssid extra ""HELLO-KITTY""
+            ssid = wifiStatusTracker.ssid?.replace("\"", "")
+        )
+        logger.d("WifiStatusTracker callback.run checkWifiStateChange, ws: $ws")
+
+        val lastConnectedSSID = _connectedWifiSSID.get()
+
+        if (ws.ssid != null && lastConnectedSSID != ws.ssid) {
+            logger.i("Connect changed to: ${ws.ssid}")
+            shortXContext.rule.publishFact(
+                reason = "Wifi SSID changed.",
+                fact = WifiConnectedTo.newBuilder()
+                    .addAllSsidList(listOf(ws.ssid)).build(),
+                initialContextData = mapOf(
+                    ContextDataMapping.WifiConnectedTo.ssid.name to ws.ssid.fallbackOnEmpty(""),
+                    ContextDataMapping.WifiConnectedTo.isWifiEnabled.name to ws.enabled.toString(),
+                    ContextDataMapping.WifiConnectedTo.wifiStatusLabel.name to ws.statusLabel.fallbackOnEmpty(
+                        ""
+                    )
+                )
+            )
+        }
+
+        if (ws.ssid == null && lastConnectedSSID != null) {
+            logger.i("Disconnected from: $lastConnectedSSID")
+            shortXContext.rule.publishFact(
+                reason = "Wifi disconnected.",
+                fact = WifiDisconnectedFrom.newBuilder()
+                    .addAllSsidList(listOf(lastConnectedSSID)).build(),
+                initialContextData = mapOf(
+                    ContextDataMapping.WifiDisconnectedFrom.ssid.name to lastConnectedSSID.fallbackOnEmpty(
+                        ""
+                    ),
+                    ContextDataMapping.WifiDisconnectedFrom.isWifiEnabled.name to ws.enabled.toString(),
+                    ContextDataMapping.WifiDisconnectedFrom.wifiStatusLabel.name to ws.statusLabel.fallbackOnEmpty(
+                        ""
+                    )
+                )
+            )
+        }
+
+        _connectedWifiSSID.set(ws.ssid)
     }
 
     override fun shutdown() {

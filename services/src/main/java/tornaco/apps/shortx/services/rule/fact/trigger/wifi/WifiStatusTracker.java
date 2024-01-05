@@ -31,9 +31,9 @@ import android.net.wifi.WifiNetworkScoreCache;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.elvishew.xlog.XLog;
-
 import java.util.List;
+
+import tornaco.apps.shortx.core.util.Logger;
 
 public class WifiStatusTracker extends ConnectivityManager.NetworkCallback {
     public static final String NONE = "<unknown ssid>";
@@ -45,6 +45,8 @@ public class WifiStatusTracker extends ConnectivityManager.NetworkCallback {
     private final NetworkScoreManager mNetworkScoreManager;
     private final ConnectivityManager mConnectivityManager;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
+
+    private static final Logger LOGGER = new Logger("WifiStatusTracker");
 
     private final WifiNetworkScoreCache.CacheListener mCacheListener =
             new WifiNetworkScoreCache.CacheListener(mHandler) {
@@ -105,7 +107,7 @@ public class WifiStatusTracker extends ConnectivityManager.NetworkCallback {
     }
 
     public void handleBroadcast(Intent intent) {
-        XLog.v("WifiStatusTracker, handleBroadcast: %s", intent);
+        LOGGER.d("WifiStatusTracker, handleBroadcast: " + intent);
         if (mWifiManager == null) {
             return;
         }
@@ -140,7 +142,7 @@ public class WifiStatusTracker extends ConnectivityManager.NetworkCallback {
     private void updateWifiState() {
         state = mWifiManager.getWifiState();
         enabled = state == WifiManager.WIFI_STATE_ENABLED;
-        XLog.v("WifiStatusTracker, updateWifiState, enabled: %s", enabled);
+        LOGGER.d("WifiStatusTracker, updateWifiState, enabled: " + enabled);
     }
 
     private void updateRssi(int newRssi) {
@@ -148,9 +150,9 @@ public class WifiStatusTracker extends ConnectivityManager.NetworkCallback {
         try {
             level = WifiManager.calculateSignalLevel(rssi, RSSI_LEVELS);
         } catch (Throwable e) {
-            XLog.e(e, "calculateSignalLevel error");
+            LOGGER.e(e, "calculateSignalLevel error");
         }
-        XLog.v("WifiStatusTracker, updateWifiState, rssi: %s, level: %s", rssi, level);
+        LOGGER.d(String.format("WifiStatusTracker, updateWifiState, rssi: %s, level: %s", rssi, level));
     }
 
     @SuppressLint("MissingPermission")
@@ -178,7 +180,7 @@ public class WifiStatusTracker extends ConnectivityManager.NetworkCallback {
                 mWifiNetworkScoreCache.getScoredNetwork(NetworkKey.createFromWifiInfo(mWifiInfo));
         statusLabel = scoredNetwork == null
                 ? null : AccessPoint.getSpeedLabel(mContext, scoredNetwork, rssi);
-        XLog.v("WifiStatusTracker, updateStatusLabel, statusLabel: %s, networkCapabilities: %s", statusLabel, networkCapabilities);
+        LOGGER.d(String.format("WifiStatusTracker, updateStatusLabel, statusLabel: %s, networkCapabilities: %s", statusLabel, networkCapabilities));
     }
 
     private String getValidSsid(WifiInfo info) {
