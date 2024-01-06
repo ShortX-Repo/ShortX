@@ -27,8 +27,13 @@ android {
     }
 
     buildTypes {
-        val noMinify = project.findProperty("no-minify")?.toString().toBoolean()
+        val noMinify = project.findProperty("noMinify")?.toString().toBoolean()
         log("noMinify: $noMinify")
+
+        val extraAbiFilter =
+            project.findProperty("extraAbiFilter")?.toString()?.split(";")?.map { it.trim() }
+                ?: emptyList()
+        log("extraAbiFilter: $extraAbiFilter")
 
         getByName("release") {
             isMinifyEnabled = !noMinify
@@ -41,6 +46,7 @@ android {
 
             ndk {
                 abiFilters.addAll(listOf("arm64-v8a"))
+                abiFilters.addAll(extraAbiFilter)
             }
         }
 
@@ -56,6 +62,7 @@ android {
             // Also support x86 for emulator test
             ndk {
                 abiFilters.addAll(listOf("arm64-v8a", "x86_64"))
+                abiFilters.addAll(extraAbiFilter)
             }
         }
     }
