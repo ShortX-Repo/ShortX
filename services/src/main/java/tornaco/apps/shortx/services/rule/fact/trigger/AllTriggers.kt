@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.rule.fact.trigger
 
 import android.content.Context
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.fact.trigger.wifi.WifiScanResultTrigger
 import tornaco.apps.shortx.services.rule.fact.trigger.wifi.WifiStateTrigger
 
 internal fun allTriggers(context: Context, shortXContext: ShortXContext) = mutableListOf(
@@ -11,6 +12,7 @@ internal fun allTriggers(context: Context, shortXContext: ShortXContext) = mutab
     FixedInPeriodTrigger(context, shortXContext),
     RandomInPeriodTrigger(context, shortXContext),
     WifiStateTrigger(context, shortXContext),
+    WifiScanResultTrigger(context, shortXContext),
     BTStateTrigger(context, shortXContext),
     LocationStateTrigger(context, shortXContext),
     UiModeStateTrigger(context, shortXContext),
