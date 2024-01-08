@@ -9,8 +9,7 @@ import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
-import tornaco.apps.shortx.services.rule.ActionEvaluator
-import tornaco.apps.shortx.services.rule.ConditionEvaluator
+import tornaco.apps.shortx.services.rule.cond.ConditionEvaluator
 
 data class HandleParams(
     val androidContext: Context,

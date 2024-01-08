@@ -8,6 +8,8 @@ import tornaco.apps.shortx.core.proto.fact.AnyFact
 import tornaco.apps.shortx.core.proto.fact.AppProcessStarted
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.logAdapter
+import tornaco.apps.shortx.services.rule.fact.FactMatcher
+import tornaco.apps.shortx.services.rule.fact.FactMatcherImpl
 
 
 class FactMatcherImplTest {

@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.services.rule
+package tornaco.apps.shortx.services.rule.cond
 
 import tornaco.apps.shortx.core.proto.rule.ConditionEvaluateRecord
 

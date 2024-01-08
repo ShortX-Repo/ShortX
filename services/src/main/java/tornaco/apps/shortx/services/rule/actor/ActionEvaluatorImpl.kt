@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.services.rule
+package tornaco.apps.shortx.services.rule.actor
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -14,8 +14,7 @@ import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.ShortXContext
-import tornaco.apps.shortx.services.rule.actor.HandleParams
-import tornaco.apps.shortx.services.rule.actor.prebuiltActorFor
+import tornaco.apps.shortx.services.rule.cond.ConditionEvaluator
 import kotlin.coroutines.cancellation.CancellationException
 
 data class ActionAttrs(

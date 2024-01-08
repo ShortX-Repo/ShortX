@@ -13,7 +13,7 @@ import tornaco.apps.shortx.core.util.bundleToString
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.app.ActivityStartResultOneTimeListener
 import tornaco.apps.shortx.services.app.RequestCodeFactory
-import tornaco.apps.shortx.services.rule.ActionEvaluator
+import tornaco.apps.shortx.services.rule.actor.ActionEvaluator
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.ui.biometric.BiometricVerifyActivityStarter
@@ -49,10 +49,16 @@ object BiometricVerify : Actor {
                 }
             })
 
-            BiometricVerifyActivityStarter.start(params.androidContext, actionRequestCode, BiometricVerify.newBuilder(d)
-                .setTitle(d.title.fallbackOnEmpty("").inflateContextMap(contextData).replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() })
-                .setSubTitle(d.subTitle.fallbackOnEmpty("").inflateContextMap(contextData).replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() })
-                .build())
+            BiometricVerifyActivityStarter.start(
+                params.androidContext, actionRequestCode, BiometricVerify.newBuilder(d)
+                    .setTitle(
+                        d.title.fallbackOnEmpty("").inflateContextMap(contextData)
+                            .replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() })
+                    .setSubTitle(
+                        d.subTitle.fallbackOnEmpty("").inflateContextMap(contextData)
+                            .replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() })
+                    .build()
+            )
         }
 
         logger.d("Got case: $case")

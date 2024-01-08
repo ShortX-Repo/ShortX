@@ -6,7 +6,7 @@ import org.junit.Test
 import tornaco.apps.shortx.core.proto.RegexMatchData
 import tornaco.apps.shortx.core.proto.common.RegexMatchOptions
 import tornaco.apps.shortx.core.util.logAdapter
-import tornaco.apps.shortx.services.rule.emptyOrRegexMatch
+import tornaco.apps.shortx.services.rule.fact.emptyOrRegexMatch
 
 class FactMatcherTest {
     @Before

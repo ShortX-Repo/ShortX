@@ -12,7 +12,6 @@ import kotlinx.coroutines.withTimeoutOrNull
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.GenericContextData
 import tornaco.apps.shortx.core.localvar.LocalVars
-import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
@@ -28,6 +27,10 @@ import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.actor.ActionEvaluator
+import tornaco.apps.shortx.services.rule.cond.ConditionEvaluator
+import tornaco.apps.shortx.services.rule.fact.FactMatcher
+import tornaco.apps.shortx.services.rule.fact.isMatch
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import java.util.concurrent.CancellationException
 import java.util.concurrent.ConcurrentHashMap
@@ -40,101 +43,6 @@ const val CONDITION_WAIT_TIMEOUT = 100L
 
 const val LOG_TAG_RULE_QUIT = "Rule-Quit"
 
-interface FactMatcher {
-    sealed interface MatcherResult {
-        data class Match(val factTag: String) : MatcherResult
-        data object NotMatch : MatcherResult
-    }
-
-    fun match(actualFact: ProtoMessage, ruleFacts: List<ProtoAny>): MatcherResult
-}
-
-val FactMatcher.MatcherResult.isMatch get() = this is FactMatcher.MatcherResult.Match
-
-
-interface ConditionEvaluator {
-    suspend fun evaluate(
-        evaluateContext: EvaluateContext,
-        condition: ProtoAny,
-        contextData: ContextData,
-        localVars: LocalVars
-    ): EvaluateResult
-
-    suspend fun evaluate(
-        evaluateContext: EvaluateContext,
-        condOp: ConditionOperator,
-        condOpPayload: ConditionOperatorPayload,
-        conditions: List<ProtoAny>,
-        contextData: ContextData,
-        localVars: LocalVars
-    ): Boolean
-
-    sealed interface EvaluateResult {
-        val evaluateContext: EvaluateContext
-
-        data class Success(
-            val condition: ProtoAny,
-            val match: Boolean,
-            val reason: String,
-            override val evaluateContext: EvaluateContext
-        ) : EvaluateResult
-
-        data class Fail(
-            val condition: ProtoAny,
-            val error: Throwable,
-            override val evaluateContext: EvaluateContext
-        ) : EvaluateResult
-
-        data class Break(override val evaluateContext: EvaluateContext) : EvaluateResult
-    }
-}
-
-fun ConditionEvaluator.EvaluateResult.isMatch() =
-    this is ConditionEvaluator.EvaluateResult.Success && this.match
-
-interface ActionEvaluator {
-    suspend fun evaluate(
-        evaluateContext: EvaluateContext,
-        action: ProtoAny,
-        contextData: ContextData,
-        localVars: LocalVars
-    ): EvaluateResult
-
-    sealed interface EvaluateResult {
-        val evaluateContext: EvaluateContext
-        val actionId: String
-
-        data class Success(
-            override val actionId: String,
-            val action: ProtoAny,
-            override val evaluateContext: EvaluateContext
-        ) : EvaluateResult
-
-        data class Fail(
-            val shouldContinue: Boolean,
-            override val actionId: String,
-            val action: ProtoAny,
-            val error: Throwable,
-            override val evaluateContext: EvaluateContext
-        ) : EvaluateResult
-
-        data class Break(
-            override val actionId: String,
-            val action: ProtoAny,
-            val scope: BreakActionExecuteScope,
-            override val evaluateContext: EvaluateContext
-        ) : EvaluateResult
-
-        data class Disabled(
-            override val actionId: String,
-            val action: ProtoAny,
-            override val evaluateContext: EvaluateContext
-        ) : EvaluateResult
-    }
-}
-
-class BreakActionException(override val message: String, val scope: BreakActionExecuteScope) :
-    RuntimeException()
 
 interface Engine {
     val conditionEvaluator: ConditionEvaluator

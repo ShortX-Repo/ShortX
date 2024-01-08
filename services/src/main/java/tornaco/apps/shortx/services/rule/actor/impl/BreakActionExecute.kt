@@ -2,8 +2,8 @@ package tornaco.apps.shortx.services.rule.actor.impl
 
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
-import tornaco.apps.shortx.services.rule.BreakActionException
 import tornaco.apps.shortx.services.rule.actor.Actor
+import tornaco.apps.shortx.services.rule.actor.BreakActionException
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 
 

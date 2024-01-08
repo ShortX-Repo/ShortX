@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.services.rule
+package tornaco.apps.shortx.services.rule.cond
 
 import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.annotations.DoNotStrip

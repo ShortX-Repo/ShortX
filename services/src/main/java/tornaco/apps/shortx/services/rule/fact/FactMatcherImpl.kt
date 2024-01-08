@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.services.rule
+package tornaco.apps.shortx.services.rule.fact
 
 import com.google.protobuf.Descriptors
 import tornaco.apps.shortx.core.PrebuiltStablePkgSetLabel

@@ -8,7 +8,7 @@ import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.services.ShortXContext
-import tornaco.apps.shortx.services.rule.ConditionEvaluator
+import tornaco.apps.shortx.services.rule.cond.ConditionEvaluator
 
 fun dummyHandlerParamsForAction(
     androidContext: Context,

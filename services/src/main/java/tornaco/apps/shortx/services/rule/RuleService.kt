@@ -65,12 +65,18 @@ import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.ToggleSettingsStore
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
+import tornaco.apps.shortx.services.rule.actor.ActionEvaluateRecorder
 import tornaco.apps.shortx.services.rule.actor.PrebuiltActor
 import tornaco.apps.shortx.services.rule.actor.dummyHandlerParamsForAction
 import tornaco.apps.shortx.services.rule.actor.impl.ExecuteMVEL
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequestLogging
 import tornaco.apps.shortx.services.rule.actor.impl.ShellCommand
+import tornaco.apps.shortx.services.rule.actor.toActionEvaluateRecord
+import tornaco.apps.shortx.services.rule.cond.ConditionEvaluateRecorder
 import tornaco.apps.shortx.services.rule.cond.PrebuiltCond
+import tornaco.apps.shortx.services.rule.cond.toConditionEvaluateRecord
+import tornaco.apps.shortx.services.rule.fact.FactPublishRecorder
+import tornaco.apps.shortx.services.rule.fact.toFactPublishRecord
 import tornaco.apps.shortx.services.rule.fact.trigger.allTriggers
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
@@ -231,12 +237,12 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
         installListeners()
 
-        PrebuiltActor.values().forEach {
+        PrebuiltActor.entries.forEach {
             it.actor.init(context, shortXContext)
         }
         logger.d("PrebuiltActor init complete")
 
-        PrebuiltCond.values().forEach {
+        PrebuiltCond.entries.forEach {
             it.cond.init(context, shortXContext)
         }
         logger.d("PrebuiltCond init complete")

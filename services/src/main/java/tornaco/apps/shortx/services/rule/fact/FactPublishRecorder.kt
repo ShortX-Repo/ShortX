@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.services.rule
+package tornaco.apps.shortx.services.rule.fact
 
 import tornaco.apps.shortx.core.proto.rule.FactPublishRecord
 import tornaco.apps.shortx.core.rule.ProtoMessage

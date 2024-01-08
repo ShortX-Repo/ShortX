@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.services.rule
+package tornaco.apps.shortx.services.rule.cond
 
 import android.content.Context
 import tornaco.apps.shortx.core.context.ContextData
@@ -12,8 +12,6 @@ import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.actor.impl.MVELExecutor
-import tornaco.apps.shortx.services.rule.cond.Cond
-import tornaco.apps.shortx.services.rule.cond.prebuiltCondFor
 
 class ConditionEvaluatorImpl(
     private val context: Context,
