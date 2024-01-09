@@ -2,21 +2,20 @@ package tornaco.apps.shortx.services.rule.actor.impl
 
 import com.android.internal.annotations.VisibleForTesting
 import com.google.protobuf.Message
-import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.proto.action.WriteGlobalVar
 import tornaco.apps.shortx.core.proto.action.WriteGlobalVarOp
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.rule.addOrUpdateValue
+import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.isBool
 import tornaco.apps.shortx.core.rule.isInt
 import tornaco.apps.shortx.core.rule.isList
-import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
-import tornaco.apps.shortx.core.rule.replaceLocalVarValues
 import tornaco.apps.shortx.core.rule.setValue
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.rule.valueList
 import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 
@@ -36,12 +35,10 @@ object WriteGlobalVar : Actor {
         val op: WriteGlobalVarOp = d.op
         logger.d("$op -> ${globalVar.name}")
 
+        val cv = RuleContextAndVars(params)
+
         val stringValueToWrite =
-            d.valueAsString.inflateContextMap(contextData)
-                .replaceLocalVarValues(localVars)
-                .replaceGlobalVarValues {
-                    shortXContext.rule.getAllGlobalVars()
-                }
+            d.valueAsString.compileContextAndVars(cv)
 
         val newGlobalVar = handleGVOp(globalVar, op, stringValueToWrite)
 

@@ -1,13 +1,12 @@
 package tornaco.apps.shortx.services.rule.cond.impl
 
 import com.google.protobuf.Message
-import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.StringPair
-import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
-import tornaco.apps.shortx.core.rule.replaceLocalVarValues
+import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.cond.Cond
 
 object CurrentPkgListByPkg : Cond {
@@ -30,19 +29,14 @@ object CurrentPkgListByPkg : Cond {
 }
 
 fun List<StringPair>.toRealApps(params: Cond.CondParam): List<AppPkg> {
+    val cv = RuleContextAndVars(params)
     return this.mapNotNull { stringPair ->
         val app = params.shortXContext.appState.pkgToApp(
             AppPkg.newBuilder()
                 .setPkgName(
-                    stringPair.first
-                        .inflateContextMap(params.contextData)
-                        .replaceGlobalVarValues { params.shortXContext.rule.getAllGlobalVars() }
-                        .replaceLocalVarValues(params.localVars)
+                    stringPair.first.compileContextAndVars(cv)
                 )
-                .setUserId(stringPair.second.inflateContextMap(params.contextData)
-                    .replaceGlobalVarValues { params.shortXContext.rule.getAllGlobalVars() }
-                    .replaceLocalVarValues(params.localVars)
-                    .toIntOrNull() ?: myUserId)
+                .setUserId(stringPair.second.compileContextAndVars(cv).toIntOrNull() ?: myUserId)
                 .build()
         )
         app?.pkg

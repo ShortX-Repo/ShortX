@@ -3,13 +3,12 @@ package tornaco.apps.shortx.core
 import android.content.Intent
 import android.net.Uri
 import tornaco.apps.shortx.core.context.ContextData
-import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.common.AndroidIntent
 import tornaco.apps.shortx.core.proto.common.AndroidIntentExtraType
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
-import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
-import tornaco.apps.shortx.core.rule.replaceLocalVarValues
+import tornaco.apps.shortx.core.rule.RuleContextAndVars
+import tornaco.apps.shortx.core.rule.compileContextAndVars
 
 fun AndroidIntent.toIntent(
     contextData: ContextData,
@@ -19,13 +18,9 @@ fun AndroidIntent.toIntent(
     Intent().apply {
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         this@toIntent.action.ifEmpty { Intent.ACTION_VIEW }.let { action = it }
-
-        val pkgName = this@toIntent.pkgName.inflateContextMap(contextData)
-            .replaceLocalVarValues(localVars)
-            .replaceGlobalVarValues(globalVarsLazy)
-        val className = this@toIntent.className.inflateContextMap(contextData)
-            .replaceLocalVarValues(localVars)
-            .replaceGlobalVarValues(globalVarsLazy)
+        val ruleContextAndVars = RuleContextAndVars(localVars, contextData, globalVarsLazy)
+        val pkgName = this@toIntent.pkgName.compileContextAndVars(ruleContextAndVars)
+        val className = this@toIntent.className.compileContextAndVars(ruleContextAndVars)
         if (pkgName.isNotBlank()) {
             setPackage(pkgName)
             if (className.isNotBlank()) {
@@ -35,23 +30,15 @@ fun AndroidIntent.toIntent(
         val data = this@toIntent.data
         if (data.isNotBlank()) {
             setData(
-                Uri.parse(
-                    data.inflateContextMap(contextData)
-                        .replaceLocalVarValues(localVars)
-                        .replaceGlobalVarValues(globalVarsLazy)
-                )
+                Uri.parse(data.compileContextAndVars(ruleContextAndVars))
             )
         }
 
         this@toIntent.extrasList?.let { extras ->
             extras.forEach {
                 val type: AndroidIntentExtraType = it.type
-                val realKey = it.key.inflateContextMap(contextData)
-                    .replaceGlobalVarValues(globalVarsLazy)
-                    .replaceLocalVarValues(localVars)
-                val realValue = it.value.inflateContextMap(contextData)
-                    .replaceGlobalVarValues(globalVarsLazy)
-                    .replaceLocalVarValues(localVars)
+                val realKey = it.key.compileContextAndVars(ruleContextAndVars)
+                val realValue = it.value.compileContextAndVars(ruleContextAndVars)
 
                 when (type) {
                     AndroidIntentExtraType.Int -> {

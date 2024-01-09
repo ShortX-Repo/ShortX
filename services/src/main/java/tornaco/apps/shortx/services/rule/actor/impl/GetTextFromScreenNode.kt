@@ -3,12 +3,12 @@ package tornaco.apps.shortx.services.rule.actor.impl
 import com.google.protobuf.Message
 import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.context.ContextDataMapping
-import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.context.forKey
-import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
+import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
+import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 
@@ -23,8 +23,8 @@ object GetTextFromScreenNode : Actor {
     ): Unit = with(params) {
         val d =
             action unpack_ tornaco.apps.shortx.core.proto.action.GetTextFromScreenNode::class.java
-        val targetViewId = d.nodeId.inflateContextMap(contextData)
-            .replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() }
+        val cv = RuleContextAndVars(params)
+        val targetViewId = d.nodeId.compileContextAndVars(cv)
         logger.d("targetViewId: $targetViewId")
 
         val viewIdAndIndex = parseViewIdAndIndex(targetViewId)

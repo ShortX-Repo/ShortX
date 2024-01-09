@@ -17,22 +17,19 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import org.mvel2.MVEL
-import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextDataMapping
-import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
-import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.HttpRequestHeaderBodyJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
 import tornaco.apps.shortx.core.proto.common.HttpRequestBodyForm
 import tornaco.apps.shortx.core.proto.common.HttpRequestBodyJson
-import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.rule.ProtoAny
+import tornaco.apps.shortx.core.rule.RuleContextAndVars
+import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.is_
-import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
-import tornaco.apps.shortx.core.rule.replaceLocalVarValues
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.data.SettingsStore
+import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.services.systemServiceScope
@@ -152,18 +149,12 @@ object HttpRequest : Actor {
     ): Unit = with(params) {
         val data =
             action unpack_ tornaco.apps.shortx.core.proto.action.HttpRequest::class.java
-        val url = data.url.inflateContextMap(contextData)
-            .replaceLocalVarValues(localVars)
-            .replaceGlobalVarValues {
-                shortXContext.rule.getAllGlobalVars()
-            }
+        val cv = RuleContextAndVars(params)
+
+        val url = data.url.compileContextAndVars(cv)
         logger.d("url: $url")
 
-        val requestBody =
-            data.requestBody.toHttpRequestBody(
-                contextData,
-                localVars
-            ) { shortXContext.rule.getAllGlobalVars() }
+        val requestBody = data.requestBody.toHttpRequestBody(cv)
 
         HttpRequestLogging.section("START")
 
@@ -171,10 +162,7 @@ object HttpRequest : Actor {
             url = url,
             method = data.method.name,
             headers = data.headersList.associate {
-                it.key to (it.value).inflateContextMap(
-                    contextData
-                ).replaceLocalVarValues(localVars)
-                    .replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() }
+                it.key.compileContextAndVars(cv) to (it.value).compileContextAndVars(cv)
             },
             requestBody = requestBody,
             withCookieJar = data.withCookieJar,
@@ -184,9 +172,7 @@ object HttpRequest : Actor {
         HttpRequestLogging.section("END")
 
         handleResponseBody(
-            contextData = contextData,
-            globalVarsLazy = { shortXContext.rule.getAllGlobalVars() },
-            localVars = localVars,
+            cv,
             response = response,
             adapter = data.adapter
         ).apply {
@@ -215,9 +201,7 @@ object HttpRequest : Actor {
     }
 
     fun handleResponseBody(
-        contextData: ContextData,
-        globalVarsLazy: () -> List<GlobalVar>,
-        localVars: LocalVars,
+        contextAndVars: RuleContextAndVars,
         response: Response,
         adapter: ProtoAny
     ): List<String> {
@@ -262,9 +246,7 @@ object HttpRequest : Actor {
             jsonAdapter.expressionsList.map { expression ->
                 logger.d("expression: $expression")
                 val fixedExpression = expression
-                    .inflateContextMap(contextData)
-                    .replaceGlobalVarValues(globalVarsLazy)
-                    .replaceLocalVarValues(localVars)
+                    .compileContextAndVars(contextAndVars)
                     .fixSpecialLetters()
                 logger.d("fixedExpression: $expression")
                 val res = runCatching {
@@ -330,25 +312,19 @@ object HttpRequest : Actor {
     }
 
     fun ProtoAny.toHttpRequestBody(
-        contextData: ContextData,
-        localVars: LocalVars,
-        globalVarsLazy: () -> List<GlobalVar>
+        contextAndVars: RuleContextAndVars,
     ): RequestBody? {
         return if (this is_ HttpRequestBodyJson::class.java) {
             val bodyJson = this unpack_ HttpRequestBodyJson::class.java
-            bodyJson.json.inflateContextMap(contextData)
-                .replaceLocalVarValues(localVars)
-                .replaceGlobalVarValues(globalVarsLazy)
+            bodyJson.json.compileContextAndVars(contextAndVars)
                 .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         } else if (this is_ HttpRequestBodyForm::class.java) {
             val bodyForm = this unpack_ HttpRequestBodyForm::class.java
             FormBody.Builder().apply {
                 bodyForm.itemsList.forEach {
                     add(
-                        it.key,
-                        it.value.inflateContextMap(contextData)
-                            .replaceLocalVarValues(localVars)
-                            .replaceGlobalVarValues(globalVarsLazy)
+                        it.key.compileContextAndVars(contextAndVars),
+                        it.value.compileContextAndVars(contextAndVars)
                     )
                 }
             }.build()

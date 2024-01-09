@@ -14,14 +14,13 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextDataMapping
-import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.DialogAction
-import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
-import tornaco.apps.shortx.core.rule.replaceLocalVarValues
+import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 
@@ -53,8 +52,7 @@ object ShowTextFieldDialog : Actor {
     ) = withContext(Dispatchers.Main) {
         logger.d("ShowTextFieldDialog, showing")
         val linearLayout = LinearLayout(context)
-
-        val allGlobalVars = { shortXContext.rule.getAllGlobalVars() }
+        val cv = RuleContextAndVars(localVars, contextData, shortXContext)
         val result = ShowDialog(context).invoke { dialogContext ->
             val messageText = TextView(context)
             messageText.text = d.message
@@ -77,9 +75,7 @@ object ShowTextFieldDialog : Actor {
 
             AlertDialog.Builder(dialogContext)
                 .setTitle(
-                    d.title.inflateContextMap(contextData)
-                        .replaceLocalVarValues(localVars)
-                        .replaceGlobalVarValues(allGlobalVars)
+                    d.title.compileContextAndVars(cv)
                 )
                 .setCancelable(d.cancelable)
                 .setView(linearLayout)

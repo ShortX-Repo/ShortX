@@ -4,11 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import com.google.protobuf.Message
-import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
-import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
-import tornaco.apps.shortx.core.rule.replaceLocalVarValues
+import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.UserHandleUtils
+import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 
@@ -24,13 +23,9 @@ object StartActivityUrlSchema : Actor {
     ) = with(params) {
         val startActivity =
             action unpack_ tornaco.apps.shortx.core.proto.action.StartActivityUrlSchema::class.java
-
+        val cv = RuleContextAndVars(params)
         val userId = startActivity.userId
-        val url = startActivity.urlSchema.inflateContextMap(contextData)
-            .replaceLocalVarValues(localVars)
-            .replaceGlobalVarValues {
-            shortXContext.rule.getAllGlobalVars()
-        }
+        val url = startActivity.urlSchema.compileContextAndVars(cv)
         logger.d("startActivity: $url")
         androidContext.startActivityAsUser(
             Intent(Intent.ACTION_VIEW).setData(Uri.parse(url))

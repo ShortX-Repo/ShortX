@@ -9,15 +9,14 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.context.ContextData
-import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.DialogMenuItem
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.ProtoAny
-import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
-import tornaco.apps.shortx.core.rule.replaceLocalVarValues
+import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.ActionEvaluator
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
@@ -57,15 +56,11 @@ object ShowMenuDialog : Actor {
         ) -> ActionEvaluator.EvaluateResult
     ) = withContext(Dispatchers.Main) {
         logger.d("ShowMenuDialog, showing: ${d.itemsList.size} ${d.cancelable}")
-        val allGlobalVars = { shortXContext.rule.getAllGlobalVars() }
+        val cv = RuleContextAndVars(localVars, contextData, shortXContext)
         val result =
             ShowDialog(context, shortXContext, localVars, contextData).invoke(d.itemsList) {
                 AlertDialog.Builder(it)
-                    .setTitle(
-                        d.title.inflateContextMap(contextData)
-                            .replaceLocalVarValues(localVars)
-                            .replaceGlobalVarValues(allGlobalVars)
-                    )
+                    .setTitle(d.title.compileContextAndVars(cv))
                     .setCancelable(d.cancelable || d.itemsList.isEmpty())
             }
 
@@ -111,13 +106,11 @@ private class ShowDialog(
 
         var result: DialogMenuItem? = null
 
+        val cv = RuleContextAndVars(localVars, contextData, shortXContext)
+
         dialogBuilder.setItems(
             menuItems.map {
-                it.title.inflateContextMap(contextData)
-                    .replaceLocalVarValues(localVars)
-                    .replaceGlobalVarValues {
-                        shortXContext.rule.getAllGlobalVars()
-                    }
+                it.title.compileContextAndVars(cv)
             }.toTypedArray()
         ) { _, which ->
             result = menuItems[which]

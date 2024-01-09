@@ -7,13 +7,12 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.webkit.URLUtil
 import com.google.protobuf.Message
-import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
-import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
-import tornaco.apps.shortx.core.rule.replaceLocalVarValues
+import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.FileHelper
 import tornaco.apps.shortx.core.util.wallpaperManager
 import tornaco.apps.shortx.services.data.Dirs
+import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import java.io.File
@@ -29,9 +28,8 @@ object SetWallpaper : Actor {
         params: HandleParams
     ) = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.SetWallpaper::class.java
-        val url = d.fileUrl.inflateContextMap(contextData)
-            .replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() }
-            .replaceLocalVarValues(localVars)
+        val cv = RuleContextAndVars(params)
+        val url = d.fileUrl.compileContextAndVars(cv)
         logger.d("url: $url")
         val isContent = URLUtil.isContentUrl(url)
         val realUrl = if (isContent) {

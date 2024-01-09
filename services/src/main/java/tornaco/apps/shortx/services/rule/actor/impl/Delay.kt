@@ -9,12 +9,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.internal.toLongOrDefault
-import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.proto.action.Delay
-import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
-import tornaco.apps.shortx.core.rule.replaceLocalVarValues
+import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import java.util.UUID
@@ -47,11 +46,10 @@ object Delay : Actor {
         params: HandleParams
     ) {
         val d = params.action unpack_ Delay::class.java
+        val cv = RuleContextAndVars(params)
 
         val timeStr = if (d.timeString.isNotEmpty()) {
-            d.timeString.inflateContextMap(params.contextData)
-                .replaceLocalVarValues(params.localVars)
-                .replaceGlobalVarValues { params.shortXContext.rule.getAllGlobalVars() }
+            d.timeString.compileContextAndVars(cv)
         } else {
             d.time.toString()
         }

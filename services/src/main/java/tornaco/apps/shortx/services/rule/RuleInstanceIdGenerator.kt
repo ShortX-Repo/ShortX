@@ -9,8 +9,9 @@ import tornaco.apps.shortx.core.proto.rule.RuleInstanceIdGenerator_MVEL
 import tornaco.apps.shortx.core.proto.rule.RuleInstanceIdGenerator_Static
 import tornaco.apps.shortx.core.proto.rule.RuleInstanceIdGenerator_String
 import tornaco.apps.shortx.core.rule.ProtoAny
+import tornaco.apps.shortx.core.rule.RuleContextAndVars
+import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.is_
-import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
@@ -36,9 +37,9 @@ object RuleInstanceIdGenerator {
 
         if (this is_ RuleInstanceIdGenerator_String::class.java) {
             val d = this unpack_ RuleInstanceIdGenerator_String::class.java
-            return d.insId.inflateContextMap(contextData).replaceGlobalVarValues {
-                shortXContext.rule.getAllGlobalVars()
-            }.apply {
+            val contextAndVars =
+                RuleContextAndVars(null, contextData) { shortXContext.rule.getAllGlobalVars() }
+            return d.insId.compileContextAndVars(contextAndVars).apply {
                 logger.d("generate: RuleInstanceIdGenerator_String: $this")
             }
         }

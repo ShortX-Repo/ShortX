@@ -4,10 +4,10 @@ import android.os.Bundle
 import com.google.protobuf.Message
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
-import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.proto.action.BiometricVerify
 import tornaco.apps.shortx.core.proto.common.BiometricVerifyResultCase
-import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
+import tornaco.apps.shortx.core.rule.RuleContextAndVars
+import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.bundleToString
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
@@ -49,14 +49,17 @@ object BiometricVerify : Actor {
                 }
             })
 
+            val contextAndVars = RuleContextAndVars(localVars, contextData) {
+                shortXContext.rule.getAllGlobalVars()
+            }
+
             BiometricVerifyActivityStarter.start(
-                params.androidContext, actionRequestCode, BiometricVerify.newBuilder(d)
-                    .setTitle(
-                        d.title.fallbackOnEmpty("").inflateContextMap(contextData)
-                            .replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() })
-                    .setSubTitle(
-                        d.subTitle.fallbackOnEmpty("").inflateContextMap(contextData)
-                            .replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() })
+                context = params.androidContext,
+                requestCode = actionRequestCode,
+                action = BiometricVerify
+                    .newBuilder(d)
+                    .setTitle(d.title.fallbackOnEmpty("").compileContextAndVars(contextAndVars))
+                    .setSubTitle(d.subTitle.compileContextAndVars(contextAndVars))
                     .build()
             )
         }

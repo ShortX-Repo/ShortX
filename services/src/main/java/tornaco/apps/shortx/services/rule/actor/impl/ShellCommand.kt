@@ -2,14 +2,13 @@ package tornaco.apps.shortx.services.rule.actor.impl
 
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.context.ContextDataMapping
-import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.proto.action.ShellCommand
-import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
-import tornaco.apps.shortx.core.rule.replaceLocalVarValues
+import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.rule.Interceptors
+import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 
@@ -25,11 +24,8 @@ object ShellCommand : Actor {
         require(Interceptors.checkExecuteShell(params.shortXContext, params.androidContext))
 
         val sc = action unpack_ ShellCommand::class.java
-        val command = sc.command.inflateContextMap(contextData)
-            .replaceLocalVarValues(localVars)
-            .replaceGlobalVarValues {
-                shortXContext.rule.getAllGlobalVars()
-            }
+        val cv = RuleContextAndVars(params)
+        val command = sc.command.compileContextAndVars(cv)
         val res =
             shortXContext.shell.executeCommand(command, sc.singleShot)
         logger.d("Shell command: $command")

@@ -7,10 +7,9 @@ import android.speech.tts.TextToSpeech
 import com.google.protobuf.Message
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
-import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
-import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
-import tornaco.apps.shortx.core.rule.replaceLocalVarValues
+import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import java.util.Locale
@@ -30,9 +29,8 @@ object TTS : Actor {
             initTTS(androidContext)
         }
 
-        val text = d.text.inflateContextMap(contextData)
-            .replaceLocalVarValues(localVars)
-            .replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() }
+        val cv = RuleContextAndVars(params)
+        val text = d.text.compileContextAndVars(cv)
 
         val speakRes1 = requireNotNull(tts) { "TTS is null" }.speak(
             text,

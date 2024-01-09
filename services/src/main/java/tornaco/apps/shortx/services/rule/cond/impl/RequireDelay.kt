@@ -6,11 +6,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.internal.toLongOrDefault
-import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
-import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
-import tornaco.apps.shortx.core.rule.replaceLocalVarValues
+import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.impl.DelaySchedulerHolder
 import tornaco.apps.shortx.services.rule.cond.Cond
 import java.util.UUID
@@ -28,9 +27,8 @@ object RequireDelay : Cond {
     override suspend fun evaluate(param: Cond.CondParam): Cond.Result {
         val data =
             param.condition.unpack_(tornaco.apps.shortx.core.proto.condition.RequireDelay::class.java)
-        val timeStr = data.timeString.inflateContextMap(param.contextData)
-            .replaceLocalVarValues(param.localVars)
-            .replaceGlobalVarValues { param.shortXContext.rule.getAllGlobalVars() }
+        val cv = RuleContextAndVars(param)
+        val timeStr = data.timeString.compileContextAndVars(cv)
         logger.d("timeStr: $timeStr")
         val timeLong = timeStr.toLongOrDefault(0L)
 

@@ -1,11 +1,10 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
 import com.google.protobuf.Message
-import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.rule.addOrUpdateValue
-import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
-import tornaco.apps.shortx.core.rule.replaceLocalVarValues
+import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 
@@ -22,12 +21,9 @@ object WriteLocalVar : Actor {
         val localVar = requireNotNull(localVars.getByName(d.varName)) {
             "Local var: ${d.varName} not exists. pls create first.\nCurrent local vars: ${localVars.all.joinToString { it.name }}"
         }
+        val cv = RuleContextAndVars(params)
         val newValue =
-            d.valueAsString.inflateContextMap(contextData)
-                .replaceLocalVarValues(localVars)
-                .replaceGlobalVarValues {
-                    shortXContext.rule.getAllGlobalVars()
-                }
+            d.valueAsString.compileContextAndVars(cv)
         localVars.update(localVar.addOrUpdateValue(listOf(newValue)))
     }
 }

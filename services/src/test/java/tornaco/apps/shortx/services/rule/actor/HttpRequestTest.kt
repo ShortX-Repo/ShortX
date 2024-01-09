@@ -12,6 +12,7 @@ import tornaco.apps.shortx.core.proto.action.HttpRequestRawAdapter
 import tornaco.apps.shortx.core.proto.common.HttpRequestBodyJson
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.gv.StringVar
+import tornaco.apps.shortx.core.rule.RuleContextAndVars
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.logAdapter
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest
@@ -38,10 +39,13 @@ class HttpRequestTest {
             headers = emptyMap(),
             requestBody = null,
         ).let {
-            handleResponseBody(
+            val cv = tornaco.apps.shortx.core.rule.RuleContextAndVars(
                 contextData = ContextData.obtain(),
                 globalVarsLazy = { emptyList() },
                 localVars = LocalVars.obtain(),
+            )
+            handleResponseBody(
+                cv,
                 response = it,
                 adapter = HttpRequestJsonMapAdapter.newBuilder().addAllExpressions(listOf("author"))
                     .build()
@@ -59,7 +63,7 @@ class HttpRequestTest {
             headers = emptyMap(),
             requestBody = null,
         ).let {
-            handleResponseBody(
+            val cv = tornaco.apps.shortx.core.rule.RuleContextAndVars(
                 contextData = ContextData.obtain(),
                 globalVarsLazy = {
                     listOf(
@@ -74,6 +78,9 @@ class HttpRequestTest {
                     )
                 },
                 localVars = LocalVars.obtain(),
+            )
+            handleResponseBody(
+                cv,
                 response = it,
                 adapter = HttpRequestHeaderBodyJsonMapAdapter.newBuilder()
                     .addAllExpressions(listOf("globalVarOf\$exp_test"))
@@ -94,9 +101,11 @@ class HttpRequestTest {
             requestBody = null,
         ).let {
             handleResponseBody(
-                contextData = ContextData.obtain(),
-                globalVarsLazy = { emptyList() },
-                localVars = LocalVars.obtain(),
+                RuleContextAndVars(
+                    contextData = ContextData.obtain(),
+                    globalVarsLazy = { emptyList() },
+                    localVars = LocalVars.obtain(),
+                ),
                 response = it,
                 adapter = HttpRequestJsonMapAdapter.newBuilder()
                     .addAllExpressions(listOf("colors.red"))
@@ -116,9 +125,11 @@ class HttpRequestTest {
             requestBody = null,
         ).let {
             handleResponseBody(
-                contextData = ContextData.obtain(),
-                globalVarsLazy = { emptyList() },
-                localVars = LocalVars.obtain(),
+                RuleContextAndVars(
+                    contextData = ContextData.obtain(),
+                    globalVarsLazy = { emptyList() },
+                    localVars = LocalVars.obtain(),
+                ),
                 response = it,
                 adapter = HttpRequestHeaderBodyJsonMapAdapter.newBuilder()
                     .addAllExpressions(listOf("body.colors.red"))
@@ -138,9 +149,11 @@ class HttpRequestTest {
             requestBody = null,
         ).let {
             handleResponseBody(
-                contextData = ContextData.obtain(),
-                globalVarsLazy = { emptyList() },
-                localVars = LocalVars.obtain(),
+                RuleContextAndVars(
+                    contextData = ContextData.obtain(),
+                    globalVarsLazy = { emptyList() },
+                    localVars = LocalVars.obtain(),
+                ),
                 response = it,
                 adapter = HttpRequestRawAdapter.newBuilder().build().pack_()
             )
@@ -188,12 +201,18 @@ class HttpRequestTest {
                 }
             """.trimIndent()
             ).build().pack_()
-                .toHttpRequestBody(ContextData.obtain(), LocalVars.obtain()) { emptyList() },
+                .toHttpRequestBody(
+                    RuleContextAndVars(
+                        contextData = ContextData.obtain(),
+                        localVars = LocalVars.obtain()
+                    ) { emptyList() })
         ).let {
             handleResponseBody(
-                contextData = ContextData.obtain(),
-                globalVarsLazy = { emptyList() },
-                localVars = LocalVars.obtain(),
+                RuleContextAndVars(
+                    contextData = ContextData.obtain(),
+                    globalVarsLazy = { emptyList() },
+                    localVars = LocalVars.obtain(),
+                ),
                 response = it,
                 adapter = HttpRequestRawAdapter.newBuilder().build().pack_()
             )
