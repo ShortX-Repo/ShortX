@@ -18,7 +18,13 @@ fun AndroidIntent.toIntent(
     Intent().apply {
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         this@toIntent.action.ifEmpty { Intent.ACTION_VIEW }.let { action = it }
-        val ruleContextAndVars = RuleContextAndVars(localVars, contextData, globalVarsLazy)
+        val ruleContextAndVars =
+            RuleContextAndVars(
+                localVars = localVars,
+                contextData = contextData,
+                funcParameters = emptyList(),
+                globalVarsLazy = globalVarsLazy
+            )
         val pkgName = this@toIntent.pkgName.compileContextAndVars(ruleContextAndVars)
         val className = this@toIntent.className.compileContextAndVars(ruleContextAndVars)
         if (pkgName.isNotBlank()) {
