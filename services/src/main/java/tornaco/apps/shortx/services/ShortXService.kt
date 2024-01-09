@@ -56,6 +56,7 @@ import tornaco.apps.shortx.core.rule.IPkgSetObserver
 import tornaco.apps.shortx.core.rule.IRuleObserver
 import tornaco.apps.shortx.core.rule.IToggleObserver
 import tornaco.apps.shortx.core.rule.ProtoAny
+import tornaco.apps.shortx.core.rule.RuleContextAndVars
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.action.emptyByteArrayWrapper
 import tornaco.apps.shortx.core.rule.action.su.ISu
@@ -512,11 +513,13 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                 }
             val requestBody =
                 data.requestBody.toHttpRequestBody(
-                    ContextData.obtain(),
-                    localVars
-                ) {
-                    shortXContext.rule.getAllGlobalVars()
-                }
+                    RuleContextAndVars(
+                        localVars,
+                        ContextData.obtain(),
+                    ) {
+                        shortXContext.rule.getAllGlobalVars()
+                    }
+                )
             return kotlin.runCatching {
                 tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.callUrl(
                     url = url,
@@ -529,10 +532,13 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                     requestBody = requestBody,
                 ).let {
                     handleResponseBody(
-                        contextData = ContextData.obtain(),
-                        globalVarsLazy = { shortXContext.rule.getAllGlobalVars() },
-                        localVars = LocalVars.obtain(),
-                        response = it, adapter = data.adapter
+                        RuleContextAndVars(
+                            contextData = ContextData.obtain(),
+                            globalVarsLazy = { shortXContext.rule.getAllGlobalVars() },
+                            localVars = LocalVars.obtain()
+                        ),
+                        response = it,
+                        adapter = data.adapter
                     )
                 }
             }.getOrElse {

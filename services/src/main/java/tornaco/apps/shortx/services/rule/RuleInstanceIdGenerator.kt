@@ -38,7 +38,10 @@ object RuleInstanceIdGenerator {
         if (this is_ RuleInstanceIdGenerator_String::class.java) {
             val d = this unpack_ RuleInstanceIdGenerator_String::class.java
             val contextAndVars =
-                RuleContextAndVars(null, contextData) { shortXContext.rule.getAllGlobalVars() }
+                RuleContextAndVars(
+                    localVars = LocalVars.obtain(),
+                    contextData = contextData
+                ) { shortXContext.rule.getAllGlobalVars() }
             return d.insId.compileContextAndVars(contextAndVars).apply {
                 logger.d("generate: RuleInstanceIdGenerator_String: $this")
             }
