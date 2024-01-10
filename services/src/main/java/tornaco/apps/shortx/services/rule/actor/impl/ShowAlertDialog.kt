@@ -12,12 +12,12 @@ import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.DialogAction
 import tornaco.apps.shortx.core.proto.action.ShowAlertDialog
+import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.RuleContextAndVars
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
-import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.ActionEvaluator
 import tornaco.apps.shortx.services.rule.actor.Actor
@@ -36,9 +36,9 @@ object ShowAlertDialog : Actor {
         val cv = RuleContextAndVars(params)
         evaluateShowDialogAction(
             context = androidContext,
-            shortXContext = shortXContext,
             evaluateContext = evaluateContext,
             d = d,
+            parameterInputs = parameterInputs,
             recursiveExecute = recursiveExecute,
             cv = cv
         )
@@ -46,20 +46,20 @@ object ShowAlertDialog : Actor {
 
     private suspend fun evaluateShowDialogAction(
         context: Context,
-        shortXContext: ShortXContext,
         evaluateContext: EvaluateContext,
         d: ShowAlertDialog,
         cv: RuleContextAndVars,
+        parameterInputs: List<FuncParameterInput>,
 
         recursiveExecute: suspend (
             evaluateContext: EvaluateContext,
             action: ProtoAny,
             contextData: ContextData,
-            localVars: LocalVars
+            localVars: LocalVars,
+            parameterInputs: List<FuncParameterInput>
         ) -> ActionEvaluator.EvaluateResult
     ) = withContext(Dispatchers.Main) {
         logger.d("ShowAlertDialog, showing")
-        val allGlobalVars = { shortXContext.rule.getAllGlobalVars() }
         val result = ShowDialog(context).invoke(
             positiveButtonText = d.positive.compileContextAndVars(cv),
             negativeButtonText = d.negative.compileContextAndVars(cv),
@@ -80,7 +80,13 @@ object ShowAlertDialog : Actor {
                     run loop@{
                         if (d.onPositiveList.isNullOrEmpty().not()) d.onPositiveList.forEach {
                             val evaRes =
-                                recursiveExecute(evaluateContext, it, cv.contextData, cv.localVars)
+                                recursiveExecute(
+                                    evaluateContext,
+                                    it,
+                                    cv.contextData,
+                                    cv.localVars,
+                                    parameterInputs
+                                )
                             if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
                                 logger.e(evaRes.error, "evaluate fail")
                                 if (evaRes.shouldContinue) {
@@ -100,7 +106,13 @@ object ShowAlertDialog : Actor {
                     run loop@{
                         if (d.onNegativeList.isNullOrEmpty().not()) d.onNegativeList.forEach {
                             val evaRes =
-                                recursiveExecute(evaluateContext, it, cv.contextData, cv.localVars)
+                                recursiveExecute(
+                                    evaluateContext,
+                                    it,
+                                    cv.contextData,
+                                    cv.localVars,
+                                    parameterInputs
+                                )
                             if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
                                 logger.e(evaRes.error, "evaluate fail")
                                 if (evaRes.shouldContinue) {
@@ -120,7 +132,13 @@ object ShowAlertDialog : Actor {
                     run loop@{
                         if (d.onNeutralList.isNullOrEmpty().not()) d.onNeutralList.forEach {
                             val evaRes =
-                                recursiveExecute(evaluateContext, it, cv.contextData, cv.localVars)
+                                recursiveExecute(
+                                    evaluateContext,
+                                    it,
+                                    cv.contextData,
+                                    cv.localVars,
+                                    parameterInputs
+                                )
                             if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
                                 logger.e(evaRes.error, "evaluate fail")
                                 if (evaRes.shouldContinue) {

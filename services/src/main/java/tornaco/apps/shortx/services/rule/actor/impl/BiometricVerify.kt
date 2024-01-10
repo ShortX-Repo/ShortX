@@ -6,13 +6,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import tornaco.apps.shortx.core.proto.action.BiometricVerify
 import tornaco.apps.shortx.core.proto.common.BiometricVerifyResultCase
-import tornaco.apps.shortx.core.rule.RuleContextAndVars
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.bundleToString
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.app.ActivityStartResultOneTimeListener
 import tornaco.apps.shortx.services.app.RequestCodeFactory
+import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.ActionEvaluator
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
@@ -49,9 +49,7 @@ object BiometricVerify : Actor {
                 }
             })
 
-            val contextAndVars = RuleContextAndVars(localVars, contextData) {
-                shortXContext.rule.getAllGlobalVars()
-            }
+            val contextAndVars = RuleContextAndVars(params)
 
             BiometricVerifyActivityStarter.start(
                 context = params.androidContext,
@@ -76,7 +74,13 @@ object BiometricVerify : Actor {
             run loop@{
                 if (d.allowActionsList.isNullOrEmpty().not()) {
                     d.allowActionsList.forEach {
-                        val evaRes = recursiveExecute(evaluateContext, it, contextData, localVars)
+                        val evaRes = recursiveExecute(
+                            evaluateContext,
+                            it,
+                            contextData,
+                            localVars,
+                            parameterInputs
+                        )
                         if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
                             logger.e(evaRes.error, "evaluate fail")
                             if (evaRes.shouldContinue) {

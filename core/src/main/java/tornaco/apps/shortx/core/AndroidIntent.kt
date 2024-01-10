@@ -6,6 +6,7 @@ import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.common.AndroidIntent
 import tornaco.apps.shortx.core.proto.common.AndroidIntentExtraType
+import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.rule.RuleContextAndVars
 import tornaco.apps.shortx.core.rule.compileContextAndVars
@@ -13,6 +14,7 @@ import tornaco.apps.shortx.core.rule.compileContextAndVars
 fun AndroidIntent.toIntent(
     contextData: ContextData,
     localVars: LocalVars,
+    parameterInputs: List<FuncParameterInput>,
     globalVarsLazy: () -> List<GlobalVar>,
 ) =
     Intent().apply {
@@ -22,7 +24,7 @@ fun AndroidIntent.toIntent(
             RuleContextAndVars(
                 localVars = localVars,
                 contextData = contextData,
-                funcParameters = emptyList(),
+                funcParameters = parameterInputs,
                 globalVarsLazy = globalVarsLazy
             )
         val pkgName = this@toIntent.pkgName.compileContextAndVars(ruleContextAndVars)

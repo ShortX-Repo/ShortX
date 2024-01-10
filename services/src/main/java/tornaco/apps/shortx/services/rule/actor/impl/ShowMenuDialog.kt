@@ -11,6 +11,7 @@ import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.DialogMenuItem
+import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.compileContextAndVars
@@ -37,7 +38,8 @@ object ShowMenuDialog : Actor {
             d = d,
             contextData = contextData,
             recursiveExecute = recursiveExecute,
-            localVars = localVars
+            localVars = localVars,
+            parameterInputs = parameterInputs
         )
     }
 
@@ -48,11 +50,14 @@ object ShowMenuDialog : Actor {
         d: tornaco.apps.shortx.core.proto.action.ShowMenuDialog,
         contextData: ContextData,
         localVars: LocalVars,
+        parameterInputs: List<FuncParameterInput>,
+
         recursiveExecute: suspend (
             evaluateContext: EvaluateContext,
             action: ProtoAny,
             contextData: ContextData,
-            localVars: LocalVars
+            localVars: LocalVars,
+            parameterInputs: List<FuncParameterInput>
         ) -> ActionEvaluator.EvaluateResult
     ) = withContext(Dispatchers.Main) {
         logger.d("ShowMenuDialog, showing: ${d.itemsList.size} ${d.cancelable}")
@@ -71,7 +76,13 @@ object ShowMenuDialog : Actor {
             val actions = result?.clickActionsList
             run loop@{
                 if (!actions.isNullOrEmpty()) actions.forEach {
-                    val evaRes = recursiveExecute(evaluateContext, it, contextData, localVars)
+                    val evaRes = recursiveExecute(
+                        evaluateContext,
+                        it,
+                        contextData,
+                        localVars,
+                        parameterInputs
+                    )
                     if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
                         logger.e(evaRes.error, "evaluate fail")
                         if (evaRes.shouldContinue) {

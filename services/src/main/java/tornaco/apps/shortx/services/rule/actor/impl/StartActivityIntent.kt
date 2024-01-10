@@ -24,7 +24,8 @@ object StartActivityIntent : Actor {
         val intent =
             startActivity.intent.toIntent(
                 contextData = contextData,
-                localVars = localVars
+                localVars = localVars,
+                parameterInputs = parameterInputs,
             ) { shortXContext.rule.getAllGlobalVars() }
         val userId = startActivity.userId
         logger.d("startActivityAsUser: $intent $userId")

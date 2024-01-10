@@ -20,7 +20,11 @@ fun RuleContextAndVars(
 fun RuleContextAndVars(
     handleParams: HandleParams
 ): RuleContextAndVars {
-    return RuleContextAndVars(handleParams.localVars, handleParams.contextData) {
+    return RuleContextAndVars(
+        handleParams.localVars,
+        handleParams.contextData,
+        handleParams.parameterInputs
+    ) {
         handleParams.shortXContext.rule.getAllGlobalVars()
     }
 }

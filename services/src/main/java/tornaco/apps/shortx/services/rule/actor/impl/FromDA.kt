@@ -25,7 +25,13 @@ object FromDA : Actor {
             if (da.actionsList.isNullOrEmpty().not()) {
                 da.actionsList.forEach { actionProto ->
                     val evaRes =
-                        recursiveExecute(evaluateContext, actionProto, contextData, localVars)
+                        recursiveExecute(
+                            evaluateContext,
+                            actionProto,
+                            contextData,
+                            localVars,
+                            parameterInputs
+                        )
                     if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
                         logger.e(evaRes.error, "evaluate fail")
                         if (evaRes.shouldContinue) {

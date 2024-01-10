@@ -4,6 +4,7 @@ package tornaco.apps.shortx.services.rule.actor
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
+import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.ProtoAny
 
@@ -12,7 +13,8 @@ interface ActionEvaluator {
         evaluateContext: EvaluateContext,
         action: ProtoAny,
         contextData: ContextData,
-        localVars: LocalVars
+        localVars: LocalVars,
+        parameterInputs: List<FuncParameterInput> = emptyList()
     ): EvaluateResult
 
     sealed interface EvaluateResult {

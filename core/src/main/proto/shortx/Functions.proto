@@ -39,7 +39,7 @@ message Func {
 message FuncParameter {
   string name = 1;
   string defaultValue = 2;
-  string isRequired = 3;
+  bool isRequired = 3;
   string comments = 4;
 }
 
@@ -49,6 +49,5 @@ message FuncParameterInput {
 }
 
 message FuncReturnValue {
-  string key = 1;
-  string value = 2;
+  string value = 1;
 }

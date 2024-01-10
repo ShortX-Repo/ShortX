@@ -7,6 +7,7 @@ import com.google.protobuf.Descriptors
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.common.ActionOnError
+import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
@@ -37,10 +38,11 @@ class ActionEvaluatorImpl(
         context: EvaluateContext,
         action: ProtoAny,
         contextData: ContextData,
-        localVars: LocalVars
+        localVars: LocalVars,
+        parameterInputs: List<FuncParameterInput>
     ) -> ActionEvaluator.EvaluateResult =
-        { logTagR, actionR, contextDataR, localVars ->
-            evaluate(logTagR, actionR, contextDataR, localVars)
+        { logTagR, actionR, contextDataR, localVars, parameterInputs ->
+            evaluate(logTagR, actionR, contextDataR, localVars, parameterInputs)
         }
 
     @SuppressLint("MissingPermission")
@@ -48,7 +50,8 @@ class ActionEvaluatorImpl(
         evaluateContext: EvaluateContext,
         action: ProtoAny,
         contextData: ContextData,
-        localVars: LocalVars
+        localVars: LocalVars,
+        parameterInputs: List<FuncParameterInput>
     ): ActionEvaluator.EvaluateResult {
         val actor = requireNotNull(prebuiltActorFor(action)) {
             "Can not find Actor for: ${action.typeUrl}"
@@ -78,7 +81,8 @@ class ActionEvaluatorImpl(
                     contextData = contextData,
                     localVars = localVars,
                     recursiveExecute = recursiveExecute,
-                    conditionEvaluator = conditionEvaluator
+                    conditionEvaluator = conditionEvaluator,
+                    parameterInputs = parameterInputs
                 )
             )
             ActionEvaluator.EvaluateResult.Success(actionId, action, evaluateContext)

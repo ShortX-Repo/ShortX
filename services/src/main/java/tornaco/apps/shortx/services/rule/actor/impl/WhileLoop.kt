@@ -45,7 +45,13 @@ object WhileLoop : Actor {
                         d.actionsList.forEach {
                             logger.d("about to execute action: ${it.typeUrl}")
                             val evaRes =
-                                recursiveExecute(evaluateContext, it, contextData, localVars)
+                                recursiveExecute(
+                                    evaluateContext,
+                                    it,
+                                    contextData,
+                                    localVars,
+                                    parameterInputs
+                                )
                             if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
                                 logger.e(evaRes.error, "evaluate fail")
                                 if (evaRes.shouldContinue) {
