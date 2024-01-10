@@ -10,6 +10,7 @@ import "shortx/Facts.proto";
 import "shortx/Conditions.proto";
 import "shortx/GlobalVars.proto";
 import "shortx/Settings.proto";
+import "shortx/Functions.proto";
 
 message NoAction {
   string icon = 1;
@@ -1425,6 +1426,17 @@ message ShowClipboardView {
 
 message PlayRingtone {
   Ringtone ringtone = 1;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message InvokeFunc {
+  string funcId = 1;
+  repeated FuncParameterInput params = 2;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
