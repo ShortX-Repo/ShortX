@@ -63,6 +63,7 @@ import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.SwitchBar
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
@@ -173,6 +174,16 @@ fun SettingsScreen(
 
                     AnimatedVisibility(visible = state.sensorUsages.isNotEmpty()) {
                         SensorUsage(state.sensorUsages)
+                    }
+
+                    StandardSpacer()
+                    SwitchBar(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        isChecked = state.ruleFeatureEnabled,
+                        text = LocalI18N.current["ui.settings.enable.rule.feature"],
+                        tip = LocalI18N.current["ui.settings.enable.rule.feature.description"]
+                    ) {
+                        vm.toggleRuleFeatureEnable(it)
                     }
 
                     val i18N = LocalI18N.current
@@ -404,14 +415,6 @@ private fun generalSettings(
 
     return listOf(
         Preference.Category(LocalI18N.current["ui.settings.general"]),
-
-        Preference.SwitchPreference(icon = Remix.Weather.meteor_line,
-            title = LocalI18N.current["ui.settings.enable.rule.feature"],
-            summary = LocalI18N.current["ui.settings.enable.rule.feature.description"],
-            value = state.ruleFeatureEnabled,
-            onCheckChanged = {
-                vm.toggleRuleFeatureEnable()
-            }),
 
         Preference.TextPreference(icon = Remix.System.apps_fill,
             title = LocalI18N.current["ui.pkg.set.title"],

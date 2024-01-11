@@ -317,9 +317,9 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
         }
     }
 
-    fun toggleRuleFeatureEnable() {
+    fun toggleRuleFeatureEnable(enable: Boolean) {
         viewModelScope.launch {
-            shortXManager.setRuleFeatureEnabled(!state.value.ruleFeatureEnabled)
+            shortXManager.setRuleFeatureEnabled(enable)
             updateState { copy(ruleFeatureEnabled = shortXManager.isRuleFeatureEnabled()) }
         }
     }
