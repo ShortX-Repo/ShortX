@@ -23,7 +23,7 @@ fun dummyHandlerParamsForAction(
         action = action,
         contextData = ContextData.obtain(),
         localVars = LocalVars.obtain(),
-        recursiveExecute = { _, _, _, _ ->
+        recursiveExecute = { _, _, _, _, _ ->
             throw java.lang.IllegalStateException("Dummy")
         },
         conditionEvaluator = object : ConditionEvaluator {

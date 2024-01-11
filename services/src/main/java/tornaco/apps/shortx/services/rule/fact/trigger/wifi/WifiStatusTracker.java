@@ -34,6 +34,7 @@ import android.os.Looper;
 import java.util.List;
 
 import tornaco.apps.shortx.core.util.Logger;
+import tornaco.apps.shortx.core.util.OsUtils;
 
 public class WifiStatusTracker extends ConnectivityManager.NetworkCallback {
     public static final String NONE = "<unknown ssid>";
@@ -148,7 +149,11 @@ public class WifiStatusTracker extends ConnectivityManager.NetworkCallback {
     private void updateRssi(int newRssi) {
         rssi = newRssi;
         try {
-            level = WifiManager.calculateSignalLevel(rssi, RSSI_LEVELS);
+            if (OsUtils.isROrAbove()) {
+                level = mWifiManager.calculateSignalLevel(rssi);
+            } else {
+                level = WifiManager.calculateSignalLevel(rssi, RSSI_LEVELS);
+            }
         } catch (Throwable e) {
             LOGGER.e(e, "calculateSignalLevel error");
         }

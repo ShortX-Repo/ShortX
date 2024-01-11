@@ -28,6 +28,7 @@ import tornaco.apps.shortx.core.proto.fact.CallStateChanged
 import tornaco.apps.shortx.core.proto.fact.ChargerPlug
 import tornaco.apps.shortx.core.proto.fact.ChargerUnplug
 import tornaco.apps.shortx.core.proto.fact.ClipboardContentChanged
+import tornaco.apps.shortx.core.proto.fact.ConnectedWifiSignalLevelChanged
 import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DeepLinkCall
@@ -604,6 +605,16 @@ fun Fact.toProtoFact(
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .setDeepLinkTag(deepLinkTag)
+                .build()
+        }
+
+        is Fact.ConnectedWifiSignalLevelChanged -> {
+            ConnectedWifiSignalLevelChanged.newBuilder().setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
+                .setTag(overrideTag ?: tag)
+                .setCustomContextDataKey(customContextDataKey)
+                .setLevel(level)
+                .setRssi(rssi)
                 .build()
         }
 

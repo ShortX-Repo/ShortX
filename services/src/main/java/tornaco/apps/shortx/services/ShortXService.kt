@@ -366,6 +366,10 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }
         }
 
+        override fun getMaxSignalLevel(): Int {
+            return shortXContext.network.getMaxSignalLevel()
+        }
+
         override fun attachSUImpl(from: String?, su: ISu?) {
             shortXContext.shell.attachSUImpl(from, su)
 

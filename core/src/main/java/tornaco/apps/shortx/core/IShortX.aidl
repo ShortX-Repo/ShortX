@@ -301,5 +301,7 @@ interface IShortX {
 
     void deepLinkTriggerCalled(String tag);
 
-   List<ByteArrayWrapper> getAllRingtones();
+    List<ByteArrayWrapper> getAllRingtones();
+
+    int getMaxSignalLevel();
 }

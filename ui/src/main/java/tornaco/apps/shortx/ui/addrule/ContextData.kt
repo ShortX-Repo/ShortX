@@ -114,6 +114,10 @@ fun KClass<out Fact>.factContextData(customContextDataKey: CustomContextDataKey 
             dats<ContextDataMapping.AudioFocusChanged>(customContextDataKey)
         }
 
+        Fact.ConnectedWifiSignalLevelChanged::class -> {
+            dats<ContextDataMapping.ConnectedWifiSignalLevelChanged>(customContextDataKey)
+        }
+
         Fact.WifiConnectedTo::class -> {
             dats<ContextDataMapping.WifiConnectedTo>(customContextDataKey)
         }

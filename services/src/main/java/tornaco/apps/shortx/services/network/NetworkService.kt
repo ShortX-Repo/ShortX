@@ -10,10 +10,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.common.WifiConfig
+import tornaco.apps.shortx.core.proto.fact.ConnectedWifiSignalLevelChanged
 import tornaco.apps.shortx.core.proto.fact.VPNConnected
 import tornaco.apps.shortx.core.proto.fact.VPNDisconnected
 import tornaco.apps.shortx.core.proto.fact.WifiConnectedTo
 import tornaco.apps.shortx.core.proto.fact.WifiDisconnectedFrom
+import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.core.util.wifiManager
 import tornaco.apps.shortx.services.ShortXContext
@@ -34,7 +36,7 @@ class NetworkService(shortXContext: ShortXContext) :
     val connectedWifiSSID get() = _connectedWifiSSID.get()
 
     private val _wifiSignalState: AtomicReference<WifiSignalState> = AtomicReference(
-        WifiSignalState(0, 0)
+        WifiSignalState(0)
     )
     val wifiSignalState get() = _wifiSignalState.get()
 
@@ -104,12 +106,33 @@ class NetworkService(shortXContext: ShortXContext) :
 
     private fun checkWifiSignalChange() {
         val signalState =
-            WifiSignalState(level = wifiStatusTracker.level, rssi = wifiStatusTracker.rssi)
+            WifiSignalState(
+                level = wifiStatusTracker.level
+            )
         logger.d("WifiStatusTracker callback.run checkWifiSignalChange, ss: $signalState")
         val lastSignalState = wifiSignalState
         if (lastSignalState != signalState) {
             logger.d("Wifi signal changed.")
             _wifiSignalState.set(signalState)
+
+            val rssi = wifiStatusTracker.rssi
+            val ssid = wifiStatusTracker.ssid
+            val statusLabel = wifiStatusTracker.statusLabel
+
+            shortXContext.rule.publishFact(
+                "checkWifiSignalChange",
+                ConnectedWifiSignalLevelChanged.newBuilder()
+                    .setLevel(signalState.level)
+                    .setRssi(rssi)
+                    .build()
+            ) {
+                mapOf(
+                    ContextDataMapping.ConnectedWifiSignalLevelChanged.level.name to signalState.level,
+                    ContextDataMapping.ConnectedWifiSignalLevelChanged.rssi.name to rssi,
+                    ContextDataMapping.ConnectedWifiSignalLevelChanged.ssid.name to ssid,
+                    ContextDataMapping.ConnectedWifiSignalLevelChanged.statusLabel.name to statusLabel,
+                )
+            }
         }
     }
 
@@ -159,6 +182,12 @@ class NetworkService(shortXContext: ShortXContext) :
         }
 
         _connectedWifiSSID.set(ws.ssid)
+    }
+
+    fun getMaxSignalLevel() = if (OsUtils.isROrAbove()) {
+        context.wifiManager.maxSignalLevel
+    } else {
+        WifiStatusTracker.RSSI_LEVELS
     }
 
     override fun shutdown() {

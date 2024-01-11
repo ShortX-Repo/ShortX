@@ -52,6 +52,7 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
         Fact.WifiStatusChanged::class -> i18n["ui.fact.wifi.state.changed"] to null
         Fact.WifiConnectedTo::class -> i18n["ui.fact.wifi.connect.to"] to null
         Fact.WifiDisconnectedFrom::class -> i18n["ui.fact.wifi.disconnected.from"] to null
+        Fact.ConnectedWifiSignalLevelChanged::class -> i18n["ui.fact.wifi.signal.changed"] to null
 
         Fact.BTStatusChanged::class -> {
             i18n["ui.fact.bt.state.changed"] to null
@@ -702,6 +703,13 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
             listOf(
                 i18N["ui.fact.deeplink.call"],
                 fact.deepLinkTag
+            )
+        }
+
+        is Fact.ConnectedWifiSignalLevelChanged -> {
+            listOf(
+                i18N["ui.fact.wifi.signal.changed"],
+                fact.level.toString()
             )
         }
     }

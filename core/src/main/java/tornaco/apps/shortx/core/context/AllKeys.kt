@@ -24,6 +24,7 @@ val allKeys: List<String> = listOf(
     enumValues<ContextDataMapping.GetTextFromScreenNode>().map { it.name },
     enumValues<ContextDataMapping.ShellCommand>().map { it.name },
     enumValues<ContextDataMapping.WifiConnectedTo>().map { it.name },
+    enumValues<ContextDataMapping.ConnectedWifiSignalLevelChanged>().map { it.name },
     enumValues<ContextDataMapping.WifiDisconnectedFrom>().map { it.name },
     enumValues<ContextDataMapping.BatteryTemperatureChanged>().map { it.name },
     enumValues<ContextDataMapping.BatteryLevelChanged>().map { it.name },

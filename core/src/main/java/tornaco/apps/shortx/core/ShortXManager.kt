@@ -828,6 +828,10 @@ class ShortXManager(val service: IShortX) {
         wifiScanResults
     }
 
+    fun getMaxSignalLevel(): Int = invokeService(5) {
+        maxSignalLevel
+    }
+
     fun getPrivilegedConfiguredNetworks(): List<String> = invokeService(emptyList()) {
         privilegedConfiguredNetworks.mapNotNull { WifiConfig.parseFrom(it.byteData).ssid }
     }

@@ -151,6 +151,14 @@ object ContextDataMapping {
     }
 
     @DoNotStrip
+    enum class ConnectedWifiSignalLevelChanged(val description: String) {
+        ssid("SSID of the connection"),
+        rssi("Wifi rssi"),
+        level("Wifi signal level"),
+        statusLabel("Wifi status label"),
+    }
+
+    @DoNotStrip
     enum class WifiDisconnectedFrom(val description: String) {
         ssid("SSID from which wifi disconnected"),
         isWifiEnabled("True of wifi is in Enable state"),

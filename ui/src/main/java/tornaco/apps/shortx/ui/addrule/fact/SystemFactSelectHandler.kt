@@ -288,7 +288,7 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     val callStateSelectState =
         rememberMenuDialogState<String>(title = LocalI18N.current["ui.fact.call.state.changed"],
             menuItems =
-            CallState.values().filterNot { it == CallState.UNRECOGNIZED }.map {
+            CallState.entries.filterNot { it == CallState.UNRECOGNIZED }.map {
                 MenuDialogItem(
                     it.name,
                     LocalI18N.current["ui.fact.call.state.${it.name.lowercase()}"],
@@ -313,7 +313,7 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
     val screenRotateSelectorState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.fact.screen.rotate"],
-        menuItems = ScreenRotateDegree.values().filterNot { it == ScreenRotateDegree.UNRECOGNIZED }
+        menuItems = ScreenRotateDegree.entries.filterNot { it == ScreenRotateDegree.UNRECOGNIZED }
             .map {
                 MenuDialogItem(it.name, title = LocalI18N.current[it.factLabelKey()])
             },
@@ -326,7 +326,7 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
     val windowRotateSelectorState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.fact.window.rotate"],
-        menuItems = ScreenRotateDegree.values().filterNot { it == ScreenRotateDegree.UNRECOGNIZED }
+        menuItems = ScreenRotateDegree.entries.filterNot { it == ScreenRotateDegree.UNRECOGNIZED }
             .map {
                 MenuDialogItem(it.name, title = LocalI18N.current[it.factLabelKey()])
             },
@@ -356,6 +356,16 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
         }
     )
     MenuDialog(state = imeVisibilitySelectorState)
+
+    val connectedWifiSignalState = rememberTextInputState(
+        title = LocalI18N.current["ui.fact.wifi.signal.changed"],
+        message = LocalI18N.current["ui.fact.wifi.signal.changed.message", mapOf(
+            "max" to shortXManager.getMaxSignalLevel().toString()
+        )]
+    ) {
+        addFact(Fact.ConnectedWifiSignalLevelChanged(level = it.toIntOrNull() ?: 0, rssi = 0))
+    }
+    TextInputDialog(state = connectedWifiSignalState)
 
     return { source ->
         when (source.clazz) {
@@ -438,6 +448,11 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
                 wifiDisconnectedFromSelectorState.show(source.getFactAs<Fact.WifiDisconnectedFrom>()?.ssidList?.let {
                     if (it.isEmpty()) null else it[0]
                 })
+                true
+            }
+
+            Fact.ConnectedWifiSignalLevelChanged::class -> {
+                connectedWifiSignalState.show(source.getFactAs<Fact.ConnectedWifiSignalLevelChanged>()?.level?.toString())
                 true
             }
 

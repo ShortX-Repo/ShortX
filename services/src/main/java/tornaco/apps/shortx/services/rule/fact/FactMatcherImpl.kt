@@ -33,6 +33,7 @@ import tornaco.apps.shortx.core.proto.fact.CallStateChanged
 import tornaco.apps.shortx.core.proto.fact.ChargerPlug
 import tornaco.apps.shortx.core.proto.fact.ChargerUnplug
 import tornaco.apps.shortx.core.proto.fact.ClipboardContentChanged
+import tornaco.apps.shortx.core.proto.fact.ConnectedWifiSignalLevelChanged
 import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DeepLinkCall
@@ -525,6 +526,12 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
             val actualN = (actual as DeepLinkCall)
             val ruleN = (rule as DeepLinkCall)
             actualN.deepLinkTag == ruleN.deepLinkTag
+        }
+
+        register(ConnectedWifiSignalLevelChanged::class.java) { actual, rule ->
+            val actualN = (actual as ConnectedWifiSignalLevelChanged)
+            val ruleN = (rule as ConnectedWifiSignalLevelChanged)
+            ruleN.level < 0 || actualN.level == ruleN.level
         }
 
         logger.i("Init complete.")

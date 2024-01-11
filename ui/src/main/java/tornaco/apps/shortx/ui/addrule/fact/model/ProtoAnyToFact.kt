@@ -836,6 +836,20 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.fact.ConnectedWifiSignalLevelChanged::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.ConnectedWifiSignalLevelChanged::class.java
+
+            Fact.ConnectedWifiSignalLevelChanged(
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                tag = data.tag,
+                level = data.level,
+                rssi = data.rssi
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.fact.DeepLinkCall::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.DeepLinkCall::class.java

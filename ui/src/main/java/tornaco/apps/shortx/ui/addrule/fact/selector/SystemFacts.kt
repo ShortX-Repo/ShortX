@@ -37,6 +37,7 @@ fun SystemFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: 
         Fact.FixedInPeriod::class,
 
         Fact.WifiStatusChanged::class,
+        Fact.ConnectedWifiSignalLevelChanged::class,
         Fact.WifiConnectedTo::class,
         Fact.WifiDisconnectedFrom::class,
 
