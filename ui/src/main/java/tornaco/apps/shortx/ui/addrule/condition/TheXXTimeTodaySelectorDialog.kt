@@ -248,7 +248,7 @@ private fun TheXXTimeTodaySelector(dialogState: TheXXTimeTodaySelectorState) {
                     TinySpacer()
                     ShortXTextField(
                         value = dialogState.currentValue.time.let {
-                            if (it <= 0) "" else it.toString()
+                            if (it < 0) "" else it.toString()
                         }, onValueChange = {
                             dialogState.inputValue(it)
                         }, showSymbolButton = false,
