@@ -1451,3 +1451,14 @@ message InvokeFunc {
   string note = 99;
   string id = 100;
 }
+
+message Toggle5G {
+  OnOffToggle onOff = 1;
+  int32 slotId = 2;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
