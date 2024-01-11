@@ -5,7 +5,9 @@ import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.common.timeOfADayRangeToString
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.QSTileState
+import tornaco.apps.shortx.core.proto.condition.TheXXTimeTodayScope
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
+import tornaco.apps.shortx.core.rule.toDisplayName
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
@@ -242,6 +244,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             )
         }
 
+        Condition.TheXXTimeToday::class -> {
+            listOf(
+                i18N["ui.conditions.the.xx.time.within"],
+            )
+        }
+
         else -> {
             emptyList()
         }
@@ -367,7 +375,7 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
         is Condition.BatteryPercent -> {
             listOf(
                 i18N["ui.conditions.battery.percent"],
-                "${condition.op} ${condition.value}%"
+                "${condition.op.toDisplayName()} ${condition.value}%"
             )
         }
 
@@ -398,7 +406,7 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
         is Condition.ConnectedWifiSignal -> {
             listOf(
                 i18N["ui.conditions.wifi.signal"],
-                "${condition.op} ${condition.level}"
+                "${condition.op.toDisplayName()} ${condition.level}"
             )
         }
 
@@ -546,6 +554,13 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
                 )
             )
         }
+
+        is Condition.TheXXTimeToday -> {
+            listOf(
+                i18N["ui.conditions.the.xx.time.within"],
+                "${i18N[condition.scope.labelKey()]} ${condition.what} ${condition.op.toDisplayName()} ${condition.time}"
+            )
+        }
     }
 }
 
@@ -644,4 +659,15 @@ fun opDescriptionForComponent(op: Op, i18N: I18N): String {
 
 fun QSTileState.labelKey(): String {
     return "ui.conditions.tile.state.${this.name.lowercase()}"
+}
+
+fun TheXXTimeTodayScope.labelKey(): String {
+    return when (this) {
+        TheXXTimeTodayScope.Today -> "ui.conditions.the.xx.time.within.today"
+        TheXXTimeTodayScope.TodayAM -> "ui.conditions.the.xx.time.within.today.am"
+        TheXXTimeTodayScope.TodayPM -> "ui.conditions.the.xx.time.within.today.pm"
+        TheXXTimeTodayScope.ThisWeek -> "ui.conditions.the.xx.time.within.this.week"
+        TheXXTimeTodayScope.ThisMonth -> "ui.conditions.the.xx.time.within.this.month"
+        TheXXTimeTodayScope.UNRECOGNIZED -> "UNKNOWN"
+    }
 }

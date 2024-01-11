@@ -468,3 +468,25 @@ message RequireIMEVisibility {
   string note = 99;
   string id = 100;
 }
+
+
+// The first/second/3/... time
+message TheXXTimeToday {
+  string what = 1;
+  int32 time = 2;
+  IntOp op = 3;
+  TheXXTimeTodayScope scope = 4;
+
+  CustomContextDataKey customContextDataKey = 97;
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}
+
+enum TheXXTimeTodayScope {
+  Today = 0;
+  TodayAM = 1;
+  TodayPM = 2;
+  ThisWeek = 3;
+  ThisMonth = 4;
+}

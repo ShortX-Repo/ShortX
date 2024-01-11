@@ -40,6 +40,7 @@ import tornaco.apps.shortx.core.proto.condition.RequireWindowRotation
 import tornaco.apps.shortx.core.proto.condition.ScreenIsOn
 import tornaco.apps.shortx.core.proto.condition.ScreenOrientationIsPort
 import tornaco.apps.shortx.core.proto.condition.ServiceIsRunning
+import tornaco.apps.shortx.core.proto.condition.TheXXTimeToday
 import tornaco.apps.shortx.core.proto.condition.TimeInRange
 import tornaco.apps.shortx.core.proto.condition.True
 import tornaco.apps.shortx.core.proto.condition.VPNIsConnected
@@ -563,6 +564,19 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setIsInvert(isInvert)
                 .setCustomContextDataKey(customContextDataKey)
                 .setIsShown(isShown)
+                .build()
+        }
+
+        is Condition.TheXXTimeToday -> {
+            TheXXTimeToday.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
+                .setWhat(what)
+                .setScope(scope)
+                .setTime(time)
+                .setOp(op)
                 .build()
         }
     }

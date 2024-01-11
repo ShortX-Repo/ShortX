@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.proto.common.TimeOfADayRange
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOp
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOpPayload
 import tornaco.apps.shortx.core.proto.condition.PlugType
+import tornaco.apps.shortx.core.proto.condition.TheXXTimeTodayScope
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.ui.addrule.ContextData
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
@@ -1026,6 +1027,33 @@ sealed interface Condition : Parcelable {
         override val id: String = defaultNewConditionId(),
 
         val tag: String
+    ) : Condition {
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: CustomContextDataKey
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
+        }
+    }
+
+    @Parcelize
+    data class TheXXTimeToday(
+        override val isInvert: Boolean = false,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val note: String = "",
+        override val id: String = defaultNewConditionId(),
+
+        val what: String,
+        val scope: TheXXTimeTodayScope,
+        val time: Int,
+        val op: IntOp,
     ) : Condition {
         override fun clone(
             id: String,

@@ -6,6 +6,7 @@ import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.actor.ActionEvaluator
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
+import tornaco.apps.shortx.services.rule.updateTheXXTimeToday
 
 
 object IfThenElse : Actor {
@@ -28,6 +29,8 @@ object IfThenElse : Actor {
             )
         logger.d("IfThenElse, matchCond: $matchCond")
         if (matchCond) {
+            updateTheXXTimeToday(shortXContext, d.ifList)
+
             run loop@{
                 if (d.ifActionsList.isNullOrEmpty().not()) {
                     d.ifActionsList.forEach {

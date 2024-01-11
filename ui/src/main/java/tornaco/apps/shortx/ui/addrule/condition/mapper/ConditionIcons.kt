@@ -172,6 +172,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.Device.signal_wifi_2_line
         }
 
+        Condition.TheXXTimeToday::class -> {
+            Remix.Editor.number_8
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

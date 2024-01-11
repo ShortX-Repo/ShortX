@@ -28,7 +28,8 @@ fun OtherConditions(
         Condition.EvaluateGlobalVar::class,
         Condition.EvaluateLocalVar::class,
         Condition.IsRuleEnabled::class,
-        Condition.RequireFactTag::class
+        Condition.RequireFactTag::class,
+        Condition.TheXXTimeToday::class
     ).map {
         SelectorItem(
             type = it,

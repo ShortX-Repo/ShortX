@@ -215,8 +215,12 @@ enum class PrebuiltCond : CondProvider {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.RequireIMEVisibility
     },
+    TheXXTimeToday {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.TheXXTimeToday
+    },
 }
 
 fun prebuiltCondFor(condition: ProtoAny): Cond? {
-    return PrebuiltCond.values().firstOrNull { condition is_ it.cond.condClass() }?.cond
+    return PrebuiltCond.entries.firstOrNull { condition is_ it.cond.condClass() }?.cond
 }

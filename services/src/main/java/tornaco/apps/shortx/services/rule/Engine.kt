@@ -15,6 +15,7 @@ import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
+import tornaco.apps.shortx.core.proto.condition.TheXXTimeToday
 import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.rule.AsyncMode
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
@@ -23,7 +24,9 @@ import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleInstanceIdGenerator_Static
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
+import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.pack_
+import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext
@@ -301,6 +304,9 @@ class DefaultRuleEngine(
                             logger.d("conditionRes for  ${fact.javaClass} ${rule.title} is: $conditionRes")
 
                             if (conditionRes) {
+                                // Update TheXXTimeToday state.
+                                updateTheXXTimeToday(shortXContext, rule.conditionsList)
+
                                 val localVars = LocalVars.obtain()
                                 runActionsJob(
                                     ruleTitleForLog = rule.title,
@@ -414,11 +420,13 @@ class DefaultRuleEngine(
                                         it.srcId == rule.id && it.instanceId == ruleInstanceId
                                     }
 
+                                    updateTheXXTimeToday(shortXContext, quit.conditionsList)
+
                                     runActionsJob(
                                         ruleTitleForLog = "$LOG_TAG_RULE_QUIT-${rule.title}",
                                         asyncMode = rule.asyncMode,
                                         muteX = rule.muteX,
-                                        actionsToRun = rule.quit.actionsList,
+                                        actionsToRun = quit.actionsList,
                                         evaluateContext = evaluateContext,
                                         contextData = contextData,
                                         localVars = localVars
@@ -623,6 +631,17 @@ class DefaultRuleEngine(
 
 private fun List<Rule>.filterInvalid() =
     filter { it.actionsList.isNotEmpty() || it.quit.actionsList.isNotEmpty() }
+
+fun updateTheXXTimeToday(shortXContext: ShortXContext, conditions: List<ProtoAny>) {
+    val allTheXXTimeTodayConditions =
+        conditions.filter { it is_ TheXXTimeToday::class.java }
+    allTheXXTimeTodayConditions.forEach {
+        val dxtc = it unpack_ TheXXTimeToday::class.java
+        if (!dxtc.isInvert) {
+            shortXContext.user.didSomethingToday(dxtc.what, dxtc.scope)
+        }
+    }
+}
 
 data class JobRecord(
     val title: String,

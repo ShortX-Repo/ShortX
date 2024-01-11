@@ -43,4 +43,5 @@ val allConditionClasses = listOf(
     Condition.RequireAPMMode::class,
     Condition.RequireIMEVisibility::class,
     Condition.ConnectedWifiSignal::class,
+    Condition.TheXXTimeToday::class,
 )

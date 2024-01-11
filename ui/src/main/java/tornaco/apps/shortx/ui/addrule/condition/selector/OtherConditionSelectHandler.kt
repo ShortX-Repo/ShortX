@@ -12,10 +12,12 @@ import tornaco.apps.shortx.ui.addrule.action.selector.rememberSetRuleEnabledDial
 import tornaco.apps.shortx.ui.addrule.condition.ConditionSelectSource
 import tornaco.apps.shortx.ui.addrule.condition.EvaluateGlobalVarSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.EvaluateLocalVarSelectorDialog
+import tornaco.apps.shortx.ui.addrule.condition.TheXXTimeTodaySelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.getConditionAs
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateGlobalVarSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateLocalVarSelectorState
+import tornaco.apps.shortx.ui.addrule.condition.rememberTheXXTimeTodaySelectorState
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorCurrentDataOrNull
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -88,6 +90,11 @@ fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSe
         })
     TextInputDialog(state = factTagSelectorState)
 
+    val doXXAtTimeState = rememberTheXXTimeTodaySelectorState {
+        addCondition(it)
+    }
+    TheXXTimeTodaySelectorDialog(state = doXXAtTimeState)
+
     val context = LocalContext.current
 
     return { source ->
@@ -139,6 +146,11 @@ fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSe
 
             Condition.RequireFactTag::class -> {
                 factTagSelectorState.show(source.getConditionAs<Condition.RequireFactTag>()?.tag)
+                true
+            }
+
+            Condition.TheXXTimeToday::class -> {
+                doXXAtTimeState.show(source.getConditionAs())
                 true
             }
 

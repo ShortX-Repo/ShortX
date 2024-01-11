@@ -11,13 +11,17 @@ import android.os.UserHandle
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import tornaco.apps.shortx.core.compat.ContextCompat
-import tornaco.apps.shortx.core.proto.fact.ScreenOff
-import tornaco.apps.shortx.core.proto.fact.ScreenOn
+import tornaco.apps.shortx.core.proto.common.IntOp
+import tornaco.apps.shortx.core.proto.condition.TheXXTimeTodayScope
 import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.userManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
+import tornaco.apps.shortx.services.data.Settings
+import tornaco.apps.shortx.services.data.read
+import tornaco.apps.shortx.services.data.write
+import tornaco.apps.shortx.services.rule.cond.impl.matchIntOp
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import java.util.concurrent.atomic.AtomicBoolean
@@ -131,5 +135,27 @@ class UserService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
             _systemReadyTriggered.set(true)
         }
+    }
+
+    fun isSomethingTheXXTimeToady(
+        what: String,
+        scope: TheXXTimeTodayScope,
+        time: Int,
+        op: IntOp,
+    ): Boolean {
+        val dateLabel = formatTheXXTimeTodayScope(scope)
+        val currentTime = store.read(Settings.IntSettings.DidSomethingAtDay(dateLabel, what))
+        logger.d("isSomethingTheXXTimeToady, what: $what, time:$time, dateLabel: $dateLabel, currentTime: $currentTime")
+        return matchIntOp(op = op, currentValue = currentTime, expectedValue = time)
+    }
+
+    fun didSomethingToday(what: String, scope: TheXXTimeTodayScope) {
+        val dateLabel = formatTheXXTimeTodayScope(scope)
+        val currentTime = store.read(Settings.IntSettings.DidSomethingAtDay(dateLabel, what))
+        store.write(
+            Settings.IntSettings.DidSomethingAtDay(dateLabel, what),
+            (currentTime + 1).also {
+                logger.d("didSomethingToday, $what $dateLabel update to: $it")
+            })
     }
 }

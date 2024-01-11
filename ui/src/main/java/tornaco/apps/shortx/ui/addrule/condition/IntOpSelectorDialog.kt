@@ -38,12 +38,12 @@ import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
+import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
-import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
@@ -52,7 +52,7 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 data class IntOpSelectorRes(val value: Int, val op: IntOp)
 
 
-class BatteryPercentSelectorDialogState(
+class IntOpSelectorState(
     val title: String,
     val valueTitle: String,
     val evaluate: (IntOpSelectorRes) -> String,
@@ -109,23 +109,23 @@ fun rememberIntOpSelectorState(
     valueTitle: String,
     evaluate: (IntOpSelectorRes) -> String,
     onSelected: (IntOpSelectorRes) -> Unit
-): BatteryPercentSelectorDialogState {
+): IntOpSelectorState {
     return remember {
-        BatteryPercentSelectorDialogState(title, valueTitle, evaluate, onSelected)
+        IntOpSelectorState(title, valueTitle, evaluate, onSelected)
     }
 }
 
 @Composable
-fun IntOpSelectorDialog(state: BatteryPercentSelectorDialogState) {
+fun IntOpSelectorDialog(state: IntOpSelectorState) {
     if (state.isShowing) {
         ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
-            BatteryPercentSelector(state)
+            IntOpSelector(state)
         }
     }
 }
 
 @Composable
-private fun BatteryPercentSelector(dialogState: BatteryPercentSelectorDialogState) {
+private fun IntOpSelector(dialogState: IntOpSelectorState) {
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -167,7 +167,7 @@ private fun BatteryPercentSelector(dialogState: BatteryPercentSelectorDialogStat
                         .padding(paddingValues)
                         .padding(16.dp)
                 ) {
-                    SmallTitle(
+                    FieldTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
                         text = LocalI18N.current["ui.conditions.battery.percent.op"]
                     )
@@ -199,7 +199,7 @@ private fun BatteryPercentSelector(dialogState: BatteryPercentSelectorDialogStat
                         }
                     }
 
-                    SmallTitle(
+                    FieldTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
                         text = dialogState.valueTitle
                     )
