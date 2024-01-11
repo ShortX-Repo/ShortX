@@ -6,7 +6,9 @@ import android.os.ParcelFileDescriptor
 import android.os.RemoteCallbackList
 import android.util.Log
 import android.widget.Toast
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.IActionEvaluateListener
 import tornaco.apps.shortx.core.ICallback
@@ -157,6 +159,9 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     private val actionEvaluateRecorder = ActionEvaluateRecorder()
     private val conditionEvaluateRecorder = ConditionEvaluateRecorder()
     private val factPublishRecorder = FactPublishRecorder()
+
+    // For internal usage, such as Actor listen to a fact to act.
+    private val internalFactListeners: MutableList<InternalFactListener> = mutableListOf()
 
     private val engine by lazy {
         RuleEngineFactory.newRuleEngine(
@@ -311,17 +316,10 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
             // Check Normal Rules.
             val fact = KeyEvent.newBuilder().setKeyCode(it.keyCode).build()
-            val enabledRules = getAllEnabledRules()
-            if (shouldFire(enabledRules, fact, false)) {
+            if (shouldFire(getAllEnabledRules(), fact, false)) {
                 if (it.action == android.view.KeyEvent.ACTION_UP) {
                     logger.d("hasAnyRuleMatchFact for keyCode: ${it.keyCode}")
-                    handler.postSafety {
-                        engine.fire(
-                            fact = fact,
-                            rules = enabledRules,
-                            initialContextDataLazy = { emptyMap() }
-                        )
-                    }
+                    publishFact("KeyEvent", fact) { emptyMap() }
                 }
                 // False means consume.
                 return@onKeyEvent false
@@ -332,16 +330,9 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         shortXContext.gesture.onGestureEvent {
             logger.d("onGestureEvent: $it")
             val fact = EdgeGesture.newBuilder().setEdge(it.first).setGesture(it.second).build()
-            val enabledRules = getAllEnabledRules()
-            if (shouldFire(enabledRules, fact, false)) {
+            if (shouldFire(getAllEnabledRules(), fact, false)) {
                 logger.d("hasAnyRuleMatchFact for onGestureEvent: $it")
-                handler.postSafety {
-                    engine.fire(
-                        fact = fact,
-                        rules = enabledRules,
-                        initialContextDataLazy = { emptyMap() }
-                    )
-                }
+                publishFact("Gesture", fact) { emptyMap() }
                 return@onGestureEvent true
             }
             false
@@ -393,6 +384,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             if (anyMatch) {
                 factPublishRecorder.add(fact.toFactPublishRecord(publishTimeMillis))
             }
+
+            notifyInternalFactListeners(fact, initialContextDataLazy)
         }
     }
 
@@ -1215,5 +1208,32 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             "onScreenOff",
             ScreenOff.newBuilder().build()
         ) { emptyMap() }
+    }
+
+    internal fun registerInternalFactListener(listener: InternalFactListener) {
+        internalFactListeners.add(listener)
+    }
+
+    internal fun unregisterInternalFactListener(listener: InternalFactListener) {
+        internalFactListeners.remove(listener).also {
+            if (it) logger.d("did unregisterInternalFactListener: ${listener.usage}")
+        }
+    }
+
+    internal fun unregisterInternalFactListener(usage: String) {
+        internalFactListeners.removeIf { it.usage == usage }.also {
+            if (it) logger.d("did unregisterInternalFactListener: $usage")
+        }
+    }
+
+    private fun notifyInternalFactListeners(
+        fact: ProtoMessage,
+        initialContextDataLazy: () -> Map<String, Any>
+    ) {
+        systemServiceScope.launchSafety {
+            withContext(Dispatchers.IO) {
+                internalFactListeners.forEach { it.onFact(fact, initialContextDataLazy) }
+            }
+        }
     }
 }

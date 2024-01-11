@@ -11,6 +11,7 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.cond.ConditionEvaluator
+import tornaco.apps.shortx.services.rule.fact.FactMatcher
 
 data class HandleParams(
     val androidContext: Context,
@@ -30,7 +31,8 @@ data class HandleParams(
         parameterInputs: List<FuncParameterInput>,
     ) -> ActionEvaluator.EvaluateResult,
 
-    val conditionEvaluator: ConditionEvaluator
+    val conditionEvaluator: ConditionEvaluator,
+    val factMatcher: FactMatcher,
 )
 
 interface Actor {

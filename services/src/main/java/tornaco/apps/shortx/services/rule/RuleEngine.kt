@@ -25,6 +25,7 @@ object RuleEngineFactory {
         shortXContext: ShortXContext,
         handler: Handler,
         conditionEvaluator: ConditionEvaluator,
+        factMatcher: FactMatcher,
         actionEvaluateStartListener: (actionId: String) -> Unit,
         actionEvaluateResultListener: (ActionEvaluator.EvaluateResult) -> Unit,
     ) = ActionEvaluatorImpl(
@@ -33,7 +34,8 @@ object RuleEngineFactory {
         handler,
         actionEvaluateStartListener,
         actionEvaluateResultListener,
-        conditionEvaluator
+        conditionEvaluator,
+        factMatcher
     )
 
     private fun newFactMatcher(shortXContext: ShortXContext) = FactMatcherImpl { shortXContext }
@@ -57,7 +59,8 @@ object RuleEngineFactory {
             handler = handler,
             conditionEvaluator = conditionEvaluator,
             actionEvaluateStartListener = actionEvaluateStartListener,
-            actionEvaluateResultListener = actionEvaluateResultListener
+            actionEvaluateResultListener = actionEvaluateResultListener,
+            factMatcher = factMatcher
         ),
         onJobStarted: (String) -> Unit,
         onJobCompleted: (String) -> Unit,

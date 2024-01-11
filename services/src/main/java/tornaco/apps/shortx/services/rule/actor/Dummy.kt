@@ -7,8 +7,10 @@ import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.ProtoAny
+import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.cond.ConditionEvaluator
+import tornaco.apps.shortx.services.rule.fact.FactMatcher
 
 fun dummyHandlerParamsForAction(
     androidContext: Context,
@@ -47,6 +49,13 @@ fun dummyHandlerParamsForAction(
                 TODO("Dummy")
             }
 
-
         },
+        factMatcher = object : FactMatcher {
+            override fun match(
+                actualFact: ProtoMessage,
+                ruleFacts: List<ProtoAny>
+            ): FactMatcher.MatcherResult {
+                TODO("Dummy")
+            }
+        }
     )

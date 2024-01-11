@@ -16,6 +16,7 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.cond.ConditionEvaluator
+import tornaco.apps.shortx.services.rule.fact.FactMatcher
 import kotlin.coroutines.cancellation.CancellationException
 
 data class ActionAttrs(
@@ -31,7 +32,8 @@ class ActionEvaluatorImpl(
     private val handler: Handler,
     private val evaluateStartListener: (actionId: String) -> Unit,
     private val evaluateResultListener: (ActionEvaluator.EvaluateResult) -> Unit,
-    private val conditionEvaluator: ConditionEvaluator
+    private val conditionEvaluator: ConditionEvaluator,
+    private val factMatcher: FactMatcher,
 ) : ActionEvaluator {
     private val logger = Logger("ActionEvaluatorImpl")
     private val recursiveExecute: suspend (
@@ -82,11 +84,15 @@ class ActionEvaluatorImpl(
                     localVars = localVars,
                     recursiveExecute = recursiveExecute,
                     conditionEvaluator = conditionEvaluator,
+                    factMatcher = factMatcher,
                     parameterInputs = parameterInputs
                 )
             )
             ActionEvaluator.EvaluateResult.Success(actionId, action, evaluateContext)
         }.getOrElse { throwable ->
+            // Clean up registered listeners for Actor usage...
+            attrs?.let { shortXContext.rule.unregisterInternalFactListener(it.id) }
+
             if (throwable is BreakActionException) {
                 ActionEvaluator.EvaluateResult.Break(
                     actionId,
