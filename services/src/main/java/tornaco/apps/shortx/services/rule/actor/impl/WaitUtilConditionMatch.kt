@@ -44,6 +44,19 @@ object WaitUtilConditionMatch : Actor {
                 "Condition not match within time: $timeout(ms)"
             }
             delay(CHECK_DELAY)
+
+            val isQuit =
+                d.quitEnabled && d.quitConditionList.isNotEmpty() && conditionEvaluator.evaluate(
+                    evaluateContext,
+                    d.quitConditionOp,
+                    d.quitCondOpPayload,
+                    d.quitConditionList,
+                    contextData,
+                    localVars
+                )
+            require(!isQuit) {
+                "Quit(退出条件)"
+            }
         }
         logger.d("after match condition")
     }

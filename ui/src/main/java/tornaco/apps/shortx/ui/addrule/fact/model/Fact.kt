@@ -26,7 +26,7 @@ import java.util.UUID
 
 fun defaultNewFactId() = "F-" + UUID.randomUUID().toString()
 
-sealed interface Fact {
+sealed interface Fact : Parcelable {
     val id: String
     val note: String
     val tag: String
@@ -39,6 +39,7 @@ sealed interface Fact {
         customContextDataKey: CustomContextDataKey
     ): Fact
 
+    @Parcelize
     data class AnyFact(
         override val note: String = "",
         override val tag: String = "",
@@ -60,6 +61,7 @@ sealed interface Fact {
         }
     }
 
+    @Parcelize
     data class KeyEvent(
         val keyCode: Int,
         override val note: String = "",
@@ -82,6 +84,7 @@ sealed interface Fact {
         }
     }
 
+    @Parcelize
     data class AdvancedKeyEvent(
         val keyCode: Int,
         val gesture: KeyGesture,
@@ -106,6 +109,7 @@ sealed interface Fact {
         }
     }
 
+    @Parcelize
     data class AnyActivityStarted(
         override val note: String = "",
         override val tag: String = "",
@@ -127,6 +131,7 @@ sealed interface Fact {
         }
     }
 
+    @Parcelize
     data class ActivityStarted(
         val components: List<AppComponent>,
         override val note: String = "",
@@ -150,6 +155,7 @@ sealed interface Fact {
         }
     }
 
+    @Parcelize
     data class EdgeGesture(
         val edge: Edge,
         val gesture: Gesture,
@@ -175,6 +181,7 @@ sealed interface Fact {
         }
     }
 
+    @Parcelize
     data class ScreenOn(
         override val note: String = "",
         override val tag: String = "",
@@ -197,6 +204,7 @@ sealed interface Fact {
         }
     }
 
+    @Parcelize
     data class ScreenOff(
         override val note: String = "",
         override val tag: String = "",
@@ -219,6 +227,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class UserPresent(
         override val note: String = "",
         override val tag: String = "",
@@ -241,6 +251,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class UserPresentAtTheFirstTime(
         override val note: String = "",
         override val tag: String = "",
@@ -263,6 +275,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class SystemReady(
         override val note: String = "",
         override val tag: String = "",
@@ -285,6 +299,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class Alarm(
         override val note: String = "",
         override val tag: String = "",
@@ -308,6 +324,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class RandomInPeriod(
         override val note: String = "",
         override val tag: String = "",
@@ -332,6 +350,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class FixedInPeriod(
         override val note: String = "",
         override val tag: String = "",
@@ -357,6 +377,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class AppBecomeBackground(
         override val note: String = "",
         override val tag: String = "",
@@ -380,6 +402,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class AppBecomeForeground(
         override val note: String = "",
         override val tag: String = "",
@@ -403,6 +427,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class AppAdded(
         override val note: String = "",
         override val tag: String = "",
@@ -424,6 +450,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class AppRemoved(
         override val note: String = "",
         override val tag: String = "",
@@ -447,6 +475,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class AppUpdated(
         override val note: String = "",
         override val tag: String = "",
@@ -470,6 +500,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class WifiStatusChanged(
         val state: OnOffAny,
         override val note: String = "",
@@ -493,6 +525,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class WifiConnectedTo(
         override val note: String = "",
         override val tag: String = "",
@@ -516,6 +550,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class ConnectedWifiSignalLevelChanged(
         override val note: String = "",
         override val tag: String = "",
@@ -541,6 +577,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class WifiDisconnectedFrom(
         override val note: String = "",
         override val tag: String = "",
@@ -564,6 +602,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class BTStatusChanged(
         val state: OnOffAny,
         override val note: String = "",
@@ -587,6 +627,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class BTConnectedTo(
         override val note: String = "",
         override val tag: String = "",
@@ -610,6 +652,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class BTDisconnectedFrom(
         override val note: String = "",
         override val tag: String = "",
@@ -633,6 +677,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class MobileDataStatusChanged(
         val state: OnOffAny,
         override val note: String = "",
@@ -656,6 +702,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class LocationStatusChanged(
         val state: OnOffAny,
         override val note: String = "",
@@ -679,6 +727,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class NFCStatusChanged(
         val state: OnOffAny,
         override val note: String = "",
@@ -702,6 +752,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class DNDStatusChanged(
         val state: OnOffAny,
         override val note: String = "",
@@ -726,6 +778,8 @@ sealed interface Fact {
     }
 
 
+    // Fact class
+    @Parcelize
     data class APMStatusChanged(
         val state: OnOffAny,
         override val note: String = "",
@@ -749,6 +803,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class HotSpotStatusChanged(
         val state: OnOffAny,
         override val note: String = "",
@@ -772,6 +828,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class FlashLightStatusChanged(
         val state: OnOffAny,
         override val note: String = "",
@@ -794,6 +852,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class DarkModeStatusChanged(
         val state: OnOffAny,
         override val note: String = "",
@@ -818,6 +878,8 @@ sealed interface Fact {
 
     // For match purpose.
     // TODO: Should move to common.
+
+    // Fact class
     @Parcelize
     data class Notification(
         val titleRegex: String,
@@ -844,6 +906,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class NotificationPosted(
         override val note: String = "",
         override val tag: String = "",
@@ -866,6 +930,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class NotificationRemoved(
         override val note: String = "",
         override val tag: String = "",
@@ -888,6 +954,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class NotificationUpdated(
         override val note: String = "",
         override val tag: String = "",
@@ -910,6 +978,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class AppProcessStarted(
         override val note: String = "",
         override val tag: String = "",
@@ -932,6 +1002,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class TaskRemoved(
         override val note: String = "",
         override val tag: String = "",
@@ -955,6 +1027,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class TaskRemovedAny(
         override val note: String = "",
         override val tag: String = "",
@@ -977,6 +1051,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class PkgStopRunning(
         override val note: String = "",
         override val tag: String = "",
@@ -1000,6 +1076,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class PkgStopRunningAny(
         override val note: String = "",
         override val tag: String = "",
@@ -1021,6 +1099,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class AudioFocusGain(
         override val note: String = "",
         override val tag: String = "",
@@ -1044,6 +1124,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class AudioFocusLost(
         override val note: String = "",
         override val tag: String = "",
@@ -1067,6 +1149,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class AudioFocusChanged(
         override val note: String = "",
         override val tag: String = "",
@@ -1088,6 +1172,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class BatteryLevelChanged(
         override val note: String = "",
         override val tag: String = "",
@@ -1110,6 +1196,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class BatteryTemperatureChanged(
         override val note: String = "",
         override val tag: String = "",
@@ -1132,6 +1220,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class ChargerPlug(
         override val note: String = "",
         override val tag: String = "",
@@ -1153,6 +1243,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class ChargerUnplug(
         override val note: String = "",
         override val tag: String = "",
@@ -1174,6 +1266,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class Broadcast(
         override val note: String = "",
         override val tag: String = "",
@@ -1196,6 +1290,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class VPNConnected(
         override val note: String = "",
         override val tag: String = "",
@@ -1217,6 +1313,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class VPNDisconnected(
         override val note: String = "",
         override val tag: String = "",
@@ -1238,6 +1336,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class MediaStoreInsert(
         override val note: String = "",
         override val tag: String = "",
@@ -1262,6 +1362,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class OnStartOp(
         override val note: String = "",
         override val tag: String = "",
@@ -1287,6 +1389,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class OnFinishOp(
         override val note: String = "",
         override val tag: String = "",
@@ -1312,6 +1416,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class OnQSTileClick(
         override val note: String = "",
         override val tag: String = "",
@@ -1334,6 +1440,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class SystemSettingsChanged(
         override val note: String = "",
         override val tag: String = "",
@@ -1357,6 +1465,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class CallStateChanged(
         override val note: String = "",
         override val tag: String = "",
@@ -1380,6 +1490,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class ClipboardContentChanged(
         override val note: String = "",
         override val tag: String = "",
@@ -1404,6 +1516,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class GlobalVarChanged(
         override val note: String = "",
         override val tag: String = "",
@@ -1427,6 +1541,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class HeadsetPlug(
         override val note: String = "",
         override val tag: String = "",
@@ -1450,6 +1566,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class HasFoundNodeOnScreen(
         override val note: String = "",
         override val tag: String = "",
@@ -1475,6 +1593,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class ScreenRotate(
         override val note: String = "",
         override val tag: String = "",
@@ -1498,6 +1618,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class WindowRotationChange(
         override val note: String = "",
         override val tag: String = "",
@@ -1521,6 +1643,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class IMEVisibilityChange(
         override val note: String = "",
         override val tag: String = "",
@@ -1544,6 +1668,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class AppGainWindowFocus(
         override val note: String = "",
         override val tag: String = "",
@@ -1568,6 +1694,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class AppLostWindowFocus(
         override val note: String = "",
         override val tag: String = "",
@@ -1592,6 +1720,8 @@ sealed interface Fact {
         }
     }
 
+    // Fact class
+    @Parcelize
     data class DeepLinkCall(
         override val note: String = "",
         override val tag: String = "",

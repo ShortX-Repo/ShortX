@@ -2227,6 +2227,12 @@ sealed interface Action : Parcelable {
 
         val conditions: List<Condition> = listOf(Condition.TRUE()),
         val op: Op = Op.All,
+        val timeout: Long,
+
+        val quitFacts: List<Fact> = emptyList(),
+        val quitConditions: List<Condition> = emptyList(),
+        val quitOp: Op = Op.All,
+        val isQuitEnabled: Boolean
     ) : Action {
         override fun clone(
             id: String,

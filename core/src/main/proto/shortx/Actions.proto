@@ -1330,6 +1330,13 @@ message WaitUtilConditionMatch {
   ConditionOperatorPayload condOpPayload = 3;
   int64 timeout = 4;
 
+  // Quit
+  repeated google.protobuf.Any quitFacts = 5;
+  repeated google.protobuf.Any quitCondition = 6;
+  ConditionOperator quitConditionOp = 7;
+  ConditionOperatorPayload quitCondOpPayload = 8;
+  bool quitEnabled = 9;
+
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;

@@ -17,6 +17,8 @@
 
 package tornaco.apps.shortx.core.alarm
 
+import android.os.Parcel
+import android.os.Parcelable
 import tornaco.apps.shortx.core.common.sortedDays
 import tornaco.apps.shortx.core.proto.fact.FixedByInterval
 import tornaco.apps.shortx.core.proto.fact.FixedByTimes
@@ -166,15 +168,57 @@ fun FixedInPeriod.getNextTriggerDayOfWeekOffset(triggerDateToday: Date): Int {
     }
 }
 
-sealed interface FixedSetting {
+sealed interface FixedSetting : Parcelable {
     data class Interval(val interval: Long) : FixedSetting {
         val displayDuration: String
             get() = DateUtils.formatDuration(
                 this.interval.milliseconds.toJavaDuration()
             )
+
+        constructor(parcel: Parcel) : this(parcel.readLong()) {
+        }
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeLong(interval)
+        }
+
+        override fun describeContents(): Int {
+            return 0
+        }
+
+        companion object CREATOR : Parcelable.Creator<Interval> {
+            override fun createFromParcel(parcel: Parcel): Interval {
+                return Interval(parcel)
+            }
+
+            override fun newArray(size: Int): Array<Interval?> {
+                return arrayOfNulls(size)
+            }
+        }
     }
 
-    data class Times(val times: Int) : FixedSetting
+    data class Times(val times: Int) : FixedSetting {
+        constructor(parcel: Parcel) : this(parcel.readInt()) {
+        }
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeInt(times)
+        }
+
+        override fun describeContents(): Int {
+            return 0
+        }
+
+        companion object CREATOR : Parcelable.Creator<Times> {
+            override fun createFromParcel(parcel: Parcel): Times {
+                return Times(parcel)
+            }
+
+            override fun newArray(size: Int): Array<Times?> {
+                return arrayOfNulls(size)
+            }
+        }
+    }
 }
 
 fun ProtoAny.toFixedBy(): FixedSetting? {

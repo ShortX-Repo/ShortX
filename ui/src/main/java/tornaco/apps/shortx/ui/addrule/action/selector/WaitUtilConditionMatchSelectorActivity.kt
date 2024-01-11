@@ -2,9 +2,13 @@
 
 package tornaco.apps.shortx.ui.addrule.action.selector
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -19,6 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -30,19 +35,30 @@ import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.addrule.condition.ConditionContent
 import tornaco.apps.shortx.ui.addrule.condition.ConditionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.condition.asConditionHandler
+import tornaco.apps.shortx.ui.addrule.fact.FactContentStateHandler
+import tornaco.apps.shortx.ui.addrule.fact.FactSelectors
+import tornaco.apps.shortx.ui.addrule.fact.asFactHandler
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
+import tornaco.apps.shortx.ui.base.FieldTitle
+import tornaco.apps.shortx.ui.base.FieldTitleWithTip
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumTitle
+import tornaco.apps.shortx.ui.base.MediumTitleWithTip
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
+import tornaco.apps.shortx.ui.base.ShortXSwitch
+import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.StateViewModel
+import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 
 @AndroidEntryPoint
-class WaitUtilConditionMatchSelectorActivity : BaseSelectorActivity<Action.WaitUtilConditionMatch>() {
+class WaitUtilConditionMatchSelectorActivity :
+    BaseSelectorActivity<Action.WaitUtilConditionMatch>() {
     @Composable
     override fun BaseSelectorActivity<Action.WaitUtilConditionMatch>.SelectorContent(currentData: Action.WaitUtilConditionMatch?) {
         WaitUtilConditionMatchSelectorDialogSelector(currentData)
@@ -59,15 +75,38 @@ class WaitUtilConditionMatchSelectorViewModel :
 
     val conditionHandler: ConditionContentStateHandler = ConditionContentStateHandler()
 
+    val quitFactContentStateHandler = FactContentStateHandler()
+    val quitConditionHandler: ConditionContentStateHandler = ConditionContentStateHandler()
+
     fun initFrom(currentSettings: Action.WaitUtilConditionMatch? = null) {
         currentSettings?.let {
             updateState {
-                copy(id = currentSettings.id, note = currentSettings.note)
+                copy(
+                    id = currentSettings.id,
+                    note = currentSettings.note,
+                    timeout = currentSettings.timeout,
+                    isQuitEnabled = currentSettings.isQuitEnabled
+                )
             }
             conditionHandler.init(
                 currentSettings.conditions,
                 currentSettings.op
             )
+            quitFactContentStateHandler.init(currentSettings.quitFacts)
+            quitConditionHandler.init(
+                currentSettings.quitConditions,
+                currentSettings.quitOp
+            )
+        }
+    }
+
+    fun toggleQuitEnable() {
+        updateState { copy(isQuitEnabled = !isQuitEnabled) }
+    }
+
+    fun setTimeout(l: Long) {
+        updateState {
+            copy(timeout = l)
         }
     }
 }
@@ -75,6 +114,8 @@ class WaitUtilConditionMatchSelectorViewModel :
 data class WaitUtilConditionMatchSelectorDialogDialogState(
     val id: String = defaultNewActionId(),
     val note: String = "",
+    val timeout: Long = 0L,
+    val isQuitEnabled: Boolean = false
 )
 
 @Composable
@@ -85,10 +126,16 @@ private fun BaseSelectorActivity<Action.WaitUtilConditionMatch>.WaitUtilConditio
     LaunchedEffect(vm) {
         vm.initFrom(currentAction)
     }
-    val dialogState by vm.state.collectAsState()
+    val vmState by vm.state.collectAsState()
 
     val condHandler = remember(vm) { vm.conditionHandler }
     val conditionState by condHandler.state.collectAsState()
+
+    val quitCondHandler = remember(vm) { vm.quitConditionHandler }
+    val quitConditionState by quitCondHandler.state.collectAsState()
+
+    val quitFactHandler = remember(vm) { vm.quitFactContentStateHandler }
+    val quitFactContentState by quitFactHandler.state.collectAsState()
 
     ShortXTheme {
         Surface(
@@ -110,11 +157,16 @@ private fun BaseSelectorActivity<Action.WaitUtilConditionMatch>.WaitUtilConditio
                             IconButton(onClick = {
                                 setResultAndFinish(
                                     Action.WaitUtilConditionMatch(
-                                        id = dialogState.id,
-                                        note = dialogState.note,
-
+                                        id = vmState.id,
+                                        note = vmState.note,
                                         op = conditionState.conditionOp,
                                         conditions = conditionState.conditions,
+
+                                        quitFacts = quitFactContentState.facts,
+                                        quitOp = quitConditionState.conditionOp,
+                                        quitConditions = quitConditionState.conditions,
+                                        isQuitEnabled = vmState.isQuitEnabled,
+                                        timeout = vmState.timeout
                                     )
                                 )
                             }) {
@@ -134,11 +186,71 @@ private fun BaseSelectorActivity<Action.WaitUtilConditionMatch>.WaitUtilConditio
                 ) {
                     ConditionContent(
                         header = {
-                            MediumTitle(LocalI18N.current["ui.conditions.title"])
+                            MediumTitle(LocalI18N.current["ui.conditions.add"])
                         },
                         state = conditionState,
                         handler = condHandler.asConditionHandler()
                     )
+                    StandardSpacer()
+
+                    // Timeout
+                    FieldTitleWithTip(
+                        text = LocalI18N.current["ui.action.wait.util.condition.match.timeout"],
+                        tipText = LocalI18N.current["ui.action.wait.util.condition.match.timeout.summary"]
+                    )
+                    TinySpacer()
+                    ShortXTextField(value = vmState.timeout.toString(), onValueChange = {
+                        vm.setTimeout(it.toLongOrNull() ?: 0L)
+                    })
+
+                    SectionSpacer()
+
+                    // Quit.
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        MediumTitleWithTip(
+                            LocalI18N.current["ui.action.wait.util.condition.match.quit.title"],
+                            LocalI18N.current["ui.action.wait.util.condition.match.quit.description"]
+                        )
+                        ShortXSwitch(checked = vmState.isQuitEnabled, onCheckedChange = {
+                            vm.toggleQuitEnable()
+                        })
+                    }
+                    AnimatedVisibility(visible = vmState.isQuitEnabled) {
+                        Column {
+                            StandardSpacer()
+                            FactSelectors(
+                                header = {
+                                    FieldTitle(
+                                        modifier = Modifier.padding(bottom = 12.dp),
+                                        text = LocalI18N.current["ui.fact.title"]
+                                    )
+                                },
+                                state = quitFactContentState,
+                                handler = quitFactHandler.asFactHandler(),
+                                readOnly = false
+                            )
+
+                            SectionSpacer()
+
+                            ConditionContent(
+                                header = {
+                                    FieldTitle(
+                                        modifier = Modifier.padding(bottom = 12.dp),
+                                        text = LocalI18N.current["ui.conditions.title"]
+                                    )
+                                },
+                                state = quitConditionState,
+                                readOnly = false,
+                                handler = quitCondHandler.asConditionHandler()
+                            )
+
+                            SectionSpacer()
+                        }
+                    }
 
                     SectionSpacer()
                     SectionSpacer()

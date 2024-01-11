@@ -18,6 +18,7 @@ import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
 import tornaco.apps.shortx.ui.addrule.condition.op.toOp
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
+import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.addrule.protoPkgsAndPkgSetsToModels
 import tornaco.apps.shortx.ui.remote.toModel
 
@@ -1094,6 +1095,17 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                     )
                 },
                 op = data.conditionOp.toOp(data.condOpPayload),
+                quitFacts = data.quitFactsList.mapNotNull {
+                    it.toFact(shortXManager)
+                },
+                quitConditions = data.quitConditionList.mapNotNull {
+                    it.toCondition(
+                        shortXManager
+                    )
+                },
+                quitOp = data.quitConditionOp.toOp(data.quitCondOpPayload),
+                isQuitEnabled = data.quitEnabled,
+                timeout = data.timeout
             )
         }
 

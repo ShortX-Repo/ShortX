@@ -130,6 +130,7 @@ import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.condition.model.toProtoCondition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.condition.op.toConditionOperator
+import tornaco.apps.shortx.ui.addrule.fact.model.toProtoFact
 import tornaco.apps.shortx.ui.addrule.toCustomContextDataKey
 import tornaco.apps.shortx.ui.remote.toProto
 
@@ -931,6 +932,20 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                                 .build()
                     }
                 }
+                .addAllQuitFacts(quitFacts.map { it.toProtoFact().pack_() })
+                .addAllQuitCondition(quitConditions.map { it.toProtoCondition().pack_() })
+                .setQuitConditionOp(quitOp.toConditionOperator())
+                .apply {
+                    if (quitOp is Op.MVEL) {
+                        quitCondOpPayload =
+                            ConditionOperatorPayload
+                                .newBuilder()
+                                .setExpression(quitOp.expression)
+                                .build()
+                    }
+                }
+                .setQuitEnabled(isQuitEnabled)
+                .setTimeout(timeout)
                 .build()
         }
 
