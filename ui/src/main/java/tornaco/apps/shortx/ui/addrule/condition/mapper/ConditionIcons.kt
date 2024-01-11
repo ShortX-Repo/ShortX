@@ -168,6 +168,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.Design.focus_2_fill
         }
 
+        Condition.ConnectedWifiSignal::class -> {
+            Remix.Device.signal_wifi_2_line
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

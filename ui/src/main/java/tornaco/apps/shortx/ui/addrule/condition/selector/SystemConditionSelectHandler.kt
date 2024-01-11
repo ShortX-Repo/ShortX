@@ -5,17 +5,22 @@ import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.QSTileState
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.condition.PlugType
+import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
+import tornaco.apps.shortx.core.proto.rule.EvaluateContext
+import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
-import tornaco.apps.shortx.ui.addrule.condition.BatteryPercentSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.ConditionSelectSource
 import tornaco.apps.shortx.ui.addrule.condition.EvaluateGlobalVarSelectorDialog
+import tornaco.apps.shortx.ui.addrule.condition.IntOpSelectorDialog
+import tornaco.apps.shortx.ui.addrule.condition.IntOpSelectorRes
 import tornaco.apps.shortx.ui.addrule.condition.SIMSlotSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.getConditionAs
 import tornaco.apps.shortx.ui.addrule.condition.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
-import tornaco.apps.shortx.ui.addrule.condition.rememberBatteryPercentSelectorState
+import tornaco.apps.shortx.ui.addrule.condition.model.toProtoCondition
 import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateGlobalVarSelectorState
+import tornaco.apps.shortx.ui.addrule.condition.rememberIntOpSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberSIMSlotSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.mapper.factLabelKey
 import tornaco.apps.shortx.ui.addrule.fact.selector.BTDeviceSelectorDialog
@@ -30,6 +35,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
+import java.util.UUID
 
 @Composable
 fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectSource) -> Boolean {
@@ -38,10 +44,47 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     }
     EvaluateGlobalVarSelectorDialog(state = evaluateGlobalVarSelectorDialogState)
 
-    val batteryPercentDialog = rememberBatteryPercentSelectorState {
-        addCondition(it)
+    val batteryPercentDialog = rememberIntOpSelectorState(
+        title = LocalI18N.current["ui.conditions.battery.percent"],
+        valueTitle = LocalI18N.current["ui.conditions.battery.percent.value"],
+        evaluate = {
+            val res = shortXManager.evaluateCondition(
+                context = EvaluateContext.newBuilder()
+                    .setSrcId(UUID.randomUUID().toString())
+                    .setSrcEvent(ContextSrcEvent.ContextSrc_ExecuteOnDAEditor)
+                    .setSrcTitle("Testing battery level")
+                    .build(),
+                condition = Condition.BatteryPercent(value = it.value, op = it.op)
+                    .toProtoCondition().pack_()
+            )
+            res?.toString() ?: "FAIL TO EVALUATE"
+        }
+    ) {
+        addCondition(Condition.BatteryPercent(value = it.value, op = it.op))
     }
-    BatteryPercentSelectorDialog(state = batteryPercentDialog)
+    IntOpSelectorDialog(state = batteryPercentDialog)
+
+    val wifiSignalSelectorState = rememberIntOpSelectorState(
+        title = LocalI18N.current["ui.conditions.wifi.signal"],
+        valueTitle = LocalI18N.current["ui.conditions.wifi.signal.level", mapOf(
+            "max" to shortXManager.getMaxSignalLevel().toString()
+        )],
+        evaluate = {
+            val res = shortXManager.evaluateCondition(
+                context = EvaluateContext.newBuilder()
+                    .setSrcId(UUID.randomUUID().toString())
+                    .setSrcEvent(ContextSrcEvent.ContextSrc_ExecuteOnDAEditor)
+                    .setSrcTitle("Testing wifi level")
+                    .build(),
+                condition = Condition.ConnectedWifiSignal(level = it.value, op = it.op)
+                    .toProtoCondition().pack_()
+            )
+            res?.toString() ?: "FAIL TO EVALUATE"
+        }
+    ) {
+        addCondition(Condition.ConnectedWifiSignal(level = it.value, op = it.op))
+    }
+    IntOpSelectorDialog(state = wifiSignalSelectorState)
 
     val timeInRangeSelectorState = rememberTimeOfADayRangeSelectorState(selected = {
         addCondition(Condition.TimeInRange(range = it))
@@ -241,7 +284,17 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
             }
 
             Condition.BatteryPercent::class -> {
-                batteryPercentDialog.show(source.getConditionAs())
+                batteryPercentDialog.show(source.getConditionAs<Condition.BatteryPercent>()?.let {
+                    IntOpSelectorRes(it.value, it.op)
+                })
+                true
+            }
+
+            Condition.ConnectedWifiSignal::class -> {
+                wifiSignalSelectorState.show(
+                    source.getConditionAs<Condition.ConnectedWifiSignal>()?.let {
+                        IntOpSelectorRes(it.level, it.op)
+                    })
                 true
             }
 

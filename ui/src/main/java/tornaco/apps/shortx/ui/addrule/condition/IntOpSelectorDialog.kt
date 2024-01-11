@@ -32,14 +32,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.common.IntOp
-import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
-import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.toDisplayName
-import tornaco.apps.shortx.core.shortXManager
-import tornaco.apps.shortx.ui.addrule.condition.model.Condition
-import tornaco.apps.shortx.ui.addrule.condition.model.toProtoCondition
 import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DropdownItem
@@ -54,25 +48,30 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
-import java.util.UUID
+
+data class IntOpSelectorRes(val value: Int, val op: IntOp)
+
 
 class BatteryPercentSelectorDialogState(
-    val onSelected: (Condition.BatteryPercent) -> Unit
+    val title: String,
+    val valueTitle: String,
+    val evaluate: (IntOpSelectorRes) -> String,
+    val onSelected: (IntOpSelectorRes) -> Unit
 ) : CommonDialogState() {
 
-    private var _action by mutableStateOf(
-        Condition.BatteryPercent(
-            value = 100,
+    private var _currentValue by mutableStateOf(
+        IntOpSelectorRes(
+            value = 0,
             op = IntOp.IntEqualTo,
         )
     )
 
-    val action get() = _action
+    val currentValue get() = _currentValue
 
     private var _output by mutableStateOf("")
     val output get() = _output
 
-    fun show(current: Condition.BatteryPercent? = null) {
+    fun show(current: IntOpSelectorRes? = null) {
         current?.let {
             inputValue(it.value.toString())
             setOp(it.op)
@@ -81,14 +80,14 @@ class BatteryPercentSelectorDialogState(
     }
 
     fun inputValue(value: String) {
-        _action = _action.copy(
+        _currentValue = _currentValue.copy(
             value = minOf(100, value.toIntOrNull() ?: 0)
         )
         setOutput("")
     }
 
     infix fun setOp(data: IntOp) {
-        _action = _action.copy(
+        _currentValue = _currentValue.copy(
             op = data
         )
         setOutput("")
@@ -99,29 +98,25 @@ class BatteryPercentSelectorDialogState(
     }
 
     fun evaluate() {
-        val res = shortXManager.evaluateCondition(
-            context = EvaluateContext.newBuilder()
-                .setSrcId(UUID.randomUUID().toString())
-                .setSrcEvent(ContextSrcEvent.ContextSrc_ExecuteOnDAEditor)
-                .setSrcTitle("Testing battery level")
-                .build(),
-            condition = action.toProtoCondition().pack_()
-        )
-        setOutput(res?.toString() ?: "FAIL TO EVALUATE")
+        val res = evaluate(currentValue)
+        setOutput(res)
     }
 }
 
 @Composable
-fun rememberBatteryPercentSelectorState(
-    onSelected: (Condition.BatteryPercent) -> Unit
+fun rememberIntOpSelectorState(
+    title: String,
+    valueTitle: String,
+    evaluate: (IntOpSelectorRes) -> String,
+    onSelected: (IntOpSelectorRes) -> Unit
 ): BatteryPercentSelectorDialogState {
     return remember {
-        BatteryPercentSelectorDialogState(onSelected)
+        BatteryPercentSelectorDialogState(title, valueTitle, evaluate, onSelected)
     }
 }
 
 @Composable
-fun BatteryPercentSelectorDialog(state: BatteryPercentSelectorDialogState) {
+fun IntOpSelectorDialog(state: BatteryPercentSelectorDialogState) {
     if (state.isShowing) {
         ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
             BatteryPercentSelector(state)
@@ -139,7 +134,7 @@ private fun BatteryPercentSelector(dialogState: BatteryPercentSelectorDialogStat
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.dialog.title.select.app"]) },
+                        title = { Text(text = dialogState.title) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
@@ -159,7 +154,7 @@ private fun BatteryPercentSelector(dialogState: BatteryPercentSelectorDialogStat
 
                             IconButton(onClick = {
                                 dialogState.dismiss()
-                                dialogState.onSelected(dialogState.action)
+                                dialogState.onSelected(dialogState.currentValue)
                             }) {
                                 RemixIcon(remixName = Remix.System.check_line)
                             }
@@ -187,11 +182,11 @@ private fun BatteryPercentSelector(dialogState: BatteryPercentSelectorDialogStat
                             ), onClick = {
                                 opSelectorState.open()
                             }) {
-                            Text(dialogState.action.op.toDisplayName())
+                            Text(dialogState.currentValue.op.toDisplayName())
                         }
                         DropdownSelector(
                             state = opSelectorState,
-                            items = IntOp.values().toMutableList().apply {
+                            items = IntOp.entries.toMutableList().apply {
                                 remove(IntOp.UNRECOGNIZED)
                             }.map {
                                 DropdownItem(
@@ -206,11 +201,11 @@ private fun BatteryPercentSelector(dialogState: BatteryPercentSelectorDialogStat
 
                     SmallTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        text = LocalI18N.current["ui.conditions.battery.percent.value"]
+                        text = dialogState.valueTitle
                     )
                     TinySpacer()
                     ShortXTextField(
-                        value = dialogState.action.value.let {
+                        value = dialogState.currentValue.value.let {
                             if (it <= 0) "" else it.toString()
                         }, onValueChange = {
                             dialogState.inputValue(it)

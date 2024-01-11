@@ -9,6 +9,7 @@ import tornaco.apps.shortx.core.proto.condition.AppIsNotRunning
 import tornaco.apps.shortx.core.proto.condition.AppIsRunning
 import tornaco.apps.shortx.core.proto.condition.BatteryPercent
 import tornaco.apps.shortx.core.proto.condition.ChargeState
+import tornaco.apps.shortx.core.proto.condition.ConnectedWifiSignal
 import tornaco.apps.shortx.core.proto.condition.CurrentActivity
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgListByPkg
@@ -260,6 +261,18 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 customContextDataKey = data.customContextDataKey,
                 op = data.op,
                 value = data.value
+            )
+        }
+
+        this is_ ConnectedWifiSignal::class.java -> {
+            val data = this unpack_ ConnectedWifiSignal::class.java
+            Condition.ConnectedWifiSignal(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+                customContextDataKey = data.customContextDataKey,
+                op = data.op,
+                level = data.level
             )
         }
 

@@ -94,6 +94,16 @@ message BatteryPercent {
   string id = 100;
 }
 
+message ConnectedWifiSignal {
+  int32 level = 1;
+  IntOp op = 2;
+
+  CustomContextDataKey customContextDataKey = 97;
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message AppIsRunning {
   repeated AppPkg pkgs = 1;
   repeated string pkgSets = 2;

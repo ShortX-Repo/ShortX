@@ -81,6 +81,10 @@ enum class PrebuiltCond : CondProvider {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.BatteryPercent
     },
+    ConnectedWifiSignal {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.ConnectedWifiSignal
+    },
     ChargeState {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.ChargeState

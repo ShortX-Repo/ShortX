@@ -17,31 +17,11 @@ object BatteryPercent : Cond {
 
             val batteryPercent = condition unpack_ BatteryPercent::class.java
             val value = batteryPercent.value
-            val res = when (batteryPercent.op ?: IntOp.UNRECOGNIZED) {
-                IntOp.IntGreaterThan -> {
-                    state.batteryLevel > value
-                }
-
-                IntOp.IntGreaterThanOrEQ -> {
-                    state.batteryLevel >= value
-                }
-
-                IntOp.IntLessThan -> {
-                    state.batteryLevel < value
-                }
-
-                IntOp.IntLessThanOrEQ -> {
-                    state.batteryLevel <= value
-                }
-
-                IntOp.IntEqualTo -> {
-                    state.batteryLevel == value
-                }
-
-                IntOp.UNRECOGNIZED -> {
-                    false
-                }
-            }
+            val res = matchIntOp(
+                op = batteryPercent.op ?: IntOp.UNRECOGNIZED,
+                currentValue = state.batteryLevel,
+                expectedValue = value
+            )
 
             if (batteryPercent.isInvert) {
                 !res
