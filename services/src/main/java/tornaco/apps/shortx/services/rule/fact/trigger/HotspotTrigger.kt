@@ -1,15 +1,15 @@
 package tornaco.apps.shortx.services.rule.fact.trigger
 
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.net.wifi.WifiManager
-import android.net.wifi.WifiManager.SoftApCallback
-import android.os.HandlerExecutor
+import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.fact.HotSpotStatusChanged
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.util.OsUtils
-import tornaco.apps.shortx.core.util.wifiManager
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.util.SafeBroadcastReceiver
 
 
 class HotspotTrigger(
@@ -18,32 +18,39 @@ class HotspotTrigger(
 ) : Trigger {
     private val logger = Logger("HotspotTrigger")
 
-    override fun register() {
-        // Android 10 http://aospxref.com/android-10.0.0_r47/xref/frameworks/base/wifi/java/android/net/wifi/WifiManager.java#3080
-        // Android 11 http://aospxref.com/android-11.0.0_r21/xref/frameworks/base/wifi/java/android/net/wifi/WifiManager.java#3612
+    private val receiver = object : SafeBroadcastReceiver(shortXContext) {
+        override fun handleReceive(context: Context, intent: Intent) {
+            logger.d("handleReceive: $intent")
 
-        if (OsUtils.isROrAbove()) {
-            context.wifiManager.registerSoftApCallback(
-                HandlerExecutor(shortXContext.phone.handler),
-                object : SoftApCallback {
-                    override fun onStateChanged(state: Int, failureReason: Int) {
-                        super.onStateChanged(state, failureReason)
-                        logger.d("onStateChanged: $state $failureReason ${stateToString(state)}")
+            val action = intent.action
 
-                        if (state == WifiManager.WIFI_AP_STATE_ENABLED) {
-                            shortXContext.rule.publishFact(
-                                "SoftApCallback.onStateChanged",
-                                HotSpotStatusChanged.newBuilder().setOoa(OnOffAny.On).build()
-                            ) { emptyMap() }
-                        } else if (state == WifiManager.WIFI_AP_STATE_DISABLED) {
-                            shortXContext.rule.publishFact(
-                                "SoftApCallback.onStateChanged",
-                                HotSpotStatusChanged.newBuilder().setOoa(OnOffAny.Off).build()
-                            ) { emptyMap() }
-                        }
+            if (WifiManager.WIFI_AP_STATE_CHANGED_ACTION == action) {
+                val wifiApState = intent.getIntExtra(WifiManager.EXTRA_WIFI_AP_STATE, -1)
+                logger.d("wifiApState: ${stateToString(wifiApState)}")
+                when (wifiApState) {
+                    WifiManager.WIFI_AP_STATE_DISABLED -> {
+                        shortXContext.rule.publishFact(
+                            "SoftApCallback.onStateChanged",
+                            HotSpotStatusChanged.newBuilder().setOoa(OnOffAny.Off).build()
+                        ) { emptyMap() }
                     }
-                })
+
+                    WifiManager.WIFI_AP_STATE_ENABLED -> {
+                        shortXContext.rule.publishFact(
+                            "SoftApCallback.onStateChanged",
+                            HotSpotStatusChanged.newBuilder().setOoa(OnOffAny.On).build()
+                        ) { emptyMap() }
+                    }
+
+                    WifiManager.WIFI_AP_STATE_FAILED -> {}
+                }
+            }
         }
+    }
+
+    override fun register() {
+        val filter = IntentFilter(WifiManager.WIFI_AP_STATE_CHANGED_ACTION)
+        ContextCompat.registerReceiver(context, receiver, filter, ContextCompat.RECEIVER_EXPORTED)
     }
 
     override fun unRegister() {
