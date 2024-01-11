@@ -9,8 +9,8 @@ class ActorTest {
     @Test
     fun `can handle class should not dup`() {
         Assert.assertEquals(
-            PrebuiltActor.values().size,
-            PrebuiltActor.values().map { it.actor.actionsCanHandle() }.size
+            PrebuiltActor.entries.size,
+            PrebuiltActor.entries.map { it.actor.actionsCanHandle() }.size
         )
     }
 
@@ -24,7 +24,7 @@ class ActorTest {
         allActionNames.forEach { actionProtoName ->
             Assert.assertTrue(
                 "Should contains Actor for Action: $actionProtoName",
-                PrebuiltActor.values().map { it.actor.actionsCanHandle().simpleName }
+                PrebuiltActor.entries.map { it.actor.actionsCanHandle().simpleName }
                     .contains(actionProtoName)
             )
         }
