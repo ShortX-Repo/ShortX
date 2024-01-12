@@ -92,6 +92,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Fact.AppGainWindowFocus::class,
     Fact.AppLostWindowFocus::class,
     Fact.IMEVisibilityChange::class,
+    Fact.ConnectedWifiSignalLevelChanged::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 
     Condition.AppHasAudioFocus::class,
@@ -100,6 +101,8 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Condition.AppHasTask::class,
     Condition.AppHasWindowFocus::class,
     Condition.RequireIMEVisibility::class,
+    Condition.ConnectedWifiSignal::class,
+    Condition.TheXXTimeToday::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 
     Action.LaunchAppByPkg::class,
@@ -142,6 +145,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Action.ClickNotification::class,
     Action.ClickNotificationActionButton::class,
     Action.ShowClipboardView::class,
+    Action.Toggle5G::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 )
 

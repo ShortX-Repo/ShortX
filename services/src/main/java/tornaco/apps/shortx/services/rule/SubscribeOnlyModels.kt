@@ -35,19 +35,23 @@ import tornaco.apps.shortx.core.proto.action.StopAppByPkg
 import tornaco.apps.shortx.core.proto.action.StopGestureRecording
 import tornaco.apps.shortx.core.proto.action.SwitchMobileDataSlot
 import tornaco.apps.shortx.core.proto.action.TTS
+import tornaco.apps.shortx.core.proto.action.Toggle5G
 import tornaco.apps.shortx.core.proto.action.ToggleGestureRecording
 import tornaco.apps.shortx.core.proto.action.WaitUtilConditionMatch
 import tornaco.apps.shortx.core.proto.condition.AppHasAudioFocus
 import tornaco.apps.shortx.core.proto.condition.AppHasTask
 import tornaco.apps.shortx.core.proto.condition.AppHasWindowFocus
+import tornaco.apps.shortx.core.proto.condition.ConnectedWifiSignal
 import tornaco.apps.shortx.core.proto.condition.RequireFactTag
 import tornaco.apps.shortx.core.proto.condition.RequireIMEVisibility
 import tornaco.apps.shortx.core.proto.condition.RequireMobileDataEnabled
+import tornaco.apps.shortx.core.proto.condition.TheXXTimeToday
 import tornaco.apps.shortx.core.proto.fact.AdvancedKeyEvent
 import tornaco.apps.shortx.core.proto.fact.AppGainWindowFocus
 import tornaco.apps.shortx.core.proto.fact.AppLostWindowFocus
 import tornaco.apps.shortx.core.proto.fact.BTConnectedTo
 import tornaco.apps.shortx.core.proto.fact.BTDisconnectedFrom
+import tornaco.apps.shortx.core.proto.fact.ConnectedWifiSignalLevelChanged
 import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen
 import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
@@ -73,6 +77,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         AppGainWindowFocus::class,
         AppLostWindowFocus::class,
         IMEVisibilityChange::class,
+        ConnectedWifiSignalLevelChanged::class,
 
         AppHasAudioFocus::class,
         RequireMobileDataEnabled::class,
@@ -80,6 +85,8 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         AppHasTask::class,
         AppHasWindowFocus::class,
         RequireIMEVisibility::class,
+        ConnectedWifiSignal::class,
+        TheXXTimeToday::class,
 
         LaunchAppByPkg::class,
         StopAppByPkg::class,
@@ -117,4 +124,5 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         ClickNotification::class,
         ClickNotificationActionButton::class,
         ShowClipboardView::class,
+        Toggle5G::class,
     )
