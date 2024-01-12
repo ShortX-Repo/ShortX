@@ -29,6 +29,7 @@ buildConfig {
     buildConfigField("String", "TG_GROUP", "\"https://t.me/shortxmod\"")
     buildConfigField("String", "QQ_GROUP_1", "\"882416995\"")
     buildConfigField("String", "WIKI_URL", "\"https://shortx-repo.github.io/ShortX-Pages/zh/\"")
+    buildConfigField("String", "WIKI_URL_BILI", "\"https://www.bilibili.com/video/BV1hc411X7yF/\"")
     buildConfigField(
         "String",
         "WIKI_URL_MVEL",
