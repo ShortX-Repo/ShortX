@@ -1,14 +1,18 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
 import android.annotation.SuppressLint
+import android.content.ContentResolver
 import android.content.Context
-import android.telephony.SubscriptionManager
+import android.net.Uri
+import android.os.Bundle
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.proto.common.OnOffToggle
 import tornaco.apps.shortx.core.rule.unpack_
-import tornaco.apps.shortx.core.util.telephonyManager
+import tornaco.apps.shortx.core.util.OsUtils
+import tornaco.apps.shortx.core.util.bundleToString
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
+
 
 object Toggle5G : Actor {
     override fun actionsCanHandle(): Class<out Message> {
@@ -21,29 +25,23 @@ object Toggle5G : Actor {
     ): Unit = with(params) {
         val data = action unpack_ tornaco.apps.shortx.core.proto.action.Toggle5G::class.java
         val onOff: OnOffToggle = data.onOff
+        val slotId = data.slotId
 
-        val targetSubInfo =
-            SubscriptionManager.from(androidContext).activeSubscriptionInfoList.firstOrNull {
-                it.simSlotIndex == data.slotId
-            }
-        requireNotNull(targetSubInfo) {
-            "Sub not found for slot: ${data.slotId}"
-        }
-        logger.d("Toggle5G targetSubInfo.subId: ${targetSubInfo.subscriptionId}")
+        logger.d("Toggle5G slotId: $slotId")
 
         val switcher = getFiveGSwitcher()
-        val isCurrent5G = switcher.is5GEnabled(androidContext, targetSubInfo.subscriptionId)
+        val isCurrent5G = switcher.is5GEnabled(androidContext, slotId)
         when (onOff) {
             OnOffToggle.OnOffToggle_On -> {
-                switcher.set5GEnabled(true, androidContext, targetSubInfo.subscriptionId)
+                switcher.set5GEnabled(true, androidContext, slotId)
             }
 
             OnOffToggle.OnOffToggle_Off -> {
-                switcher.set5GEnabled(false, androidContext, targetSubInfo.subscriptionId)
+                switcher.set5GEnabled(false, androidContext, slotId)
             }
 
             OnOffToggle.OnOffToggle_Toggle -> {
-                switcher.set5GEnabled(!isCurrent5G, androidContext, targetSubInfo.subscriptionId)
+                switcher.run { set5GEnabled(!isCurrent5G, androidContext, slotId) }
             }
 
             OnOffToggle.UNRECOGNIZED -> {
@@ -53,26 +51,78 @@ object Toggle5G : Actor {
     }
 
     private fun getFiveGSwitcher(): FiveGSwitcher {
-        return object : FiveGSwitcher {
-            @SuppressLint("MissingPermission")
-            override fun is5GEnabled(context: Context, subId: Int): Boolean {
-                val networkMode = context.telephonyManager.getPreferredNetworkType(subId)
-                logger.d("getPreferredNetworkType, networkMode: $networkMode")
-                val is5G = networkMode >= 23
-                return is5G
-            }
+        return if (OsUtils.isColorOS()) {
+            ColorOSFiveGSwitcher
+        } else FallbackFiveGSwitcher
+    }
 
-            override fun set5GEnabled(enable: Boolean, context: Context, subId: Int) {
-                val mode = if (enable) 33 else 22
-                logger.d("set5GEnabled, mode: $mode")
-                context.telephonyManager.setPreferredNetworkType(subId, mode)
-            }
+    // Color OS
+    //   <provider android:name="com.android.simsettings.demands.siminfo.fiveg.FiveGStatus1Provider" android:permission="com.oplus.permission.safe.SECURITY" android:exported="true" android:authorities="com.android.simsettings.demands.FiveG1_SwitchProvider" android:grantUriPermissions="true">
+    //            <intent-filter>
+    //                <action android:name="com.android.settings.MANUFACTURER_APPLICATION_SETTING"/>
+    //            </intent-filter>
+    //        </provider>
+    //        <provider android:name="com.android.simsettings.demands.siminfo.fiveg.FiveGStatus2Provider" android:permission="com.oplus.permission.safe.SECURITY" android:exported="true" android:authorities="com.android.simsettings.demands.FiveG2_SwitchProvider" android:grantUriPermissions="true">
+    //            <intent-filter>
+    //                <action android:name="com.android.settings.MANUFACTURER_APPLICATION_SETTING"/>
+    //            </intent-filter>
+    //        </provider>
+
+    interface FiveGSwitcher {
+        fun is5GEnabled(context: Context, slotId: Int): Boolean
+        fun set5GEnabled(enable: Boolean, context: Context, slotId: Int)
+    }
+
+    object ColorOSFiveGSwitcher : FiveGSwitcher {
+        const val META_DATA_PREFERENCE_KEYHINT = "com.android.settings.keyhint"
+        const val EXTRA_SWITCH_CHECKED_STATE = "checked_state"
+        const val METHOD_IS_CHECKED = "isChecked"
+        const val METHOD_ON_CHECKED_CHANGED = "onCheckedChanged"
+        const val KEY1 = "5g_debug_key1"
+        const val KEY2 = "5g_debug_key2"
+        const val URL_1 = "content://com.android.simsettings.demands.FiveG1_SwitchProvider"
+        const val URL_2 = "content://com.android.simsettings.demands.FiveG2_SwitchProvider"
+
+        override fun is5GEnabled(context: Context, slotId: Int): Boolean {
+            // content call --uri content://com.android.simsettings.demands.FiveG1_SwitchProvider --method isChecked --extra com.android.settings.keyhint:s:5g_debug_key1
+            val contentResolver: ContentResolver = context.contentResolver
+            val providerUri: Uri =
+                Uri.parse(if (slotId == 0) URL_1 else URL_2)
+            logger.d("ColorOSFiveGSwitcher is5GEnabled, call uri: $providerUri")
+            val key = if (slotId == 0) KEY1 else KEY2
+            val result: Bundle =
+                contentResolver.call(providerUri, METHOD_IS_CHECKED, null, Bundle().apply {
+                    putString(META_DATA_PREFERENCE_KEYHINT, key)
+                })
+            logger.d("ColorOSFiveGSwitcher is5GEnabled call res: ${result.bundleToString()}")
+            return result.getBoolean(EXTRA_SWITCH_CHECKED_STATE)
+        }
+
+        override fun set5GEnabled(enable: Boolean, context: Context, slotId: Int) {
+            // call --uri content://com.android.simsettings.demands.FiveG2_SwitchProvider --method onCheckedChanged --extra com.android.settings.keyhint:s:5g_debug_key2 --extra checked_state:b:true
+            val contentResolver: ContentResolver = context.contentResolver
+            val providerUri: Uri =
+                Uri.parse(if (slotId == 0) URL_1 else URL_2)
+            logger.d("ColorOSFiveGSwitcher set5GEnabled, call uri: $providerUri")
+            val key = if (slotId == 0) KEY1 else KEY2
+            val result: Bundle =
+                contentResolver.call(providerUri, METHOD_ON_CHECKED_CHANGED, null, Bundle().apply {
+                    putString(META_DATA_PREFERENCE_KEYHINT, key)
+                    putBoolean(EXTRA_SWITCH_CHECKED_STATE, enable)
+                })
+            logger.d("ColorOSFiveGSwitcher set5GEnabled call res: ${result.bundleToString()}")
         }
     }
 
-    interface FiveGSwitcher {
-        fun is5GEnabled(context: Context, subId: Int): Boolean
-        fun set5GEnabled(enable: Boolean, context: Context, subId: Int)
+    object FallbackFiveGSwitcher : FiveGSwitcher {
+        override fun is5GEnabled(context: Context, slotId: Int): Boolean {
+            TODO("Not yet implemented")
+        }
+
+        override fun set5GEnabled(enable: Boolean, context: Context, slotId: Int) {
+            TODO("Not yet implemented")
+        }
+
     }
 }
 
