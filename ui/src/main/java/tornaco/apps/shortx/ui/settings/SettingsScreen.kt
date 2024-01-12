@@ -58,7 +58,6 @@ import tornaco.apps.shortx.ui.base.LinkText
 import tornaco.apps.shortx.ui.base.LocalAppName
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalShortXProps
-import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.OutlineBadge
@@ -114,6 +113,30 @@ fun SettingsScreen(
         ) {
             val snackbarHostState = remember { SnackbarHostState() }
             val scope = rememberCoroutineScope()
+
+            val guideSelectorDialogState = rememberMenuDialogState<String>(
+                title = LocalI18N.current["ui.user.guide"],
+                menuItems = listOf(
+                    MenuDialogItem(
+                        id = "Bili",
+                        title = "bilibili",
+                        iconName = Remix.Logos.bilibili_fill
+                    ),
+                    MenuDialogItem(
+                        id = "Github",
+                        title = "Github",
+                        iconName = Remix.Logos.github_fill
+                    ),
+                )
+            ) { _, data ->
+                if (data == "Github") {
+                    BrowserUtils.launch(context, BuildProp.WIKI_URL)
+                } else {
+                    BrowserUtils.launch(context, BuildProp.WIKI_URL_BILI)
+                }
+            }
+            MenuDialog(state = guideSelectorDialogState)
+
             Scaffold(
                 modifier = Modifier,
                 snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -121,16 +144,28 @@ fun SettingsScreen(
                     ShortXTopAppBar(
                         modifier = Modifier,
                         title = {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                AppIcon(
-                                    modifier = Modifier.size(32.dp),
-                                    pkg = Pkg(BuildProp.APP_PACKAGE_NAME)
-                                )
-                                TinySpacer()
-                                Text(text = LocalAppName.current)
-                                TinySpacer()
-                                BuildProp.APP_VERSION_NAME_SUFFIX.ifEmpty { null }?.let {
-                                    OutlineBadge(text = it)
+                            Row(
+                                modifier = Modifier
+                                    .padding(end = 16.dp)
+                                    .fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    AppIcon(
+                                        modifier = Modifier.size(32.dp),
+                                        pkg = Pkg(BuildProp.APP_PACKAGE_NAME)
+                                    )
+                                    TinySpacer()
+                                    Text(text = LocalAppName.current)
+                                    TinySpacer()
+                                    BuildProp.APP_VERSION_NAME_SUFFIX.ifEmpty { null }?.let {
+                                        OutlineBadge(text = it)
+                                    }
+                                }
+
+                                LinkText(text = LocalI18N.current["ui.user.guide"]) {
+                                    guideSelectorDialogState.show()
                                 }
                             }
                         }
@@ -162,42 +197,6 @@ fun SettingsScreen(
                         StandardSpacer()
                     }
 
-                    val guideSelectorDialogState = rememberMenuDialogState<String>(
-                        title = LocalI18N.current["ui.user.guide"],
-                        menuItems = listOf(
-                            MenuDialogItem(
-                                id = "Bili",
-                                title = "bilibili",
-                                iconName = Remix.Logos.bilibili_fill
-                            ),
-                            MenuDialogItem(
-                                id = "Github",
-                                title = "Github",
-                                iconName = Remix.Logos.github_fill
-                            ),
-                        )
-                    ) { _, data ->
-                        if (data == "Github") {
-                            BrowserUtils.launch(context, BuildProp.WIKI_URL)
-                        } else {
-                            BrowserUtils.launch(context, BuildProp.WIKI_URL_BILI)
-                        }
-                    }
-                    MenuDialog(state = guideSelectorDialogState)
-
-                    Row(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        MediumTitle(text = LocalI18N.current["ui.common.settings"])
-                        LinkText(text = LocalI18N.current["ui.user.guide"]) {
-                            guideSelectorDialogState.show()
-                        }
-                    }
-
                     AnimatedVisibility(visible = state.sensorUsages.isNotEmpty()) {
                         SensorUsage(state.sensorUsages)
                     }
@@ -213,7 +212,6 @@ fun SettingsScreen(
                     }
 
                     val i18N = LocalI18N.current
-                    val context = LocalContext.current
                     val backupErrorTitle = i18N["ui.settings.backup.error.title"]
                     val backupErrorAction = i18N["ui.settings.backup.error.action"]
                     LaunchedEffect(vm) {
