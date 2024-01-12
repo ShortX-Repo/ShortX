@@ -232,6 +232,7 @@ fun labelAndDescriptionForActionSelector(
         Action.ShowDrawBoard::class -> i18N["ui.action.show.draw.board"] to null
         Action.ConnectWifi::class -> i18N["ui.action.connect.wifi"] to null
         Action.StayAwake::class -> i18N["ui.action.stay.awake"] to null
+        Action.Toggle5G::class -> i18N["5G"] to null
         Action.ForEachPkgSet::class -> i18N["ui.action.for.each.pkg.set"] to null
         Action.LockDeviceNow::class -> i18N["ui.action.lock.screen"] to null
         Action.SetMasterSync::class -> i18N["ui.action.sync"] to null
@@ -888,6 +889,11 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.StayAwake -> listOf(
             i18N["ui.action.stay.awake"],
             i18N[action.stay.labelKey()]
+        )
+
+        is Action.Toggle5G -> listOf(
+            i18N["5G"],
+            i18N[action.onOff.labelKey()]
         )
 
         is Action.ForEachPkgSet -> listOf(

@@ -16,6 +16,9 @@ fun imageVectorForAction(action: KClass<out Action>): String {
         Action.ShowToast::class -> {
             Remix.Communication.chat_2_fill
         }
+        Action.Toggle5G::class -> {
+            Remix.Editor.number_5
+        }
 
         Action.ShowDanmu::class -> {
             Remix.Communication.chat_1_fill

@@ -559,5 +559,5 @@ enum class PrebuiltActor : ActorProvider {
 }
 
 fun prebuiltActorFor(action: ProtoAny): Actor? {
-    return PrebuiltActor.values().firstOrNull { action is_ it.actor.actionsCanHandle() }?.actor
+    return PrebuiltActor.entries.firstOrNull { action is_ it.actor.actionsCanHandle() }?.actor
 }

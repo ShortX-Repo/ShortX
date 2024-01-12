@@ -28,7 +28,9 @@ import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.base.rememberCategoryState
 import tornaco.apps.shortx.ui.addrule.condition.SIMSlotSelectorDialog
+import tornaco.apps.shortx.ui.addrule.condition.Toggle5GSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.rememberSIMSlotSelectorState
+import tornaco.apps.shortx.ui.addrule.condition.rememberToggle5GSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.BrightnessValueSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.CombineKeyEventSelectorActivity
 import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
@@ -152,6 +154,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
             addAction(Action.SwitchMobileDataSlot(slotId = it))
         })
     SIMSlotSelectorDialog(state = switchMobileDataSelectorState)
+
+    val toggle5GSelectorState = rememberToggle5GSelectorState {
+        addAction(it)
+    }
+    Toggle5GSelectorDialog(dialogState = toggle5GSelectorState)
 
     val wallpaperFileSelectorState = rememberSetWallpaperState(
         onSelected = {
@@ -444,6 +451,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.Toggle5G::class -> {
+                toggle5GSelectorState.show(source.getActionAs())
+                true
+            }
+
             else -> false
         }
     }
@@ -477,6 +489,9 @@ fun SystemActions(
         Action.DisableBT::class,
         Action.EnableData::class,
         Action.DisableData::class,
+        Action.SwitchMobileDataSlot::class,
+        Action.Toggle5G::class,
+        Action.SetAPMModeEnabled::class,
         Action.EnableHotSpot::class,
         Action.DisableHotSpot::class,
         Action.EnableNFC::class,
@@ -489,7 +504,6 @@ fun SystemActions(
         Action.DisableDarkMode::class,
         Action.EnableAutoBrightness::class,
         Action.DisableAutoBrightness::class,
-        Action.SetAPMModeEnabled::class,
         Action.SetBrightness::class,
         Action.EnableSensorsOff::class,
         Action.DisableSensorsOff::class,
@@ -497,7 +511,6 @@ fun SystemActions(
         Action.PlayRingtone::class,
         OsUtils.isQOrAbove().select(Action.AudioRecording::class, null),
         OsUtils.isQOrAbove().select(Action.StopAudioRecording::class, null),
-        Action.SwitchMobileDataSlot::class,
         Action.SetWallpaper::class,
         Action.ClickTile::class,
         Action.BiometricVerify::class,
