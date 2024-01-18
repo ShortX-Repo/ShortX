@@ -1,4 +1,4 @@
--repackageclasses
+-repackageclasses shortx
 
 # https://github.com/square/retrofit/issues/3751
 # Keep generic signature of Call, Response (R8 full mode strips signatures from non-kept items).
