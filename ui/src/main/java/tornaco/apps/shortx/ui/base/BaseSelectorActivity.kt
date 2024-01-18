@@ -3,10 +3,10 @@ package tornaco.apps.shortx.ui.base
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Parcelable
 import androidx.activity.result.ActivityResult
 import androidx.compose.runtime.Composable
+import androidx.core.os.BundleCompat
 
 
 abstract class BaseSelectorActivity<T : Parcelable> : BaseActivity() {
@@ -15,13 +15,13 @@ abstract class BaseSelectorActivity<T : Parcelable> : BaseActivity() {
 
         inline fun <reified T : Parcelable> ActivityResult.toBaseSelectorCurrentDataOrNull(): T? {
             return if (this.resultCode == Activity.RESULT_OK) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    this.data?.getParcelableExtra(
+                this.data?.extras?.let {
+                    // Even though API was introduced in 33, we use 34 as 33 is bugged in some scenarios.
+                    BundleCompat.getParcelable(
+                        it,
                         INTENT_EXTRA_KEY_CURRENT,
                         T::class.java
                     )
-                } else {
-                    (this.data?.getParcelableExtra(INTENT_EXTRA_KEY_CURRENT)) as T?
                 }
             } else {
                 null
