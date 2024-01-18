@@ -1,6 +1,5 @@
 package tornaco.apps.shortx.services.ui
 
-import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import kotlinx.coroutines.runBlocking
@@ -29,13 +28,9 @@ class UIService(shortXContext: ShortXContext) : SystemService(shortXContext, "UI
 
     private var liveDanmuView: LiveDanmuView? = null
 
-    override fun start(context: Context) {
-        super.start(context)
-        PicassoInitializer.install(context)
-    }
-
     override fun systemReady() {
         super.systemReady()
+        PicassoInitializer.install(context)
     }
 
     fun showDanmu(icon: String?, text: String) {
