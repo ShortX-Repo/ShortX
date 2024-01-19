@@ -154,6 +154,12 @@ class DemoActivity : BaseActivity() {
                         }
 
                         Button(onClick = {
+                            context.startActivity(Intent(context, PieDemoActivity::class.java))
+                        }) {
+                            Text(text = "Pie demo")
+                        }
+
+                        Button(onClick = {
                             var tts: TextToSpeech? = null
                             tts = TextToSpeech(
                                 context

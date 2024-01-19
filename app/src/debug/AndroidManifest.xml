@@ -32,6 +32,13 @@
             android:label="Demo"
             android:roundIcon="@mipmap/ic_launcher_demo_round" />
 
+        <activity
+            android:name=".ui.demo.PieDemoActivity"
+            android:exported="false"
+            android:icon="@mipmap/ic_launcher_demo"
+            android:label="Demo"
+            android:roundIcon="@mipmap/ic_launcher_demo_round" />
+
     </application>
 
 </manifest>
