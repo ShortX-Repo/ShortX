@@ -9,12 +9,19 @@ import io.github.rosemoe.sora.event.KeyBindingEvent
 import io.github.rosemoe.sora.event.PublishSearchResultEvent
 import io.github.rosemoe.sora.event.SelectionChangeEvent
 import io.github.rosemoe.sora.event.SideIconClickEvent
-import io.github.rosemoe.sora.langs.java.JavaLanguage
+import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
+import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
+import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
+import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
+import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
+import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
+import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
 import io.github.rosemoe.sora.text.LineSeparator
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import io.github.rosemoe.sora.widget.getComponent
 import io.github.rosemoe.sora.widget.subscribeEvent
+import org.eclipse.tm4e.core.registry.IThemeSource
 
 
 class CEComposeBinding(
@@ -99,9 +106,17 @@ class CEComposeBinding(
         binding.editorTools.isVisible = showToolbar
 
 
-        val editor = binding.editor
+        loadDefaultThemes()
+        loadDefaultLanguages()
 
-        editor.setEditorLanguage(JavaLanguage())
+        ensureTextmateTheme()
+
+        val editor = binding.editor
+        val language = TextMateLanguage.create(
+            "source.java", true
+        )
+
+        editor.setEditorLanguage(language)
 
         // Load file here.
         editor.setText(initialText)
@@ -114,6 +129,47 @@ class CEComposeBinding(
     private fun updateBtnState() {
         binding.btnUndo.isEnabled = binding.editor.canUndo()
         binding.btnRedo.isEnabled = binding.editor.canRedo()
+    }
+
+    private /*suspend*/ fun loadDefaultThemes() /*= withContext(Dispatchers.IO)*/ {
+        //add assets file provider
+        FileProviderRegistry.getInstance().addFileProvider(
+            AssetsFileResolver(
+                context.assets
+            )
+        )
+
+        val themes = arrayOf("darcula", "abyss", "quietlight", "solarized_drak")
+        val themeRegistry = ThemeRegistry.getInstance()
+        themes.forEach { name ->
+            val path = "textmate/$name.json"
+            themeRegistry.loadTheme(
+                ThemeModel(
+                    IThemeSource.fromInputStream(
+                        FileProviderRegistry.getInstance().tryGetInputStream(path), path, null
+                    ), name
+                ).apply {
+                    if (name != "quietlight") {
+                        isDark = true
+                    }
+                }
+            )
+        }
+
+        themeRegistry.setTheme("quietlight")
+    }
+
+    private /*suspend*/ fun loadDefaultLanguages() /*= withContext(Dispatchers.Main)*/ {
+        GrammarRegistry.getInstance().loadGrammars("textmate/languages.json")
+    }
+
+    private fun ensureTextmateTheme() {
+        val editor = binding.editor
+        var editorColorScheme = editor.colorScheme
+        if (editorColorScheme !is TextMateColorScheme) {
+            editorColorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
+            editor.colorScheme = editorColorScheme
+        }
     }
 
     private fun updatePositionText() {
