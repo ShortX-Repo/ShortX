@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+option java_package = "shortx.plugin";
+option java_outer_classname = "OuterPluginSDK";
+option java_multiple_files = true;
+
+
+message ParamsData {
+  map<string, string> stringData = 1;
+  map<string, int32> intData = 2;
+  map<string, int64> longData = 3;
+  map<string, float> floatData = 4;
+  map<string, bool> boolData = 5;
+
+  map<string, StringList> stringListData = 6;
+  map<string, IntList> intListData = 7;
+  map<string, LongList> longListData = 8;
+  map<string, BoolList> boolListData = 9;
+
+  map<string, StringMap> stringMapData = 10;
+}
+
+message StringList {
+  repeated string string = 1;
+}
+
+message IntList {
+  repeated int32 int = 1[packed = true];
+}
+
+message LongList {
+  repeated int64 long = 1[packed = true];
+}
+
+message BoolList {
+  repeated bool bool = 1[packed = true];
+}
+
+message StringMap {
+  map<string, string> data = 1;
+}
