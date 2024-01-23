@@ -11,6 +11,7 @@ import "shortx/Conditions.proto";
 import "shortx/GlobalVars.proto";
 import "shortx/Settings.proto";
 import "shortx/Functions.proto";
+import "tornaco.apps.shortx.proto/sdk.proto";
 
 message NoAction {
   string icon = 1;
@@ -1256,7 +1257,7 @@ message AppShortcut {
 
 message PluginAction {
   string pluginId = 1;
-  repeated StringPair config = 2;
+  ParamsData params = 2;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;

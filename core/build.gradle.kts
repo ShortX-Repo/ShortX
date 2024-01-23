@@ -89,6 +89,8 @@ dependencies {
 
     implementation(libs.kotlin.reflect)
 
+    protobuf(libs.shortx.plugin.sdk)
+
     implementation(project(":external:utils"))
 }
 
