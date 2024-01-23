@@ -4,6 +4,7 @@ import android.content.Context
 import com.google.protobuf.Message
 import dalvik.system.PathClassLoader
 import shortx.plugin.Intents
+import shortx.plugin.ParamsData
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.services.rule.actor.Actor
@@ -20,7 +21,19 @@ object PluginAction : Actor {
     ): Unit = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.PluginAction::class.java
         logger.i("execute plugin action: ${d.pluginId}")
-        val paramsData = d.params
+        val paramsData = d.params.let { wrapper ->
+            ParamsData.newBuilder()
+                .putAllStringData(wrapper.stringDataMap)
+                .putAllIntData(wrapper.intDataMap)
+                .putAllLongData(wrapper.longDataMap)
+                .putAllFloatData(wrapper.floatDataMap)
+                .putAllBoolData(wrapper.boolDataMap)
+                .putAllStringListData(wrapper.stringListDataMap.mapValues {
+                    shortx.plugin.StringList.newBuilder().addAllString(it.value.stringList).build()
+                })
+                // TODO Add More.
+                .build()
+        }
         val pluginId = d.pluginId
         val actionEvaluatorIns =
             requireNotNull(getPluginActionEvaluatorObject(pluginId, androidContext)) {

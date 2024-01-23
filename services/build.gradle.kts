@@ -43,6 +43,8 @@ dependencies {
 
     implementation(libs.zxing.core)
 
+    implementation(libs.shortx.plugin.sdk)
+    
     testImplementation(libs.junit)
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotest.property)

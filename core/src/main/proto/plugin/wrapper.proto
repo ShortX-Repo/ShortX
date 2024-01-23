@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+option java_package = "shortx.plugin.wrapper";
+option java_outer_classname = "OuterPluginWrapper";
+option java_multiple_files = true;
+
+
+message ParamsDataWrapper {
+  map<string, string> stringData = 1;
+  map<string, int32> intData = 2;
+  map<string, int64> longData = 3;
+  map<string, float> floatData = 4;
+  map<string, bool> boolData = 5;
+
+  map<string, StringListWrapper> stringListData = 6;
+  map<string, IntListWrapper> intListData = 7;
+  map<string, LongListWrapper> longListData = 8;
+  map<string, BoolListWrapper> boolListData = 9;
+
+  map<string, StringMapWrapper> stringMapData = 10;
+}
+
+message StringListWrapper {
+  repeated string string = 1;
+}
+
+message IntListWrapper {
+  repeated int32 int = 1[packed = true];
+}
+
+message LongListWrapper {
+  repeated int64 long = 1[packed = true];
+}
+
+message BoolListWrapper {
+  repeated bool bool = 1[packed = true];
+}
+
+message StringMapWrapper {
+  map<string, string> data = 1;
+}

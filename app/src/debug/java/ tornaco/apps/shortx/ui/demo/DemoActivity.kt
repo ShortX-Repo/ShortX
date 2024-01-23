@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import io.github.rosemoe.sora.app.CEActivity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import shortx.plugin.ParamsData
+import shortx.plugin.wrapper.ParamsDataWrapper
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.proto.action.PluginAction
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
@@ -126,7 +126,8 @@ class DemoActivity : BaseActivity() {
                                     PluginAction.newBuilder()
                                         .setPluginId("shortx.pluginsdk")
                                         .setParams(
-                                            ParamsData.newBuilder().putStringData("input", "Nick")
+                                            ParamsDataWrapper.newBuilder()
+                                                .putStringData("input", "Nick")
                                                 .build()
                                         )
                                         .build().pack_().toByteArray()
