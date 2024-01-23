@@ -63,11 +63,11 @@ object PluginAction : Actor {
     ): Any? {
         logger.i("getPluginActionEvaluatorObject: $className from apk: $apkPath")
         val appCl: ClassLoader = PathClassLoader(
-            apkPath.absolutePath, Thread.currentThread().contextClassLoader
+            apkPath.absolutePath, PluginAction::class.java.classLoader
         )
         val overlayClass = appCl.loadClass(className)
         logger.d("overlayClass: $overlayClass")
-        val constructor = overlayClass.getConstructor(Context::class.java)
-        return constructor.newInstance(context)
+        val constructor = overlayClass.getConstructor()
+        return constructor.newInstance()
     }
 }

@@ -34,6 +34,7 @@ import tornaco.apps.shortx.core.proto.action.PluginAction
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
+import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
@@ -123,12 +124,12 @@ class DemoActivity : BaseActivity() {
                                 ByteArrayWrapper(evaluateContext.toByteArray()),
                                 ByteArrayWrapper(
                                     PluginAction.newBuilder()
-                                        .setPluginId("shortx.pluginsdk.demo")
+                                        .setPluginId("shortx.pluginsdk")
                                         .setParams(
                                             ParamsData.newBuilder().putStringData("input", "Nick")
                                                 .build()
                                         )
-                                        .build().toByteArray()
+                                        .build().pack_().toByteArray()
                                 )
                             )
                         }) {
