@@ -104,6 +104,28 @@ class WatchDogService(shortXContext: ShortXContext) :
         )
     }
 
+    fun onUiAutomationAlreadyRegisterError() {
+        logger.w("onUiAutomationAlreadyRegisterError")
+        shortXContext.notification.post(
+            PostNotification.newBuilder()
+                .setTitle(i18NIns["ui.settings.fatal.error.ui.auto.already.registered.title"])
+                .setMessage(i18NIns["ui.settings.fatal.error.ui.auto.already.registered.message"])
+                .setId("ShortX.WatchDog.UiAuto")
+                .setIsImportant(true)
+                .setSmallIcon(Remix.System.alert_fill)
+                .addClickAction(
+                    LaunchApp.newBuilder()
+                        .setId("ShortX.WatchDog.UiAuto")
+                        .setAppPkg(
+                            AppPkg.newBuilder().setUserId(myUserId)
+                                .setPkgName(BuildProp.APP_PACKAGE_NAME).build()
+                        )
+                        .build().pack_()
+                )
+                .build()
+        )
+    }
+
     fun hasFatalError() = fatalErrors.isNotEmpty()
 }
 

@@ -162,11 +162,22 @@ class WindowManagerService(shortXContext: ShortXContext) :
                 if (!automationManager.isConnected) {
                     logger.w("ensureAutomationConnected, connect: $reason")
                     disableThanoxProfileAutoEngine()
+                    // java.lang.IllegalStateException: UiAutomationService android.accessibilityservice.IAccessibilityServiceClient$Stub$Proxy@1548193already registered!
+                    //	at com.android.server.accessibility.UiAutomationManager.registerUiTestAutomationServiceLocked(UiAutomationManager.java:104)
+                    //	at com.android.server.accessibility.AccessibilityManagerService.registerUiTestAutomationService(AccessibilityManagerService.java:1249)
+                    //	at android.app.UiAutomationConnection.registerUiTestAutomationServiceLocked(UiAutomationConnection.java:558)
+                    //	at android.app.UiAutomationConnection.connect(UiAutomationConnection.java:112)
                     automationManager.connect()
                     automationManager.setOnAccessibilityEventListener(this)
                 }
             }.onFailure {
-                shortXContext.watchDog.onFatalError(it, "ensureAutomationConnected")
+                if (it is IllegalStateException && it.message.orEmpty()
+                        .contains("already registered")
+                ) {
+                    shortXContext.watchDog.onUiAutomationAlreadyRegisterError()
+                } else {
+                    shortXContext.watchDog.onFatalError(it, "ensureAutomationConnected")
+                }
             }
         }
     }
