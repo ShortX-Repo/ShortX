@@ -28,7 +28,12 @@ import androidx.compose.ui.unit.dp
 import io.github.rosemoe.sora.app.CEActivity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import shortx.plugin.ParamsData
 import tornaco.apps.shortx.core.ShortXManagerNative
+import tornaco.apps.shortx.core.proto.action.PluginAction
+import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
+import tornaco.apps.shortx.core.proto.rule.EvaluateContext
+import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
@@ -36,6 +41,7 @@ import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.settings.TileSettingsActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import java.util.Locale
+import java.util.UUID
 
 class DemoActivity : BaseActivity() {
     @Composable
@@ -105,6 +111,28 @@ class DemoActivity : BaseActivity() {
                             ShortXManagerNative.shortX?.reportFATALError("Test")
                         }) {
                             Text(text = "Test fatal error")
+                        }
+
+                        FilledTonalButton(onClick = {
+                            val evaluateContext = EvaluateContext.newBuilder()
+                                .setSrcId("Test-" + UUID.randomUUID().toString())
+                                .setSrcEvent(ContextSrcEvent.ContextSrc_ExecuteOnDAEditor)
+                                .setSrcTitle("Testing")
+                                .build()
+                            ShortXManagerNative.shortX?.executeAction(
+                                ByteArrayWrapper(evaluateContext.toByteArray()),
+                                ByteArrayWrapper(
+                                    PluginAction.newBuilder()
+                                        .setPluginId("shortx.pluginsdk.demo")
+                                        .setParams(
+                                            ParamsData.newBuilder().putStringData("input", "Nick")
+                                                .build()
+                                        )
+                                        .build().toByteArray()
+                                )
+                            )
+                        }) {
+                            Text(text = "Plugin action")
                         }
 
                         FilledTonalButton(onClick = {

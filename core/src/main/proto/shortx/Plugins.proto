@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option java_package = "tornaco.apps.shortx.core.proto.plugins";
+option java_outer_classname = "OuterPlugins";
+option java_multiple_files = true;
+
+import "google/protobuf/any.proto";
+
+message ShortXPlugin {
+  string pkgName = 1;
+  string pluginName = 2;
+  string pluginDescription = 3;
+  bool isEnabled = 4;
+}

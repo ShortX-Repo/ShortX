@@ -907,6 +907,8 @@
     "ui.settings.debug.log.export.description": "导出日志文件到 {dir}",
     "ui.settings.export.log.error.title": "导出失败，请手动进设置授文件读写权限",
     "ui.settings.export.log.error.action": "设置",
+    "ui.settings.fatal.error.ui.auto.already.registered.title": "ShortX无法连接到UI Automation",
+    "ui.settings.fatal.error.ui.auto.already.registered.message": "似乎是被其他使用了UI Automation的应用占用了，此时ShortX的某些UI相关的功能可能无法正常工作",
     "ui.settings.fatal.error.title": "兼容性错误",
     "ui.settings.fatal.error.message": "检测到兼容性错误，可能会导致某些功能出现异常，请在设置中导出日志反馈给开发者",
     "ui.settings.key.event.prompt": "按键事件提示",

@@ -908,6 +908,8 @@
     "ui.settings.debug.log.export.description": "Export logs to {dir}",
     "ui.settings.export.log.error.title": "Fail to export, pls grant Storage permission and try again",
     "ui.settings.export.log.error.action": "Grant",
+    "ui.settings.fatal.error.ui.auto.already.registered.title": "Can not connect ui auto",
+    "ui.settings.fatal.error.ui.auto.already.registered.message": "ShortX cannot connect to UI automation due to a conflict with another app that is already utilizing UI automation. Some UI releated Facts, Conditions, Actions may not work.",
     "ui.settings.fatal.error.title": "Compatibility error",
     "ui.settings.fatal.error.message": "A compatibility error has been detected. It is recommended to feed back the logs to developer",
     "ui.settings.key.event.prompt": "Key event prompt",
