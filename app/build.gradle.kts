@@ -101,6 +101,8 @@ android {
 
     packaging {
         resources.excludes.add("/META-INF/{AL2.0,LGPL2.1}")
+        resources.pickFirsts.add("google/protobuf/*.proto")
+        resources.pickFirsts.add("tornaco.apps.shortx.proto/*.proto")
     }
 
     applicationVariants.all {
