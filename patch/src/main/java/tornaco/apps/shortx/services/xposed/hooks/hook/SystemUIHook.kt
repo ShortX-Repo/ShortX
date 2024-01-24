@@ -201,8 +201,23 @@ class QSTileHostImpl(private val hostObj: Any, private val shortx: IShortX) : IQ
                     val isCustomTile = tile.javaClass.name.endsWith("CustomTile")
                     logger.d("Tile class: ${tile.javaClass.name}")
                     if (isCustomTile) {
-                        // void handleClick(@Nullable View view)
-                        Reflections.callMethod(tile, "handleClick", arrayOf(View::class.java), null)
+                        runCatching {
+                            // void handleClick(@Nullable View view)
+                            Reflections.callMethod(
+                                tile,
+                                "handleClick",
+                                arrayOf(View::class.java),
+                                null
+                            )
+                        }.onFailure {
+                            // Some MIUI systemui
+                            // com.android.systemui.qs.external.CustomTile.handleClick():void
+                            Reflections.callMethod(tile, "handleClick")
+                        }.onFailure {
+                            throw Error(it)
+                        }
+
+
                     } else {
                         // Normal android
                         // click(View v);
