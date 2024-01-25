@@ -234,8 +234,15 @@ class QSTileHostImpl(private val hostObj: Any, private val shortx: IShortX) : IQ
                         runCatching {
                             Reflections.callMethod(tile, "click", arrayOf(View::class.java), null)
                         }.onFailure {
-                            logger.w("Call click(view) fail, try click()")
-                            Reflections.callMethod(tile, "click")
+                            runCatching {
+                                logger.w("Call click(view) fail, try click()")
+                                Reflections.callMethod(tile, "click")
+                            }.onFailure {
+                                // MIUI some rom
+                                // protected void handleClick()
+                                logger.w("Call click() fail, try handleClick()")
+                                Reflections.callMethod(tile, "handleClick")
+                            }
                         }
                     }
                 }
