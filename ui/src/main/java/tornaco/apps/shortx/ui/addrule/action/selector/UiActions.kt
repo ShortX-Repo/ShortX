@@ -277,7 +277,12 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
 }
 
 @Composable
-fun UiActions(keyword: String, subscribeState: LVLStateHolder.State, addAction: (Action) -> Unit) {
+fun UiActions(
+    keyword: String,
+    subscribeState: LVLStateHolder.State,
+    selectedFilter: ActionCategory,
+    addAction: (Action) -> Unit
+) {
     val i18N = LocalI18N.current
 
     val uiActionItems = listOf(
@@ -321,12 +326,15 @@ fun UiActions(keyword: String, subscribeState: LVLStateHolder.State, addAction: 
     }
 
     val categoryState = rememberCategoryState(categoryTitle = i18N[ActionCategory.Ui.i18NKey])
-    if (uiActionItems.isNotEmpty()) {
+    if (uiActionItems.isNotEmpty() && selectedFilter == ActionCategory.All) {
         ActionCategory(i18N[ActionCategory.Ui.i18NKey], uiActionItems.size, categoryState)
     }
 
+    val isVisible =
+        (categoryState.isExpand && selectedFilter == ActionCategory.All) || selectedFilter == ActionCategory.Ui
+
     val handler = uiActionSelectHandler(addAction = addAction)
-    AnimatedVisibility(visible = categoryState.isExpand) {
+    AnimatedVisibility(visible = isVisible) {
         SelectorList(
             items = uiActionItems,
             itemSelected = {

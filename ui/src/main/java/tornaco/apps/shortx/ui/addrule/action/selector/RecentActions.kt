@@ -16,12 +16,12 @@ import kotlin.reflect.KClass
 
 @Composable
 fun RecentActions(
-    actions: SelectorState,
+    recentActions: List<KClass<out Action>> = emptyList(),
     subscribeState: LVLStateHolder.State,
     addAction: (Action) -> Unit
 ) {
     val i18N = LocalI18N.current
-    val actionItems = actions.recentActions.map {
+    val actionItems = recentActions.map {
         SelectorItem(
             type = it,
             labelAndDescription = labelAndDescriptionForActionSelector(i18N, it),

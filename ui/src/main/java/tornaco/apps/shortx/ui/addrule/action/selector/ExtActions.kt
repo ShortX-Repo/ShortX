@@ -262,7 +262,12 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
 }
 
 @Composable
-fun ExtActions(keyword: String, subscribeState: LVLStateHolder.State, addAction: (Action) -> Unit) {
+fun ExtActions(
+    keyword: String,
+    subscribeState: LVLStateHolder.State,
+    selectedFilter: ActionCategory,
+    addAction: (Action) -> Unit
+) {
     val i18N = LocalI18N.current
     val actionItems = listOf(
         Action.FromDA::class,
@@ -292,13 +297,15 @@ fun ExtActions(keyword: String, subscribeState: LVLStateHolder.State, addAction:
     }
 
     val categoryState = rememberCategoryState(categoryTitle = i18N[ActionCategory.Advanced.i18NKey])
-    if (actionItems.isNotEmpty()) {
+    if (actionItems.isNotEmpty() && selectedFilter == ActionCategory.All) {
         ActionCategory(i18N[ActionCategory.Advanced.i18NKey], actionItems.size, categoryState)
     }
 
     val itemSelected = extActionSelectHandler(addAction = addAction)
 
-    AnimatedVisibility(visible = categoryState.isExpand) {
+    val isVisible =
+        (categoryState.isExpand && selectedFilter == ActionCategory.All) || selectedFilter == ActionCategory.Advanced
+    AnimatedVisibility(visible = isVisible) {
         SelectorList(
             items = actionItems,
             itemSelected = { it ->
