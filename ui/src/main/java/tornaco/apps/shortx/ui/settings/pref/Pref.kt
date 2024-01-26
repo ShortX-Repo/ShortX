@@ -53,6 +53,12 @@ private val MISC_UI_TOGGLES =
 private val SELECTED_ACTION_FILTER =
     stringPreferencesKey("selected_action_filter")
 
+private val SELECTED_DA_FILTER =
+    stringPreferencesKey("selected_da_filter")
+
+private val SELECTED_RULE_FILTER =
+    stringPreferencesKey("selected_rule_filter")
+
 class Pref(val context: Context) {
     companion object {
         private val gson by lazy { Gson() }
@@ -101,6 +107,12 @@ class Pref(val context: Context) {
 
     val selectedActionFilter: Flow<String> = context.dataStore.data.map { preferences ->
         preferences[SELECTED_ACTION_FILTER] ?: ""
+    }
+    val selectedDAFilter: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[SELECTED_DA_FILTER] ?: ""
+    }
+    val selectedRuleFilter: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[SELECTED_RULE_FILTER] ?: ""
     }
 
     val shareAuthorInfo: Flow<Author> = context.dataStore.data.map { preferences ->
@@ -193,6 +205,18 @@ class Pref(val context: Context) {
     suspend fun setSelectedActionFilter(filter: String) {
         context.dataStore.edit {
             it[SELECTED_ACTION_FILTER] = filter
+        }
+    }
+
+    suspend fun setSelectedDAFilter(filter: String) {
+        context.dataStore.edit {
+            it[SELECTED_DA_FILTER] = filter
+        }
+    }
+
+    suspend fun setSelectedRuleFilter(filter: String) {
+        context.dataStore.edit {
+            it[SELECTED_RULE_FILTER] = filter
         }
     }
 
