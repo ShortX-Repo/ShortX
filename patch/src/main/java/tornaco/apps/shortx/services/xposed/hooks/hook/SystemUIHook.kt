@@ -214,7 +214,7 @@ class QSTileHostImpl(private val hostObj: Any, private val shortx: IShortX) : IQ
                             // com.android.systemui.qs.external.CustomTile.handleClick():void
                             Reflections.callMethod(tile, "handleClick")
                         }.onFailure {
-                            throw Error(it)
+                            logger.e(it, "click CustomTile")
                         }
 
 
@@ -241,7 +241,11 @@ class QSTileHostImpl(private val hostObj: Any, private val shortx: IShortX) : IQ
                                 // MIUI some rom
                                 // protected void handleClick()
                                 logger.w("Call click() fail, try handleClick()")
-                                Reflections.callMethod(tile, "handleClick")
+                                runCatching {
+                                    Reflections.callMethod(tile, "handleClick")
+                                }.onFailure {
+                                    logger.e(it, "click")
+                                }
                             }
                         }
                     }
