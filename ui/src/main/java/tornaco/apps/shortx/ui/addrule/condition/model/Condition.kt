@@ -27,12 +27,14 @@ sealed interface Condition : Parcelable {
     val id: String
     val note: String
     val isInvert: Boolean
+    val isDisabled: Boolean
     val customContextDataKey: CustomContextDataKey
 
     fun clone(
         id: String,
         note: String,
         isInvert: Boolean,
+        isDisabled: Boolean,
         customContextDataKey: CustomContextDataKey
     ): Condition
 
@@ -43,6 +45,7 @@ sealed interface Condition : Parcelable {
         val op: Op,
         override val note: String = "",
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewConditionId()
     ) : Condition {
@@ -50,12 +53,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -67,6 +72,7 @@ sealed interface Condition : Parcelable {
         val op: Op,
         override val note: String = "",
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewConditionId()
     ) : Condition {
@@ -74,12 +80,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -92,6 +100,7 @@ sealed interface Condition : Parcelable {
         val op: Op,
         override val note: String = "",
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewConditionId()
     ) : Condition {
@@ -99,12 +108,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -117,6 +128,7 @@ sealed interface Condition : Parcelable {
         val op: Op,
         override val note: String = "",
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewConditionId()
     ) : Condition {
@@ -124,12 +136,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -140,6 +154,7 @@ sealed interface Condition : Parcelable {
         val isEnableAPM: Boolean,
         override val note: String = "",
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewConditionId()
     ) : Condition {
@@ -147,12 +162,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -163,6 +180,7 @@ sealed interface Condition : Parcelable {
         val isShown: Boolean,
         override val note: String = "",
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewConditionId()
     ) : Condition {
@@ -170,12 +188,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -188,6 +208,7 @@ sealed interface Condition : Parcelable {
         val op: Op,
         override val note: String = "",
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewConditionId()
     ) : Condition {
@@ -195,12 +216,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -213,6 +236,7 @@ sealed interface Condition : Parcelable {
 
         override val note: String = "",
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewConditionId()
     ) : Condition {
@@ -220,12 +244,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -238,6 +264,7 @@ sealed interface Condition : Parcelable {
 
         override val note: String = "",
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewConditionId()
     ) : Condition {
@@ -245,12 +272,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -260,6 +289,7 @@ sealed interface Condition : Parcelable {
     data class ScreenIsOn(
         override val note: String = "",
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewConditionId()
     ) : Condition {
@@ -267,12 +297,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -282,6 +314,7 @@ sealed interface Condition : Parcelable {
     data class VPNIsConnected(
         override val note: String = "",
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewConditionId()
     ) : Condition {
@@ -289,12 +322,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -308,6 +343,7 @@ sealed interface Condition : Parcelable {
         val op: Op,
         override val note: String = "",
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewConditionId()
     ) : Condition {
@@ -315,12 +351,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -334,6 +372,7 @@ sealed interface Condition : Parcelable {
 
         override val note: String = "",
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewConditionId()
     ) : Condition {
@@ -341,12 +380,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -361,6 +402,7 @@ sealed interface Condition : Parcelable {
 
         override val note: String = "",
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewConditionId()
     ) : Condition {
@@ -368,12 +410,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -383,6 +427,7 @@ sealed interface Condition : Parcelable {
     data class MVEL(
         val expression: String,
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId()
@@ -391,12 +436,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -406,6 +453,7 @@ sealed interface Condition : Parcelable {
     data class JS(
         val expression: String,
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId()
@@ -414,12 +462,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -428,6 +478,7 @@ sealed interface Condition : Parcelable {
     @Parcelize
     data class TRUE(
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId()
@@ -436,12 +487,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -454,6 +507,7 @@ sealed interface Condition : Parcelable {
         val payload: GlobalVarOpPayload,
 
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId()
@@ -462,12 +516,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -480,6 +536,7 @@ sealed interface Condition : Parcelable {
         val payload: GlobalVarOpPayload,
 
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId()
@@ -488,12 +545,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -505,6 +564,7 @@ sealed interface Condition : Parcelable {
         val op: IntOp,
 
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId()
@@ -513,12 +573,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -530,6 +592,7 @@ sealed interface Condition : Parcelable {
         val op: IntOp,
 
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId()
@@ -538,12 +601,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -554,6 +619,7 @@ sealed interface Condition : Parcelable {
         val requireIsCharge: Boolean,
 
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId()
@@ -562,12 +628,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -578,6 +646,7 @@ sealed interface Condition : Parcelable {
         val type: PlugType,
 
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId()
@@ -586,12 +655,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -602,6 +673,7 @@ sealed interface Condition : Parcelable {
         val range: TimeOfADayRange,
 
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId()
@@ -610,12 +682,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -626,6 +700,7 @@ sealed interface Condition : Parcelable {
         val requiredSSID: String = "*",
 
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId()
@@ -634,12 +709,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -648,6 +725,7 @@ sealed interface Condition : Parcelable {
     @Parcelize
     data class RequireWifiDisconnected(
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId()
@@ -656,12 +734,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -672,6 +752,7 @@ sealed interface Condition : Parcelable {
         val requiredDevice: String = "*",
 
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId()
@@ -680,12 +761,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -694,6 +777,7 @@ sealed interface Condition : Parcelable {
     @Parcelize
     data class RequireBTDisconnected(
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId()
@@ -702,12 +786,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -716,6 +802,7 @@ sealed interface Condition : Parcelable {
     @Parcelize
     data class RequireMobileDataEnabled(
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId(),
@@ -726,12 +813,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -740,6 +829,7 @@ sealed interface Condition : Parcelable {
     @Parcelize
     data class KeyguardIsLocked(
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId(),
@@ -748,12 +838,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -762,6 +854,7 @@ sealed interface Condition : Parcelable {
     @Parcelize
     data class ScreenOrientationIsPort(
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId(),
@@ -770,12 +863,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -784,6 +879,7 @@ sealed interface Condition : Parcelable {
     @Parcelize
     data class IsInCall(
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId(),
@@ -792,12 +888,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -806,6 +904,7 @@ sealed interface Condition : Parcelable {
     @Parcelize
     data class IsRinging(
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId(),
@@ -814,12 +913,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -829,6 +930,7 @@ sealed interface Condition : Parcelable {
     @Parcelize
     data class HasNodeOnScreen(
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId(),
@@ -841,12 +943,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -855,6 +959,7 @@ sealed interface Condition : Parcelable {
     @Parcelize
     data class IsRuleEnabled(
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId(),
@@ -866,12 +971,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -880,6 +987,7 @@ sealed interface Condition : Parcelable {
     @Parcelize
     data class IsHeadsetPlug(
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId(),
@@ -889,12 +997,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -903,6 +1013,7 @@ sealed interface Condition : Parcelable {
     @Parcelize
     data class RequireScreenRotate(
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId(),
@@ -912,12 +1023,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -926,6 +1039,7 @@ sealed interface Condition : Parcelable {
     @Parcelize
     data class RequireWindowRotation(
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId(),
@@ -935,12 +1049,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -949,6 +1065,7 @@ sealed interface Condition : Parcelable {
     @Parcelize
     data class RequireDelay(
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId(),
@@ -959,12 +1076,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -973,6 +1092,7 @@ sealed interface Condition : Parcelable {
     @Parcelize
     data class RequireSensorOff(
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId(),
@@ -983,12 +1103,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -997,6 +1119,7 @@ sealed interface Condition : Parcelable {
     @Parcelize
     data class RequireTileState(
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId(),
@@ -1008,12 +1131,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1022,6 +1147,7 @@ sealed interface Condition : Parcelable {
     @Parcelize
     data class RequireFactTag(
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId(),
@@ -1032,12 +1158,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1046,6 +1174,7 @@ sealed interface Condition : Parcelable {
     @Parcelize
     data class TheXXTimeToday(
         override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId(),
@@ -1059,12 +1188,14 @@ sealed interface Condition : Parcelable {
             id: String,
             note: String,
             isInvert: Boolean,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Condition {
             return copy(
                 id = id,
                 note = note,
                 isInvert = isInvert,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }

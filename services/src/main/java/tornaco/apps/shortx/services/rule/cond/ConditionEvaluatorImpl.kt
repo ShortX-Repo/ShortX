@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule.cond
 
 import android.content.Context
+import com.google.protobuf.Descriptors
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
@@ -8,10 +9,20 @@ import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.ProtoAny
+import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.pack_
+import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.actor.impl.MVELExecutor
+
+
+data class ConditionAttrs(
+    val id: String,
+    val isDisabled: Boolean,
+)
+
 
 class ConditionEvaluatorImpl(
     private val context: Context,
@@ -33,6 +44,16 @@ class ConditionEvaluatorImpl(
             return ConditionEvaluator.EvaluateResult.Break(evaluateContext)
         }
         return kotlin.runCatching {
+            // Do not worry about unpack cost, protobuf has cache.
+            val unPacked = condition unpack_ cond.condClass()
+            val attrs = extractConditionAttrs(unPacked)
+            val conditionId = attrs?.id.fallbackOnEmpty("Unknown-Condition-Id")
+            logger.d("Condition attrs: $attrs")
+
+            if (attrs != null && attrs.isDisabled) {
+                return ConditionEvaluator.EvaluateResult.Disabled(evaluateContext)
+            }
+
             val matchRes =
                 cond.evaluate(
                     Cond.CondParam(
@@ -136,6 +157,23 @@ class ConditionEvaluatorImpl(
             else -> {
                 conditions.all { evaluate(evaluateContext, it, contextData, localVars).isMatch() }
             }
+        }
+    }
+
+    private fun extractConditionAttrs(condition: ProtoMessage): ConditionAttrs? {
+        return runCatching {
+            val idDescriptor: Descriptors.FieldDescriptor =
+                condition.descriptorForType.findFieldByName("id")
+            val id: String = condition.getField(idDescriptor) as String
+
+            val isDisabledDescriptor: Descriptors.FieldDescriptor =
+                condition.descriptorForType.findFieldByName("isDisabled")
+            val isDisabled: Boolean = condition.getField(isDisabledDescriptor) as Boolean
+
+            ConditionAttrs(id, isDisabled)
+        }.getOrElse {
+            logger.e(it, "extractConditionAttrs: $condition")
+            null
         }
     }
 }

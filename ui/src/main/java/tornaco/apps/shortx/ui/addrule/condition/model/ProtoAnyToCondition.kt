@@ -63,6 +63,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 apps = models.first,
                 pkgSets = models.second,
@@ -76,6 +77,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 stringPairs = data.pkgAndUsersList,
                 op = data.op.toOp(null)
@@ -89,6 +91,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 apps = models.first,
                 pkgSets = models.second,
@@ -103,6 +106,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 apps = models.first,
                 pkgSets = models.second,
@@ -117,6 +121,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 apps = models.first,
                 pkgSets = models.second,
@@ -131,6 +136,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 apps = models.first,
                 pkgSets = models.second,
@@ -144,6 +150,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 op = data.op.toOp(null),
                 services = data.servicesList
@@ -156,6 +163,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 op = data.op.toOp(null),
                 activities = data.activitiesList
@@ -169,6 +177,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 apps = models.first,
                 pkgSets = models.second,
@@ -183,6 +192,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 apps = models.first,
                 pkgSets = models.second,
@@ -196,6 +206,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 expression = data.expression
             )
@@ -207,6 +218,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 expression = data.expression
             )
@@ -233,6 +245,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 varName = data.varName,
                 op = data.op,
@@ -246,6 +259,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 varName = data.varName,
                 op = data.op,
@@ -259,6 +273,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 op = data.op,
                 value = data.value
@@ -271,6 +286,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 op = data.op,
                 level = data.level
@@ -283,6 +299,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 requireIsCharge = data.requireIsCharge
             )
@@ -294,6 +311,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 type = data.type
             )
@@ -305,6 +323,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 range = data.range
             )
@@ -316,6 +335,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 requiredSSID = data.requiredSSID
             )
@@ -327,6 +347,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey
             )
         }
@@ -337,6 +358,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 requiredDevice = data.device
             )
@@ -348,6 +370,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey
             )
         }
@@ -358,6 +381,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 slot = data.slotId
             )
@@ -369,6 +393,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey
             )
         }
@@ -379,6 +404,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey
             )
         }
@@ -389,6 +415,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey
             )
         }
@@ -399,6 +426,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey
             )
         }
@@ -409,6 +437,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 packageName = data.packageName,
                 componentName = data.componentName,
@@ -431,6 +460,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 ruleId = data.ruleId,
                 isEnabled = data.isEnabled,
@@ -444,6 +474,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 isPlug = data.isPlug
             )
@@ -455,6 +486,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 degree = data.degree
             )
@@ -466,6 +498,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 degree = data.degree
             )
@@ -477,6 +510,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 timeString = data.timeString,
                 isAlarm = data.useAlarm
@@ -489,6 +523,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 isRequireOn = data.isRequireOn
             )
@@ -500,6 +535,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 state = data.state,
                 spec = data.tileSpec
@@ -512,6 +548,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 tag = data.tag,
             )
@@ -523,6 +560,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 isEnableAPM = data.isAPMEnable
             )
@@ -534,6 +572,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 isShown = data.isShown
             )
@@ -545,6 +584,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 what = data.what,
                 scope = data.scope,
