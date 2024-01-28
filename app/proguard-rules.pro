@@ -68,6 +68,10 @@
 -keep class com.faendir.rhino_android** {*;}
 -keep class org.mozilla** {*;}
 
+# Code Editor
+-keep class io.github.rosemoe** {*;}
+-keep class org.eclipse.tm4e** {*;}
+
 -keep class tornaco.apps.shortx.services.util.http.persistentcookiejar** {*;}
 
 # Retain generic signatures of TypeToken and its subclasses with R8 version 3.0 and higher.
