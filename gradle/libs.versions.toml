@@ -1,5 +1,5 @@
 [versions]
-accompanist = "0.33.2-alpha"
+accompanist = "0.34.0"
 activity-compose = "1.8.2"
 agp = "8.2.2"
 biometric = "1.2.0-alpha05"
