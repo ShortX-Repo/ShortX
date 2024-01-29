@@ -32,6 +32,7 @@ import tornaco.apps.shortx.ui.main.RuleSortBy
 import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.settings.ResetEventRegistry
 import tornaco.apps.shortx.ui.settings.RestoreEventRegistry
+import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.addShareContentHeader
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
@@ -51,6 +52,8 @@ data class RuleListState(
 @SuppressLint("StaticFieldLeak")
 abstract class BaseRuleListViewModel(context: Context) :
     ContextViewModel<RuleListState>(context, { RuleListState() }) {
+    val pref by lazy { Pref(context) }
+
     private var loadRuleJob: Job? = null
 
     private val jobStatusListener = object : IJobStatusListener.Stub() {
