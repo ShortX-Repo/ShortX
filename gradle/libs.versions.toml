@@ -1,7 +1,7 @@
 [versions]
 accompanist = "0.33.2-alpha"
 activity-compose = "1.8.2"
-agp = "8.2.1"
+agp = "8.2.2"
 biometric = "1.2.0-alpha05"
 rang-vikalp = "1.0.0-alpha02"
 sardine-android = "v0.8"
