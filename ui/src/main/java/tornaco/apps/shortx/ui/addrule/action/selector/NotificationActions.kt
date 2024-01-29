@@ -140,6 +140,7 @@ fun notificationActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectS
 fun NotificationActions(
     keyword: String,
     subscribeState: LVLStateHolder.State,
+    selectedFilter: ActionCategory,
     addAction: (Action) -> Unit
 ) {
     val i18N = LocalI18N.current
@@ -167,13 +168,15 @@ fun NotificationActions(
 
     val categoryState =
         rememberCategoryState(categoryTitle = i18N[ActionCategory.Notifications.i18NKey])
-    if (actionItems.isNotEmpty()) {
+    if (actionItems.isNotEmpty() && selectedFilter == ActionCategory.All) {
         ActionCategory(i18N[ActionCategory.Notifications.i18NKey], actionItems.size, categoryState)
     }
 
     val selectHandler = notificationActionSelectHandler(addAction = addAction)
 
-    AnimatedVisibility(visible = categoryState.isExpand) {
+    val isVisible =
+        (categoryState.isExpand && selectedFilter == ActionCategory.All) || selectedFilter == ActionCategory.Notifications
+    AnimatedVisibility(visible = isVisible) {
         SelectorList(
             actionItems = actionItems,
             itemSelected = { it, _ ->

@@ -1,11 +1,14 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -24,6 +27,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import org.orbitmvi.orbit.compose.collectAsState
+import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.allActionClasses
@@ -33,13 +37,18 @@ import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
+import tornaco.apps.shortx.ui.base.SearchBarState
+import tornaco.apps.shortx.ui.base.ShortXFilterChip
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import kotlin.reflect.KClass
 
+@DoNotStrip
 enum class ActionCategory(val i18NKey: String, val icon: String) {
+    All("ui.action.all", Remix.Buildings.store_2_line),
     Recent("ui.action.recent", Remix.System.history_line),
     Ui("UI", Remix.Design.layout_2_fill),
     Apps("ui.action.category.app", Remix.System.apps_2_fill),
@@ -89,8 +98,13 @@ fun ActionSelector(close: () -> Unit, onSelected: (Action) -> Unit) {
                 ) {
                     ClickOutsideClearFocusBox {
                         Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.SpaceBetween
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 8.dp)
+                                .verticalScroll(
+                                    rememberScrollState()
+                                ),
+                            verticalArrangement = Arrangement.Top
                         ) {
                             val selectorVM = hiltViewModel<ActionSelectorViewModel>()
                             val selectorState by selectorVM.state.collectAsState()
@@ -98,7 +112,37 @@ fun ActionSelector(close: () -> Unit, onSelected: (Action) -> Unit) {
                                 onSelected(it)
                                 selectorVM.onActionAdd(it)
                             }
-                            AllActions(selectorState, addAction)
+
+                            val searchBarState = rememberSearchBarState(
+                                itemCount = allActionClasses.size,
+                                keywordChanged = { })
+                            SearchBar(searchBarState = searchBarState)
+
+                            val selectedFilter = selectorState.selectedFilter
+                            FlowRow(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Start
+                            ) {
+                                ActionCategory.entries.forEach {
+                                    ShortXFilterChip(
+                                        modifier = Modifier.padding(start = 16.dp),
+                                        selected = selectedFilter == it,
+                                        label = {
+                                            Text(text = LocalI18N.current[it.i18NKey])
+                                        },
+                                        onClick = {
+                                            selectorVM.selectFilterCategory(it)
+                                        })
+                                }
+                            }
+
+                            StandardSpacer()
+                            AllActions(
+                                selectedFilter = selectedFilter,
+                                recentActions = selectorState.recentActions,
+                                searchBarState = searchBarState,
+                                addAction = addAction
+                            )
                         }
                     }
                 }
@@ -109,63 +153,72 @@ fun ActionSelector(close: () -> Unit, onSelected: (Action) -> Unit) {
 
 @Composable
 private fun AllActions(
-    selectorState: SelectorState,
+    selectedFilter: ActionCategory,
+    recentActions: List<KClass<out Action>>,
+    searchBarState: SearchBarState,
     addAction: (Action) -> Unit,
 ) {
-    Column(
-        modifier = Modifier
-            .padding(horizontal = 8.dp)
-            .verticalScroll(rememberScrollState())
+    val subscribeState by LVLStateHolder.collectAsState()
+
+    RecentActions(
+        searchBarState = searchBarState,
+        subscribeState = subscribeState,
+        selectedFilter = selectedFilter,
+        recentActions = recentActions,
+        addAction = addAction
+    )
+
+    UiActions(searchBarState.keyword, subscribeState, selectedFilter, addAction = addAction)
+    AppActions(searchBarState.keyword, subscribeState, selectedFilter, addAction = addAction)
+
+    SystemActions(searchBarState.keyword, subscribeState, selectedFilter, addAction = addAction)
+
+    NotificationActions(
+        searchBarState.keyword,
+        subscribeState,
+        selectedFilter,
+        addAction = addAction
+    )
+
+    ExtActions(searchBarState.keyword, subscribeState, selectedFilter, addAction = addAction)
+    VarActions(searchBarState.keyword, subscribeState, selectedFilter, addAction = addAction)
+    LifeActions(searchBarState.keyword, subscribeState, selectedFilter, addAction = addAction)
+    MiscActions(searchBarState.keyword, subscribeState, selectedFilter, addAction = addAction)
+}
+
+@Composable
+private fun RecentActions(
+    searchBarState: SearchBarState,
+    subscribeState: LVLStateHolder.State,
+    selectedFilter: ActionCategory,
+    recentActions: List<KClass<out Action>>,
+    addAction: (Action) -> Unit
+) {
+    val categoryState =
+        rememberCategoryState(categoryTitle = LocalI18N.current[ActionCategory.Recent.i18NKey])
+    if (recentActions.isNotEmpty() && selectedFilter == ActionCategory.All) {
+        ActionCategory(
+            LocalI18N.current[ActionCategory.Recent.i18NKey],
+            recentActions.size,
+            categoryState
+        )
+    }
+
+    val isVisible = selectedFilter == ActionCategory.All || selectedFilter == ActionCategory.Recent
+    AnimatedVisibility(
+        visible = isVisible && searchBarState.keyword.isBlank()
+                && recentActions.isNotEmpty()
     ) {
-        val searchBarState = rememberSearchBarState(
-            itemCount = allActionClasses.size,
-            keywordChanged = { })
-        SearchBar(searchBarState = searchBarState)
-
-        val subscribeState by LVLStateHolder.collectAsState()
-
-        AnimatedVisibility(visible = searchBarState.keyword.isBlank() && selectorState.recentActions.isNotEmpty()) {
-            Column {
-                val categoryState =
-                    rememberCategoryState(categoryTitle = LocalI18N.current[ActionCategory.Recent.i18NKey])
-                ActionCategory(
-                    LocalI18N.current[ActionCategory.Recent.i18NKey],
-                    selectorState.recentActions.size,
-                    categoryState
+        Column {
+            AnimatedVisibility(visible = categoryState.isExpand) {
+                RecentActions(
+                    recentActions = recentActions,
+                    subscribeState = subscribeState,
+                    addAction = addAction
                 )
-                AnimatedVisibility(visible = categoryState.isExpand) {
-                    RecentActions(
-                        actions = selectorState,
-                        subscribeState = subscribeState,
-                        addAction = addAction
-                    )
-                }
-                StandardSpacer()
             }
+            StandardSpacer()
         }
-        UiActions(searchBarState.keyword, subscribeState, addAction = addAction)
-        StandardSpacer()
-
-        AppActions(searchBarState.keyword, subscribeState, addAction = addAction)
-        StandardSpacer()
-
-        NotificationActions(searchBarState.keyword, subscribeState, addAction = addAction)
-        StandardSpacer()
-
-        SystemActions(searchBarState.keyword, subscribeState, addAction = addAction)
-        StandardSpacer()
-
-        ExtActions(searchBarState.keyword, subscribeState, addAction = addAction)
-        StandardSpacer()
-
-        VarActions(searchBarState.keyword, subscribeState, addAction = addAction)
-        StandardSpacer()
-
-        LifeActions(searchBarState.keyword, subscribeState, addAction = addAction)
-        StandardSpacer()
-
-        MiscActions(searchBarState.keyword, subscribeState, addAction = addAction)
-        StandardSpacer()
     }
 }
 

@@ -107,7 +107,12 @@ fun varActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
 }
 
 @Composable
-fun VarActions(keyword: String, subscribeState: LVLStateHolder.State, addAction: (Action) -> Unit) {
+fun VarActions(
+    keyword: String,
+    subscribeState: LVLStateHolder.State,
+    selectedFilter: ActionCategory,
+    addAction: (Action) -> Unit
+) {
     val i18N = LocalI18N.current
     val actionItems = listOf(
         Action.WriteGV::class,
@@ -130,13 +135,15 @@ fun VarActions(keyword: String, subscribeState: LVLStateHolder.State, addAction:
     }
 
     val categoryState = rememberCategoryState(categoryTitle = i18N[ActionCategory.Vars.i18NKey])
-    if (actionItems.isNotEmpty()) {
+    if (actionItems.isNotEmpty() && selectedFilter == ActionCategory.All) {
         ActionCategory(i18N[ActionCategory.Vars.i18NKey], actionItems.size, categoryState)
     }
 
     val itemSelected = varActionSelectHandler(addAction = addAction)
 
-    AnimatedVisibility(visible = categoryState.isExpand) {
+    val isVisible =
+        (categoryState.isExpand && selectedFilter == ActionCategory.All) || selectedFilter == ActionCategory.Vars
+    AnimatedVisibility(visible = isVisible) {
         SelectorList(
             items = actionItems,
             itemSelected = { it ->

@@ -81,6 +81,11 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.appPkgToString
 import tornaco.apps.shortx.services.ShortXContext
 
+data class FactAttrs(
+    val id: String,
+    val isDisabled: Boolean,
+)
+
 internal class Matcher(
     val targetClass: String,
     val impl: (l: ProtoMessage, r: ProtoMessage) -> Boolean
@@ -576,7 +581,11 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
     private fun match(actualFact: ProtoMessage, ruleFact: ProtoAny): Boolean {
         return if (ruleFact is_ actualFact.javaClass) {
             val targetFactMessage = ruleFact unpack_ actualFact.javaClass
-            match0(actualFact, targetFactMessage)
+
+            val factAttrs = extractFactAttrs(targetFactMessage)
+            logger.d("ruleFact attrs: $factAttrs")
+            val isDisabled = factAttrs?.isDisabled ?: false
+            !isDisabled && match0(actualFact, targetFactMessage)
         } else {
             false
         }
@@ -597,6 +606,23 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
         return res
     }
 
+
+    private fun extractFactAttrs(fact: ProtoMessage): FactAttrs? {
+        return runCatching {
+            val idDescriptor: Descriptors.FieldDescriptor =
+                fact.descriptorForType.findFieldByName("id")
+            val id: String = fact.getField(idDescriptor) as String
+
+            val isDisabledDescriptor: Descriptors.FieldDescriptor =
+                fact.descriptorForType.findFieldByName("isDisabled")
+            val isDisabled: Boolean = fact.getField(isDisabledDescriptor) as Boolean
+
+            FactAttrs(id, isDisabled)
+        }.getOrElse {
+            logger.e(it, "extractFactAttrs: $fact")
+            null
+        }
+    }
 }
 
 fun matchWithAppOrPkgSetListFact(

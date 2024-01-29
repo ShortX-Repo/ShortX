@@ -31,6 +31,14 @@ fun ConditionEvaluator.EvaluateResult.toConditionEvaluateRecord(): ConditionEval
                 .setCondition(condition)
                 .setTimeStamp(System.currentTimeMillis()).build()
         }
+
+        is ConditionEvaluator.EvaluateResult.Disabled -> {
+            ConditionEvaluateRecord.newBuilder()
+                .setIsSuccess(true)
+                .setMessage("Disabled")
+                .setContext(this.evaluateContext)
+                .setTimeStamp(System.currentTimeMillis()).build()
+        }
     }
 }
 

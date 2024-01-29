@@ -22,7 +22,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.res.Remix
@@ -71,6 +73,7 @@ import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberTipDialogState
 import tornaco.apps.shortx.ui.rememberClipboardDialogState
+import tornaco.apps.shortx.ui.theme.ErrorRed
 
 class ConditionHandler(
     val addCondition: (Condition) -> Unit,
@@ -137,6 +140,7 @@ fun ConditionList(
                                         id = currentCondition.id,
                                         note = currentCondition.note,
                                         isInvert = currentCondition.isInvert,
+                                        isDisabled = currentCondition.isDisabled,
                                         customContextDataKey = currentCondition.customContextDataKey
                                     )
                                 )
@@ -147,6 +151,7 @@ fun ConditionList(
                                         id = currentCondition.id,
                                         note = currentCondition.note,
                                         isInvert = currentCondition.isInvert,
+                                        isDisabled = currentCondition.isDisabled,
                                         customContextDataKey = currentCondition.customContextDataKey
                                     )
                                 )
@@ -157,6 +162,7 @@ fun ConditionList(
                                         id = currentCondition.id,
                                         note = currentCondition.note,
                                         isInvert = currentCondition.isInvert,
+                                        isDisabled = currentCondition.isDisabled,
                                         customContextDataKey = currentCondition.customContextDataKey
                                     )
                                 )
@@ -167,6 +173,7 @@ fun ConditionList(
                                         id = currentCondition.id,
                                         note = currentCondition.note,
                                         isInvert = currentCondition.isInvert,
+                                        isDisabled = currentCondition.isDisabled,
                                         customContextDataKey = currentCondition.customContextDataKey
                                     )
                                 )
@@ -211,6 +218,9 @@ fun ConditionList(
                                             clickDropdownState.open()
                                         }
                                     },
+                                    textDecoration = if (conditionItem.isDisabled.not()) TextDecoration.None else TextDecoration.LineThrough,
+                                    titleColor = if (conditionItem.isDisabled.not()) Color.Unspecified else ErrorRed,
+                                    textColor = if (conditionItem.isDisabled.not()) Color.Unspecified else ErrorRed,
                                     action1 = {
                                         val invertDialog = rememberTipDialogState(
                                             title = LocalI18N.current["ui.condition.invert"],
@@ -303,6 +313,19 @@ fun ConditionList(
                                         icon = {
                                             RemixIcon(
                                                 remixName = Remix.Arrows.arrow_go_back_line,
+                                                tint = colorForCondition(conditionItem::class)
+                                            )
+                                        }
+                                    ),
+                                    DropdownItem(
+                                        labelLines = listOf(
+                                            LocalI18N.current["ui.common.toggle.enable.disable"],
+                                            LocalI18N.current["ui.common.toggle.enable.disable.summary"]
+                                        ),
+                                        data = currentCondition.id to "enableDisable",
+                                        icon = {
+                                            RemixIcon(
+                                                remixName = Remix.System.toggle_line,
                                                 tint = colorForCondition(conditionItem::class)
                                             )
                                         }

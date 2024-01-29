@@ -37,8 +37,17 @@ fun ConditionContentStateHandler.asConditionHandler(): ConditionHandler {
         insertBelow = { condition, anchorId ->
             insertConditionBelow(condition, anchorId)
         },
-        enableDisable = {
-
+        enableDisable = { conditionId ->
+            val currentCondition = conditions.first { it.id == conditionId }
+            addCondition(
+                currentCondition.clone(
+                    id = currentCondition.id,
+                    note = currentCondition.note,
+                    isInvert = currentCondition.isInvert,
+                    isDisabled = !currentCondition.isDisabled,
+                    customContextDataKey = currentCondition.customContextDataKey
+                )
+            )
         },
         invert = { conditionId ->
             val currentCondition = conditions.first { it.id == conditionId }
@@ -47,6 +56,7 @@ fun ConditionContentStateHandler.asConditionHandler(): ConditionHandler {
                     id = currentCondition.id,
                     note = currentCondition.note,
                     isInvert = !currentCondition.isInvert,
+                    isDisabled = currentCondition.isDisabled,
                     customContextDataKey = currentCondition.customContextDataKey
                 )
             )

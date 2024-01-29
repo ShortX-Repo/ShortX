@@ -13,7 +13,6 @@ import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.remote.RemoteExecuteMVELAction
 import tornaco.apps.shortx.ui.remote.RemoteRepo
 import tornaco.apps.shortx.ui.settings.pref.Pref
-import java.util.*
 import javax.inject.Inject
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmName
@@ -26,7 +25,8 @@ interface RemoteExecuteMVELActionLoadState {
 
 data class SelectorState(
     val remoteActionsState: RemoteExecuteMVELActionLoadState = RemoteExecuteMVELActionLoadState.Loading,
-    val recentActions: List<KClass<out Action>> = emptyList()
+    val recentActions: List<KClass<out Action>> = emptyList(),
+    val selectedFilter: ActionCategory = ActionCategory.All
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -55,11 +55,30 @@ class ActionSelectorViewModel @Inject constructor(@ApplicationContext context: C
                 }
             }
         }
+
+        viewModelScope.launch {
+            pref.selectedActionFilter.collectLatest {
+                updateState {
+                    copy(selectedFilter = runCatching {
+                        ActionCategory.valueOf(it)
+                    }.getOrElse { ActionCategory.All })
+                }
+            }
+        }
     }
 
     fun onActionAdd(action: Action) {
         viewModelScope.launch {
             pref.addRecentSelectedAction(action::class.jvmName)
+        }
+    }
+
+    fun selectFilterCategory(category: ActionCategory) {
+        updateState {
+            copy(selectedFilter = category)
+        }
+        viewModelScope.launch {
+            pref.setSelectedActionFilter(category.name)
         }
     }
 

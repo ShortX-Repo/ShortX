@@ -41,8 +41,9 @@ interface ConditionEvaluator {
         ) : EvaluateResult
 
         data class Break(override val evaluateContext: EvaluateContext) : EvaluateResult
+        data class Disabled(override val evaluateContext: EvaluateContext) : EvaluateResult
     }
 }
 
 fun ConditionEvaluator.EvaluateResult.isMatch() =
-    this is ConditionEvaluator.EvaluateResult.Success && this.match
+    (this is ConditionEvaluator.EvaluateResult.Success && this.match) || this is ConditionEvaluator.EvaluateResult.Disabled

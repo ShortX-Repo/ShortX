@@ -12,6 +12,7 @@ message AnyFact {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message KeyEvent {
@@ -21,6 +22,7 @@ message KeyEvent {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message AdvancedKeyEvent {
@@ -32,6 +34,7 @@ message AdvancedKeyEvent {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message ScreenOn {
@@ -39,6 +42,7 @@ message ScreenOn {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message ScreenOff {
@@ -46,6 +50,7 @@ message ScreenOff {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message UserPresent {
@@ -53,6 +58,7 @@ message UserPresent {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message UserPresentAtTheFirstTime {
@@ -60,6 +66,7 @@ message UserPresentAtTheFirstTime {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message BatteryLevelChanged {
@@ -70,6 +77,7 @@ message BatteryLevelChanged {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message BatteryTemperatureChanged {
@@ -80,6 +88,7 @@ message BatteryTemperatureChanged {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 
@@ -88,6 +97,7 @@ message ChargerPlug {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message ChargerUnplug {
@@ -95,6 +105,7 @@ message ChargerUnplug {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message EdgeGesture {
@@ -106,6 +117,7 @@ message EdgeGesture {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 enum Edge {
@@ -158,6 +170,7 @@ message Alarm {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message RandomInPeriod {
@@ -170,6 +183,7 @@ message RandomInPeriod {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message FixedInPeriod {
@@ -183,6 +197,7 @@ message FixedInPeriod {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message FixedByTimes {
@@ -201,6 +216,7 @@ message AppBecomeFg {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message AppBecomeBg {
@@ -211,6 +227,7 @@ message AppBecomeBg {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message BTStatusChanged {
@@ -220,6 +237,7 @@ message BTStatusChanged {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message BTConnectedTo {
@@ -229,6 +247,7 @@ message BTConnectedTo {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message BTDisconnectedFrom {
@@ -238,6 +257,7 @@ message BTDisconnectedFrom {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message WifiStatusChanged {
@@ -247,6 +267,7 @@ message WifiStatusChanged {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message WifiConnectedTo {
@@ -256,6 +277,7 @@ message WifiConnectedTo {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message WifiDisconnectedFrom {
@@ -265,6 +287,7 @@ message WifiDisconnectedFrom {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message MobileDataStatusChanged {
@@ -274,6 +297,7 @@ message MobileDataStatusChanged {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message NFCStatusChanged {
@@ -283,6 +307,7 @@ message NFCStatusChanged {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message FlashLightStatusChanged {
@@ -292,6 +317,7 @@ message FlashLightStatusChanged {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message LocationStatusChanged {
@@ -301,6 +327,7 @@ message LocationStatusChanged {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message HotSpotStatusChanged {
@@ -310,6 +337,7 @@ message HotSpotStatusChanged {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message DarkModeStatusChanged {
@@ -319,6 +347,7 @@ message DarkModeStatusChanged {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message DNDStatusChanged {
@@ -328,6 +357,7 @@ message DNDStatusChanged {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message APMStatusChanged {
@@ -337,6 +367,7 @@ message APMStatusChanged {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message ActivityStarted {
@@ -346,6 +377,7 @@ message ActivityStarted {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message Notification {
@@ -375,6 +407,7 @@ message NotificationPosted {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message NotificationRemoved {
@@ -385,6 +418,7 @@ message NotificationRemoved {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message NotificationUpdated {
@@ -395,6 +429,7 @@ message NotificationUpdated {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message TaskRemoved {
@@ -405,6 +440,7 @@ message TaskRemoved {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message SystemReady {
@@ -412,6 +448,7 @@ message SystemReady {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message AppAdded {
@@ -419,6 +456,7 @@ message AppAdded {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message AppRemoved {
@@ -429,6 +467,7 @@ message AppRemoved {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message AppUpdated {
@@ -439,6 +478,7 @@ message AppUpdated {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message PkgStopRunning {
@@ -449,6 +489,7 @@ message PkgStopRunning {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message AudioFocusGain {
@@ -459,6 +500,7 @@ message AudioFocusGain {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message AudioFocusLost {
@@ -469,6 +511,7 @@ message AudioFocusLost {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message AudioFocusChanged {
@@ -476,6 +519,7 @@ message AudioFocusChanged {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message Broadcast {
@@ -486,6 +530,7 @@ message Broadcast {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message VPNConnected {
@@ -493,6 +538,7 @@ message VPNConnected {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message VPNDisconnected {
@@ -500,6 +546,7 @@ message VPNDisconnected {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message MediaStoreInsert {
@@ -513,6 +560,7 @@ message MediaStoreInsert {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message OnStartOp {
@@ -525,6 +573,7 @@ message OnStartOp {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message OnFinishOp {
@@ -537,6 +586,7 @@ message OnFinishOp {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message OnQSTileClick {
@@ -546,6 +596,7 @@ message OnQSTileClick {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message SystemSettingsChanged {
@@ -556,6 +607,7 @@ message SystemSettingsChanged {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message CallStateChanged {
@@ -566,6 +618,7 @@ message CallStateChanged {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message ClipboardContentChanged {
@@ -576,6 +629,7 @@ message ClipboardContentChanged {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message GlobalVarChanged {
@@ -585,6 +639,7 @@ message GlobalVarChanged {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message HasFoundNodeOnScreen {
@@ -597,6 +652,7 @@ message HasFoundNodeOnScreen {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message NodeMatcherViewId {
@@ -615,6 +671,7 @@ message AppProcessStarted {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message HeadsetPlug {
@@ -624,6 +681,7 @@ message HeadsetPlug {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 // Sensor
@@ -634,6 +692,7 @@ message ScreenRotate {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message WindowRotationChange {
@@ -643,6 +702,7 @@ message WindowRotationChange {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message IMEVisibilityChange {
@@ -652,6 +712,7 @@ message IMEVisibilityChange {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message AppGainWindowFocus {
@@ -662,6 +723,7 @@ message AppGainWindowFocus {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message AppLostWindowFocus {
@@ -672,6 +734,7 @@ message AppLostWindowFocus {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message DeepLinkCall {
@@ -681,6 +744,7 @@ message DeepLinkCall {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
 
 message ConnectedWifiSignalLevelChanged {
@@ -691,4 +755,5 @@ message ConnectedWifiSignalLevelChanged {
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
   string id = 100;
+  bool isDisabled = 101;
 }
