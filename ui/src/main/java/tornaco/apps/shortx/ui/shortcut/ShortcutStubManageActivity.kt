@@ -50,6 +50,7 @@ import com.godaddy.android.colorpicker.toColorInt
 import dagger.hilt.android.AndroidEntryPoint
 import org.orbitmvi.orbit.compose.collectSideEffect
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
 import tornaco.apps.shortx.ui.base.ColoredIcon
@@ -94,9 +95,13 @@ class ShortcutStubManageActivity : BaseActivity() {
 
         vm.collectSideEffect(sideEffect = {
             when (it) {
-                ShortcutStubManageEffect.InstallFailure -> {
+                is ShortcutStubManageEffect.InstallFailure -> {
                     progressDialogState.dismiss()
-                    Toast.makeText(context, i18N["ui.common.install.failed"], Toast.LENGTH_LONG)
+                    Toast.makeText(
+                        context,
+                        it.message.fallbackOnEmpty { i18N["ui.common.install.failed"] },
+                        Toast.LENGTH_LONG
+                    )
                         .show()
                 }
 

@@ -20,6 +20,7 @@ import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.util.ShortcutHelper
 import java.io.File
 
@@ -30,11 +31,12 @@ data class ShortcutStubManageState(
 sealed interface ShortcutStubManageEffect {
     data object Installing : ShortcutStubManageEffect
     data object InstallSuccess : ShortcutStubManageEffect
-    data object InstallFailure : ShortcutStubManageEffect
+    data class InstallFailure(val message: String) : ShortcutStubManageEffect
 }
 
 class ShortcutStubManageViewModel : ViewModel(),
     ContainerHost<ShortcutStubManageState, ShortcutStubManageEffect> {
+    private val logger = Logger("ShortcutStubManageViewModel");
 
     override val container: Container<ShortcutStubManageState, ShortcutStubManageEffect> =
         container(initialState = ShortcutStubManageState())
@@ -61,32 +63,44 @@ class ShortcutStubManageViewModel : ViewModel(),
             postSideEffect(ShortcutStubManageEffect.Installing)
         }
 
-        val apkFile = ShortcutHelper.createShortcutStubApkFor(
-            context,
-            info.appLabel,
-            info.appIcon,
-            "1.0",
-            info.appPkgName,
-            1
-        )
-        val pfd = ParcelFileDescriptor.open(apkFile, ParcelFileDescriptor.MODE_READ_WRITE)
-        shortXManager.installApk(
-            info.appPkgName,
-            pfd,
-            onSuccess = object : ICallback.Stub() {
-                override fun receive(data: ByteArrayWrapper?) {
-                    intent {
-                        postSideEffect(ShortcutStubManageEffect.InstallSuccess)
+        runCatching {
+            val apkFile = ShortcutHelper.createShortcutStubApkFor(
+                context,
+                info.appLabel,
+                info.appIcon,
+                "1.0",
+                info.appPkgName,
+                1
+            )
+
+            val pfd = ParcelFileDescriptor.open(apkFile, ParcelFileDescriptor.MODE_READ_WRITE)
+            shortXManager.installApk(
+                info.appPkgName,
+                pfd,
+                onSuccess = object : ICallback.Stub() {
+                    override fun receive(data: ByteArrayWrapper?) {
+                        intent {
+                            postSideEffect(ShortcutStubManageEffect.InstallSuccess)
+                        }
                     }
-                }
-            },
-            onFailure = object : ICallback.Stub() {
-                override fun receive(data: ByteArrayWrapper?) {
-                    intent {
-                        postSideEffect(ShortcutStubManageEffect.InstallFailure)
+                },
+                onFailure = object : ICallback.Stub() {
+                    override fun receive(data: ByteArrayWrapper?) {
+                        intent {
+                            postSideEffect(ShortcutStubManageEffect.InstallFailure("Install failed."))
+                        }
                     }
-                }
-            })
+                })
+        }.onFailure {
+            logger.e(it, "Install apk")
+            intent {
+                postSideEffect(
+                    ShortcutStubManageEffect.InstallFailure(
+                        it.message ?: "Unknown error"
+                    )
+                )
+            }
+        }
     }
 
     private fun viewApkFile(context: Context, file: File) {

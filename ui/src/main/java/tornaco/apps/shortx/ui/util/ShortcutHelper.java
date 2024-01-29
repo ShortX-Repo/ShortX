@@ -6,11 +6,18 @@ import android.graphics.Color;
 
 import androidx.annotation.WorkerThread;
 
+import com.android.tools.build.apkzlib.sign.SigningExtension;
+import com.android.tools.build.apkzlib.sign.SigningOptions;
+import com.android.tools.build.apkzlib.zip.AlignmentRules;
+import com.android.tools.build.apkzlib.zip.ZFile;
+import com.android.tools.build.apkzlib.zip.ZFileOptions;
 import com.google.common.io.Files;
 import com.stardust.autojs.apkbuilder.ApkBuilder;
 
 import java.io.File;
 import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.cert.X509Certificate;
 import java.util.Objects;
 
 import kotlin.io.FilesKt;
@@ -23,6 +30,12 @@ public class ShortcutHelper {
     private static final String OUT_APK_PATH = "shortcut_stub_apks";
     private static final String WORK_DIR_PATH = "tmp_";
     private static final String ICON_DIR_PATH = "icon.png";
+
+    private static final ZFileOptions Z_FILE_OPTIONS = new ZFileOptions().setAlignmentRule(AlignmentRules.compose(
+            AlignmentRules.constantForSuffix(".so", 4096),
+            AlignmentRules.constantForSuffix(".apk", 4096)
+    ));
+
 
     public static void cleanUp(Context context) {
         try {
@@ -54,7 +67,9 @@ public class ShortcutHelper {
         if (!compressed) {
             throw new IllegalStateException("Compress fail.");
         }
-        return generateStubApk(context, workDir, iconPath, appLabel, versionName, packageName, versionCode);
+        File stubApk = generateStubApk(context, workDir, iconPath, appLabel, versionName, packageName, versionCode);
+        signApk(context, stubApk);
+        return stubApk;
     }
 
     private static File generateStubApk(Context context,
@@ -94,5 +109,26 @@ public class ShortcutHelper {
                 .cleanWorkspace();
 
         return outApk;
+    }
+
+    private static void signApk(Context context, File apkFile) {
+        try {
+            ZFile dstZFile = ZFile.openReadWrite(apkFile, Z_FILE_OPTIONS);
+            var keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            // Followed by 4 arguments: keystore path, keystore password, keystore alias, keystore alias password
+            // List<String> keystoreArgs = Arrays.asList(null, "123456", "key0", "123456");
+            try (var is = context.getAssets().open("apk/keystore")) {
+                keyStore.load(is, "123456".toCharArray());
+            }
+            var entry = (KeyStore.PrivateKeyEntry) keyStore.getEntry("shortx", new KeyStore.PasswordProtection("123456".toCharArray()));
+            new SigningExtension(SigningOptions.builder()
+                    .setMinSdkVersion(28)
+                    .setV2SigningEnabled(true)
+                    .setCertificates((X509Certificate[]) entry.getCertificateChain())
+                    .setKey(entry.getPrivateKey())
+                    .build()).register(dstZFile);
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to signApk", e);
+        }
     }
 }

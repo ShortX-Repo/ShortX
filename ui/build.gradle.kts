@@ -116,6 +116,7 @@ dependencies {
     implementation(project(":external:dex-maker"))
     implementation(project(":external:apkbuilder"))
     implementation(project(":external:codeditor"))
+    implementation(project(":external:apkzlib"))
 
     implementation(libs.mmkv)
     implementation(libs.jotp)
