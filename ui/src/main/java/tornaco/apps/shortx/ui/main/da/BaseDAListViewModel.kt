@@ -48,7 +48,7 @@ data class DAListState(
 @SuppressLint("StaticFieldLeak")
 abstract class BaseDAListViewModel(context: Context) :
     ContextViewModel<DAListState>(context, { DAListState() }) {
-    private val pref by lazy { Pref(context) }
+    protected val pref by lazy { Pref(context) }
     private var loadDAJob: Job? = null
 
     private val jobStatusListener = object : IJobStatusListener.Stub() {

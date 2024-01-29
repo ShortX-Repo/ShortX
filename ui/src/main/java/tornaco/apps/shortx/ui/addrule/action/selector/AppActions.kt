@@ -514,7 +514,12 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
 }
 
 @Composable
-fun AppActions(keyword: String, subscribeState: LVLStateHolder.State, addAction: (Action) -> Unit) {
+fun AppActions(
+    keyword: String,
+    subscribeState: LVLStateHolder.State,
+    selectedFilter: ActionCategory,
+    addAction: (Action) -> Unit
+) {
     val i18N = LocalI18N.current
     val actionItems = arrayOf(
         Action.StartActivity::class,
@@ -561,13 +566,15 @@ fun AppActions(keyword: String, subscribeState: LVLStateHolder.State, addAction:
     }
 
     val categoryState = rememberCategoryState(categoryTitle = i18N[ActionCategory.Apps.i18NKey])
-    if (actionItems.isNotEmpty()) {
+    if (actionItems.isNotEmpty() && selectedFilter == ActionCategory.All) {
         ActionCategory(i18N[ActionCategory.Apps.i18NKey], actionItems.size, categoryState)
     }
 
     val selectHandler = appActionSelectHandler(addAction = addAction)
 
-    AnimatedVisibility(visible = categoryState.isExpand) {
+    val isVisible =
+        (categoryState.isExpand && selectedFilter == ActionCategory.All) || selectedFilter == ActionCategory.Apps
+    AnimatedVisibility(visible = isVisible) {
         SelectorList(
             actionItems = actionItems,
             itemSelected = { it, _ ->

@@ -52,6 +52,7 @@ fun lifeActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
 fun LifeActions(
     keyword: String,
     subscribeState: LVLStateHolder.State,
+    selectedFilter: ActionCategory,
     addAction: (Action) -> Unit
 ) {
     val i18N = LocalI18N.current
@@ -75,12 +76,15 @@ fun LifeActions(
         }
 
     val categoryState = rememberCategoryState(categoryTitle = i18N[ActionCategory.Life.i18NKey])
-    if (actionItems.isNotEmpty()) {
+    if (actionItems.isNotEmpty() && selectedFilter == ActionCategory.All) {
         ActionCategory(i18N[ActionCategory.Life.i18NKey], actionItems.size, categoryState)
     }
 
     val selectHandler = lifeActionSelectHandler(addAction = addAction)
-    AnimatedVisibility(visible = categoryState.isExpand) {
+
+    val isVisible =
+        (categoryState.isExpand && selectedFilter == ActionCategory.All) || selectedFilter == ActionCategory.Life
+    AnimatedVisibility(visible = isVisible) {
         SelectorList(
             items = actionItems,
             itemSelected = { it ->

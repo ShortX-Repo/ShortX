@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
@@ -37,11 +38,23 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                 val gvs = shortXManager.getAllGlobalVars()
                 val allDASets = shortXManager.getAllDASets()
 
-                // This set is not exists anymore.
-                if (state.value.selectedDASetFilter.id != null
-                    && allDASets.none { it.id == state.value.selectedDASetFilter.id }
-                ) {
+
+                val selectedFilterId = pref.selectedDAFilter.firstOrNull()
+                val selectedSetOrNull =
+                    selectedFilterId?.let { allDASets.firstOrNull { it.id == selectedFilterId } }
+                if (selectedSetOrNull == null) {
+                    // This set is not exists anymore.
+                    pref.setSelectedDAFilter("")
                     updateState { copy(selectedDASetFilter = CommonSetFilter.PinnedAll) }
+                } else {
+                    updateState {
+                        copy(
+                            selectedDASetFilter = CommonSetFilter.UserSet(
+                                id = selectedFilterId,
+                                title = selectedSetOrNull.title
+                            )
+                        )
+                    }
                 }
 
                 val selectedDASetFilter = state.value.selectedDASetFilter
@@ -161,6 +174,9 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
 
     fun selectDASetFilter(daSetFilter: CommonSetFilter) {
         updateState { copy(selectedDASetFilter = daSetFilter) }
-        loadDAList()
+        viewModelScope.launch {
+            pref.setSelectedDAFilter(daSetFilter.id.orEmpty())
+            loadDAList()
+        }
     }
 }

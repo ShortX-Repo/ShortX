@@ -22,6 +22,8 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.context.ContextDataMapping.asAccessExample
 import tornaco.apps.shortx.core.context.GenericContextData
@@ -67,6 +69,7 @@ import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.base.rememberTipDialogState
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.rememberClipboardDialogState
+import tornaco.apps.shortx.ui.theme.ErrorRed
 
 class FactHandler(
     val addFact: (Fact) -> Unit,
@@ -149,6 +152,7 @@ private fun FactItem(
                     id = currentFact.id,
                     note = currentFact.note,
                     tag = currentFact.tag,
+                    isDisabled = currentFact.isDisabled,
                     customContextDataKey = currentFact.customContextDataKey
                 )
             )
@@ -160,6 +164,7 @@ private fun FactItem(
                     id = currentFact.id,
                     note = currentFact.note,
                     tag = currentFact.tag,
+                    isDisabled = currentFact.isDisabled,
                     customContextDataKey = currentFact.customContextDataKey
                 ).apply {
                     composeLogger.d("systemFactSelectHandler: $this")
@@ -171,6 +176,7 @@ private fun FactItem(
                     id = currentFact.id,
                     note = currentFact.note,
                     tag = currentFact.tag,
+                    isDisabled = currentFact.isDisabled,
                     customContextDataKey = currentFact.customContextDataKey
                 )
             )
@@ -206,6 +212,9 @@ private fun FactItem(
                     addAll(labelForFact(fact = fact))
                     onDebugBuild { add(currentFact.id) }
                 },
+                textDecoration = if (currentFact.isDisabled.not()) TextDecoration.None else TextDecoration.LineThrough,
+                titleColor = if (currentFact.isDisabled.not()) Color.Unspecified else ErrorRed,
+                textColor = if (currentFact.isDisabled.not()) Color.Unspecified else ErrorRed,
                 icon = {
                     FactIcon(fact) {
                         clickDropdownState.open()
@@ -352,6 +361,19 @@ private fun FactItem(
                         )
                     }
                 ),
+                DropdownItem(
+                    labelLines = listOf(
+                        LocalI18N.current["ui.common.toggle.enable.disable"],
+                        LocalI18N.current["ui.common.toggle.enable.disable.summary"]
+                    ),
+                    data = currentFact.id to FactItemOptions.EnabledDisabled,
+                    icon = {
+                        RemixIcon(
+                            remixName = Remix.System.toggle_line,
+                            tint = colorForFact(fact::class)
+                        )
+                    }
+                ),
             ),
             onSelect = { dropdownItem ->
                 when (dropdownItem.data.second) {
@@ -406,6 +428,10 @@ private fun FactItem(
                     FactItemOptions.Note -> {
                         noteDialogState.show(fact.note)
                     }
+
+                    FactItemOptions.EnabledDisabled -> {
+                        handler.enableDisable(dropdownItem.data.first)
+                    }
                 }
             })
     }
@@ -429,5 +455,5 @@ fun FactIcon(fact: Fact, onClick: (() -> Unit)? = null) {
 }
 
 enum class FactItemOptions {
-    PasteAbove, PasteBelow, Copy, SetTag, Note
+    PasteAbove, PasteBelow, Copy, SetTag, Note, EnabledDisabled
 }

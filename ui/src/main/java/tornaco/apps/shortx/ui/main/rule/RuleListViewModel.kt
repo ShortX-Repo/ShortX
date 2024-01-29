@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.rule.Rule
@@ -36,11 +37,22 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                 val allRules = shortXManager.getAllRules()
                 val allRuleSets = shortXManager.getAllRuleSets()
 
-                // This set is not exists anymore.
-                if (state.value.selectedRuleSetFilter.id != null
-                    && allRuleSets.none { it.id == state.value.selectedRuleSetFilter.id }
-                ) {
+                val selectedFilterId = pref.selectedRuleFilter.firstOrNull()
+                val selectedSetOrNull =
+                    selectedFilterId?.let { allRuleSets.firstOrNull { it.id == selectedFilterId } }
+                if (selectedSetOrNull == null) {
+                    // This set is not exists anymore.
+                    pref.setSelectedRuleFilter("")
                     updateState { copy(selectedRuleSetFilter = CommonSetFilter.PinnedAll) }
+                } else {
+                    updateState {
+                        copy(
+                            selectedRuleSetFilter = CommonSetFilter.UserSet(
+                                id = selectedFilterId,
+                                title = selectedSetOrNull.title
+                            )
+                        )
+                    }
                 }
 
                 val selectedDASetFilter = state.value.selectedRuleSetFilter
@@ -171,6 +183,9 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
 
     fun selectRuleSetFilter(filter: CommonSetFilter) {
         updateState { copy(selectedRuleSetFilter = filter) }
-        loadRuleList()
+        viewModelScope.launch {
+            pref.setSelectedRuleFilter(filter.id.orEmpty())
+            loadRuleList()
+        }
     }
 }
