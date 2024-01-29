@@ -201,8 +201,23 @@ class QSTileHostImpl(private val hostObj: Any, private val shortx: IShortX) : IQ
                     val isCustomTile = tile.javaClass.name.endsWith("CustomTile")
                     logger.d("Tile class: ${tile.javaClass.name}")
                     if (isCustomTile) {
-                        // void handleClick(@Nullable View view)
-                        Reflections.callMethod(tile, "handleClick", arrayOf(View::class.java), null)
+                        runCatching {
+                            // void handleClick(@Nullable View view)
+                            Reflections.callMethod(
+                                tile,
+                                "handleClick",
+                                arrayOf(View::class.java),
+                                null
+                            )
+                        }.onFailure {
+                            // Some MIUI systemui
+                            // com.android.systemui.qs.external.CustomTile.handleClick():void
+                            Reflections.callMethod(tile, "handleClick")
+                        }.onFailure {
+                            logger.e(it, "click CustomTile")
+                        }
+
+
                     } else {
                         // Normal android
                         // click(View v);
@@ -219,8 +234,19 @@ class QSTileHostImpl(private val hostObj: Any, private val shortx: IShortX) : IQ
                         runCatching {
                             Reflections.callMethod(tile, "click", arrayOf(View::class.java), null)
                         }.onFailure {
-                            logger.w("Call click(view) fail, try click()")
-                            Reflections.callMethod(tile, "click")
+                            runCatching {
+                                logger.w("Call click(view) fail, try click()")
+                                Reflections.callMethod(tile, "click")
+                            }.onFailure {
+                                // MIUI some rom
+                                // protected void handleClick()
+                                logger.w("Call click() fail, try handleClick()")
+                                runCatching {
+                                    Reflections.callMethod(tile, "handleClick")
+                                }.onFailure {
+                                    logger.e(it, "click")
+                                }
+                            }
                         }
                     }
                 }

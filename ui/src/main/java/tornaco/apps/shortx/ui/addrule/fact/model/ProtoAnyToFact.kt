@@ -20,6 +20,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -31,6 +32,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -43,6 +45,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 isInterceptMode = data.isInterceptMode,
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -55,6 +58,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 isIntercept = data.isIntercept,
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -65,6 +69,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -75,6 +80,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -85,6 +91,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -96,6 +103,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -106,6 +114,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -118,6 +127,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -131,6 +141,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -145,6 +156,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -158,6 +170,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -171,6 +184,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -185,6 +199,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -199,6 +214,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -209,6 +225,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -222,6 +239,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -235,6 +253,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -247,6 +266,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                     id = data.id,
                     customContextDataKey = data.customContextDataKey,
                     note = data.note,
+                    isDisabled = data.isDisabled,
                     tag = data.tag
                 )
             } else {
@@ -255,6 +275,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                     id = data.id,
                     customContextDataKey = data.customContextDataKey,
                     note = data.note,
+                    isDisabled = data.isDisabled,
                     tag = data.tag
                 )
             }
@@ -268,6 +289,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -280,6 +302,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -292,6 +315,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -303,6 +327,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -315,6 +340,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -327,6 +353,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -339,6 +366,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -350,6 +378,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -361,6 +390,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -373,6 +403,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -385,6 +416,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -397,6 +429,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -408,6 +441,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -420,6 +454,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -442,6 +477,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -464,6 +500,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -486,6 +523,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -501,6 +539,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                     id = data.id,
                     customContextDataKey = data.customContextDataKey,
                     note = data.note,
+                    isDisabled = data.isDisabled,
                     tag = data.tag
                 )
             } else {
@@ -510,6 +549,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                     id = data.id,
                     customContextDataKey = data.customContextDataKey,
                     note = data.note,
+                    isDisabled = data.isDisabled,
                     tag = data.tag
                 )
             }
@@ -526,6 +566,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                     id = data.id,
                     customContextDataKey = data.customContextDataKey,
                     note = data.note,
+                    isDisabled = data.isDisabled,
                     tag = data.tag
                 )
             } else {
@@ -535,6 +576,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                     id = data.id,
                     customContextDataKey = data.customContextDataKey,
                     note = data.note,
+                    isDisabled = data.isDisabled,
                     tag = data.tag
                 )
             }
@@ -553,6 +595,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -569,6 +612,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -580,6 +624,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -591,6 +636,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag,
                 level = data.level
             )
@@ -603,6 +649,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag,
                 temp = data.temp
             )
@@ -615,6 +662,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag,
             )
         }
@@ -626,6 +674,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag,
             )
         }
@@ -637,6 +686,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag,
                 actions = data.actionsList
             )
@@ -649,6 +699,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -660,6 +711,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag
             )
         }
@@ -671,6 +723,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag,
                 filterPathRegex = data.filterPath,
                 matchOptions = data.options
@@ -687,6 +740,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag,
                 codes = data.opCodesList,
                 apps = models.first,
@@ -704,6 +758,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag,
                 codes = data.opCodesList,
                 apps = models.first,
@@ -719,6 +774,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag,
                 tile = StatusBarTile.forNumber(data.tileNumber)
             )
@@ -732,6 +788,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag,
                 urlAndValueRegex = data.urlAndExpectedValueRegex,
                 options = data.matchOptions
@@ -745,6 +802,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.CallStateChanged(
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag,
                 callState = data.callState
             )
@@ -757,6 +815,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.ClipboardContentChanged(
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag,
                 content = data.content,
                 options = data.matchOptions
@@ -770,6 +829,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.GlobalVarChanged(
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag,
                 gvId = data.gvId
             )
@@ -782,6 +842,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.HeadsetPlug(
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag,
                 isPlug = data.isPlug
             )
@@ -794,6 +855,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.ScreenRotate(
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag,
                 degree = data.degree
             )
@@ -806,6 +868,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.WindowRotationChange(
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag,
                 degree = data.degree
             )
@@ -818,6 +881,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.AppProcessStarted(
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag,
                 processNames = data.processNameList
             )
@@ -831,6 +895,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag,
                 isShown = data.isShown
             )
@@ -844,6 +909,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag,
                 level = data.level,
                 rssi = data.rssi
@@ -858,6 +924,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag,
                 deepLinkTag = data.deepLinkTag
             )
@@ -871,6 +938,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
+                isDisabled = data.isDisabled,
                 tag = data.tag,
                 packageName = data.packageName,
                 componentName = data.componentName,

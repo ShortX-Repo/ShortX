@@ -28,6 +28,7 @@ fun defaultNewFactId() = "F-" + UUID.randomUUID().toString()
 
 sealed interface Fact : Parcelable {
     val id: String
+    val isDisabled: Boolean
     val note: String
     val tag: String
     val customContextDataKey: CustomContextDataKey
@@ -36,12 +37,14 @@ sealed interface Fact : Parcelable {
         id: String,
         note: String,
         tag: String,
+        isDisabled: Boolean,
         customContextDataKey: CustomContextDataKey
     ): Fact
 
     @Parcelize
     data class AnyFact(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId()
@@ -50,12 +53,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -65,6 +70,7 @@ sealed interface Fact : Parcelable {
     data class KeyEvent(
         val keyCode: Int,
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId()
@@ -73,12 +79,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -90,6 +98,7 @@ sealed interface Fact : Parcelable {
         val gesture: KeyGesture,
         val isInterceptMode: Boolean,
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId()
@@ -98,12 +107,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -112,6 +123,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class AnyActivityStarted(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId()
@@ -120,12 +132,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -134,7 +148,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class ActivityStarted(
         val components: List<AppComponent>,
-        override val note: String = "",
+        override val note: String = "", override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -144,12 +158,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -161,6 +177,7 @@ sealed interface Fact : Parcelable {
         val gesture: Gesture,
         val isIntercept: Boolean,
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -170,12 +187,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -184,6 +203,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class ScreenOn(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -193,12 +213,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -207,6 +229,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class ScreenOff(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -216,12 +239,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -231,6 +256,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class UserPresent(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -240,12 +266,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -254,7 +282,7 @@ sealed interface Fact : Parcelable {
     // Fact class
     @Parcelize
     data class UserPresentAtTheFirstTime(
-        override val note: String = "",
+        override val note: String = "", override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -264,12 +292,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -279,6 +309,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class SystemReady(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -288,12 +319,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -303,6 +336,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class Alarm(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -313,12 +347,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -328,6 +364,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class RandomInPeriod(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -339,12 +376,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -354,6 +393,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class FixedInPeriod(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -366,12 +406,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -381,6 +423,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class AppBecomeBackground(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -391,12 +434,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -406,6 +451,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class AppBecomeForeground(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -416,12 +462,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -431,6 +479,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class AppAdded(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -439,12 +488,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -454,6 +505,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class AppRemoved(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -464,12 +516,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -479,6 +533,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class AppUpdated(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -489,12 +544,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -505,6 +562,7 @@ sealed interface Fact : Parcelable {
     data class WifiStatusChanged(
         val state: OnOffAny,
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -514,12 +572,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -529,6 +589,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class WifiConnectedTo(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -539,12 +600,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -553,7 +616,7 @@ sealed interface Fact : Parcelable {
     // Fact class
     @Parcelize
     data class ConnectedWifiSignalLevelChanged(
-        override val note: String = "",
+        override val note: String = "", override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -566,12 +629,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -581,6 +646,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class WifiDisconnectedFrom(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -591,12 +657,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -607,6 +675,7 @@ sealed interface Fact : Parcelable {
     data class BTStatusChanged(
         val state: OnOffAny,
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -616,12 +685,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -631,6 +702,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class BTConnectedTo(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -641,12 +713,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -656,6 +730,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class BTDisconnectedFrom(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -666,12 +741,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -682,6 +759,7 @@ sealed interface Fact : Parcelable {
     data class MobileDataStatusChanged(
         val state: OnOffAny,
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -691,12 +769,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -707,6 +787,7 @@ sealed interface Fact : Parcelable {
     data class LocationStatusChanged(
         val state: OnOffAny,
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -716,12 +797,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -732,6 +815,7 @@ sealed interface Fact : Parcelable {
     data class NFCStatusChanged(
         val state: OnOffAny,
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -741,12 +825,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -757,6 +843,7 @@ sealed interface Fact : Parcelable {
     data class DNDStatusChanged(
         val state: OnOffAny,
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -766,12 +853,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -783,6 +872,7 @@ sealed interface Fact : Parcelable {
     data class APMStatusChanged(
         val state: OnOffAny,
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -792,12 +882,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -808,6 +900,7 @@ sealed interface Fact : Parcelable {
     data class HotSpotStatusChanged(
         val state: OnOffAny,
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -817,12 +910,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -833,6 +928,7 @@ sealed interface Fact : Parcelable {
     data class FlashLightStatusChanged(
         val state: OnOffAny,
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -841,12 +937,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -857,6 +955,7 @@ sealed interface Fact : Parcelable {
     data class DarkModeStatusChanged(
         val state: OnOffAny,
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -865,12 +964,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -910,6 +1011,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class NotificationPosted(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -919,12 +1021,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -934,6 +1038,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class NotificationRemoved(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -943,12 +1048,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -958,6 +1065,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class NotificationUpdated(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -967,12 +1075,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -982,6 +1092,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class AppProcessStarted(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -991,12 +1102,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1006,6 +1119,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class TaskRemoved(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1016,12 +1130,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1031,6 +1147,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class TaskRemovedAny(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1040,12 +1157,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1055,6 +1174,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class PkgStopRunning(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1065,12 +1185,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1080,6 +1202,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class PkgStopRunningAny(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1088,12 +1211,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1103,6 +1228,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class AudioFocusGain(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1113,12 +1239,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1128,6 +1256,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class AudioFocusLost(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1138,12 +1267,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1153,6 +1284,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class AudioFocusChanged(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1161,12 +1293,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1176,6 +1310,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class BatteryLevelChanged(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1185,12 +1320,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1199,7 +1336,7 @@ sealed interface Fact : Parcelable {
     // Fact class
     @Parcelize
     data class BatteryTemperatureChanged(
-        override val note: String = "",
+        override val note: String = "", override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1209,12 +1346,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1224,6 +1363,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class ChargerPlug(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1232,12 +1372,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1247,6 +1389,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class ChargerUnplug(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1255,12 +1398,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1270,6 +1415,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class Broadcast(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1279,12 +1425,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1294,6 +1442,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class VPNConnected(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1302,12 +1451,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1317,6 +1468,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class VPNDisconnected(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1325,12 +1477,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1340,6 +1494,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class MediaStoreInsert(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1351,12 +1506,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1366,6 +1523,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class OnStartOp(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1378,12 +1536,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1393,6 +1553,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class OnFinishOp(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1405,12 +1566,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1420,6 +1583,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class OnQSTileClick(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1429,12 +1593,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1444,6 +1610,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class SystemSettingsChanged(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1454,12 +1621,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1469,6 +1638,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class CallStateChanged(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1479,12 +1649,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1494,6 +1666,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class ClipboardContentChanged(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1505,12 +1678,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1520,6 +1695,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class GlobalVarChanged(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1530,12 +1706,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1545,6 +1723,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class HeadsetPlug(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1555,12 +1734,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1570,6 +1751,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class HasFoundNodeOnScreen(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1582,12 +1764,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1597,6 +1781,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class ScreenRotate(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1607,12 +1792,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1622,6 +1809,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class WindowRotationChange(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1632,12 +1820,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1647,6 +1837,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class IMEVisibilityChange(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1657,12 +1848,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1672,6 +1865,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class AppGainWindowFocus(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1683,12 +1877,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1698,6 +1894,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class AppLostWindowFocus(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1709,12 +1906,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }
@@ -1724,6 +1923,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class DeepLinkCall(
         override val note: String = "",
+        override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
@@ -1734,12 +1934,14 @@ sealed interface Fact : Parcelable {
             id: String,
             note: String,
             tag: String,
+            isDisabled: Boolean,
             customContextDataKey: CustomContextDataKey
         ): Fact {
             return copy(
                 id = id,
                 note = note,
                 tag = tag,
+                isDisabled = isDisabled,
                 customContextDataKey = customContextDataKey
             )
         }

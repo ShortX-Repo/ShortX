@@ -40,6 +40,19 @@ fun FactContentStateHandler.asFactHandler(): FactHandler {
             facts.firstOrNull { it.id == id }?.let {
                 setTag(it, tag)
             }
+        },
+        enableDisable = { id ->
+            facts.firstOrNull { it.id == id }?.let { currentFact ->
+                addFact(
+                    currentFact.clone(
+                        id = currentFact.id,
+                        note = currentFact.note,
+                        tag = currentFact.tag,
+                        isDisabled = !currentFact.isDisabled,
+                        customContextDataKey = currentFact.customContextDataKey
+                    )
+                )
+            }
         }
     )
 }

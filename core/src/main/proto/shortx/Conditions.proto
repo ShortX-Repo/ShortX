@@ -20,6 +20,7 @@ message ConditionOperatorPayload {
 
 message True {
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -27,6 +28,7 @@ message True {
 
 message False {
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -39,6 +41,7 @@ message CurrentPkgList {
   ConditionOperator op = 3;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -50,6 +53,7 @@ message CurrentPkgListByPkg {
   ConditionOperator op = 2;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -61,6 +65,7 @@ message CurrentActivity {
   ConditionOperator op = 2;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -70,6 +75,7 @@ message MatchMVEL {
   string expression = 1;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -79,6 +85,7 @@ message MatchJS {
   string expression = 1;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -89,6 +96,7 @@ message BatteryPercent {
   IntOp op = 2;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -99,6 +107,7 @@ message ConnectedWifiSignal {
   IntOp op = 2;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -111,6 +120,7 @@ message AppIsRunning {
   ConditionOperator op = 3;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -123,6 +133,7 @@ message AppIsNotRunning {
   ConditionOperator op = 3;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -136,6 +147,7 @@ message AppHasAudioFocus {
   ConditionOperator op = 3;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -148,6 +160,7 @@ message AppHasWindowFocus {
   ConditionOperator op = 3;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -160,6 +173,7 @@ message EvaluateLocalVar {
   GlobalVarOpPayload payload = 3;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -171,6 +185,7 @@ message EvaluateGlobalVar {
   GlobalVarOpPayload payload = 3;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -203,6 +218,7 @@ message ServiceIsRunning {
   ConditionOperator op = 3;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -212,6 +228,7 @@ message ProcessIsRunning {
   repeated ProcessName processList = 1;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -219,6 +236,7 @@ message ProcessIsRunning {
 
 message ScreenIsOn {
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -226,6 +244,7 @@ message ScreenIsOn {
 
 message VPNIsConnected {
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -235,6 +254,7 @@ message TimeInRange {
   TimeOfADayRange range = 1;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -244,6 +264,7 @@ message ChargeState {
   bool requireIsCharge = 1;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -254,6 +275,7 @@ message PlugState {
   PlugType type = 2;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -272,6 +294,7 @@ message RequireWifiConnected {
   string requiredSSID = 1;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -279,6 +302,7 @@ message RequireWifiConnected {
 
 message RequireWifiDisconnected {
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -288,6 +312,7 @@ message RequireBTConnected {
   string device = 1;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -295,6 +320,7 @@ message RequireBTConnected {
 
 message RequireBTDisconnected {
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -304,6 +330,7 @@ message RequireMobileDataEnabled {
   int32 slotId = 1;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -316,6 +343,7 @@ message AppHasNotification {
   ConditionOperator op = 3;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -323,6 +351,7 @@ message AppHasNotification {
 
 message KeyguardIsLocked {
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -330,6 +359,7 @@ message KeyguardIsLocked {
 
 message ScreenOrientationIsPort {
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -337,6 +367,7 @@ message ScreenOrientationIsPort {
 
 message IsInCall {
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -344,6 +375,7 @@ message IsInCall {
 
 message IsRinging {
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -356,6 +388,7 @@ message HasNodeOnScreen {
   int64 detectTimeout = 4;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -366,6 +399,7 @@ message IsRuleEnabled {
   string ruleId = 2;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -375,6 +409,7 @@ message IsHeadsetPlug {
   bool isPlug = 1;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -384,6 +419,7 @@ message RequireScreenRotate {
   ScreenRotateDegree degree = 1;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -394,6 +430,7 @@ message RequireWindowRotation {
   ScreenRotateDegree degree = 1;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -404,6 +441,7 @@ message RequireDelay {
   bool useAlarm = 2;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -413,6 +451,7 @@ message RequireSensorOff {
   bool isRequireOn = 1;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -423,6 +462,7 @@ message RequireTileState {
   string tileSpec = 2;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -433,6 +473,7 @@ message RequireFactTag {
   string tag = 1;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -445,6 +486,7 @@ message AppHasTask {
   ConditionOperator op = 3;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -454,6 +496,7 @@ message RequireAPMMode {
   bool isAPMEnable = 1;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -464,6 +507,7 @@ message RequireIMEVisibility {
   bool isShown = 1;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -478,6 +522,7 @@ message TheXXTimeToday {
   TheXXTimeTodayScope scope = 4;
 
   CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
   bool isInvert = 98;
   string note = 99;
   string id = 100;

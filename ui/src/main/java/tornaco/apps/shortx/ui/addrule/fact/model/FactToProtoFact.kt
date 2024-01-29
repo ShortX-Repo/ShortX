@@ -86,6 +86,7 @@ fun Fact.toProtoFact(
         is Fact.KeyEvent -> {
             KeyEvent.newBuilder().setKeyCode(keyCode).setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }
@@ -94,6 +95,7 @@ fun Fact.toProtoFact(
             AdvancedKeyEvent.newBuilder().setKeyCode(keyCode).setGesture(gesture)
                 .setIsInterceptMode(isInterceptMode).setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }
@@ -101,13 +103,15 @@ fun Fact.toProtoFact(
         is Fact.ActivityStarted -> {
             ActivityStarted.newBuilder()
                 .addAllComponents(components)
-                .setId(overrideId ?: id).setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
 
         is Fact.AnyActivityStarted -> {
             ActivityStarted.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }
@@ -118,25 +122,29 @@ fun Fact.toProtoFact(
                 .setGesture(gesture)
                 .setIsIntercept(isIntercept)
                 .setId(overrideId ?: id)
-                .setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
 
         is Fact.ScreenOff -> {
             ScreenOff.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }
 
         is Fact.ScreenOn -> {
             ScreenOn.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }
 
         is Fact.UserPresent -> {
             UserPresent.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }
@@ -144,12 +152,14 @@ fun Fact.toProtoFact(
         is Fact.UserPresentAtTheFirstTime -> {
             UserPresentAtTheFirstTime.newBuilder().setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }
 
         is Fact.SystemReady -> {
             SystemReady.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }
@@ -158,7 +168,8 @@ fun Fact.toProtoFact(
             Alarm.newBuilder()
                 .setRepeat(repeatDays)
                 .setTriggerAt(timeOfADay)
-                .setId(overrideId ?: id).setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
@@ -168,7 +179,8 @@ fun Fact.toProtoFact(
                 .setRepeat(repeatDays)
                 .setStart(start)
                 .setEnd(end)
-                .setId(overrideId ?: id).setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
@@ -179,7 +191,8 @@ fun Fact.toProtoFact(
                 .setStart(start)
                 .setEnd(end)
                 .setFixedBy(fixedBy.toProto())
-                .setId(overrideId ?: id).setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
@@ -189,6 +202,7 @@ fun Fact.toProtoFact(
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
             }).addAllPkgSets(pkgSets.map { it.label }).setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }
@@ -198,6 +212,7 @@ fun Fact.toProtoFact(
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
             }).addAllPkgSets(pkgSets.map { it.label }).setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }
@@ -207,6 +222,7 @@ fun Fact.toProtoFact(
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
             }).addAllPkgSets(pkgSets.map { it.label }).setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }
@@ -216,6 +232,7 @@ fun Fact.toProtoFact(
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
             }).addAllPkgSets(pkgSets.map { it.label }).setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }
@@ -223,7 +240,8 @@ fun Fact.toProtoFact(
         is Fact.WifiStatusChanged -> {
             WifiStatusChanged.newBuilder()
                 .setOoa(state)
-                .setId(overrideId ?: id).setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
@@ -231,7 +249,8 @@ fun Fact.toProtoFact(
         is Fact.WifiConnectedTo -> {
             WifiConnectedTo.newBuilder()
                 .addAllSsidList(ssidList)
-                .setId(overrideId ?: id).setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
@@ -239,7 +258,8 @@ fun Fact.toProtoFact(
         is Fact.WifiDisconnectedFrom -> {
             WifiDisconnectedFrom.newBuilder()
                 .addAllSsidList(ssidList)
-                .setId(overrideId ?: id).setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
@@ -247,7 +267,8 @@ fun Fact.toProtoFact(
         is Fact.BTStatusChanged -> {
             BTStatusChanged.newBuilder()
                 .setOoa(state)
-                .setId(overrideId ?: id).setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
@@ -255,7 +276,8 @@ fun Fact.toProtoFact(
         is Fact.BTConnectedTo -> {
             BTConnectedTo.newBuilder()
                 .addAllDevice(devices)
-                .setId(overrideId ?: id).setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
@@ -263,7 +285,8 @@ fun Fact.toProtoFact(
         is Fact.BTDisconnectedFrom -> {
             BTDisconnectedFrom.newBuilder()
                 .addAllDevice(devices)
-                .setId(overrideId ?: id).setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
@@ -271,7 +294,8 @@ fun Fact.toProtoFact(
         is Fact.DNDStatusChanged -> {
             DNDStatusChanged.newBuilder()
                 .setOoa(state)
-                .setId(overrideId ?: id).setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
@@ -279,7 +303,8 @@ fun Fact.toProtoFact(
         is Fact.APMStatusChanged -> {
             APMStatusChanged.newBuilder()
                 .setOoa(state)
-                .setId(overrideId ?: id).setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
@@ -287,7 +312,8 @@ fun Fact.toProtoFact(
         is Fact.FlashLightStatusChanged -> {
             FlashLightStatusChanged.newBuilder()
                 .setOoa(state)
-                .setId(overrideId ?: id).setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
@@ -295,7 +321,8 @@ fun Fact.toProtoFact(
         is Fact.HotSpotStatusChanged -> {
             HotSpotStatusChanged.newBuilder()
                 .setOoa(state)
-                .setId(overrideId ?: id).setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
@@ -303,7 +330,8 @@ fun Fact.toProtoFact(
         is Fact.LocationStatusChanged -> {
             LocationStatusChanged.newBuilder()
                 .setOoa(state)
-                .setId(overrideId ?: id).setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
@@ -311,7 +339,8 @@ fun Fact.toProtoFact(
         is Fact.MobileDataStatusChanged -> {
             MobileDataStatusChanged.newBuilder()
                 .setOoa(state)
-                .setId(overrideId ?: id).setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
@@ -319,7 +348,8 @@ fun Fact.toProtoFact(
         is Fact.NFCStatusChanged -> {
             NFCStatusChanged.newBuilder()
                 .setOoa(state)
-                .setId(overrideId ?: id).setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
@@ -327,7 +357,8 @@ fun Fact.toProtoFact(
         is Fact.DarkModeStatusChanged -> {
             DarkModeStatusChanged.newBuilder()
                 .setOoa(state)
-                .setId(overrideId ?: id).setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
@@ -337,7 +368,8 @@ fun Fact.toProtoFact(
                 .setRecord(
                     n.toProtoNotification()
                 )
-                .setId(overrideId ?: id).setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
@@ -347,7 +379,8 @@ fun Fact.toProtoFact(
                 .setRecord(
                     n.toProtoNotification()
                 )
-                .setId(overrideId ?: id).setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
@@ -357,7 +390,8 @@ fun Fact.toProtoFact(
                 .setNew(
                     n.toProtoNotification()
                 )
-                .setId(overrideId ?: id).setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
@@ -366,13 +400,15 @@ fun Fact.toProtoFact(
             TaskRemoved.newBuilder()
                 .addAllApps(apps.map { it.pkg })
                 .addAllPkgSets(pkgSets.map { it.label })
-                .setId(overrideId ?: id).setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
 
         is Fact.TaskRemovedAny -> {
             TaskRemoved.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }
@@ -381,19 +417,22 @@ fun Fact.toProtoFact(
             PkgStopRunning.newBuilder()
                 .addAllApps(apps.map { it.pkg })
                 .addAllPkgSets(pkgSets.map { it.label })
-                .setId(overrideId ?: id).setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
 
         is Fact.PkgStopRunningAny -> {
             PkgStopRunning.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }
 
         is Fact.AppAdded -> {
             AppAdded.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }
@@ -403,6 +442,7 @@ fun Fact.toProtoFact(
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
             }).addAllPkgSets(pkgSets.map { it.label }).setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }
@@ -412,6 +452,7 @@ fun Fact.toProtoFact(
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
             }).addAllPkgSets(pkgSets.map { it.label }).setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }
@@ -421,6 +462,7 @@ fun Fact.toProtoFact(
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
             }).addAllPkgSets(pkgSets.map { it.label }).setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }
@@ -430,18 +472,21 @@ fun Fact.toProtoFact(
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
             }).addAllPkgSets(pkgSets.map { it.label }).setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }
 
         is Fact.AudioFocusChanged -> {
             AudioFocusChanged.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }
 
         is Fact.BatteryLevelChanged -> {
             BatteryLevelChanged.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).setLevel(level)
                 .build()
@@ -449,25 +494,29 @@ fun Fact.toProtoFact(
 
         is Fact.BatteryTemperatureChanged -> {
             BatteryTemperatureChanged.newBuilder().setId(overrideId ?: id)
-                .setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .setTemp(temp).build()
         }
 
         is Fact.ChargerPlug -> {
             ChargerPlug.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }
 
         is Fact.ChargerUnplug -> {
             ChargerUnplug.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }
 
         is Fact.Broadcast -> {
             Broadcast.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).addAllActions(actions)
                 .build()
@@ -475,18 +524,21 @@ fun Fact.toProtoFact(
 
         is Fact.VPNConnected -> {
             VPNConnected.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }
 
         is Fact.VPNDisconnected -> {
             VPNDisconnected.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey).build()
         }
 
         is Fact.MediaStoreInsert -> {
             MediaStoreInsert.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .setFilterPath(filterPathRegex)
@@ -496,6 +548,7 @@ fun Fact.toProtoFact(
 
         is Fact.OnStartOp -> {
             OnStartOp.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .addAllOpCodes(codes)
@@ -508,6 +561,7 @@ fun Fact.toProtoFact(
 
         is Fact.OnFinishOp -> {
             OnFinishOp.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .addAllOpCodes(codes)
@@ -520,6 +574,7 @@ fun Fact.toProtoFact(
 
         is Fact.OnQSTileClick -> {
             OnQSTileClick.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .setTileNumber(tile.number)
@@ -528,6 +583,7 @@ fun Fact.toProtoFact(
 
         is Fact.SystemSettingsChanged -> {
             SystemSettingsChanged.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .setUrlAndExpectedValueRegex(urlAndValueRegex)
@@ -537,6 +593,7 @@ fun Fact.toProtoFact(
 
         is Fact.CallStateChanged -> {
             CallStateChanged.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .setCallState(callState)
@@ -545,7 +602,8 @@ fun Fact.toProtoFact(
 
         is Fact.ClipboardContentChanged -> {
             ClipboardContentChanged.newBuilder().setId(overrideId ?: id)
-                .setNote(overrideNote ?: note).setTag(overrideTag ?: tag)
+                .setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .setContent(content)
                 .setMatchOptions(options)
@@ -554,6 +612,7 @@ fun Fact.toProtoFact(
 
         is Fact.GlobalVarChanged -> {
             GlobalVarChanged.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .setGvId(gvId)
@@ -562,6 +621,7 @@ fun Fact.toProtoFact(
 
         is Fact.AppProcessStarted -> {
             AppProcessStarted.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .addAllProcessName(processNames)
@@ -570,6 +630,7 @@ fun Fact.toProtoFact(
 
         is Fact.HeadsetPlug -> {
             HeadsetPlug.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .setIsPlug(isPlug)
@@ -578,6 +639,7 @@ fun Fact.toProtoFact(
 
         is Fact.ScreenRotate -> {
             ScreenRotate.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .setDegree(degree)
@@ -586,6 +648,7 @@ fun Fact.toProtoFact(
 
         is Fact.WindowRotationChange -> {
             WindowRotationChange.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .setDegree(degree)
@@ -594,6 +657,7 @@ fun Fact.toProtoFact(
 
         is Fact.IMEVisibilityChange -> {
             IMEVisibilityChange.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .setIsShown(isShown)
@@ -602,6 +666,7 @@ fun Fact.toProtoFact(
 
         is Fact.DeepLinkCall -> {
             DeepLinkCall.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .setDeepLinkTag(deepLinkTag)
@@ -611,6 +676,7 @@ fun Fact.toProtoFact(
         is Fact.ConnectedWifiSignalLevelChanged -> {
             ConnectedWifiSignalLevelChanged.newBuilder().setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .setLevel(level)
@@ -620,6 +686,7 @@ fun Fact.toProtoFact(
 
         is Fact.HasFoundNodeOnScreen -> {
             HasFoundNodeOnScreen.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .setPackageName(packageName)
