@@ -24,15 +24,10 @@ android {
         }
     }
 
-    defaultConfig {
-        targetSdk = 29
-    }
-
     buildTypes {
-
         getByName("release") {
             isMinifyEnabled = true
-            isShrinkResources = false
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
