@@ -101,8 +101,7 @@ class ShortcutStubManageActivity : BaseActivity() {
                         context,
                         it.message.fallbackOnEmpty { i18N["ui.common.install.failed"] },
                         Toast.LENGTH_LONG
-                    )
-                        .show()
+                    ).show()
                 }
 
                 ShortcutStubManageEffect.InstallSuccess -> {

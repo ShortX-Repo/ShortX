@@ -64,9 +64,11 @@ class ShortcutStubManageViewModel : ViewModel(),
         }
 
         runCatching {
+            // Patch
             val apkFile = StubApkGen.patchApk(context, info)
             logger.d("apkFile: $apkFile")
 
+            // Install.
             val pfd = ParcelFileDescriptor.open(apkFile, ParcelFileDescriptor.MODE_READ_WRITE)
             shortXManager.installApk(
                 info.appPkgName,
@@ -80,13 +82,32 @@ class ShortcutStubManageViewModel : ViewModel(),
                 },
                 onFailure = object : ICallback.Stub() {
                     override fun receive(data: ByteArrayWrapper?) {
-                        intent {
-                            postSideEffect(ShortcutStubManageEffect.InstallFailure("Install failed."))
+                        // Fallback to install it with Intent.
+                        runCatching {
+                            logger.e("Install apk fail. try launch Intent")
+                            val uri =
+                                FileProvider.getUriForFile(context, "tornaco.apps.shortx", apkFile)
+                            val shareIntent = Intent(Intent.ACTION_SEND)
+                            shareIntent.type = "application/vnd.android.package-archive"
+                            shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
+                            context.startActivity(Intent.createChooser(shareIntent, "ShortX"))
+
+                            intent {
+                                postSideEffect(ShortcutStubManageEffect.InstallSuccess)
+                            }
+                        }.onFailure {
+                            logger.e(it, "share apk as Intent err")
+                            intent {
+                                postSideEffect(
+                                    ShortcutStubManageEffect.InstallFailure("Apk path: ${apkFile.absolutePath}")
+                                )
+                            }
                         }
                     }
                 })
+
         }.onFailure {
-            logger.e(it, "Install apk")
+            logger.e(it, "doInstallShortcutApk err")
             intent {
                 postSideEffect(
                     ShortcutStubManageEffect.InstallFailure(
