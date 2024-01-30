@@ -70,7 +70,7 @@ class Repackager(private val context: Context) {
             ).apply {
                 type = 3
                 namespace = null
-            }).addManifestAttribute(
+            }).addApplicationAttribute(
             AttributeItem(
                 NodeValue.Application.LABEL,
                 info.appLabel
