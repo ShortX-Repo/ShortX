@@ -64,7 +64,7 @@ class ShortcutStubManageViewModel : ViewModel(),
         }
 
         runCatching {
-            val apkFile = StubApkGen.patchApk(context)
+            val apkFile = StubApkGen.patchApk(context, info)
             logger.d("apkFile: $apkFile")
 
             val pfd = ParcelFileDescriptor.open(apkFile, ParcelFileDescriptor.MODE_READ_WRITE)

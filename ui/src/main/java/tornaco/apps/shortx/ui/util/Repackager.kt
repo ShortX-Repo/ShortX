@@ -9,6 +9,7 @@ import com.wind.meditor.property.AttributeItem
 import com.wind.meditor.property.ModificationProperty
 import com.wind.meditor.utils.NodeValue
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.ui.shortcut.ShortcutStubInfo
 import tornaco.apps.shortx.ui.util.ApkSignatureHelper.provideSigningExtension
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -17,10 +18,10 @@ import java.io.File
 class Repackager(private val context: Context) {
     private val logger = Logger("Repackager")
 
-    fun patch(apkFile: File): File {
+    fun patch(apkFile: File, info: ShortcutStubInfo): File {
         val outputFile = File(apkFile.parentFile, "patched-${apkFile.name}")
         runCatching {
-            patch(apkFile, outputFile)
+            patch(apkFile, outputFile, info)
         }.onFailure {
             outputFile.delete()
             throw it
@@ -28,7 +29,7 @@ class Repackager(private val context: Context) {
         return outputFile
     }
 
-    fun patch(apkFile: File, outputFile: File) {
+    fun patch(apkFile: File, outputFile: File, info: ShortcutStubInfo) {
         val dstZFile = ZFile.openReadWrite(
             outputFile, ZFileOptions().setAlignmentRule(
                 AlignmentRules.compose(AlignmentRules.constantForSuffix(".so", 4096))
@@ -45,7 +46,7 @@ class Repackager(private val context: Context) {
             if (name.startsWith("AndroidManifest.xml")) {
                 dstZFile.add(
                     name, ByteArrayInputStream(
-                        patchManifest(entry.read())
+                        patchManifest(entry.read(), info)
                     ), false
                 )
                 continue
@@ -59,20 +60,20 @@ class Repackager(private val context: Context) {
         dexFiles.forEach { it.delete() }
     }
 
-    private fun patchManifest(data: ByteArray): ByteArray {
+    private fun patchManifest(data: ByteArray, info: ShortcutStubInfo): ByteArray {
         val property = ModificationProperty()
 
         property.addManifestAttribute(
             AttributeItem(
                 NodeValue.Manifest.PACKAGE,
-                "shortx.stub.hello"
+                info.appPkgName
             ).apply {
                 type = 3
                 namespace = null
             }).addManifestAttribute(
             AttributeItem(
                 NodeValue.Application.LABEL,
-                "Label XX"
+                info.appLabel
             )
         )
 

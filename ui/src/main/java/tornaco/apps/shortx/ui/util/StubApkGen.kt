@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.util
 
 import android.content.Context
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.ui.shortcut.ShortcutStubInfo
 import java.io.File
 
 object StubApkGen {
@@ -21,22 +22,20 @@ object StubApkGen {
         }
     }
 
-    fun patchApk(context: Context): File {
+    fun patchApk(context: Context, info: ShortcutStubInfo): File {
         try {
             val apkFile = File(
                 File(
                     context.filesDir.absolutePath
                             + File.separator
                             + OUT_APK_PATH
-                ), "stub.apk"
+                ), "stub_${info.appPkgName}.apk"
             )
-            require(apkFile.parentFile?.mkdirs() ?: false) {
-                "Fail mk dir."
-            }
+            apkFile.parentFile?.mkdirs()
             context.assets.open(STUB_APK_TEMPLATE_PATH).use {
                 it.copyTo(apkFile.outputStream())
             }
-            return Repackager(context).patch(apkFile)
+            return Repackager(context).patch(apkFile, info)
         } catch (e: Exception) {
             throw IllegalStateException("Failed to patchApk", e)
         }
