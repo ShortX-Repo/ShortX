@@ -20,6 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
@@ -33,6 +35,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.theme.ErrorRed
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 
@@ -126,6 +129,9 @@ private fun ActionSortDialogContent(state: ActionSortState) {
                             ListItem(
                                 modifier = Modifier.scale(scale.value),
                                 titleLines = labelLinesForAction(action = item),
+                                textDecoration = if (item.isEnabled) TextDecoration.None else TextDecoration.LineThrough,
+                                titleColor = if (item.isEnabled) Color.Unspecified else ErrorRed,
+                                textColor = if (item.isEnabled) Color.Unspecified else ErrorRed,
                                 icon = {
                                     ActionIcon(item, false)
                                 }
