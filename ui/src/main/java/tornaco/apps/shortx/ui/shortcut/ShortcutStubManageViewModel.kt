@@ -21,7 +21,7 @@ import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.ui.util.ShortcutHelper
+import tornaco.apps.shortx.ui.util.StubApkGen
 import java.io.File
 
 data class ShortcutStubManageState(
@@ -36,7 +36,7 @@ sealed interface ShortcutStubManageEffect {
 
 class ShortcutStubManageViewModel : ViewModel(),
     ContainerHost<ShortcutStubManageState, ShortcutStubManageEffect> {
-    private val logger = Logger("ShortcutStubManageViewModel");
+    private val logger = Logger("ShortcutStubManageViewModel")
 
     override val container: Container<ShortcutStubManageState, ShortcutStubManageEffect> =
         container(initialState = ShortcutStubManageState())
@@ -64,14 +64,8 @@ class ShortcutStubManageViewModel : ViewModel(),
         }
 
         runCatching {
-            val apkFile = ShortcutHelper.createShortcutStubApkFor(
-                context,
-                info.appLabel,
-                info.appIcon,
-                "1.0",
-                info.appPkgName,
-                1
-            )
+            val apkFile = StubApkGen.patchApk(context)
+            logger.d("apkFile: $apkFile")
 
             val pfd = ParcelFileDescriptor.open(apkFile, ParcelFileDescriptor.MODE_READ_WRITE)
             shortXManager.installApk(

@@ -15,7 +15,7 @@ import tornaco.apps.shortx.ui.subscribe.util.getLVLToken
 import tornaco.apps.shortx.ui.subscribe.util.isGPToken
 import tornaco.apps.shortx.ui.subscribe.util.setLVLToken
 import tornaco.apps.shortx.ui.util.LCRulesAdapter
-import tornaco.apps.shortx.ui.util.ShortcutHelper
+import tornaco.apps.shortx.ui.util.StubApkGen
 import tornaco.apps.shortx.ui.util.verifyOtp
 
 
@@ -34,7 +34,7 @@ object EntryPoint {
         @Suppress("OPT_IN_USAGE")
         GlobalScope.launch {
             withContext(Dispatchers.IO) {
-                ShortcutHelper.cleanUp(context)
+                StubApkGen.cleanUp(context)
             }
         }
     }
