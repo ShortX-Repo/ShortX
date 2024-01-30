@@ -1,6 +1,12 @@
 package tornaco.apps.shortx.ui.util
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Bitmap.CompressFormat
+import android.graphics.drawable.LayerDrawable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.core.content.res.ResourcesCompat
 import com.android.tools.build.apkzlib.zip.AlignmentRules
 import com.android.tools.build.apkzlib.zip.ZFile
 import com.android.tools.build.apkzlib.zip.ZFileOptions
@@ -8,15 +14,29 @@ import com.wind.meditor.core.ManifestEditor
 import com.wind.meditor.property.AttributeItem
 import com.wind.meditor.property.ModificationProperty
 import com.wind.meditor.utils.NodeValue
+import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.ui.R
+import tornaco.apps.shortx.ui.base.remixResId
 import tornaco.apps.shortx.ui.shortcut.ShortcutStubInfo
 import tornaco.apps.shortx.ui.util.ApkSignatureHelper.provideSigningExtension
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
 
+
 class Repackager(private val context: Context) {
     private val logger = Logger("Repackager")
+
+    companion object {
+        val ICONS = listOf(
+            "res/o-.png",
+            "res/RJ.png",
+            "res/FS.png",
+            "res/yn.png",
+            "res/9w.png",
+        )
+    }
 
     fun patch(apkFile: File, info: ShortcutStubInfo): File {
         val outputFile = File(apkFile.parentFile, "patched-${apkFile.name}")
@@ -30,6 +50,7 @@ class Repackager(private val context: Context) {
     }
 
     fun patch(apkFile: File, outputFile: File, info: ShortcutStubInfo) {
+
         val dstZFile = ZFile.openReadWrite(
             outputFile, ZFileOptions().setAlignmentRule(
                 AlignmentRules.compose(AlignmentRules.constantForSuffix(".so", 4096))
@@ -37,7 +58,6 @@ class Repackager(private val context: Context) {
         )
         provideSigningExtension(context.assets.open("apk/keystore")).register(dstZFile)
         val srcZFile = ZFile.openReadOnly(apkFile)
-        val dexFiles = mutableListOf<File>()
 
         for (entry in srcZFile.entries()) {
             val name = entry.centralDirectoryHeader.name
@@ -52,12 +72,20 @@ class Repackager(private val context: Context) {
                 continue
             }
 
+            if (ICONS.contains(name)) {
+                val patchedIcon = patchIcon(info)
+                if (patchedIcon != null) {
+                    logger.d("replace icon: $name")
+                    dstZFile.add(name, patchedIcon, false)
+                    continue
+                }
+            }
+
             dstZFile.add(name, entry.open(), false)
         }
         dstZFile.realign()
         dstZFile.close()
         srcZFile.close()
-        dexFiles.forEach { it.delete() }
     }
 
     private fun patchManifest(data: ByteArray, info: ShortcutStubInfo): ByteArray {
@@ -82,5 +110,29 @@ class Repackager(private val context: Context) {
             flush()
             close()
         }.toByteArray()
+    }
+
+    private fun patchIcon(info: ShortcutStubInfo): ByteArrayInputStream? {
+        val actionIconDrawable = ResourcesCompat.getDrawable(
+            context.resources,
+            context.remixResId(info.appIcon),
+            null
+        )?.apply {
+            setTint(Color(info.appIconTintColor).toArgb())
+        }
+        val templateDrawable =
+            ResourcesCompat.getDrawable(
+                context.resources,
+                R.drawable.ui_ic_shortcut_template,
+                null
+            )
+        val ld = templateDrawable as LayerDrawable
+        ld.setTint(Color(info.appIconBgColor).toArgb())
+        ld.setDrawableByLayerId(R.id.settings_ic_foreground, actionIconDrawable)
+
+        val bitmap: Bitmap = BitmapUtils.getBitmap(context, templateDrawable) ?: return null
+        val bos = ByteArrayOutputStream()
+        bitmap.compress(CompressFormat.PNG, 0 /*ignored for PNG*/, bos)
+        return ByteArrayInputStream(bos.toByteArray())
     }
 }
