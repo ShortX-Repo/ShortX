@@ -14,6 +14,7 @@ interface RuleItemHandler {
     fun moveOutSet(rule: RuleUM)
     fun stopAllJobs(rule: RuleUM)
     fun setRuleEnabled(rule: RuleUM, enable: Boolean)
+    fun extractAsDA(title: String, rule: RuleUM, token: String?)
 }
 
 interface RuleSetItemHandler {

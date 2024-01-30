@@ -2,6 +2,7 @@
 
 package tornaco.apps.shortx.ui.main.rule
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -34,14 +35,17 @@ import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.DropdownSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.LocalShortXProps
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXSwitch
+import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberClickAnimateState
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
+import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.main.da.RunningIndicator
 import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.record.EvaRecordActivity
@@ -156,7 +160,9 @@ private fun listItemOverflowMenu(
     rule: RuleUM,
     isSubscribed: Boolean,
 ): DropdownSelectorState {
+    val shortXProps = LocalShortXProps.current
     val handler = LocalRuleItemHandler.current
+    val context = LocalContext.current
 
     val i18N = LocalI18N.current
     val badge = if (isSubscribed) {
@@ -180,9 +186,15 @@ private fun listItemOverflowMenu(
     })
     RuleSetSelectorDialog(state = ruleSetSelectDialogState)
 
+    val extractAsDAInputDialog =
+        rememberTextInputState(title = "ui.rule.extract.as.da", message = null) {
+            handler.extractAsDA(it, rule, shortXProps.firstOrNull())
+            Toast.makeText(context, "✅", Toast.LENGTH_SHORT).show()
+        }
+    TextInputDialog(state = extractAsDAInputDialog)
+
     val menuState = rememberDropdownSelectorState()
 
-    val context = LocalContext.current
 
     DropdownSelector(
         widthFraction = menuDropdownFraction,
@@ -229,6 +241,13 @@ private fun listItemOverflowMenu(
                 data = RuleItemMenuOptions.ViewEvaRecord,
                 icon = {
                     RemixIcon(Remix.System.history_fill)
+                }),
+            DropdownItem(
+                labelLines = listOf(LocalI18N.current["ui.rule.extract.as.da"]),
+                data = RuleItemMenuOptions.ExtractAsDA,
+                badge = badge,
+                icon = {
+                    RemixIcon(Remix.Development.command_line)
                 }),
             DropdownItem(
                 labelLines = listOf(i18N["ui.common.delete"]),
@@ -278,11 +297,19 @@ private fun listItemOverflowMenu(
                 RuleItemMenuOptions.ViewEvaRecord -> {
                     EvaRecordActivity.start(context, rule.id)
                 }
+
+                RuleItemMenuOptions.ExtractAsDA -> {
+                    if (isSubscribed) {
+                        extractAsDAInputDialog.show(initialValue = rule.title)
+                    } else {
+                        subscribeDialogState.show()
+                    }
+                }
             }
         })
     return menuState
 }
 
 enum class RuleItemMenuOptions {
-    Dup, Delete, Edit, Share, Execute, MoveToSet, MoveOutSet, ViewEvaRecord
+    Dup, Delete, Edit, Share, Execute, MoveToSet, MoveOutSet, ViewEvaRecord, ExtractAsDA
 }

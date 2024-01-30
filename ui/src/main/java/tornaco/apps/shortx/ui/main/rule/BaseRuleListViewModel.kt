@@ -8,7 +8,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.IJobStatusListener
+import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.common.StringPair
+import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.Rule
@@ -16,6 +18,7 @@ import tornaco.apps.shortx.core.proto.toJson
 import tornaco.apps.shortx.core.proto.toStringPair
 import tornaco.apps.shortx.core.rule.RuleObserver
 import tornaco.apps.shortx.core.rule.pack_
+import tornaco.apps.shortx.ui.addda.defaultNewDAId
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
@@ -137,6 +140,28 @@ abstract class BaseRuleListViewModel(context: Context) :
         }
     }
 
+    fun extractAsDA(title: String, rule: RuleUM, token: String?) {
+        viewModelScope.launch {
+            shortXManager.getRuleById(rule.id)?.let {
+                val da = DirectAction.newBuilder()
+                    .setId(defaultNewDAId())
+                    .setTitle(title)
+                    .addAllActions(it.actionsList)
+                    .setConflictPolicy(ConflictStrategy.ConflictStrategy_ExecuteBoth)
+                    .setCreateTime(System.currentTimeMillis())
+                    .setLastUpdateTime(System.currentTimeMillis())
+                    .setVersionCode(1)
+                    .addAllExtras(mutableListOf<StringPair>().apply {
+                        if (!token.isNullOrEmpty()) {
+                            add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                        }
+                    })
+                    .build()
+
+                shortXManager.addDirectAction(da)
+            }
+        }
+    }
 
     fun deleteRule(ruleId: String) {
         viewModelScope.launch {
