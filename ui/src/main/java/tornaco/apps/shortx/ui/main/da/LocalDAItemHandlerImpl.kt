@@ -50,6 +50,10 @@ fun getLocalDAItemHandler(vm: BaseDAListViewModel): DAItemHandler {
             edit(da)
         }
 
+        override fun createApk(da: DirectActionUM) {
+            vm.createApk(da)
+        }
+
         override fun deepLink(da: DirectActionUM) {
             val uri = "shortx://run?id=${da.id}"
             ClipboardUtils.copyToClipboard(context, "uri", uri)

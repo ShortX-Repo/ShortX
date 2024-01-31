@@ -189,7 +189,7 @@ private fun listItemOverflowMenu(
     val extractAsDAInputDialog =
         rememberTextInputState(title = "ui.rule.extract.as.da", message = null) {
             handler.extractAsDA(it, rule, shortXProps.firstOrNull())
-            Toast.makeText(context, "✅", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, i18N["ui.common.done"], Toast.LENGTH_SHORT).show()
         }
     TextInputDialog(state = extractAsDAInputDialog)
 

@@ -2,9 +2,12 @@ package tornaco.apps.shortx.ui.main.da
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
@@ -31,6 +34,9 @@ import tornaco.apps.shortx.ui.settings.RestoreEventRegistry
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.addShareContentHeader
+import tornaco.apps.shortx.ui.shortcut.ApkInstallState
+import tornaco.apps.shortx.ui.shortcut.ShortcutStubInfo
+import tornaco.apps.shortx.ui.shortcut.ShortcutStubInstaller
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import java.util.UUID
 
@@ -50,6 +56,9 @@ abstract class BaseDAListViewModel(context: Context) :
     ContextViewModel<DAListState>(context, { DAListState() }) {
     protected val pref by lazy { Pref(context) }
     private var loadDAJob: Job? = null
+
+    private val _shortcutApkInstalled = MutableSharedFlow<ApkInstallState>()
+    val shortcutApkInstalled = _shortcutApkInstalled.asSharedFlow()
 
     private val jobStatusListener = object : IJobStatusListener.Stub() {
         override fun onJobStarted(id: String?) {
@@ -159,6 +168,28 @@ abstract class BaseDAListViewModel(context: Context) :
             shortXManager.executeDirectionActionById(
                 context = evaluateContext,
                 id = da.id
+            )
+        }
+    }
+
+    fun createApk(da: DirectActionUM) {
+        viewModelScope.launch {
+            val info = ShortcutStubInfo(
+                da.title,
+                "shortx.stub.${da.id}",
+                da.icon,
+                Color.WHITE,
+                Color.RED,
+                da.id
+            )
+            ShortcutStubInstaller.doInstallShortcutApk(
+                context,
+                info,
+                effect = {
+                    viewModelScope.launch {
+                        _shortcutApkInstalled.emit(it)
+                    }
+                }
             )
         }
     }

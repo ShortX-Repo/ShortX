@@ -15,6 +15,10 @@
             android:name="shortx-stub"
             android:value="true" />
 
+        <meta-data
+            android:name="target-da-id"
+            android:value="" />
+
         <activity
             android:name=".MainActivity"
             android:excludeFromRecents="true"

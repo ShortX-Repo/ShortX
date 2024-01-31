@@ -95,7 +95,7 @@ class ShortcutStubManageActivity : BaseActivity() {
 
         vm.collectSideEffect(sideEffect = {
             when (it) {
-                is ShortcutStubManageEffect.InstallFailure -> {
+                is ApkInstallState.InstallFailure -> {
                     progressDialogState.dismiss()
                     Toast.makeText(
                         context,
@@ -104,13 +104,13 @@ class ShortcutStubManageActivity : BaseActivity() {
                     ).show()
                 }
 
-                ShortcutStubManageEffect.InstallSuccess -> {
+                ApkInstallState.InstallSuccess -> {
                     progressDialogState.dismiss()
                     Toast.makeText(context, i18N["ui.common.install.success"], Toast.LENGTH_LONG)
                         .show()
                 }
 
-                ShortcutStubManageEffect.Installing -> {
+                ApkInstallState.Installing -> {
                     progressDialogState.show()
                 }
             }

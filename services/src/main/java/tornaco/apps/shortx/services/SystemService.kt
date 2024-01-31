@@ -136,5 +136,9 @@ fun SystemService.enforceCallingPermissions() {
         logger.p("enforceCallingPermissions, allow SystemUI of UID: $callingUid")
         return
     }
+    if (shortXContext.appState.isShortXStubAppUid(callingUid)) {
+        logger.p("enforceCallingPermissions, allow shortx stub of UID: $callingUid")
+        return
+    }
     throw SecurityException("Uid of $callingUid it not allowed to interact with ShortX server!!!")
 }

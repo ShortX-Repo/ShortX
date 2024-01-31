@@ -1,9 +1,6 @@
 package tornaco.apps.shortx.ui.shortcut
 
 import android.content.Context
-import android.content.Intent
-import android.os.ParcelFileDescriptor
-import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -16,29 +13,16 @@ import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
-import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.proto.common.App
-import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.shortXManager
-import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.ui.util.StubApkGen
-import java.io.File
 
 data class ShortcutStubManageState(
     val shortcutApps: List<App> = emptyList()
 )
 
-sealed interface ShortcutStubManageEffect {
-    data object Installing : ShortcutStubManageEffect
-    data object InstallSuccess : ShortcutStubManageEffect
-    data class InstallFailure(val message: String) : ShortcutStubManageEffect
-}
-
 class ShortcutStubManageViewModel : ViewModel(),
-    ContainerHost<ShortcutStubManageState, ShortcutStubManageEffect> {
-    private val logger = Logger("ShortcutStubManageViewModel")
-
-    override val container: Container<ShortcutStubManageState, ShortcutStubManageEffect> =
+    ContainerHost<ShortcutStubManageState, ApkInstallState> {
+    override val container: Container<ShortcutStubManageState, ApkInstallState> =
         container(initialState = ShortcutStubManageState())
 
     fun loadApps() {
@@ -59,74 +43,16 @@ class ShortcutStubManageViewModel : ViewModel(),
     }
 
     private fun doInstallShortcutApk(context: Context, info: ShortcutStubInfo) {
-        intent {
-            postSideEffect(ShortcutStubManageEffect.Installing)
-        }
-
-        runCatching {
-            // Patch
-            val apkFile = StubApkGen.patchApk(context, info)
-            logger.d("apkFile: $apkFile")
-
-            // Install.
-            val pfd = ParcelFileDescriptor.open(apkFile, ParcelFileDescriptor.MODE_READ_WRITE)
-            shortXManager.installApk(
-                info.appPkgName,
-                pfd,
-                onSuccess = object : ICallback.Stub() {
-                    override fun receive(data: ByteArrayWrapper?) {
-                        intent {
-                            postSideEffect(ShortcutStubManageEffect.InstallSuccess)
-                        }
-                    }
-                },
-                onFailure = object : ICallback.Stub() {
-                    override fun receive(data: ByteArrayWrapper?) {
-                        // Fallback to install it with Intent.
-                        runCatching {
-                            logger.e("Install apk fail. try launch Intent")
-                            val uri =
-                                FileProvider.getUriForFile(context, "tornaco.apps.shortx", apkFile)
-                            val shareIntent = Intent(Intent.ACTION_SEND)
-                            shareIntent.type = "application/vnd.android.package-archive"
-                            shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
-                            context.startActivity(Intent.createChooser(shareIntent, "ShortX"))
-
-                            intent {
-                                postSideEffect(ShortcutStubManageEffect.InstallSuccess)
-                            }
-                        }.onFailure {
-                            logger.e(it, "share apk as Intent err")
-                            intent {
-                                postSideEffect(
-                                    ShortcutStubManageEffect.InstallFailure("Apk path: ${apkFile.absolutePath}")
-                                )
-                            }
-                        }
-                    }
-                })
-
-        }.onFailure {
-            logger.e(it, "doInstallShortcutApk err")
-            intent {
-                postSideEffect(
-                    ShortcutStubManageEffect.InstallFailure(
-                        it.message ?: "Unknown error"
-                    )
-                )
+        ShortcutStubInstaller.doInstallShortcutApk(
+            context,
+            info,
+            effect = {
+                intent {
+                    postSideEffect(it)
+                }
             }
-        }
+        )
     }
-
-    private fun viewApkFile(context: Context, file: File) {
-        val uri = FileProvider.getUriForFile(context, "tornaco.apps.shortx", file)
-        val shareIntent = Intent(Intent.ACTION_VIEW)
-        shareIntent.setDataAndType(uri, "application/vnd.android.package-archive")
-        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(Intent.createChooser(shareIntent, "ShortX"))
-    }
-
 
     companion object {
         fun genPackageName(): String {

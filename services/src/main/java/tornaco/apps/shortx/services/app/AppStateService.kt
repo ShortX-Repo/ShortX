@@ -669,6 +669,7 @@ class AppStateService(shortXContext: ShortXContext) :
     }
 
     fun isShortXAppUid(uid: Int) = pkgPools.any { it.isShortXAppUid(uid) }
+    fun isShortXStubAppUid(uid: Int) = pkgPools.any { it.isShortXStubAppUid(uid) }
     fun isSystemUIAppUid(uid: Int) = pkgPools.any { it.isSystemUIAppUid(uid) }
 
     fun setStartActivityResult(requestCode: Int, resultCode: Int, result: Bundle) {

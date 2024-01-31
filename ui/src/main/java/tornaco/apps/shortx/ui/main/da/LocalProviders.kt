@@ -6,6 +6,7 @@ import tornaco.apps.shortx.ui.main.model.DirectActionUM
 interface DAItemHandler {
     fun run(da: DirectActionUM) {}
     fun dup(da: DirectActionUM) {}
+    fun createApk(da: DirectActionUM) {}
     fun delete(da: DirectActionUM) {}
     fun edit(da: DirectActionUM) {}
     fun click(da: DirectActionUM) {}

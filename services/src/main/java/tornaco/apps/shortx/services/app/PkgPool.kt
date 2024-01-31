@@ -100,6 +100,7 @@ class PkgPool(
     }
 
     private val shortXAppUids = mutableListOf<Int>()
+    private val shortXStubAppUids = mutableListOf<Int>()
     private val systemUIAppUids = mutableListOf<Int>()
 
     fun init() {
@@ -167,6 +168,10 @@ class PkgPool(
         return shortXAppUids.contains(uid)
     }
 
+    fun isShortXStubAppUid(uid: Int): Boolean {
+        return shortXStubAppUids.contains(uid)
+    }
+
     fun isSystemUIAppUid(uid: Int): Boolean {
         return systemUIAppUids.contains(uid)
     }
@@ -194,6 +199,11 @@ class PkgPool(
         } else if ("com.android.systemui" == packageName) {
             logger.i("systemui app uid: $uid")
             systemUIAppUids.add(uid)
+        }
+
+        if (isShortcutStub) {
+            logger.i("ShortX stub app uid: $uid")
+            shortXStubAppUids.add(uid)
         }
 
         return tornaco.apps.shortx.core.App(

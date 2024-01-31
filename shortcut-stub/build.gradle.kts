@@ -82,7 +82,7 @@ android {
 }
 
 dependencies {
-    implementation(files("libs/core.jar"))
+    implementation(project(":core"))
     implementation(libs.hiddenapibypass)
 }
 

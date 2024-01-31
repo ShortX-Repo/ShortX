@@ -2,6 +2,7 @@
 
 package tornaco.apps.shortx.ui.main.da
 
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -33,11 +34,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.flow.collectLatest
 import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addda.AddDirectActionActivity
 import tornaco.apps.shortx.ui.base.EmptyList
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.ProgressDialog
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXFilterChip
@@ -45,7 +49,9 @@ import tornaco.apps.shortx.ui.base.TipIds
 import tornaco.apps.shortx.ui.base.UserTip
 import tornaco.apps.shortx.ui.base.adaptiveLauncherIconSizeMin
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
+import tornaco.apps.shortx.ui.base.rememberProgressDialogState
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
+import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.main.CommonSetFilter
 import tornaco.apps.shortx.ui.main.MainScaffold
 import tornaco.apps.shortx.ui.main.MainViewModel
@@ -53,6 +59,7 @@ import tornaco.apps.shortx.ui.main.id
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.ViewerActivity
+import tornaco.apps.shortx.ui.shortcut.ApkInstallState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 import java.io.File
@@ -65,11 +72,43 @@ fun DirectActionListScreen() {
     val daListViewModel = hiltViewModel<DAListViewModel>()
     val daListState by daListViewModel.state.collectAsState()
 
+    val context = LocalContext.current
+    val i18n = LocalI18N.current
+
+    val progressDialogState =
+        rememberProgressDialogState(title = i18n["ui.common.install"], message = "...")
+    ProgressDialog(state = progressDialogState)
+
+
     LaunchedEffect(daListViewModel) {
         daListViewModel.loadDAList(delay = false)
     }
 
-    val context = LocalContext.current
+    LaunchedEffect(daListViewModel) {
+        daListViewModel.shortcutApkInstalled.collectLatest {
+            composeLogger.d("shortcutApkInstalled: $it")
+            when (it) {
+                is ApkInstallState.InstallFailure -> {
+                    progressDialogState.dismiss()
+                    Toast.makeText(
+                        context,
+                        it.message.fallbackOnEmpty { i18n["ui.common.install.failed"] },
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
+                ApkInstallState.InstallSuccess -> {
+                    progressDialogState.dismiss()
+                    Toast.makeText(context, i18n["ui.common.install.success"], Toast.LENGTH_LONG)
+                        .show()
+                }
+
+                ApkInstallState.Installing -> {
+                    progressDialogState.show()
+                }
+            }
+        }
+    }
 
     val pickFileLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()

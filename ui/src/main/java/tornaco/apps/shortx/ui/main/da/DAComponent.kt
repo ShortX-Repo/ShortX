@@ -328,6 +328,12 @@ private fun daListItemOverflowMenu(
             icon = {
                 RemixIcon(Remix.System.external_link_line)
             }),
+        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.create.apk"]),
+            data = DAItemMenuOptions.CreateApk,
+            badge = badge,
+            icon = {
+                RemixIcon(Remix.Logos.android_line)
+            }),
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.dup"]),
             data = DAItemMenuOptions.Dup,
             badge = badge,
@@ -449,6 +455,14 @@ private fun daListItemOverflowMenu(
             DAItemMenuOptions.ViewEvaRecord -> {
                 EvaRecordActivity.start(context, da.id)
             }
+
+            DAItemMenuOptions.CreateApk -> {
+                if (isSubscribed) {
+                    handler.createApk(da)
+                } else {
+                    subscribeDialogState.show()
+                }
+            }
         }
     })
 
@@ -457,7 +471,7 @@ private fun daListItemOverflowMenu(
 
 
 enum class DAItemMenuOptions {
-    Dup, DeepLink, ShellCommand, Delete, Edit, Share, Shortcut, MoveToSet, MoveOutSet, ViewEvaRecord
+    Dup, DeepLink, ShellCommand, Delete, Edit, Share, Shortcut, CreateApk, MoveToSet, MoveOutSet, ViewEvaRecord
 }
 
 @Composable

@@ -49,7 +49,7 @@ class Repackager(private val context: Context) {
         return outputFile
     }
 
-    fun patch(apkFile: File, outputFile: File, info: ShortcutStubInfo) {
+    private fun patch(apkFile: File, outputFile: File, info: ShortcutStubInfo) {
 
         val dstZFile = ZFile.openReadWrite(
             outputFile, ZFileOptions().setAlignmentRule(
@@ -104,6 +104,10 @@ class Repackager(private val context: Context) {
                 info.appLabel
             )
         )
+
+        info.daId?.let {
+            property.addMetaData(ModificationProperty.MetaData("target-da-id", it))
+        }
 
         return ByteArrayOutputStream().apply {
             ManifestEditor(ByteArrayInputStream(data), this, property).processManifest()
