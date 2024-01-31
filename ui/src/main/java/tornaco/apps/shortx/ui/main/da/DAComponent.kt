@@ -328,7 +328,7 @@ private fun daListItemOverflowMenu(
             icon = {
                 RemixIcon(Remix.System.external_link_line)
             }),
-        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.create.apk"]),
+        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.install.as.apk"]),
             data = DAItemMenuOptions.CreateApk,
             badge = badge,
             icon = {
