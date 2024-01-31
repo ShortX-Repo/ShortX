@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import androidx.lifecycle.viewModelScope
+import com.github.promeg.pinyinhelper.Pinyin
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,6 +22,7 @@ import tornaco.apps.shortx.core.proto.toJson
 import tornaco.apps.shortx.core.proto.toStringPair
 import tornaco.apps.shortx.core.rule.DAObserver
 import tornaco.apps.shortx.core.rule.pack_
+import tornaco.apps.shortx.core.util.removeSpecialCharacters
 import tornaco.apps.shortx.ui.addda.defaultNewDAId
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
@@ -172,18 +174,19 @@ abstract class BaseDAListViewModel(context: Context) :
         }
     }
 
-    fun createApk(da: DirectActionUM) {
+    fun createApk(activity: Context, da: DirectActionUM) {
         viewModelScope.launch {
+            val pkgNameSuffix = Pinyin.toPinyin(da.title, "").lowercase().removeSpecialCharacters()
             val info = ShortcutStubInfo(
                 da.title,
-                "shortx.stub.${da.id}",
+                "shortx.stub.${pkgNameSuffix}",
                 da.icon,
                 Color.WHITE,
                 Color.RED,
                 da.id
             )
             ShortcutStubInstaller.doInstallShortcutApk(
-                context,
+                activity,
                 info,
                 effect = {
                     viewModelScope.launch {

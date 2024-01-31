@@ -106,6 +106,8 @@ dependencies {
     implementation(libs.orbit.compose)
     implementation(libs.orbit.viewmodel)
 
+    implementation(libs.tinypinyin)
+
     implementation(project(":binder-retriever"))
     implementation(project(":ui-base"))
     implementation(project(":core"))
@@ -124,7 +126,7 @@ dependencies {
 
     implementation(libs.sardine.android)
 
-    implementation("com.android.tools.build:apksig:8.0.2")
+    implementation(libs.apksig)
 
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit)

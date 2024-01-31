@@ -51,7 +51,7 @@ fun getLocalDAItemHandler(vm: BaseDAListViewModel): DAItemHandler {
         }
 
         override fun createApk(da: DirectActionUM) {
-            vm.createApk(da)
+            vm.createApk(context, da)
         }
 
         override fun deepLink(da: DirectActionUM) {

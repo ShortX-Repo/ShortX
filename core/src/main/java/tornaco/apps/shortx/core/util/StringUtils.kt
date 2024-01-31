@@ -41,3 +41,8 @@ fun String.replaceLazy(
 fun String.maskAll(): String {
     return "*".repeat(this.length)
 }
+
+fun String.removeSpecialCharacters(): String {
+    // 使用正则表达式匹配字母和数字，去除其他特殊字符
+    return replace(Regex("[^a-zA-Z0-9]"), "")
+}

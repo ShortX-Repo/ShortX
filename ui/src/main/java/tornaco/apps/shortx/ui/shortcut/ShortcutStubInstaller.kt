@@ -25,6 +25,7 @@ object ShortcutStubInstaller {
         info: ShortcutStubInfo,
         effect: (ApkInstallState) -> Unit,
     ) {
+        logger.d("doInstallShortcutApk: $info")
         effect(ApkInstallState.Installing)
 
         runCatching {
