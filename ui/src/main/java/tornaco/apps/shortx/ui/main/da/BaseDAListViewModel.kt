@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.main.da
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.viewModelScope
 import com.github.promeg.pinyinhelper.Pinyin
 import kotlinx.coroutines.Job
@@ -178,12 +179,12 @@ abstract class BaseDAListViewModel(context: Context) :
         viewModelScope.launch {
             val pkgNameSuffix = Pinyin.toPinyin(da.title, "").lowercase().removeSpecialCharacters()
             val info = ShortcutStubInfo(
-                da.title,
-                "shortx.stub.${pkgNameSuffix}",
-                da.icon,
-                Color.WHITE,
-                Color.RED,
-                da.id
+                appLabel = da.title,
+                appPkgName = "shortx.stub.${pkgNameSuffix}",
+                appIcon = da.icon,
+                appIconTintColor = Color.WHITE,
+                appIconBgColor = androidx.compose.ui.graphics.Color(da.iconColor).toArgb(),
+                daId = da.id
             )
             ShortcutStubInstaller.doInstallShortcutApk(
                 activity,
