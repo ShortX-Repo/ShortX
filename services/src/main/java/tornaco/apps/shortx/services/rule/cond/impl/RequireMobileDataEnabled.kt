@@ -1,11 +1,11 @@
 package tornaco.apps.shortx.services.rule.cond.impl
 
 import android.annotation.SuppressLint
-import android.telephony.SubscriptionManager
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.telephonyManager
 import tornaco.apps.shortx.services.rule.cond.Cond
+import tornaco.apps.shortx.services.util.PhoneUtils
 
 object RequireMobileDataEnabled : Cond {
     override fun condClass(): Class<out Message> =
@@ -19,16 +19,9 @@ object RequireMobileDataEnabled : Cond {
             val res = if (data.slotId < 0) {
                 context.telephonyManager.isDataEnabled
             } else {
-                val targetSubInfo =
-                    SubscriptionManager.from(context).activeSubscriptionInfoList.firstOrNull {
-                        it.simSlotIndex == data.slotId
-                    }
-                requireNotNull(targetSubInfo) {
-                    "Sub not found for slot: ${data.slotId}"
-                }
-                logger.d("targetSubInfo.subId: ${targetSubInfo.subscriptionId}")
-
-                context.telephonyManager.getDataEnabled(targetSubInfo.subscriptionId)
+                val subId = PhoneUtils.slotIdToSubIdOrThrow(context, data.slotId)
+                logger.d("targetSubInfo.subId: $subId")
+                context.telephonyManager.getDataEnabled(subId)
             }
 
             if (data.isInvert) {

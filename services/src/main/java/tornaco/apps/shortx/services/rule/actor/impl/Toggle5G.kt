@@ -12,6 +12,8 @@ import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.bundleToString
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
+import tornaco.apps.shortx.services.util.FivegControllerService
+import tornaco.apps.shortx.services.util.PhoneUtils
 
 
 object Toggle5G : Actor {
@@ -53,7 +55,7 @@ object Toggle5G : Actor {
     private fun getFiveGSwitcher(): FiveGSwitcher {
         return if (OsUtils.isColorOS()) {
             ColorOSFiveGSwitcher
-        } else FallbackFiveGSwitcher
+        } else FallbackFiveGSwitcher()
     }
 
     // Color OS
@@ -114,15 +116,19 @@ object Toggle5G : Actor {
         }
     }
 
-    object FallbackFiveGSwitcher : FiveGSwitcher {
+    class FallbackFiveGSwitcher : FiveGSwitcher {
+        private val service by lazy { FivegControllerService() }
+
+        @SuppressLint("MissingPermission")
         override fun is5GEnabled(context: Context, slotId: Int): Boolean {
-            TODO("Not yet implemented")
+            val subId = PhoneUtils.slotIdToSubIdOrThrow(context, slotId)
+            return service.getFivegEnabled(subId)
         }
 
         override fun set5GEnabled(enable: Boolean, context: Context, slotId: Int) {
-            TODO("Not yet implemented")
+            val subId = PhoneUtils.slotIdToSubIdOrThrow(context, slotId)
+            service.setFivegEnabled(subId, enable)
         }
-
     }
 }
 

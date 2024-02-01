@@ -491,7 +491,7 @@ fun SystemActions(
         Action.EnableData::class,
         Action.DisableData::class,
         Action.SwitchMobileDataSlot::class,
-        OsUtils.isColorOS().select(Action.Toggle5G::class, null),
+        Action.Toggle5G::class,
         Action.SetAPMModeEnabled::class,
         Action.EnableHotSpot::class,
         Action.DisableHotSpot::class,
