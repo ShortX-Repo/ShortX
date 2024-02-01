@@ -19,7 +19,10 @@ import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.os.CancellationSignal
 import tornaco.apps.shortx.core.os.ICancellationSignal
 import tornaco.apps.shortx.core.os.myUserId
+import tornaco.apps.shortx.core.proto.action.LaunchApp
+import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.proto.action.StartActivityUrlSchema
+import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.Author
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.common.ShellRes
@@ -44,6 +47,7 @@ import tornaco.apps.shortx.core.proto.rule.RuleSet
 import tornaco.apps.shortx.core.proto.toggles.Toggle
 import tornaco.apps.shortx.core.proto.toggles.ToggleStateHandleByCondition
 import tornaco.apps.shortx.core.proto.toggles.ToggleStateHandleByStore
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.IDAObserver
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.rule.IRuleObserver
@@ -79,6 +83,7 @@ import tornaco.apps.shortx.services.rule.cond.PrebuiltCond
 import tornaco.apps.shortx.services.rule.cond.toConditionEvaluateRecord
 import tornaco.apps.shortx.services.rule.fact.FactPublishRecorder
 import tornaco.apps.shortx.services.rule.fact.toFactPublishRecord
+import tornaco.apps.shortx.services.rule.fact.trigger.KeyPressTimesInIntervalListener
 import tornaco.apps.shortx.services.rule.fact.trigger.allTriggers
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
@@ -162,6 +167,13 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     // For internal usage, such as Actor listen to a fact to act.
     private val internalFactListeners: MutableList<InternalFactListener> = mutableListOf()
+
+    private val forceDisableShortXListener = object : KeyPressTimesInIntervalListener(12, 10000) {
+        override fun keyPressCountHit() {
+            logger.e("forceDisableShortXListener - keyPressCountHit.")
+            forceDisableShortX()
+        }
+    }
 
     private val engine by lazy {
         RuleEngineFactory.newRuleEngine(
@@ -295,6 +307,14 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 handler.postSafety {
                     Toast.makeText(context, "Key code: ${it.keyCode}", Toast.LENGTH_SHORT).show()
                 }
+            }
+
+            if (it.keyCode == android.view.KeyEvent.KEYCODE_POWER) {
+                if (it.action == android.view.KeyEvent.ACTION_DOWN) {
+                    forceDisableShortXListener.onKeyPressed()
+                }
+            } else {
+                forceDisableShortXListener.onOtherKeyPressed()
             }
 
             // Check if it accessibility service.
@@ -557,9 +577,9 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     fun getActiveJobs(): List<String> = engine.activeJobs().map { it.srcId }
 
     // For App
-    fun cancelJobs(jobs: List<String>) {
+    fun cancelJobs(jobs: List<String>, reason: String) {
         handler.postSafety {
-            engine.cancelJobs("User requested(用户主动取消)") {
+            engine.cancelJobs(reason) {
                 jobs.contains(it.srcId)
             }
         }
@@ -628,7 +648,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         }
 
         // Stop tasks
-        cancelJobs(getActiveJobs().filter { it == id })
+        cancelJobs(getActiveJobs().filter { it == id }, "Rule deleted")
     }
 
     fun getDirectActionById(id: String): DirectAction? {
@@ -1234,6 +1254,32 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             withContext(Dispatchers.IO) {
                 internalFactListeners.forEach { it.onFact(fact, initialContextDataLazy) }
             }
+        }
+    }
+
+    private fun forceDisableShortX() {
+        systemServiceScope.launchSafety {
+            setRuleFeatureEnabled(false)
+            cancelJobs(getActiveJobs(), "Force disable ShortX")
+
+            shortXContext.notification.post(
+                PostNotification.newBuilder()
+                    .setTitle(i18NIns["ui.shortx.force.disabled"])
+                    .setMessage(i18NIns["ui.shortx.force.disabled.message"])
+                    .setId("ShortX.Rule")
+                    .setIsImportant(true)
+                    .setSmallIcon(Remix.System.forbid_2_fill)
+                    .addClickAction(
+                        LaunchApp.newBuilder()
+                            .setId("ShortX.Rule")
+                            .setAppPkg(
+                                AppPkg.newBuilder().setUserId(myUserId)
+                                    .setPkgName(BuildProp.APP_PACKAGE_NAME).build()
+                            )
+                            .build().pack_()
+                    )
+                    .build()
+            )
         }
     }
 }

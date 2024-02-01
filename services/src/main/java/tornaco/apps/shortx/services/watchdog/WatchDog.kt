@@ -112,7 +112,7 @@ class WatchDogService(shortXContext: ShortXContext) :
                 .setMessage(i18NIns["ui.settings.fatal.error.ui.auto.already.registered.message"])
                 .setId("ShortX.WatchDog.UiAuto")
                 .setIsImportant(true)
-                .setSmallIcon(Remix.System.alert_fill)
+                .setSmallIcon(Remix.Development.bug_2_fill)
                 .addClickAction(
                     LaunchApp.newBuilder()
                         .setId("ShortX.WatchDog.UiAuto")

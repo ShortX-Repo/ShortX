@@ -934,7 +934,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         }
 
         override fun cancelJobs(jobs: List<String>) {
-            shortXContext.rule.cancelJobs(jobs)
+            shortXContext.rule.cancelJobs(jobs, "User requested(用户主动取消)")
         }
 
         override fun registerJobStatusListener(listener: IJobStatusListener) {

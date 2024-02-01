@@ -193,7 +193,7 @@ class AppStateService(shortXContext: ShortXContext) :
             shortXContext.rule.getAllEnabledRules().map { it.id }.forEach {
                 shortXContext.rule.setRuleEnabled(it, false)
             }
-            shortXContext.rule.cancelJobs(shortXContext.rule.getActiveJobs())
+            shortXContext.rule.cancelJobs(shortXContext.rule.getActiveJobs(), "ShortX uninstalled")
             systemServiceScope.launchSafety {
                 // After all file persisted.
                 delay(WRITE_DELAY + 100L)
