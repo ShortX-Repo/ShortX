@@ -1026,6 +1026,7 @@
     "ui.common.sensor.tip.title": "正在监听{count}个传感器",
     "ui.common.picker.pick": "选择",
     "ui.common.install.as.apk": "安装为应用",
+    "ui.common.install.as.apk.description": "生成并安装一个指令快捷方式app，该app唯一的作用就是启动后执行该指令；你可以利用系统的语音助手启动该应用从而快速执行一键指令",
     "ui.common.install": "安装",
     "ui.common.uninstall": "卸载",
     "ui.common.install.success": "安装成功",

@@ -319,6 +319,18 @@ private fun daListItemOverflowMenu(
     })
     DASetSelectorDialog(state = daSetSelectDialogState)
 
+    val createApkDialog = rememberConfirmDialogState()
+    ConfirmDialog(
+        title = i18N["ui.common.install.as.apk"],
+        state = createApkDialog,
+        data = da,
+        messageHint = {
+            i18N["ui.common.install.as.apk"]
+        },
+    ) {
+        handler.createApk(it)
+    }
+
     val menuState = rememberDropdownSelectorState()
 
     DropdownSelector(widthFraction = menuDropdownFraction, state = menuState, items = listOf(
@@ -458,7 +470,7 @@ private fun daListItemOverflowMenu(
 
             DAItemMenuOptions.CreateApk -> {
                 if (isSubscribed) {
-                    handler.createApk(da)
+                    createApkDialog.show()
                 } else {
                     subscribeDialogState.show()
                 }

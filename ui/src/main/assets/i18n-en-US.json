@@ -1027,6 +1027,7 @@
     "ui.common.sensor.tip.title": "{count} sensor is listening",
     "ui.common.picker.pick": "Pick",
     "ui.common.install.as.apk": "Install as App",
+    "ui.common.install.as.apk.description": "Generate and install a shortcut app for this rule. The sole purpose of this app is to execute the specified rule upon launch. You can utilize the system's voice assistant to start this app, enabling quick execution of the rule",
     "ui.common.install": "Install",
     "ui.common.uninstall": "Uninstall",
     "ui.common.install.success": "Install success",
