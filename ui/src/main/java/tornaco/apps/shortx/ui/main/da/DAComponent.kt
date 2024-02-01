@@ -325,7 +325,7 @@ private fun daListItemOverflowMenu(
         state = createApkDialog,
         data = da,
         messageHint = {
-            i18N["ui.common.install.as.apk"]
+            i18N["ui.common.install.as.apk.description"]
         },
     ) {
         handler.createApk(it)
