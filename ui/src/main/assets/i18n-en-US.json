@@ -827,7 +827,7 @@
     "ui.action.download.file.file.name": "File name",
     "ui.action.download.file.title": "Task title",
     "ui.action.download.file.description": "Task description",
-    "ui.action.download.file.tip": "Tip",
+    "ui.action.download.file.tip": "The download will be done through the built-in downloader automatically, and the file will be saved in the Download directory of the internal storage",
     "ui.ringtone.type.alarm": "Alarm",
     "ui.ringtone.type.notification": "Notification",
     "ui.ringtone.type.ringtone": "Ringtone",

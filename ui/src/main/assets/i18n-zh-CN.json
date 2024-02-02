@@ -818,7 +818,7 @@
     "ui.action.download.file.file.name": "文件名",
     "ui.action.download.file.title": "下载任务标题",
     "ui.action.download.file.description": "下载任务描述",
-    "ui.action.download.file.tip": "下载任务描述",
+    "ui.action.download.file.tip": "将通过自动自带下载器进行下载，文件将保存到内部存储的Download目录下",
     "ui.ringtone.type.alarm": "闹铃",
     "ui.ringtone.type.notification": "通知铃音",
     "ui.ringtone.type.ringtone": "电话铃音",
