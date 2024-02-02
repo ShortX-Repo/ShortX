@@ -36,6 +36,11 @@ fun miscActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
         })
     TextInputDialog(state = ttsDialogState)
 
+    val downloadFileSelectorState = rememberDownloadFileSelectorState {
+        addAction(it)
+    }
+    DownloadFileSelectorDialog(state = downloadFileSelectorState)
+
     return { source ->
         when (source.clazz) {
             Action.NoAction::class -> {
@@ -45,6 +50,11 @@ fun miscActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
 
             Action.TTS::class -> {
                 ttsDialogState.show(initialValue = source.getActionAs<Action.TTS>()?.text)
+                true
+            }
+
+            Action.DownloadFile::class -> {
+                downloadFileSelectorState.show(current = source.getActionAs())
                 true
             }
 
@@ -66,6 +76,7 @@ fun MiscActions(
 
     val actionItems = listOf(
         Action.TTS::class,
+        Action.DownloadFile::class,
         Action.NoAction::class,
     ).map {
         SelectorItem(

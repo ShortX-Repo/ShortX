@@ -377,3 +377,10 @@ message Ringtone {
   string uri = 2;
   int32 type = 3;
 }
+
+message DownloadSubject {
+  string title = 1;
+  string description = 2;
+  string url = 3;
+  string fileName = 4;
+}

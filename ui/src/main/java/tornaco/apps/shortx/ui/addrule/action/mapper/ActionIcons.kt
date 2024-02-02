@@ -500,6 +500,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Media.music_2_fill
         }
 
+        Action.DownloadFile::class -> {
+            Remix.System.download_2_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

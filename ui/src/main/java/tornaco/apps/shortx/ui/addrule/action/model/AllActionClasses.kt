@@ -135,5 +135,6 @@ val allActionClasses = listOf(
     Action.ShowClipboardView::class,
     Action.PlayRingtone::class,
     Action.Toggle5G::class,
+    Action.DownloadFile::class,
     Action.NoAction::class,
 )

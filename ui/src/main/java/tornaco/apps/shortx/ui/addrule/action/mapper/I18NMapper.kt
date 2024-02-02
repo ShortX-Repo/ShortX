@@ -238,6 +238,7 @@ fun labelAndDescriptionForActionSelector(
         Action.SetMasterSync::class -> i18N["ui.action.sync"] to null
         Action.ShowClipboardView::class -> i18N["ui.action.show.clip.board"] to null
         Action.PlayRingtone::class -> i18N["ui.action.ringtone"] to null
+        Action.DownloadFile::class -> i18N["ui.action.download.file"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -916,6 +917,11 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.PlayRingtone -> listOf(
             i18N["ui.action.ringtone"],
             action.ringtone.title
+        )
+
+        is Action.DownloadFile -> listOf(
+            i18N["ui.action.download.file"],
+            action.subject.title
         )
     }
 }
