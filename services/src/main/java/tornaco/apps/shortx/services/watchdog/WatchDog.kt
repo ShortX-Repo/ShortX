@@ -76,12 +76,16 @@ class WatchDogService(shortXContext: ShortXContext) :
         fatalErrors.add(error)
         logger.e(error, "FATAL: $method got error in SYSTEM PROCESS")
         // Write to file
-        val logFile = File(
-            File(Dirs.baseServerLogDir(), "fatal"),
-            "$method-${DateUtils.formatForFileName(System.currentTimeMillis())}.log"
-        )
-        logFile.parentFile.mkdirs()
-        logFile.writeText(error.stackTraceToString())
+        runCatching {
+            val logFile = File(
+                File(Dirs.baseServerLogDir(), "fatal"),
+                "$method-${DateUtils.formatForFileName(System.currentTimeMillis())}.log"
+            )
+            logFile.parentFile.mkdirs()
+            logFile.writeText(error.stackTraceToString())
+        }.onFailure {
+            // Noop...
+        }
 
         // Post N
         shortXContext.notification.post(

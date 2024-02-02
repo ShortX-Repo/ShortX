@@ -81,15 +81,19 @@ class NotificationService(shortXContext: ShortXContext) :
     override fun systemReady() {
         super.systemReady()
 
-        nls.registerAsSystemService(
-            context,
-            ComponentName(
-                OsUtils.isSOrAbove().select({ nls.javaClass.packageName },
-                    { "tornaco.apps.shortx.services.notification" }),
-                nls.javaClass.name
-            ),
-            ActivityManager.getCurrentUser()
-        )
+        runCatching {
+            nls.registerAsSystemService(
+                context,
+                ComponentName(
+                    OsUtils.isSOrAbove().select({ nls.javaClass.packageName },
+                        { "tornaco.apps.shortx.services.notification" }),
+                    nls.javaClass.name
+                ),
+                ActivityManager.getCurrentUser()
+            )
+        }.onFailure {
+            logger.e(it, "notification - registerAsSystemService ")
+        }
         logger.d("nls registered: $nls")
     }
 

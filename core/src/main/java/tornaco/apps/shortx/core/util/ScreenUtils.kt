@@ -13,7 +13,18 @@ fun Context.screenSize(): Point {
 
 fun Context.defaultDisplay(): Display {
     return if (OsUtils.isROrAbove()) {
-        this.display
+        runCatching {
+            // When running in app process
+            // java.lang.UnsupportedOperationException: Tried to obtain display from a Context
+            // not associated with one. Only visual Contexts (such as Activity or one created with Context#createWindowContext)
+            // or ones created with Context#createDisplayContext are associated with displays.
+            // Other types of Contexts are typically related to background entities and may return an arbitrary display.
+            // 02-02 16:03:52.736 25920 25973 E AndroidRuntime: 	at android.app.ContextImpl.getDisplay(ContextImpl.java:3036)
+            this.display
+        }.getOrElse {
+            val wm = windowManager
+            wm.defaultDisplay
+        }
     } else {
         val wm = windowManager
         return wm.defaultDisplay
