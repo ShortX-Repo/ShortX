@@ -246,4 +246,11 @@ object ContextDataMapping {
         loopAppPkgName("App package name of current loop"),
         loopAppUserId("App user id of current loop"),
     }
+
+    @DoNotStrip
+    enum class DownloadFile(val description: String) {
+        isDownloadSuccess("If download is successful or not. true/false"),
+        downloadFileUri("Uri of the file is it is successful"),
+        downloadFilePath("Path of the file is it is successful"),
+    }
 }

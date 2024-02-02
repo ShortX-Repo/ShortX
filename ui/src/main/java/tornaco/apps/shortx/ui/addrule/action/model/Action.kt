@@ -3802,7 +3802,9 @@ sealed interface Action : Parcelable {
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
-        override val contextData: List<ContextData> = emptyList(),
+        override val contextData: List<ContextData> = dats<ContextDataMapping.DownloadFile>(
+            customContextDataKey
+        ),
         override val note: String = "",
 
         val subject: DownloadSubject

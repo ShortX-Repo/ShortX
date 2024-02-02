@@ -40,4 +40,5 @@ val allKeys: List<String> = listOf(
     enumValues<ContextDataMapping.ClipboardContentChanged>().map { it.name },
     enumValues<ContextDataMapping.HasFoundNodeOnScreen>().map { it.name },
     enumValues<ContextDataMapping.ForEachPkgSet>().map { it.name },
+    enumValues<ContextDataMapping.DownloadFile>().map { it.name },
 ).flatten().distinct().sorted()
