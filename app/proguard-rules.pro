@@ -194,3 +194,8 @@
 -dontwarn java.beans.PropertyDescriptor
 -dontwarn javax.lang.model.SourceVersion
 -dontwarn java.beans.FeatureDescriptor
+
+-dontwarn com.android.internal.telephony.ITelephony$Stub
+-dontwarn com.android.internal.telephony.ITelephony
+-dontwarn com.google.auto.value.AutoValue$Builder
+-dontwarn com.google.auto.value.AutoValue
