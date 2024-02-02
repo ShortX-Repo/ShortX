@@ -2,6 +2,7 @@
 
 package tornaco.apps.shortx.ui.main.da
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -333,12 +334,24 @@ private fun daListItemOverflowMenu(
 
     val menuState = rememberDropdownSelectorState()
 
-    DropdownSelector(widthFraction = menuDropdownFraction, state = menuState, items = listOf(
+    DropdownSelector(widthFraction = menuDropdownFraction, state = menuState, items = listOfNotNull(
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.create.shortcut"]),
             data = DAItemMenuOptions.Shortcut,
             badge = badge,
             icon = {
                 RemixIcon(Remix.System.external_link_line)
+            }),
+        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.create.dynamic.shortcut"]),
+            data = DAItemMenuOptions.DynamicShortcut,
+            badge = badge,
+            icon = {
+                RemixIcon(Remix.System.external_link_line)
+            }),
+        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.remove.dynamic.shortcut"]),
+            data = DAItemMenuOptions.RemoveDynamicShortcut,
+            badge = badge,
+            icon = {
+                RemixIcon(Remix.System.delete_bin_5_line)
             }),
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.install.as.apk"]),
             data = DAItemMenuOptions.CreateApk,
@@ -475,6 +488,20 @@ private fun daListItemOverflowMenu(
                     subscribeDialogState.show()
                 }
             }
+
+            DAItemMenuOptions.DynamicShortcut -> {
+                if (isSubscribed) {
+                    if (ActionShortcutActivity.addDynamicShortcut(context, da)) {
+                        Toast.makeText(context, i18N["ui.common.done"], Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    subscribeDialogState.show()
+                }
+            }
+
+            DAItemMenuOptions.RemoveDynamicShortcut -> {
+                ActionShortcutActivity.removeDynamicShortcut(context, da)
+            }
         }
     })
 
@@ -483,7 +510,7 @@ private fun daListItemOverflowMenu(
 
 
 enum class DAItemMenuOptions {
-    Dup, DeepLink, ShellCommand, Delete, Edit, Share, Shortcut, CreateApk, MoveToSet, MoveOutSet, ViewEvaRecord
+    Dup, DeepLink, ShellCommand, Delete, Edit, Share, Shortcut, DynamicShortcut, RemoveDynamicShortcut, CreateApk, MoveToSet, MoveOutSet, ViewEvaRecord
 }
 
 @Composable

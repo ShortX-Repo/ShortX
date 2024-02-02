@@ -20,6 +20,7 @@ import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.shortcutManager
 import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.base.i18NIns
 import tornaco.apps.shortx.ui.base.remixResId
@@ -91,7 +92,53 @@ class ActionShortcutActivity : Activity() {
             }
         }
 
+        fun addDynamicShortcut(context: Context, action: DirectActionUM): Boolean {
+            val shortcutInfoIntent = createIntent(context, action.id)
+            shortcutInfoIntent.action = Intent.ACTION_VIEW
+
+            val resource = createIconForDA(context, action)
+            val icon = resource?.let { IconCompat.createWithBitmap(it) }
+                ?: IconCompat.createWithResource(
+                    context,
+                    github.tornaco.shortx.icons.R.drawable.ic_remix_android_fill
+                )
+
+            val shortcutInfo = ShortcutInfoCompat.Builder(context, action.id)
+                .setShortLabel(action.title)
+                .setLongLabel(action.title)
+                .setIcon(icon)
+                .setIntent(shortcutInfoIntent)
+                .build()
+
+            return ShortcutManagerCompat.pushDynamicShortcut(context, shortcutInfo)
+        }
+
+        fun removeDynamicShortcut(context: Context, action: DirectActionUM) {
+            ShortcutManagerCompat.removeDynamicShortcuts(context, listOf(action.id))
+        }
+
+        fun hasDynamicShortcut(context: Context, action: DirectActionUM): Boolean {
+            val shortcutManager = context.shortcutManager
+            return shortcutManager.dynamicShortcuts.any {
+                it.id == action.id
+            }
+        }
+
         fun createShortcutInfo(context: Context, action: DirectActionUM): ShortcutInfoCompat {
+
+            val shortcutInfoIntent = createIntent(context, action.id)
+            shortcutInfoIntent.action = Intent.ACTION_VIEW
+
+            val resource = createIconForDA(context, action)
+
+            return ShortcutInfoCompat.Builder(context, "ShortX-Action-" + action.id)
+                .setIcon(resource?.let { IconCompat.createWithBitmap(it) })
+                .setShortLabel(action.title)
+                .setIntent(shortcutInfoIntent)
+                .build()
+        }
+
+        private fun createIconForDA(context: Context, action: DirectActionUM): Bitmap? {
             val actionIconDrawable = ResourcesCompat.getDrawable(
                 context.resources,
                 context.remixResId(action.icon),
@@ -109,15 +156,7 @@ class ActionShortcutActivity : Activity() {
             ld.setTint(Color(action.iconColor).toArgb())
             ld.setDrawableByLayerId(R.id.settings_ic_foreground, actionIconDrawable)
 
-            val resource: Bitmap? = BitmapUtils.getBitmap(context, templateDrawable)
-            val shortcutInfoIntent = createIntent(context, action.id)
-            shortcutInfoIntent.action = Intent.ACTION_VIEW
-            val info = ShortcutInfoCompat.Builder(context, "ShortX-Action-" + action.id)
-                .setIcon(resource?.let { IconCompat.createWithBitmap(it) })
-                .setShortLabel(action.title)
-                .setIntent(shortcutInfoIntent)
-                .build()
-            return info
+            return BitmapUtils.getBitmap(context, templateDrawable)
         }
     }
 

@@ -296,6 +296,8 @@
     "ui.common.click.item.to.pick": "Click item to pick",
     "ui.common.create.shortcut": "Create shortcut",
     "ui.common.create.shortcut.snackbar.message": "Check permission in System Settings if it fails",
+    "ui.common.create.dynamic.shortcut": "Create dynamic shortcut",
+    "ui.common.remove.dynamic.shortcut": "Remove dynamic shortcut",
     "ui.common.dup": "Duplicate",
     "ui.common.share": "Share",
     "ui.common.settings": "Settings",
