@@ -24,6 +24,10 @@ android {
         }
     }
 
+    defaultConfig {
+        targetSdk = 29
+    }
+
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true

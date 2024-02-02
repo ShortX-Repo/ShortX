@@ -103,7 +103,15 @@ class Repackager(private val context: Context) {
                 NodeValue.Application.LABEL,
                 info.appLabel
             )
-        )
+        ).addManifestAttribute(AttributeItem(
+            NodeValue.UsesSDK.TARGET_SDK_VERSION,
+            // Failed parse during installPackageLI: Targeting R+ (version 30 and above) requires the resources.arsc
+            // of installed APKs to be stored uncompressed and aligned on a 4-byte boundary
+
+            // WTF? still got this err.
+            // Maybe the resource.arsc need to be change.
+            29
+        ))
 
         info.daId?.let {
             property.addMetaData(ModificationProperty.MetaData("target-da-id", it))
