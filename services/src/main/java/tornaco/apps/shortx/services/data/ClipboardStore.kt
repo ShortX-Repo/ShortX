@@ -30,22 +30,30 @@ class ClipboardStore(
     }
 
     fun addText(text: ClipboardItem) {
-        cache.add(text)
-        postWrite()
+        synchronized(cache) {
+            cache.add(text)
+            postWrite()
+        }
     }
 
     fun deleteText(id: String) {
-        cache.removeIf { it.id == id }
-        postWrite()
+        synchronized(cache) {
+            cache.removeIf { it.id == id }
+            postWrite()
+        }
     }
 
     fun getAllText(): List<ClipboardItem> {
-        return cache.toList()
+        synchronized(cache) {
+            return cache.toList()
+        }
     }
 
     fun clearAllText() {
-        cache.clear()
-        postWrite()
+        synchronized(cache) {
+            cache.clear()
+            postWrite()
+        }
     }
 
     private suspend fun readInternal() = withContext(Dispatchers.IO) {
@@ -54,16 +62,18 @@ class ClipboardStore(
             return@withContext
         }
         kotlin.runCatching {
-            val list = storeFile.inputStream().use {
-                ClipboardItemList.parseDelimitedFrom(it)
+            synchronized(cache) {
+                val list = storeFile.inputStream().use {
+                    ClipboardItemList.parseDelimitedFrom(it)
+                }
+                cache.clear()
+                cache.addAll(list.itemList.map {
+                    ClipboardItem
+                        .newBuilder(it)
+                        .setValue(AESCrypt.decrypt(encKey, it.value))
+                        .build()
+                })
             }
-            cache.clear()
-            cache.addAll(list.itemList.map {
-                ClipboardItem
-                    .newBuilder(it)
-                    .setValue(AESCrypt.decrypt(encKey, it.value))
-                    .build()
-            })
         }.onFailure {
             logger.e(it, "read error")
         }
@@ -78,19 +88,21 @@ class ClipboardStore(
 
     suspend fun write() = withContext(Dispatchers.IO) {
         logger.d("write.")
-        val list = ClipboardItemList.newBuilder().addAllItem(cache.map {
-            ClipboardItem
-                .newBuilder(it)
-                .setValue(AESCrypt.encrypt(encKey, it.value))
-                .build()
-        }).build()
-        kotlin.runCatching {
-            storeFile.apply { parentFile.mkdirs() }.outputStream().use {
-                list.writeDelimitedTo(it)
-                logger.d("write to: $storeFile")
+        synchronized(cache) {
+            val list = ClipboardItemList.newBuilder().addAllItem(cache.map {
+                ClipboardItem
+                    .newBuilder(it)
+                    .setValue(AESCrypt.encrypt(encKey, it.value))
+                    .build()
+            }).build()
+            kotlin.runCatching {
+                storeFile.apply { parentFile.mkdirs() }.outputStream().use {
+                    list.writeDelimitedTo(it)
+                    logger.d("write to: $storeFile")
+                }
+            }.onFailure {
+                logger.e(it, "write error")
             }
-        }.onFailure {
-            logger.e(it, "write error")
         }
     }
 }
