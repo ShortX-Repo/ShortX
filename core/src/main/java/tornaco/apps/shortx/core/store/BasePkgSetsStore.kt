@@ -29,30 +29,40 @@ open class BasePkgSetsStore(
     }
 
     fun addAllPkgSets(pkgSets: List<PkgSet>, write: Boolean = true) {
-        pkgSets.forEach { pkgSet ->
-            pkgSetsCache.removeIf { it.label == pkgSet.label }
-            pkgSetsCache.add(pkgSet)
+        synchronized(pkgSetsCache) {
+            pkgSets.forEach { pkgSet ->
+                pkgSetsCache.removeIf { it.label == pkgSet.label }
+                pkgSetsCache.add(pkgSet)
+            }
+            if (write) postWrite()
         }
-        if (write) postWrite()
     }
 
     fun addPkgSet(pkgSet: PkgSet) {
-        pkgSetsCache.removeIf { it.label == pkgSet.label }
-        pkgSetsCache.add(pkgSet)
-        postWrite()
+        synchronized(pkgSetsCache) {
+            pkgSetsCache.removeIf { it.label == pkgSet.label }
+            pkgSetsCache.add(pkgSet)
+            postWrite()
+        }
     }
 
     fun deletePkgSet(pkgSetLabel: String) {
-        pkgSetsCache.removeIf { it.label == pkgSetLabel }
-        postWrite()
+        synchronized(pkgSetsCache) {
+            pkgSetsCache.removeIf { it.label == pkgSetLabel }
+            postWrite()
+        }
     }
 
     fun getPkgSet(label: String): PkgSet? {
-        return pkgSetsCache.firstOrNull { it.label == label }
+        synchronized(pkgSetsCache) {
+            return pkgSetsCache.firstOrNull { it.label == label }
+        }
     }
 
     fun getAllPkgSets(): List<PkgSet> {
-        return pkgSetsCache.toList()
+        synchronized(pkgSetsCache) {
+            return pkgSetsCache.toList()
+        }
     }
 
     private suspend fun readInternal() = withContext(Dispatchers.IO) {
@@ -60,16 +70,18 @@ open class BasePkgSetsStore(
             logger.d("skip read no-exists file: $storeFile")
             return@withContext
         }
-        kotlin.runCatching {
-            val pkgSetList = storeFile.inputStream().use {
-                PkgSetList.parseDelimitedFrom(it)
+        synchronized(pkgSetsCache) {
+            kotlin.runCatching {
+                val pkgSetList = storeFile.inputStream().use {
+                    PkgSetList.parseDelimitedFrom(it)
+                }
+                pkgSetList.run {
+                    pkgSetsCache.clear()
+                    pkgSetsCache.addAll(this.pkgSetsList)
+                }
+            }.onFailure {
+                logger.e(it, "read error")
             }
-            pkgSetList.run {
-                pkgSetsCache.clear()
-                pkgSetsCache.addAll(this.pkgSetsList)
-            }
-        }.onFailure {
-            logger.e(it, "read error")
         }
     }
 
@@ -83,16 +95,18 @@ open class BasePkgSetsStore(
 
     suspend fun write() = withContext(Dispatchers.IO) {
         logger.d("write.")
-        val pkgSetList = PkgSetList.newBuilder().apply {
-            addAllPkgSets(pkgSetsCache)
-        }.build()
-        kotlin.runCatching {
-            storeFile.apply { parentFile.mkdirs() }.outputStream().use {
-                pkgSetList.writeDelimitedTo(it)
-                logger.d("write to: $storeFile")
+        synchronized(pkgSetsCache) {
+            val pkgSetList = PkgSetList.newBuilder().apply {
+                addAllPkgSets(pkgSetsCache)
+            }.build()
+            kotlin.runCatching {
+                storeFile.apply { parentFile.mkdirs() }.outputStream().use {
+                    pkgSetList.writeDelimitedTo(it)
+                    logger.d("write to: $storeFile")
+                }
+            }.onFailure {
+                logger.e(it, "write error")
             }
-        }.onFailure {
-            logger.e(it, "write error")
         }
     }
 }

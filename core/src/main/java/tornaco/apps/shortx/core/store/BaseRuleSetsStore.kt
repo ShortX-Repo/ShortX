@@ -18,7 +18,7 @@ open class BaseRuleSetsStore(
 ) {
     private val logger = Logger("RuleSetsStore")
 
-    private val pkgSetsCache: MutableList<RuleSet> = mutableListOf()
+    private val ruleSetsCache: MutableList<RuleSet> = mutableListOf()
 
     private var job: Job? = null
 
@@ -29,30 +29,40 @@ open class BaseRuleSetsStore(
     }
 
     fun addRuleSets(ruleSets: List<RuleSet>, write: Boolean = true) {
-        ruleSets.forEach { pkgSet ->
-            pkgSetsCache.removeIf { it.id == pkgSet.id }
-            pkgSetsCache.add(pkgSet)
+        synchronized(ruleSetsCache) {
+            ruleSets.forEach { pkgSet ->
+                ruleSetsCache.removeIf { it.id == pkgSet.id }
+                ruleSetsCache.add(pkgSet)
+            }
+            if (write) postWrite()
         }
-        if (write) postWrite()
     }
 
     fun addRuleSet(set: RuleSet) {
-        pkgSetsCache.removeIf { it.id == set.id }
-        pkgSetsCache.add(set)
-        postWrite()
+        synchronized(ruleSetsCache) {
+            ruleSetsCache.removeIf { it.id == set.id }
+            ruleSetsCache.add(set)
+            postWrite()
+        }
     }
 
     fun deleteRuleSet(id: String) {
-        pkgSetsCache.removeIf { it.id == id }
-        postWrite()
+        synchronized(ruleSetsCache) {
+            ruleSetsCache.removeIf { it.id == id }
+            postWrite()
+        }
     }
 
     fun getRuleSet(id: String): RuleSet? {
-        return pkgSetsCache.firstOrNull { it.id == id }
+        synchronized(ruleSetsCache) {
+            return ruleSetsCache.firstOrNull { it.id == id }
+        }
     }
 
     fun getAllRuleSets(): List<RuleSet> {
-        return pkgSetsCache.toList()
+        synchronized(ruleSetsCache) {
+            return ruleSetsCache.toList()
+        }
     }
 
     private suspend fun readInternal() = withContext(Dispatchers.IO) {
@@ -60,16 +70,18 @@ open class BaseRuleSetsStore(
             logger.d("skip read no-exists file: $storeFile")
             return@withContext
         }
-        kotlin.runCatching {
-            val pkgSetList = storeFile.inputStream().use {
-                RuleSetList.parseDelimitedFrom(it)
+        synchronized(ruleSetsCache) {
+            kotlin.runCatching {
+                val pkgSetList = storeFile.inputStream().use {
+                    RuleSetList.parseDelimitedFrom(it)
+                }
+                pkgSetList.run {
+                    ruleSetsCache.clear()
+                    ruleSetsCache.addAll(this.ruleSetList)
+                }
+            }.onFailure {
+                logger.e(it, "read error")
             }
-            pkgSetList.run {
-                pkgSetsCache.clear()
-                pkgSetsCache.addAll(this.ruleSetList)
-            }
-        }.onFailure {
-            logger.e(it, "read error")
         }
     }
 
@@ -82,15 +94,17 @@ open class BaseRuleSetsStore(
     }
 
     suspend fun write() = withContext(Dispatchers.IO) {
-        logger.d("write.")
-        val pkgSetList = RuleSetList.newBuilder().addAllRuleSet(pkgSetsCache).build()
-        kotlin.runCatching {
-            storeFile.apply { parentFile.mkdirs() }.outputStream().use {
-                pkgSetList.writeDelimitedTo(it)
-                logger.d("write to: $storeFile")
+        synchronized(ruleSetsCache) {
+            logger.d("write.")
+            val pkgSetList = RuleSetList.newBuilder().addAllRuleSet(ruleSetsCache).build()
+            kotlin.runCatching {
+                storeFile.apply { parentFile.mkdirs() }.outputStream().use {
+                    pkgSetList.writeDelimitedTo(it)
+                    logger.d("write to: $storeFile")
+                }
+            }.onFailure {
+                logger.e(it, "write error")
             }
-        }.onFailure {
-            logger.e(it, "write error")
         }
     }
 }

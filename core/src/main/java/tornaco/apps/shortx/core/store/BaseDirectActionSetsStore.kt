@@ -28,35 +28,41 @@ open class BaseDirectActionSetsStore(
         readInternal()
     }
 
-    @Synchronized
     fun addDirectActionSets(directActionSets: List<DirectActionSet>, write: Boolean = true) {
-        directActionSets.forEach { pkgSet ->
-            pkgSetsCache.removeIf { it.id == pkgSet.id }
-            pkgSetsCache.add(pkgSet)
+        synchronized(pkgSetsCache) {
+            directActionSets.forEach { pkgSet ->
+                pkgSetsCache.removeIf { it.id == pkgSet.id }
+                pkgSetsCache.add(pkgSet)
+            }
+            if (write) postWrite()
         }
-        if (write) postWrite()
     }
 
-    @Synchronized
     fun addDirectActionSet(set: DirectActionSet) {
-        pkgSetsCache.removeIf { it.id == set.id }
-        pkgSetsCache.add(set)
-        postWrite()
+        synchronized(pkgSetsCache) {
+            pkgSetsCache.removeIf { it.id == set.id }
+            pkgSetsCache.add(set)
+            postWrite()
+        }
     }
 
-    @Synchronized
     fun deleteDirectActionSet(id: String) {
-        pkgSetsCache.removeIf { it.id == id }
-        postWrite()
+        synchronized(pkgSetsCache) {
+            pkgSetsCache.removeIf { it.id == id }
+            postWrite()
+        }
     }
 
-    @Synchronized
     fun getDirectActionSet(id: String): DirectActionSet? {
-        return pkgSetsCache.firstOrNull { it.id == id }
+        synchronized(pkgSetsCache) {
+            return pkgSetsCache.firstOrNull { it.id == id }
+        }
     }
 
     fun getAllDirectActionSets(): List<DirectActionSet> {
-        return pkgSetsCache.toList()
+        synchronized(pkgSetsCache) {
+            return pkgSetsCache.toList()
+        }
     }
 
     private suspend fun readInternal() = withContext(Dispatchers.IO) {
@@ -65,12 +71,14 @@ open class BaseDirectActionSetsStore(
             return@withContext
         }
         kotlin.runCatching {
-            val pkgSetList = storeFile.inputStream().use {
-                DirectActionSetList.parseDelimitedFrom(it)
-            }
-            pkgSetList.run {
-                pkgSetsCache.clear()
-                pkgSetsCache.addAll(this.directActionSetList)
+            synchronized(pkgSetsCache) {
+                val pkgSetList = storeFile.inputStream().use {
+                    DirectActionSetList.parseDelimitedFrom(it)
+                }
+                pkgSetList.run {
+                    pkgSetsCache.clear()
+                    pkgSetsCache.addAll(this.directActionSetList)
+                }
             }
         }.onFailure {
             logger.e(it, "read error")
@@ -86,16 +94,18 @@ open class BaseDirectActionSetsStore(
     }
 
     suspend fun write() = withContext(Dispatchers.IO) {
-        logger.d("write.")
-        val pkgSetList =
-            DirectActionSetList.newBuilder().addAllDirectActionSet(pkgSetsCache).build()
-        kotlin.runCatching {
-            storeFile.apply { parentFile.mkdirs() }.outputStream().use {
-                pkgSetList.writeDelimitedTo(it)
-                logger.d("write to: $storeFile")
+        synchronized(pkgSetsCache) {
+            logger.d("write.")
+            val pkgSetList =
+                DirectActionSetList.newBuilder().addAllDirectActionSet(pkgSetsCache).build()
+            kotlin.runCatching {
+                storeFile.apply { parentFile.mkdirs() }.outputStream().use {
+                    pkgSetList.writeDelimitedTo(it)
+                    logger.d("write to: $storeFile")
+                }
+            }.onFailure {
+                logger.e(it, "write error")
             }
-        }.onFailure {
-            logger.e(it, "write error")
         }
     }
 }

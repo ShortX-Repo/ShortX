@@ -29,52 +29,66 @@ open class BaseToggleSettingsStore(
     suspend fun read() = readInternal()
 
     fun addToggle(da: Toggle) {
-        require(da.extrasList.isEmpty()) {
-            "Toggle extra must be cleared."
+        synchronized(togglesCache) {
+            require(da.extrasList.isEmpty()) {
+                "Toggle extra must be cleared."
+            }
+            togglesCache.removeIf { it.id == da.id }
+            togglesCache.add(da)
+            postWrite()
         }
-        togglesCache.removeIf { it.id == da.id }
-        togglesCache.add(da)
-        postWrite()
     }
 
     fun addToggles(das: List<Toggle>, write: Boolean = true) {
-        das.forEach { da ->
-            togglesCache.removeIf { it.id == da.id }
-            togglesCache.add(da)
+        synchronized(togglesCache) {
+            das.forEach { da ->
+                togglesCache.removeIf { it.id == da.id }
+                togglesCache.add(da)
+            }
+            if (write) postWrite()
         }
-        if (write) postWrite()
     }
 
     fun deleteToggle(id: String) {
-        togglesCache.removeIf { it.id == id }
-        postWrite()
+        synchronized(togglesCache) {
+            togglesCache.removeIf { it.id == id }
+            postWrite()
+        }
     }
 
     fun getToggleById(id: String): Toggle? {
-        return togglesCache.firstOrNull { it.id == id }
+        synchronized(togglesCache) {
+            return togglesCache.firstOrNull { it.id == id }
+        }
     }
 
     fun getAllToggles(): List<Toggle> {
-        return togglesCache.toList()
+        synchronized(togglesCache) {
+            return togglesCache.toList()
+        }
     }
 
-    fun getToggleCount() = togglesCache.size
+    fun getToggleCount() = synchronized(togglesCache) {
+        togglesCache.size
+    }
 
     private suspend fun readInternal() = withContext(Dispatchers.IO) {
         if (!storeFile.exists()) {
             logger.d("skip read no-exists file: $storeFile")
             return@withContext
         }
-        kotlin.runCatching {
-            val daList = storeFile.inputStream().use {
-                ToggleList.parseDelimitedFrom(it)
+        synchronized(togglesCache) {
+            kotlin.runCatching {
+                val daList = storeFile.inputStream().use {
+                    ToggleList.parseDelimitedFrom(it)
+                }
+                daList.run {
+                    togglesCache.clear()
+                    togglesCache.addAll(this.toggleList)
+                }
+            }.onFailure {
+                logger.e(it, "read error")
             }
-            daList.run {
-                togglesCache.clear()
-                togglesCache.addAll(this.toggleList)
-            }
-        }.onFailure {
-            logger.e(it, "read error")
         }
     }
 
@@ -87,17 +101,19 @@ open class BaseToggleSettingsStore(
     }
 
     suspend fun write() = withContext(Dispatchers.IO) {
-        logger.d("write.")
-        val toggleList = ToggleList.newBuilder().apply {
-            addAllToggle(togglesCache)
-        }.build()
-        kotlin.runCatching {
-            storeFile.apply { parentFile.mkdirs() }.outputStream().use {
-                toggleList.writeDelimitedTo(it)
-                logger.d("write to: $storeFile")
+        synchronized(togglesCache) {
+            logger.d("write.")
+            val toggleList = ToggleList.newBuilder().apply {
+                addAllToggle(togglesCache)
+            }.build()
+            kotlin.runCatching {
+                storeFile.apply { parentFile.mkdirs() }.outputStream().use {
+                    toggleList.writeDelimitedTo(it)
+                    logger.d("write to: $storeFile")
+                }
+            }.onFailure {
+                logger.e(it, "write error")
             }
-        }.onFailure {
-            logger.e(it, "write error")
         }
     }
 }
