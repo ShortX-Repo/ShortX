@@ -16,9 +16,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.orbitmvi.orbit.compose.collectAsState
@@ -28,7 +25,6 @@ import tornaco.apps.shortx.ui.addrule.condition.model.allConditionClasses
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
-import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
@@ -43,39 +39,10 @@ enum class ConditionCategory(val i18NKey: String, val icon: String) {
     Other("ui.action.misc", Remix.System.settings_2_line),
 }
 
-class ConditionSelectorDialogState<ARGS>(val onSelected: (Condition, ARGS?) -> Unit) {
-    var isShowing by mutableStateOf(false)
-    var args: ARGS? = null
-
-    fun show(args: ARGS? = null) {
-        isShowing = true
-        this.args = args
-    }
-
-    fun dismiss() {
-        isShowing = false
-    }
-}
 
 @Composable
-fun <ARGS> rememberConditionSelectorDialogState(onSelected: (Condition, ARGS?) -> Unit): ConditionSelectorDialogState<ARGS> {
-    return remember {
-        ConditionSelectorDialogState(onSelected)
-    }
-}
-
-@Composable
-fun <ARGS> ConditionSelectorDialog(state: ConditionSelectorDialogState<ARGS>) {
-    if (state.isShowing) {
-        ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
-            ConditionSelector(state)
-        }
-    }
-}
-
-@Composable
-private fun <ARGS> ConditionSelector(
-    state: ConditionSelectorDialogState<ARGS>
+fun ConditionSelector(
+    close: () -> Unit, onSelected: (Condition) -> Unit
 ) {
     ShortXTheme {
         Surface(
@@ -88,7 +55,7 @@ private fun <ARGS> ConditionSelector(
                         title = { Text(text = LocalI18N.current["ui.conditions.add"]) },
                         actions = {
                             IconButton(onClick = {
-                                state.dismiss()
+                                close()
                             }) {
                                 RemixIcon(remixName = Remix.System.close_line)
                             }
@@ -107,8 +74,7 @@ private fun <ARGS> ConditionSelector(
                     SearchBar(searchBarState = searchBarState)
 
                     val setCondition: (Condition) -> Unit = {
-                        state.onSelected(it, state.args)
-                        state.dismiss()
+                        onSelected(it)
                     }
 
                     val subscribeState by LVLStateHolder.collectAsState()
