@@ -69,7 +69,7 @@ fun OutlineBadge(modifier: Modifier = Modifier, text: String) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            modifier = Modifier.padding(4.dp),
+            modifier = Modifier.padding(horizontal = 4.dp),
             text = text,
             fontSize = 10.sp,
             fontFamily = fontFamilyProductSansRegular(),
