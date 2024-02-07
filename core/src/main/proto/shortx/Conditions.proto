@@ -6,6 +6,7 @@ option java_multiple_files = true;
 
 import "shortx/Common.proto";
 import "google/protobuf/any.proto";
+import "plugin/wrapper.proto";
 
 enum ConditionOperator {
   ALL = 0;
@@ -534,4 +535,15 @@ enum TheXXTimeTodayScope {
   TodayPM = 2;
   ThisWeek = 3;
   ThisMonth = 4;
+}
+
+message PluginCondition {
+  string pluginId = 1;
+  ParamsDataWrapper params = 2;
+
+  CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
 }

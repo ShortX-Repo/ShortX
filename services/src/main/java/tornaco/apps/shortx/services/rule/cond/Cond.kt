@@ -219,6 +219,10 @@ enum class PrebuiltCond : CondProvider {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.TheXXTimeToday
     },
+    PluginCond {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.PluginCond
+    },
 }
 
 fun prebuiltCondFor(condition: ProtoAny): Cond? {

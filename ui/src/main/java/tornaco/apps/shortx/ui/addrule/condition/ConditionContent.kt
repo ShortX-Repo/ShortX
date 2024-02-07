@@ -2,6 +2,8 @@
 
 package tornaco.apps.shortx.ui.addrule.condition
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -44,10 +46,10 @@ import tornaco.apps.shortx.ui.addrule.condition.mapper.opTitle
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.model.contextData
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
-import tornaco.apps.shortx.ui.addrule.condition.selector.ConditionSelectorDialog
+import tornaco.apps.shortx.ui.addrule.condition.selector.ConditionSelectorActivity
+import tornaco.apps.shortx.ui.addrule.condition.selector.ConditionSelectorActivity.Companion.toConditionOrNull
 import tornaco.apps.shortx.ui.addrule.condition.selector.appConditionSelectHandler
 import tornaco.apps.shortx.ui.addrule.condition.selector.otherConditionSelectHandler
-import tornaco.apps.shortx.ui.addrule.condition.selector.rememberConditionSelectorDialogState
 import tornaco.apps.shortx.ui.addrule.condition.selector.systemConditionSelectHandler
 import tornaco.apps.shortx.ui.addrule.condition.selector.uiConditionSelectHandler
 import tornaco.apps.shortx.ui.addrule.rememberContextDataInfoDialogState
@@ -72,6 +74,7 @@ import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
 import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberTipDialogState
+import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.rememberClipboardDialogState
 import tornaco.apps.shortx.ui.theme.ErrorRed
 
@@ -422,18 +425,24 @@ private fun ConditionSelector(
     readOnly: Boolean,
     selectCondition: (Condition) -> Unit
 ) {
+    val context = LocalContext.current
     Box {
-        val conditionSelectorState =
-            rememberConditionSelectorDialogState<String>(onSelected = { condition: Condition, s: String? ->
-                selectCondition(condition)
-            })
-        ConditionSelectorDialog(state = conditionSelectorState)
+        val conditionSelectActivityLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartActivityForResult(),
+            onResult = {
+                val condition = it.toConditionOrNull()
+                composeLogger.d("newActionSelectActivityLauncher, onResult: $it $condition")
+                condition?.let { it1 -> selectCondition(it1) }
+            }
+        )
 
         if (!readOnly) {
             Button(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 onClick = {
-                    conditionSelectorState.show()
+                    conditionSelectActivityLauncher.launch(
+                        ConditionSelectorActivity.newIntent(context)
+                    )
                 }) {
                 RemixIcon(
                     modifier = Modifier.size(16.dp),

@@ -30,28 +30,30 @@ open class BaseStatusBarSettingsStore(
     }
 
     fun addAllSettings(records: List<StatusBarTileSetting>, write: Boolean = true) {
-        records.forEach { record ->
-            synchronized(tileSettingsCache) {
-                tileSettingsCache.removeIf { it.tile == record.tile }
-                tileSettingsCache.add(record)
+        synchronized(tileSettingsCache) {
+            records.forEach { record ->
+                synchronized(tileSettingsCache) {
+                    tileSettingsCache.removeIf { it.tile == record.tile }
+                    tileSettingsCache.add(record)
+                }
             }
+            if (write) postWrite()
         }
-        if (write) postWrite()
     }
 
     fun addSetting(setting: StatusBarTileSetting) {
         synchronized(tileSettingsCache) {
             tileSettingsCache.removeIf { setting.tile == it.tile }
             tileSettingsCache.add(setting)
+            postWrite()
         }
-        postWrite()
     }
 
     fun deleteSetting(tile: StatusBarTile) {
         synchronized(tileSettingsCache) {
             tileSettingsCache.removeIf { it.tile == tile }
+            postWrite()
         }
-        postWrite()
     }
 
     fun getSettingByTile(tile: StatusBarTile): StatusBarTileSetting? {

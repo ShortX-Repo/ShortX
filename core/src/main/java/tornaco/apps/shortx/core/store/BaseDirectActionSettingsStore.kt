@@ -29,52 +29,66 @@ open class BaseDirectActionSettingsStore(
     suspend fun read() = readInternal()
 
     fun addDirectAction(da: DirectAction) {
-        require(da.extrasList.isEmpty()) {
-            "DA extra must be cleared."
+        synchronized(dasCache) {
+            require(da.extrasList.isEmpty()) {
+                "DA extra must be cleared."
+            }
+            dasCache.removeIf { it.id == da.id }
+            dasCache.add(da)
+            postWrite()
         }
-        dasCache.removeIf { it.id == da.id }
-        dasCache.add(da)
-        postWrite()
     }
 
     fun addDirectActions(das: List<DirectAction>, write: Boolean = true) {
-        das.forEach { da ->
-            dasCache.removeIf { it.id == da.id }
-            dasCache.add(da)
+        synchronized(dasCache) {
+            das.forEach { da ->
+                dasCache.removeIf { it.id == da.id }
+                dasCache.add(da)
+            }
+            if (write) postWrite()
         }
-        if (write) postWrite()
     }
 
     fun deleteDirectAction(daId: String) {
-        dasCache.removeIf { it.id == daId }
-        postWrite()
+        synchronized(dasCache) {
+            dasCache.removeIf { it.id == daId }
+            postWrite()
+        }
     }
 
     fun getDirectActionById(id: String): DirectAction? {
-        return dasCache.firstOrNull { it.id == id }
+        synchronized(dasCache) {
+            return dasCache.firstOrNull { it.id == id }
+        }
     }
 
     fun getAllDirectActions(): List<DirectAction> {
-        return dasCache.toList()
+        synchronized(dasCache) {
+            return dasCache.toList()
+        }
     }
 
-    fun getDirectActionCount() = dasCache.size
+    fun getDirectActionCount() = synchronized(dasCache) {
+        dasCache.size
+    }
 
     private suspend fun readInternal() = withContext(Dispatchers.IO) {
-        if (!storeFile.exists()) {
-            logger.d("skip read no-exists file: $storeFile")
-            return@withContext
-        }
-        kotlin.runCatching {
-            val daList = storeFile.inputStream().use {
-                DirectActionList.parseDelimitedFrom(it)
+        synchronized(dasCache) {
+            if (!storeFile.exists()) {
+                logger.d("skip read no-exists file: $storeFile")
+                return@withContext
             }
-            daList.run {
-                dasCache.clear()
-                dasCache.addAll(this.directActionsList)
+            kotlin.runCatching {
+                val daList = storeFile.inputStream().use {
+                    DirectActionList.parseDelimitedFrom(it)
+                }
+                daList.run {
+                    dasCache.clear()
+                    dasCache.addAll(this.directActionsList)
+                }
+            }.onFailure {
+                logger.e(it, "read error")
             }
-        }.onFailure {
-            logger.e(it, "read error")
         }
     }
 
@@ -87,17 +101,19 @@ open class BaseDirectActionSettingsStore(
     }
 
     suspend fun write() = withContext(Dispatchers.IO) {
-        logger.d("write.")
-        val daList = DirectActionList.newBuilder().apply {
-            addAllDirectActions(dasCache)
-        }.build()
-        kotlin.runCatching {
-            storeFile.apply { parentFile.mkdirs() }.outputStream().use {
-                daList.writeDelimitedTo(it)
-                logger.d("write to: $storeFile")
+        synchronized(dasCache) {
+            logger.d("write.")
+            val daList = DirectActionList.newBuilder().apply {
+                addAllDirectActions(dasCache)
+            }.build()
+            kotlin.runCatching {
+                storeFile.apply { parentFile.mkdirs() }.outputStream().use {
+                    daList.writeDelimitedTo(it)
+                    logger.d("write to: $storeFile")
+                }
+            }.onFailure {
+                logger.e(it, "write error")
             }
-        }.onFailure {
-            logger.e(it, "write error")
         }
     }
 }

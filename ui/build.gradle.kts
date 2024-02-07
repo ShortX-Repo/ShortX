@@ -128,6 +128,8 @@ dependencies {
 
     implementation(libs.apksig)
 
+    implementation(libs.exoplayer)
+
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)

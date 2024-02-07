@@ -28,71 +28,82 @@ open class BaseRuleSettingsStore(
 
     suspend fun read() = readInternal()
 
-    @Synchronized
     fun addRules(rules: List<Rule>, write: Boolean = true) {
-        rules.forEach { rule ->
+        synchronized(rulesCache) {
+            rules.forEach { rule ->
+                rulesCache.removeIf { it.id == rule.id }
+                rulesCache.add(rule)
+            }
+            if (write) postWrite()
+        }
+    }
+
+    fun addRule(rule: Rule) {
+        synchronized(rulesCache) {
+            require(rule.extrasList.isEmpty()) {
+                "Rule extra must be cleared."
+            }
             rulesCache.removeIf { it.id == rule.id }
             rulesCache.add(rule)
+            postWrite()
         }
-        if (write) postWrite()
     }
 
-    @Synchronized
-    fun addRule(rule: Rule) {
-        require(rule.extrasList.isEmpty()) {
-            "Rule extra must be cleared."
-        }
-        rulesCache.removeIf { it.id == rule.id }
-        rulesCache.add(rule)
-        postWrite()
-    }
-
-    @Synchronized
     fun deleteRule(ruleId: String): List<Rule> {
-        val toBeDeleted = rulesCache.filter { it.id == ruleId }
-        rulesCache.removeAll(toBeDeleted)
-        postWrite()
-        return toBeDeleted
-    }
-
-    @Synchronized
-    fun getRuleById(id: String): Rule? {
-        return rulesCache.firstOrNull { it.id == id }
-    }
-
-    @Synchronized
-    fun setRuleEnabled(ruleId: String, enable: Boolean) {
-        rulesCache.replaceAll {
-            if (it.id == ruleId) {
-                Rule.newBuilder().mergeFrom(it).setIsEnabled(enable).build()
-            } else {
-                it
-            }
+        synchronized(rulesCache) {
+            val toBeDeleted = rulesCache.filter { it.id == ruleId }
+            rulesCache.removeAll(toBeDeleted)
+            postWrite()
+            return toBeDeleted
         }
-        postWrite()
+    }
+
+    fun getRuleById(id: String): Rule? {
+        synchronized(rulesCache) {
+            return rulesCache.firstOrNull { it.id == id }
+        }
+    }
+
+    fun setRuleEnabled(ruleId: String, enable: Boolean) {
+        synchronized(rulesCache) {
+            rulesCache.replaceAll {
+                if (it.id == ruleId) {
+                    Rule.newBuilder().mergeFrom(it).setIsEnabled(enable).build()
+                } else {
+                    it
+                }
+            }
+            postWrite()
+        }
     }
 
     fun getAllRules(): List<Rule> {
-        return rulesCache.toList()
+        synchronized(rulesCache) {
+            return rulesCache.toList()
+        }
     }
 
-    fun getRuleCount() = rulesCache.size
+    fun getRuleCount() = synchronized(rulesCache) {
+        rulesCache.size
+    }
 
     private suspend fun readInternal() = withContext(Dispatchers.IO) {
         if (!storeFile.exists()) {
             logger.d("skip read no-exists file: $storeFile")
             return@withContext
         }
-        kotlin.runCatching {
-            val ruleList = storeFile.inputStream().use {
-                RuleList.parseDelimitedFrom(it)
+        synchronized(rulesCache) {
+            kotlin.runCatching {
+                val ruleList = storeFile.inputStream().use {
+                    RuleList.parseDelimitedFrom(it)
+                }
+                ruleList.run {
+                    rulesCache.clear()
+                    rulesCache.addAll(this.rulesList)
+                }
+            }.onFailure {
+                logger.e(it, "read error")
             }
-            ruleList.run {
-                rulesCache.clear()
-                rulesCache.addAll(this.rulesList)
-            }
-        }.onFailure {
-            logger.e(it, "read error")
         }
     }
 
@@ -105,17 +116,19 @@ open class BaseRuleSettingsStore(
     }
 
     suspend fun write() = withContext(Dispatchers.IO) {
-        logger.d("write.")
-        val ruleList = RuleList.newBuilder().apply {
-            addAllRules(rulesCache)
-        }.build()
-        kotlin.runCatching {
-            storeFile.apply { parentFile.mkdirs() }.outputStream().use {
-                ruleList.writeDelimitedTo(it)
-                logger.d("write to: $storeFile")
+        synchronized(rulesCache) {
+            logger.d("write.")
+            val ruleList = RuleList.newBuilder().apply {
+                addAllRules(rulesCache)
+            }.build()
+            kotlin.runCatching {
+                storeFile.apply { parentFile.mkdirs() }.outputStream().use {
+                    ruleList.writeDelimitedTo(it)
+                    logger.d("write to: $storeFile")
+                }
+            }.onFailure {
+                logger.e(it, "write error")
             }
-        }.onFailure {
-            logger.e(it, "write error")
         }
     }
 }

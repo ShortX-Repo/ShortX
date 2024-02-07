@@ -29,31 +29,41 @@ open class BaseGestureRecordsStore(
     }
 
     fun addAllGestureRecords(records: List<GestureRecord>, write: Boolean = true) {
-        records.forEach { record ->
-            gestureRecordsCache.removeIf { it.id == record.id }
-            gestureRecordsCache.add(record)
+        synchronized(gestureRecordsCache) {
+            records.forEach { record ->
+                gestureRecordsCache.removeIf { it.id == record.id }
+                gestureRecordsCache.add(record)
+            }
+            if (write) postWrite()
         }
-        if (write) postWrite()
     }
 
     fun addGestureRecord(record: GestureRecord) {
-        logger.d("addGestureRecord: ${record.id}")
-        gestureRecordsCache.removeIf { it.id == record.id }
-        gestureRecordsCache.add(record)
-        postWrite()
+        synchronized(gestureRecordsCache) {
+            logger.d("addGestureRecord: ${record.id}")
+            gestureRecordsCache.removeIf { it.id == record.id }
+            gestureRecordsCache.add(record)
+            postWrite()
+        }
     }
 
     fun deleteGestureRecord(id: String) {
-        gestureRecordsCache.removeIf { it.id == id }
-        postWrite()
+        synchronized(gestureRecordsCache) {
+            gestureRecordsCache.removeIf { it.id == id }
+            postWrite()
+        }
     }
 
     fun getGestureRecord(id: String): GestureRecord? {
-        return gestureRecordsCache.firstOrNull { it.id == id }
+        synchronized(gestureRecordsCache) {
+            return gestureRecordsCache.firstOrNull { it.id == id }
+        }
     }
 
     fun getAllGestureRecords(): List<GestureRecord> {
-        return gestureRecordsCache.toList()
+        synchronized(gestureRecordsCache) {
+            return gestureRecordsCache.toList()
+        }
     }
 
     private suspend fun readInternal() = withContext(Dispatchers.IO) {
@@ -62,11 +72,13 @@ open class BaseGestureRecordsStore(
             return@withContext
         }
         kotlin.runCatching {
-            val recordList = storeFile.inputStream().use {
-                GestureRecordList.parseDelimitedFrom(it)
+            synchronized(gestureRecordsCache) {
+                val recordList = storeFile.inputStream().use {
+                    GestureRecordList.parseDelimitedFrom(it)
+                }
+                gestureRecordsCache.clear()
+                gestureRecordsCache.addAll(recordList.recordsList)
             }
-            gestureRecordsCache.clear()
-            gestureRecordsCache.addAll(recordList.recordsList)
         }.onFailure {
             logger.e(it, "read error")
         }
@@ -81,17 +93,19 @@ open class BaseGestureRecordsStore(
     }
 
     suspend fun write() = withContext(Dispatchers.IO) {
-        logger.d("write.")
-        val recordList = GestureRecordList.newBuilder().apply {
-            addAllRecords(gestureRecordsCache)
-        }.build()
-        kotlin.runCatching {
-            storeFile.apply { parentFile.mkdirs() }.outputStream().use {
-                recordList.writeDelimitedTo(it)
-                logger.d("write to: $storeFile")
+        synchronized(gestureRecordsCache) {
+            logger.d("write.")
+            val recordList = GestureRecordList.newBuilder().apply {
+                addAllRecords(gestureRecordsCache)
+            }.build()
+            kotlin.runCatching {
+                storeFile.apply { parentFile.mkdirs() }.outputStream().use {
+                    recordList.writeDelimitedTo(it)
+                    logger.d("write to: $storeFile")
+                }
+            }.onFailure {
+                logger.e(it, "write error")
             }
-        }.onFailure {
-            logger.e(it, "write error")
         }
     }
 }
