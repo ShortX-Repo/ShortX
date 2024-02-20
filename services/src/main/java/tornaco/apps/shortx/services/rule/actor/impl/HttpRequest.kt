@@ -8,20 +8,20 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
-import okhttp3.FormBody
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import org.mvel2.MVEL
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.http.persistentcookiejar.PersistentCookieJar
+import tornaco.apps.shortx.core.http.persistentcookiejar.cache.SetCookieCache
+import tornaco.apps.shortx.core.http.persistentcookiejar.persistence.CookiePersistor
+import tornaco.apps.shortx.core.http.persistentcookiejar.persistence.SettingsStoreCookiePersistor
+import tornaco.apps.shortx.core.http.toHttpRequestBody
 import tornaco.apps.shortx.core.proto.action.HttpRequestHeaderBodyJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
-import tornaco.apps.shortx.core.proto.common.HttpRequestBodyForm
-import tornaco.apps.shortx.core.proto.common.HttpRequestBodyJson
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.RuleContextAndVars
 import tornaco.apps.shortx.core.rule.compileContextAndVars
@@ -34,10 +34,6 @@ import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.util.TestUtils
-import tornaco.apps.shortx.services.util.http.persistentcookiejar.PersistentCookieJar
-import tornaco.apps.shortx.services.util.http.persistentcookiejar.cache.SetCookieCache
-import tornaco.apps.shortx.services.util.http.persistentcookiejar.persistence.CookiePersistor
-import tornaco.apps.shortx.services.util.http.persistentcookiejar.persistence.SettingsStoreCookiePersistor
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLContext
 import javax.net.ssl.X509TrustManager
@@ -309,26 +305,6 @@ object HttpRequest : Actor {
         }
 
         return client.newCall(request).execute()
-    }
-
-    fun ProtoAny.toHttpRequestBody(
-        contextAndVars: RuleContextAndVars,
-    ): RequestBody? {
-        return if (this is_ HttpRequestBodyJson::class.java) {
-            val bodyJson = this unpack_ HttpRequestBodyJson::class.java
-            bodyJson.json.compileContextAndVars(contextAndVars)
-                .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
-        } else if (this is_ HttpRequestBodyForm::class.java) {
-            val bodyForm = this unpack_ HttpRequestBodyForm::class.java
-            FormBody.Builder().apply {
-                bodyForm.itemsList.forEach {
-                    add(
-                        it.key.compileContextAndVars(contextAndVars),
-                        it.value.compileContextAndVars(contextAndVars)
-                    )
-                }
-            }.build()
-        } else null
     }
 }
 

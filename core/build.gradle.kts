@@ -89,6 +89,11 @@ dependencies {
 
     implementation(libs.kotlin.reflect)
 
+    api(libs.retrofit)
+    api(libs.converter.gson)
+    api(libs.okhttp)
+    api(libs.logging.interceptor)
+
     implementation(project(":external:utils"))
 }
 

@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.services.util.http.persistentcookiejar.persistence;
+package tornaco.apps.shortx.core.http.persistentcookiejar.persistence;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import okhttp3.Cookie;
-import tornaco.apps.shortx.services.data.SettingsStore;
+import tornaco.apps.shortx.core.store.BaseSettingsStore;
 
 public class SettingsStoreCookiePersistor implements CookiePersistor {
 
-    private final SettingsStore store;
+    private final BaseSettingsStore store;
 
-    public SettingsStoreCookiePersistor(SettingsStore store) {
+    public SettingsStoreCookiePersistor(BaseSettingsStore store) {
         this.store = store;
     }
 

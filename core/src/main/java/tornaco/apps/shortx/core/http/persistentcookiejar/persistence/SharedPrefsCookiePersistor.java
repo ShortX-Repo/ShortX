@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package tornaco.apps.shortx.services.util.http.persistentcookiejar.persistence;
+package tornaco.apps.shortx.core.http.persistentcookiejar.persistence;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

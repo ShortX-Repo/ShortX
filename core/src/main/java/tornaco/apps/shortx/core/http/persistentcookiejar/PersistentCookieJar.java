@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package tornaco.apps.shortx.services.util.http.persistentcookiejar;
+package tornaco.apps.shortx.core.http.persistentcookiejar;
 
 
 import android.annotation.NonNull;
@@ -27,9 +27,9 @@ import java.util.List;
 import okhttp3.Cookie;
 import okhttp3.HttpUrl;
 import tornaco.apps.shortx.core.BuildProp;
+import tornaco.apps.shortx.core.http.persistentcookiejar.cache.CookieCache;
+import tornaco.apps.shortx.core.http.persistentcookiejar.persistence.CookiePersistor;
 import tornaco.apps.shortx.core.util.Logger;
-import tornaco.apps.shortx.services.util.http.persistentcookiejar.cache.CookieCache;
-import tornaco.apps.shortx.services.util.http.persistentcookiejar.persistence.CookiePersistor;
 
 public class PersistentCookieJar implements ClearableCookieJar {
     private static final Logger LOGGER = new Logger("PersistentCookieJar");

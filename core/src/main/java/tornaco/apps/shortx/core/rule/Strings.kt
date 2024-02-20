@@ -21,3 +21,5 @@ data class RuleContextAndVars(
     val funcParameters: List<FuncParameterInput> = emptyList(),
     val globalVarsLazy: () -> List<GlobalVar> = { emptyList() },
 )
+
+val emptyRuleContextAndVars = RuleContextAndVars()
