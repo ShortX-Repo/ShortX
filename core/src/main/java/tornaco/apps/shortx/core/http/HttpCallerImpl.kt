@@ -129,12 +129,7 @@ class HttpCallerImpl(
         val requestBody = requestBodyProto?.toHttpRequestBody(emptyRuleContextAndVars)
         logger.p("call: $url $method $headers $requestBody")
         val response = callUrl(url, method, headers, requestBody, withCookieJar, trustAllCerts)
-        return HttpResponseData.newBuilder()
-            .setCode(response.code)
-            .setMessage(response.message)
-            .setBody(response.body?.string().orEmpty())
-            .putAllHeaders(response.headers.toMultimap().mapValues { it.value.joinToString(", ") })
-            .build()
+        return response.toHttpResponseData()
     }
 
     fun callUrl(

@@ -530,7 +530,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                     }
                 )
             return kotlin.runCatching {
-                val callerImpl = tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.callerImpl
+                val callerImpl = tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.localCallerImpl
                 callerImpl.callUrl(
                     url = url,
                     method = data.method.name,

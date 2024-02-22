@@ -6,11 +6,12 @@ import android.content.Intent
 import android.os.IBinder
 import com.google.protobuf.Message
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
-import okhttp3.Response
 import org.mvel2.MVEL
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.context.ContextDataMapping
@@ -18,6 +19,7 @@ import tornaco.apps.shortx.core.http.HttpCallerImpl
 import tornaco.apps.shortx.core.http.IHttpCaller
 import tornaco.apps.shortx.core.http.persistentcookiejar.persistence.SettingsStoreCookiePersistor
 import tornaco.apps.shortx.core.http.toHttpRequestBody
+import tornaco.apps.shortx.core.http.toHttpResponseData
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.action.HttpRequestHeaderBodyJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
@@ -43,7 +45,7 @@ import java.util.concurrent.atomic.AtomicReference
 
 
 object HttpRequest : Actor {
-    lateinit var callerImpl: HttpCallerImpl
+    lateinit var localCallerImpl: HttpCallerImpl
 
     private val httpLogger: (String) -> Unit = {
         if (!TestUtils.isUnitTestEnv && HttpRequestLogging.isLogEnabled) {
@@ -62,8 +64,8 @@ object HttpRequest : Actor {
                 shortXContext.rule.systemServiceScope
             )
         )
-        this.callerImpl = HttpCallerImpl(persistor, httpLogger)
-        logger.d("callerImpl: $callerImpl")
+        this.localCallerImpl = HttpCallerImpl(persistor, httpLogger)
+        logger.d("localCallerImpl: $localCallerImpl")
     }
 
     override fun actionsCanHandle(): Class<out Message> {
@@ -77,28 +79,12 @@ object HttpRequest : Actor {
             action unpack_ tornaco.apps.shortx.core.proto.action.HttpRequest::class.java
         val cv = RuleContextAndVars(params)
 
-        val url = data.url.compileContextAndVars(cv)
-        logger.d("url: $url")
-
-        val requestBody = data.requestBody.toHttpRequestBody(cv)
-
         HttpRequestLogging.section("START")
-
-        val response = callerImpl.callUrl(
-            url = url,
-            method = data.method.name,
-            headers = data.headersList.associate {
-                it.key.compileContextAndVars(cv) to (it.value).compileContextAndVars(cv)
-            },
-            requestBody = requestBody,
-            withCookieJar = data.withCookieJar,
-            trustAllCerts = data.trustAllCerts
-        )
-
+        val response = executeHttpRequest(androidContext, cv, data)
         HttpRequestLogging.section("END")
 
         handleResponseBody(
-            cv,
+            contextAndVars = cv,
             response = response,
             adapter = data.adapter
         ).apply {
@@ -126,13 +112,58 @@ object HttpRequest : Actor {
         }
     }
 
+    private suspend fun executeHttpRequest(
+        context: Context,
+        cv: RuleContextAndVars,
+        data: tornaco.apps.shortx.core.proto.action.HttpRequest
+    ): HttpResponseData {
+        val url = data.url.compileContextAndVars(cv)
+        logger.d("url: $url")
+        val method = data.method.name
+        val headers = data.headersList.associate {
+            it.key.compileContextAndVars(cv) to (it.value).compileContextAndVars(cv)
+        }
+        val withCookieJar = data.withCookieJar
+        val trustAllCerts = data.trustAllCerts
+
+        return if (data.executeInAppProcess) {
+            withContext(Dispatchers.IO) {
+                val response = AppHttpRequestServiceProxy.call(
+                    context = context,
+                    scope = this,
+                    url = url,
+                    method = method,
+                    headers = headers,
+                    // TODO Inflate CV
+                    requestBodyData = data.requestBody?.let {
+                        ByteArrayWrapper(it.toByteArray())
+                    },
+                    withCookieJar = withCookieJar,
+                    trustAllCerts = trustAllCerts
+                )
+                response ?: error("Can not get http response from App")
+            }
+        } else {
+            val requestBody = data.requestBody.toHttpRequestBody(cv)
+            val response = localCallerImpl.callUrl(
+                url = url,
+                method = method,
+                headers = headers,
+                requestBody = requestBody,
+                withCookieJar = withCookieJar,
+                trustAllCerts = trustAllCerts
+            )
+            response.toHttpResponseData()
+        }
+    }
+
     fun handleResponseBody(
         contextAndVars: RuleContextAndVars,
-        response: Response,
+        response: HttpResponseData,
         adapter: ProtoAny
     ): List<String> {
-        val responseBody = response.body?.string() ?: "NO-BODY"
-        val responseHeaders = response.headers
+        val responseBody = response.body ?: "NO-BODY"
+        val responseHeaders = response.headersMap
         logger.p("responseBody: $responseBody")
         logger.p("responseHeaders: $responseHeaders")
 
@@ -164,7 +195,7 @@ object HttpRequest : Actor {
             val jsonAdapter = adapter unpack_ HttpRequestHeaderBodyJsonMapAdapter::class.java
             val bodyJsonElement = Json.parseToJsonElement(responseBody)
             val bodyMap: Map<String, JsonElement> = bodyJsonElement.jsonObject.toMap()
-            val headerMap = responseHeaders.toMap().mapKeys {
+            val headerMap = responseHeaders.mapKeys {
                 it.key.fixSpecialLetters()
             }
             val dataMap = mapOf("headers" to headerMap, "body" to bodyMap)
@@ -215,7 +246,7 @@ internal class AppHttpRequestServiceProxy(context: Context, intent: Intent, scop
     suspend fun call(
         url: String,
         method: String,
-        headers: MutableMap<String, String>,
+        headers: Map<String, String>,
         requestBodyData: ByteArrayWrapper?,
         withCookieJar: Boolean,
         trustAllCerts: Boolean
@@ -275,7 +306,7 @@ internal class AppHttpRequestServiceProxy(context: Context, intent: Intent, scop
             scope: CoroutineScope,
             url: String,
             method: String,
-            headers: MutableMap<String, String>,
+            headers: Map<String, String>,
             requestBodyData: ByteArrayWrapper?,
             withCookieJar: Boolean,
             trustAllCerts: Boolean
