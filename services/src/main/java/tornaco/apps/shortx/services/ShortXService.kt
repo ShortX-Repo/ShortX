@@ -27,6 +27,7 @@ import tornaco.apps.shortx.core.IShortX
 import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener
 import tornaco.apps.shortx.core.Version
 import tornaco.apps.shortx.core.context.ContextData
+import tornaco.apps.shortx.core.http.toHttpRequestBody
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.notification.INotificationPoster
 import tornaco.apps.shortx.core.os.ICancellationSignal
@@ -71,7 +72,6 @@ import tornaco.apps.shortx.core.util.powerManager
 import tornaco.apps.shortx.core.util.wifiManager
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.handleResponseBody
-import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.toHttpRequestBody
 import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper
 import tornaco.apps.shortx.services.rule.nextEvaluateContextSerialNumber
 import tornaco.apps.shortx.services.ui.I18NCache
@@ -525,7 +525,8 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                     }
                 )
             return kotlin.runCatching {
-                tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.callUrl(
+                val callerImpl = tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.callerImpl
+                callerImpl.callUrl(
                     url = url,
                     method = data.method.name,
                     headers = data.headersList.associate {

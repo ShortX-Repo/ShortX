@@ -7,7 +7,7 @@ public interface IHttpCaller extends android.os.IInterface
   /** Default implementation for IHttpCaller. */
   public static class Default implements tornaco.apps.shortx.core.http.IHttpCaller
   {
-    @Override public tornaco.apps.shortx.core.http.ParcelableResponseData call(java.lang.String url, java.lang.String method, java.util.Map<java.lang.String,java.lang.String> headers, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper requestBody, boolean withCookieJar, boolean trustAllCerts) throws android.os.RemoteException
+    @Override public tornaco.apps.shortx.core.http.ParcelableResponseData call(java.lang.String url, java.lang.String method, java.util.Map<java.lang.String,java.lang.String> headers, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper requestBodyData, boolean withCookieJar, boolean trustAllCerts) throws android.os.RemoteException
     {
       return null;
     }
@@ -115,7 +115,7 @@ public interface IHttpCaller extends android.os.IInterface
       {
         return DESCRIPTOR;
       }
-      @Override public tornaco.apps.shortx.core.http.ParcelableResponseData call(java.lang.String url, java.lang.String method, java.util.Map<java.lang.String,java.lang.String> headers, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper requestBody, boolean withCookieJar, boolean trustAllCerts) throws android.os.RemoteException
+      @Override public tornaco.apps.shortx.core.http.ParcelableResponseData call(java.lang.String url, java.lang.String method, java.util.Map<java.lang.String,java.lang.String> headers, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper requestBodyData, boolean withCookieJar, boolean trustAllCerts) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
@@ -133,9 +133,9 @@ public interface IHttpCaller extends android.os.IInterface
               _data.writeString(v);
             });
           }
-          if ((requestBody!=null)) {
+          if ((requestBodyData!=null)) {
             _data.writeInt(1);
-            requestBody.writeToParcel(_data, 0);
+            requestBodyData.writeToParcel(_data, 0);
           }
           else {
             _data.writeInt(0);
@@ -144,7 +144,7 @@ public interface IHttpCaller extends android.os.IInterface
           _data.writeInt(((trustAllCerts)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_call, _data, _reply, 0);
           if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().call(url, method, headers, requestBody, withCookieJar, trustAllCerts);
+            return getDefaultImpl().call(url, method, headers, requestBodyData, withCookieJar, trustAllCerts);
           }
           _reply.readException();
           if ((0!=_reply.readInt())) {
@@ -180,5 +180,5 @@ public interface IHttpCaller extends android.os.IInterface
       return Stub.Proxy.sDefaultImpl;
     }
   }
-  public tornaco.apps.shortx.core.http.ParcelableResponseData call(java.lang.String url, java.lang.String method, java.util.Map<java.lang.String,java.lang.String> headers, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper requestBody, boolean withCookieJar, boolean trustAllCerts) throws android.os.RemoteException;
+  public tornaco.apps.shortx.core.http.ParcelableResponseData call(java.lang.String url, java.lang.String method, java.util.Map<java.lang.String,java.lang.String> headers, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper requestBodyData, boolean withCookieJar, boolean trustAllCerts) throws android.os.RemoteException;
 }

@@ -1,19 +1,17 @@
 package tornaco.apps.shortx.core.http
 
 import android.annotation.SuppressLint
-import android.content.Context
-import kotlinx.coroutines.CoroutineScope
 import okhttp3.FormBody
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import tornaco.apps.shortx.core.http.persistentcookiejar.PersistentCookieJar
 import tornaco.apps.shortx.core.http.persistentcookiejar.cache.SetCookieCache
 import tornaco.apps.shortx.core.http.persistentcookiejar.persistence.CookiePersistor
-import tornaco.apps.shortx.core.http.persistentcookiejar.persistence.SettingsStoreCookiePersistor
 import tornaco.apps.shortx.core.proto.common.HttpRequestBodyForm
 import tornaco.apps.shortx.core.proto.common.HttpRequestBodyJson
 import tornaco.apps.shortx.core.rule.ProtoAny
@@ -23,21 +21,22 @@ import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.emptyRuleContextAndVars
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
-import tornaco.apps.shortx.core.store.BaseSettingsStore
 import tornaco.apps.shortx.core.util.Logger
-import java.io.File
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLContext
 import javax.net.ssl.X509TrustManager
 
-class HttpCallerImpl(val androidContext: Context, val scope: CoroutineScope) : IHttpCaller.Stub() {
+class HttpCallerImpl(
+    private val cookiePersistor: CookiePersistor,
+    private val httpLogger: (String) -> Unit
+) {
     private val logger = Logger("HttpCallerImpl")
 
     private lateinit var cookieJar: PersistentCookieJar
 
     private val logging =
         HttpLoggingInterceptor {
-
+            httpLogger(it)
         }.apply { setLevel(HttpLoggingInterceptor.Level.BODY) }
 
     private lateinit var client: OkHttpClient
@@ -46,19 +45,10 @@ class HttpCallerImpl(val androidContext: Context, val scope: CoroutineScope) : I
     private lateinit var clientWithCookieJarTrustAllCerts: OkHttpClient
 
     init {
-        init(
-            SettingsStoreCookiePersistor(
-                BaseSettingsStore(
-                    androidContext,
-                    "PersistentCookieJar",
-                    File(androidContext.cacheDir, "PersistentCookieJar-cache"),
-                    scope
-                )
-            )
-        )
+        initInternal()
     }
 
-    private fun init(cookiePersistor: CookiePersistor) {
+    private fun initInternal() {
         val trustAllCerts = arrayOf<X509TrustManager>(@SuppressLint("CustomX509TrustManager")
         object : X509TrustManager {
             @SuppressLint("TrustAllX509TrustManager")
@@ -124,7 +114,7 @@ class HttpCallerImpl(val androidContext: Context, val scope: CoroutineScope) : I
         logger.d("clientTrustAllCerts: $cookieJar")
     }
 
-    override fun call(
+    fun call(
         url: String,
         method: String,
         headers: MutableMap<String, String>,
@@ -136,8 +126,20 @@ class HttpCallerImpl(val androidContext: Context, val scope: CoroutineScope) : I
             ProtoAny.parseFrom(it)
         }
         val requestBody = requestBodyProto?.toHttpRequestBody(emptyRuleContextAndVars)
-
         logger.p("handleUrl: $url $method $headers $requestBody")
+        val response = callUrl(url, method, headers, requestBody, withCookieJar, trustAllCerts)
+        return ParcelableResponseData(response)
+    }
+
+    fun callUrl(
+        url: String,
+        method: String,
+        headers: Map<String, String>,
+        requestBody: RequestBody? = null,
+        withCookieJar: Boolean = true,
+        trustAllCerts: Boolean = false,
+    ): Response {
+        logger.p("callUrl: $url $method $headers $requestBody")
 
         val request = Request.Builder().url(url)
             .method(method, requestBody)
@@ -166,10 +168,8 @@ class HttpCallerImpl(val androidContext: Context, val scope: CoroutineScope) : I
             }
         }
 
-        val response = client.newCall(request).execute()
-        return ParcelableResponseData(response)
+        return client.newCall(request).execute()
     }
-
 }
 
 fun ProtoAny.toHttpRequestBody(

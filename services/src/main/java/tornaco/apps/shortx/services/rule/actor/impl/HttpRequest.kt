@@ -1,23 +1,15 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
-import android.annotation.SuppressLint
 import android.content.Context
-import com.android.internal.annotations.VisibleForTesting
 import com.google.protobuf.Message
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.Response
-import okhttp3.logging.HttpLoggingInterceptor
 import org.mvel2.MVEL
 import tornaco.apps.shortx.core.context.ContextDataMapping
-import tornaco.apps.shortx.core.http.persistentcookiejar.PersistentCookieJar
-import tornaco.apps.shortx.core.http.persistentcookiejar.cache.SetCookieCache
-import tornaco.apps.shortx.core.http.persistentcookiejar.persistence.CookiePersistor
+import tornaco.apps.shortx.core.http.HttpCallerImpl
 import tornaco.apps.shortx.core.http.persistentcookiejar.persistence.SettingsStoreCookiePersistor
 import tornaco.apps.shortx.core.http.toHttpRequestBody
 import tornaco.apps.shortx.core.proto.action.HttpRequestHeaderBodyJsonMapAdapter
@@ -34,106 +26,30 @@ import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.util.TestUtils
-import java.util.concurrent.TimeUnit
-import javax.net.ssl.SSLContext
-import javax.net.ssl.X509TrustManager
 
 
 object HttpRequest : Actor {
-    private lateinit var cookieJar: PersistentCookieJar
+    lateinit var callerImpl: HttpCallerImpl
 
-    private val logging =
-        HttpLoggingInterceptor {
-            if (!TestUtils.isUnitTestEnv && HttpRequestLogging.isLogEnabled) {
-                HttpRequestLogging.log(it)
-            } else {
-                logger.d(it)
-            }
-        }.apply { setLevel(HttpLoggingInterceptor.Level.BODY) }
-
-    private lateinit var client: OkHttpClient
-    private lateinit var clientWithCookieJar: OkHttpClient
-    private lateinit var clientTrustAllCerts: OkHttpClient
-    private lateinit var clientWithCookieJarTrustAllCerts: OkHttpClient
+    private val httpLogger: (String) -> Unit = {
+        if (!TestUtils.isUnitTestEnv && HttpRequestLogging.isLogEnabled) {
+            HttpRequestLogging.log(it)
+        } else {
+            logger.p(it)
+        }
+    }
 
     override fun init(androidContext: Context, shortXContext: ShortXContext) {
         super.init(androidContext, shortXContext)
-        init(
-            SettingsStoreCookiePersistor(
-                SettingsStore(
-                    androidContext,
-                    "PersistentCookieJar",
-                    shortXContext.rule.systemServiceScope
-                )
+        val persistor = SettingsStoreCookiePersistor(
+            SettingsStore(
+                androidContext,
+                "PersistentCookieJar",
+                shortXContext.rule.systemServiceScope
             )
         )
-    }
-
-    @VisibleForTesting
-    fun init(cookiePersistor: CookiePersistor) {
-        val trustAllCerts = arrayOf<X509TrustManager>(@SuppressLint("CustomX509TrustManager")
-        object : X509TrustManager {
-            @SuppressLint("TrustAllX509TrustManager")
-            override fun checkClientTrusted(
-                chain: Array<out java.security.cert.X509Certificate>?,
-                authType: String?
-            ) {
-            }
-
-            @SuppressLint("TrustAllX509TrustManager")
-            override fun checkServerTrusted(
-                chain: Array<out java.security.cert.X509Certificate>?,
-                authType: String?
-            ) {
-            }
-
-            override fun getAcceptedIssuers(): Array<java.security.cert.X509Certificate> {
-                return arrayOf()
-            }
-        })
-
-        val sslContext = SSLContext.getInstance("SSL")
-        sslContext.init(null, trustAllCerts, java.security.SecureRandom())
-
-        cookieJar = PersistentCookieJar(
-            SetCookieCache(),
-            cookiePersistor
-        )
-        logger.d("cookieJar: $cookieJar")
-
-        clientWithCookieJar = OkHttpClient.Builder()
-            .cookieJar(cookieJar)
-            .writeTimeout(2, TimeUnit.MINUTES)
-            .readTimeout(2, TimeUnit.MINUTES)
-            .addInterceptor(logging)
-            .build()
-        logger.d("clientWithCookieJar: $cookieJar")
-
-        client = OkHttpClient.Builder()
-            .writeTimeout(2, TimeUnit.MINUTES)
-            .readTimeout(2, TimeUnit.MINUTES)
-            .addInterceptor(logging)
-            .build()
-        logger.d("client: $cookieJar")
-
-        clientWithCookieJarTrustAllCerts = OkHttpClient.Builder()
-            .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0])
-            .hostnameVerifier { _, _ -> true }
-            .cookieJar(cookieJar)
-            .writeTimeout(2, TimeUnit.MINUTES)
-            .readTimeout(2, TimeUnit.MINUTES)
-            .addInterceptor(logging)
-            .build()
-        logger.d("clientWithCookieJarTrustAllCerts: $cookieJar")
-
-        clientTrustAllCerts = OkHttpClient.Builder()
-            .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0])
-            .hostnameVerifier { _, _ -> true }
-            .writeTimeout(2, TimeUnit.MINUTES)
-            .readTimeout(2, TimeUnit.MINUTES)
-            .addInterceptor(logging)
-            .build()
-        logger.d("clientTrustAllCerts: $cookieJar")
+        this.callerImpl = HttpCallerImpl(persistor, httpLogger)
+        logger.d("callerImpl: $callerImpl")
     }
 
     override fun actionsCanHandle(): Class<out Message> {
@@ -154,7 +70,7 @@ object HttpRequest : Actor {
 
         HttpRequestLogging.section("START")
 
-        val response = callUrl(
+        val response = callerImpl.callUrl(
             url = url,
             method = data.method.name,
             headers = data.headersList.associate {
@@ -267,45 +183,6 @@ object HttpRequest : Actor {
         }
     }
 
-    fun callUrl(
-        url: String,
-        method: String,
-        headers: Map<String, String>,
-        requestBody: RequestBody? = null,
-        withCookieJar: Boolean = true,
-        trustAllCerts: Boolean = false,
-    ): Response {
-        logger.p("handleUrl: $url $method $headers $requestBody")
-
-        val request = Request.Builder().url(url)
-            .method(method, requestBody)
-            .apply {
-                headers.forEach { (k, v) ->
-                    this.addHeader(k, v)
-                }
-            }
-            .build()
-
-        val client = if (withCookieJar) {
-            if (trustAllCerts) {
-                logger.d("Choose clientWithCookieJarTrustAllCerts")
-                clientWithCookieJarTrustAllCerts
-            } else {
-                logger.d("Choose clientWithCookieJar")
-                clientWithCookieJar
-            }
-        } else {
-            if (trustAllCerts) {
-                logger.d("Choose clientTrustAllCerts")
-                clientTrustAllCerts
-            } else {
-                logger.d("Choose client")
-                client
-            }
-        }
-
-        return client.newCall(request).execute()
-    }
 }
 
 fun String.fixSpecialLetters(): String {
