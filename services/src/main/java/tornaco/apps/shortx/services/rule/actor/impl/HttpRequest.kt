@@ -1,21 +1,30 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.os.IBinder
 import com.google.protobuf.Message
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
 import okhttp3.Response
 import org.mvel2.MVEL
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.http.HttpCallerImpl
+import tornaco.apps.shortx.core.http.IHttpCaller
 import tornaco.apps.shortx.core.http.persistentcookiejar.persistence.SettingsStoreCookiePersistor
 import tornaco.apps.shortx.core.http.toHttpRequestBody
+import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.action.HttpRequestHeaderBodyJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
+import tornaco.apps.shortx.core.proto.common.HttpResponseData
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.RuleContextAndVars
+import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
@@ -25,7 +34,12 @@ import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.services.systemServiceScope
+import tornaco.apps.shortx.services.util.AppServiceProxy
 import tornaco.apps.shortx.services.util.TestUtils
+import java.time.Duration
+import java.util.concurrent.CancellationException
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicReference
 
 
 object HttpRequest : Actor {
@@ -187,4 +201,103 @@ object HttpRequest : Actor {
 
 fun String.fixSpecialLetters(): String {
     return this.replace("-", "_").replace(" ", "_")
+}
+
+internal class AppHttpRequestServiceProxy(context: Context, intent: Intent, scope: CoroutineScope) :
+    AppServiceProxy(context, intent, scope) {
+    private val logger = tornaco.apps.shortx.core.util.Logger("AppHttpRequestServiceProxy")
+    private var impl: IHttpCaller? = null
+
+    override fun onConnected(binder: IBinder) {
+        impl = IHttpCaller.Stub.asInterface(binder)
+    }
+
+    suspend fun call(
+        url: String,
+        method: String,
+        headers: MutableMap<String, String>,
+        requestBodyData: ByteArrayWrapper?,
+        withCookieJar: Boolean,
+        trustAllCerts: Boolean
+    ): HttpResponseData? {
+        logger.d("call.")
+        val res: AtomicReference<HttpResponseData> = AtomicReference()
+        val requestId = HttpRequestSerialNum.nextId().toString()
+        // Minutes
+        val timeout = 2L
+
+        setTask(object : ProxyTask {
+            override suspend fun run() {
+                runCatching {
+                    logger.d("Before call exe.")
+                    val receiver = SynchronousResultReceiver.get()
+                    requireNotNull(impl) { "Impl is null." }.call(
+                        requestId,
+                        receiver,
+                        url,
+                        method,
+                        headers,
+                        requestBodyData,
+                        withCookieJar,
+                        trustAllCerts
+                    )
+                    logger.d("After call exe.")
+                    val receiverRes = receiver.awaitResultNoInterrupt(Duration.ofMinutes(timeout))
+                    logger.d("receiver get res: $receiverRes")
+                    val byteRes: ByteArrayWrapper? = receiverRes.getValue(null)
+                    res.set(
+                        if (byteRes == null) {
+                            null
+                        } else {
+                            HttpResponseData.parseFrom(byteRes.byteData)
+                        }
+                    )
+                }.onFailure {
+                    logger.e(it, "ProxyTask error")
+                    if (it is CancellationException) {
+                        logger.i("Shutdown http request: $requestId since it is CancellationException.")
+                        impl?.close(requestId)
+                    }
+                    res.set(null)
+                }
+            }
+
+        })
+        logger.d("Before waitForCompletion.")
+        waitForCompletion(Duration.ofMinutes(timeout))
+        logger.d("After waitForCompletion.")
+        return res.get()
+    }
+
+    companion object {
+        suspend fun call(
+            context: Context,
+            scope: CoroutineScope,
+            url: String,
+            method: String,
+            headers: MutableMap<String, String>,
+            requestBodyData: ByteArrayWrapper?,
+            withCookieJar: Boolean,
+            trustAllCerts: Boolean
+        ): HttpResponseData? {
+            val intent = Intent()
+            intent.setPackage(BuildProp.APP_PACKAGE_NAME)
+            intent.component =
+                ComponentName.unflattenFromString("${BuildProp.APP_PACKAGE_NAME}/${BuildProp.APP_HTTP_REQUEST_SERVICE_NAME}")
+            return AppHttpRequestServiceProxy(context, intent, scope).call(
+                url,
+                method,
+                headers,
+                requestBodyData,
+                withCookieJar,
+                trustAllCerts
+            )
+        }
+    }
+
+    object HttpRequestSerialNum {
+        private val _id = AtomicInteger(0)
+
+        fun nextId() = _id.getAndIncrement()
+    }
 }

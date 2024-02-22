@@ -538,7 +538,7 @@ public interface IShortX extends android.os.IInterface
     @Override public void setSwipeDistanceThresholdDp(int dp) throws android.os.RemoteException
     {
     }
-    @Override public void log(java.lang.String message) throws android.os.RemoteException
+    @Override public void log(java.lang.String message, java.lang.String redirectTo) throws android.os.RemoteException
     {
     }
     @Override public int getStreamMinVolume(int type) throws android.os.RemoteException
@@ -2268,7 +2268,9 @@ public interface IShortX extends android.os.IInterface
           data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
-          this.log(_arg0);
+          java.lang.String _arg1;
+          _arg1 = data.readString();
+          this.log(_arg0, _arg1);
           reply.writeNoException();
           return true;
         }
@@ -5720,16 +5722,17 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
-      @Override public void log(java.lang.String message) throws android.os.RemoteException
+      @Override public void log(java.lang.String message, java.lang.String redirectTo) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(message);
+          _data.writeString(redirectTo);
           boolean _status = mRemote.transact(Stub.TRANSACTION_log, _data, _reply, 0);
           if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().log(message);
+            getDefaultImpl().log(message, redirectTo);
             return;
           }
           _reply.readException();
@@ -6942,7 +6945,7 @@ public interface IShortX extends android.os.IInterface
 
   public int getSwipeDistanceThresholdDp() throws android.os.RemoteException;
   public void setSwipeDistanceThresholdDp(int dp) throws android.os.RemoteException;
-  public void log(java.lang.String message) throws android.os.RemoteException;
+  public void log(java.lang.String message, java.lang.String redirectTo) throws android.os.RemoteException;
   public int getStreamMinVolume(int type) throws android.os.RemoteException;
   public int getStreamMaxVolume(int type) throws android.os.RemoteException;
   public int getStreamVolume(int type) throws android.os.RemoteException;

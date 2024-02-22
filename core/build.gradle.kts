@@ -48,6 +48,11 @@ buildConfig {
     )
     buildConfigField(
         "String",
+        "APP_HTTP_REQUEST_SERVICE_NAME",
+        "\"tornaco.apps.shortx.ui.service.AppHttpRequestService\""
+    )
+    buildConfigField(
+        "String",
         "APP_MAIN_ACTIVITY",
         "\"tornaco.apps.shortx.ui.main.MainActivity\""
     )

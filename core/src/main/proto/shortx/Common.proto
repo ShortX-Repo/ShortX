@@ -384,3 +384,10 @@ message DownloadSubject {
   string url = 3;
   string fileName = 4;
 }
+
+message HttpResponseData {
+  int32 code = 1;
+  string message = 2;
+  string body = 3;
+  map<string, string> headers = 4;
+}

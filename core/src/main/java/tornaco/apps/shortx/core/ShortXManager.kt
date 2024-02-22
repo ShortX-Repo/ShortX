@@ -174,6 +174,12 @@ class ShortXManager(val service: IShortX) {
         }
     }
 
+    fun log(message: String?, redirectTo: String?) {
+        invokeService(Unit) {
+            log(message, redirectTo)
+        }
+    }
+
     fun addRule(rule: Rule) {
         invokeService(Unit) {
             addRule(ByteArrayWrapper(rule.toByteArray()))

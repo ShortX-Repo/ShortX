@@ -14,6 +14,7 @@ import tornaco.apps.shortx.core.http.persistentcookiejar.cache.SetCookieCache
 import tornaco.apps.shortx.core.http.persistentcookiejar.persistence.CookiePersistor
 import tornaco.apps.shortx.core.proto.common.HttpRequestBodyForm
 import tornaco.apps.shortx.core.proto.common.HttpRequestBodyJson
+import tornaco.apps.shortx.core.proto.common.HttpResponseData
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.RuleContextAndVars
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
@@ -121,14 +122,19 @@ class HttpCallerImpl(
         requestBodyData: ByteArrayWrapper?,
         withCookieJar: Boolean,
         trustAllCerts: Boolean
-    ): ParcelableResponseData {
+    ): HttpResponseData {
         val requestBodyProto = requestBodyData?.byteData?.let {
             ProtoAny.parseFrom(it)
         }
         val requestBody = requestBodyProto?.toHttpRequestBody(emptyRuleContextAndVars)
-        logger.p("handleUrl: $url $method $headers $requestBody")
+        logger.p("call: $url $method $headers $requestBody")
         val response = callUrl(url, method, headers, requestBody, withCookieJar, trustAllCerts)
-        return ParcelableResponseData(response)
+        return HttpResponseData.newBuilder()
+            .setCode(response.code)
+            .setMessage(response.message)
+            .setBody(response.body?.string().orEmpty())
+            .putAllHeaders(response.headers.toMultimap().mapValues { it.value.joinToString(", ") })
+            .build()
     }
 
     fun callUrl(

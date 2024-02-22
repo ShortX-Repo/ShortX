@@ -72,6 +72,7 @@ import tornaco.apps.shortx.core.util.powerManager
 import tornaco.apps.shortx.core.util.wifiManager
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.handleResponseBody
+import tornaco.apps.shortx.services.rule.actor.impl.HttpRequestLogging
 import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper
 import tornaco.apps.shortx.services.rule.nextEvaluateContextSerialNumber
 import tornaco.apps.shortx.services.ui.I18NCache
@@ -405,8 +406,12 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.gesture.setSwipeDistanceThresholdDp(dp)
         }
 
-        override fun log(message: String?) {
-            logger.i("EXTERNAL: $message")
+        override fun log(message: String?, redirectTo: String?) {
+            if (redirectTo.isNullOrBlank()) {
+                logger.i("EXTERNAL: $message")
+            } else if ("http" == redirectTo) {
+                message?.let { HttpRequestLogging.log(it) }
+            }
         }
 
         override fun getStreamMinVolume(type: Int): Int {
