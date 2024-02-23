@@ -87,7 +87,10 @@ class DemoActivity : BaseActivity() {
                         Button(onClick = {
                             scope.launch {
                                 while (true) {
-                                    ShortXManagerNative.shortX?.log("Test log: ${System.currentTimeMillis()}")
+                                    ShortXManagerNative.shortX?.log(
+                                        "Test log: ${System.currentTimeMillis()}",
+                                        ""
+                                    )
                                     delay(20)
                                 }
                             }

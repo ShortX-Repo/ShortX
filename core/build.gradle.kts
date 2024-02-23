@@ -48,6 +48,11 @@ buildConfig {
     )
     buildConfigField(
         "String",
+        "APP_HTTP_REQUEST_SERVICE_NAME",
+        "\"tornaco.apps.shortx.ui.service.AppHttpRequestService\""
+    )
+    buildConfigField(
+        "String",
         "APP_MAIN_ACTIVITY",
         "\"tornaco.apps.shortx.ui.main.MainActivity\""
     )
@@ -88,6 +93,11 @@ dependencies {
     implementation(libs.kotlin.stdlib.jdk8)
 
     implementation(libs.kotlin.reflect)
+
+    api(libs.retrofit)
+    api(libs.converter.gson)
+    api(libs.okhttp)
+    api(libs.logging.interceptor)
 
     implementation(project(":external:utils"))
 }

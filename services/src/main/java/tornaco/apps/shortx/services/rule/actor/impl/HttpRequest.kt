@@ -1,29 +1,32 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
-import android.annotation.SuppressLint
+import android.content.ComponentName
 import android.content.Context
-import com.android.internal.annotations.VisibleForTesting
+import android.content.Intent
+import android.os.IBinder
 import com.google.protobuf.Message
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
-import okhttp3.FormBody
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
-import okhttp3.logging.HttpLoggingInterceptor
 import org.mvel2.MVEL
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.http.HttpCallerImpl
+import tornaco.apps.shortx.core.http.IHttpCaller
+import tornaco.apps.shortx.core.http.persistentcookiejar.persistence.SettingsStoreCookiePersistor
+import tornaco.apps.shortx.core.http.toHttpRequestBody
+import tornaco.apps.shortx.core.http.toHttpResponseData
+import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.action.HttpRequestHeaderBodyJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
-import tornaco.apps.shortx.core.proto.common.HttpRequestBodyForm
-import tornaco.apps.shortx.core.proto.common.HttpRequestBodyJson
+import tornaco.apps.shortx.core.proto.common.HttpResponseData
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.RuleContextAndVars
+import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
@@ -33,111 +36,36 @@ import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.services.systemServiceScope
+import tornaco.apps.shortx.services.util.AppServiceProxy
 import tornaco.apps.shortx.services.util.TestUtils
-import tornaco.apps.shortx.services.util.http.persistentcookiejar.PersistentCookieJar
-import tornaco.apps.shortx.services.util.http.persistentcookiejar.cache.SetCookieCache
-import tornaco.apps.shortx.services.util.http.persistentcookiejar.persistence.CookiePersistor
-import tornaco.apps.shortx.services.util.http.persistentcookiejar.persistence.SettingsStoreCookiePersistor
-import java.util.concurrent.TimeUnit
-import javax.net.ssl.SSLContext
-import javax.net.ssl.X509TrustManager
+import java.time.Duration
+import java.util.concurrent.CancellationException
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicReference
 
 
 object HttpRequest : Actor {
-    private lateinit var cookieJar: PersistentCookieJar
+    lateinit var localCallerImpl: HttpCallerImpl
 
-    private val logging =
-        HttpLoggingInterceptor {
-            if (!TestUtils.isUnitTestEnv && HttpRequestLogging.isLogEnabled) {
-                HttpRequestLogging.log(it)
-            } else {
-                logger.d(it)
-            }
-        }.apply { setLevel(HttpLoggingInterceptor.Level.BODY) }
-
-    private lateinit var client: OkHttpClient
-    private lateinit var clientWithCookieJar: OkHttpClient
-    private lateinit var clientTrustAllCerts: OkHttpClient
-    private lateinit var clientWithCookieJarTrustAllCerts: OkHttpClient
+    private val httpLogger: (String) -> Unit = {
+        if (!TestUtils.isUnitTestEnv && HttpRequestLogging.isLogEnabled) {
+            HttpRequestLogging.log(it)
+        } else {
+            logger.p(it)
+        }
+    }
 
     override fun init(androidContext: Context, shortXContext: ShortXContext) {
         super.init(androidContext, shortXContext)
-        init(
-            SettingsStoreCookiePersistor(
-                SettingsStore(
-                    androidContext,
-                    "PersistentCookieJar",
-                    shortXContext.rule.systemServiceScope
-                )
+        val persistor = SettingsStoreCookiePersistor(
+            SettingsStore(
+                androidContext,
+                "PersistentCookieJar",
+                shortXContext.rule.systemServiceScope
             )
         )
-    }
-
-    @VisibleForTesting
-    fun init(cookiePersistor: CookiePersistor) {
-        val trustAllCerts = arrayOf<X509TrustManager>(@SuppressLint("CustomX509TrustManager")
-        object : X509TrustManager {
-            @SuppressLint("TrustAllX509TrustManager")
-            override fun checkClientTrusted(
-                chain: Array<out java.security.cert.X509Certificate>?,
-                authType: String?
-            ) {
-            }
-
-            @SuppressLint("TrustAllX509TrustManager")
-            override fun checkServerTrusted(
-                chain: Array<out java.security.cert.X509Certificate>?,
-                authType: String?
-            ) {
-            }
-
-            override fun getAcceptedIssuers(): Array<java.security.cert.X509Certificate> {
-                return arrayOf()
-            }
-        })
-
-        val sslContext = SSLContext.getInstance("SSL")
-        sslContext.init(null, trustAllCerts, java.security.SecureRandom())
-
-        cookieJar = PersistentCookieJar(
-            SetCookieCache(),
-            cookiePersistor
-        )
-        logger.d("cookieJar: $cookieJar")
-
-        clientWithCookieJar = OkHttpClient.Builder()
-            .cookieJar(cookieJar)
-            .writeTimeout(2, TimeUnit.MINUTES)
-            .readTimeout(2, TimeUnit.MINUTES)
-            .addInterceptor(logging)
-            .build()
-        logger.d("clientWithCookieJar: $cookieJar")
-
-        client = OkHttpClient.Builder()
-            .writeTimeout(2, TimeUnit.MINUTES)
-            .readTimeout(2, TimeUnit.MINUTES)
-            .addInterceptor(logging)
-            .build()
-        logger.d("client: $cookieJar")
-
-        clientWithCookieJarTrustAllCerts = OkHttpClient.Builder()
-            .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0])
-            .hostnameVerifier { _, _ -> true }
-            .cookieJar(cookieJar)
-            .writeTimeout(2, TimeUnit.MINUTES)
-            .readTimeout(2, TimeUnit.MINUTES)
-            .addInterceptor(logging)
-            .build()
-        logger.d("clientWithCookieJarTrustAllCerts: $cookieJar")
-
-        clientTrustAllCerts = OkHttpClient.Builder()
-            .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0])
-            .hostnameVerifier { _, _ -> true }
-            .writeTimeout(2, TimeUnit.MINUTES)
-            .readTimeout(2, TimeUnit.MINUTES)
-            .addInterceptor(logging)
-            .build()
-        logger.d("clientTrustAllCerts: $cookieJar")
+        this.localCallerImpl = HttpCallerImpl(persistor, httpLogger)
+        logger.d("localCallerImpl: $localCallerImpl")
     }
 
     override fun actionsCanHandle(): Class<out Message> {
@@ -151,28 +79,12 @@ object HttpRequest : Actor {
             action unpack_ tornaco.apps.shortx.core.proto.action.HttpRequest::class.java
         val cv = RuleContextAndVars(params)
 
-        val url = data.url.compileContextAndVars(cv)
-        logger.d("url: $url")
-
-        val requestBody = data.requestBody.toHttpRequestBody(cv)
-
         HttpRequestLogging.section("START")
-
-        val response = callUrl(
-            url = url,
-            method = data.method.name,
-            headers = data.headersList.associate {
-                it.key.compileContextAndVars(cv) to (it.value).compileContextAndVars(cv)
-            },
-            requestBody = requestBody,
-            withCookieJar = data.withCookieJar,
-            trustAllCerts = data.trustAllCerts
-        )
-
+        val response = executeHttpRequest(androidContext, cv, data)
         HttpRequestLogging.section("END")
 
         handleResponseBody(
-            cv,
+            contextAndVars = cv,
             response = response,
             adapter = data.adapter
         ).apply {
@@ -200,13 +112,58 @@ object HttpRequest : Actor {
         }
     }
 
+    private suspend fun executeHttpRequest(
+        context: Context,
+        cv: RuleContextAndVars,
+        data: tornaco.apps.shortx.core.proto.action.HttpRequest
+    ): HttpResponseData {
+        val url = data.url.compileContextAndVars(cv)
+        logger.d("url: $url")
+        val method = data.method.name
+        val headers = data.headersList.associate {
+            it.key.compileContextAndVars(cv) to (it.value).compileContextAndVars(cv)
+        }
+        val withCookieJar = data.withCookieJar
+        val trustAllCerts = data.trustAllCerts
+
+        return if (data.executeInAppProcess) {
+            withContext(Dispatchers.IO) {
+                val response = AppHttpRequestServiceProxy.call(
+                    context = context,
+                    scope = this,
+                    url = url,
+                    method = method,
+                    headers = headers,
+                    // TODO Inflate CV
+                    requestBodyData = data.requestBody?.let {
+                        ByteArrayWrapper(it.toByteArray())
+                    },
+                    withCookieJar = withCookieJar,
+                    trustAllCerts = trustAllCerts
+                )
+                response ?: error("Can not get http response from App")
+            }
+        } else {
+            val requestBody = data.requestBody.toHttpRequestBody(cv)
+            val response = localCallerImpl.callUrl(
+                url = url,
+                method = method,
+                headers = headers,
+                requestBody = requestBody,
+                withCookieJar = withCookieJar,
+                trustAllCerts = trustAllCerts
+            )
+            response.toHttpResponseData()
+        }
+    }
+
     fun handleResponseBody(
         contextAndVars: RuleContextAndVars,
-        response: Response,
+        response: HttpResponseData,
         adapter: ProtoAny
     ): List<String> {
-        val responseBody = response.body?.string() ?: "NO-BODY"
-        val responseHeaders = response.headers
+        val responseBody = response.body ?: "NO-BODY"
+        val responseHeaders = response.headersMap
         logger.p("responseBody: $responseBody")
         logger.p("responseHeaders: $responseHeaders")
 
@@ -238,7 +195,7 @@ object HttpRequest : Actor {
             val jsonAdapter = adapter unpack_ HttpRequestHeaderBodyJsonMapAdapter::class.java
             val bodyJsonElement = Json.parseToJsonElement(responseBody)
             val bodyMap: Map<String, JsonElement> = bodyJsonElement.jsonObject.toMap()
-            val headerMap = responseHeaders.toMap().mapKeys {
+            val headerMap = responseHeaders.mapKeys {
                 it.key.fixSpecialLetters()
             }
             val dataMap = mapOf("headers" to headerMap, "body" to bodyMap)
@@ -271,67 +228,107 @@ object HttpRequest : Actor {
         }
     }
 
-    fun callUrl(
-        url: String,
-        method: String,
-        headers: Map<String, String>,
-        requestBody: RequestBody? = null,
-        withCookieJar: Boolean = true,
-        trustAllCerts: Boolean = false,
-    ): Response {
-        logger.p("handleUrl: $url $method $headers $requestBody")
-
-        val request = Request.Builder().url(url)
-            .method(method, requestBody)
-            .apply {
-                headers.forEach { (k, v) ->
-                    this.addHeader(k, v)
-                }
-            }
-            .build()
-
-        val client = if (withCookieJar) {
-            if (trustAllCerts) {
-                logger.d("Choose clientWithCookieJarTrustAllCerts")
-                clientWithCookieJarTrustAllCerts
-            } else {
-                logger.d("Choose clientWithCookieJar")
-                clientWithCookieJar
-            }
-        } else {
-            if (trustAllCerts) {
-                logger.d("Choose clientTrustAllCerts")
-                clientTrustAllCerts
-            } else {
-                logger.d("Choose client")
-                client
-            }
-        }
-
-        return client.newCall(request).execute()
-    }
-
-    fun ProtoAny.toHttpRequestBody(
-        contextAndVars: RuleContextAndVars,
-    ): RequestBody? {
-        return if (this is_ HttpRequestBodyJson::class.java) {
-            val bodyJson = this unpack_ HttpRequestBodyJson::class.java
-            bodyJson.json.compileContextAndVars(contextAndVars)
-                .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
-        } else if (this is_ HttpRequestBodyForm::class.java) {
-            val bodyForm = this unpack_ HttpRequestBodyForm::class.java
-            FormBody.Builder().apply {
-                bodyForm.itemsList.forEach {
-                    add(
-                        it.key.compileContextAndVars(contextAndVars),
-                        it.value.compileContextAndVars(contextAndVars)
-                    )
-                }
-            }.build()
-        } else null
-    }
 }
 
 fun String.fixSpecialLetters(): String {
     return this.replace("-", "_").replace(" ", "_")
+}
+
+internal class AppHttpRequestServiceProxy(context: Context, intent: Intent, scope: CoroutineScope) :
+    AppServiceProxy(context, intent, scope) {
+    private val logger = tornaco.apps.shortx.core.util.Logger("AppHttpRequestServiceProxy")
+    private var impl: IHttpCaller? = null
+
+    override fun onConnected(binder: IBinder) {
+        impl = IHttpCaller.Stub.asInterface(binder)
+    }
+
+    suspend fun call(
+        url: String,
+        method: String,
+        headers: Map<String, String>,
+        requestBodyData: ByteArrayWrapper?,
+        withCookieJar: Boolean,
+        trustAllCerts: Boolean
+    ): HttpResponseData? {
+        logger.d("call.")
+        val res: AtomicReference<HttpResponseData> = AtomicReference()
+        val requestId = HttpRequestSerialNum.nextId().toString()
+        // Minutes
+        val timeout = 2L
+
+        setTask(object : ProxyTask {
+            override suspend fun run() {
+                runCatching {
+                    logger.d("Before call exe.")
+                    val receiver = SynchronousResultReceiver.get()
+                    requireNotNull(impl) { "Impl is null." }.call(
+                        requestId,
+                        receiver,
+                        url,
+                        method,
+                        headers,
+                        requestBodyData,
+                        withCookieJar,
+                        trustAllCerts
+                    )
+                    logger.d("After call exe.")
+                    val receiverRes = receiver.awaitResultNoInterrupt(Duration.ofMinutes(timeout))
+                    logger.d("receiver get res: $receiverRes")
+                    val byteRes: ByteArrayWrapper? = receiverRes.getValue(null)
+                    res.set(
+                        if (byteRes == null) {
+                            null
+                        } else {
+                            HttpResponseData.parseFrom(byteRes.byteData)
+                        }
+                    )
+                }.onFailure {
+                    logger.e(it, "ProxyTask error")
+                    if (it is CancellationException) {
+                        logger.i("Shutdown http request: $requestId since it is CancellationException.")
+                        impl?.close(requestId)
+                    }
+                    res.set(null)
+                }
+            }
+
+        })
+        logger.d("Before waitForCompletion.")
+        waitForCompletion(Duration.ofMinutes(timeout))
+        logger.d("After waitForCompletion.")
+        return res.get()
+    }
+
+    companion object {
+        suspend fun call(
+            context: Context,
+            scope: CoroutineScope,
+            url: String,
+            method: String,
+            headers: Map<String, String>,
+            requestBodyData: ByteArrayWrapper?,
+            withCookieJar: Boolean,
+            trustAllCerts: Boolean
+        ): HttpResponseData? {
+            val intent = Intent()
+            intent.setPackage(BuildProp.APP_PACKAGE_NAME)
+            intent.component =
+                ComponentName.unflattenFromString("${BuildProp.APP_PACKAGE_NAME}/${BuildProp.APP_HTTP_REQUEST_SERVICE_NAME}")
+            return AppHttpRequestServiceProxy(context, intent, scope).call(
+                url,
+                method,
+                headers,
+                requestBodyData,
+                withCookieJar,
+                trustAllCerts
+            )
+        }
+    }
+
+    object HttpRequestSerialNum {
+        private val _id = AtomicInteger(0)
+
+        fun nextId() = _id.getAndIncrement()
+    }
 }

@@ -250,9 +250,6 @@
         <activity
             android:name="tornaco.apps.shortx.ui.addrule.condition.selector.ConditionSelectorActivity"
             android:exported="false" />
-        <activity
-            android:name="tornaco.apps.shortx.ui.settings.EggActivity"
-            android:exported="false" />
 
         <service
             android:name=".service.tile.Tile1"
@@ -378,6 +375,10 @@
             android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
         <service
             android:name="tornaco.apps.shortx.ui.service.AppNotificationService"
+            android:exported="true"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+        <service
+            android:name="tornaco.apps.shortx.ui.service.AppHttpRequestService"
             android:exported="true"
             android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
 

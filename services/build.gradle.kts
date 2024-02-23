@@ -27,11 +27,6 @@ dependencies {
     implementation(libs.kotlinx.serialization.json.jvm)
     implementation(libs.kotlin.reflect)
 
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
-    implementation(libs.okhttp)
-    implementation(libs.logging.interceptor)
-
     implementation(libs.protobuf.java)
 
     // https://mvnrepository.com/artifact/org.mvel/mvel2

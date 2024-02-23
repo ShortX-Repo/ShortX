@@ -101,7 +101,7 @@ object SystemUIHook {
 
                 // Install log
                 logAdapter = { _: Int, tag: String, msg: String ->
-                    shortx.log("$tag - $msg")
+                    shortx.log("$tag - $msg", "")
                 }
 
                 val app: Context = param.thisObject as Context

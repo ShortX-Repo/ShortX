@@ -32,10 +32,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -894,9 +892,6 @@ private fun aboutSettings(
 ): List<Preference> {
     val context = LocalContext.current
     val i18N = LocalI18N.current
-    var coreInfoClickedTimes by remember {
-        mutableIntStateOf(0)
-    }
     return listOf(
         Preference.Category(i18N["ui.settings.about"]),
 
@@ -913,11 +908,6 @@ private fun aboutSettings(
                         i18N["ui.settings.core.info.na"]
                     },
                     onClick = {
-                        coreInfoClickedTimes += 1
-                        if (coreInfoClickedTimes > 10) {
-                            EggActivity.start(context)
-                            coreInfoClickedTimes = 0
-                        }
                     }
                 )
             ),

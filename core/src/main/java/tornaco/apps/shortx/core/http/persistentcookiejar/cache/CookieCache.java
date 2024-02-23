@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package tornaco.apps.shortx.services.util.http.persistentcookiejar.cache;
+package tornaco.apps.shortx.core.http.persistentcookiejar.cache;
 
 import java.util.Collection;
 

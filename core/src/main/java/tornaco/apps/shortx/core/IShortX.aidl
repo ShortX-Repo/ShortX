@@ -240,7 +240,7 @@ interface IShortX {
     int getSwipeDistanceThresholdDp();
     void setSwipeDistanceThresholdDp(int dp);
 
-    void log(String message);
+    void log(String message, String redirectTo);
 
     int getStreamMinVolume(int type);
     int getStreamMaxVolume(int type);

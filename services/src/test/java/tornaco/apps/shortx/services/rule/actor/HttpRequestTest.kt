@@ -5,6 +5,8 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import tornaco.apps.shortx.core.context.ContextData
+import tornaco.apps.shortx.core.http.HttpCallerImpl
+import tornaco.apps.shortx.core.http.toHttpRequestBody
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.HttpRequestHeaderBodyJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
@@ -15,25 +17,27 @@ import tornaco.apps.shortx.core.proto.gv.StringVar
 import tornaco.apps.shortx.core.rule.RuleContextAndVars
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.logAdapter
-import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.handleResponseBody
-import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.toHttpRequestBody
 import tornaco.apps.shortx.services.rule.actor.impl.fixSpecialLetters
 import tornaco.apps.shortx.services.util.TestUtils
 
 class HttpRequestTest {
+    private lateinit var httpCaller: HttpCallerImpl
+
     @Before
     fun installLogger() {
         TestUtils.isUnitTestEnv = true
         logAdapter = { _: Int, tag: String, msg: String ->
             println("[$tag] $msg")
         }
-        HttpRequest.init(mockk(relaxed = true))
+        httpCaller = HttpCallerImpl(mockk(relaxed = true)) {
+            println(it)
+        }
     }
 
     @Test
     fun testJsonAdapter() {
-        val res = HttpRequest.callUrl(
+        val res = httpCaller.callUrl(
             url = "https://raw.githubusercontent.com/Tornaco/Thanox/master/files/profile/profiles/forceidle.json",
             method = "GET",
             headers = emptyMap(),
@@ -57,7 +61,7 @@ class HttpRequestTest {
 
     @Test
     fun testJsonAdapterWithHeaderAndBody() {
-        val res = HttpRequest.callUrl(
+        val res = httpCaller.callUrl(
             url = "https://raw.githubusercontent.com/Tornaco/Thanox/master/files/profile/profiles/forceidle.json",
             method = "GET",
             headers = emptyMap(),
@@ -94,7 +98,7 @@ class HttpRequestTest {
 
     @Test
     fun testJsonAdapter2() {
-        val res = HttpRequest.callUrl(
+        val res = httpCaller.callUrl(
             url = "https://raw.githubusercontent.com/Tornaco/Thanox/master/files/profile/tag.json",
             method = "GET",
             headers = emptyMap(),
@@ -118,7 +122,7 @@ class HttpRequestTest {
 
     @Test
     fun testJsonAdapterWithHeaderAndBody2() {
-        val res = HttpRequest.callUrl(
+        val res = httpCaller.callUrl(
             url = "https://raw.githubusercontent.com/Tornaco/Thanox/master/files/profile/tag.json",
             method = "GET",
             headers = emptyMap(),
@@ -142,7 +146,7 @@ class HttpRequestTest {
 
     @Test
     fun testRawAdapter() {
-        val res = HttpRequest.callUrl(
+        val res = httpCaller.callUrl(
             url = "https://raw.githubusercontent.com/Tornaco/Thanox/master/files/profile/tag.json",
             method = "GET",
             headers = emptyMap(),
@@ -190,7 +194,7 @@ class HttpRequestTest {
 
     @Test
     fun testRequestBody() {
-        val res = HttpRequest.callUrl(
+        val res = httpCaller.callUrl(
             url = "https://raw.githubusercontent.com/Tornaco/Thanox/master/files/profile/tag.json",
             method = "POST",
             headers = mapOf("name" to "Nick"),
