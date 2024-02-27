@@ -28,6 +28,7 @@ import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener
 import tornaco.apps.shortx.core.Version
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.http.toHttpRequestBody
+import tornaco.apps.shortx.core.http.toHttpResponseData
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.notification.INotificationPoster
 import tornaco.apps.shortx.core.os.ICancellationSignal
@@ -547,7 +548,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                             globalVarsLazy = { shortXContext.rule.getAllGlobalVars() },
                             localVars = LocalVars.obtain()
                         ),
-                        response = it,
+                        response = it.toHttpResponseData(),
                         adapter = data.adapter
                     )
                 }

@@ -1474,3 +1474,15 @@ message DownloadFile {
   string note = 99;
   string id = 100;
 }
+
+message SendSMS {
+  int32 slotId = 1;
+  string message = 2;
+  string to = 3;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
