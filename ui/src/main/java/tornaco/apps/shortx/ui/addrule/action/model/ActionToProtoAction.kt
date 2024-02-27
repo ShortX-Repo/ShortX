@@ -1158,6 +1158,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setRequestBody(requestBody)
                 .setWithCookieJar(withCookieJar)
                 .setTrustAllCerts(trustAllCerts)
+                .setExecuteInAppProcess(executeInAppProcess)
                 .build()
         }
 

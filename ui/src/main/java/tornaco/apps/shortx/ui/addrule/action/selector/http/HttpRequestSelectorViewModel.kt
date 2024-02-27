@@ -43,6 +43,7 @@ data class HttpRequestDialogState(
 
     val withCookieJar: Boolean = false,
     val trustAllCerts: Boolean = false,
+    val executeInAppProcess: Boolean = false,
     val isTesting: Boolean = false,
 ) {
     val httpRequest
@@ -71,7 +72,8 @@ data class HttpRequestDialogState(
                 }
             },
             withCookieJar = this.withCookieJar,
-            trustAllCerts = this.trustAllCerts
+            trustAllCerts = this.trustAllCerts,
+            executeInAppProcess = this.executeInAppProcess
         )
 }
 
@@ -91,6 +93,7 @@ class HttpRequestSelectorViewModel @Inject constructor(@ApplicationContext conte
                     headers = currentAction.headers,
                     withCookieJar = currentAction.withCookieJar,
                     trustAllCerts = currentAction.trustAllCerts,
+                    executeInAppProcess = currentAction.executeInAppProcess,
                     expressions = currentAction.let {
                         when (it.adapter) {
                             is HttpRequestAdapter.BodyJsonMap -> {
@@ -262,6 +265,10 @@ class HttpRequestSelectorViewModel @Inject constructor(@ApplicationContext conte
 
     fun trustAllCerts(boolean: Boolean) {
         updateState { copy(trustAllCerts = boolean) }
+    }
+
+    fun executeInApp(boolean: Boolean) {
+        updateState { copy(executeInAppProcess = boolean) }
     }
 
     fun withCookieJar(boolean: Boolean) {

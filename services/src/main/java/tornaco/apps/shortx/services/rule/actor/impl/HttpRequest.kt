@@ -127,6 +127,7 @@ object HttpRequest : Actor {
         val trustAllCerts = data.trustAllCerts
 
         return if (data.executeInAppProcess) {
+            logger.i("execute in app process.")
             withContext(Dispatchers.IO) {
                 val response = AppHttpRequestServiceProxy.call(
                     context = context,
@@ -144,6 +145,7 @@ object HttpRequest : Actor {
                 response ?: error("Can not get http response from App")
             }
         } else {
+            logger.i("execute in system process.")
             val requestBody = data.requestBody.toHttpRequestBody(cv)
             val response = localCallerImpl.callUrl(
                 url = url,

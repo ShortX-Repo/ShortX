@@ -2726,7 +2726,8 @@ sealed interface Action : Parcelable {
 
         val adapter: HttpRequestAdapter,
         val withCookieJar: Boolean,
-        val trustAllCerts: Boolean
+        val trustAllCerts: Boolean,
+        val executeInAppProcess: Boolean,
     ) : Action {
         override fun clone(
             id: String,
