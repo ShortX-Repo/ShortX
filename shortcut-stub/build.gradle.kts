@@ -84,6 +84,8 @@ android {
 dependencies {
     implementation(project(":core"))
     implementation(libs.hiddenapibypass)
+
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 }
 
 
