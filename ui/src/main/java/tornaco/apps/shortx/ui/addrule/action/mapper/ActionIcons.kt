@@ -504,6 +504,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.System.download_2_fill
         }
 
+        Action.SendSMS::class -> {
+            Remix.Communication.chat_smile_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

@@ -280,6 +280,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
         }
     RingtonePickerDialog(state = ringtonePickerState)
 
+    val sendSMSSelectorState = rememberSendSMSSelectorState {
+        addAction(it)
+    }
+    SendSMSSelectorDialog(state = sendSMSSelectorState)
+
     return { source ->
         when (source.clazz) {
             Action.MediaPlayback::class -> {
@@ -456,6 +461,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.SendSMS::class -> {
+                sendSMSSelectorState.show(source.getActionAs())
+                true
+            }
+
             else -> false
         }
     }
@@ -519,6 +529,7 @@ fun SystemActions(
         Action.SetScreenRotate::class,
         Action.ConnectWifi::class,
         Action.SetMasterSync::class,
+        Action.SendSMS::class,
     ).map {
         SelectorItem(
             type = it,

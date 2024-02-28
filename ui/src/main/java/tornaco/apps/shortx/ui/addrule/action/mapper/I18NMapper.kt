@@ -239,6 +239,7 @@ fun labelAndDescriptionForActionSelector(
         Action.ShowClipboardView::class -> i18N["ui.action.show.clip.board"] to null
         Action.PlayRingtone::class -> i18N["ui.action.ringtone"] to null
         Action.DownloadFile::class -> i18N["ui.action.download.file"] to null
+        Action.SendSMS::class -> i18N["ui.action.send.sms"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -922,6 +923,18 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.DownloadFile -> listOf(
             i18N["ui.action.download.file"],
             action.subject.title
+        )
+        is Action.SendSMS -> listOf(
+            i18N["ui.action.send.sms"],
+            (action.slotId >= 0).select(
+                i18N["ui.common.mobile.data.enabled.slot", mapOf(
+                    "slotId" to action.slotId.toString(),
+                    "label" to (shortXManager.getSlotLabel(action.slotId) ?: "")
+                )],
+                "N/A"
+            ),
+            action.to,
+            action.message
         )
     }
 }
