@@ -59,6 +59,10 @@ android {
     ndkVersion = Configs.ndkVersion
 }
 
+dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+}
+
 val magiskDir = magiskModuleBuildDir
 val isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows
 

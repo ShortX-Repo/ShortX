@@ -4,8 +4,9 @@ activity-compose = "1.8.2"
 agp = "8.2.2"
 apksig = "8.2.2"
 biometric = "1.2.0-alpha05"
+desugar_jdk_libs = "2.0.4"
 rang-vikalp = "1.0.0-alpha02"
-sardine-android = "v0.8"
+sardine-android = "v0.9"
 shortx-plugin-sdk = "v1.0.7"
 tinypinyin = "3.0.0"
 zxing-core = "3.5.3"
@@ -13,7 +14,7 @@ dalvik-dx = "14.0.0_r21"
 jotp = "1.3.0"
 jsoup = "1.17.2"
 kotest-assertions = "5.8.0"
-libsu = "5.1.0"
+libsu = "5.2.2"
 mmkv = "1.3.3"
 orbit = "6.1.0"
 androidx-test-runner = "1.5.2"
@@ -36,7 +37,7 @@ compose-runtime = "1.6.0"
 compose-ui = "1.6.1"
 converter-gson = "2.9.0"
 junit = "4.13.2"
-libchecker-rules-bundle = "32.1"
+libchecker-rules-bundle = "34.9"
 lottie = "6.3.0"
 markwo = "4.6.2"
 core-ktx = "1.12.0"
@@ -82,6 +83,7 @@ kover = { id = "org.jetbrains.kotlinx.kover", version = "0.7.5" }
 [libraries]
 androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
 apksig = { module = "com.android.tools.build:apksig", version.ref = "apksig" }
+desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 rang-vikalp = { module = "io.ak1:rang-vikalp", version.ref = "rang-vikalp" }
 sardine-android = { module = "com.github.thegrizzlylabs:sardine-android", version.ref = "sardine-android" }
 shortx-plugin-sdk = { module = "com.github.ShortX-Repo:ShortX-Plugin-SDK", version.ref = "shortx-plugin-sdk" }

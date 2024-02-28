@@ -352,6 +352,9 @@ private fun BaseSelectorActivity<Action.HttpRequest>.HttpRequestSelector(current
                         TrustAllCerts(selectorState.trustAllCerts) { vm.trustAllCerts(it) }
                         LargeSpacer()
 
+                        ExecuteInAppProcess(selectorState.executeInAppProcess) { vm.executeInApp(it) }
+                        LargeSpacer()
+
                         SectionSpacer()
                         SuggestedNavEntry()
                     }
@@ -384,6 +387,18 @@ fun TrustAllCerts(trustAllCerts: Boolean, update: (Boolean) -> Unit) {
         })
     SmallSpacer()
     TipBody(text = LocalI18N.current["ui.action.http.request.trust.all.certs.message"])
+}
+
+@Composable
+fun ExecuteInAppProcess(executeInAppProcess: Boolean, update: (Boolean) -> Unit) {
+    SwitchRow(
+        text = LocalI18N.current["ui.action.http.request.execute.in.app.process"],
+        isChecked = executeInAppProcess,
+        onCheckChange = {
+            update(it)
+        })
+    SmallSpacer()
+    TipBody(text = LocalI18N.current["ui.action.http.request.execute.in.app.process.message"])
 }
 
 @Composable

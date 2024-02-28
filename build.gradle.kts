@@ -1,3 +1,4 @@
+import com.android.build.gradle.LibraryExtension
 import tornaco.project.android.shortx.Configs.outDir
 import tornaco.project.android.shortx.Configs.sxIsDebugBuild
 import tornaco.project.android.shortx.Configs.sxVersionCode
@@ -90,8 +91,8 @@ subprojects {
             compileOptions {
                 sourceCompatibility = androidSourceCompatibility
                 targetCompatibility = androidTargetCompatibility
+                isCoreLibraryDesugaringEnabled = true
             }
-
         }
     }
     plugins.withType(JavaPlugin::class.java) {

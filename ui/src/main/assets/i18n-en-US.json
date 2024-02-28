@@ -771,6 +771,8 @@
     "ui.action.http.request.with.cookie.jar.message": "Cookies are small pieces of data sent by a web server to be stored on the user's device. These cookies are then sent back to the server with subsequent requests, allowing the server to recognize the user and maintain stateful information.",
     "ui.action.http.request.trust.all.certs": "Trust all certs",
     "ui.action.http.request.trust.all.certs.message": "Skip SSL certificate validation. Note that this approach is insecure",
+    "ui.action.http.request.execute.in.app.process": "In app process",
+    "ui.action.http.request.execute.in.app.process.message": "By default, this request will be executed in the Android system process. You can toggle this to execute the request in the app process. After you enable this, you need to allow ShortX to start from the background",
     "ui.action.kill.process.by.name": "Kill process",
     "ui.action.kill.process.by.name.summary": "{count} processes",
     "ui.action.enable": "Enable {s}",

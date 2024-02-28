@@ -28,7 +28,9 @@ android {
 }
 
 dependencies {
-    implementation(platform("io.github.Rosemoe.sora-editor:bom:0.22.2"))
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
+    implementation(platform("io.github.Rosemoe.sora-editor:bom:0.23.4"))
     implementation("io.github.Rosemoe.sora-editor:editor")
     implementation("io.github.Rosemoe.sora-editor:language-java")
     implementation("io.github.Rosemoe.sora-editor:language-textmate")

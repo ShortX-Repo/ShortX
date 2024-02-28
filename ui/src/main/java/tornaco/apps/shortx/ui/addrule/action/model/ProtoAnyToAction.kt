@@ -1295,7 +1295,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                     }
                 },
                 withCookieJar = data.withCookieJar,
-                trustAllCerts = data.trustAllCerts
+                trustAllCerts = data.trustAllCerts,
+                executeInAppProcess = data.executeInAppProcess
             )
         }
 
