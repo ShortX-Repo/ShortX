@@ -14,8 +14,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.IActionEvaluateListener
+import tornaco.apps.shortx.core.proto.action.SendSMS
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.common.StringPair
+import tornaco.apps.shortx.core.proto.containsAnyTypeUrl
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.toStringPair
 import tornaco.apps.shortx.core.rule.Security
@@ -31,7 +33,8 @@ import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import java.net.URL
-import java.util.*
+import java.util.Date
+import java.util.UUID
 import javax.inject.Inject
 
 fun defaultNewDAId() = "DA" + UUID.randomUUID().toString()
@@ -51,7 +54,8 @@ data class AddDirectActionState(
     val daSetId: String = "",
     // For online.
     val onlineDALoadState: LoadState<Unit> = LoadState.Success(Unit),
-    val securityCheckRes: Boolean = true
+    val securityCheckRes: Boolean = true,
+    val hasSMSAction: Boolean = false,
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -176,6 +180,10 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                         shortXManager
                     )
                 })
+                val smsTyprUrls = listOf(
+                    SendSMS.getDefaultInstance().pack_().typeUrl,
+                )
+                val hasAnySMSAction = da.containsAnyTypeUrl(smsTyprUrls)
                 updateState {
                     copy(
                         id = da.id,
@@ -187,7 +195,8 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                         conflictStrategy = da.conflictPolicy,
                         evaluatingActions = shortXManager.getEvaluatingActions(),
                         daSetId = da.directActionSetId,
-                        securityCheckRes = Security.checkSecurity(da)
+                        securityCheckRes = Security.checkSecurity(da),
+                        hasSMSAction = hasAnySMSAction,
                     )
                 }
             }

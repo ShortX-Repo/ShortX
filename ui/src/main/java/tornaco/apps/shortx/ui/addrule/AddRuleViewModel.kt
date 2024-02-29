@@ -14,9 +14,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.IActionEvaluateListener
+import tornaco.apps.shortx.core.proto.action.SendSMS
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
+import tornaco.apps.shortx.core.proto.containsAnyTypeUrl
 import tornaco.apps.shortx.core.proto.rule.AsyncMode
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleHook
@@ -29,6 +31,7 @@ import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.core.util.maskAll
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
+import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.addrule.condition.ConditionContentStateHandler
@@ -69,7 +72,8 @@ data class AddRuleState(
     val instanceIdGen: RuleInstanceIdGen = RuleInstanceIdGen.RuleInstanceIdGenDefault,
     // For online.
     val onlineDALoadState: LoadState<Unit> = LoadState.Success(Unit),
-    val securityCheckRes: Boolean = true
+    val securityCheckRes: Boolean = true,
+    val hasSMSAction: Boolean = false,
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -369,6 +373,10 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                             || quitConditionContentStateHandler.conditions.isNotEmpty()
                 logger.d("hasAnyHookActions: $hasAnyHookActions")
 
+                val smsTyprUrls = listOf(
+                    SendSMS.getDefaultInstance().pack_().typeUrl,
+                )
+                val hasAnySMSAction = rule.containsAnyTypeUrl(smsTyprUrls)
 
                 val hasAnyGeeksOptions: Boolean = r.hasRuleInstanceIdGenerator()
                 logger.d("hasAnyGeeksOptions: $hasAnyGeeksOptions")
@@ -392,7 +400,8 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         conflictStrategy = r.conflictPolicy,
                         evaluatingActions = evaluatingActions,
                         ruleSetId = r.ruleSetId,
-                        securityCheckRes = Security.checkSecurity(r)
+                        securityCheckRes = Security.checkSecurity(r),
+                        hasSMSAction = hasAnySMSAction
                     )
                 }
             }

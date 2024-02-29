@@ -216,7 +216,7 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
         viewModelScope.launch {
             shortXManager.setRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_SMS, enable)
             updateState {
-                copy(mvelEngineEnabled = shortXManager.isRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_SMS))
+                copy(smsEngineEnabled = shortXManager.isRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_SMS))
             }
         }
     }

@@ -82,6 +82,7 @@ import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.SplitLines
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipBody
+import tornaco.apps.shortx.ui.base.WarningCard
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.record.EvaRecordSetting
@@ -356,6 +357,25 @@ private fun RuleContent(
                 title = LocalI18N.current["ui.rule.action.secure.warning.title"],
                 warnings = listOf(LocalI18N.current["ui.rule.action.secure.warning.message"])
             )
+            LargeSpacer()
+        }
+    }
+
+    AnimatedVisibility(visible = addRuleState.hasSMSAction) {
+        Column {
+            WarningCard(
+                modifier = Modifier
+                    .padding(vertical = 16.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text(text = LocalI18N.current["ui.rule.contains.send.sms.message"], style = MaterialTheme.typography.titleSmall)
+                    StandardSpacer()
+                }
+            }
             LargeSpacer()
         }
     }
