@@ -11,6 +11,7 @@ import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.Interceptors
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.services.util.PhoneUtils
@@ -47,6 +48,8 @@ object SendSMS : Actor {
     override suspend fun handle(
         params: HandleParams
     ): Unit = with(params) {
+        require(Interceptors.checkSendSMS(params.shortXContext, params.androidContext))
+
         val t = action unpack_ tornaco.apps.shortx.core.proto.action.SendSMS::class.java
         val subId = PhoneUtils.slotIdToSubIdOrThrow(androidContext, t.slotId)
         val smsManager = androidContext.getSystemService(Context.SMS_SERVICE) as SmsManager

@@ -43,6 +43,7 @@ data class SettingsState(
     val enableHttpChucker: Boolean = false,
     val shellEngineEnabled: Boolean = false,
     val mvelEngineEnabled: Boolean = false,
+    val smsEngineEnabled: Boolean = false,
     val ruleFeatureEnabled: Boolean = false,
     val isPostNByApp: Boolean = false,
     val sensorUsages: List<SensorUsage> = emptyList()
@@ -115,6 +116,7 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 isPointerLocationEnabled = shortXManager.isPointerLocationEnabled(),
                 shellEngineEnabled = shortXManager.isRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_SHELL),
                 mvelEngineEnabled = shortXManager.isRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_MVEL),
+                smsEngineEnabled = shortXManager.isRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_SMS),
                 hasAudioRecord = shortXManager.getAllAudioRecordFiles().isNotEmpty(),
                 ruleFeatureEnabled = shortXManager.isRuleFeatureEnabled(),
                 isPostNByApp = shortXManager.isPostNByAppEnabled(),
@@ -206,6 +208,15 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
             shortXManager.setRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_MVEL, enable)
             updateState {
                 copy(mvelEngineEnabled = shortXManager.isRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_MVEL))
+            }
+        }
+    }
+
+    fun setSMSEngineEnable(enable: Boolean) {
+        viewModelScope.launch {
+            shortXManager.setRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_SMS, enable)
+            updateState {
+                copy(mvelEngineEnabled = shortXManager.isRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_SMS))
             }
         }
     }

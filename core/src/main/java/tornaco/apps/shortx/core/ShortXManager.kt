@@ -62,6 +62,7 @@ private val logger = Logger("ShortXManager")
 object RuleEngineNames {
     const val ENGINE_NAME_SHELL = "shell"
     const val ENGINE_NAME_MVEL = "mvel"
+    const val ENGINE_NAME_SMS = "sms"
 }
 
 val shortXManager by lazy {

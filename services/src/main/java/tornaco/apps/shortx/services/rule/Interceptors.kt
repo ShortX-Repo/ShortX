@@ -26,4 +26,15 @@ object Interceptors {
         }
         return true
     }
+
+    fun checkSendSMS(shortXContext: ShortXContext, androidContext: Context): Boolean {
+        require(shortXContext.rule.isRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_SMS)) {
+            "SMS engine is disabled, pls enable it in ShortX app Settings.\n" +
+                    "短信引擎未启用，请前往ShortX设置中阅读说明并开启"
+        }
+        require(!androidContext.packageManager.isSafeMode) {
+            "Safe mode!"
+        }
+        return true
+    }
 }

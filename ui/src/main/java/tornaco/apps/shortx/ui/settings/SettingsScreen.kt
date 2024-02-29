@@ -811,6 +811,19 @@ private fun engineSettings(
         }
     )
 
+    val smsConfirmDialogState = rememberConfirmDialogState()
+    ConfirmDialog(
+        title = i18N["ui.engine.send.sms"],
+        messageHint = {
+            i18N["ui.engine.send.sms.enable.message"]
+        },
+        state = smsConfirmDialogState,
+        data = Unit,
+        onConfirm = {
+            vm.setSMSEngineEnable(true)
+        }
+    )
+
     return mutableListOf(
         Preference.Category(i18N["ui.settings.engine"]),
 
@@ -861,6 +874,22 @@ private fun engineSettings(
                 }
             }
         ),
+
+        Preference.SwitchPreference(
+            icon = Remix.Communication.chat_smile_fill,
+            title = i18N["ui.engine.send.sms"],
+            summary = i18N["ui.engine.send.sms.description"],
+            hasLongSummary = false,
+            value = state.smsEngineEnabled,
+            onCheckChanged = { enable ->
+                if (enable) {
+                    smsConfirmDialogState.show()
+                } else {
+                    vm.setSMSEngineEnable(false)
+                }
+            }
+        ),
+
         Preference.SwitchPreference(
             icon = Remix.Communication.chat_smile_2_line,
             title = i18N["ui.settings.rule.post.n.app"],
