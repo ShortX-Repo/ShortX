@@ -71,6 +71,7 @@
 # Code Editor
 -keep class io.github.rosemoe** {*;}
 -keep class org.eclipse.tm4e** {*;}
+-keep class io.github.rosemoe.sora.langs.textmate.registry.reader.LanguageDefinitionReader$LanguageDefinitionList
 
 -keep class tornaco.apps.shortx.services.util.http.persistentcookiejar** {*;}
 
