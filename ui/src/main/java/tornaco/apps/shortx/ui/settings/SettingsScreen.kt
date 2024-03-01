@@ -356,7 +356,6 @@ fun SettingsScreen(
                                 deleteDialogState.show()
                             })
                         )
-                        addAll(shareSettings(state = state, vm = vm))
                         addAll(
                             systemSettings(
                                 state = state,
@@ -380,6 +379,7 @@ fun SettingsScreen(
                                 goToFeatToggle = goToFeatToggle
                             )
                         )
+                        addAll(shareSettings(state = state, vm = vm))
                         addAll(devSettings(state = state, vm = vm))
                         addAll(
                             aboutSettings(
@@ -471,6 +471,17 @@ private fun generalSettings(
             summary = LocalI18N.current["ui.settings.edge.gesture.summary"],
             onClick = {
                 EdgeGestureSettingsActivity.start(context)
+            }
+        ),
+
+        Preference.SwitchPreference(
+            icon = Remix.System.forbid_fill,
+            title = LocalI18N.current["ui.settings.force.disable.by.key.press.title"],
+            summary = LocalI18N.current["ui.settings.force.disable.by.key.press.description"],
+            hasLongSummary = false,
+            value = state.isForceDisableShortXByKeyPress,
+            onCheckChanged = { enable ->
+                vm.setForceDisableShortXByKeyPressEnabled(enable)
             }
         ),
     )

@@ -372,6 +372,15 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             return shortXContext.network.getMaxSignalLevel()
         }
 
+        override fun setForceDisableShortXByKeyPressEnabled(enable: Boolean) {
+            enforceCallingPermissions()
+            shortXContext.rule.setForceDisableShortXByKeyPressEnabled(enable)
+        }
+
+        override fun isForceDisableShortXByKeyPressEnabled(): Boolean {
+            return shortXContext.rule.isForceDisableShortXByKeyPressEnabled()
+        }
+
         override fun attachSUImpl(from: String?, su: ISu?) {
             shortXContext.shell.attachSUImpl(from, su)
 
@@ -531,7 +540,8 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                     }
                 )
             return kotlin.runCatching {
-                val callerImpl = tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.localCallerImpl
+                val callerImpl =
+                    tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.localCallerImpl
                 callerImpl.callUrl(
                     url = url,
                     method = data.method.name,

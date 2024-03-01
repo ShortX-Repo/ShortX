@@ -46,6 +46,7 @@ data class SettingsState(
     val smsEngineEnabled: Boolean = false,
     val ruleFeatureEnabled: Boolean = false,
     val isPostNByApp: Boolean = false,
+    val isForceDisableShortXByKeyPress: Boolean = false,
     val sensorUsages: List<SensorUsage> = emptyList()
 )
 
@@ -120,6 +121,7 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 hasAudioRecord = shortXManager.getAllAudioRecordFiles().isNotEmpty(),
                 ruleFeatureEnabled = shortXManager.isRuleFeatureEnabled(),
                 isPostNByApp = shortXManager.isPostNByAppEnabled(),
+                isForceDisableShortXByKeyPress = shortXManager.isForceDisableShortXByKeyPressEnabled(),
                 sensorUsages = shortXManager.querySensorUsage()
             )
         }
@@ -173,6 +175,15 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
             shortXManager.setPostNByAppEnabled(enable)
             updateState {
                 copy(isPostNByApp = shortXManager.isPostNByAppEnabled())
+            }
+        }
+    }
+
+    fun setForceDisableShortXByKeyPressEnabled(enable: Boolean) {
+        viewModelScope.launch {
+            shortXManager.setForceDisableShortXByKeyPressEnabled(enable)
+            updateState {
+                copy(isForceDisableShortXByKeyPress = shortXManager.isForceDisableShortXByKeyPressEnabled())
             }
         }
     }

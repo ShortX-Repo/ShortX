@@ -28,8 +28,10 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
         data object EnableSettingsCatcher :
             BoolSettings(key = "EnableSettingsCatcher", defaultValue = { false })
 
-        data class EnableRuleEngine(val engineName: String) :
-            BoolSettings(key = "EnableRuleEngine_${engineName}", defaultValue = { true })
+        data class EnableRuleEngine(val engineName: String, val enabledByDefault: Boolean) :
+            BoolSettings(
+                key = "EnableRuleEngine_${engineName}",
+                defaultValue = { enabledByDefault })
 
         data object EnableRuleFeature :
             BoolSettings(key = "EnableRuleFeature", defaultValue = { true })
@@ -39,6 +41,9 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
 
         data object EnableHttpRequestLog :
             BoolSettings(key = "EnableHttpRequestLog", defaultValue = { true })
+
+        data object EnableForceDisableShortXByKeyPress :
+            BoolSettings(key = "EnableForceDisableShortXByKeyPress", defaultValue = { true })
 
         data class EnableToggle(val id: String) :
             BoolSettings(key = "EnableToggle${id}", defaultValue = { false })

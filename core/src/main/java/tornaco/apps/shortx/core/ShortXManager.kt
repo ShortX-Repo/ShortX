@@ -1059,6 +1059,18 @@ class ShortXManager(val service: IShortX) {
         }
     }
 
+    fun setForceDisableShortXByKeyPressEnabled(enable: Boolean) {
+        invokeService(Unit) {
+            isForceDisableShortXByKeyPressEnabled = enable
+        }
+    }
+
+    fun isForceDisableShortXByKeyPressEnabled(): Boolean {
+        return invokeService(false) {
+            isForceDisableShortXByKeyPressEnabled
+        }
+    }
+
     fun addOrUpdateRuleSet(rs: RuleSet) {
         invokeService(Unit) {
             addOrUpdateRuleSet(ByteArrayWrapper(rs.toByteArray()))

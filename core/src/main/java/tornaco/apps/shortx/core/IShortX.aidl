@@ -304,4 +304,7 @@ interface IShortX {
     List<ByteArrayWrapper> getAllRingtones();
 
     int getMaxSignalLevel();
+
+    void setForceDisableShortXByKeyPressEnabled(boolean enable);
+    boolean isForceDisableShortXByKeyPressEnabled();
 }

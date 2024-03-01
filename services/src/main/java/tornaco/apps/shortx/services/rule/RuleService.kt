@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.IActionEvaluateListener
 import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.IJobStatusListener
+import tornaco.apps.shortx.core.RuleEngineNames
 import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.localvar.LocalVars
@@ -170,8 +171,10 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     private val forceDisableShortXListener = object : KeyPressTimesInIntervalListener(12, 10000) {
         override fun keyPressCountHit() {
-            logger.e("forceDisableShortXListener - keyPressCountHit.")
-            forceDisableShortX()
+            if (isForceDisableShortXByKeyPressEnabled()) {
+                logger.e("forceDisableShortXListener - keyPressCountHit.")
+                forceDisableShortX()
+            }
         }
     }
 
@@ -1048,6 +1051,14 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         store.write(Settings.BoolSettings.EnableEvaluateRecorder(id), enable)
     }
 
+    fun setForceDisableShortXByKeyPressEnabled(enable: Boolean) {
+        store.write(Settings.BoolSettings.EnableForceDisableShortXByKeyPress, enable)
+    }
+
+    fun isForceDisableShortXByKeyPressEnabled(): Boolean {
+        return store.read(Settings.BoolSettings.EnableForceDisableShortXByKeyPress)
+    }
+
     fun registerRuleObs(obs: IRuleObserver) {
         ruleObs.register(obs)
     }
@@ -1073,11 +1084,12 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     }
 
     fun setRuleEngineEnabled(engine: String, enable: Boolean) {
-        store.write(Settings.BoolSettings.EnableRuleEngine(engine), enable)
+        store.write(Settings.BoolSettings.EnableRuleEngine(engine, false), enable)
     }
 
     fun isRuleEngineEnabled(engine: String): Boolean {
-        return store.read(Settings.BoolSettings.EnableRuleEngine(engine))
+        val defaultValue = engine != RuleEngineNames.ENGINE_NAME_SMS
+        return store.read(Settings.BoolSettings.EnableRuleEngine(engine, defaultValue))
     }
 
     fun addOrUpdateRuleSet(rs: RuleSet) {
