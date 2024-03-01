@@ -8,10 +8,12 @@ import android.content.IntentFilter
 import android.telephony.SmsManager
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.compat.ContextCompat
+import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.Interceptors
+import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.services.util.PhoneUtils
@@ -51,6 +53,9 @@ object SendSMS : Actor {
         require(Interceptors.checkSendSMS(params.shortXContext, params.androidContext))
 
         val t = action unpack_ tornaco.apps.shortx.core.proto.action.SendSMS::class.java
+
+        val cv = RuleContextAndVars(params)
+
         val subId = PhoneUtils.slotIdToSubIdOrThrow(androidContext, t.slotId)
         val smsManager = androidContext.getSystemService(Context.SMS_SERVICE) as SmsManager
         val smsForSub = if (OsUtils.isSOrAbove()) {
@@ -61,9 +66,9 @@ object SendSMS : Actor {
         logger.d("smsForSub: $smsForSub")
 
         // 设置短信内容
-        val message = t.message
+        val message = t.message.compileContextAndVars(cv)
         // 设置目标手机号
-        val phoneNumber = t.to
+        val phoneNumber = t.to.compileContextAndVars(cv)
         // 设置 PendingIntent，用于接收发送短信的状态
         val sentIntent = PendingIntent.getBroadcast(
             androidContext,

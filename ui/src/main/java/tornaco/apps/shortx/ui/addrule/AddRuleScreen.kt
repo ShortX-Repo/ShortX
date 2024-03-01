@@ -373,7 +373,6 @@ private fun RuleContent(
                         .padding(16.dp)
                 ) {
                     Text(text = LocalI18N.current["ui.rule.contains.send.sms.message"], style = MaterialTheme.typography.titleSmall)
-                    StandardSpacer()
                 }
             }
             LargeSpacer()
