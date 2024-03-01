@@ -22,6 +22,7 @@ import tornaco.apps.shortx.core.proto.action.LockDeviceNow
 import tornaco.apps.shortx.core.proto.action.PerformContextMenuAction
 import tornaco.apps.shortx.core.proto.action.RemoveNotificationForPackageByPkg
 import tornaco.apps.shortx.core.proto.action.ScrollViewTo
+import tornaco.apps.shortx.core.proto.action.SendSMS
 import tornaco.apps.shortx.core.proto.action.SetAppEnabled
 import tornaco.apps.shortx.core.proto.action.SetAppEnabledByPkg
 import tornaco.apps.shortx.core.proto.action.SetAppSuspend
@@ -125,4 +126,5 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         ClickNotificationActionButton::class,
         ShowClipboardView::class,
         Toggle5G::class,
+        SendSMS::class,
     )

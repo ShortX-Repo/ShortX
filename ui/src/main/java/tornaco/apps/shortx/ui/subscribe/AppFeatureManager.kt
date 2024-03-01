@@ -146,6 +146,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Action.ClickNotificationActionButton::class,
     Action.ShowClipboardView::class,
     Action.Toggle5G::class,
+    Action.SendSMS::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 )
 
