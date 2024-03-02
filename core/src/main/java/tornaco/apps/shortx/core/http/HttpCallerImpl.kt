@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.http.persistentcookiejar.PersistentCookieJar
 import tornaco.apps.shortx.core.http.persistentcookiejar.cache.SetCookieCache
 import tornaco.apps.shortx.core.http.persistentcookiejar.persistence.CookiePersistor
 import tornaco.apps.shortx.core.proto.common.HttpRequestBodyForm
+import tornaco.apps.shortx.core.proto.common.HttpRequestBodyFormItem
 import tornaco.apps.shortx.core.proto.common.HttpRequestBodyJson
 import tornaco.apps.shortx.core.proto.common.HttpResponseData
 import tornaco.apps.shortx.core.rule.ProtoAny
@@ -21,6 +22,7 @@ import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.emptyRuleContextAndVars
 import tornaco.apps.shortx.core.rule.is_
+import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import java.util.concurrent.TimeUnit
@@ -190,5 +192,28 @@ fun ProtoAny.toHttpRequestBody(
                 )
             }
         }.build()
+    } else null
+}
+
+
+fun ProtoAny.compileHttpRequestBody(
+    contextAndVars: RuleContextAndVars,
+): ProtoAny? {
+    return if (this is_ HttpRequestBodyJson::class.java) {
+        val bodyJson = this unpack_ HttpRequestBodyJson::class.java
+        val compiledJson = bodyJson.json.compileContextAndVars(contextAndVars)
+        HttpRequestBodyJson.newBuilder().setJson(compiledJson).build().pack_()
+    } else if (this is_ HttpRequestBodyForm::class.java) {
+        val bodyForm = this unpack_ HttpRequestBodyForm::class.java
+        HttpRequestBodyForm.newBuilder()
+            .apply {
+                bodyForm.itemsList.forEach {
+                    addItems(HttpRequestBodyFormItem.newBuilder()
+                        .setKey(it.key.compileContextAndVars(contextAndVars))
+                        .setValue(it.value.compileContextAndVars(contextAndVars))
+                        .build())
+                }
+            }
+            .build().pack_()
     } else null
 }

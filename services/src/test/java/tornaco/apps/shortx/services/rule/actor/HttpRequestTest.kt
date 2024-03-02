@@ -1,21 +1,27 @@
 package tornaco.apps.shortx.services.rule.actor
 
+import io.kotest.matchers.shouldBe
 import io.mockk.mockk
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.http.HttpCallerImpl
+import tornaco.apps.shortx.core.http.compileHttpRequestBody
 import tornaco.apps.shortx.core.http.toHttpRequestBody
+import tornaco.apps.shortx.core.http.toHttpResponseData
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.HttpRequestHeaderBodyJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.HttpRequestRawAdapter
+import tornaco.apps.shortx.core.proto.common.HttpRequestBodyForm
+import tornaco.apps.shortx.core.proto.common.HttpRequestBodyFormItem
 import tornaco.apps.shortx.core.proto.common.HttpRequestBodyJson
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.gv.StringVar
 import tornaco.apps.shortx.core.rule.RuleContextAndVars
 import tornaco.apps.shortx.core.rule.pack_
+import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.logAdapter
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.handleResponseBody
 import tornaco.apps.shortx.services.rule.actor.impl.fixSpecialLetters
@@ -50,7 +56,7 @@ class HttpRequestTest {
             )
             handleResponseBody(
                 cv,
-                response = it,
+                response = it.toHttpResponseData(),
                 adapter = HttpRequestJsonMapAdapter.newBuilder().addAllExpressions(listOf("author"))
                     .build()
                     .pack_()
@@ -85,7 +91,7 @@ class HttpRequestTest {
             )
             handleResponseBody(
                 cv,
-                response = it,
+                response = it.toHttpResponseData(),
                 adapter = HttpRequestHeaderBodyJsonMapAdapter.newBuilder()
                     .addAllExpressions(listOf("globalVarOf\$exp_test"))
                     .build()
@@ -110,7 +116,7 @@ class HttpRequestTest {
                     globalVarsLazy = { emptyList() },
                     localVars = LocalVars.obtain(),
                 ),
-                response = it,
+                response = it.toHttpResponseData(),
                 adapter = HttpRequestJsonMapAdapter.newBuilder()
                     .addAllExpressions(listOf("colors.red"))
                     .build()
@@ -134,7 +140,7 @@ class HttpRequestTest {
                     globalVarsLazy = { emptyList() },
                     localVars = LocalVars.obtain(),
                 ),
-                response = it,
+                response = it.toHttpResponseData(),
                 adapter = HttpRequestHeaderBodyJsonMapAdapter.newBuilder()
                     .addAllExpressions(listOf("body.colors.red"))
                     .build()
@@ -158,7 +164,7 @@ class HttpRequestTest {
                     globalVarsLazy = { emptyList() },
                     localVars = LocalVars.obtain(),
                 ),
-                response = it,
+                response = it.toHttpResponseData(),
                 adapter = HttpRequestRawAdapter.newBuilder().build().pack_()
             )
         }
@@ -217,7 +223,7 @@ class HttpRequestTest {
                     globalVarsLazy = { emptyList() },
                     localVars = LocalVars.obtain(),
                 ),
-                response = it,
+                response = it.toHttpResponseData(),
                 adapter = HttpRequestRawAdapter.newBuilder().build().pack_()
             )
         }
@@ -232,5 +238,53 @@ class HttpRequestTest {
         Assert.assertEquals("name__1_2", "name--1-2".fixSpecialLetters())
         Assert.assertEquals("name_1", "name 1".fixSpecialLetters())
         Assert.assertEquals("name__1", "name  1".fixSpecialLetters())
+    }
+
+    @Test
+    fun testCompileHttpRequestBodyHttpRequestBodyForm() {
+        val body = HttpRequestBodyForm.newBuilder()
+            .addAllItems(
+                listOf(
+                    HttpRequestBodyFormItem.newBuilder().setKey("name").setValue("Nick").build(),
+                    HttpRequestBodyFormItem.newBuilder().setKey("size").setValue("22").build(),
+                    HttpRequestBodyFormItem.newBuilder().setKey("text-{class}").setValue("Cool-globalVa{pwd}").build(),
+                )
+            )
+            .build()
+
+
+        val compiledAny = body.pack_().compileHttpRequestBody(RuleContextAndVars(LocalVars.obtain(), ContextData.obtain().apply {
+            add("class", "hahaha")
+            add("pwd", "pass111")
+        }))
+
+        val compiledForm = compiledAny!! unpack_  HttpRequestBodyForm::class.java
+
+        compiledForm shouldBe HttpRequestBodyForm.newBuilder()
+            .addAllItems(
+                listOf(
+                    HttpRequestBodyFormItem.newBuilder().setKey("name").setValue("Nick").build(),
+                    HttpRequestBodyFormItem.newBuilder().setKey("size").setValue("22").build(),
+                    HttpRequestBodyFormItem.newBuilder().setKey("text-hahaha").setValue("Cool-globalVapass111").build(),
+                )
+            )
+            .build()
+    }
+
+    @Test
+    fun testCompileHttpRequestBodyHttpRequestBodyJson() {
+        val body = HttpRequestBodyJson.newBuilder()
+            .setJson("{hello:{world}}")
+            .build()
+
+        val compiledAny = body.pack_().compileHttpRequestBody(RuleContextAndVars(LocalVars.obtain(), ContextData.obtain().apply {
+            add("world", "AU")
+        }))
+
+        val compiledForm = compiledAny!! unpack_  HttpRequestBodyJson::class.java
+
+        compiledForm shouldBe HttpRequestBodyJson.newBuilder()
+            .setJson("{hello:AU}")
+            .build()
     }
 }

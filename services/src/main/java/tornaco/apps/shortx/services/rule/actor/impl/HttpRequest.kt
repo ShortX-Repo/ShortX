@@ -17,6 +17,7 @@ import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.http.HttpCallerImpl
 import tornaco.apps.shortx.core.http.IHttpCaller
+import tornaco.apps.shortx.core.http.compileHttpRequestBody
 import tornaco.apps.shortx.core.http.persistentcookiejar.persistence.SettingsStoreCookiePersistor
 import tornaco.apps.shortx.core.http.toHttpRequestBody
 import tornaco.apps.shortx.core.http.toHttpResponseData
@@ -129,14 +130,15 @@ object HttpRequest : Actor {
         return if (data.executeInAppProcess) {
             logger.i("execute in app process.")
             withContext(Dispatchers.IO) {
+                val inflatedRequestBody = data.requestBody?.compileHttpRequestBody(cv)
+
                 val response = AppHttpRequestServiceProxy.call(
                     context = context,
                     scope = this,
                     url = url,
                     method = method,
                     headers = headers,
-                    // TODO Inflate CV
-                    requestBodyData = data.requestBody?.let {
+                    requestBodyData = inflatedRequestBody?.let {
                         ByteArrayWrapper(it.toByteArray())
                     },
                     withCookieJar = withCookieJar,
