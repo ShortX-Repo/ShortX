@@ -699,6 +699,7 @@ sealed interface Action : Parcelable {
         val tag: String,
         val title: String,
         val message: String,
+        val overrideAppName: String,
         val largeIcon: String,
         val smallIcon: String,
         val isImportant: Boolean,

@@ -54,7 +54,7 @@ class NotificationPoster(
     private val context: Context,
     private val silenceNotificationChannelLabel: String,
     private val importNotificationChannelLabel: String,
-    private val overrideName: String? = null,
+    private val overrideName: String = "ShortX",
     private val getIcon: (String) -> android.graphics.drawable.Icon?,
     private val getBitmap: (String) -> Bitmap?,
     private val onButtonClick: (NotificationButton) -> Unit = {},
@@ -112,11 +112,6 @@ class NotificationPoster(
                 }
             )
 
-            SystemUI.overrideNotificationAppName(
-                context, builder,
-                overrideName
-            )
-
             val style = NotificationCompat.BigTextStyle()
             style.bigText(notification.message)
             style.setBigContentTitle(notification.title)
@@ -171,14 +166,14 @@ class NotificationPoster(
                 }
             }
 
-            overrideName?.let {
-                kotlin.runCatching {
-                    SystemUI.overrideNotificationAppName(
-                        context,
-                        builder,
-                        it
-                    )
-                }
+            val preferredOverrideName = notification.overrideAppName.takeIf { it.isNotEmpty() } ?: overrideName
+            logger.d("preferredOverrideName: $preferredOverrideName")
+            kotlin.runCatching {
+                SystemUI.overrideNotificationAppName(
+                    context,
+                    builder,
+                    preferredOverrideName
+                )
             }
 
             cancelNotification(tag)

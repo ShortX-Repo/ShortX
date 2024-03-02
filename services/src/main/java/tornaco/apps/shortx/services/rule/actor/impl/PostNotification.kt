@@ -24,8 +24,9 @@ object PostNotification : Actor {
             val cv = RuleContextAndVars(params)
             val inflatedTitle = d.title.compileContextAndVars(cv)
             val inflatedMessage = d.message.compileContextAndVars(cv)
+            val inflatedAppName = d.overrideAppName.compileContextAndVars(cv)
             val inflatedN =
-                PostNotification.newBuilder(d).setTitle(inflatedTitle).setMessage(inflatedMessage)
+                PostNotification.newBuilder(d).setTitle(inflatedTitle).setMessage(inflatedMessage).setOverrideAppName(inflatedAppName)
                     .build()
             shortXContext.notification.post(inflatedN)
         }

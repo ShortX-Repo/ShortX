@@ -783,6 +783,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setTag(tag)
                 .setMessage(message)
+                .setOverrideAppName(overrideAppName)
                 .setTitle(title)
                 .setSmallIcon(smallIcon)
                 .setLargeIcon(largeIcon)

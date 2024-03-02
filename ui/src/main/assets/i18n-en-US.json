@@ -678,6 +678,7 @@
     "ui.action.post.notification.tag.description": "You can update or cancel this notification with this tag",
     "ui.action.post.notification.title": "Title",
     "ui.action.post.notification.message": "Message",
+    "ui.action.post.notification.override.app.name": "Notification app name (Optional)",
     "ui.action.post.notification.small.icon": "Status bar icon",
     "ui.action.post.notification.large.icon": "Large icon (optional)",
     "ui.action.post.notification.important": "Important",

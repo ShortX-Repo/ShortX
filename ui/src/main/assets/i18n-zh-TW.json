@@ -669,6 +669,7 @@
     "ui.action.post.notification.tag.description": "用於標記該通知，你可以通過標籤來更新或取消該通知",
     "ui.action.post.notification.title": "標題",
     "ui.action.post.notification.message": "內容",
+    "ui.action.post.notification.override.app.name": "通知应用名称（可选）",
     "ui.action.post.notification.small.icon": "狀態欄圖標",
     "ui.action.post.notification.large.icon": "大圖標（可選）",
     "ui.action.post.notification.important": "重要通知",

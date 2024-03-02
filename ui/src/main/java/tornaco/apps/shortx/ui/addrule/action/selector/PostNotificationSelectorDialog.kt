@@ -167,6 +167,21 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
         Column(verticalArrangement = Arrangement.Center) {
             FieldTitle(
                 modifier = Modifier,
+                LocalI18N.current["ui.action.post.notification.override.app.name"]
+            )
+            MediumSpacer()
+            ShortXTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = state.overrideAppName,
+                onValueChange = {
+                    vm.updateOverrideAppName(it)
+                })
+        }
+
+        StandardSpacer()
+        Column(verticalArrangement = Arrangement.Center) {
+            FieldTitle(
+                modifier = Modifier,
                 LocalI18N.current["ui.action.post.notification.small.icon"]
             )
             MediumSpacer()

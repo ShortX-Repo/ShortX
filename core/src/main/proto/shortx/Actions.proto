@@ -694,6 +694,8 @@ message PostNotification {
   repeated google.protobuf.Any clickAction = 9;
   repeated NotificationButton button = 10;
 
+  string overrideAppName = 11;
+
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;

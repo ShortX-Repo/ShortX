@@ -22,6 +22,7 @@ data class PostNotificationSelectorState(
     val tag: String,
     val title: String,
     val message: String,
+    val overrideAppName: String,
     val largeIcon: String,
     val smallIcon: String,
     val isImportant: Boolean,
@@ -44,6 +45,7 @@ fun PostNotificationSelectorState.toAction(): Action.PostNotification {
         tag = this.tag,
         title = this.title,
         message = this.message,
+        overrideAppName = this.overrideAppName,
         largeIcon = this.largeIcon,
         smallIcon = this.smallIcon,
         isImportant = this.isImportant,
@@ -69,6 +71,7 @@ class PostNotificationSelectorViewModel @Inject constructor(@ApplicationContext 
                 tag = "tag-${System.currentTimeMillis()}",
                 title = "",
                 message = "",
+                overrideAppName = "",
                 largeIcon = "",
                 smallIcon = Remix.Communication.chat_2_line,
                 isImportant = false,
@@ -109,6 +112,7 @@ class PostNotificationSelectorViewModel @Inject constructor(@ApplicationContext 
                 tag = settings.tag,
                 title = settings.title,
                 message = settings.message,
+                overrideAppName = settings.overrideAppName,
                 largeIcon = settings.largeIcon,
                 smallIcon = settings.smallIcon,
                 isImportant = settings.isImportant,
@@ -173,6 +177,9 @@ class PostNotificationSelectorViewModel @Inject constructor(@ApplicationContext 
 
     fun updateMessage(it: String) {
         updateState { copy(message = it) }
+    }
+    fun updateOverrideAppName(it: String) {
+        updateState { copy(overrideAppName = it) }
     }
 
     fun setImportant(it: Boolean) {

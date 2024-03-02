@@ -884,6 +884,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 tag = data.tag,
                 message = data.message,
                 title = data.title,
+                overrideAppName = data.overrideAppName,
                 largeIcon = data.largeIcon,
                 smallIcon = data.smallIcon,
                 vibrate = data.vibrate,

@@ -133,7 +133,7 @@ fun NotificationDemo() {
             context,
             "silence",
             "important",
-            null,
+            "Demo",
             getIcon = {
                 Icon.createWithResource(context, context.remixResId(it))
             },
