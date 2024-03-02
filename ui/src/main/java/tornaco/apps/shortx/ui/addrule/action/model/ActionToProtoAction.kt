@@ -15,6 +15,7 @@ import tornaco.apps.shortx.core.proto.action.CreateLocalVar
 import tornaco.apps.shortx.core.proto.action.CreatePkgSet
 import tornaco.apps.shortx.core.proto.action.Delay
 import tornaco.apps.shortx.core.proto.action.DeleteGlobalVar
+import tornaco.apps.shortx.core.proto.action.DisconnectCurrentWifi
 import tornaco.apps.shortx.core.proto.action.DownloadFile
 import tornaco.apps.shortx.core.proto.action.EnableUniversalCopy
 import tornaco.apps.shortx.core.proto.action.EnableViewIdViewer
@@ -1551,6 +1552,16 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setNote(overrideNote ?: note)
                 .setSsid(ssid)
+                .build()
+        }
+
+        is Action.DisconnectCurrentWifi -> {
+            DisconnectCurrentWifi.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
                 .build()
         }
 

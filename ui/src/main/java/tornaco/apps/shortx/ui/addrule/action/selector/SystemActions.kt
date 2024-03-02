@@ -466,6 +466,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.DisconnectCurrentWifi::class -> {
+                addAction(Action.DisconnectCurrentWifi())
+                true
+            }
+
             else -> false
         }
     }
@@ -528,6 +533,7 @@ fun SystemActions(
         Action.SetScreenTimeout::class,
         Action.SetScreenRotate::class,
         Action.ConnectWifi::class,
+        Action.DisconnectCurrentWifi::class,
         Action.SetMasterSync::class,
         Action.SendSMS::class,
     ).map {

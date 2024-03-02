@@ -523,6 +523,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.ConnectWifi
     },
+    DisconnectCurrentWifi {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.DisconnectCurrentWifi
+    },
     StayAwake {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.StayAwake

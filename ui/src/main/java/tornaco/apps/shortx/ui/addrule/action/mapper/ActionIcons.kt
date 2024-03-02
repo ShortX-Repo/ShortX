@@ -484,6 +484,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Device.wifi_fill
         }
 
+        Action.DisconnectCurrentWifi::class -> {
+            Remix.Device.signal_wifi_line
+        }
+
         Action.StayAwake::class -> {
             Remix.System.eye_2_fill
         }
