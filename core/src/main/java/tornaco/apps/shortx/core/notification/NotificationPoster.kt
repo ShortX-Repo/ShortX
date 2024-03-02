@@ -112,6 +112,16 @@ class NotificationPoster(
                 }
             )
 
+            val preferredOverrideName = notification.overrideAppName.takeIf { it.isNotEmpty() } ?: overrideName
+            logger.d("preferredOverrideName: $preferredOverrideName")
+            kotlin.runCatching {
+                SystemUI.overrideNotificationAppName(
+                    context,
+                    builder,
+                    preferredOverrideName
+                )
+            }
+
             val style = NotificationCompat.BigTextStyle()
             style.bigText(notification.message)
             style.setBigContentTitle(notification.title)
@@ -164,16 +174,6 @@ class NotificationPoster(
                 getIcon(smallIcon)?.let {
                     n.smallIcon = it
                 }
-            }
-
-            val preferredOverrideName = notification.overrideAppName.takeIf { it.isNotEmpty() } ?: overrideName
-            logger.d("preferredOverrideName: $preferredOverrideName")
-            kotlin.runCatching {
-                SystemUI.overrideNotificationAppName(
-                    context,
-                    builder,
-                    preferredOverrideName
-                )
             }
 
             cancelNotification(tag)

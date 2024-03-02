@@ -43,10 +43,12 @@ import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.SwitchRow
 import tornaco.apps.shortx.ui.base.TipBody
+import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.rememberMDIconSelectorState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -169,6 +171,8 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
                 modifier = Modifier,
                 LocalI18N.current["ui.action.post.notification.override.app.name"]
             )
+            SmallSpacer()
+            TipRow(text = LocalI18N.current["ui.common.feature.not.work.on.3rd.rom"])
             MediumSpacer()
             ShortXTextField(
                 modifier = Modifier.fillMaxWidth(),
