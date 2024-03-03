@@ -58,7 +58,9 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                 }
 
                 val selectedDASetFilter = state.value.selectedDASetFilter
-                val allDAs = shortXManager.getAllDirectAction()
+                val allDAs = shortXManager.getAllDirectAction().apply {
+                    logger.i("all da: ${this.joinToString { it.title }}")
+                }
                 val das = allDAs
                     .filter { directAction ->
                         when (selectedDASetFilter) {

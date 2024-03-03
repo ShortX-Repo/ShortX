@@ -34,7 +34,9 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                     logger.d("activeJobs: $this")
                 }
                 val gvs = shortXManager.getAllGlobalVars()
-                val allRules = shortXManager.getAllRules()
+                val allRules = shortXManager.getAllRules().apply {
+                    logger.i("all rules: ${this.joinToString { it.title }}")
+                }
                 val allRuleSets = shortXManager.getAllRuleSets()
 
                 val selectedFilterId = pref.selectedRuleFilter.firstOrNull()
