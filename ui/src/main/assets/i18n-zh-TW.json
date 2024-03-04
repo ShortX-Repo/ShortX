@@ -1055,6 +1055,7 @@
     "ui.common.install.failed": "安装失败，请抓取日志反馈",
     "ui.common.regex.options.RegexMatchOptions_Match": "完整匹配",
     "ui.common.regex.options.RegexMatchOptions_ContainsMatchIn": "包含匹配",
+    "ui.common.feature.not.work.on.3rd.rom": "该功能在三方ROM上可能不生效",
     "ui.shortx.uninstalled.title": "ShortX已卸载",
     "ui.shortx.uninstalled.message": "你想保留ShortX的数据吗？",
     "ui.shortx.uninstalled.keep": "保留",

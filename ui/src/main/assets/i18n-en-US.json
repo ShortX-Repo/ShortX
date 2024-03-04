@@ -1056,6 +1056,7 @@
     "ui.common.install.failed": "Install failed, pls catch log and report to developer",
     "ui.common.regex.options.RegexMatchOptions_Match": "Match all",
     "ui.common.regex.options.RegexMatchOptions_ContainsMatchIn": "Contains match in",
+    "ui.common.feature.not.work.on.3rd.rom": "May not work on custom Android ROM",
     "ui.shortx.uninstalled.title": "ShortX uninstalled",
     "ui.shortx.uninstalled.message": "Do you want to clear ShortX data or keep it?",
     "ui.shortx.uninstalled.keep": "Keep",
