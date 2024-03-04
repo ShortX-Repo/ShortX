@@ -14,7 +14,6 @@ import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.ui.base.afterNavLongDelay
 import tornaco.apps.shortx.ui.main.CommonSetFilter
-import tornaco.apps.shortx.ui.main.id
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.main.model.daToDirectActionUM
 import java.text.Collator
@@ -38,14 +37,14 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                 val gvs = shortXManager.getAllGlobalVars()
                 val allDASets = shortXManager.getAllDASets()
 
-
                 val selectedFilterId = pref.selectedDAFilter.firstOrNull()
                 val selectedSetOrNull =
                     selectedFilterId?.let { allDASets.firstOrNull { it.id == selectedFilterId } }
                 if (selectedSetOrNull == null) {
-                    // This set is not exists anymore.
-                    pref.setSelectedDAFilter("")
-                    updateState { copy(selectedDASetFilter = CommonSetFilter.PinnedAll) }
+                    // This set is not exists anymore. or it is prebuilt all/flat
+                    val prebuiltSet = CommonSetFilter.prebuiltOfId(selectedFilterId)
+                    pref.setSelectedDAFilter(prebuiltSet.filterId)
+                    updateState { copy(selectedDASetFilter = prebuiltSet) }
                 } else {
                     updateState {
                         copy(
@@ -177,7 +176,7 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
     fun selectDASetFilter(daSetFilter: CommonSetFilter) {
         updateState { copy(selectedDASetFilter = daSetFilter) }
         viewModelScope.launch {
-            pref.setSelectedDAFilter(daSetFilter.id.orEmpty())
+            pref.setSelectedDAFilter(daSetFilter.filterId)
             loadDAList()
         }
     }

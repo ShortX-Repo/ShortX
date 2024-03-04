@@ -55,8 +55,8 @@ import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.main.CommonSetFilter
 import tornaco.apps.shortx.ui.main.MainScaffold
 import tornaco.apps.shortx.ui.main.MainViewModel
-import tornaco.apps.shortx.ui.main.id
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
+import tornaco.apps.shortx.ui.main.userSetIdOrNull
 import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.ViewerActivity
 import tornaco.apps.shortx.ui.shortcut.ApkInstallState
@@ -144,7 +144,7 @@ fun DirectActionListScreen() {
         onAddClick = {
             AddDirectActionActivity.create(
                 context = context,
-                daSetId = daListState.selectedDASetFilter.id
+                daSetId = daListState.selectedDASetFilter.userSetIdOrNull
             )
         },
         onUrlClick = {

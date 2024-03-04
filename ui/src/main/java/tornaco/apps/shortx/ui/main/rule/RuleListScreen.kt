@@ -38,8 +38,8 @@ import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.main.CommonSetFilter
 import tornaco.apps.shortx.ui.main.MainScaffold
 import tornaco.apps.shortx.ui.main.MainViewModel
-import tornaco.apps.shortx.ui.main.id
 import tornaco.apps.shortx.ui.main.model.RuleUM
+import tornaco.apps.shortx.ui.main.userSetIdOrNull
 import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.ViewerActivity
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
@@ -86,7 +86,7 @@ fun RuleScreen() {
         onAddClick = {
             AddRuleActivity.create(
                 context = context,
-                ruleSetId = ruleListState.selectedRuleSetFilter.id
+                ruleSetId = ruleListState.selectedRuleSetFilter.userSetIdOrNull
             )
         },
         onUrlClick = {

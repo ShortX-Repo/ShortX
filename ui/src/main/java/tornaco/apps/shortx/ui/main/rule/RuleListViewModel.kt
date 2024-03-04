@@ -13,7 +13,6 @@ import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleSet
 import tornaco.apps.shortx.ui.base.afterNavLongDelay
 import tornaco.apps.shortx.ui.main.CommonSetFilter
-import tornaco.apps.shortx.ui.main.id
 import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.main.model.ruleToRuleUM
 import java.text.Collator
@@ -43,9 +42,10 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                 val selectedSetOrNull =
                     selectedFilterId?.let { allRuleSets.firstOrNull { it.id == selectedFilterId } }
                 if (selectedSetOrNull == null) {
-                    // This set is not exists anymore.
-                    pref.setSelectedRuleFilter("")
-                    updateState { copy(selectedRuleSetFilter = CommonSetFilter.PinnedAll) }
+                    // This set is not exists anymore. or it is prebuilt all/flat
+                    val prebuiltSet = CommonSetFilter.prebuiltOfId(selectedFilterId)
+                    pref.setSelectedRuleFilter(prebuiltSet.filterId)
+                    updateState { copy(selectedRuleSetFilter = prebuiltSet) }
                 } else {
                     updateState {
                         copy(
@@ -186,7 +186,7 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
     fun selectRuleSetFilter(filter: CommonSetFilter) {
         updateState { copy(selectedRuleSetFilter = filter) }
         viewModelScope.launch {
-            pref.setSelectedRuleFilter(filter.id.orEmpty())
+            pref.setSelectedRuleFilter(filter.filterId)
             loadRuleList()
         }
     }
