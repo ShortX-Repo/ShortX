@@ -42,7 +42,6 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(project(":patch-magisk:bridge"))
 }
 

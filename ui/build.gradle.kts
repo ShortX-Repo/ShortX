@@ -47,8 +47,6 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
-
     implementation(files("lib/apkzlib.jar"))
     implementation(files("lib/ManifestEditor-1.0.2.jar"))
 

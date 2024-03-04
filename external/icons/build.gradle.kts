@@ -30,8 +30,6 @@ android {
     }
 }
 dependencies {
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
-
     testImplementation(libs.junit)
     testImplementation("com.android.tools:sdk-common:31.2.2")
     testImplementation("com.android.tools:common:31.2.2")
