@@ -10,15 +10,19 @@ import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSettingList
+import tornaco.apps.shortx.core.util.AtomicFileCompat
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.read
+import tornaco.apps.shortx.core.util.writeInlined
 import java.io.File
 
 open class BaseStatusBarSettingsStore(
     private val scope: CoroutineScope,
-    private val storeFile: File
+    storeFile: File
 ) {
     private val logger = Logger("StatusBarSettingsStore")
 
+    private val atomicStoreFile = AtomicFileCompat(storeFile)
     private val tileSettingsCache: MutableList<StatusBarTileSetting> = mutableListOf()
 
     private var job: Job? = null
@@ -69,12 +73,12 @@ open class BaseStatusBarSettingsStore(
     }
 
     private suspend fun readInternal() = withContext(Dispatchers.IO) {
-        if (!storeFile.exists()) {
-            logger.d("skip read no-exists file: $storeFile")
+        if (!atomicStoreFile.exists()) {
+            logger.d("skip read no-exists file: $atomicStoreFile")
             return@withContext
         }
         kotlin.runCatching {
-            val tileSettingList = storeFile.inputStream().use {
+            val tileSettingList = atomicStoreFile.read {
                 StatusBarTileSettingList.parseDelimitedFrom(it)
             }
             synchronized(tileSettingsCache) {
@@ -102,9 +106,9 @@ open class BaseStatusBarSettingsStore(
                 addAllSettings(tileSettingsCache)
             }.build()
             kotlin.runCatching {
-                storeFile.apply { parentFile.mkdirs() }.outputStream().use {
+                atomicStoreFile.writeInlined {
                     statusBarTileSettingList.writeDelimitedTo(it)
-                    logger.d("write to: $storeFile")
+                    logger.d("write to: $atomicStoreFile")
                 }
             }.onFailure {
                 logger.e(it, "write error")

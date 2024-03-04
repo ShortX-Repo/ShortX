@@ -9,15 +9,18 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionList
+import tornaco.apps.shortx.core.util.AtomicFileCompat
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.read
+import tornaco.apps.shortx.core.util.writeInlined
 import java.io.File
 
 open class BaseDirectActionSettingsStore(
     private val scope: CoroutineScope,
-    private val storeFile: File
+    storeFile: File
 ) {
     private val logger = Logger("DirectActionSettingsStore")
-
+    private val atomicStoreFile = AtomicFileCompat(storeFile)
     private val dasCache: MutableList<DirectAction> = mutableListOf()
 
     private var job: Job? = null
@@ -74,12 +77,12 @@ open class BaseDirectActionSettingsStore(
 
     private suspend fun readInternal() = withContext(Dispatchers.IO) {
         synchronized(dasCache) {
-            if (!storeFile.exists()) {
-                logger.d("skip read no-exists file: $storeFile")
+            if (!atomicStoreFile.exists()) {
+                logger.d("skip read no-exists file: $atomicStoreFile")
                 return@withContext
             }
             kotlin.runCatching {
-                val daList = storeFile.inputStream().use {
+                val daList = atomicStoreFile.read {
                     DirectActionList.parseDelimitedFrom(it)
                 }
                 daList.run {
@@ -107,9 +110,9 @@ open class BaseDirectActionSettingsStore(
                 addAllDirectActions(dasCache)
             }.build()
             kotlin.runCatching {
-                storeFile.apply { parentFile.mkdirs() }.outputStream().use {
+                atomicStoreFile.writeInlined {
                     daList.writeDelimitedTo(it)
-                    logger.d("write to: $storeFile")
+                    logger.d("write to: $atomicStoreFile")
                 }
             }.onFailure {
                 logger.e(it, "write error")

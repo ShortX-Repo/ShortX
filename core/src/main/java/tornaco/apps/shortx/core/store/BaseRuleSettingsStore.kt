@@ -9,15 +9,18 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleList
+import tornaco.apps.shortx.core.util.AtomicFileCompat
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.read
+import tornaco.apps.shortx.core.util.writeInlined
 import java.io.File
 
 open class BaseRuleSettingsStore(
     private val scope: CoroutineScope,
-    private val storeFile: File
+    storeFile: File
 ) {
     private val logger = Logger("RuleSettingsStore")
-
+    private val atomicStoreFile = AtomicFileCompat(storeFile)
     private val rulesCache: MutableList<Rule> = mutableListOf()
 
     private var job: Job? = null
@@ -88,13 +91,13 @@ open class BaseRuleSettingsStore(
     }
 
     private suspend fun readInternal() = withContext(Dispatchers.IO) {
-        if (!storeFile.exists()) {
-            logger.d("skip read no-exists file: $storeFile")
+        if (!atomicStoreFile.exists()) {
+            logger.d("skip read no-exists file: $atomicStoreFile")
             return@withContext
         }
         synchronized(rulesCache) {
             kotlin.runCatching {
-                val ruleList = storeFile.inputStream().use {
+                val ruleList = atomicStoreFile.read {
                     RuleList.parseDelimitedFrom(it)
                 }
                 ruleList.run {
@@ -122,9 +125,9 @@ open class BaseRuleSettingsStore(
                 addAllRules(rulesCache)
             }.build()
             kotlin.runCatching {
-                storeFile.apply { parentFile.mkdirs() }.outputStream().use {
+                atomicStoreFile.writeInlined {
                     ruleList.writeDelimitedTo(it)
-                    logger.d("write to: $storeFile")
+                    logger.d("write to: $atomicStoreFile")
                 }
             }.onFailure {
                 logger.e(it, "write error")

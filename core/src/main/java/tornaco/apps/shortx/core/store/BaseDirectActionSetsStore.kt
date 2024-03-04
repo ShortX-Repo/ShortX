@@ -9,15 +9,18 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.core.proto.da.DirectActionSetList
+import tornaco.apps.shortx.core.util.AtomicFileCompat
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.read
+import tornaco.apps.shortx.core.util.writeInlined
 import java.io.File
 
 open class BaseDirectActionSetsStore(
     private val scope: CoroutineScope,
-    private val storeFile: File
+    storeFile: File
 ) {
     private val logger = Logger("DirectActionSetsStore")
-
+    private val atomicStoreFile = AtomicFileCompat(storeFile)
     private val pkgSetsCache: MutableList<DirectActionSet> = mutableListOf()
 
     private var job: Job? = null
@@ -66,13 +69,13 @@ open class BaseDirectActionSetsStore(
     }
 
     private suspend fun readInternal() = withContext(Dispatchers.IO) {
-        if (!storeFile.exists()) {
-            logger.d("skip read no-exists file: $storeFile")
+        if (!atomicStoreFile.exists()) {
+            logger.d("skip read no-exists file: $atomicStoreFile")
             return@withContext
         }
         kotlin.runCatching {
             synchronized(pkgSetsCache) {
-                val pkgSetList = storeFile.inputStream().use {
+                val pkgSetList = atomicStoreFile.read {
                     DirectActionSetList.parseDelimitedFrom(it)
                 }
                 pkgSetList.run {
@@ -99,9 +102,9 @@ open class BaseDirectActionSetsStore(
             val pkgSetList =
                 DirectActionSetList.newBuilder().addAllDirectActionSet(pkgSetsCache).build()
             kotlin.runCatching {
-                storeFile.apply { parentFile.mkdirs() }.outputStream().use {
+                atomicStoreFile.writeInlined {
                     pkgSetList.writeDelimitedTo(it)
-                    logger.d("write to: $storeFile")
+                    logger.d("write to: $atomicStoreFile")
                 }
             }.onFailure {
                 logger.e(it, "write error")

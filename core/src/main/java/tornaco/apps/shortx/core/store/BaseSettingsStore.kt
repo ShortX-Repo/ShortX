@@ -8,17 +8,22 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.util.AtomicFileCompat
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.mapToString
+import tornaco.apps.shortx.core.util.read
+import tornaco.apps.shortx.core.util.writeInlined
 import java.io.File
 
 open class BaseSettingsStore(
     val context: Context,
     name: String,
-    private val storeFile: File,
+    storeFile: File,
     private val scope: CoroutineScope,
 ) {
     private val logger = Logger("${BaseSettingsStore::class.java.simpleName}-$name")
+
+    private val atomicStoreFile = AtomicFileCompat(storeFile)
 
     private val stringCache = mutableMapOf<String, String?>()
     private val boolCache = mutableMapOf<String, Boolean?>()
@@ -48,12 +53,12 @@ open class BaseSettingsStore(
     }
 
     private suspend fun readInternal() = withContext(Dispatchers.IO) {
-        if (!storeFile.exists()) {
-            logger.d("skip read no-exists file: $storeFile")
+        if (!atomicStoreFile.exists()) {
+            logger.d("skip read no-exists file: $atomicStoreFile")
             return@withContext
         }
         kotlin.runCatching {
-            val settings = storeFile.inputStream().use {
+            val settings = atomicStoreFile.read {
                 tornaco.apps.shortx.services.proto.Settings.parseDelimitedFrom(it)
             }
             settings.run {
@@ -161,9 +166,9 @@ open class BaseSettingsStore(
             }
         }.build()
         kotlin.runCatching {
-            storeFile.apply { parentFile.mkdirs() }.outputStream().use {
+            atomicStoreFile.writeInlined {
                 settings.writeDelimitedTo(it)
-                logger.d("write to: $storeFile")
+                logger.d("write to: $atomicStoreFile")
             }
         }.onFailure {
             logger.e(it, "write error")

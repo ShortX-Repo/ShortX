@@ -9,15 +9,18 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.GestureRecordList
+import tornaco.apps.shortx.core.util.AtomicFileCompat
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.read
+import tornaco.apps.shortx.core.util.writeInlined
 import java.io.File
 
 open class BaseGestureRecordsStore(
     private val scope: CoroutineScope,
-    private val storeFile: File
+    storeFile: File
 ) {
     private val logger = Logger("GestureRecordsStore")
-
+    private val atomicStoreFile = AtomicFileCompat(storeFile)
     private val gestureRecordsCache: MutableList<GestureRecord> = mutableListOf()
 
     private var job: Job? = null
@@ -67,13 +70,13 @@ open class BaseGestureRecordsStore(
     }
 
     private suspend fun readInternal() = withContext(Dispatchers.IO) {
-        if (!storeFile.exists()) {
-            logger.d("skip read no-exists file: $storeFile")
+        if (!atomicStoreFile.exists()) {
+            logger.d("skip read no-exists file: $atomicStoreFile")
             return@withContext
         }
         kotlin.runCatching {
             synchronized(gestureRecordsCache) {
-                val recordList = storeFile.inputStream().use {
+                val recordList = atomicStoreFile.read {
                     GestureRecordList.parseDelimitedFrom(it)
                 }
                 gestureRecordsCache.clear()
@@ -99,9 +102,9 @@ open class BaseGestureRecordsStore(
                 addAllRecords(gestureRecordsCache)
             }.build()
             kotlin.runCatching {
-                storeFile.apply { parentFile.mkdirs() }.outputStream().use {
+                atomicStoreFile.writeInlined {
                     recordList.writeDelimitedTo(it)
-                    logger.d("write to: $storeFile")
+                    logger.d("write to: $atomicStoreFile")
                 }
             }.onFailure {
                 logger.e(it, "write error")
