@@ -51,7 +51,6 @@ import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolve
 import io.github.rosemoe.sora.text.LineSeparator
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.EditorSearcher.SearchOptions
-import io.github.rosemoe.sora.widget.SelectionMovement
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import io.github.rosemoe.sora.widget.getComponent
 import io.github.rosemoe.sora.widget.subscribeEvent
@@ -385,12 +384,12 @@ class CEActivity : AppCompatActivity() {
                 editor.text.getColumnCount(editor.text.lineCount - 1)
             )
 
-            R.id.move_up -> editor.moveSelection(SelectionMovement.UP)
-            R.id.move_down -> editor.moveSelection(SelectionMovement.DOWN)
-            R.id.home -> editor.moveSelection(SelectionMovement.TEXT_START)
-            R.id.end -> editor.moveSelection(SelectionMovement.TEXT_END)
-            R.id.move_left -> editor.moveSelection(SelectionMovement.LEFT)
-            R.id.move_right -> editor.moveSelection(SelectionMovement.RIGHT)
+            R.id.move_up -> editor.moveSelectionUp()
+            R.id.move_down -> editor.moveSelectionDown()
+            R.id.home -> editor.moveSelectionHome()
+            R.id.end -> editor.moveSelectionEnd()
+            R.id.move_left -> editor.moveSelectionLeft()
+            R.id.move_right -> editor.moveSelectionRight()
 
             R.id.search_panel_st -> {
                 if (binding.searchPanel.visibility == View.GONE) {
