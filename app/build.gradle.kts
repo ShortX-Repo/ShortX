@@ -121,6 +121,7 @@ android {
 dependencies {
     implementation(libs.dagger.hilt.android)
     implementation(libs.dagger.hilt.navigation.compose)
+    implementation(libs.material)
     kapt(libs.dagger.hilt.android.compiler)
 
     implementation(libs.appcompat)

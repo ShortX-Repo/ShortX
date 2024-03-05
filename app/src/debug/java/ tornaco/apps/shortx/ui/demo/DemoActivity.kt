@@ -193,6 +193,12 @@ class DemoActivity : BaseActivity() {
                         }
 
                         Button(onClick = {
+                            context.startActivity(Intent(context, DialogStyleActivity::class.java))
+                        }) {
+                            Text(text = "Dialog Activity")
+                        }
+
+                        Button(onClick = {
                             var tts: TextToSpeech? = null
                             tts = TextToSpeech(
                                 context
