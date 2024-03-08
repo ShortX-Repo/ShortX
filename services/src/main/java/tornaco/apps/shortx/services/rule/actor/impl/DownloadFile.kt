@@ -4,6 +4,7 @@ import com.google.protobuf.Message
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.services.util.DownloadHelper
@@ -18,7 +19,9 @@ object DownloadFile : Actor {
         params: HandleParams
     ): Unit = with(params) {
         val t = action unpack_ tornaco.apps.shortx.core.proto.action.DownloadFile::class.java
-        val id = DownloadHelper.downloadFile(androidContext, t.subject)
+        val cv = RuleContextAndVars(params)
+
+        val id = DownloadHelper.downloadFile(androidContext, t.subject, cv)
 
         while (true) {
             delay(1000)
