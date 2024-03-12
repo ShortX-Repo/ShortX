@@ -6,6 +6,8 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Environment
 import tornaco.apps.shortx.core.proto.common.DownloadSubject
+import tornaco.apps.shortx.core.rule.RuleContextAndVars
+import tornaco.apps.shortx.core.rule.compileContextAndVars
 
 object DownloadHelper {
 
@@ -19,17 +21,21 @@ object DownloadHelper {
 
     fun downloadFile(
         context: Context,
-        subject: DownloadSubject
+        subject: DownloadSubject,
+        cv: RuleContextAndVars
     ): Long {
         with(subject) {
-            val request = DownloadManager.Request(Uri.parse(url))
+            val request = DownloadManager.Request(Uri.parse(url.compileContextAndVars(cv)))
 
             // 设置下载标题和描述
-            request.setTitle(title)
-            request.setDescription(description)
+            request.setTitle(title.compileContextAndVars(cv))
+            request.setDescription(description.compileContextAndVars(cv))
 
             // 设置下载目录和文件名
-            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
+            request.setDestinationInExternalPublicDir(
+                Environment.DIRECTORY_DOWNLOADS,
+                fileName.compileContextAndVars(cv)
+            )
 
             // 允许下载时使用的网络类型
             request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
