@@ -805,6 +805,30 @@ message IfThenElse {
   string id = 100;
 }
 
+message SwitchCase {
+  repeated SwitchCase_Case case = 1;
+  SwitchCase_Default deft = 2;
+
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message SwitchCase_Case {
+  repeated google.protobuf.Any case = 1;
+  ConditionOperator caseCondOp = 2;
+  ConditionOperatorPayload caseCondOpPayload = 3;
+
+  repeated google.protobuf.Any action = 4;
+}
+
+message SwitchCase_Default {
+  repeated google.protobuf.Any defaultAction = 4;
+}
+
 message ReadClipboard {
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
