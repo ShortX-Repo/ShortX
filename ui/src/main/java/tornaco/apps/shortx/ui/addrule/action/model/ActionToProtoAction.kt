@@ -111,6 +111,8 @@ import tornaco.apps.shortx.core.proto.action.StopAudioRecording
 import tornaco.apps.shortx.core.proto.action.StopCurrentApp
 import tornaco.apps.shortx.core.proto.action.StopGestureRecording
 import tornaco.apps.shortx.core.proto.action.StopService
+import tornaco.apps.shortx.core.proto.action.SwitchCase
+import tornaco.apps.shortx.core.proto.action.SwitchCase_Case
 import tornaco.apps.shortx.core.proto.action.SwitchMobileDataSlot
 import tornaco.apps.shortx.core.proto.action.TTS
 import tornaco.apps.shortx.core.proto.action.TakeScreenshot
@@ -916,6 +918,34 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 }
                 .addAllIfActions(ifActions.map { it.toProtoAction().pack_() })
                 .addAllElseActions(elseActions.map { it.toProtoAction().pack_() })
+                .build()
+        }
+
+        is Action.SwitchCase -> {
+            SwitchCase.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .addAllCase(cases.map { case ->
+                    SwitchCase_Case.newBuilder()
+                        .addAllCase(case.conditions.map { it.toProtoCondition().pack_() })
+                        .setCaseCondOp(case.conditionOp.toConditionOperator())
+                        .apply {
+                            if (case.conditionOp is Op.MVEL) {
+                                caseCondOpPayload =
+                                    ConditionOperatorPayload
+                                        .newBuilder()
+                                        .setExpression(case.conditionOp.expression)
+                                        .build()
+                            }
+                        }
+                        .addAllAction(case.actions.map { it.toProtoAction().pack_() })
+                        .setDescription(case.description)
+                        .setId(case.id)
+                        .build()
+                })
                 .build()
         }
 

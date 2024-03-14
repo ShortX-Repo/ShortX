@@ -103,6 +103,16 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         }
     )
 
+    val switchCaseLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.toBaseSelectorCurrentDataOrNull<Action.SwitchCase>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
     val waitUtilLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
@@ -221,6 +231,17 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.SwitchCase::class -> {
+                switchCaseLauncher.launch(
+                    newIntent(
+                        context,
+                        source.getActionAs<Action.SwitchCase>(),
+                        SwitchCaseSelectorActivity::class.java
+                    )
+                )
+                true
+            }
+
             Action.WaitUtilConditionMatch::class -> {
                 waitUtilLauncher.launch(
                     newIntent(
@@ -278,6 +299,7 @@ fun ExtActions(
         Action.Brk::class,
         Action.CreatePkgSet::class,
         Action.IfThenElse::class,
+        Action.SwitchCase::class,
         Action.WhileLoop::class,
         Action.WaitUtilConditionMatch::class,
         Action.HttpRequest::class,

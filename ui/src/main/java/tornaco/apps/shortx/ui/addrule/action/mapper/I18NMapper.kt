@@ -241,6 +241,11 @@ fun labelAndDescriptionForActionSelector(
         Action.PlayRingtone::class -> i18N["ui.action.ringtone"] to null
         Action.DownloadFile::class -> i18N["ui.action.download.file"] to null
         Action.SendSMS::class -> i18N["ui.action.send.sms"] to null
+        Action.SwitchCase::class -> i18N.get(
+            key = "ui.action.switch.case",
+            fallback = "Switch case"
+        ) to null
+
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -929,6 +934,15 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             i18N["ui.action.download.file"],
             action.subject.title
         )
+
+        is Action.SwitchCase -> listOf(
+            i18N.get(
+                key = "ui.action.switch.case",
+                fallback = "Switch case"
+            ),
+            "${action.cases.size} cases"
+        )
+
         is Action.SendSMS -> listOf(
             i18N["ui.action.send.sms"],
             (action.slotId >= 0).select(

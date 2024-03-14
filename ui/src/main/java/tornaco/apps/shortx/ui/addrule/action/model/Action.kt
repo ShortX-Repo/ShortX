@@ -2219,6 +2219,53 @@ sealed interface Action : Parcelable {
     }
 
     @Parcelize
+    data class SwitchCase(
+        override val id: String = defaultNewActionId(),
+        override val isEnabled: Boolean = true,
+        override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val contextData: List<ContextData> = emptyList(),
+        override val note: String = "",
+
+        val cases: List<Case>,
+        val deft: Default,
+    ) : Action {
+        override fun clone(
+            id: String,
+            note: String,
+            isEnabled: Boolean,
+            actionOnError: ActionOnError,
+            contextData: List<ContextData>
+        ): Action {
+            return this.copy(
+                id = id,
+                note = note,
+                isEnabled = isEnabled,
+                actionOnError = actionOnError,
+                contextData = contextData
+            )
+        }
+
+        @Parcelize
+        data class Case(
+            val conditions: List<Condition> = listOf(Condition.TRUE()),
+            val conditionOp: Op = Op.All,
+            val actions: List<Action> = emptyList(),
+            val description: String = "",
+            val id: String = defaultNewCaseId(),
+        ) : Parcelable
+
+        @Parcelize
+        data class Default(
+            val actions: List<Action> = emptyList(),
+        ) : Parcelable
+
+        companion object {
+            fun defaultNewCaseId() = "Case-" + UUID.randomUUID().toString()
+        }
+    }
+
+    @Parcelize
     data class WaitUtilConditionMatch(
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,

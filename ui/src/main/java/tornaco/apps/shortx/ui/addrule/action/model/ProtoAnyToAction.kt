@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.action.HttpRequestHeaderBodyJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.IfThenElse
+import tornaco.apps.shortx.core.proto.action.SwitchCase
 import tornaco.apps.shortx.core.proto.action.WaitUtilConditionMatch
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
@@ -1079,6 +1080,35 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 ifConditionOp = data.ifCondOp.toOp(data.ifCondOpPayload),
                 ifActions = data.ifActionsList.mapNotNull { it.toAction(shortXManager) },
                 elseActions = data.elseActionsList.mapNotNull { it.toAction(shortXManager) },
+            )
+        }
+
+        this is_ SwitchCase::class.java -> {
+            val data = this unpack_ SwitchCase::class.java
+            Action.SwitchCase(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                cases = data.caseList.map { case ->
+                    Action.SwitchCase.Case(
+                        conditions = case.caseList.mapNotNull {
+                            it.toCondition(
+                                shortXManager
+                            )
+                        },
+                        conditionOp = case.caseCondOp.toOp(case.caseCondOpPayload),
+                        actions = case.actionList.mapNotNull { it.toAction(shortXManager) },
+                        description = case.description.orEmpty(),
+                        id = case.id.fallbackOnEmpty(Action.SwitchCase.defaultNewCaseId()),
+                    )
+                },
+                deft = Action.SwitchCase.Default(data.deft.defaultActionList.mapNotNull {
+                    it.toAction(
+                        shortXManager
+                    )
+                })
             )
         }
 

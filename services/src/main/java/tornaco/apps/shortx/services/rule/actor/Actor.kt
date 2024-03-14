@@ -308,6 +308,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.IfThenElse
     },
+    SwitchCase {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.SwitchCase
+    },
     WaitUtilConditionMatch {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.WaitUtilConditionMatch

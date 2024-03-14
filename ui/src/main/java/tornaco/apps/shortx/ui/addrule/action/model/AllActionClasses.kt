@@ -74,6 +74,7 @@ val allActionClasses = listOf(
     Action.InputSwipe::class,
     Action.WaitForIdle::class,
     Action.IfThenElse::class,
+    Action.SwitchCase::class,
     Action.ReadClipboard::class,
     Action.WriteClipboard::class,
     Action.GetTextFromScreenNode::class,
