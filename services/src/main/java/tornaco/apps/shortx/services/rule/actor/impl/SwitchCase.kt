@@ -22,7 +22,7 @@ object SwitchCase : Actor {
 
         logger.i("start, ${cases.size} cases, has default: ${d.hasDeft()}")
 
-        var hasMatchAnyCase = false
+        var isBreakCalled = false
 
         suspend fun executeActions(actionList: List<com.google.protobuf.Any>?) {
             run loop@{
@@ -55,7 +55,7 @@ object SwitchCase : Actor {
         }
 
         cases.forEach { case ->
-            if (!hasMatchAnyCase) {
+            if (!isBreakCalled) {
                 val matchCond =
                     conditionEvaluator.evaluate(
                         evaluateContext = evaluateContext,
@@ -69,7 +69,9 @@ object SwitchCase : Actor {
                 logger.d("SwitchCase, case, matchCond: $matchCond")
 
                 if (matchCond) {
-                    hasMatchAnyCase = true
+                    if (case.isBreak) {
+                        isBreakCalled = true
+                    }
                     logger.i("Execute case branch actions.")
                     updateTheXXTimeToday(shortXContext, case.caseList)
                     executeActions(case.actionList)
@@ -78,7 +80,7 @@ object SwitchCase : Actor {
         }
 
         // Default.
-        if (!hasMatchAnyCase && d.hasDeft()) {
+        if (!isBreakCalled && d.hasDeft()) {
             run loop@{
                 logger.i("Execute default branch actions.")
                 val deft = d.deft
