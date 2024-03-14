@@ -16,6 +16,7 @@ fun imageVectorForAction(action: KClass<out Action>): String {
         Action.ShowToast::class -> {
             Remix.Communication.chat_2_fill
         }
+
         Action.Toggle5G::class -> {
             Remix.Editor.number_5
         }
@@ -510,6 +511,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
 
         Action.SendSMS::class -> {
             Remix.Communication.chat_smile_fill
+        }
+
+        Action.SwitchCase::class -> {
+            Remix.Editor.flow_chart
         }
 
         else -> {
