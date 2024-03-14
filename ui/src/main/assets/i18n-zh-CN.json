@@ -639,6 +639,7 @@
     "ui.action.find.click.view.by.id.timeout.description": "设定检索ID的最长等待时间（毫秒）",
     "ui.action.find.click.view.matched": "点击发现的视图",
     "ui.action.find.click.view.matched.description": "点击由 发现页面视图 触发器所发现到视图",
+    "ui.action.stop.all.actions": "停止所有指令",
     "ui.action.send.sms": "发送短信",
     "ui.action.send.sms.to": "收信人",
     "ui.action.send.sms.message": "短信",

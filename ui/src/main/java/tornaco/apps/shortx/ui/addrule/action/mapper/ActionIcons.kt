@@ -517,6 +517,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Editor.flow_chart
         }
 
+        Action.StopAllActions::class -> {
+            Remix.Media.stop_circle_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

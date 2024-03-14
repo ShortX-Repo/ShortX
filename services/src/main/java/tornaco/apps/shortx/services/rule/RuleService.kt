@@ -588,6 +588,10 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         }
     }
 
+    fun cancelAllJobs(reason: String) {
+        cancelJobs(getActiveJobs(), reason)
+    }
+
     fun getAllRules(): List<Rule> {
         return ruleSettingsStore.getAllRules()
     }

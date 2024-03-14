@@ -241,6 +241,7 @@ fun labelAndDescriptionForActionSelector(
         Action.PlayRingtone::class -> i18N["ui.action.ringtone"] to null
         Action.DownloadFile::class -> i18N["ui.action.download.file"] to null
         Action.SendSMS::class -> i18N["ui.action.send.sms"] to null
+        Action.StopAllActions::class -> i18N["ui.action.stop.all.actions"] to null
         Action.SwitchCase::class -> i18N.get(
             key = "ui.action.switch.case",
             fallback = "Switch case"
@@ -954,6 +955,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             ),
             action.to,
             action.message
+        )
+
+        is Action.StopAllActions -> listOf(
+            i18N["ui.action.stop.all.actions"]
         )
     }
 }

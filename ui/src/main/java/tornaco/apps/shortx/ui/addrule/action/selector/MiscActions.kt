@@ -19,6 +19,7 @@ import tornaco.apps.shortx.ui.base.rememberMDIconSelectorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
+import kotlin.reflect.full.createInstance
 
 
 @Composable
@@ -58,6 +59,11 @@ fun miscActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
                 true
             }
 
+            Action.StopAllActions::class -> {
+                addAction(source.clazz.createInstance())
+                true
+            }
+
             else -> {
                 false
             }
@@ -78,6 +84,7 @@ fun MiscActions(
         Action.TTS::class,
         Action.DownloadFile::class,
         Action.NoAction::class,
+        Action.StopAllActions::class,
     ).map {
         SelectorItem(
             it,

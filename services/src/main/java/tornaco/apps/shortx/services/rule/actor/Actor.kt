@@ -567,7 +567,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SendSMS
     },
-
+    StopAllActions {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.StopAllActions
+    },
 
     ;
 

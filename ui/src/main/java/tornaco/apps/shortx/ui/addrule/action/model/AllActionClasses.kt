@@ -139,5 +139,6 @@ val allActionClasses = listOf(
     Action.Toggle5G::class,
     Action.DownloadFile::class,
     Action.SendSMS::class,
+    Action.StopAllActions::class,
     Action.NoAction::class,
 )
