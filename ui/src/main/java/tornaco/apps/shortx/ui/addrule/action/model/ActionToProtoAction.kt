@@ -944,6 +944,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                         }
                         .addAllAction(case.actions.map { it.toProtoAction().pack_() })
                         .setDescription(case.description)
+                        .setIsBreak(case.isBreak)
                         .setId(case.id)
                         .build()
                 })

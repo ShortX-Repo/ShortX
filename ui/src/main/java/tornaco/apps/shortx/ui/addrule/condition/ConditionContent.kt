@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.ClipboardDialog
 import tornaco.apps.shortx.ui.UiClipboard
 import tornaco.apps.shortx.ui.addrule.ContextDataIcon
@@ -91,8 +92,14 @@ class ConditionHandler(
 
 @Composable
 fun ConditionContent(
+    isOptional: Boolean = true,
     header: @Composable ColumnScope.() -> Unit = {
-        MediumTitle(LocalI18N.current["ui.conditions.title"])
+        MediumTitle(
+            LocalI18N.current[isOptional.select(
+                "ui.conditions.title.optional",
+                "ui.conditions.title"
+            )]
+        )
     },
     state: ConditionContentState,
     readOnly: Boolean = false,

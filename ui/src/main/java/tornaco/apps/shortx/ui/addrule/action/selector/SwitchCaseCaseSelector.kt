@@ -4,10 +4,8 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,10 +34,16 @@ import tornaco.apps.shortx.ui.addrule.condition.ConditionContent
 import tornaco.apps.shortx.ui.addrule.condition.ConditionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.condition.asConditionHandler
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
+import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.SmallTitle
+import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.StateViewModel
+import tornaco.apps.shortx.ui.base.SwitchItem
+import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -84,10 +88,11 @@ class SwitchCaseCaseSelectorViewModel : StateViewModel<SwitchCaseCaseSelectorDia
     }
 
     fun initFrom(currentSettings: Action.SwitchCase.Case? = null) {
+        logger.d("initFrom: ${currentSettings?.id}")
         updateState { copy(evaluatingActions = shortXManager.getEvaluatingActions()) }
 
         currentSettings?.let {
-            updateState { copy(description = it.description, id = id) }
+            updateState { copy(description = it.description, id = it.id, isBreak = it.isBreak) }
 
             conditionHandler.init(
                 currentSettings.conditions,
@@ -102,12 +107,19 @@ class SwitchCaseCaseSelectorViewModel : StateViewModel<SwitchCaseCaseSelectorDia
             copy(description = description)
         }
     }
+
+    fun setIsBreak(isBreak: Boolean) {
+        updateState {
+            copy(isBreak = isBreak)
+        }
+    }
 }
 
 data class SwitchCaseCaseSelectorDialogDialogState(
     val evaluatingActions: List<String> = emptyList(),
     val id: String = Action.SwitchCase.defaultNewCaseId(),
-    val description: String = ""
+    val description: String = "",
+    val isBreak: Boolean = false,
 )
 
 @Composable
@@ -155,6 +167,7 @@ private fun BaseSelectorActivity<Action.SwitchCase.Case>.SwitchCaseCaseSelectorD
                                     Action.SwitchCase.Case(
                                         id = dialogState.id,
                                         description = dialogState.description,
+                                        isBreak = dialogState.isBreak,
                                         conditionOp = conditionState.conditionOp,
                                         conditions = conditionState.conditions,
                                         actions = actionContentState.actions,
@@ -170,26 +183,50 @@ private fun BaseSelectorActivity<Action.SwitchCase.Case>.SwitchCaseCaseSelectorD
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp)
                         .padding(paddingValues)
                         .animateContentSize()
                         .verticalScroll(rememberScrollState())
                 ) {
-                    ConditionContent(
-                        state = conditionState,
-                        handler = condHandler.asConditionHandler()
+                    StandardSpacer()
+                    SwitchItem(
+                        title = LocalI18N.current["ui.action.switch.case.break"],
+                        summary = LocalI18N.current["ui.action.switch.case.break.summary"],
+                        isChecked = dialogState.isBreak,
+                        onCheckChange = {
+                            vm.setIsBreak(it)
+                        }
                     )
-                    Spacer(modifier = Modifier.size(24.dp))
+                    StandardSpacer()
 
-                    tornaco.apps.shortx.ui.addrule.action.ActionContent(
-                        actions = actionContentState.actions,
-                        evaluatingActions = dialogState.evaluatingActions,
-                        handler = actionContentStateHandler.asActionHandler(),
-                        warnings = actionContentState.actionWarningMessages
-                    )
-                    Spacer(modifier = Modifier.size(24.dp))
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        SmallTitle(text = LocalI18N.current["ui.action.switch.case.description"])
+                        TinySpacer()
+                        ShortXTextField(
+                            value = dialogState.description,
+                            onValueChange = { vm.setDescription(it) })
+                        LargeSpacer()
 
-                    SuggestedNavEntry()
+                        ConditionContent(
+                            isOptional = false,
+                            state = conditionState,
+                            handler = condHandler.asConditionHandler()
+                        )
+                        LargeSpacer()
+
+                        tornaco.apps.shortx.ui.addrule.action.ActionContent(
+                            actions = actionContentState.actions,
+                            evaluatingActions = dialogState.evaluatingActions,
+                            handler = actionContentStateHandler.asActionHandler(),
+                            warnings = actionContentState.actionWarningMessages
+                        )
+                        LargeSpacer()
+
+                        SuggestedNavEntry()
+                    }
                 }
             }
         }

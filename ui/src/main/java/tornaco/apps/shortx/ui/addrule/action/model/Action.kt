@@ -2252,6 +2252,7 @@ sealed interface Action : Parcelable {
             val conditionOp: Op = Op.All,
             val actions: List<Action> = emptyList(),
             val description: String = "",
+            val isBreak: Boolean = false,
             val id: String = defaultNewCaseId(),
         ) : Parcelable
 

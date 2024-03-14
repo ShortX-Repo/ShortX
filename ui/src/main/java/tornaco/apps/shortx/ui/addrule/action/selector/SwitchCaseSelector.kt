@@ -34,11 +34,11 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorCurrentDataOrNull
-import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StateViewModel
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -97,6 +97,7 @@ class SwitchCaseSelectorViewModel : StateViewModel<SwitchCaseSelectorDialogDialo
 
     fun addOrUpdateCase(newCase: Action.SwitchCase.Case) {
         val existingIndex = state.value.cases.indexOfFirst { it.id == newCase.id }
+        logger.d("addOrUpdateCase, new id: ${newCase.id} existingIndex: $existingIndex")
         updateState {
             copy(cases = cases.toMutableList().apply {
                 if (existingIndex >= 0) {
@@ -104,6 +105,14 @@ class SwitchCaseSelectorViewModel : StateViewModel<SwitchCaseSelectorDialogDialo
                 } else {
                     add(newCase)
                 }
+            })
+        }
+    }
+
+    fun removeCase(case: Action.SwitchCase.Case) {
+        updateState {
+            copy(cases = cases.toMutableList().apply {
+                removeIf { it.id == case.id }
             })
         }
     }
@@ -170,16 +179,18 @@ private fun BaseSelectorActivity<Action.SwitchCase>.SwitchCaseSelectorDialogSele
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp)
+                        .padding(vertical = 16.dp)
                         .padding(paddingValues)
                 ) {
                     item {
-                        FieldTitle(
+                        SmallTitle(
                             text = LocalI18N.current.get(
                                 "ui.action.switch.case.case",
                                 fallback = "Case"
                             ),
-                            modifier = Modifier.padding(bottom = 8.dp)
+                            modifier = Modifier
+                                .padding(bottom = 8.dp)
+                                .padding(horizontal = 16.dp)
                         )
                     }
 
@@ -196,7 +207,7 @@ private fun BaseSelectorActivity<Action.SwitchCase>.SwitchCaseSelectorDialogSele
                         )
 
                         ListItem(titleLines = listOf(
-                            it.description.fallbackOnEmpty("Case")
+                            it.description.fallbackOnEmpty(LocalI18N.current["ui.common.unnamed"])
                         ),
                             onClick = {
                                 caseEditLauncher.launch(
@@ -209,9 +220,9 @@ private fun BaseSelectorActivity<Action.SwitchCase>.SwitchCaseSelectorDialogSele
                             },
                             action1 = {
                                 IconButton(onClick = {
-
+                                    vm.removeCase(it)
                                 }) {
-                                    RemixIcon(remixName = Remix.System.close_circle_fill)
+                                    RemixIcon(remixName = Remix.System.close_fill)
                                 }
                             }
                         )
@@ -248,7 +259,12 @@ private fun BaseSelectorActivity<Action.SwitchCase>.SwitchCaseSelectorDialogSele
                                 tint = MaterialTheme.colorScheme.onPrimary
                             )
                             TinySpacer()
-                            Text(LocalI18N.current["ui.actions.add"])
+                            Text(
+                                LocalI18N.current["ui.common.add"] + " " + LocalI18N.current.get(
+                                    "ui.action.switch.case.case",
+                                    fallback = "Case"
+                                )
+                            )
                         }
                     }
                 }

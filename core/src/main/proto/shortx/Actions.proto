@@ -809,7 +809,6 @@ message SwitchCase {
   repeated SwitchCase_Case case = 1;
   SwitchCase_Default deft = 2;
 
-
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
@@ -826,6 +825,7 @@ message SwitchCase_Case {
 
   string description = 5;
   string id = 6;
+  bool isBreak = 7;
 }
 
 message SwitchCase_Default {

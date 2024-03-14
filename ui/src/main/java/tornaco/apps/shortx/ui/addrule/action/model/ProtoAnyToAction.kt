@@ -1101,6 +1101,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                         conditionOp = case.caseCondOp.toOp(case.caseCondOpPayload),
                         actions = case.actionList.mapNotNull { it.toAction(shortXManager) },
                         description = case.description.orEmpty(),
+                        isBreak = case.isBreak,
                         id = case.id.fallbackOnEmpty(Action.SwitchCase.defaultNewCaseId()),
                     )
                 },
