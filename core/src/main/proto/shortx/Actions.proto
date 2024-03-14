@@ -823,6 +823,9 @@ message SwitchCase_Case {
   ConditionOperatorPayload caseCondOpPayload = 3;
 
   repeated google.protobuf.Any action = 4;
+
+  string description = 5;
+  string id = 6;
 }
 
 message SwitchCase_Default {

@@ -1100,9 +1100,11 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                         },
                         conditionOp = case.caseCondOp.toOp(case.caseCondOpPayload),
                         actions = case.actionList.mapNotNull { it.toAction(shortXManager) },
+                        description = case.description.orEmpty(),
+                        id = case.id.fallbackOnEmpty(Action.SwitchCase.defaultNewCaseId()),
                     )
                 },
-                default = Action.SwitchCase.Default(data.deft.defaultActionList.mapNotNull {
+                deft = Action.SwitchCase.Default(data.deft.defaultActionList.mapNotNull {
                     it.toAction(
                         shortXManager
                     )

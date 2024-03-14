@@ -2228,7 +2228,7 @@ sealed interface Action : Parcelable {
         override val note: String = "",
 
         val cases: List<Case>,
-        val default: Default,
+        val deft: Default,
     ) : Action {
         override fun clone(
             id: String,
@@ -2251,12 +2251,18 @@ sealed interface Action : Parcelable {
             val conditions: List<Condition> = listOf(Condition.TRUE()),
             val conditionOp: Op = Op.All,
             val actions: List<Action> = emptyList(),
+            val description: String = "",
+            val id: String = defaultNewCaseId(),
         ) : Parcelable
 
         @Parcelize
         data class Default(
             val actions: List<Action> = emptyList(),
         ) : Parcelable
+
+        companion object {
+            fun defaultNewCaseId() = "Case-" + UUID.randomUUID().toString()
+        }
     }
 
     @Parcelize
