@@ -114,7 +114,11 @@ class ActionShortcutActivity : Activity() {
         }
 
         fun removeDynamicShortcut(context: Context, action: DirectActionUM) {
-            ShortcutManagerCompat.removeDynamicShortcuts(context, listOf(action.id))
+            removeDynamicShortcut(context, action.id)
+        }
+
+        fun removeDynamicShortcut(context: Context, id: String) {
+            ShortcutManagerCompat.removeDynamicShortcuts(context, listOf(id))
         }
 
         fun hasDynamicShortcut(context: Context, action: DirectActionUM): Boolean {

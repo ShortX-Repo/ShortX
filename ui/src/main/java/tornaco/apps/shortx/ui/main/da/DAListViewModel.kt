@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.main.da
 
 import android.content.Context
 import androidx.compose.ui.graphics.Color
+import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -60,6 +61,9 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                 val allDAs = shortXManager.getAllDirectAction().apply {
                     logger.i("all da: ${this.joinToString { it.title }}")
                 }
+
+                cleanUpInvalidDynamicShortcuts(allDAs)
+
                 val das = allDAs
                     .filter { directAction ->
                         when (selectedDASetFilter) {
@@ -141,6 +145,17 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                 }
             }
         }
+    }
+
+    private fun cleanUpInvalidDynamicShortcuts(allDAs: List<DirectAction>) {
+        val allDynamicShortcuts = ShortcutManagerCompat.getDynamicShortcuts(context)
+        val invalidShortcuts = allDynamicShortcuts.filter { shortcut ->
+            allDAs.none { it.id == shortcut.id }
+        }
+        logger.w("invalidShortcuts: $invalidShortcuts")
+        ShortcutManagerCompat.removeDynamicShortcuts(
+            context,
+            invalidShortcuts.map { it.id })
     }
 
     fun dismissDASet(daSet: DirectActionUM, token: String?) {
