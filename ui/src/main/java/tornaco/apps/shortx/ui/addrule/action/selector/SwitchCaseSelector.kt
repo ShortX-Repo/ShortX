@@ -4,7 +4,11 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,8 +24,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,6 +41,7 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorCurrentDataOrNull
+import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -41,6 +49,7 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StateViewModel
 import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.theme.ErrorRed
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 
@@ -99,13 +108,15 @@ class SwitchCaseSelectorViewModel : StateViewModel<SwitchCaseSelectorDialogDialo
         val existingIndex = state.value.cases.indexOfFirst { it.id == newCase.id }
         logger.d("addOrUpdateCase, new id: ${newCase.id} existingIndex: $existingIndex")
         updateState {
-            copy(cases = cases.toMutableList().apply {
-                if (existingIndex >= 0) {
-                    set(existingIndex, newCase)
-                } else {
-                    add(newCase)
-                }
-            })
+            copy(
+                isChanged = true,
+                cases = cases.toMutableList().apply {
+                    if (existingIndex >= 0) {
+                        set(existingIndex, newCase)
+                    } else {
+                        add(newCase)
+                    }
+                })
         }
     }
 
@@ -113,8 +124,12 @@ class SwitchCaseSelectorViewModel : StateViewModel<SwitchCaseSelectorDialogDialo
         updateState {
             copy(cases = cases.toMutableList().apply {
                 removeIf { it.id == case.id }
-            })
+            }, isChanged = true)
         }
+    }
+
+    fun applySort(cases: List<Action.SwitchCase.Case>) {
+        updateState { copy(isChanged = true, cases = cases) }
     }
 }
 
@@ -124,6 +139,7 @@ data class SwitchCaseSelectorDialogDialogState(
     val evaluatingActions: List<String> = emptyList(),
     val cases: List<Action.SwitchCase.Case> = emptyList(),
     val deft: Action.SwitchCase.Default = Action.SwitchCase.Default(),
+    val isChanged: Boolean = false
 )
 
 @Composable
@@ -158,16 +174,18 @@ private fun BaseSelectorActivity<Action.SwitchCase>.SwitchCaseSelectorDialogSele
                             }
                         },
                         actions = {
-                            IconButton(onClick = {
-                                setResultAndFinish(
-                                    Action.SwitchCase(
-                                        id = dialogState.id,
-                                        note = dialogState.note,
-                                        cases = dialogState.cases,
-                                        deft = dialogState.deft
+                            IconButton(
+                                enabled = dialogState.isChanged,
+                                onClick = {
+                                    setResultAndFinish(
+                                        Action.SwitchCase(
+                                            id = dialogState.id,
+                                            note = dialogState.note,
+                                            cases = dialogState.cases,
+                                            deft = dialogState.deft
+                                        )
                                     )
-                                )
-                            }) {
+                                }) {
                                 RemixIcon(remixName = Remix.System.check_line)
                             }
 
@@ -176,6 +194,11 @@ private fun BaseSelectorActivity<Action.SwitchCase>.SwitchCaseSelectorDialogSele
                 }) { paddingValues ->
                 val context = LocalContext.current
 
+                val caseSortDialogState = rememberSwitchCaseSortState(cases = dialogState.cases) {
+                    vm.applySort(it)
+                }
+                SwitchCaseSortDialog(state = caseSortDialogState)
+
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
@@ -183,15 +206,30 @@ private fun BaseSelectorActivity<Action.SwitchCase>.SwitchCaseSelectorDialogSele
                         .padding(paddingValues)
                 ) {
                     item {
-                        SmallTitle(
-                            text = LocalI18N.current.get(
-                                "ui.action.switch.case.case",
-                                fallback = "Case"
-                            ),
+                        Row(
                             modifier = Modifier
-                                .padding(bottom = 8.dp)
-                                .padding(horizontal = 16.dp)
-                        )
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            SmallTitle(
+                                text = LocalI18N.current.get(
+                                    "ui.action.switch.case.case",
+                                    fallback = "Case"
+                                ),
+                                modifier = Modifier
+                                    .padding(bottom = 8.dp)
+                                    .padding(horizontal = 16.dp)
+                            )
+
+                            AnimatedVisibility(visible = dialogState.cases.size > 1) {
+                                IconButton(onClick = {
+                                    caseSortDialogState.show()
+                                }) {
+                                    RemixIcon(Remix.Editor.sort_asc)
+                                }
+                            }
+                        }
                     }
 
                     items(dialogState.cases) {
@@ -206,9 +244,20 @@ private fun BaseSelectorActivity<Action.SwitchCase>.SwitchCaseSelectorDialogSele
                             }
                         )
 
-                        ListItem(titleLines = listOf(
-                            it.description.fallbackOnEmpty(LocalI18N.current["ui.common.unnamed"])
-                        ),
+                        ListItem(
+                            icon = {
+                                ColoredIcon(onClick = {
+                                    vm.addOrUpdateCase(it.copy(isDisabled = !it.isDisabled))
+                                }) {
+                                    RemixIcon(remixName = Remix.Development.git_commit_fill)
+                                }
+                            },
+                            titleLines = listOf(
+                                it.description.fallbackOnEmpty(LocalI18N.current["ui.common.unnamed"])
+                            ),
+                            textDecoration = if (!it.isDisabled) TextDecoration.None else TextDecoration.LineThrough,
+                            titleColor = if (!it.isDisabled) Color.Unspecified else ErrorRed,
+                            textColor = if (!it.isDisabled) Color.Unspecified else ErrorRed,
                             onClick = {
                                 caseEditLauncher.launch(
                                     BaseSelectorActivity.newIntent(

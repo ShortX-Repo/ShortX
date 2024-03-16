@@ -826,6 +826,7 @@ message SwitchCase_Case {
   string description = 5;
   string id = 6;
   bool isBreak = 7;
+  bool isDisabled = 8;
 }
 
 message SwitchCase_Default {

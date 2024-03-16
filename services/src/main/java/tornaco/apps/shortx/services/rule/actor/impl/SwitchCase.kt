@@ -54,7 +54,7 @@ object SwitchCase : Actor {
             }
         }
 
-        cases.forEach { case ->
+        cases.filter { !it.isDisabled }.forEach { case ->
             if (!isBreakCalled) {
                 val matchCond =
                     conditionEvaluator.evaluate(

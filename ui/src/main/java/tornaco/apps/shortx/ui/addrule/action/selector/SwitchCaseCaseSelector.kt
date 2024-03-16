@@ -92,7 +92,14 @@ class SwitchCaseCaseSelectorViewModel : StateViewModel<SwitchCaseCaseSelectorDia
         updateState { copy(evaluatingActions = shortXManager.getEvaluatingActions()) }
 
         currentSettings?.let {
-            updateState { copy(description = it.description, id = it.id, isBreak = it.isBreak) }
+            updateState {
+                copy(
+                    description = it.description,
+                    id = it.id,
+                    isBreak = it.isBreak,
+                    isDisabled = it.isDisabled
+                )
+            }
 
             conditionHandler.init(
                 currentSettings.conditions,
@@ -113,6 +120,12 @@ class SwitchCaseCaseSelectorViewModel : StateViewModel<SwitchCaseCaseSelectorDia
             copy(isBreak = isBreak)
         }
     }
+
+    fun setIsDisabled(isDisabled: Boolean) {
+        updateState {
+            copy(isDisabled = isDisabled)
+        }
+    }
 }
 
 data class SwitchCaseCaseSelectorDialogDialogState(
@@ -120,6 +133,7 @@ data class SwitchCaseCaseSelectorDialogDialogState(
     val id: String = Action.SwitchCase.defaultNewCaseId(),
     val description: String = "",
     val isBreak: Boolean = false,
+    val isDisabled: Boolean = false,
 )
 
 @Composable
@@ -168,6 +182,7 @@ private fun BaseSelectorActivity<Action.SwitchCase.Case>.SwitchCaseCaseSelectorD
                                         id = dialogState.id,
                                         description = dialogState.description,
                                         isBreak = dialogState.isBreak,
+                                        isDisabled = dialogState.isDisabled,
                                         conditionOp = conditionState.conditionOp,
                                         conditions = conditionState.conditions,
                                         actions = actionContentState.actions,
