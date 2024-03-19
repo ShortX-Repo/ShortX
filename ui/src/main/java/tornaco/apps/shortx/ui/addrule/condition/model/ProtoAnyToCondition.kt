@@ -226,17 +226,32 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
 
         this is_ True::class.java -> {
             val data = this unpack_ True::class.java
-            Condition.TRUE(id = data.id, note = data.note, isInvert = data.isInvert)
+            Condition.TRUE(
+                id = data.id,
+                note = data.note,
+                isDisabled = data.isDisabled,
+                isInvert = data.isInvert
+            )
         }
 
         this is_ ScreenIsOn::class.java -> {
             val data = this unpack_ ScreenIsOn::class.java
-            Condition.ScreenIsOn(id = data.id, note = data.note, isInvert = data.isInvert)
+            Condition.ScreenIsOn(
+                id = data.id,
+                note = data.note,
+                isDisabled = data.isDisabled,
+                isInvert = data.isInvert
+            )
         }
 
         this is_ VPNIsConnected::class.java -> {
             val data = this unpack_ VPNIsConnected::class.java
-            Condition.VPNIsConnected(id = data.id, note = data.note, isInvert = data.isInvert)
+            Condition.VPNIsConnected(
+                id = data.id,
+                note = data.note,
+                isDisabled = data.isDisabled,
+                isInvert = data.isInvert
+            )
         }
 
         this is_ EvaluateGlobalVar::class.java -> {

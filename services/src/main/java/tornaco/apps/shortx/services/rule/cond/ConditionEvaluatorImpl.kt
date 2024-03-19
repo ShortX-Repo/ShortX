@@ -29,7 +29,7 @@ class ConditionEvaluatorImpl(
     private val shortXContext: ShortXContext,
     private val evaluateResultListener: (ConditionEvaluator.EvaluateResult) -> Unit,
 ) : ConditionEvaluator {
-    private val logger = Logger("ConditionEvaluatorImpl")
+    private val logger = Logger("CondEva")
 
     // For single
     override suspend fun evaluate(
@@ -86,18 +86,34 @@ class ConditionEvaluatorImpl(
         contextData: ContextData,
         localVars: LocalVars
     ): Boolean {
-        logger.d("evaluate rule condition: ${evaluateContext.srcTitle} $condOp condition size: ${conditions.size}, context: $contextData")
+        logger.d("evaluate, conditions: ${conditions.size}")
+        val ecs = conditions.filter { condition ->
+            val cond = prebuiltCondFor(condition)
+            if (cond == null) {
+                logger.e("Can not find prebuilt cond for ${condition.typeUrl}")
+                return@filter false
+            }
+            val unPacked = condition unpack_ cond.condClass()
+            val attrs = extractConditionAttrs(unPacked)
+            if (attrs == null) {
+                logger.e("Can not find extract attr for ${condition.typeUrl}")
+                return@filter false
+            }
+            return@filter !attrs.isDisabled
+        }
+
+        logger.d("evaluate condition: ${evaluateContext.srcTitle} $condOp enabled condition size: ${ecs.size}, context: $contextData")
         return when (condOp) {
             ConditionOperator.ALL -> {
-                conditions.all { evaluate(evaluateContext, it, contextData, localVars).isMatch() }
+                ecs.all { evaluate(evaluateContext, it, contextData, localVars).isMatch() }
             }
 
             ConditionOperator.ANY -> {
-                conditions.any { evaluate(evaluateContext, it, contextData, localVars).isMatch() }
+                ecs.any { evaluate(evaluateContext, it, contextData, localVars).isMatch() }
             }
 
             ConditionOperator.NONE -> {
-                conditions.none { evaluate(evaluateContext, it, contextData, localVars).isMatch() }
+                ecs.none { evaluate(evaluateContext, it, contextData, localVars).isMatch() }
             }
 
             ConditionOperator.MVEL -> {
@@ -106,12 +122,12 @@ class ConditionEvaluatorImpl(
 
                 val varMap = mutableMapOf<String, Any>()
                 var expressionTranslation = expression
-                repeat(conditions.size) { index ->
+                repeat(ecs.size) { index ->
                     val codeName = "c${index + 1}"
                     varMap[codeName] = ConditionCallable(
                         evaluateContext = evaluateContext,
                         eva = this,
-                        condition = conditions[index],
+                        condition = ecs[index],
                         contextData = contextData,
                         localVars = localVars
                     )
@@ -155,7 +171,7 @@ class ConditionEvaluatorImpl(
             }
 
             else -> {
-                conditions.all { evaluate(evaluateContext, it, contextData, localVars).isMatch() }
+                ecs.all { evaluate(evaluateContext, it, contextData, localVars).isMatch() }
             }
         }
     }

@@ -18,6 +18,7 @@ object IfThenElse : Actor {
         params: HandleParams
     ) = with(params) {
         val d = action unpack_ IfThenElse::class.java
+        logger.d("IfThenElse, check cond with: $conditionEvaluator")
         val matchCond =
             conditionEvaluator.evaluate(
                 evaluateContext = evaluateContext,
