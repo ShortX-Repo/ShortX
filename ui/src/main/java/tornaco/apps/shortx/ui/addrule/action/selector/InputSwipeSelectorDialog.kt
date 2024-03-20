@@ -3,22 +3,41 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.core.text.isDigitsOnly
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.addrule.action.selector.*
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXTextField
+import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.SmallTitle
+import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -35,11 +54,11 @@ class InputSwipeSelectorState(
     var swipeTime by mutableStateOf("500")
 
     fun show(current: Action.InputSwipe? = null) {
-        this.startX = current?.startX?.toString() ?: ""
-        this.startY = current?.startY?.toString() ?: ""
-        this.endX = current?.endX?.toString() ?: ""
-        this.endY = current?.endY?.toString() ?: ""
-        this.swipeTime = current?.swipeTime?.toString() ?: "500"
+        this.startX = current?.startX.orEmpty()
+        this.startY = current?.startY.orEmpty()
+        this.endX = current?.endX.orEmpty()
+        this.endY = current?.endY.orEmpty()
+        this.swipeTime = current?.swipeTime ?: "500"
         _isShow = true
     }
 
@@ -88,15 +107,15 @@ private fun InputSwipeSelector(
                     actions = {
                         IconButton(onClick = {
                             if (listOf(state.startX, state.startY, state.endX, state.endY).all {
-                                    it.isNotBlank() && it.isDigitsOnly()
+                                    it.isNotBlank()
                                 }) {
                                 state.onSelected(
                                     Action.InputSwipe(
-                                        startX = state.startX.toIntOrNull() ?: 0,
-                                        startY = state.startY.toIntOrNull() ?: 0,
-                                        endX = state.endX.toIntOrNull() ?: 0,
-                                        endY = state.endY.toIntOrNull() ?: 0,
-                                        swipeTime = state.swipeTime.toLongOrNull() ?: 0L
+                                        startX = state.startX,
+                                        startY = state.startY,
+                                        endX = state.endX,
+                                        endY = state.endY,
+                                        swipeTime = state.swipeTime
                                     )
                                 )
                                 state.dismiss()

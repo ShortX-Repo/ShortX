@@ -770,11 +770,17 @@ message InputTap {
 }
 
 message InputSwipe {
-  int32 startX = 1;
-  int32 startY = 2;
-  int32 endX = 3;
-  int32 endY = 4;
-  int64 swipeTime = 5;
+  int32 startX = 1 [deprecated = true]; // To support var
+  int32 startY = 2 [deprecated = true];
+  int32 endX = 3 [deprecated = true];
+  int32 endY = 4 [deprecated = true];
+  int64 swipeTime = 5 [deprecated = true];
+
+  string startXS = 11; // To support var
+  string startYS = 12;
+  string endXS = 13;
+  string endYS = 14;
+  string swipeTimeS = 15;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;

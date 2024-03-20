@@ -884,9 +884,11 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setIsDisabled(!isEnabled)
                 .setActionOnError(actionOnError)
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
-                .setStartX(startX)
-                .setStartY(startY)
-                .setEndX(endX).setEndY(endY).setSwipeTime(swipeTime)
+                .setStartXS(startX)
+                .setStartYS(startY)
+                .setEndXS(endX)
+                .setEndYS(endY)
+                .setSwipeTimeS(swipeTime)
                 .setNote(overrideNote ?: note).build()
         }
 

@@ -1045,11 +1045,11 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 customContextDataKey = data.customContextDataKey,
                 id = data.id,
                 note = data.note,
-                startX = data.startX,
-                startY = data.startY,
-                endX = data.endX,
-                endY = data.endY,
-                swipeTime = data.swipeTime
+                startX = data.startXS.ifBlank { data.startX.toString() },
+                startY = data.startYS.ifBlank { data.startY.toString() },
+                endX = data.endXS.ifBlank { data.endX.toString() },
+                endY = data.endYS.ifBlank { data.endY.toString() },
+                swipeTime = data.swipeTimeS.ifBlank { data.swipeTime.toString() }
             )
         }
 

@@ -2137,12 +2137,12 @@ sealed interface Action : Parcelable {
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
 
-        val startX: Int,
-        val startY: Int,
-        val endX: Int,
-        val endY: Int,
+        val startX: String,
+        val startY: String,
+        val endX: String,
+        val endY: String,
 
-        val swipeTime: Long = 500
+        val swipeTime: String = "500"
     ) : Action {
         override fun clone(
             id: String,
