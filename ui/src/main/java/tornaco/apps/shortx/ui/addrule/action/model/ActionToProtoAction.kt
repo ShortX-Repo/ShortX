@@ -874,7 +874,8 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setIsDisabled(!isEnabled)
                 .setActionOnError(actionOnError)
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
-                .setX(x).setY(y)
+                .setXs(x)
+                .setYs(y)
                 .setNote(overrideNote ?: note).build()
         }
 

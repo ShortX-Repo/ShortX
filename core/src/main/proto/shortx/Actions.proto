@@ -756,8 +756,11 @@ message FindAndClickMatchedView {
 }
 
 message InputTap {
-  int32 x = 1;
-  int32 y = 2;
+  int32 x = 1 [deprecated = true]; // To support var
+  int32 y = 2 [deprecated = true];
+
+  string xs = 3;
+  string ys = 4;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;

@@ -1031,8 +1031,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 customContextDataKey = data.customContextDataKey,
                 id = data.id,
                 note = data.note,
-                x = data.x,
-                y = data.y
+                x = data.xs.ifBlank { data.x.toString() },
+                y = data.ys.ifBlank { data.y.toString() }
             )
         }
 

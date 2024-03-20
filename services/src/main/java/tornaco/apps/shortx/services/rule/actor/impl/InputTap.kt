@@ -1,8 +1,10 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.powerManager
+import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 
@@ -18,8 +20,13 @@ object InputTap : Actor {
         require(androidContext.powerManager.isInteractive) {
             "Can not InputTap when device is not interactive"
         }
+
+        val cv = RuleContextAndVars(params)
+        val x = data.xs.ifBlank { data.x.toString() }.compileContextAndVars(cv).trim().toInt()
+        val y = data.ys.ifBlank { data.y.toString() }.compileContextAndVars(cv).trim().toInt()
+
         shortXContext.wm.withUiAutomation("InputTap") {
-            it.click(data.x, data.y)
+            it.click(x, y)
         }
     }
 }

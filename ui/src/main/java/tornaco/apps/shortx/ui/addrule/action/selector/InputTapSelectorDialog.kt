@@ -3,29 +3,43 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.core.text.isDigitsOnly
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.addrule.action.selector.*
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.CommonDialogState
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXTextField
+import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 class InputTapSelectorState(
     val onSelected: (Action.InputTap) -> Unit
-) {
-    private var _isShow by mutableStateOf(false)
-    val isShow get() = _isShow
-
+) : CommonDialogState() {
     private var _x by mutableStateOf("")
     val x get() = _x
 
@@ -34,13 +48,10 @@ class InputTapSelectorState(
 
 
     fun show(current: Action.InputTap? = null) {
-        this._x = current?.x?.toString() ?: ""
-        this._y = current?.y?.toString() ?: ""
-        _isShow = true
-    }
+        this._x = current?.x.orEmpty()
+        this._y = current?.y.orEmpty()
 
-    fun dismiss() {
-        _isShow = false
+        super.show()
     }
 
     fun setX(text: String) {
@@ -63,7 +74,7 @@ fun rememberInputTapSelectorState(
 
 @Composable
 fun InputTapSelectorDialog(state: InputTapSelectorState) {
-    if (state.isShow) {
+    if (state.isShowing) {
         ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
             InputTapSelector(state)
         }
@@ -91,11 +102,13 @@ private fun InputTapSelector(
                     },
                     actions = {
                         IconButton(onClick = {
-                            if (state.x.isNotBlank() && state.x.isDigitsOnly() && state.y.isNotBlank() && state.y.isDigitsOnly()) {
+                            if (state.x.isNotBlank()
+                                && state.y.isNotBlank()
+                            ) {
                                 state.onSelected(
                                     Action.InputTap(
-                                        x = state.x.toIntOrNull() ?: 0,
-                                        y = state.y.toIntOrNull() ?: 0
+                                        x = state.x,
+                                        y = state.y
                                     )
                                 )
                                 state.dismiss()
