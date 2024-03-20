@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import okhttp3.internal.toLongOrDefault
+import tornaco.apps.shortx.core.proto.common.RegexMatchOptions
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.ui.addrule.base.SingleAppSelectorDialog
@@ -33,11 +34,13 @@ import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.NodeMatcher
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.FieldTitle
+import tornaco.apps.shortx.ui.base.InputValidateResult
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
+import tornaco.apps.shortx.ui.base.RegexTextInputDialog
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
@@ -47,6 +50,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
+import tornaco.apps.shortx.ui.base.rememberRegexTextInputState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -264,10 +268,34 @@ private fun HasFoundNodeOnScreen(dialogState: HasFoundNodeOnScreenSelectorDialog
                         title = LocalI18N.current["ui.fact.has.found.node.on.screen.view.text"],
                         message = null,
                         onSelected = {
-                            dialogState.addMatcher(NodeMatcher.Text(it, false))
+                            dialogState.addMatcher(
+                                NodeMatcher.Text(
+                                    it,
+                                    false,
+                                    RegexMatchOptions.RegexMatchOptions_Match
+                                )
+                            )
                         }
                     )
                     TextInputDialog(state = textInputState)
+
+                    val textInputRegexState = rememberRegexTextInputState(
+                        title = LocalI18N.current["ui.fact.has.found.node.on.screen.view.text.regex"],
+                        message = null,
+                        inputValidator = {
+                            InputValidateResult.OK
+                        },
+                        onSelected = { text, options ->
+                            dialogState.addMatcher(
+                                NodeMatcher.Text(
+                                    text,
+                                    true,
+                                    options
+                                )
+                            )
+                        }
+                    )
+                    RegexTextInputDialog(state = textInputRegexState)
 
                     val viewIdInputState = rememberTextInputState(
                         title = LocalI18N.current["ui.fact.has.found.node.on.screen.view.id"],
@@ -289,12 +317,18 @@ private fun HasFoundNodeOnScreen(dialogState: HasFoundNodeOnScreenSelectorDialog
                                 id = "text",
                                 title = LocalI18N.current["ui.fact.has.found.node.on.screen.view.text"]
                             ),
+                            MenuDialogItem(
+                                id = "regex",
+                                title = LocalI18N.current["ui.fact.has.found.node.on.screen.view.text.regex"]
+                            ),
                         ),
                         onItemSelected = { _: Unit?, s: String ->
                             if (s == "id") {
                                 viewIdInputState.show("")
-                            } else {
+                            } else if (s == "text") {
                                 textInputState.show("")
+                            } else {
+                                textInputRegexState.show("")
                             }
                         }
                     )

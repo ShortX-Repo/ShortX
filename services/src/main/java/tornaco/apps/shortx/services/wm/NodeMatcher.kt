@@ -6,6 +6,7 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.ui.ViewNode
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.services.rule.fact.emptyOrRegexMatch
 
 
 sealed interface NodeMatcherRes {
@@ -94,7 +95,14 @@ object NodeMatcher {
 
     private fun matchTextOrRegex(text: CharSequence?, matcher: NodeMatcherText): Boolean {
         if (text == null) return false
-        if (matcher.isRegex && matcher.text.toRegex().matches(text.toString())) return true
+        if (matcher.isRegex && emptyOrRegexMatch(
+                ruleField = matcher.text,
+                actualField = text.toString(),
+                options = matcher.regexOptions
+            )
+        ) {
+            return true
+        }
         return !matcher.isRegex && matcher.text == text.toString()
     }
 }

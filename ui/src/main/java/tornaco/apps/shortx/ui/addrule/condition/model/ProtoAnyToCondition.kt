@@ -460,7 +460,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 matchers = data.matchersList.mapNotNull {
                     if (it is_ NodeMatcherText::class.java) {
                         val m = it unpack_ NodeMatcherText::class.java
-                        NodeMatcher.Text(m.text, m.isRegex)
+                        NodeMatcher.Text(m.text, m.isRegex, m.regexOptions)
                     } else if (it is_ NodeMatcherViewId::class.java) {
                         val m = it unpack_ NodeMatcherViewId::class.java
                         NodeMatcher.ViewId(m.id)

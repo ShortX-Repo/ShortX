@@ -1955,7 +1955,8 @@ sealed interface NodeMatcher : Parcelable {
     val displayMessage: String
 
     @Parcelize
-    data class Text(val text: String, val isRegex: Boolean) : NodeMatcher {
+    data class Text(val text: String, val isRegex: Boolean, val regexOptions: RegexMatchOptions) :
+        NodeMatcher {
         override val displayLabel: String
             get() = "ui.fact.has.found.node.on.screen.view.text"
         override val displayMessage: String

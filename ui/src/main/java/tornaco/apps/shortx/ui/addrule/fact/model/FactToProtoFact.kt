@@ -695,7 +695,11 @@ fun Fact.toProtoFact(
                 .addAllMatchers(matchers.mapNotNull {
                     when (it) {
                         is NodeMatcher.Text -> {
-                            NodeMatcherText.newBuilder().setText(it.text).setIsRegex(it.isRegex)
+                            NodeMatcherText
+                                .newBuilder()
+                                .setText(it.text)
+                                .setIsRegex(it.isRegex)
+                                .setRegexOptions(it.regexOptions)
                                 .build()
                                 .pack_()
                         }
