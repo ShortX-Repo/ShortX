@@ -13,6 +13,7 @@ import androidx.test.uiautomator.imp.UiSelector
 import androidx.test.uiautomator.imp.adapter.InstrumentationAdapter
 import github.tornaco.android.thanos.core.app.ThanosManagerNative
 import kotlinx.coroutines.delay
+import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.fact.AppGainWindowFocus
@@ -731,14 +732,24 @@ class WindowManagerService(shortXContext: ShortXContext) :
                         "onWindowFocusChanged", AppLostWindowFocus.newBuilder()
                             .addApps(_currentFocusedWindowOwner)
                             .build()
-                    ) { emptyMap() }
+                    ) {
+                        mapOf(
+                            ContextDataMapping.AppLostWindowFocus.pkgName.name to _currentFocusedWindowOwner.pkgName,
+                            ContextDataMapping.AppLostWindowFocus.userId.name to _currentFocusedWindowOwner.userId,
+                        )
+                    }
 
                     // Gain new
                     shortXContext.rule.publishFact(
                         "onWindowFocusChanged", AppGainWindowFocus.newBuilder()
                             .addApps(newAppPkg)
                             .build()
-                    ) { emptyMap() }
+                    ) {
+                        mapOf(
+                            ContextDataMapping.AppGainWindowFocus.pkgName.name to newAppPkg.pkgName,
+                            ContextDataMapping.AppGainWindowFocus.userId.name to newAppPkg.userId,
+                        )
+                    }
 
                     _currentFocusedWindowOwner = newAppPkg
                     logger.d("onWindowFocusChanged: $ownerUid - ${_currentFocusedWindowOwner.appPkgToString()}")

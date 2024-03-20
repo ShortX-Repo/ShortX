@@ -232,6 +232,18 @@ object ContextDataMapping {
     }
 
     @DoNotStrip
+    enum class AppGainWindowFocus(val description: String) {
+        userId("The user id"),
+        pkgName("App package name of the focused package"),
+    }
+
+    @DoNotStrip
+    enum class AppLostWindowFocus(val description: String) {
+        userId("The user id"),
+        pkgName("App package name of the losing focus package"),
+    }
+
+    @DoNotStrip
     enum class HasFoundNodeOnScreen(val description: String) {
         matchedViewText("Matched text of the view"),
         matchedViewTextIsRegex("true if matched text is regex"),
