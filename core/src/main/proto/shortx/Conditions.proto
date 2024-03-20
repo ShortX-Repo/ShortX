@@ -192,6 +192,18 @@ message EvaluateGlobalVar {
   string id = 100;
 }
 
+message EvaluateContextVar {
+  GlobalVarOp op = 1;
+  string varName = 2;
+  GlobalVarOpPayload payload = 3;
+
+  CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}
+
 enum GlobalVarOp {
   GreaterThan = 0;
   GreaterThanOrEQ = 1;

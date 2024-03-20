@@ -73,6 +73,10 @@ enum class PrebuiltCond : CondProvider {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.EvaluateGlobalVar
     },
+    EvaluateContextVar {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.EvaluateContextVar
+    },
     EvaluateLocalVar {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.EvaluateLocalVar

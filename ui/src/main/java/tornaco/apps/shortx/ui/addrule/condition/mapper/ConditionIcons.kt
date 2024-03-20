@@ -52,6 +52,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.Document.file_list_fill
         }
 
+        Condition.EvaluateContextVar::class -> {
+            Remix.Document.file_list_fill
+        }
+
         Condition.EvaluateLocalVar::class -> {
             Remix.Document.file_list_fill
         }

@@ -25,6 +25,7 @@
     "ui.conditions.the.xx.time.within.this.month": "This month",
     "ui.conditions.the.xx.time.within.what": "Do what?",
     "ui.conditions.eva.global.var": "Check global var",
+    "ui.conditions.eva.context.var": "Check context var",
     "ui.conditions.eva.local.var": "Check local var",
     "ui.conditions.screen.on": "Screen is ON",
     "ui.conditions.screen.locked": "Screen is l",

@@ -25,6 +25,7 @@
     "ui.conditions.the.xx.time.within.this.month": "这个月",
     "ui.conditions.the.xx.time.within.what": "做什么事",
     "ui.conditions.eva.global.var": "比較全域變數",
+    "ui.conditions.eva.context.var": "比較上下文變量",
     "ui.conditions.eva.local.var": "比较局部变量",
     "ui.conditions.app.running": "應用正在運行",
     "ui.conditions.current.activity": "活动在前台",

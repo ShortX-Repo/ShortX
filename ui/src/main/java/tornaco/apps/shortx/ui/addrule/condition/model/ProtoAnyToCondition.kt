@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.proto.condition.ConnectedWifiSignal
 import tornaco.apps.shortx.core.proto.condition.CurrentActivity
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgListByPkg
+import tornaco.apps.shortx.core.proto.condition.EvaluateContextVar
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.EvaluateLocalVar
 import tornaco.apps.shortx.core.proto.condition.HasNodeOnScreen
@@ -257,6 +258,20 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
         this is_ EvaluateGlobalVar::class.java -> {
             val data = this unpack_ EvaluateGlobalVar::class.java
             Condition.EvaluateGlobalVar(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
+                customContextDataKey = data.customContextDataKey,
+                varName = data.varName,
+                op = data.op,
+                payload = data.payload
+            )
+        }
+
+        this is_ EvaluateContextVar::class.java -> {
+            val data = this unpack_ EvaluateContextVar::class.java
+            Condition.EvaluateContextVar(
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,

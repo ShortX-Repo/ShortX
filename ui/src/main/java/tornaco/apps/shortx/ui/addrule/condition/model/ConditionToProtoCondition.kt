@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.proto.condition.ConnectedWifiSignal
 import tornaco.apps.shortx.core.proto.condition.CurrentActivity
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgListByPkg
+import tornaco.apps.shortx.core.proto.condition.EvaluateContextVar
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.EvaluateLocalVar
 import tornaco.apps.shortx.core.proto.condition.HasNodeOnScreen
@@ -274,6 +275,19 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
 
         is Condition.EvaluateGlobalVar -> {
             EvaluateGlobalVar.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .setIsDisabled(isDisabled)
+                .setCustomContextDataKey(customContextDataKey)
+                .setVarName(varName)
+                .setOp(op)
+                .setPayload(payload)
+                .build()
+        }
+
+        is Condition.EvaluateContextVar -> {
+            EvaluateContextVar.newBuilder()
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)

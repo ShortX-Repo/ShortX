@@ -10,11 +10,13 @@ import tornaco.apps.shortx.ui.addrule.action.selector.SetRuleEnabledSelectorDial
 import tornaco.apps.shortx.ui.addrule.action.selector.rememberDelayState
 import tornaco.apps.shortx.ui.addrule.action.selector.rememberSetRuleEnabledDialogState
 import tornaco.apps.shortx.ui.addrule.condition.ConditionSelectSource
+import tornaco.apps.shortx.ui.addrule.condition.EvaluateContextVarSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.EvaluateGlobalVarSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.EvaluateLocalVarSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.TheXXTimeTodaySelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.getConditionAs
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
+import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateContextVarSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateGlobalVarSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateLocalVarSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberTheXXTimeTodaySelectorState
@@ -54,6 +56,11 @@ fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSe
         addCondition(it)
     }
     EvaluateGlobalVarSelectorDialog(state = evaluateGlobalVarSelectorDialogState)
+
+    val evaluateContextVarSelectorDialogState = rememberEvaluateContextVarSelectorState {
+        addCondition(it)
+    }
+    EvaluateContextVarSelectorDialog(state = evaluateContextVarSelectorDialogState)
 
     val evaluateLocalVarSelectorDialogState = rememberEvaluateLocalVarSelectorState {
         addCondition(it)
@@ -136,6 +143,11 @@ fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSe
 
             Condition.EvaluateGlobalVar::class -> {
                 evaluateGlobalVarSelectorDialogState.show(source.getConditionAs())
+                true
+            }
+
+            Condition.EvaluateContextVar::class -> {
+                evaluateContextVarSelectorDialogState.show(source.getConditionAs())
                 true
             }
 

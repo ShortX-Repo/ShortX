@@ -26,6 +26,7 @@ fun OtherConditions(
         Condition.TRUE::class,
         Condition.RequireDelay::class,
         Condition.EvaluateGlobalVar::class,
+        Condition.EvaluateContextVar::class,
         Condition.EvaluateLocalVar::class,
         Condition.IsRuleEnabled::class,
         Condition.RequireFactTag::class,

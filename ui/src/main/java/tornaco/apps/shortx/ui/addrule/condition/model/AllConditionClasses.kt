@@ -7,6 +7,7 @@ val allConditionClasses = listOf(
     Condition.JS::class,
     Condition.TRUE::class,
     Condition.EvaluateGlobalVar::class,
+    Condition.EvaluateContextVar::class,
     Condition.EvaluateLocalVar::class,
     Condition.BatteryPercent::class,
     Condition.AppIsRunning::class,
