@@ -145,6 +145,7 @@
     "ui.fact.has.found.node.on.screen.matcher.description": "If you set multiple matchers, it will trigger on any one of the matcher matches",
     "ui.fact.has.found.node.on.screen.view.id": "View ID",
     "ui.fact.has.found.node.on.screen.view.text": "Text",
+    "ui.fact.has.found.node.on.screen.view.text.regex": "Text regex",
     "ui.fact.has.found.node.on.screen.timeout": "Time out",
     "ui.fact.has.found.node.on.screen.timeout.description": "Set timeout in milliseconds to detech the view, input a negative number means no timeout",
     "ui.fact.deeplink.call": "Deeplink",
