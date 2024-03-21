@@ -339,6 +339,16 @@ message RequireBTDisconnected {
   string id = 100;
 }
 
+message RequireBTDeviceFound {
+  string device = 1;
+
+  CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message RequireMobileDataEnabled {
   int32 slotId = 1;
 

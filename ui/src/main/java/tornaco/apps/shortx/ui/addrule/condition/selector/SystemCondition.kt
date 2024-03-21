@@ -36,6 +36,7 @@ fun SystemConditions(
         Condition.ConnectedWifiSignal::class,
         Condition.RequireBTConnected::class,
         Condition.RequireBTDisconnected::class,
+        Condition.RequireBTDeviceFound::class,
         Condition.RequireMobileDataEnabled::class,
         Condition.IsInCall::class,
         Condition.IsRinging::class,

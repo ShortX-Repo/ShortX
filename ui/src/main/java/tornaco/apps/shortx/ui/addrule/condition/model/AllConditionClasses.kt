@@ -24,6 +24,7 @@ val allConditionClasses = listOf(
     Condition.RequireWifiDisconnected::class,
     Condition.RequireBTConnected::class,
     Condition.RequireBTDisconnected::class,
+    Condition.RequireBTDeviceFound::class,
     Condition.RequireMobileDataEnabled::class,
     Condition.AppHasNotification::class,
     Condition.KeyguardIsLocked::class,

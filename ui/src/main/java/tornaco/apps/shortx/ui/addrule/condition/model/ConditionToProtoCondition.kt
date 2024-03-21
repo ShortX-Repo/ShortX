@@ -27,6 +27,7 @@ import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.proto.condition.PlugState
 import tornaco.apps.shortx.core.proto.condition.RequireAPMMode
 import tornaco.apps.shortx.core.proto.condition.RequireBTConnected
+import tornaco.apps.shortx.core.proto.condition.RequireBTDeviceFound
 import tornaco.apps.shortx.core.proto.condition.RequireBTDisconnected
 import tornaco.apps.shortx.core.proto.condition.RequireDelay
 import tornaco.apps.shortx.core.proto.condition.RequireFactTag
@@ -428,6 +429,17 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setIsInvert(isInvert)
                 .setIsDisabled(isDisabled)
                 .setCustomContextDataKey(customContextDataKey)
+                .build()
+        }
+
+        is Condition.RequireBTDeviceFound -> {
+            RequireBTDeviceFound.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .setIsDisabled(isDisabled)
+                .setCustomContextDataKey(customContextDataKey)
+                .setDevice(device)
                 .build()
         }
 

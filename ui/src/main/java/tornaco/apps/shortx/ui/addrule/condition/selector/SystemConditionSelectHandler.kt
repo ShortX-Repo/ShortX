@@ -146,6 +146,16 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     )
     BTDeviceSelectorDialog(state = btConnectedSelectorState)
 
+    val btFoundSelectorState = rememberBTDeviceSelectorState(
+        title = LocalI18N.current["ui.conditions.bt.device.found"],
+        message = LocalI18N.current["ui.conditions.bt.device.found.target"],
+        showSymbolButton = false,
+        onSelected = {
+            addCondition(Condition.RequireBTDeviceFound(device = it))
+        }
+    )
+    BTDeviceSelectorDialog(state = btFoundSelectorState)
+
     val mobileDataEnableSelectorState = rememberSIMSlotSelectorState(onSelected = {
         addCondition(Condition.RequireMobileDataEnabled(slot = it))
     })
@@ -315,6 +325,11 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
 
             Condition.RequireWifiDisconnected::class -> {
                 addCondition(Condition.RequireWifiDisconnected())
+                true
+            }
+
+            Condition.RequireBTDeviceFound::class -> {
+                btFoundSelectorState.show(source.getConditionAs<Condition.RequireBTDeviceFound>()?.device)
                 true
             }
 

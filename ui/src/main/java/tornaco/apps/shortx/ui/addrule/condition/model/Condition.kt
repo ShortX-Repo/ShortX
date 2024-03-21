@@ -829,6 +829,33 @@ sealed interface Condition : Parcelable {
     }
 
     @Parcelize
+    data class RequireBTDeviceFound(
+        override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val note: String = "",
+        override val id: String = defaultNewConditionId(),
+
+        val device: String
+    ) : Condition {
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            isDisabled: Boolean,
+            customContextDataKey: CustomContextDataKey
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                isDisabled = isDisabled,
+                customContextDataKey = customContextDataKey
+            )
+        }
+    }
+
+    @Parcelize
     data class RequireMobileDataEnabled(
         override val isInvert: Boolean = false,
         override val isDisabled: Boolean = false,

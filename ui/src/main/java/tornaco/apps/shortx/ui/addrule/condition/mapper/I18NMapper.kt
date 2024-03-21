@@ -150,6 +150,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             )
         }
 
+        Condition.RequireBTDeviceFound::class -> {
+            listOf(
+                i18N["ui.conditions.bt.device.found"]
+            )
+        }
+
         Condition.RequireMobileDataEnabled::class -> {
             listOf(
                 i18N["ui.conditions.mobile.data.enabled"]
@@ -444,6 +450,13 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
         is Condition.RequireBTDisconnected -> {
             listOf(
                 i18N["ui.conditions.bt.not.connected"],
+            )
+        }
+
+        is Condition.RequireBTDeviceFound -> {
+            listOf(
+                i18N["ui.conditions.bt.device.found"],
+                condition.device
             )
         }
 

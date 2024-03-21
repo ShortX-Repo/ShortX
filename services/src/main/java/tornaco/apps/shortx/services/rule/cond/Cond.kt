@@ -145,6 +145,10 @@ enum class PrebuiltCond : CondProvider {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.RequireBTDisconnected
     },
+    RequireBTDeviceFound {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.RequireBTDeviceFound
+    },
     RequireMobileDataEnabled {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.RequireMobileDataEnabled

@@ -27,6 +27,7 @@ import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.proto.condition.PlugState
 import tornaco.apps.shortx.core.proto.condition.RequireAPMMode
 import tornaco.apps.shortx.core.proto.condition.RequireBTConnected
+import tornaco.apps.shortx.core.proto.condition.RequireBTDeviceFound
 import tornaco.apps.shortx.core.proto.condition.RequireBTDisconnected
 import tornaco.apps.shortx.core.proto.condition.RequireDelay
 import tornaco.apps.shortx.core.proto.condition.RequireFactTag
@@ -402,6 +403,18 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 isInvert = data.isInvert,
                 isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey
+            )
+        }
+
+        this is_ RequireBTDeviceFound::class.java -> {
+            val data = this unpack_ RequireBTDeviceFound::class.java
+            Condition.RequireBTDeviceFound(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
+                customContextDataKey = data.customContextDataKey,
+                device = data.device
             )
         }
 
