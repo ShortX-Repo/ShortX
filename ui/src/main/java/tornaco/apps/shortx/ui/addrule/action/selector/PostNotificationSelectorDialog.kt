@@ -244,8 +244,8 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
 
         SectionSpacer()
         FieldTitle(text = LocalI18N.current["ui.action.post.notification.on.click"])
-        val handlerState by state.onClickHandler.state.collectAsState()
-        val handler = remember(state) { state.onClickHandler.asActionHandler() }
+        val onClickHandler = remember(state) { state.onClickHandler }
+        val handlerState by onClickHandler.state.collectAsState()
         tornaco.apps.shortx.ui.addrule.action.ActionContent(
             header = {
                 SmallTitle(
@@ -256,7 +256,7 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
             actions = handlerState.actions,
             evaluatingActions = state.evaluatingActions,
             warnings = emptyMap(),
-            handler = handler
+            handler = onClickHandler.asActionHandler("PostN onClick - ${state.onClickHandler}")
         )
 
         SectionSpacer()
@@ -345,7 +345,7 @@ private fun ButtonListItem(
                 actions = actionState.actions,
                 evaluatingActions = evaluatingActions,
                 warnings = actionState.actionWarningMessages,
-                handler = buttonAndHandler.handler.asActionHandler()
+                handler = buttonAndHandler.handler.asActionHandler("N.SingleClick")
             )
         }
     }

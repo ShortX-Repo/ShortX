@@ -203,7 +203,6 @@ public interface IProfileManager extends android.os.IInterface
       return null;
     }
     // Engines.
-
     @Override public void addAlarmEngine(java.lang.String alarm) throws android.os.RemoteException
     {
     }
@@ -218,7 +217,6 @@ public interface IProfileManager extends android.os.IInterface
     {
     }
     // Danmu API
-
     @Override public void setDanmuUISettings(java.lang.String settings) throws android.os.RemoteException
     {
     }
@@ -234,7 +232,6 @@ public interface IProfileManager extends android.os.IInterface
   /** Local-side IPC implementation stub class. */
   public static abstract class Stub extends android.os.Binder implements github.tornaco.android.thanos.core.profile.IProfileManager
   {
-    private static final java.lang.String DESCRIPTOR = "github.tornaco.android.thanos.core.profile.IProfileManager";
     /** Construct the stub at attach it to the interface. */
     public Stub()
     {
@@ -262,6 +259,9 @@ public interface IProfileManager extends android.os.IInterface
     @Override public boolean onTransact(int code, android.os.Parcel data, android.os.Parcel reply, int flags) throws android.os.RemoteException
     {
       java.lang.String descriptor = DESCRIPTOR;
+      if (code >= android.os.IBinder.FIRST_CALL_TRANSACTION && code <= android.os.IBinder.LAST_CALL_TRANSACTION) {
+        data.enforceInterface(descriptor);
+      }
       switch (code)
       {
         case INTERFACE_TRANSACTION:
@@ -269,26 +269,26 @@ public interface IProfileManager extends android.os.IInterface
           reply.writeString(descriptor);
           return true;
         }
+      }
+      switch (code)
+      {
         case TRANSACTION_setAutoApplyForNewInstalledAppsEnabled:
         {
-          data.enforceInterface(descriptor);
           boolean _arg0;
           _arg0 = (0!=data.readInt());
           this.setAutoApplyForNewInstalledAppsEnabled(_arg0);
           reply.writeNoException();
-          return true;
+          break;
         }
         case TRANSACTION_isAutoApplyForNewInstalledAppsEnabled:
         {
-          data.enforceInterface(descriptor);
           boolean _result = this.isAutoApplyForNewInstalledAppsEnabled();
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          return true;
+          break;
         }
         case TRANSACTION_addRule:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           int _arg1;
@@ -301,60 +301,54 @@ public interface IProfileManager extends android.os.IInterface
           _arg4 = data.readInt();
           this.addRule(_arg0, _arg1, _arg2, _arg3, _arg4);
           reply.writeNoException();
-          return true;
+          break;
         }
         case TRANSACTION_deleteRule:
         {
-          data.enforceInterface(descriptor);
           int _arg0;
           _arg0 = data.readInt();
           this.deleteRule(_arg0);
           reply.writeNoException();
-          return true;
+          break;
         }
         case TRANSACTION_enableRule:
         {
-          data.enforceInterface(descriptor);
           int _arg0;
           _arg0 = data.readInt();
           boolean _result = this.enableRule(_arg0);
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          return true;
+          break;
         }
         case TRANSACTION_disableRule:
         {
-          data.enforceInterface(descriptor);
           int _arg0;
           _arg0 = data.readInt();
           boolean _result = this.disableRule(_arg0);
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          return true;
+          break;
         }
         case TRANSACTION_isRuleEnabled:
         {
-          data.enforceInterface(descriptor);
           int _arg0;
           _arg0 = data.readInt();
           boolean _result = this.isRuleEnabled(_arg0);
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          return true;
+          break;
         }
         case TRANSACTION_isRuleExists:
         {
-          data.enforceInterface(descriptor);
           int _arg0;
           _arg0 = data.readInt();
           boolean _result = this.isRuleExists(_arg0);
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          return true;
+          break;
         }
         case TRANSACTION_checkRule:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           android.os.IBinder _arg1;
@@ -363,44 +357,39 @@ public interface IProfileManager extends android.os.IInterface
           _arg2 = data.readInt();
           this.checkRule(_arg0, _arg1, _arg2);
           reply.writeNoException();
-          return true;
+          break;
         }
         case TRANSACTION_getAllRules:
         {
-          data.enforceInterface(descriptor);
           java.lang.String[] _result = this.getAllRules();
           reply.writeNoException();
           reply.writeStringArray(_result);
-          return true;
+          break;
         }
         case TRANSACTION_getEnabledRules:
         {
-          data.enforceInterface(descriptor);
           java.lang.String[] _result = this.getEnabledRules();
           reply.writeNoException();
           reply.writeStringArray(_result);
-          return true;
+          break;
         }
         case TRANSACTION_setProfileEnabled:
         {
-          data.enforceInterface(descriptor);
           boolean _arg0;
           _arg0 = (0!=data.readInt());
           this.setProfileEnabled(_arg0);
           reply.writeNoException();
-          return true;
+          break;
         }
         case TRANSACTION_isProfileEnabled:
         {
-          data.enforceInterface(descriptor);
           boolean _result = this.isProfileEnabled();
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          return true;
+          break;
         }
         case TRANSACTION_addGlobalRuleVar:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           java.lang.String[] _arg1;
@@ -408,11 +397,10 @@ public interface IProfileManager extends android.os.IInterface
           boolean _result = this.addGlobalRuleVar(_arg0, _arg1);
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          return true;
+          break;
         }
         case TRANSACTION_appendGlobalRuleVar:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           java.lang.String[] _arg1;
@@ -420,180 +408,156 @@ public interface IProfileManager extends android.os.IInterface
           boolean _result = this.appendGlobalRuleVar(_arg0, _arg1);
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          return true;
+          break;
         }
         case TRANSACTION_removeGlobalRuleVar:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           boolean _result = this.removeGlobalRuleVar(_arg0);
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          return true;
+          break;
         }
         case TRANSACTION_getAllGlobalRuleVarNames:
         {
-          data.enforceInterface(descriptor);
           java.lang.String[] _result = this.getAllGlobalRuleVarNames();
           reply.writeNoException();
           reply.writeStringArray(_result);
-          return true;
+          break;
         }
         case TRANSACTION_getGlobalRuleVarByName:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           java.lang.String[] _result = this.getGlobalRuleVarByName(_arg0);
           reply.writeNoException();
           reply.writeStringArray(_result);
-          return true;
+          break;
         }
         case TRANSACTION_getAllGlobalRuleVar:
         {
-          data.enforceInterface(descriptor);
           java.lang.String[] _result = this.getAllGlobalRuleVar();
           reply.writeNoException();
           reply.writeStringArray(_result);
-          return true;
+          break;
         }
         case TRANSACTION_isGlobalRuleVarByNameExists:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           boolean _result = this.isGlobalRuleVarByNameExists(_arg0);
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          return true;
+          break;
         }
         case TRANSACTION_setProfileEngineUiAutomationEnabled:
         {
-          data.enforceInterface(descriptor);
           boolean _arg0;
           _arg0 = (0!=data.readInt());
           this.setProfileEngineUiAutomationEnabled(_arg0);
           reply.writeNoException();
-          return true;
+          break;
         }
         case TRANSACTION_isProfileEngineUiAutomationEnabled:
         {
-          data.enforceInterface(descriptor);
           boolean _result = this.isProfileEngineUiAutomationEnabled();
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          return true;
+          break;
         }
         case TRANSACTION_setProfileEnginePushEnabled:
         {
-          data.enforceInterface(descriptor);
           boolean _arg0;
           _arg0 = (0!=data.readInt());
           this.setProfileEnginePushEnabled(_arg0);
           reply.writeNoException();
-          return true;
+          break;
         }
         case TRANSACTION_isProfileEnginePushEnabled:
         {
-          data.enforceInterface(descriptor);
           boolean _result = this.isProfileEnginePushEnabled();
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          return true;
+          break;
         }
         case TRANSACTION_setShellSuSupportInstalled:
         {
-          data.enforceInterface(descriptor);
           boolean _arg0;
           _arg0 = (0!=data.readInt());
           this.setShellSuSupportInstalled(_arg0);
           reply.writeNoException();
-          return true;
+          break;
         }
         case TRANSACTION_isShellSuSupportInstalled:
         {
-          data.enforceInterface(descriptor);
           boolean _result = this.isShellSuSupportInstalled();
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          return true;
+          break;
         }
         case TRANSACTION_addConfigTemplate:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           boolean _result = this.addConfigTemplate(_arg0);
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          return true;
+          break;
         }
         case TRANSACTION_deleteConfigTemplate:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           boolean _result = this.deleteConfigTemplate(_arg0);
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          return true;
+          break;
         }
         case TRANSACTION_getAllConfigTemplates:
         {
-          data.enforceInterface(descriptor);
           java.util.List<java.lang.String> _result = this.getAllConfigTemplates();
           reply.writeNoException();
           reply.writeStringList(_result);
-          return true;
+          break;
         }
         case TRANSACTION_getConfigTemplateById:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           java.lang.String _result = this.getConfigTemplateById(_arg0);
           reply.writeNoException();
           reply.writeString(_result);
-          return true;
+          break;
         }
         case TRANSACTION_setAutoConfigTemplateSelection:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           this.setAutoConfigTemplateSelection(_arg0);
           reply.writeNoException();
-          return true;
+          break;
         }
         case TRANSACTION_getAutoConfigTemplateSelectionId:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _result = this.getAutoConfigTemplateSelectionId();
           reply.writeNoException();
           reply.writeString(_result);
-          return true;
+          break;
         }
         case TRANSACTION_applyConfigTemplateForPackage:
         {
-          data.enforceInterface(descriptor);
           github.tornaco.android.thanos.core.pm.Pkg _arg0;
-          if ((0!=data.readInt())) {
-            _arg0 = github.tornaco.android.thanos.core.pm.Pkg.CREATOR.createFromParcel(data);
-          }
-          else {
-            _arg0 = null;
-          }
+          _arg0 = _Parcel.readTypedObject(data, github.tornaco.android.thanos.core.pm.Pkg.CREATOR);
           java.lang.String _arg1;
           _arg1 = data.readString();
           boolean _result = this.applyConfigTemplateForPackage(_arg0, _arg1);
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          return true;
+          break;
         }
         case TRANSACTION_addRuleIfNotExists:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           int _arg1;
@@ -606,11 +570,10 @@ public interface IProfileManager extends android.os.IInterface
           _arg4 = data.readInt();
           this.addRuleIfNotExists(_arg0, _arg1, _arg2, _arg3, _arg4);
           reply.writeNoException();
-          return true;
+          break;
         }
         case TRANSACTION_publishStringFact:
         {
-          data.enforceInterface(descriptor);
           int _arg0;
           _arg0 = data.readInt();
           java.lang.String _arg1;
@@ -621,11 +584,10 @@ public interface IProfileManager extends android.os.IInterface
           _arg3 = data.createStringArray();
           this.publishStringFact(_arg0, _arg1, _arg2, _arg3);
           reply.writeNoException();
-          return true;
+          break;
         }
         case TRANSACTION_updateRule:
         {
-          data.enforceInterface(descriptor);
           int _arg0;
           _arg0 = data.readInt();
           java.lang.String _arg1;
@@ -636,141 +598,120 @@ public interface IProfileManager extends android.os.IInterface
           _arg3 = data.readInt();
           this.updateRule(_arg0, _arg1, _arg2, _arg3);
           reply.writeNoException();
-          return true;
+          break;
         }
         case TRANSACTION_registerRuleChangeListener:
         {
-          data.enforceInterface(descriptor);
           android.os.IBinder _arg0;
           _arg0 = data.readStrongBinder();
           this.registerRuleChangeListener(_arg0);
           reply.writeNoException();
-          return true;
+          break;
         }
         case TRANSACTION_unRegisterRuleChangeListener:
         {
-          data.enforceInterface(descriptor);
           android.os.IBinder _arg0;
           _arg0 = data.readStrongBinder();
           this.unRegisterRuleChangeListener(_arg0);
           reply.writeNoException();
-          return true;
+          break;
         }
         case TRANSACTION_getRuleById:
         {
-          data.enforceInterface(descriptor);
           int _arg0;
           _arg0 = data.readInt();
           java.lang.String _result = this.getRuleById(_arg0);
           reply.writeNoException();
           reply.writeString(_result);
-          return true;
+          break;
         }
         case TRANSACTION_enableRuleByName:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           boolean _result = this.enableRuleByName(_arg0);
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          return true;
+          break;
         }
         case TRANSACTION_disableRuleByName:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           boolean _result = this.disableRuleByName(_arg0);
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          return true;
+          break;
         }
         case TRANSACTION_dump:
         {
-          data.enforceInterface(descriptor);
           android.os.IBinder _arg0;
           _arg0 = data.readStrongBinder();
           this.dump(_arg0);
           reply.writeNoException();
-          return true;
+          break;
         }
         case TRANSACTION_getLogFD:
         {
-          data.enforceInterface(descriptor);
           android.os.ParcelFileDescriptor _result = this.getLogFD();
           reply.writeNoException();
-          if ((_result!=null)) {
-            reply.writeInt(1);
-            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          }
-          else {
-            reply.writeInt(0);
-          }
-          return true;
+          _Parcel.writeTypedObject(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+          break;
         }
         case TRANSACTION_getLogPath:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _result = this.getLogPath();
           reply.writeNoException();
           reply.writeString(_result);
-          return true;
+          break;
         }
         case TRANSACTION_clearLogs:
         {
-          data.enforceInterface(descriptor);
           this.clearLogs();
           reply.writeNoException();
-          return true;
+          break;
         }
         case TRANSACTION_setLogEnabled:
         {
-          data.enforceInterface(descriptor);
           boolean _arg0;
           _arg0 = (0!=data.readInt());
           this.setLogEnabled(_arg0);
           reply.writeNoException();
-          return true;
+          break;
         }
         case TRANSACTION_isLogEnabled:
         {
-          data.enforceInterface(descriptor);
           boolean _result = this.isLogEnabled();
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          return true;
+          break;
         }
         case TRANSACTION_executeAction:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           this.executeAction(_arg0);
           reply.writeNoException();
-          return true;
+          break;
         }
         case TRANSACTION_addConsoleLogSink:
         {
-          data.enforceInterface(descriptor);
           android.os.IBinder _arg0;
           _arg0 = data.readStrongBinder();
           this.addConsoleLogSink(_arg0);
           reply.writeNoException();
-          return true;
+          break;
         }
         case TRANSACTION_removeConsoleLogSink:
         {
-          data.enforceInterface(descriptor);
           android.os.IBinder _arg0;
           _arg0 = data.readStrongBinder();
           this.removeConsoleLogSink(_arg0);
           reply.writeNoException();
-          return true;
+          break;
         }
         case TRANSACTION_parseRuleOrNull:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           int _arg1;
@@ -778,94 +719,86 @@ public interface IProfileManager extends android.os.IInterface
           java.lang.String _result = this.parseRuleOrNull(_arg0, _arg1);
           reply.writeNoException();
           reply.writeString(_result);
-          return true;
+          break;
         }
         case TRANSACTION_getRuleByName:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           java.lang.String _result = this.getRuleByName(_arg0);
           reply.writeNoException();
           reply.writeString(_result);
-          return true;
+          break;
         }
         case TRANSACTION_setCustomSuCommand:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           this.setCustomSuCommand(_arg0);
           reply.writeNoException();
-          return true;
+          break;
         }
         case TRANSACTION_getCustomSuCommand:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _result = this.getCustomSuCommand();
           reply.writeNoException();
           reply.writeString(_result);
-          return true;
+          break;
         }
         case TRANSACTION_addAlarmEngine:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           this.addAlarmEngine(_arg0);
           reply.writeNoException();
-          return true;
+          break;
         }
         case TRANSACTION_removeAlarmEngine:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           this.removeAlarmEngine(_arg0);
           reply.writeNoException();
-          return true;
+          break;
         }
         case TRANSACTION_getAllAlarms:
         {
-          data.enforceInterface(descriptor);
           java.util.List<java.lang.String> _result = this.getAllAlarms();
           reply.writeNoException();
           reply.writeStringList(_result);
-          return true;
+          break;
         }
         case TRANSACTION_setAlarmEnabled:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           boolean _arg1;
           _arg1 = (0!=data.readInt());
           this.setAlarmEnabled(_arg0, _arg1);
           reply.writeNoException();
-          return true;
+          break;
         }
         case TRANSACTION_setDanmuUISettings:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           this.setDanmuUISettings(_arg0);
           reply.writeNoException();
-          return true;
+          break;
         }
         case TRANSACTION_getDanmuUISettings:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _result = this.getDanmuUISettings();
           reply.writeNoException();
           reply.writeString(_result);
-          return true;
+          break;
         }
         default:
         {
           return super.onTransact(code, data, reply, flags);
         }
       }
+      return true;
     }
     private static class Proxy implements github.tornaco.android.thanos.core.profile.IProfileManager
     {
@@ -890,10 +823,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(((enable)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_setAutoApplyForNewInstalledAppsEnabled, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().setAutoApplyForNewInstalledAppsEnabled(enable);
-            return;
-          }
           _reply.readException();
         }
         finally {
@@ -909,9 +838,6 @@ public interface IProfileManager extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_isAutoApplyForNewInstalledAppsEnabled, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().isAutoApplyForNewInstalledAppsEnabled();
-          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -933,10 +859,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeStrongBinder(callback);
           _data.writeInt(format);
           boolean _status = mRemote.transact(Stub.TRANSACTION_addRule, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().addRule(author, versionCode, ruleJson, callback, format);
-            return;
-          }
           _reply.readException();
         }
         finally {
@@ -952,10 +874,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(ruleId);
           boolean _status = mRemote.transact(Stub.TRANSACTION_deleteRule, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().deleteRule(ruleId);
-            return;
-          }
           _reply.readException();
         }
         finally {
@@ -972,9 +890,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(ruleId);
           boolean _status = mRemote.transact(Stub.TRANSACTION_enableRule, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().enableRule(ruleId);
-          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -993,9 +908,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(ruleId);
           boolean _status = mRemote.transact(Stub.TRANSACTION_disableRule, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().disableRule(ruleId);
-          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -1014,9 +926,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(ruleId);
           boolean _status = mRemote.transact(Stub.TRANSACTION_isRuleEnabled, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().isRuleEnabled(ruleId);
-          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -1035,9 +944,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(ruleId);
           boolean _status = mRemote.transact(Stub.TRANSACTION_isRuleExists, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().isRuleExists(ruleId);
-          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -1057,10 +963,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeStrongBinder(callback);
           _data.writeInt(format);
           boolean _status = mRemote.transact(Stub.TRANSACTION_checkRule, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().checkRule(ruleJson, callback, format);
-            return;
-          }
           _reply.readException();
         }
         finally {
@@ -1076,9 +978,6 @@ public interface IProfileManager extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getAllRules, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().getAllRules();
-          }
           _reply.readException();
           _result = _reply.createStringArray();
         }
@@ -1096,9 +995,6 @@ public interface IProfileManager extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getEnabledRules, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().getEnabledRules();
-          }
           _reply.readException();
           _result = _reply.createStringArray();
         }
@@ -1116,10 +1012,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(((enable)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_setProfileEnabled, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().setProfileEnabled(enable);
-            return;
-          }
           _reply.readException();
         }
         finally {
@@ -1135,9 +1027,6 @@ public interface IProfileManager extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_isProfileEnabled, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().isProfileEnabled();
-          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -1157,9 +1046,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeString(varName);
           _data.writeStringArray(varArray);
           boolean _status = mRemote.transact(Stub.TRANSACTION_addGlobalRuleVar, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().addGlobalRuleVar(varName, varArray);
-          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -1179,9 +1065,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeString(varName);
           _data.writeStringArray(varArray);
           boolean _status = mRemote.transact(Stub.TRANSACTION_appendGlobalRuleVar, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().appendGlobalRuleVar(varName, varArray);
-          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -1200,9 +1083,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(varName);
           boolean _status = mRemote.transact(Stub.TRANSACTION_removeGlobalRuleVar, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().removeGlobalRuleVar(varName);
-          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -1220,9 +1100,6 @@ public interface IProfileManager extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getAllGlobalRuleVarNames, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().getAllGlobalRuleVarNames();
-          }
           _reply.readException();
           _result = _reply.createStringArray();
         }
@@ -1241,9 +1118,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(varName);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getGlobalRuleVarByName, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().getGlobalRuleVarByName(varName);
-          }
           _reply.readException();
           _result = _reply.createStringArray();
         }
@@ -1261,9 +1135,6 @@ public interface IProfileManager extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getAllGlobalRuleVar, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().getAllGlobalRuleVar();
-          }
           _reply.readException();
           _result = _reply.createStringArray();
         }
@@ -1282,9 +1153,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(varName);
           boolean _status = mRemote.transact(Stub.TRANSACTION_isGlobalRuleVarByNameExists, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().isGlobalRuleVarByNameExists(varName);
-          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -1302,10 +1170,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(((enabled)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_setProfileEngineUiAutomationEnabled, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().setProfileEngineUiAutomationEnabled(enabled);
-            return;
-          }
           _reply.readException();
         }
         finally {
@@ -1321,9 +1185,6 @@ public interface IProfileManager extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_isProfileEngineUiAutomationEnabled, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().isProfileEngineUiAutomationEnabled();
-          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -1341,10 +1202,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(((enabled)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_setProfileEnginePushEnabled, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().setProfileEnginePushEnabled(enabled);
-            return;
-          }
           _reply.readException();
         }
         finally {
@@ -1360,9 +1217,6 @@ public interface IProfileManager extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_isProfileEnginePushEnabled, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().isProfileEnginePushEnabled();
-          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -1380,10 +1234,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(((enable)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_setShellSuSupportInstalled, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().setShellSuSupportInstalled(enable);
-            return;
-          }
           _reply.readException();
         }
         finally {
@@ -1399,9 +1249,6 @@ public interface IProfileManager extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_isShellSuSupportInstalled, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().isShellSuSupportInstalled();
-          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -1420,9 +1267,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(template);
           boolean _status = mRemote.transact(Stub.TRANSACTION_addConfigTemplate, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().addConfigTemplate(template);
-          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -1441,9 +1285,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(template);
           boolean _status = mRemote.transact(Stub.TRANSACTION_deleteConfigTemplate, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().deleteConfigTemplate(template);
-          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -1461,9 +1302,6 @@ public interface IProfileManager extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getAllConfigTemplates, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().getAllConfigTemplates();
-          }
           _reply.readException();
           _result = _reply.createStringArrayList();
         }
@@ -1482,9 +1320,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(id);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getConfigTemplateById, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().getConfigTemplateById(id);
-          }
           _reply.readException();
           _result = _reply.readString();
         }
@@ -1502,10 +1337,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(id);
           boolean _status = mRemote.transact(Stub.TRANSACTION_setAutoConfigTemplateSelection, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().setAutoConfigTemplateSelection(id);
-            return;
-          }
           _reply.readException();
         }
         finally {
@@ -1521,9 +1352,6 @@ public interface IProfileManager extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getAutoConfigTemplateSelectionId, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().getAutoConfigTemplateSelectionId();
-          }
           _reply.readException();
           _result = _reply.readString();
         }
@@ -1540,18 +1368,9 @@ public interface IProfileManager extends android.os.IInterface
         boolean _result;
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          if ((pkg!=null)) {
-            _data.writeInt(1);
-            pkg.writeToParcel(_data, 0);
-          }
-          else {
-            _data.writeInt(0);
-          }
+          _Parcel.writeTypedObject(_data, pkg, 0);
           _data.writeString(template);
           boolean _status = mRemote.transact(Stub.TRANSACTION_applyConfigTemplateForPackage, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().applyConfigTemplateForPackage(pkg, template);
-          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -1573,10 +1392,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeStrongBinder(callback);
           _data.writeInt(format);
           boolean _status = mRemote.transact(Stub.TRANSACTION_addRuleIfNotExists, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().addRuleIfNotExists(author, versionCode, ruleJson, callback, format);
-            return;
-          }
           _reply.readException();
         }
         finally {
@@ -1595,10 +1410,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeLong(delayMills);
           _data.writeStringArray(args);
           boolean _status = mRemote.transact(Stub.TRANSACTION_publishStringFact, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().publishStringFact(source, factValue, delayMills, args);
-            return;
-          }
           _reply.readException();
         }
         finally {
@@ -1617,10 +1428,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeStrongBinder(callback);
           _data.writeInt(format);
           boolean _status = mRemote.transact(Stub.TRANSACTION_updateRule, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().updateRule(ruleId, ruleJson, callback, format);
-            return;
-          }
           _reply.readException();
         }
         finally {
@@ -1636,10 +1443,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeStrongBinder(listener);
           boolean _status = mRemote.transact(Stub.TRANSACTION_registerRuleChangeListener, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().registerRuleChangeListener(listener);
-            return;
-          }
           _reply.readException();
         }
         finally {
@@ -1655,10 +1458,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeStrongBinder(listener);
           boolean _status = mRemote.transact(Stub.TRANSACTION_unRegisterRuleChangeListener, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().unRegisterRuleChangeListener(listener);
-            return;
-          }
           _reply.readException();
         }
         finally {
@@ -1675,9 +1474,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(ruleId);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getRuleById, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().getRuleById(ruleId);
-          }
           _reply.readException();
           _result = _reply.readString();
         }
@@ -1696,9 +1492,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(ruleName);
           boolean _status = mRemote.transact(Stub.TRANSACTION_enableRuleByName, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().enableRuleByName(ruleName);
-          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -1717,9 +1510,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(ruleName);
           boolean _status = mRemote.transact(Stub.TRANSACTION_disableRuleByName, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().disableRuleByName(ruleName);
-          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -1737,10 +1527,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeStrongBinder(p);
           boolean _status = mRemote.transact(Stub.TRANSACTION_dump, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().dump(p);
-            return;
-          }
           _reply.readException();
         }
         finally {
@@ -1756,16 +1542,8 @@ public interface IProfileManager extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getLogFD, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().getLogFD();
-          }
           _reply.readException();
-          if ((0!=_reply.readInt())) {
-            _result = android.os.ParcelFileDescriptor.CREATOR.createFromParcel(_reply);
-          }
-          else {
-            _result = null;
-          }
+          _result = _Parcel.readTypedObject(_reply, android.os.ParcelFileDescriptor.CREATOR);
         }
         finally {
           _reply.recycle();
@@ -1781,9 +1559,6 @@ public interface IProfileManager extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getLogPath, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().getLogPath();
-          }
           _reply.readException();
           _result = _reply.readString();
         }
@@ -1800,10 +1575,6 @@ public interface IProfileManager extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_clearLogs, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().clearLogs();
-            return;
-          }
           _reply.readException();
         }
         finally {
@@ -1819,10 +1590,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(((enable)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_setLogEnabled, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().setLogEnabled(enable);
-            return;
-          }
           _reply.readException();
         }
         finally {
@@ -1838,9 +1605,6 @@ public interface IProfileManager extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_isLogEnabled, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().isLogEnabled();
-          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -1858,10 +1622,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(action);
           boolean _status = mRemote.transact(Stub.TRANSACTION_executeAction, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().executeAction(action);
-            return;
-          }
           _reply.readException();
         }
         finally {
@@ -1877,10 +1637,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeStrongBinder(sink);
           boolean _status = mRemote.transact(Stub.TRANSACTION_addConsoleLogSink, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().addConsoleLogSink(sink);
-            return;
-          }
           _reply.readException();
         }
         finally {
@@ -1896,10 +1652,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeStrongBinder(sink);
           boolean _status = mRemote.transact(Stub.TRANSACTION_removeConsoleLogSink, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().removeConsoleLogSink(sink);
-            return;
-          }
           _reply.readException();
         }
         finally {
@@ -1917,9 +1669,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeString(ruleString);
           _data.writeInt(format);
           boolean _status = mRemote.transact(Stub.TRANSACTION_parseRuleOrNull, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().parseRuleOrNull(ruleString, format);
-          }
           _reply.readException();
           _result = _reply.readString();
         }
@@ -1938,9 +1687,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(ruleName);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getRuleByName, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().getRuleByName(ruleName);
-          }
           _reply.readException();
           _result = _reply.readString();
         }
@@ -1958,10 +1704,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(command);
           boolean _status = mRemote.transact(Stub.TRANSACTION_setCustomSuCommand, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().setCustomSuCommand(command);
-            return;
-          }
           _reply.readException();
         }
         finally {
@@ -1977,9 +1719,6 @@ public interface IProfileManager extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getCustomSuCommand, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().getCustomSuCommand();
-          }
           _reply.readException();
           _result = _reply.readString();
         }
@@ -1990,7 +1729,6 @@ public interface IProfileManager extends android.os.IInterface
         return _result;
       }
       // Engines.
-
       @Override public void addAlarmEngine(java.lang.String alarm) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -1999,10 +1737,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(alarm);
           boolean _status = mRemote.transact(Stub.TRANSACTION_addAlarmEngine, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().addAlarmEngine(alarm);
-            return;
-          }
           _reply.readException();
         }
         finally {
@@ -2018,10 +1752,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(alarm);
           boolean _status = mRemote.transact(Stub.TRANSACTION_removeAlarmEngine, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().removeAlarmEngine(alarm);
-            return;
-          }
           _reply.readException();
         }
         finally {
@@ -2037,9 +1767,6 @@ public interface IProfileManager extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getAllAlarms, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().getAllAlarms();
-          }
           _reply.readException();
           _result = _reply.createStringArrayList();
         }
@@ -2058,10 +1785,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeString(alarm);
           _data.writeInt(((enabled)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_setAlarmEnabled, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().setAlarmEnabled(alarm, enabled);
-            return;
-          }
           _reply.readException();
         }
         finally {
@@ -2070,7 +1793,6 @@ public interface IProfileManager extends android.os.IInterface
         }
       }
       // Danmu API
-
       @Override public void setDanmuUISettings(java.lang.String settings) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -2079,10 +1801,6 @@ public interface IProfileManager extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(settings);
           boolean _status = mRemote.transact(Stub.TRANSACTION_setDanmuUISettings, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().setDanmuUISettings(settings);
-            return;
-          }
           _reply.readException();
         }
         finally {
@@ -2098,9 +1816,6 @@ public interface IProfileManager extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getDanmuUISettings, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().getDanmuUISettings();
-          }
           _reply.readException();
           _result = _reply.readString();
         }
@@ -2110,7 +1825,6 @@ public interface IProfileManager extends android.os.IInterface
         }
         return _result;
       }
-      public static github.tornaco.android.thanos.core.profile.IProfileManager sDefaultImpl;
     }
     static final int TRANSACTION_setAutoApplyForNewInstalledAppsEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
     static final int TRANSACTION_isAutoApplyForNewInstalledAppsEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 1);
@@ -2172,23 +1886,8 @@ public interface IProfileManager extends android.os.IInterface
     static final int TRANSACTION_setAlarmEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 57);
     static final int TRANSACTION_setDanmuUISettings = (android.os.IBinder.FIRST_CALL_TRANSACTION + 58);
     static final int TRANSACTION_getDanmuUISettings = (android.os.IBinder.FIRST_CALL_TRANSACTION + 59);
-    public static boolean setDefaultImpl(github.tornaco.android.thanos.core.profile.IProfileManager impl) {
-      // Only one user of this interface can use this function
-      // at a time. This is a heuristic to detect if two different
-      // users in the same process use this function.
-      if (Stub.Proxy.sDefaultImpl != null) {
-        throw new IllegalStateException("setDefaultImpl() called twice");
-      }
-      if (impl != null) {
-        Stub.Proxy.sDefaultImpl = impl;
-        return true;
-      }
-      return false;
-    }
-    public static github.tornaco.android.thanos.core.profile.IProfileManager getDefaultImpl() {
-      return Stub.Proxy.sDefaultImpl;
-    }
   }
+  public static final java.lang.String DESCRIPTOR = "github.tornaco.android.thanos.core.profile.IProfileManager";
   public void setAutoApplyForNewInstalledAppsEnabled(boolean enable) throws android.os.RemoteException;
   public boolean isAutoApplyForNewInstalledAppsEnabled() throws android.os.RemoteException;
   public void addRule(java.lang.String author, int versionCode, java.lang.String ruleJson, android.os.IBinder callback, int format) throws android.os.RemoteException;
@@ -2244,13 +1943,32 @@ public interface IProfileManager extends android.os.IInterface
   public void setCustomSuCommand(java.lang.String command) throws android.os.RemoteException;
   public java.lang.String getCustomSuCommand() throws android.os.RemoteException;
   // Engines.
-
   public void addAlarmEngine(java.lang.String alarm) throws android.os.RemoteException;
   public void removeAlarmEngine(java.lang.String alarm) throws android.os.RemoteException;
   public java.util.List<java.lang.String> getAllAlarms() throws android.os.RemoteException;
   public void setAlarmEnabled(java.lang.String alarm, boolean enabled) throws android.os.RemoteException;
   // Danmu API
-
   public void setDanmuUISettings(java.lang.String settings) throws android.os.RemoteException;
   public java.lang.String getDanmuUISettings() throws android.os.RemoteException;
+  /** @hide */
+  static class _Parcel {
+    static private <T> T readTypedObject(
+        android.os.Parcel parcel,
+        android.os.Parcelable.Creator<T> c) {
+      if (parcel.readInt() != 0) {
+          return c.createFromParcel(parcel);
+      } else {
+          return null;
+      }
+    }
+    static private <T extends android.os.Parcelable> void writeTypedObject(
+        android.os.Parcel parcel, T value, int parcelableFlags) {
+      if (value != null) {
+        parcel.writeInt(1);
+        value.writeToParcel(parcel, parcelableFlags);
+      } else {
+        parcel.writeInt(0);
+      }
+    }
+  }
 }

@@ -15,6 +15,7 @@ import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.WithState
 import tornaco.apps.shortx.ui.base.WithStateImpl
 import tornaco.apps.shortx.ui.base.i18NIns
+import tornaco.apps.shortx.ui.composeLogger
 import java.util.Date
 
 data class ActionContentState(
@@ -23,8 +24,9 @@ data class ActionContentState(
     val isChanged: Boolean = false,
 )
 
-fun ActionContentStateHandler.asActionHandler(): ActionHandler {
+fun ActionContentStateHandler.asActionHandler(name: String = "unnamed"): ActionHandler {
     return ActionHandler(
+        name = name,
         addAction = { action ->
             this.addAction(
                 action
@@ -40,6 +42,8 @@ fun ActionContentStateHandler.asActionHandler(): ActionHandler {
             addAction(action)
         },
         copy = { actionId ->
+            composeLogger.d("copy $this $name: $actionId")
+            composeLogger.d("actions: ${actions.joinToString(System.lineSeparator())}")
             actions.first { it.id == actionId }.let {
                 UiClipboard.copy(UiClipboard.ClipboardContent.ActionContent(it))
             }
@@ -210,6 +214,7 @@ class ActionContentStateHandler(
     }
 
     fun init(actions: List<Action>) {
+        composeLogger.d("init@${this}: ${actions.joinToString(System.lineSeparator())}")
         updateState { copy(actions = actions) }
         checkUpdateWarnings()
     }

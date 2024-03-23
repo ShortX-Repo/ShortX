@@ -12,6 +12,7 @@ object PackageNames {
         "com.android.providers.media"
     }
 
+    val nfc = "com.android.nfc"
 
 }
 
@@ -29,6 +30,7 @@ object Methods {
     const val registerRemovedByApp = "registerRemovedByApp"
     const val registerDismissedByUser = "registerDismissedByUser"
     const val cleanUpRemovedTaskLocked = "cleanUpRemovedTaskLocked"
+
     // Android 14
     const val cleanUpRemovedTask = "cleanUpRemovedTask"
     const val removeLruProcessLocked = "removeLruProcessLocked"
@@ -62,6 +64,7 @@ object ClassNames {
     const val CLIPBOARD_SERVICE = "com.android.server.clipboard.ClipboardService"
     const val SYSTEM_UI_APP = "com.android.systemui.SystemUIApplication"
     const val SYSTEM_UI_CUSTOM_TILE = "com.android.systemui.qs.external.CustomTile"
+    const val NFC_SERVICE_HANDLER = "com.android.nfc.NfcService\$NfcServiceHandler"
 }
 
 object Fields {

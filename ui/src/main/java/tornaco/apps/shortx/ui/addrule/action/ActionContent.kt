@@ -741,6 +741,7 @@ fun ActionIcon(actionClass: KClass<out Action>) {
 
 
 class ActionHandler(
+    val name: String = "unnamed.",
     val addAction: (Action) -> Unit = {},
     val removeAction: (String) -> Unit = {},
     val applySort: (List<Action>) -> Unit = {},

@@ -6,6 +6,7 @@ import tornaco.apps.shortx.core.platform.ClassNames.AMS
 import tornaco.apps.shortx.core.platform.ClassNames.ATMS
 import tornaco.apps.shortx.core.platform.ClassNames.CLIPBOARD_SERVICE
 import tornaco.apps.shortx.core.platform.ClassNames.MEDIA_DOCUMENTS_PROVIDER
+import tornaco.apps.shortx.core.platform.ClassNames.NFC_SERVICE_HANDLER
 import tornaco.apps.shortx.core.platform.ClassNames.NOTIFICATION_USAGE_STATS_SERVICE
 import tornaco.apps.shortx.core.platform.ClassNames.PHONE_WINDOW_MANAGER
 import tornaco.apps.shortx.core.platform.ClassNames.PROCESS_LIST
@@ -152,6 +153,13 @@ object Classes {
     fun ClassLoader.mediaDocumentProviderClass(): Class<*> =
         Reflections.findClass(
             MEDIA_DOCUMENTS_PROVIDER,
+            this
+        )
+
+    @Throws(ClassNotFoundException::class)
+    fun ClassLoader.nfcServiceHandlerClass(): Class<*> =
+        Reflections.findClass(
+            NFC_SERVICE_HANDLER,
             this
         )
 

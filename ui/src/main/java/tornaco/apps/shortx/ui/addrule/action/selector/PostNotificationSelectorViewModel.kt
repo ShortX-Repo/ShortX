@@ -131,7 +131,7 @@ class PostNotificationSelectorViewModel @Inject constructor(@ApplicationContext 
                             })
                         })
                 },
-                onClickHandler = ActionContentStateHandler().apply {
+                onClickHandler = onClickHandler.apply {
                     init(settings.onClickActions)
                 }
             )
@@ -178,6 +178,7 @@ class PostNotificationSelectorViewModel @Inject constructor(@ApplicationContext 
     fun updateMessage(it: String) {
         updateState { copy(message = it) }
     }
+
     fun updateOverrideAppName(it: String) {
         updateState { copy(overrideAppName = it) }
     }
