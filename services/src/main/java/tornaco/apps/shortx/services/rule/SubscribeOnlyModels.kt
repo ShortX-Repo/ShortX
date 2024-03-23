@@ -34,6 +34,7 @@ import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.action.StartGestureRecording
 import tornaco.apps.shortx.core.proto.action.StopAppByPkg
 import tornaco.apps.shortx.core.proto.action.StopGestureRecording
+import tornaco.apps.shortx.core.proto.action.SwitchCase
 import tornaco.apps.shortx.core.proto.action.SwitchMobileDataSlot
 import tornaco.apps.shortx.core.proto.action.TTS
 import tornaco.apps.shortx.core.proto.action.Toggle5G
@@ -43,6 +44,7 @@ import tornaco.apps.shortx.core.proto.condition.AppHasAudioFocus
 import tornaco.apps.shortx.core.proto.condition.AppHasTask
 import tornaco.apps.shortx.core.proto.condition.AppHasWindowFocus
 import tornaco.apps.shortx.core.proto.condition.ConnectedWifiSignal
+import tornaco.apps.shortx.core.proto.condition.RequireBTDeviceFound
 import tornaco.apps.shortx.core.proto.condition.RequireFactTag
 import tornaco.apps.shortx.core.proto.condition.RequireIMEVisibility
 import tornaco.apps.shortx.core.proto.condition.RequireMobileDataEnabled
@@ -88,6 +90,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         RequireIMEVisibility::class,
         ConnectedWifiSignal::class,
         TheXXTimeToday::class,
+        RequireBTDeviceFound::class,
 
         LaunchAppByPkg::class,
         StopAppByPkg::class,
@@ -127,4 +130,5 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         ShowClipboardView::class,
         Toggle5G::class,
         SendSMS::class,
+        SwitchCase::class,
     )

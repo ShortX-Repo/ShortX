@@ -836,7 +836,9 @@ sealed interface Condition : Parcelable {
         override val note: String = "",
         override val id: String = defaultNewConditionId(),
 
-        val device: String
+        val device: String,
+        val address: String,
+        val timeout: String
     ) : Condition {
         override fun clone(
             id: String,

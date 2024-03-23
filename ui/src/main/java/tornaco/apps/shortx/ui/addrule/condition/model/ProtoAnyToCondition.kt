@@ -414,7 +414,9 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 isInvert = data.isInvert,
                 isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
-                device = data.device
+                device = data.device,
+                address = data.address,
+                timeout = data.timeout
             )
         }
 

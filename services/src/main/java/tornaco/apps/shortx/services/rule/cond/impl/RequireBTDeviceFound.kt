@@ -5,27 +5,36 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import com.google.protobuf.Message
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import tornaco.apps.shortx.core.proto.common.BTBondedDevice
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.cond.Cond
 import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper
 
 object RequireBTDeviceFound : Cond {
-    private val stopScanCallback = object : ScanCallback() {
+    private val scanResults = mutableSetOf<BTBondedDevice>()
+    private val scanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult?) {
             super.onScanResult(callbackType, result)
-            logger.d("STOPCALLBACK onScanResult: $result")
+            logger.p("onScanResult: $result")
+            result?.device?.let {
+                val dev = BTHelper.btDeviceToProtoDevice(it)
+                scanResults.add(dev)
+            }
         }
 
         override fun onBatchScanResults(results: MutableList<ScanResult>?) {
             super.onBatchScanResults(results)
-            logger.d("STOPCALLBACK onBatchScanResults: $results")
+            logger.p("onBatchScanResults: $results")
+            results?.mapNotNull { it.device }?.forEach {
+                val dev = BTHelper.btDeviceToProtoDevice(it)
+                scanResults.add(dev)
+            }
         }
 
         override fun onScanFailed(errorCode: Int) {
             super.onScanFailed(errorCode)
-            logger.d("STOPCALLBACK onScanFailed: $errorCode")
+            logger.w("onScanFailed: $errorCode")
         }
     }
 
@@ -33,47 +42,24 @@ object RequireBTDeviceFound : Cond {
         tornaco.apps.shortx.core.proto.condition.RequireBTDeviceFound::class.java
 
     @SuppressLint("MissingPermission")
-    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun evaluate(param: Cond.CondParam): Cond.Result {
         return with(param) {
             val data =
                 condition unpack_ tornaco.apps.shortx.core.proto.condition.RequireBTDeviceFound::class.java
             val scanner = BluetoothAdapter.getDefaultAdapter().bluetoothLeScanner
 
-            val scanResults = mutableSetOf<String>()
-            val scanCallback = object : ScanCallback() {
-                override fun onScanResult(callbackType: Int, result: ScanResult?) {
-                    super.onScanResult(callbackType, result)
-                    logger.p("onScanResult: $result")
-                    result?.device?.let {
-                        val dev = BTHelper.btDeviceToProtoDevice(it)
-                        scanResults.add(dev.alias)
-                    }
-                }
-
-                override fun onBatchScanResults(results: MutableList<ScanResult>?) {
-                    super.onBatchScanResults(results)
-                    logger.p("onBatchScanResults: $results")
-                    results?.mapNotNull { it.device }?.forEach {
-                        val dev = BTHelper.btDeviceToProtoDevice(it)
-                        scanResults.add(dev.alias)
-                    }
-                }
-
-                override fun onScanFailed(errorCode: Int) {
-                    super.onScanFailed(errorCode)
-                    logger.w("onScanFailed: $errorCode")
-                }
-            }
+            scanResults.clear()
             scanner.startScan(scanCallback)
 
-            delay(5000)
+            delay(data.timeout.toLongOrNull() ?: 5000)
 
             logger.p("scanResults: $scanResults")
 
-            val hasFound = scanResults.contains(data.device)
-            logger.d("Has found target device? $")
-            scanner.stopScan(stopScanCallback)
+            val hasFound = scanResults.any {
+                it.alias == data.device && (data.address.isNullOrEmpty() || data.address == it.address)
+            }
+            logger.d("Has found target device? $hasFound")
+            scanner.stopScan(scanCallback)
 
             val res = hasFound
             if (data.isInvert) {

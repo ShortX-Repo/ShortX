@@ -440,6 +440,8 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setIsDisabled(isDisabled)
                 .setCustomContextDataKey(customContextDataKey)
                 .setDevice(device)
+                .setAddress(address)
+                .setTimeout(timeout)
                 .build()
         }
 

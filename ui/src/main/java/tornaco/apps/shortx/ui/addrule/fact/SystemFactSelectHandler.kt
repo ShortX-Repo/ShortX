@@ -133,19 +133,17 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     OnOffAnyStateSelectorDialog(btSelectorState)
 
     val btConnectedToState = rememberBTDeviceSelectorState(
-        title = LocalI18N.current["ui.fact.bt.device.alias"],
-        message = LocalI18N.current["ui.fact.bt.device.alias.summary"],
-        onSelected = {
-            addFact(Fact.BTConnectedTo(devices = listOf(it)))
+        title = LocalI18N.current["ui.fact.bt.connected.to"],
+        onSelected = { name, address, timeout ->
+            addFact(Fact.BTConnectedTo(devices = listOf(name)))
         }
     )
     BTDeviceSelectorDialog(state = btConnectedToState)
 
     val btDisConnectedFromState = rememberBTDeviceSelectorState(
-        title = LocalI18N.current["ui.fact.bt.device.alias"],
-        message = LocalI18N.current["ui.fact.bt.device.alias.summary"],
-        onSelected = {
-            addFact(Fact.BTDisconnectedFrom(devices = listOf(it)))
+        title = LocalI18N.current["ui.fact.bt.disconnected.from"],
+        onSelected = { name, address, timeout ->
+            addFact(Fact.BTDisconnectedFrom(devices = listOf(name)))
         }
     )
     BTDeviceSelectorDialog(state = btDisConnectedFromState)

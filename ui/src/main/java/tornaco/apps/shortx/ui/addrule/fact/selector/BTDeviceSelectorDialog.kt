@@ -1,12 +1,10 @@
 package tornaco.apps.shortx.ui.addrule.fact.selector
 
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
@@ -14,57 +12,49 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.CommonDialogState
-import tornaco.apps.shortx.ui.base.DialogMessage
-import tornaco.apps.shortx.ui.base.ErrorTipRow
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 class BTDeviceSelectorState(
     val title: String,
-    val message: String?,
-    val showSymbolButton: Boolean,
-    val keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    val inputValidator: ((String) -> Pair<Boolean, String>),
-    val onSelected: (String) -> Unit
+    val showTimeoutSelector: Boolean,
+    val onSelected: (String, String, String) -> Unit
 ) : CommonDialogState() {
     private val logger = Logger("BTDeviceSelectorState")
 
-    var currentValue by mutableStateOf("")
+    var deviceName by mutableStateOf("")
+    var deviceAddress by mutableStateOf("")
+    var timeout by mutableStateOf("")
 
-    var errorMsg by mutableStateOf("")
-    var isValid by mutableStateOf(false)
-
-    fun show(initialValue: String? = null) {
-        logger.p("initialValue: $initialValue")
-        this.currentValue = initialValue ?: ""
-        this.errorMsg = ""
-        this.isValid = true
-
-        // Trigger validate
-        val validate = inputValidator(this.currentValue)
-        this.isValid = validate.first
-        this.errorMsg = validate.second
+    fun show(
+        initialNameValue: String? = null,
+        initialAddressValue: String? = null,
+        timeout: String? = "5000"
+    ) {
+        logger.p("initialValue: $initialNameValue")
+        this.deviceName = initialNameValue ?: ""
+        this.deviceAddress = initialAddressValue ?: ""
+        this.timeout = timeout ?: "5000"
 
         show()
     }
@@ -73,19 +63,13 @@ class BTDeviceSelectorState(
 @Composable
 fun rememberBTDeviceSelectorState(
     title: String,
-    message: String?,
-    showSymbolButton: Boolean = true,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    inputValidator: ((String) -> Pair<Boolean, String>) = { it.isNotEmpty() to "" },
-    onSelected: (String) -> Unit
+    showTimeoutSelector: Boolean = false,
+    onSelected: (String, String, String) -> Unit
 ): BTDeviceSelectorState {
     return remember {
         BTDeviceSelectorState(
             title,
-            message,
-            showSymbolButton,
-            keyboardOptions,
-            inputValidator,
+            showTimeoutSelector,
             onSelected
         )
     }
@@ -107,10 +91,12 @@ fun BTDeviceSelectorDialog(state: BTDeviceSelectorState) {
                                 title = { Text(text = state.title) },
                                 actions = {
                                     IconButton(onClick = {
-                                        if (state.isValid) {
-                                            state.onSelected(state.currentValue)
-                                            state.dismiss()
-                                        }
+                                        state.onSelected(
+                                            state.deviceName,
+                                            state.deviceAddress,
+                                            state.timeout
+                                        )
+                                        state.dismiss()
                                     }) {
                                         RemixIcon(remixName = Remix.System.check_line)
                                     }
@@ -131,31 +117,46 @@ fun BTDeviceSelectorDialog(state: BTDeviceSelectorState) {
                                 .padding(16.dp)
                                 .verticalScroll(rememberScrollState())
                         ) {
-                            state.message?.let {
-                                DialogMessage(
-                                    text = it,
-                                )
-                                StandardSpacer()
-                            }
-
+                            FieldTitle(
+                                text = LocalI18N.current["ui.fact.bt.device.alias"],
+                            )
+                            TinySpacer()
+                            TipBody(LocalI18N.current["ui.fact.bt.device.alias.summary"])
+                            TinySpacer()
                             ShortXTextField(
-                                colors = TextFieldDefaults.textFieldColors(
-                                    containerColor = Color.Transparent
-                                ),
-                                isError = state.isValid.not(),
-                                value = state.currentValue,
-                                showSymbolButton = state.showSymbolButton,
-                                keyboardOptions = state.keyboardOptions,
+                                value = state.deviceName,
+                                showSymbolButton = true,
                                 onValueChange = {
-                                    val validate = state.inputValidator(it)
-                                    state.currentValue = it
-                                    state.isValid = validate.first
-                                    state.errorMsg = validate.second
+                                    state.deviceName = it
                                 })
+                            StandardSpacer()
 
-                            MediumSpacer()
-                            AnimatedVisibility(visible = !state.isValid && state.errorMsg.isNotEmpty()) {
-                                ErrorTipRow(text = state.errorMsg)
+                            FieldTitle(
+                                text = LocalI18N.current["ui.fact.bt.device.address"],
+                            )
+                            TinySpacer()
+                            TipBody(text = LocalI18N.current["ui.fact.bt.device.address.tip"])
+                            TinySpacer()
+                            ShortXTextField(
+                                value = state.deviceName,
+                                showSymbolButton = true,
+                                onValueChange = {
+                                    state.deviceAddress = it
+                                })
+                            SectionSpacer()
+
+
+                            if (state.showTimeoutSelector) {
+                                FieldTitle(
+                                    text = LocalI18N.current["ui.conditions.bt.device.found.timeout"],
+                                )
+                                TinySpacer()
+                                ShortXTextField(
+                                    value = state.timeout,
+                                    onValueChange = {
+                                        state.timeout = it
+                                    })
+
                             }
 
                             SectionSpacer()
@@ -171,7 +172,7 @@ fun BTDeviceSelectorDialog(state: BTDeviceSelectorState) {
                                         RemixIcon(remixName = Remix.Device.bluetooth_fill)
                                     },
                                     onClick = {
-                                        state.onSelected(it.alias)
+                                        state.onSelected(it.alias, it.address, state.timeout)
                                         state.dismiss()
                                     })
                             }

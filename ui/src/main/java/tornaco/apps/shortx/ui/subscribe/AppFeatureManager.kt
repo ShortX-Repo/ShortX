@@ -103,6 +103,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Condition.RequireIMEVisibility::class,
     Condition.ConnectedWifiSignal::class,
     Condition.TheXXTimeToday::class,
+    Condition.RequireBTDeviceFound::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 
     Action.LaunchAppByPkg::class,
@@ -147,6 +148,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Action.ShowClipboardView::class,
     Action.Toggle5G::class,
     Action.SendSMS::class,
+    Action.SwitchCase::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 )
 

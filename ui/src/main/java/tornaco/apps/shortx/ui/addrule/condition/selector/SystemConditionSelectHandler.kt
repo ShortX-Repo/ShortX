@@ -138,20 +138,23 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
 
     val btConnectedSelectorState = rememberBTDeviceSelectorState(
         title = LocalI18N.current["ui.conditions.bt.connected"],
-        message = LocalI18N.current["ui.conditions.bt.connected.target"],
-        showSymbolButton = false,
-        onSelected = {
-            addCondition(Condition.RequireBTConnected(requiredDevice = it))
+        onSelected = { name, address, timeout ->
+            addCondition(Condition.RequireBTConnected(requiredDevice = name))
         }
     )
     BTDeviceSelectorDialog(state = btConnectedSelectorState)
 
     val btFoundSelectorState = rememberBTDeviceSelectorState(
         title = LocalI18N.current["ui.conditions.bt.device.found"],
-        message = LocalI18N.current["ui.conditions.bt.device.found.target"],
-        showSymbolButton = false,
-        onSelected = {
-            addCondition(Condition.RequireBTDeviceFound(device = it))
+        showTimeoutSelector = true,
+        onSelected = { name, address, timeout ->
+            addCondition(
+                Condition.RequireBTDeviceFound(
+                    device = name,
+                    address = address,
+                    timeout = timeout
+                )
+            )
         }
     )
     BTDeviceSelectorDialog(state = btFoundSelectorState)
@@ -329,7 +332,8 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
             }
 
             Condition.RequireBTDeviceFound::class -> {
-                btFoundSelectorState.show(source.getConditionAs<Condition.RequireBTDeviceFound>()?.device)
+                val ori = source.getConditionAs<Condition.RequireBTDeviceFound>()
+                btFoundSelectorState.show(ori?.device, ori?.address, ori?.timeout)
                 true
             }
 
