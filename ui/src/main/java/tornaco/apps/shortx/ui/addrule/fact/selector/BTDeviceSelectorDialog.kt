@@ -24,6 +24,7 @@ import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.FieldTitle
+import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
@@ -33,10 +34,12 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.TipBody
+import tornaco.apps.shortx.ui.base.TipCard
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 class BTDeviceSelectorState(
     val title: String,
+    val message: String?,
     val showTimeoutSelector: Boolean,
     val onSelected: (String, String, String) -> Unit
 ) : CommonDialogState() {
@@ -63,12 +66,14 @@ class BTDeviceSelectorState(
 @Composable
 fun rememberBTDeviceSelectorState(
     title: String,
+    message: String? = null,
     showTimeoutSelector: Boolean = false,
     onSelected: (String, String, String) -> Unit
 ): BTDeviceSelectorState {
     return remember {
         BTDeviceSelectorState(
             title,
+            message,
             showTimeoutSelector,
             onSelected
         )
@@ -117,6 +122,14 @@ fun BTDeviceSelectorDialog(state: BTDeviceSelectorState) {
                                 .padding(16.dp)
                                 .verticalScroll(rememberScrollState())
                         ) {
+                            state.message?.let {
+                                TipCard(
+                                    modifier = Modifier,
+                                    tip = it
+                                )
+                                LargeSpacer()
+                            }
+
                             FieldTitle(
                                 text = LocalI18N.current["ui.fact.bt.device.alias"],
                             )
@@ -138,7 +151,7 @@ fun BTDeviceSelectorDialog(state: BTDeviceSelectorState) {
                             TipBody(text = LocalI18N.current["ui.fact.bt.device.address.tip"])
                             TinySpacer()
                             ShortXTextField(
-                                value = state.deviceName,
+                                value = state.deviceAddress,
                                 showSymbolButton = true,
                                 onValueChange = {
                                     state.deviceAddress = it

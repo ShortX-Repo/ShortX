@@ -146,6 +146,7 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
 
     val btFoundSelectorState = rememberBTDeviceSelectorState(
         title = LocalI18N.current["ui.conditions.bt.device.found"],
+        message = LocalI18N.current["ui.conditions.bt.device.found.tip"],
         showTimeoutSelector = true,
         onSelected = { name, address, timeout ->
             addCondition(
