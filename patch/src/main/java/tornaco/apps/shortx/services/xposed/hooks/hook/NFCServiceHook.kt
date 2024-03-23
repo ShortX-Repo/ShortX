@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.platform.Classes.nfcServiceHandlerClass
 import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.util.Logger
@@ -15,7 +16,8 @@ object NFCServiceHook {
                 logger.d("dispatchTagEndpoint: ${it.args[0]}")
                 val tag = it.args[0]
                 val uid = Reflections.callMethod(tag, "getUid") as ByteArray
-                logger.d("dispatchTagEndpoint, uid: $uid ${String(uid)}")
+                logger.d("dispatchTagEndpoint, uid: $uid - ${uid.joinToString()}")
+                ShortXManagerNative.shortX?.dispatchTagEndpoint(uid)
             }
         }
     }

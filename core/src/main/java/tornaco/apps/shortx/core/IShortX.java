@@ -666,6 +666,15 @@ public interface IShortX extends android.os.IInterface
     {
       return false;
     }
+    @Override public void dispatchTagEndpoint(byte[] uid) throws android.os.RemoteException
+    {
+    }
+    @Override public void registerNFCTagEndpointListener(tornaco.apps.shortx.core.INFCTagEndpointListener listener) throws android.os.RemoteException
+    {
+    }
+    @Override public void unregisterNFCTagEndpointListener(tornaco.apps.shortx.core.INFCTagEndpointListener listener) throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -2194,6 +2203,30 @@ public interface IShortX extends android.os.IInterface
           boolean _result = this.isForceDisableShortXByKeyPressEnabled();
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
+          break;
+        }
+        case TRANSACTION_dispatchTagEndpoint:
+        {
+          byte[] _arg0;
+          _arg0 = data.createByteArray();
+          this.dispatchTagEndpoint(_arg0);
+          reply.writeNoException();
+          break;
+        }
+        case TRANSACTION_registerNFCTagEndpointListener:
+        {
+          tornaco.apps.shortx.core.INFCTagEndpointListener _arg0;
+          _arg0 = tornaco.apps.shortx.core.INFCTagEndpointListener.Stub.asInterface(data.readStrongBinder());
+          this.registerNFCTagEndpointListener(_arg0);
+          reply.writeNoException();
+          break;
+        }
+        case TRANSACTION_unregisterNFCTagEndpointListener:
+        {
+          tornaco.apps.shortx.core.INFCTagEndpointListener _arg0;
+          _arg0 = tornaco.apps.shortx.core.INFCTagEndpointListener.Stub.asInterface(data.readStrongBinder());
+          this.unregisterNFCTagEndpointListener(_arg0);
+          reply.writeNoException();
           break;
         }
         default:
@@ -5176,6 +5209,51 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
+      @Override public void dispatchTagEndpoint(byte[] uid) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeByteArray(uid);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_dispatchTagEndpoint, _data, _reply, 0);
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public void registerNFCTagEndpointListener(tornaco.apps.shortx.core.INFCTagEndpointListener listener) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeStrongInterface(listener);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_registerNFCTagEndpointListener, _data, _reply, 0);
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public void unregisterNFCTagEndpointListener(tornaco.apps.shortx.core.INFCTagEndpointListener listener) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeStrongInterface(listener);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_unregisterNFCTagEndpointListener, _data, _reply, 0);
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
     static final int TRANSACTION_fingerprint = (android.os.IBinder.FIRST_CALL_TRANSACTION + 1);
@@ -5356,6 +5434,9 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_getMaxSignalLevel = (android.os.IBinder.FIRST_CALL_TRANSACTION + 176);
     static final int TRANSACTION_setForceDisableShortXByKeyPressEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 177);
     static final int TRANSACTION_isForceDisableShortXByKeyPressEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 178);
+    static final int TRANSACTION_dispatchTagEndpoint = (android.os.IBinder.FIRST_CALL_TRANSACTION + 179);
+    static final int TRANSACTION_registerNFCTagEndpointListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 180);
+    static final int TRANSACTION_unregisterNFCTagEndpointListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 181);
   }
   public static final java.lang.String DESCRIPTOR = "tornaco.apps.shortx.core.IShortX";
   public tornaco.apps.shortx.core.Version version() throws android.os.RemoteException;
@@ -5575,6 +5656,9 @@ public interface IShortX extends android.os.IInterface
   public int getMaxSignalLevel() throws android.os.RemoteException;
   public void setForceDisableShortXByKeyPressEnabled(boolean enable) throws android.os.RemoteException;
   public boolean isForceDisableShortXByKeyPressEnabled() throws android.os.RemoteException;
+  public void dispatchTagEndpoint(byte[] uid) throws android.os.RemoteException;
+  public void registerNFCTagEndpointListener(tornaco.apps.shortx.core.INFCTagEndpointListener listener) throws android.os.RemoteException;
+  public void unregisterNFCTagEndpointListener(tornaco.apps.shortx.core.INFCTagEndpointListener listener) throws android.os.RemoteException;
   /** @hide */
   static class _Parcel {
     static private <T> T readTypedObject(

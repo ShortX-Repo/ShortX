@@ -1,9 +1,11 @@
 package tornaco.apps.shortx.services.phone
 
 import android.annotation.SuppressLint
+import android.os.RemoteCallbackList
 import android.telephony.CellInfo
 import android.telephony.CellLocation
 import android.telephony.TelephonyCallback
+import tornaco.apps.shortx.core.INFCTagEndpointListener
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.telephonyManager
 import tornaco.apps.shortx.services.ShortXContext
@@ -12,6 +14,7 @@ import tornaco.apps.shortx.services.runClearCallingIdentity
 
 
 class PhoneService(shortXContext: ShortXContext) : SystemService(shortXContext, "PhoneService") {
+    private val nfcListeners = RemoteCallbackList<INFCTagEndpointListener>()
 
     override fun systemReady() {
         super.systemReady()
@@ -25,6 +28,28 @@ class PhoneService(shortXContext: ShortXContext) : SystemService(shortXContext, 
                 logger.p("cell: ${it.cellIdToString()}")
             }
         }
+    }
+
+    fun dispatchTagEndpoint(uid: ByteArray) {
+        logger.d("dispatchTagEndpoint: ${uid.joinToString()}")
+        synchronized(nfcListeners) {
+            nfcListeners.broadcast {
+                runCatching { it.onDispatchTagEndpoint(uid) }.onFailure {
+                    logger.e(
+                        it,
+                        "Call dispatchTagEndpoint"
+                    )
+                }
+            }
+        }
+    }
+
+    fun registerNFCTagEndpointListener(listener: INFCTagEndpointListener) {
+        nfcListeners.register(listener)
+    }
+
+    fun unregisterNFCTagEndpointListener(listener: INFCTagEndpointListener) {
+        nfcListeners.unregister(listener)
     }
 
     @SuppressLint("NewApi")

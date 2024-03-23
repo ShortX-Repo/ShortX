@@ -29,12 +29,14 @@ import io.github.rosemoe.sora.app.CEActivity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import shortx.plugin.wrapper.ParamsDataWrapper
+import tornaco.apps.shortx.core.INFCTagEndpointListener
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.proto.action.PluginAction
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.pack_
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
@@ -45,6 +47,25 @@ import java.util.Locale
 import java.util.UUID
 
 class DemoActivity : BaseActivity() {
+    private val nfcListener = object : INFCTagEndpointListener.Stub() {
+        override fun onDispatchTagEndpoint(uid: ByteArray) {
+            runOnUiThread {
+                Toast.makeText(this@DemoActivity, "NFC: ${uid.joinToString()}", Toast.LENGTH_LONG)
+                    .show()
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        shortXManager.registerNFCTagEndpointListener(nfcListener)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        shortXManager.unregisterNFCTagEndpointListener(nfcListener)
+    }
+
     @Composable
     override fun Content() {
         ShortXTheme {

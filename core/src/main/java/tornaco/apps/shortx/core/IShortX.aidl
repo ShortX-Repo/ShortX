@@ -16,6 +16,7 @@ import tornaco.apps.shortx.core.os.ICancellationSignal;
 import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener;
 import tornaco.apps.shortx.core.systemui.IQSTileHost;
 import tornaco.apps.shortx.core.ISensorUsageListener;
+import tornaco.apps.shortx.core.INFCTagEndpointListener;
 
 interface IShortX {
     Version version();
@@ -307,4 +308,8 @@ interface IShortX {
 
     void setForceDisableShortXByKeyPressEnabled(boolean enable);
     boolean isForceDisableShortXByKeyPressEnabled();
+
+    void dispatchTagEndpoint(in byte[] uid);
+    void registerNFCTagEndpointListener(in INFCTagEndpointListener listener);
+    void unregisterNFCTagEndpointListener(in INFCTagEndpointListener listener);
 }

@@ -1220,6 +1220,18 @@ class ShortXManager(val service: IShortX) {
         }
     }
 
+    fun registerNFCTagEndpointListener(listener: INFCTagEndpointListener) {
+        invokeService(Unit) {
+            registerNFCTagEndpointListener(listener)
+        }
+    }
+
+    fun unregisterNFCTagEndpointListener(listener: INFCTagEndpointListener) {
+        invokeService(Unit) {
+            unregisterNFCTagEndpointListener(listener)
+        }
+    }
+
     private inline fun <T> invokeService(defaultValue: T, onService: IShortX.() -> T): T {
         return kotlin.runCatching {
             onService(service)

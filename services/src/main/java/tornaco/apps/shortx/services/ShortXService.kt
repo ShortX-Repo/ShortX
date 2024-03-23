@@ -21,6 +21,7 @@ import tornaco.apps.shortx.core.IActionEvaluateListener
 import tornaco.apps.shortx.core.IAudioRecordingListener
 import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.IJobStatusListener
+import tornaco.apps.shortx.core.INFCTagEndpointListener
 import tornaco.apps.shortx.core.IPC_CODE
 import tornaco.apps.shortx.core.ISensorUsageListener
 import tornaco.apps.shortx.core.IShortX
@@ -379,6 +380,18 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun isForceDisableShortXByKeyPressEnabled(): Boolean {
             return shortXContext.rule.isForceDisableShortXByKeyPressEnabled()
+        }
+
+        override fun dispatchTagEndpoint(uid: ByteArray) {
+            shortXContext.phone.dispatchTagEndpoint(uid)
+        }
+
+        override fun registerNFCTagEndpointListener(listener: INFCTagEndpointListener) {
+            shortXContext.phone.registerNFCTagEndpointListener(listener)
+        }
+
+        override fun unregisterNFCTagEndpointListener(listener: INFCTagEndpointListener) {
+            shortXContext.phone.unregisterNFCTagEndpointListener(listener)
         }
 
         override fun attachSUImpl(from: String?, su: ISu?) {
