@@ -25,6 +25,9 @@ message App {
   bool isDisabled = 7;
   bool isSuspend = 8;
   bool isShortcutStub = 9;
+
+  int64 versionCode = 10;
+  string versionName = 11;
 }
 
 message AppComponent {

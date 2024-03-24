@@ -69,7 +69,7 @@ class AppStateService(shortXContext: ShortXContext) :
     SystemService(shortXContext, "AppStateService") {
     private val pkgPools = mutableListOf<PkgPool>()
 
-    private val onPackageUpdatedListeners: MutableList<((App) -> Unit)> = mutableListOf()
+    private val onPackageUpdatedListeners: MutableList<((App, App) -> Unit)> = mutableListOf()
     private val onPackageAddedListeners: MutableList<((App) -> Unit)> = mutableListOf()
     private val onPackageRemovedListeners: MutableList<((App) -> Unit)> = mutableListOf()
 
@@ -160,9 +160,9 @@ class AppStateService(shortXContext: ShortXContext) :
             context = context,
             handler = handler,
             userId = id,
-            onPackageUpdateFinished = { changed ->
+            onPackageUpdateFinished = { from, to ->
                 handler.postSafety {
-                    onPackageUpdatedListeners.forEach { it(changed) }
+                    onPackageUpdatedListeners.forEach { it(from, to) }
                 }
             },
             onPackageAdded = { added ->
@@ -285,7 +285,7 @@ class AppStateService(shortXContext: ShortXContext) :
             get(pkg.pkgName)?.label
         }
 
-    fun onPackageUpdated(listener: (App) -> Unit) {
+    fun onPackageUpdated(listener: (App, App) -> Unit) {
         onPackageUpdatedListeners.add(listener)
     }
 

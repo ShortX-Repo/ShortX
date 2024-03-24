@@ -27,6 +27,8 @@ fun App(
     isDisabled: Boolean,
     isSuspend: Boolean,
     isShortcutStub: Boolean,
+    versionCode: Long,
+    versionName: String
 ): App =
     App.newBuilder()
         .setCategory(category)
@@ -38,6 +40,8 @@ fun App(
         .setIsDisabled(isDisabled)
         .setIsSuspend(isSuspend)
         .setIsShortcutStub(isShortcutStub)
+        .setVersionCode(versionCode)
+        .setVersionName(versionName)
         .build()
 
 fun ApplicationInfo.toAppPkg(): AppPkg {

@@ -99,6 +99,8 @@ object ContextDataMapping {
         userId("The user id"),
         pkgName("App package name of the updated package"),
         label("App label of the updated package"),
+        fromVersionCode("Version code before update"),
+        toVersionCode("Version code after update"),
     }
 
     @DoNotStrip

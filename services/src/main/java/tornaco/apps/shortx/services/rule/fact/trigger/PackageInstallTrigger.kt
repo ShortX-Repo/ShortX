@@ -41,17 +41,20 @@ class PackageInstallTrigger(
             )
         }
 
-        shortXContext.appState.onPackageUpdated {
-            logger.d("onPackageUpdated: $it")
+        shortXContext.appState.onPackageUpdated { from, to ->
+            logger.d("onPackageUpdated: $from ---> $to")
             shortXContext.rule.publishFact(
                 "onPackageUpdated",
-                AppUpdated.newBuilder().addAllApps(listOf(it.pkg)).build(),
+                AppUpdated.newBuilder().addAllApps(listOf(to.pkg)).build()
+            ) {
                 mapOf(
-                    ContextDataMapping.AppUpdated.userId.name to it.pkg.userId,
-                    ContextDataMapping.AppUpdated.pkgName.name to it.pkg.pkgName,
-                    ContextDataMapping.AppUpdated.label.name to it.label,
+                    ContextDataMapping.AppUpdated.userId.name to to.pkg.userId,
+                    ContextDataMapping.AppUpdated.pkgName.name to to.pkg.pkgName,
+                    ContextDataMapping.AppUpdated.label.name to to.label,
+                    ContextDataMapping.AppUpdated.fromVersionCode.name to from.versionCode,
+                    ContextDataMapping.AppUpdated.toVersionCode.name to to.versionCode,
                 )
-            )
+            }
         }
     }
 

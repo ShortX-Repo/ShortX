@@ -23,7 +23,7 @@ class PkgPool(
     val userId: Int,
     val onPackageAdded: (App) -> Unit = {},
     val onPackageRemoved: (App) -> Unit = {},
-    val onPackageUpdateFinished: (App) -> Unit = {}
+    val onPackageUpdateFinished: (App, App) -> Unit = { from, to -> }
 ) {
     private val logger = Logger("PkgPool")
     private val pm by lazy { context.packageManager }
@@ -53,8 +53,11 @@ class PkgPool(
         override fun onPackageUpdateFinished(packageName: String?, uid: Int) {
             super.onPackageUpdateFinished(packageName, uid)
             packageName?.let { pkgName ->
-                val loaded = load(pkgName)
-                loaded?.let { onPackageUpdateFinished(it) }
+                val fromApp = allApps[pkgName]
+                val toApp = load(pkgName)
+                if (fromApp != null && toApp != null) {
+                    onPackageUpdateFinished(fromApp, toApp)
+                }
             }
         }
 
@@ -215,7 +218,9 @@ class PkgPool(
             isXposedMode = isXposedMod,
             isDisabled = isDisabled,
             isSuspend = isSuspend,
-            isShortcutStub = isShortcutStub
+            isShortcutStub = isShortcutStub,
+            versionCode = versionCode.toLong(),
+            versionName = ""
         )
     }
 
