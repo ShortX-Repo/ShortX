@@ -50,6 +50,7 @@ import tornaco.apps.shortx.core.proto.fact.LocationStatusChanged
 import tornaco.apps.shortx.core.proto.fact.MediaStoreInsert
 import tornaco.apps.shortx.core.proto.fact.MobileDataStatusChanged
 import tornaco.apps.shortx.core.proto.fact.NFCStatusChanged
+import tornaco.apps.shortx.core.proto.fact.NFCTagDiscover
 import tornaco.apps.shortx.core.proto.fact.Notification
 import tornaco.apps.shortx.core.proto.fact.NotificationPosted
 import tornaco.apps.shortx.core.proto.fact.NotificationRemoved
@@ -537,6 +538,12 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
             val actualN = (actual as ConnectedWifiSignalLevelChanged)
             val ruleN = (rule as ConnectedWifiSignalLevelChanged)
             ruleN.level < 0 || actualN.level == ruleN.level
+        }
+
+        register(NFCTagDiscover::class.java) { actual, rule ->
+            val actualN = (actual as NFCTagDiscover)
+            val ruleN = (rule as NFCTagDiscover)
+            ruleN.uid.isEmpty || ruleN.uid == actualN.uid
         }
 
         logger.i("Init complete.")

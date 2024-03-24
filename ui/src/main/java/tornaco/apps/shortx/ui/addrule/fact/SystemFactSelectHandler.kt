@@ -21,6 +21,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.BTDeviceSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.EdgeGestureSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.FixedPeriodSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
+import tornaco.apps.shortx.ui.addrule.fact.selector.NFCTagSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.OnOffAnyStateSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.PeriodSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.SystemSettingsUrlSelectorDialog
@@ -32,6 +33,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.rememberBTDeviceSelectorStat
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberEdgeGestureSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberFixedInPeriodSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberKeyEventSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberNFCTagSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberOnOffAnyStateSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberRandomInPeriodSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberSystemSettingsUrlSelectorState
@@ -365,6 +367,11 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     }
     TextInputDialog(state = connectedWifiSignalState)
 
+    val nfcTagSelectorDialogState = rememberNFCTagSelectorState {
+        addFact(Fact.NFCTagDiscover(uid = it))
+    }
+    NFCTagSelectorDialog(state = nfcTagSelectorDialogState)
+
     return { source ->
         when (source.clazz) {
             Fact.KeyEvent::class -> {
@@ -620,6 +627,10 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
                 true
             }
 
+            Fact.NFCTagDiscover::class -> {
+                nfcTagSelectorDialogState.show()
+                true
+            }
 
             else -> false
         }

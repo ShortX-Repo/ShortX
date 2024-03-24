@@ -73,6 +73,7 @@ fun imageVectorForFact(fact: KClass<out Fact>): String {
         Fact.AppGainWindowFocus::class -> Remix.Design.focus_2_fill
         Fact.AppLostWindowFocus::class -> Remix.Design.focus_2_line
         Fact.DeepLinkCall::class -> Remix.System.external_link_fill
+        Fact.NFCTagDiscover::class -> Remix.Device.nfc_fill
 
         else -> {
             Remix.Document.file_unknow_fill

@@ -48,11 +48,13 @@ fun SystemFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: 
         Fact.MobileDataStatusChanged::class,
         Fact.LocationStatusChanged::class,
         Fact.NFCStatusChanged::class,
+        Fact.NFCTagDiscover::class,
         Fact.DNDStatusChanged::class,
         Fact.HotSpotStatusChanged::class,
         Fact.FlashLightStatusChanged::class,
         Fact.DarkModeStatusChanged::class,
         Fact.APMStatusChanged::class,
+
 
         Fact.BatteryLevelChanged::class,
         Fact.BatteryTemperatureChanged::class,

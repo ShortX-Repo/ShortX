@@ -37,3 +37,14 @@ fun LottieLoaderFailView() {
         iterations = 1
     )
 }
+
+@Composable
+fun LottieNFCFlashView() {
+    LottieLoadingView(
+        file = "nfc_flash.json",
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(140.dp),
+        iterations = 100
+    )
+}

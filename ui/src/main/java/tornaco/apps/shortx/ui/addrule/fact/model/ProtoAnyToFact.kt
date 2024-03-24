@@ -916,6 +916,20 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.fact.NFCTagDiscover::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.NFCTagDiscover::class.java
+
+            Fact.NFCTagDiscover(
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                isDisabled = data.isDisabled,
+                tag = data.tag,
+                uid = data.uid
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.fact.DeepLinkCall::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.DeepLinkCall::class.java

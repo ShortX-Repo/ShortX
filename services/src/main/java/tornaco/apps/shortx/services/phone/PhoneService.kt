@@ -5,7 +5,9 @@ import android.os.RemoteCallbackList
 import android.telephony.CellInfo
 import android.telephony.CellLocation
 import android.telephony.TelephonyCallback
+import com.google.protobuf.ByteString
 import tornaco.apps.shortx.core.INFCTagEndpointListener
+import tornaco.apps.shortx.core.proto.fact.NFCTagDiscover
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.telephonyManager
 import tornaco.apps.shortx.services.ShortXContext
@@ -42,6 +44,11 @@ class PhoneService(shortXContext: ShortXContext) : SystemService(shortXContext, 
                 }
             }
         }
+
+        shortXContext.rule.publishFact(
+            "dispatchTagEndpoint",
+            NFCTagDiscover.newBuilder().setUid(ByteString.copyFrom(uid)).build()
+        ) { emptyMap() }
     }
 
     fun registerNFCTagEndpointListener(listener: INFCTagEndpointListener) {

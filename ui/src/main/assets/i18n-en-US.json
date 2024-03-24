@@ -406,6 +406,8 @@
     "ui.fact.mobile.data.state.changed": "Mobile data setting",
     "ui.fact.flash.light.state.changed": "Flash light setting",
     "ui.fact.nfc.state.changed": "NFC setting",
+    "ui.fact.nfc.tag": "NFC tag",
+    "ui.fact.nfc.tag.record.tip": "Hold the card close to your phone",
     "ui.fact.n.posted": "Notification posted",
     "ui.fact.n.updated": "Notification updated",
     "ui.fact.n.removed": "Notification removed",

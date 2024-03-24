@@ -45,6 +45,7 @@ import tornaco.apps.shortx.core.proto.fact.LocationStatusChanged
 import tornaco.apps.shortx.core.proto.fact.MediaStoreInsert
 import tornaco.apps.shortx.core.proto.fact.MobileDataStatusChanged
 import tornaco.apps.shortx.core.proto.fact.NFCStatusChanged
+import tornaco.apps.shortx.core.proto.fact.NFCTagDiscover
 import tornaco.apps.shortx.core.proto.fact.NodeMatcherText
 import tornaco.apps.shortx.core.proto.fact.NodeMatcherViewId
 import tornaco.apps.shortx.core.proto.fact.NotificationPosted
@@ -681,6 +682,16 @@ fun Fact.toProtoFact(
                 .setCustomContextDataKey(customContextDataKey)
                 .setLevel(level)
                 .setRssi(rssi)
+                .build()
+        }
+
+        is Fact.NFCTagDiscover -> {
+            NFCTagDiscover.newBuilder().setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
+                .setTag(overrideTag ?: tag)
+                .setCustomContextDataKey(customContextDataKey)
+                .setUid(uid)
                 .build()
         }
 

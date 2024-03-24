@@ -39,6 +39,8 @@ val allFactClasses = listOf(
     Fact.DarkModeStatusChanged::class,
     Fact.APMStatusChanged::class,
 
+    Fact.NFCTagDiscover::class,
+
     Fact.NotificationPosted::class,
     Fact.NotificationRemoved::class,
     Fact.NotificationUpdated::class,
