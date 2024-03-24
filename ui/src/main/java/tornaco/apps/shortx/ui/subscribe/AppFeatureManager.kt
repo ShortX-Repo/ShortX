@@ -93,6 +93,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Fact.AppLostWindowFocus::class,
     Fact.IMEVisibilityChange::class,
     Fact.ConnectedWifiSignalLevelChanged::class,
+    Fact.NFCTagDiscover::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 
     Condition.AppHasAudioFocus::class,
