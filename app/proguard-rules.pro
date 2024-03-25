@@ -70,7 +70,8 @@
 
 # Code Editor
 -keep class io.github.rosemoe** {*;}
--keep class org.eclipse.tm4e** {*;}
+-keep class org.eclipse** {*;}
+-keep class org.joni** {*;}
 
 -keep class tornaco.apps.shortx.services.util.http.persistentcookiejar** {*;}
 
