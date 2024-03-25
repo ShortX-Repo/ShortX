@@ -1,10 +1,6 @@
 package tornaco.apps.shortx.ui
 
 import android.content.Context
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import tornaco.android.sec.net.S
 import tornaco.apps.shortx.core.isSuccess
 import tornaco.apps.shortx.core.shortXManager
@@ -15,7 +11,6 @@ import tornaco.apps.shortx.ui.subscribe.util.getLVLToken
 import tornaco.apps.shortx.ui.subscribe.util.isGPToken
 import tornaco.apps.shortx.ui.subscribe.util.setLVLToken
 import tornaco.apps.shortx.ui.util.LCRulesAdapter
-import tornaco.apps.shortx.ui.util.StubApkGen
 import tornaco.apps.shortx.ui.util.verifyOtp
 
 
@@ -29,14 +24,6 @@ object EntryPoint {
         LVLStateHolder.init(context)
         checkCB(context)
         LCRulesAdapter.initRules(context)
-
-        // Async clean up.
-        @Suppress("OPT_IN_USAGE")
-        GlobalScope.launch {
-            withContext(Dispatchers.IO) {
-                StubApkGen.cleanUp(context)
-            }
-        }
     }
 
     private fun checkCB(context: Context) {

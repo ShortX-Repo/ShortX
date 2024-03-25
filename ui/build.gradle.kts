@@ -47,9 +47,6 @@ android {
 }
 
 dependencies {
-    implementation(files("lib/apkzlib.jar"))
-    implementation(files("lib/ManifestEditor-1.0.2.jar"))
-
     implementation(libs.dagger.hilt.android)
     implementation(libs.dagger.hilt.navigation.compose)
     kapt(libs.dagger.hilt.android.compiler)
@@ -125,8 +122,6 @@ dependencies {
     implementation(libs.jotp)
 
     implementation(libs.sardine.android)
-
-    implementation(libs.apksig)
 
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit)
