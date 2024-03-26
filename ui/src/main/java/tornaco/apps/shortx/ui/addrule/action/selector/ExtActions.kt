@@ -20,7 +20,7 @@ import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.base.rememberCategoryState
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.newIntent
-import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorCurrentDataOrNull
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
@@ -44,7 +44,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     val shellCommandLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toBaseSelectorCurrentDataOrNull<Action.ShellCommand>()
+            val action = result.popupSelectorResult<Action.ShellCommand>()
             action?.let {
                 addAction(it)
             }
@@ -62,7 +62,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     val mvelEditorLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toBaseSelectorCurrentDataOrNull<ParcelableCode>()
+            val action = result.popupSelectorResult<ParcelableCode>()
             action?.let {
                 addAction(Action.MVEL(expression = it.expression))
             }
@@ -72,7 +72,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     val jsEditorLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toBaseSelectorCurrentDataOrNull<ParcelableCode>()
+            val action = result.popupSelectorResult<ParcelableCode>()
             action?.let {
                 addAction(Action.ExecuteJS(expression = it.expression))
             }
@@ -96,7 +96,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     val ifThenElseLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toBaseSelectorCurrentDataOrNull<Action.IfThenElse>()
+            val action = result.popupSelectorResult<Action.IfThenElse>()
             action?.let {
                 addAction(it)
             }
@@ -106,7 +106,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     val switchCaseLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toBaseSelectorCurrentDataOrNull<Action.SwitchCase>()
+            val action = result.popupSelectorResult<Action.SwitchCase>()
             action?.let {
                 addAction(it)
             }
@@ -116,7 +116,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     val waitUtilLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toBaseSelectorCurrentDataOrNull<Action.WaitUtilConditionMatch>()
+            val action = result.popupSelectorResult<Action.WaitUtilConditionMatch>()
             action?.let {
                 addAction(it)
             }
@@ -145,7 +145,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     val httpLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toBaseSelectorCurrentDataOrNull<Action.HttpRequest>()
+            val action = result.popupSelectorResult<Action.HttpRequest>()
             action?.let {
                 addAction(it)
             }
@@ -154,7 +154,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
 
     val brkScopeSelectorState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.action.brk.scope"],
-        menuItems = BreakActionExecuteScope.values()
+        menuItems = BreakActionExecuteScope.entries
             .filterNot { it == BreakActionExecuteScope.UNRECOGNIZED }.map {
                 MenuDialogItem(id = it.name, title = LocalI18N.current[it.labelKey()])
             },

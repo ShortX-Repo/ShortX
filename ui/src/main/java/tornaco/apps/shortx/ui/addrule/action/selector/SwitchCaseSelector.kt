@@ -40,7 +40,7 @@ import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
-import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorCurrentDataOrNull
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -237,7 +237,7 @@ private fun BaseSelectorActivity<Action.SwitchCase>.SwitchCaseSelectorDialogSele
                             contract = ActivityResultContracts.StartActivityForResult(),
                             onResult = { result ->
                                 val case =
-                                    result.toBaseSelectorCurrentDataOrNull<Action.SwitchCase.Case>()
+                                    result.popupSelectorResult<Action.SwitchCase.Case>()
                                 case?.let { updatedCase ->
                                     vm.addOrUpdateCase(updatedCase)
                                 }
@@ -282,7 +282,7 @@ private fun BaseSelectorActivity<Action.SwitchCase>.SwitchCaseSelectorDialogSele
                             contract = ActivityResultContracts.StartActivityForResult(),
                             onResult = { result ->
                                 val case =
-                                    result.toBaseSelectorCurrentDataOrNull<Action.SwitchCase.Case>()
+                                    result.popupSelectorResult<Action.SwitchCase.Case>()
                                 case?.let { updatedCase ->
                                     vm.addOrUpdateCase(updatedCase)
                                 }

@@ -21,7 +21,7 @@ import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.base.rememberCategoryState
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.newIntent
-import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorCurrentDataOrNull
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
 import tornaco.apps.shortx.ui.base.InputValidateResult
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MenuDialog
@@ -52,7 +52,7 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
     val showDialogLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toBaseSelectorCurrentDataOrNull<Action.ShowAlertDialog>()
+            val action = result.popupSelectorResult<Action.ShowAlertDialog>()
             action?.let {
                 addAction(it)
             }
@@ -62,7 +62,7 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
     val showOverlayLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toBaseSelectorCurrentDataOrNull<Action.ShowOverlay>()
+            val action = result.popupSelectorResult<Action.ShowOverlay>()
             action?.let {
                 addAction(it)
             }

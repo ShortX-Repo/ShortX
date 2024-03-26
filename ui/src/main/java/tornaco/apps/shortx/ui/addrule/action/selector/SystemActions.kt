@@ -45,7 +45,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.rememberQSTileSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberVibratePatternSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberWifiSSIDSelectorState
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
-import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorCurrentDataOrNull
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
 import tornaco.apps.shortx.ui.base.InputValidateResult
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MenuDialog
@@ -105,7 +105,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     val injectCombineKeyCodeLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toBaseSelectorCurrentDataOrNull<Action.InjectCombineKeyCode>()
+            val action = result.popupSelectorResult<Action.InjectCombineKeyCode>()
             action?.let {
                 addAction(it)
             }
@@ -197,7 +197,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     val biometricVerifyLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toBaseSelectorCurrentDataOrNull<Action.BiometricVerify>()
+            val action = result.popupSelectorResult<Action.BiometricVerify>()
             action?.let {
                 addAction(it)
             }

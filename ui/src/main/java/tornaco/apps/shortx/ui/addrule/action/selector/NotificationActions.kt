@@ -20,7 +20,7 @@ import tornaco.apps.shortx.ui.addrule.base.rememberCategoryState
 import tornaco.apps.shortx.ui.addrule.fact.selector.NotificationAppAndMatcherSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberNotificationAppAndMatcherSelectorState
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
-import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorCurrentDataOrNull
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
@@ -52,7 +52,7 @@ fun notificationActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectS
     val postNotificationLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toBaseSelectorCurrentDataOrNull<Action.PostNotification>()
+            val action = result.popupSelectorResult<Action.PostNotification>()
             action?.let {
                 addAction(it)
             }

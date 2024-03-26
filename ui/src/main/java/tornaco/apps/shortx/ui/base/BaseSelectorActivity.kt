@@ -6,26 +6,36 @@ import android.content.Intent
 import android.os.Parcelable
 import androidx.activity.result.ActivityResult
 import androidx.compose.runtime.Composable
-import androidx.core.os.BundleCompat
+import tornaco.apps.shortx.core.util.Logger
+import java.util.concurrent.atomic.AtomicInteger
 
 
 abstract class BaseSelectorActivity<T : Parcelable> : BaseActivity() {
     companion object {
         const val INTENT_EXTRA_KEY_CURRENT = "selector.current"
+        const val INTENT_EXTRA_KEY_CURRENT_CACHE_KEY = "selector.current.cache.key"
 
-        inline fun <reified T : Parcelable> ActivityResult.toBaseSelectorCurrentDataOrNull(): T? {
-            return if (this.resultCode == Activity.RESULT_OK) {
-                this.data?.extras?.let {
-                    // Even though API was introduced in 33, we use 34 as 33 is bugged in some scenarios.
-                    BundleCompat.getParcelable(
-                        it,
-                        INTENT_EXTRA_KEY_CURRENT,
-                        T::class.java
-                    )
+        val selectorCache = mutableMapOf<String, Parcelable>()
+        val Intent.cacheKeyOrNull get() = getStringExtra(INTENT_EXTRA_KEY_CURRENT_CACHE_KEY)
+
+        fun newCacheKey() = "CacheKey-${cacheKeyIndex.getAndIncrement()}"
+
+        private val cacheKeyIndex = AtomicInteger(0)
+        val logger = Logger("SelectorActivity")
+
+        inline fun <reified T : Parcelable> ActivityResult.popupSelectorResult(): T? {
+            val t: T? = if (this.resultCode == Activity.RESULT_OK) {
+                val cacheKey = this.data?.cacheKeyOrNull
+                cacheKey?.let {
+                    selectorCache.remove(it) as T?
                 }
             } else {
                 null
             }
+
+            logger.i("selectorCache: $selectorCache")
+
+            return t
         }
 
         inline fun <reified T : Parcelable> newIntent(
@@ -34,15 +44,20 @@ abstract class BaseSelectorActivity<T : Parcelable> : BaseActivity() {
             clazz: Class<out Activity>
         ): Intent {
             return Intent(context, clazz).apply {
+                val cacheKey = newCacheKey()
+                putExtra(INTENT_EXTRA_KEY_CURRENT_CACHE_KEY, cacheKey)
                 currentData?.let {
-                    putExtra(INTENT_EXTRA_KEY_CURRENT, it)
+                    selectorCache[cacheKey] = it
                 }
             }
         }
     }
 
-    private fun Intent.toBaseSelectorDataOrNull(): T? {
-        return (this.getParcelableExtra(INTENT_EXTRA_KEY_CURRENT)) as T?
+    @Suppress("UNCHECKED_CAST")
+    private fun Intent.popupSelectorCache(): T? {
+        return cacheKeyOrNull?.let {
+            selectorCache.remove(it) as T?
+        }
     }
 
     fun cancelAndFinish() {
@@ -51,13 +66,18 @@ abstract class BaseSelectorActivity<T : Parcelable> : BaseActivity() {
     }
 
     fun setResultAndFinish(action: T) {
-        setResult(Activity.RESULT_OK, Intent().putExtra(INTENT_EXTRA_KEY_CURRENT, action))
+        val cacheKey = newCacheKey()
+        selectorCache[cacheKey] = action
+        setResult(
+            Activity.RESULT_OK,
+            Intent().putExtra(INTENT_EXTRA_KEY_CURRENT_CACHE_KEY, cacheKey)
+        )
         finish()
     }
 
     @Composable
     override fun Content() {
-        val current = intent.toBaseSelectorDataOrNull()
+        val current = intent.popupSelectorCache()
         SelectorContent(current)
     }
 

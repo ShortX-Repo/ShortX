@@ -21,7 +21,7 @@ import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateGlobalVarSelecto
 import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateLocalVarSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberTheXXTimeTodaySelectorState
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
-import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorCurrentDataOrNull
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.code.ParcelableCode
@@ -35,7 +35,7 @@ fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSe
     val mvelEditorLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toBaseSelectorCurrentDataOrNull<ParcelableCode>()
+            val action = result.popupSelectorResult<ParcelableCode>()
             action?.let {
                 addCondition(Condition.MVEL(it.expression))
             }
@@ -45,7 +45,7 @@ fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSe
     val jsEditorLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toBaseSelectorCurrentDataOrNull<ParcelableCode>()
+            val action = result.popupSelectorResult<ParcelableCode>()
             action?.let {
                 addCondition(Condition.JS(it.expression))
             }
