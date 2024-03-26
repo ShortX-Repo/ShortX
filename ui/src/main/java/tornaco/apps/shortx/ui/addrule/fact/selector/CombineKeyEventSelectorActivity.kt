@@ -2,7 +2,6 @@
 
 package tornaco.apps.shortx.ui.addrule.fact.selector
 
-import android.content.Intent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -73,12 +72,7 @@ class CombineKeyEventSelectorActivity : BaseSelectorActivity<Action.InjectCombin
                                     val action = Action.InjectCombineKeyCode(
                                         codes = state.keys
                                     )
-                                    setResult(
-                                        RESULT_OK, Intent().putExtra(
-                                            INTENT_EXTRA_KEY_CURRENT, action
-                                        )
-                                    )
-                                    finish()
+                                    setResultAndFinish(action)
                                 }) {
                                     RemixIcon(remixName = Remix.System.check_line)
                                 }

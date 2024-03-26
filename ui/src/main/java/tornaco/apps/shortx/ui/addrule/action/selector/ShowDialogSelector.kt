@@ -3,7 +3,6 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 import android.app.Activity
-import android.content.Intent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -100,12 +99,7 @@ class ShowDialogSelectorActivity : BaseSelectorActivity<Action.ShowAlertDialog>(
                                         negativeActions = vm.negativeActionContent.state.value.actions,
                                         neutralActions = vm.neutralActionContent.state.value.actions,
                                     )
-                                    setResult(
-                                        Activity.RESULT_OK, Intent().putExtra(
-                                            INTENT_EXTRA_KEY_CURRENT, action
-                                        )
-                                    )
-                                    finish()
+                                    setResultAndFinish(action)
                                 }) {
                                     RemixIcon(remixName = Remix.System.check_line)
                                 }

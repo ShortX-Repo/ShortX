@@ -12,7 +12,6 @@ import java.util.concurrent.atomic.AtomicInteger
 
 abstract class BaseSelectorActivity<T : Parcelable> : BaseActivity() {
     companion object {
-        const val INTENT_EXTRA_KEY_CURRENT = "selector.current"
         const val INTENT_EXTRA_KEY_CURRENT_CACHE_KEY = "selector.current.cache.key"
 
         val selectorCache = mutableMapOf<String, Parcelable>()
