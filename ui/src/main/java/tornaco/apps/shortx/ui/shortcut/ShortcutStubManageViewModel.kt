@@ -43,15 +43,17 @@ class ShortcutStubManageViewModel : ViewModel(),
     }
 
     private fun doInstallShortcutApk(context: Context, info: ShortcutStubInfo) {
-        ShortcutStubInstaller.doInstallShortcutApk(
-            context,
-            info,
-            effect = {
-                intent {
-                    postSideEffect(it)
+        viewModelScope.launch {
+            ShortcutStubInstaller.doInstallShortcutApk(
+                context,
+                info,
+                effect = {
+                    intent {
+                        postSideEffect(it)
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 
     companion object {

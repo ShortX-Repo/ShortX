@@ -2,7 +2,6 @@
 
 package tornaco.apps.shortx.ui.base
 
-import android.R
 import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.layout.Column
@@ -72,7 +71,7 @@ class TextDisplayActivity : BaseActivity() {
                                         text
                                     )
                                 }) {
-                                    Text(text = stringResource(id = R.string.copy))
+                                    Text(text = stringResource(id = android.R.string.copy))
                                 }
 
                             },
