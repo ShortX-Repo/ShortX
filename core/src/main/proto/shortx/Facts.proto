@@ -380,6 +380,16 @@ message ActivityStarted {
   bool isDisabled = 101;
 }
 
+message ActivityStopped {
+  repeated AppComponent components = 1;
+
+  string tag = 97;
+  CustomContextDataKey customContextDataKey = 98;
+  string note = 99;
+  string id = 100;
+  bool isDisabled = 101;
+}
+
 message Notification {
   // Title or regex
   string title = 1;

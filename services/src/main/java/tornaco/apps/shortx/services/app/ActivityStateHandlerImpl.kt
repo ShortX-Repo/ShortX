@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.fact.ActivityStarted
+import tornaco.apps.shortx.core.proto.fact.ActivityStopped
 import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
 import tornaco.apps.shortx.core.toAppComponent
@@ -66,8 +67,9 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
             reason = "onActivityResumed",
             fact = ActivityStarted.newBuilder()
                 .addComponents(activity)
-                .build(),
-            initialContextData = mapOf(
+                .build()
+        ) {
+            mapOf(
                 ContextDataMapping.ActivityStarted.activityIntentUri.name to intentUri,
                 ContextDataMapping.ActivityStarted.pkgName.name to activity.pkg.pkgName,
                 ContextDataMapping.ActivityStarted.userId.name to activity.pkg.userId,
@@ -76,14 +78,30 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
                     activity.pkg
                 ) ?: activity.pkg.pkgName),
             )
-        )
-
+        }
     }
 
     fun onActivityStopped(componentName: ComponentName, userId: Int) {
         // Just dump.
         logger.d("onActivityStopped: $componentName userId: $userId")
         onActivityStateChanged()
+
+        val activity = componentName.toAppComponent(userId)
+        shortXContext.rule.publishFact(
+            reason = "onActivityStopped",
+            fact = ActivityStopped.newBuilder()
+                .addComponents(activity)
+                .build()
+        ) {
+            mapOf(
+                ContextDataMapping.ActivityStopped.pkgName.name to activity.pkg.pkgName,
+                ContextDataMapping.ActivityStopped.userId.name to activity.pkg.userId,
+                ContextDataMapping.ActivityStopped.componentName.name to componentName.flattenToShortString(),
+                ContextDataMapping.ActivityStopped.appLabel.name to (shortXContext.appState.getAppLabel(
+                    activity.pkg
+                ) ?: activity.pkg.pkgName),
+            )
+        }
     }
 
     private fun onActivityStateChanged() {
