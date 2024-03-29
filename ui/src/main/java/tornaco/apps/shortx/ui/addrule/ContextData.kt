@@ -82,6 +82,10 @@ fun KClass<out Fact>.factContextData(customContextDataKey: CustomContextDataKey 
             dats<ContextDataMapping.ActivityStarted>(customContextDataKey)
         }
 
+        Fact.ActivityStopped::class -> {
+            dats<ContextDataMapping.ActivityStopped>(customContextDataKey)
+        }
+
         Fact.AnyActivityStarted::class -> {
             dats<ContextDataMapping.ActivityStarted>(customContextDataKey)
         }

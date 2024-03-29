@@ -6,6 +6,7 @@ val allFactClasses = listOf(
 
     Fact.AnyActivityStarted::class,
     Fact.ActivityStarted::class,
+    Fact.ActivityStopped::class,
     Fact.EdgeGesture::class,
 
     Fact.ScreenOn::class,

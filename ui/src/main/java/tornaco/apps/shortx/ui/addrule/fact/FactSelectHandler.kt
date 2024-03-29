@@ -56,6 +56,19 @@ fun appFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean
             })
     AppPkgSelectorDialog(appLostWindowFocusSelectorState)
 
+    val activityStopAppComponentSelectorState = rememberAppComponentSelectorState(
+        types = listOf(ComponentType.Activity),
+        onAppComponentSelected = { infoList ->
+            setFact(Fact.ActivityStopped(infoList.map { it.component }))
+        }
+    )
+    AppComponentSelectorDialog(activityStopAppComponentSelectorState)
+
+    val activityStopSingleAppSelectorState = rememberSingleAppPkgSelectorState {
+        activityStopAppComponentSelectorState.show(it.pkg)
+    }
+    SingleAppSelectorDialog(state = activityStopSingleAppSelectorState)
+
     val activityStartAppComponentSelectorState = rememberAppComponentSelectorState(
         types = listOf(ComponentType.Activity),
         onAppComponentSelected = { infoList ->
@@ -173,6 +186,11 @@ fun appFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean
 
             Fact.ActivityStarted::class -> {
                 activityStartSingleAppSelectorState.show()
+                true
+            }
+
+            Fact.ActivityStopped::class -> {
+                activityStopSingleAppSelectorState.show()
                 true
             }
 

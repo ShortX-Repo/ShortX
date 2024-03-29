@@ -20,6 +20,7 @@ fun AppFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: (Fa
     val items = listOf(
         Fact.AnyActivityStarted::class,
         Fact.ActivityStarted::class,
+        Fact.ActivityStopped::class,
 
         Fact.AppBecomeBackground::class,
         Fact.AppBecomeForeground::class,

@@ -34,6 +34,7 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
         Fact.AnyFact::class -> "Any(For dev)" to null
         Fact.AppProcessStarted::class -> i18n["ui.fact.process.started"] to null
         Fact.ActivityStarted::class -> i18n["ui.fact.activity.started"] to i18n["ui.fact.activity.started.specific"]
+        Fact.ActivityStopped::class -> i18n["ui.fact.activity.stopped"] to null
         Fact.AnyActivityStarted::class -> i18n["ui.fact.activity.started"] to i18n["ui.fact.activity.started.any"]
         Fact.EdgeGesture::class -> i18n["ui.fact.edge.gesture"] to null
         Fact.KeyEvent::class -> i18n["ui.fact.key.event"] to null
@@ -257,6 +258,14 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
     return when (fact) {
         is Fact.AnyFact -> listOf("Any(For dev)")
         is Fact.ActivityStarted -> mutableListOf(i18N["ui.fact.activity.started"]).apply {
+            addAll(fact.components.map {
+                "${
+                    it.toComponentName().flattenToShortString()
+                }$PREFIX_APP_ICON${it.pkg.pkgName}"
+            })
+        }
+
+        is Fact.ActivityStopped -> mutableListOf(i18N["ui.fact.activity.stopped"]).apply {
             addAll(fact.components.map {
                 "${
                     it.toComponentName().flattenToShortString()

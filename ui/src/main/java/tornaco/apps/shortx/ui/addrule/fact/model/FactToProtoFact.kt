@@ -4,6 +4,7 @@ import tornaco.apps.shortx.core.alarm.toProto
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.fact.APMStatusChanged
 import tornaco.apps.shortx.core.proto.fact.ActivityStarted
+import tornaco.apps.shortx.core.proto.fact.ActivityStopped
 import tornaco.apps.shortx.core.proto.fact.AdvancedKeyEvent
 import tornaco.apps.shortx.core.proto.fact.Alarm
 import tornaco.apps.shortx.core.proto.fact.AnyFact
@@ -103,6 +104,15 @@ fun Fact.toProtoFact(
 
         is Fact.ActivityStarted -> {
             ActivityStarted.newBuilder()
+                .addAllComponents(components)
+                .setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
+                .setCustomContextDataKey(customContextDataKey)
+                .build()
+        }
+
+        is Fact.ActivityStopped -> {
+            ActivityStopped.newBuilder()
                 .addAllComponents(components)
                 .setId(overrideId ?: id).setNote(overrideNote ?: note)
                 .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
