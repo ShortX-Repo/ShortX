@@ -18,13 +18,27 @@ buildConfig {
 
     buildConfigField("String", "APP_PACKAGE_NAME", provider { "\"${sxPackageName}\"" })
     buildConfigField("String", "APP_VERSION_NAME", provider { "\"${Configs.sxVersionName}\"" })
-    buildConfigField("String", "APP_VERSION_NAME_SUFFIX", provider { "\"${Configs.sxVersionNameSuffix}\"" })
+    buildConfigField(
+        "String",
+        "APP_VERSION_NAME_SUFFIX",
+        provider { "\"${Configs.sxVersionNameSuffix}\"" })
     buildConfigField("int", "APP_VERSION_CODE", provider { "${Configs.sxVersionCode}" })
     buildConfigField("boolean", "APP_IS_DEBUG", provider { "${Configs.sxIsDebugBuild}" })
     buildConfigField("long", "BUILD_TIME", "${System.currentTimeMillis()}L")
     buildConfigField("String", "BUILD_FINGERPRINT", "\"${UUID.randomUUID()}\"")
 
     buildConfigField("String", "SHORTX_EXT_APP_PKG_NAME", "\"tornaco.apps.shortx.ext\"")
+
+    buildConfigField(
+        "String",
+        "SHORTCUT_STUB_KEYSTORE_URL",
+        "\"https://github.com/ShortX-Repo/ShortX-Files/raw/main/shortcut/keystore\""
+    )
+    buildConfigField(
+        "String",
+        "SHORTCUT_STUB_APK_URL",
+        "\"https://github.com/ShortX-Repo/ShortX-Files/raw/main/shortcut/shortcut-stub.apk\""
+    )
 
     buildConfigField(
         "String",

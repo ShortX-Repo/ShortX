@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.ParcelFileDescriptor
 import androidx.core.content.FileProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.shortXManager
@@ -14,17 +16,17 @@ import java.io.File
 sealed interface ApkInstallState {
     data object Installing : ApkInstallState
     data object InstallSuccess : ApkInstallState
-    data class InstallFailure(val message: String) : ApkInstallState
+    data class InstallFailure(val message: String, val stackTrace: String) : ApkInstallState
 }
 
 object ShortcutStubInstaller {
     private val logger = Logger("Installer")
 
-    fun doInstallShortcutApk(
+    suspend fun doInstallShortcutApk(
         context: Context,
         info: ShortcutStubInfo,
         effect: (ApkInstallState) -> Unit,
-    ) {
+    ) = withContext(Dispatchers.IO) {
         logger.d("doInstallShortcutApk: $info")
         effect(ApkInstallState.Installing)
 
@@ -52,14 +54,24 @@ object ShortcutStubInstaller {
                             effect(ApkInstallState.InstallSuccess)
                         }.onFailure {
                             logger.e(it, "share apk as Intent err")
-                            effect(ApkInstallState.InstallFailure("Apk path: ${apkFile.absolutePath}"))
+                            effect(
+                                ApkInstallState.InstallFailure(
+                                    "Apk path: ${apkFile.absolutePath}",
+                                    it.stackTraceToString()
+                                )
+                            )
                         }
                     }
                 })
 
         }.onFailure {
             logger.e(it, "doInstallShortcutApk err")
-            effect(ApkInstallState.InstallFailure(it.message ?: "Unknown error"))
+            effect(
+                ApkInstallState.InstallFailure(
+                    it.message ?: "Unknown error",
+                    it.stackTraceToString()
+                )
+            )
         }
     }
 

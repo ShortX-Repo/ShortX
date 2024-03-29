@@ -37,7 +37,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addda.AddDirectActionActivity
 import tornaco.apps.shortx.ui.base.EmptyList
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -45,6 +44,7 @@ import tornaco.apps.shortx.ui.base.ProgressDialog
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXFilterChip
+import tornaco.apps.shortx.ui.base.TextDisplayActivity
 import tornaco.apps.shortx.ui.base.TipIds
 import tornaco.apps.shortx.ui.base.UserTip
 import tornaco.apps.shortx.ui.base.adaptiveLauncherIconSizeMin
@@ -79,7 +79,6 @@ fun DirectActionListScreen() {
         rememberProgressDialogState(title = i18n["ui.common.install"], message = "...")
     ProgressDialog(state = progressDialogState)
 
-
     LaunchedEffect(daListViewModel) {
         daListViewModel.loadDAList(delay = false)
     }
@@ -90,11 +89,11 @@ fun DirectActionListScreen() {
             when (it) {
                 is ApkInstallState.InstallFailure -> {
                     progressDialogState.dismiss()
-                    Toast.makeText(
+                    TextDisplayActivity.start(
                         context,
-                        it.message.fallbackOnEmpty { i18n["ui.common.install.failed"] },
-                        Toast.LENGTH_LONG
-                    ).show()
+                        i18n["ui.common.install.failed"],
+                        it.stackTrace
+                    )
                 }
 
                 ApkInstallState.InstallSuccess -> {
