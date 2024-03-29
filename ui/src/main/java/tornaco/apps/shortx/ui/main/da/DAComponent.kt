@@ -353,6 +353,12 @@ private fun daListItemOverflowMenu(
             icon = {
                 RemixIcon(Remix.System.delete_bin_5_line)
             }),
+        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.install.as.apk"]),
+            data = DAItemMenuOptions.CreateApk,
+            badge = badge,
+            icon = {
+                RemixIcon(Remix.Logos.android_line)
+            }),
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.dup"]),
             data = DAItemMenuOptions.Dup,
             badge = badge,
