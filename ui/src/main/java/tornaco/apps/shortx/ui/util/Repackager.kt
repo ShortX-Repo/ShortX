@@ -38,10 +38,10 @@ class Repackager(private val context: Context) {
         )
     }
 
-    fun patch(apkFile: File, keystoreFile: File, info: ShortcutStubInfo): File {
+    fun patch(apkFile: File, info: ShortcutStubInfo): File {
         val outputFile = File(apkFile.parentFile, "patched-${apkFile.name}")
         runCatching {
-            patch(apkFile, outputFile, keystoreFile, info)
+            patch(apkFile, outputFile, info)
         }.onFailure {
             outputFile.delete()
             throw it
@@ -49,14 +49,14 @@ class Repackager(private val context: Context) {
         return outputFile
     }
 
-    private fun patch(apkFile: File, outputFile: File, keystoreFile: File, info: ShortcutStubInfo) {
+    private fun patch(apkFile: File, outputFile: File, info: ShortcutStubInfo) {
+
         val dstZFile = ZFile.openReadWrite(
             outputFile, ZFileOptions().setAlignmentRule(
                 AlignmentRules.compose(AlignmentRules.constantForSuffix(".so", 4096))
             )
         )
-
-        provideSigningExtension(keystoreFile.inputStream()).register(dstZFile)
+        provideSigningExtension(context.assets.open("apk/keystore")).register(dstZFile)
         val srcZFile = ZFile.openReadOnly(apkFile)
 
         for (entry in srcZFile.entries()) {
@@ -103,17 +103,15 @@ class Repackager(private val context: Context) {
                 NodeValue.Application.LABEL,
                 info.appLabel
             )
-        ).addManifestAttribute(
-            AttributeItem(
-                NodeValue.UsesSDK.TARGET_SDK_VERSION,
-                // Failed parse during installPackageLI: Targeting R+ (version 30 and above) requires the resources.arsc
-                // of installed APKs to be stored uncompressed and aligned on a 4-byte boundary
+        ).addManifestAttribute(AttributeItem(
+            NodeValue.UsesSDK.TARGET_SDK_VERSION,
+            // Failed parse during installPackageLI: Targeting R+ (version 30 and above) requires the resources.arsc
+            // of installed APKs to be stored uncompressed and aligned on a 4-byte boundary
 
-                // WTF? still got this err.
-                // Maybe the resource.arsc need to be change.
-                29
-            )
-        )
+            // WTF? still got this err.
+            // Maybe the resource.arsc need to be change.
+            29
+        ))
 
         info.daId?.let {
             property.addMetaData(ModificationProperty.MetaData("target-da-id", it))
