@@ -339,6 +339,11 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
             LOGGER.e("onAccessibilityEvent, not connected...");
             return;
         }
+
+        // TODO Refactor UI auto
+        // See anr_wms.log
+        if (event.getPackageName() == "android") return;
+
         synchronized (syncLock) {
             mLastEventTimeMillis = event.getEventTime();
             if (mWaitingForEventDelivery) {

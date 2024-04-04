@@ -18,7 +18,6 @@ public interface INFCTagEndpointListener extends android.os.IInterface
   /** Local-side IPC implementation stub class. */
   public static abstract class Stub extends android.os.Binder implements tornaco.apps.shortx.core.INFCTagEndpointListener
   {
-    private static final java.lang.String DESCRIPTOR = "tornaco.apps.shortx.core.INFCTagEndpointListener";
     /** Construct the stub at attach it to the interface. */
     public Stub()
     {
@@ -46,6 +45,9 @@ public interface INFCTagEndpointListener extends android.os.IInterface
     @Override public boolean onTransact(int code, android.os.Parcel data, android.os.Parcel reply, int flags) throws android.os.RemoteException
     {
       java.lang.String descriptor = DESCRIPTOR;
+      if (code >= android.os.IBinder.FIRST_CALL_TRANSACTION && code <= android.os.IBinder.LAST_CALL_TRANSACTION) {
+        data.enforceInterface(descriptor);
+      }
       switch (code)
       {
         case INTERFACE_TRANSACTION:
@@ -53,19 +55,22 @@ public interface INFCTagEndpointListener extends android.os.IInterface
           reply.writeString(descriptor);
           return true;
         }
+      }
+      switch (code)
+      {
         case TRANSACTION_onDispatchTagEndpoint:
         {
-          data.enforceInterface(descriptor);
           byte[] _arg0;
           _arg0 = data.createByteArray();
           this.onDispatchTagEndpoint(_arg0);
-          return true;
+          break;
         }
         default:
         {
           return super.onTransact(code, data, reply, flags);
         }
       }
+      return true;
     }
     private static class Proxy implements tornaco.apps.shortx.core.INFCTagEndpointListener
     {
@@ -89,34 +94,14 @@ public interface INFCTagEndpointListener extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeByteArray(uid);
           boolean _status = mRemote.transact(Stub.TRANSACTION_onDispatchTagEndpoint, _data, null, android.os.IBinder.FLAG_ONEWAY);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().onDispatchTagEndpoint(uid);
-            return;
-          }
         }
         finally {
           _data.recycle();
         }
       }
-      public static tornaco.apps.shortx.core.INFCTagEndpointListener sDefaultImpl;
     }
     static final int TRANSACTION_onDispatchTagEndpoint = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
-    public static boolean setDefaultImpl(tornaco.apps.shortx.core.INFCTagEndpointListener impl) {
-      // Only one user of this interface can use this function
-      // at a time. This is a heuristic to detect if two different
-      // users in the same process use this function.
-      if (Stub.Proxy.sDefaultImpl != null) {
-        throw new IllegalStateException("setDefaultImpl() called twice");
-      }
-      if (impl != null) {
-        Stub.Proxy.sDefaultImpl = impl;
-        return true;
-      }
-      return false;
-    }
-    public static tornaco.apps.shortx.core.INFCTagEndpointListener getDefaultImpl() {
-      return Stub.Proxy.sDefaultImpl;
-    }
   }
+  public static final java.lang.String DESCRIPTOR = "tornaco.apps.shortx.core.INFCTagEndpointListener";
   public void onDispatchTagEndpoint(byte[] uid) throws android.os.RemoteException;
 }
