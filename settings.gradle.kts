@@ -18,12 +18,6 @@ pluginManagement {
         mavenLocal()
         jcenter()
         maven(url = "https://jitpack.io")
-
-        val storageUrl =
-            System.getenv("FLUTTER_STORAGE_BASE_URL") ?: "https://storage.googleapis.com"
-        println("Flutter, storageUrl: $storageUrl")
-        maven(url = "flutter/shortx_f/build/host/outputs/repo")
-        maven(url = "$storageUrl/download.flutter.io")
     }
 }
 
