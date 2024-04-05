@@ -1,7 +1,15 @@
 @file:Suppress("UnstableApiUsage")
 
+import java.io.FileInputStream
+import java.util.Properties
+
 
 rootProject.name = "ShortX"
+
+val githubProperties = Properties()
+val githubPropFile = File(rootProject.projectDir, "github.properties")
+println("githubPropFile: $githubPropFile")
+githubProperties.load(FileInputStream(githubPropFile))
 
 pluginManagement {
     repositories {
@@ -18,11 +26,19 @@ pluginManagement {
         mavenLocal()
         jcenter()
         maven(url = "https://jitpack.io")
+
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/ShortX-Repo/ShortX-Core")
+            credentials {
+                username = (githubProperties["gpr.usr"] ?: System.getenv("GPR_USER")).toString()
+                password = (githubProperties["gpr.key"] ?: System.getenv("GPR_API_KEY")).toString()
+            }
+        }
     }
 }
 
 include(":app")
-include(":ui-base")
 include(":ui")
 include(":binder-retriever")
 include(":core")
@@ -41,16 +57,6 @@ include(":patch-magisk:module")
 include(":patch-magisk:bridge")
 include(":patch-magisk:bridge-dex-app")
 include(":patch-magisk:patch-framework")
-include(":external:utils")
-include(":external:dateformatter")
-include(":external:reorderable")
-include(":external:picasso")
-include(":external:compose-color-picker")
-include(":external:icons")
 include(":external:sec_net")
-include(":external:dex-maker")
-include(":external:rhino-android")
-include(":external:drawbox")
-include(":external:codeditor")
 include(":prebuilts-gen")
 include(":flutter:shortx_f")

@@ -33,7 +33,7 @@ object EntryPoint {
                 if (!token.isNullOrEmpty() && !token.isGPToken()) {
                     val deviceId = DeviceId.requireDeviceId()
                     logger.p("check CB, $token $deviceId")
-                    shortXManager.vb(token, deviceId) {
+                    shortXManager.loadOnlineRules(token, deviceId) {
                         logger.p("check CB res: $it")
                         if (it.isSuccess) {
                             S.c(token, it.k)

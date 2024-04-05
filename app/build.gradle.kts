@@ -135,12 +135,12 @@ dependencies {
     implementation(libs.hiddenapibypass)
 
     implementation(project(":ui"))
-    implementation(project(":ui-base"))
     implementation(project(":services"))
     implementation(project(":patch"))
     implementation(project(":core"))
-    implementation(project(":external:utils"))
-    implementation(project(":external:codeditor"))
+
+    implementation(libs.shortx.ext.codeditor)
+    implementation(libs.shortx.ui.base)
 
     debugImplementation(project(":services-ui"))
 

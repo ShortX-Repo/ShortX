@@ -337,6 +337,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             return shortXContext.rule.executeShell(command, callback)
         }
 
+        @SuppressLint("MissingPermission")
         override fun getWifiScanResults(): List<String> {
             enforceCallingPermissions()
             return v(context) {
@@ -872,7 +873,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }
         }
 
-        override fun vb(code: String, deviceId: String, cb: ICallback) {
+        override fun loadOnlineRules(code: String, deviceId: String, cb: ICallback) {
             systemServiceScope.launchSafety {
                 tornaco.apps.shortx.services.v.vb(
                     code = code,

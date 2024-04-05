@@ -16,9 +16,10 @@ dependencies {
     implementation(project(":services-32"))
     implementation(project(":services-33"))
     implementation(project(":services-34"))
-    implementation(project(":external:utils"))
-    implementation(project(":external:picasso"))
-    implementation(project(":external:rhino-android"))
+
+    implementation(libs.shortx.ext.utils)
+    implementation(libs.shortx.ext.picasso)
+    implementation(libs.shortx.ext.rhino.android)
 
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
@@ -39,7 +40,7 @@ dependencies {
     implementation(libs.zxing.core)
 
     implementation(libs.shortx.plugin.sdk)
-    
+
     testImplementation(libs.junit)
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotest.property)

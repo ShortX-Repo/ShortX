@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.DeviceId
 import tornaco.apps.shortx.ui.subscribe.util.hasAChanceToSkipLicenseCheck
@@ -82,7 +83,7 @@ class LVLCheckViewModel : ViewModel() {
         val checker = LicenseChecker(
             context,
             ServerManagedPolicy(context, AESObfuscator(SALT, context.packageName, deviceId)),
-            BuildProp.PLAY_PUBLIC_KEY
+            BuildPropInternal.PLAY_PUBLIC_KEY
         )
 
         viewModelScope.launch {

@@ -8,7 +8,6 @@ dependencies {
     // compileOnly(files("${rootProject.rootDir.path}/android-sdk/33/services-33.jar"))
 
     implementation(project(":core"))
-    implementation(project(":external:utils"))
 
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)

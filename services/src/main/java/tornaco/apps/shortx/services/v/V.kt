@@ -7,6 +7,7 @@ import android.content.pm.Signature
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.common.CommonApiRes
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
@@ -66,8 +67,8 @@ inline fun <T> v(context: Context, run: () -> T): T? {
             }
             val md5 = StringMD5.md5(String(hexChars))
             logger.d("s_index_$index: $md5")
-            if (BuildProp.SIGNATURES_MD5.split("|")[index] != md5
-                && BuildProp.SIGNATURES2_MD5.split("|")[index] != md5
+            if (BuildPropInternal.SIGNATURES_MD5.split("|")[index] != md5
+                && BuildPropInternal.SIGNATURES2_MD5.split("|")[index] != md5
             ) {
                 match = false
             }

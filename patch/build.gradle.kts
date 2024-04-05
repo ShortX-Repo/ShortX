@@ -8,6 +8,5 @@ dependencies {
 
     implementation(project(":services"))
     implementation(project(":core"))
-    implementation(project(":external:utils"))
-    implementation(project(":external:dex-maker"))
+    implementation(libs.shortx.ext.dex.maker)
 }

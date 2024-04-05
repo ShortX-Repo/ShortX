@@ -4,6 +4,7 @@ activity-compose = "1.8.2"
 agp = "8.3.1"
 apksig = "8.2.2"
 biometric = "1.2.0-alpha05"
+shortx-core = "v1.0.4"
 rang-vikalp = "1.0.0-alpha02"
 sardine-android = "v0.9"
 shortx-plugin-sdk = "v1.0.7"
@@ -82,6 +83,18 @@ kover = { id = "org.jetbrains.kotlinx.kover", version = "0.7.6" }
 [libraries]
 androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
 apksig = { module = "com.android.tools.build:apksig", version.ref = "apksig" }
+shortx-core = { module = "shortx:core", version.ref = "shortx-core" }
+shortx-ui-base = { module = "shortx:ui-base", version.ref = "shortx-core" }
+shortx-ext-utils = { module = "shortx:external-utils", version.ref = "shortx-core" }
+shortx-ext-compose-color-picker = { module = "shortx:external-compose-color-picker", version.ref = "shortx-core" }
+shortx-ext-codeditor = { module = "shortx:external-codeditor", version.ref = "shortx-core" }
+shortx-ext-dateformatter = { module = "shortx:external-dateformatter", version.ref = "shortx-core" }
+shortx-ext-icons = { module = "shortx:external-icons", version.ref = "shortx-core" }
+shortx-ext-dex-maker = { module = "shortx:external-dex-maker", version.ref = "shortx-core" }
+shortx-ext-drawbox = { module = "shortx:external-drawbox", version.ref = "shortx-core" }
+shortx-ext-picasso = { module = "shortx:external-picasso", version.ref = "shortx-core" }
+shortx-ext-rhino-android = { module = "shortx:external-rhino-android", version.ref = "shortx-core" }
+shortx-ext-reorderable = { module = "shortx:external-reorderable", version.ref = "shortx-core" }
 rang-vikalp = { module = "io.ak1:rang-vikalp", version.ref = "rang-vikalp" }
 sardine-android = { module = "com.github.thegrizzlylabs:sardine-android", version.ref = "sardine-android" }
 shortx-plugin-sdk = { module = "com.github.ShortX-Repo:ShortX-Plugin-SDK", version.ref = "shortx-plugin-sdk" }
