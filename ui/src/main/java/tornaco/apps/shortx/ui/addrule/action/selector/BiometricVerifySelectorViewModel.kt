@@ -8,7 +8,7 @@ import tornaco.apps.shortx.core.IActionEvaluateListener
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
-import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import javax.inject.Inject
 
 data class BiometricVerifySelectorState(
@@ -21,7 +21,7 @@ data class BiometricVerifySelectorState(
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class BiometricVerifySelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<BiometricVerifySelectorState>(
+    ShortXContextViewModel<BiometricVerifySelectorState>(
         context, {
             BiometricVerifySelectorState()
         }

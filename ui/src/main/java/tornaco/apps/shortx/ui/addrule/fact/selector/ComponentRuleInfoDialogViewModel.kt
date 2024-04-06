@@ -10,10 +10,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.annotations.DoNotStrip
-import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.base.LoadState
 import java.net.URL
-import java.util.*
 import javax.inject.Inject
 
 
@@ -32,7 +31,7 @@ data class RemoteRuleInfo(
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class ComponentRuleInfoDialogViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<ComponentRuleInfoState>(context, { ComponentRuleInfoState() }) {
+    ShortXContextViewModel<ComponentRuleInfoState>(context, { ComponentRuleInfoState() }) {
     private val gson by lazy { Gson() }
 
     fun load(url: String) {

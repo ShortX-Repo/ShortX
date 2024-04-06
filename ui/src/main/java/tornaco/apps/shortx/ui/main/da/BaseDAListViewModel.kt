@@ -28,7 +28,7 @@ import tornaco.apps.shortx.ui.addda.defaultNewDAId
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
-import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.main.CommonSetFilter
 import tornaco.apps.shortx.ui.main.DASortBy
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
@@ -56,7 +56,7 @@ data class DAListState(
 
 @SuppressLint("StaticFieldLeak")
 abstract class BaseDAListViewModel(context: Context) :
-    ContextViewModel<DAListState>(context, { DAListState() }) {
+    ShortXContextViewModel<DAListState>(context, { DAListState() }) {
     protected val pref by lazy { Pref(context) }
     private var loadDAJob: Job? = null
 

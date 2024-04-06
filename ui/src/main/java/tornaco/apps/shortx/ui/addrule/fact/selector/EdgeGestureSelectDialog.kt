@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.addrule.fact.mapper.displayNameKey
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.DropdownItem
@@ -36,7 +37,6 @@ import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
-import java.util.Locale
 
 class EdgeGestureSelectorState(
     val showEdgeHint: (Edge) -> Unit,
@@ -101,7 +101,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
 
                     DropdownSelector(
                         state = dropdownState,
-                        items = Edge.values().filterNot { it == Edge.UNRECOGNIZED }.map {
+                        items = Edge.entries.filterNot { it == Edge.UNRECOGNIZED }.map {
                             DropdownItem(labelLines = listOf(i18N[it.displayNameKey()]), data = it)
                         },
                         onSelect = {
@@ -132,7 +132,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                     }
                     DropdownSelector(
                         state = dropdownState,
-                        items = Gesture.values().filterNot { it == Gesture.UNRECOGNIZED }.map {
+                        items = Gesture.entries.filterNot { it == Gesture.UNRECOGNIZED }.map {
                             DropdownItem(labelLines = listOf(i18N[it.displayNameKey()]), data = it)
                         },
                         onSelect = {
@@ -164,12 +164,3 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
     }
 }
 
-fun Gesture.displayNameKey(): String {
-    val prefix = "ui.fact.edge.gesture"
-    return "$prefix.${name.lowercase(Locale.ENGLISH)}"
-}
-
-fun Edge.displayNameKey(): String {
-    val prefix = "ui.fact.edge"
-    return "$prefix.${name.lowercase(Locale.ENGLISH)}"
-}

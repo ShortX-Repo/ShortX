@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.common.App
-import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import java.text.Collator
 import java.util.*
 import javax.inject.Inject
@@ -31,7 +31,7 @@ data class AppStates(
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class AppSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<AppStates>(context, { AppStates() }) {
+    ShortXContextViewModel<AppStates>(context, { AppStates() }) {
 
     fun loadInstalledApps(pkgSetLabel: String? = null) {
         viewModelScope.launch {

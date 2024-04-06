@@ -9,8 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import tornaco.apps.shortx.core.os.uidToUserId
 import tornaco.apps.shortx.core.proto.common.AppPkg
-import tornaco.apps.shortx.ui.base.ContextViewModel
-import java.util.*
+import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import javax.inject.Inject
 
 
@@ -27,7 +26,7 @@ data class CreateShortcutIntentItem(
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class AppShortcutViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<AppShortcutState>(
+    ShortXContextViewModel<AppShortcutState>(
         context, {
             AppShortcutState()
         }

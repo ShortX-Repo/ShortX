@@ -9,7 +9,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.remote.RemoteExecuteMVELAction
 import tornaco.apps.shortx.ui.remote.RemoteRepo
 import tornaco.apps.shortx.ui.settings.pref.Pref
@@ -32,7 +32,7 @@ data class SelectorState(
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class ActionSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<SelectorState>(context, { SelectorState() }) {
+    ShortXContextViewModel<SelectorState>(context, { SelectorState() }) {
 
     @Inject
     lateinit var remoteRepo: RemoteRepo

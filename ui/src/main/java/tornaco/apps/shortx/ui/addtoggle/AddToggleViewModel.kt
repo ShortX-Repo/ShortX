@@ -35,7 +35,7 @@ import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.condition.op.toConditionOperator
 import tornaco.apps.shortx.ui.addrule.condition.op.toOp
 import tornaco.apps.shortx.ui.addtoggle.model.ToggleStateHandle
-import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import java.util.UUID
 import javax.inject.Inject
@@ -59,7 +59,7 @@ data class AddToggleState(
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class AddToggleViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<AddToggleState>(context, { AddToggleState() }) {
+    ShortXContextViewModel<AddToggleState>(context, { AddToggleState() }) {
 
     private val _toggleSaved = MutableSharedFlow<String>()
     val toggleSaved = _toggleSaved.asSharedFlow()

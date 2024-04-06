@@ -29,7 +29,7 @@ import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
-import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import java.net.URL
@@ -61,7 +61,7 @@ data class AddDirectActionState(
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<AddDirectActionState>(context, { AddDirectActionState() }) {
+    ShortXContextViewModel<AddDirectActionState>(context, { AddDirectActionState() }) {
 
     private val _daSaved = MutableSharedFlow<String>()
     val daSaved = _daSaved.asSharedFlow()

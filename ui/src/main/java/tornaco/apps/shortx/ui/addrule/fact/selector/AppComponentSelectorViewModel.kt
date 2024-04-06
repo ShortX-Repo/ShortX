@@ -13,7 +13,7 @@ import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AppComponentInfo
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.toComponentName
-import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.util.ComponentRule
 import tornaco.apps.shortx.ui.util.LCRulesAdapter
 import java.util.*
@@ -37,7 +37,7 @@ data class AppComponentStates(
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class AppComponentSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<AppComponentStates>(context, { AppComponentStates() }) {
+    ShortXContextViewModel<AppComponentStates>(context, { AppComponentStates() }) {
 
     fun updateKeyword(keyword: String) {
         updateState { copy(keyword = keyword) }

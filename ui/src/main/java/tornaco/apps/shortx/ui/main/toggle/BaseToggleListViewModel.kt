@@ -5,7 +5,7 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.*
 import tornaco.apps.shortx.core.rule.ToggleObserver
-import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.main.ToggleSortBy
 import tornaco.apps.shortx.ui.main.model.ToggleUM
 import tornaco.apps.shortx.ui.settings.ResetEventRegistry
@@ -20,7 +20,7 @@ data class ToggleListState(
 
 @SuppressLint("StaticFieldLeak")
 abstract class BaseToggleListViewModel(context: Context) :
-    ContextViewModel<ToggleListState>(context, { ToggleListState() }) {
+    ShortXContextViewModel<ToggleListState>(context, { ToggleListState() }) {
     private val toggleObs = object : ToggleObserver() {
         override fun onToggleChanged(id: String) {
             super.onToggleChanged(id)

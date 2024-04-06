@@ -5,7 +5,7 @@ import android.content.Context
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import javax.inject.Inject
 
 data class FromDASelectorState(
@@ -15,7 +15,7 @@ data class FromDASelectorState(
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class FromDADialogSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<FromDASelectorState>(
+    ShortXContextViewModel<FromDASelectorState>(
         context, {
             FromDASelectorState(
                 data = Action.FromDA(daId = "", title = null, description = null),

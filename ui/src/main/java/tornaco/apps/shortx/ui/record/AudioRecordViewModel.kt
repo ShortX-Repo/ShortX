@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.common.AudioRecordFile
 import tornaco.apps.shortx.core.util.FileHelper
 import tornaco.apps.shortx.core.util.OsUtils
-import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
@@ -34,7 +34,7 @@ sealed interface ExportResult {
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class AudioRecordViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<AudioRecordState>(context, { AudioRecordState() }) {
+    ShortXContextViewModel<AudioRecordState>(context, { AudioRecordState() }) {
     private val _exportPerformed = MutableSharedFlow<ExportResult>()
     val exportPerformed = _exportPerformed.asSharedFlow()
 

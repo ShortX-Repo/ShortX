@@ -29,7 +29,7 @@ import tornaco.apps.shortx.ui.addrule.defaultNewRuleId
 import tornaco.apps.shortx.ui.addrule.fact.model.defaultNewFactId
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.addrule.fact.model.toProtoFact
-import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.main.CommonSetFilter
 import tornaco.apps.shortx.ui.main.RuleSortBy
 import tornaco.apps.shortx.ui.main.model.RuleUM
@@ -54,7 +54,7 @@ data class RuleListState(
 
 @SuppressLint("StaticFieldLeak")
 abstract class BaseRuleListViewModel(context: Context) :
-    ContextViewModel<RuleListState>(context, { RuleListState() }) {
+    ShortXContextViewModel<RuleListState>(context, { RuleListState() }) {
     val pref by lazy { Pref(context) }
 
     private var loadRuleJob: Job? = null

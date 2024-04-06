@@ -15,7 +15,7 @@ import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.HttpRequestAdapter
-import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import javax.inject.Inject
 
 enum class AdapterType {
@@ -80,7 +80,7 @@ data class HttpRequestDialogState(
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class HttpRequestSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<HttpRequestDialogState>(context, {
+    ShortXContextViewModel<HttpRequestDialogState>(context, {
         HttpRequestDialogState()
     }) {
 
@@ -97,11 +97,11 @@ class HttpRequestSelectorViewModel @Inject constructor(@ApplicationContext conte
                     expressions = currentAction.let {
                         when (it.adapter) {
                             is HttpRequestAdapter.BodyJsonMap -> {
-                                it.adapter.expressions
+                                (it.adapter as HttpRequestAdapter.BodyJsonMap).expressions
                             }
 
                             is HttpRequestAdapter.HeaderBodyJsonMap -> {
-                                it.adapter.expressions
+                                (it.adapter as HttpRequestAdapter.HeaderBodyJsonMap).expressions
                             }
 
                             else -> {

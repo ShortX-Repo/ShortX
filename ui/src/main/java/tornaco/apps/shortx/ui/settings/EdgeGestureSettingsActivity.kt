@@ -39,7 +39,7 @@ import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.BaseActivity
-import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.base.ErrorCard
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -72,7 +72,7 @@ class EdgeGestureSettingsActivity : BaseActivity() {
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<EdgeGestureSettings>(context, { EdgeGestureSettings() }) {
+    ShortXContextViewModel<EdgeGestureSettings>(context, { EdgeGestureSettings() }) {
 
     fun loadState() {
         viewModelScope.launch {

@@ -19,7 +19,7 @@ import tornaco.apps.shortx.core.Version
 import tornaco.apps.shortx.core.proto.common.Author
 import tornaco.apps.shortx.core.proto.common.SensorUsage
 import tornaco.apps.shortx.ui.backup.BackupAgent
-import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import java.io.File
 import javax.inject.Inject
@@ -68,7 +68,7 @@ sealed interface ExportLogResult {
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class SettingsViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<SettingsState>(context, { SettingsState() }) {
+    ShortXContextViewModel<SettingsState>(context, { SettingsState() }) {
 
     private val _backupPerformed = MutableSharedFlow<BackupResult>()
     val backupPerformed = _backupPerformed.asSharedFlow()

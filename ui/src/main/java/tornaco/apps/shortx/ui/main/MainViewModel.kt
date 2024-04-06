@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IAudioRecordingListener
-import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.main.model.MainState
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import javax.inject.Inject
@@ -17,7 +17,7 @@ import javax.inject.Inject
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 open class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<MainState>(context, { MainState() }) {
+    ShortXContextViewModel<MainState>(context, { MainState() }) {
     private val pref by lazy { Pref(context) }
 
     private val audioRecordingObs = object : IAudioRecordingListener.Stub() {

@@ -10,7 +10,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.proto.common.Ringtone
-import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import javax.inject.Inject
 
 data class RingtoneListState(
@@ -23,7 +23,7 @@ data class RingtoneListState(
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class RingtoneListViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<RingtoneListState>(context, { RingtoneListState() }) {
+    ShortXContextViewModel<RingtoneListState>(context, { RingtoneListState() }) {
     private var playingRingtone: android.media.Ringtone? = null
 
     fun loadState() {

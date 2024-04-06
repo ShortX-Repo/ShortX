@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -25,6 +24,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.common.KeyGesture
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.addrule.fact.mapper.displayNameKey
 import tornaco.apps.shortx.ui.addrule.fact.mapper.getLabelForKeyCode
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.base.CommonDialogState
@@ -42,7 +42,6 @@ import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
-import java.util.Locale
 
 class AdvancedKeyEventSelectorState(val selected: (Fact.AdvancedKeyEvent) -> Unit) :
     CommonDialogState() {
@@ -211,7 +210,7 @@ fun AdvancedKeyEventSelector(state: AdvancedKeyEventSelectorState) {
                     }
                     DropdownSelector(
                         state = dropdownState,
-                        items = KeyGesture.values().filterNot { it == KeyGesture.UNRECOGNIZED }
+                        items = KeyGesture.entries.filterNot { it == KeyGesture.UNRECOGNIZED }
                             .map {
                                 DropdownItem(
                                     labelLines = listOf(i18N[it.displayNameKey()]),
@@ -253,8 +252,3 @@ private data class AdvancedKeyEventItem(
     val labelKey: String,
     val keyCode: Int
 )
-
-fun KeyGesture.displayNameKey(): String {
-    val prefix = "ui.fact.key.gesture"
-    return "$prefix.${name.lowercase(Locale.ENGLISH)}"
-}

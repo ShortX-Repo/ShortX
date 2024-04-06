@@ -16,7 +16,7 @@ import tornaco.apps.shortx.core.rule.repo.inflateOnlineFileUrl
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.action.mapper.randomActionColor
 import tornaco.apps.shortx.ui.backup.BackupAgent
-import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.colorFromHex
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
@@ -65,7 +65,7 @@ const val assetName = "prebuilt/prebuilt-all.zip"
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<DiscoverState>(context, { DiscoverState() }) {
+    ShortXContextViewModel<DiscoverState>(context, { DiscoverState() }) {
     private val onlineRepo = OnlineRepo(context)
     private val pref by lazy { Pref(context) }
 

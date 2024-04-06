@@ -13,7 +13,7 @@ import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
-import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import java.util.*
 import javax.inject.Inject
 
@@ -34,7 +34,7 @@ data class StartServiceSelectorState(
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class StartServiceSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<StartServiceSelectorState>(
+    ShortXContextViewModel<StartServiceSelectorState>(
         context, {
             StartServiceSelectorState()
         }

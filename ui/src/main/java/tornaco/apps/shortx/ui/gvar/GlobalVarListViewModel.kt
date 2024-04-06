@@ -18,7 +18,7 @@ import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.select
-import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.main.model.daToDirectActionUM
@@ -64,7 +64,7 @@ data class GlobalVarListState(
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class GlobalVarListViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<GlobalVarListState>(context, { GlobalVarListState() }) {
+    ShortXContextViewModel<GlobalVarListState>(context, { GlobalVarListState() }) {
     private val globalVarObs = object : IGlobalVarObserver.Stub() {
         override fun onAddOrUpdate(id: String?) {
             loadState()

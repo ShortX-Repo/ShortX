@@ -13,7 +13,7 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
-import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import java.util.UUID
 import javax.inject.Inject
 
@@ -65,7 +65,7 @@ fun PostNotificationSelectorState.toAction(): Action.PostNotification {
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class PostNotificationSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<PostNotificationSelectorState>(
+    ShortXContextViewModel<PostNotificationSelectorState>(
         context, {
             PostNotificationSelectorState(
                 tag = "tag-${System.currentTimeMillis()}",
