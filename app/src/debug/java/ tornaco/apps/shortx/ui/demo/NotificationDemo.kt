@@ -16,7 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.notification.NotificationPoster
 import tornaco.apps.shortx.core.proto.action.NotificationButton
 import tornaco.apps.shortx.core.proto.action.PostNotification
@@ -25,7 +25,7 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.ui.base.remixResId
-import java.util.*
+import java.util.Date
 
 @SuppressLint("MissingPermission")
 fun mockNotification(
@@ -46,7 +46,7 @@ fun mockNotification(
             PendingIntent.getActivity(
                 context,
                 System.currentTimeMillis().toString().hashCode(),
-                context.packageManager.getLaunchIntentForPackage(BuildProp.APP_PACKAGE_NAME),
+                context.packageManager.getLaunchIntentForPackage(BuildPropInternal.APP_PACKAGE_NAME),
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             ),
         )
@@ -54,7 +54,7 @@ fun mockNotification(
             PendingIntent.getActivity(
                 context,
                 System.currentTimeMillis().toString().hashCode(),
-                context.packageManager.getLaunchIntentForPackage(BuildProp.APP_PACKAGE_NAME),
+                context.packageManager.getLaunchIntentForPackage(BuildPropInternal.APP_PACKAGE_NAME),
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             ),
             true
