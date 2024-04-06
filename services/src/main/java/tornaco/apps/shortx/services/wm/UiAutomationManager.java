@@ -340,25 +340,23 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
             return;
         }
 
-        // TODO Refactor UI auto
-        // See anr_wms.log
-        if (event.getPackageName() == "android") return;
-
-        synchronized (syncLock) {
-            mLastEventTimeMillis = event.getEventTime();
-            if (mWaitingForEventDelivery) {
-                mEventQueue.add(AccessibilityEvent.obtain(event));
+        mLocalCallbackHandler.post(() -> {
+            synchronized (syncLock) {
+                mLastEventTimeMillis = event.getEventTime();
+                if (mWaitingForEventDelivery) {
+                    mEventQueue.add(AccessibilityEvent.obtain(event));
+                }
+                syncLock.notifyAll();
             }
-            syncLock.notifyAll();
-        }
 
-        if (mOnAccessibilityEventListener != null) {
-            AccessibilityEvent cloneEvent = AccessibilityEvent.obtain(event);
-            mLocalCallbackHandler.post(() -> {
-                mOnAccessibilityEventListener.onAccessibilityEvent(cloneEvent);
-                cloneEvent.recycle();
-            });
-        }
+            if (mOnAccessibilityEventListener != null) {
+                AccessibilityEvent cloneEvent = AccessibilityEvent.obtain(event);
+                mLocalCallbackHandler.post(() -> {
+                    mOnAccessibilityEventListener.onAccessibilityEvent(cloneEvent);
+                    cloneEvent.recycle();
+                });
+            }
+        });
     }
 
     @Override
