@@ -199,6 +199,9 @@ class PkgPool(
         if (BuildPropInternal.APP_PACKAGE_NAME == packageName) {
             logger.i("ShortX app uid: $uid")
             shortXAppUids.add(uid)
+        } else if (BuildPropInternal.SHORTX_EXT_APP_PKG_NAME == packageName) {
+            logger.i("ShortX ext app uid: $uid")
+            shortXAppUids.add(uid)
         } else if ("com.android.systemui" == packageName) {
             logger.i("systemui app uid: $uid")
             systemUIAppUids.add(uid)

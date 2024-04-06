@@ -24,6 +24,8 @@ buildConfig {
     buildConfigField("long", "BUILD_TIME", "${System.currentTimeMillis()}L")
     buildConfigField("String", "BUILD_FINGERPRINT", "\"${UUID.randomUUID()}\"")
 
+    buildConfigField("String", "SHORTX_EXT_APP_PKG_NAME", "\"tornaco.apps.shortx.ext\"")
+
     buildConfigField(
         "String",
         "PLAY_PUBLIC_KEY",
