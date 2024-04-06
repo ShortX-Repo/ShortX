@@ -40,7 +40,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.ui.XRectF
 import tornaco.apps.shortx.core.util.Logger
@@ -87,7 +87,7 @@ class IdViewerView(
             LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT
         )
 
-        val appResources = AppResources(context, BuildProp.APP_PACKAGE_NAME)
+        val appResources = AppResources(context, BuildPropInternal.APP_PACKAGE_NAME)
         val appContext = appResources.appContext
 
         val contextWrapper = object : ContextWrapper(context) {

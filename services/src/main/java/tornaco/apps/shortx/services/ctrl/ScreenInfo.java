@@ -2,7 +2,7 @@ package tornaco.apps.shortx.services.ctrl;
 
 import android.graphics.Rect;
 
-import tornaco.apps.shortx.core.BuildProp;
+import tornaco.apps.shortx.core.BuildPropInternal;
 
 public final class ScreenInfo {
     /**
@@ -118,7 +118,7 @@ public final class ScreenInfo {
         w &= ~7; // in case it's not a multiple of 8
         h &= ~7;
         if (maxSize > 0) {
-            if (BuildProp.APP_IS_DEBUG && maxSize % 8 != 0) {
+            if (BuildPropInternal.APP_IS_DEBUG && maxSize % 8 != 0) {
                 throw new AssertionError("Max size must be a multiple of 8");
             }
             boolean portrait = h > w;

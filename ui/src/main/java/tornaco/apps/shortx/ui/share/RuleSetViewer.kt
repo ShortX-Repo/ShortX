@@ -28,7 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleSet
@@ -93,7 +93,7 @@ fun RuleSetViewer(ruleSet: RuleSet, back: (Boolean) -> Unit) {
                                                     .setIsEnabled(false)
                                                     .addAllExtras(mutableListOf<StringPair>().apply {
                                                         if (!token.isNullOrEmpty()) {
-                                                            add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                                                            add((BuildPropInternal.APP_PACKAGE_NAME to token).toStringPair())
                                                         }
                                                     })
                                                     .build()

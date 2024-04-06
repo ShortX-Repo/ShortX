@@ -2,7 +2,7 @@ package tornaco.apps.shortx.ui.biometric
 
 import android.content.Context
 import android.content.Intent
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.action.BiometricVerify
 
 object BiometricVerifyActivityStarter {
@@ -14,9 +14,9 @@ object BiometricVerifyActivityStarter {
     @JvmStatic
     fun start(context: Context, requestCode: Int, action: BiometricVerify) {
         val starter = Intent("")
-            .setPackage(BuildProp.APP_PACKAGE_NAME)
+            .setPackage(BuildPropInternal.APP_PACKAGE_NAME)
             .setClassName(
-                BuildProp.APP_PACKAGE_NAME,
+                BuildPropInternal.APP_PACKAGE_NAME,
                 "tornaco.apps.shortx.ui.biometric.BiometricVerifyActivity"
             )
             .putExtra(EXTRA_REQUEST_CODE, requestCode)

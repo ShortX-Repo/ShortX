@@ -16,7 +16,7 @@ import android.telephony.SubscriptionManager
 import android.util.Log
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IActionEvaluateListener
 import tornaco.apps.shortx.core.IAudioRecordingListener
 import tornaco.apps.shortx.core.ICallback
@@ -100,7 +100,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         super.systemReady()
         //  publishBinderService()
         // Init i18N
-        val appRes = AppResources(context, BuildProp.APP_PACKAGE_NAME)
+        val appRes = AppResources(context, BuildPropInternal.APP_PACKAGE_NAME)
         val localeName = appRes.getString("ui_i18n_name")
         I18NCache.init(appRes.appContext, localeName)
         val testRes = i18NIns["ui.common.delete"]
@@ -135,7 +135,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         val pw = shellCommand.outPrintWriter
         val nextArgs: String? = shellCommand.nextArg
         if (nextArgs == null) {
-            pw.println("Welcome to ShortX(${BuildProp.APP_VERSION_NAME}). Command usage:")
+            pw.println("Welcome to ShortX(${BuildPropInternal.APP_VERSION_NAME}). Command usage:")
             pw.println("shortx run [ID]")
             pw.println("      Run a Rule.")
             pw.println("shortx dump")
@@ -182,10 +182,13 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
     val serviceBinder = object : IShortX.Stub() {
         override fun version(): Version {
-            return Version(name = BuildProp.APP_VERSION_NAME, code = BuildProp.APP_VERSION_CODE)
+            return Version(
+                name = BuildPropInternal.APP_VERSION_NAME,
+                code = BuildPropInternal.APP_VERSION_CODE
+            )
         }
 
-        override fun fingerprint() = BuildProp.BUILD_FINGERPRINT
+        override fun fingerprint() = BuildPropInternal.BUILD_FINGERPRINT
 
         override fun setLogDebugEnable(enable: Boolean) {
             LogInit.setLogDebug(enable)

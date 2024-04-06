@@ -6,7 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.ISensorUsageListener
 import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.proto.action.LaunchApp
@@ -100,7 +100,7 @@ class WatchDogService(shortXContext: ShortXContext) :
                         .setId("ShortX.WatchDog")
                         .setAppPkg(
                             AppPkg.newBuilder().setUserId(myUserId)
-                                .setPkgName(BuildProp.APP_PACKAGE_NAME).build()
+                                .setPkgName(BuildPropInternal.APP_PACKAGE_NAME).build()
                         )
                         .build().pack_()
                 )
@@ -122,7 +122,7 @@ class WatchDogService(shortXContext: ShortXContext) :
                         .setId("ShortX.WatchDog.UiAuto")
                         .setAppPkg(
                             AppPkg.newBuilder().setUserId(myUserId)
-                                .setPkgName(BuildProp.APP_PACKAGE_NAME).build()
+                                .setPkgName(BuildPropInternal.APP_PACKAGE_NAME).build()
                         )
                         .build().pack_()
                 )

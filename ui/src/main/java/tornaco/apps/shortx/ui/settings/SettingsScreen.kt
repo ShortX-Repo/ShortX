@@ -44,6 +44,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.proto.common.Author
 import tornaco.apps.shortx.core.res.Remix
@@ -154,14 +155,15 @@ fun SettingsScreen(
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     AppIcon(
                                         modifier = Modifier.size(32.dp),
-                                        pkg = Pkg(BuildProp.APP_PACKAGE_NAME)
+                                        pkg = Pkg(BuildPropInternal.APP_PACKAGE_NAME)
                                     )
                                     TinySpacer()
                                     Text(text = LocalAppName.current)
                                     TinySpacer()
-                                    BuildProp.APP_VERSION_NAME_SUFFIX.ifEmpty { null }?.let {
-                                        OutlineBadge(text = it)
-                                    }
+                                    BuildPropInternal.APP_VERSION_NAME_SUFFIX.ifEmpty { null }
+                                        ?.let {
+                                            OutlineBadge(text = it)
+                                        }
                                 }
 
                                 LinkText(text = LocalI18N.current["ui.user.guide"]) {
@@ -236,7 +238,7 @@ fun SettingsScreen(
                                             kotlin.runCatching {
                                                 PkgUtils.launchPkgSettings(
                                                     context,
-                                                    BuildProp.APP_PACKAGE_NAME
+                                                    BuildPropInternal.APP_PACKAGE_NAME
                                                 )
                                             }
                                         }
@@ -295,7 +297,7 @@ fun SettingsScreen(
                                             kotlin.runCatching {
                                                 PkgUtils.launchPkgSettings(
                                                     context,
-                                                    BuildProp.APP_PACKAGE_NAME
+                                                    BuildPropInternal.APP_PACKAGE_NAME
                                                 )
                                             }
                                         }
@@ -702,7 +704,7 @@ private fun devSettings(
             }
         )
     ).apply {
-        if (BuildProp.APP_IS_DEBUG) {
+        if (BuildPropInternal.APP_IS_DEBUG) {
             add(Preference.SwitchPreference(
                 icon = Remix.Business.global_fill,
                 title = LocalI18N.current["ui.settings.http:chucker"],
@@ -911,7 +913,7 @@ private fun engineSettings(
                 vm.setPostNByAppEnabled(enable)
             }
         ),
-        BuildProp.APP_IS_DEBUG.select(
+        BuildPropInternal.APP_IS_DEBUG.select(
             Preference.TextPreference(
                 icon = Remix.System.apps_fill,
                 title = i18N["ui.shortx.stub.apk"],
@@ -938,7 +940,7 @@ private fun aboutSettings(
         Preference.ExpandablePreference(
             icon = Remix.System.information_fill,
             title = i18N["ui.settings.app.info"],
-            summary = "${BuildProp.APP_VERSION_NAME}\n${BuildProp.APP_VERSION_CODE}",
+            summary = "${BuildPropInternal.APP_VERSION_NAME}\n${BuildPropInternal.APP_VERSION_CODE}",
             preferences = listOf(
                 Preference.TextPreference(icon = Remix.Device.instance_fill,
                     title = i18N["ui.settings.core.info"],

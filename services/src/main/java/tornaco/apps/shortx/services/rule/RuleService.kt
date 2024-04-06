@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IActionEvaluateListener
 import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.IJobStatusListener
@@ -467,7 +468,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     fun addOrUpdateRule(unMaskedRule: Rule) {
         // Check Subscribe state.
         val extras = unMaskedRule.extrasList
-        val token = extras.firstOrNull { it.first == BuildProp.APP_PACKAGE_NAME }
+        val token = extras.firstOrNull { it.first == BuildPropInternal.APP_PACKAGE_NAME }
         logger.p("addOrUpdateRule, token: ${token?.second?.maskAll()}")
         // Check if has advanced action or facts
 
@@ -603,7 +604,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     fun addDirectAction(unMaskedDA: DirectAction) {
         // Check Subscribe state.
         val extras = unMaskedDA.extrasList
-        val token = extras.firstOrNull { it.first == BuildProp.APP_PACKAGE_NAME }
+        val token = extras.firstOrNull { it.first == BuildPropInternal.APP_PACKAGE_NAME }
         logger.p("addDirectAction, token: ${token?.second?.maskAll()}")
         // Check if has advanced action or facts
 
@@ -705,7 +706,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     fun addToggle(unMaskedToggle: Toggle) {
         // Check Subscribe state.
         val extras = unMaskedToggle.extrasList
-        val token = extras.firstOrNull { it.first == BuildProp.APP_PACKAGE_NAME }
+        val token = extras.firstOrNull { it.first == BuildPropInternal.APP_PACKAGE_NAME }
         logger.p("addToggle, token: ${token?.second?.maskAll()}")
         // Check if has advanced action or facts
 
@@ -1290,7 +1291,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                             .setId("ShortX.Rule")
                             .setAppPkg(
                                 AppPkg.newBuilder().setUserId(myUserId)
-                                    .setPkgName(BuildProp.APP_PACKAGE_NAME).build()
+                                    .setPkgName(BuildPropInternal.APP_PACKAGE_NAME).build()
                             )
                             .build().pack_()
                     )

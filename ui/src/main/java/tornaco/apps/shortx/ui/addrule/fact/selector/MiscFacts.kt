@@ -2,7 +2,7 @@ package tornaco.apps.shortx.ui.addrule.fact.selector
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import tornaco.apps.shortx.core.onDebugBuild
+import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.fact.FactSelectSource

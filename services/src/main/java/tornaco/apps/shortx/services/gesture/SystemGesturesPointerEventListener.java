@@ -16,8 +16,6 @@
 
 package tornaco.apps.shortx.services.gesture;
 
-import static tornaco.apps.shortx.core.BuildProp.APP_IS_DEBUG;
-
 import android.annotation.NonNull;
 import android.content.Context;
 import android.content.res.Resources;
@@ -29,6 +27,7 @@ import android.view.MotionEvent;
 
 import java.io.PrintWriter;
 
+import tornaco.apps.shortx.core.BuildPropInternal;
 import tornaco.apps.shortx.core.util.ScreenUtilsKt;
 
 /**
@@ -36,7 +35,7 @@ import tornaco.apps.shortx.core.util.ScreenUtilsKt;
  */
 public class SystemGesturesPointerEventListener {
     private static final String TAG = "SystemGestures";
-    private static final boolean DEBUG = APP_IS_DEBUG;
+    private static final boolean DEBUG = BuildPropInternal.APP_IS_DEBUG;
     private static final long SWIPE_TIMEOUT_MS = 500;
     private static final int MAX_TRACKED_POINTERS = 32;  // max per input system
     private static final int UNTRACKED_POINTER = -1;

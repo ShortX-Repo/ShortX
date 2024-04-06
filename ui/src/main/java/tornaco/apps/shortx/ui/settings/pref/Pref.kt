@@ -12,7 +12,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.common.Author
 import tornaco.apps.shortx.core.proto.toJson
 import tornaco.apps.shortx.core.proto.toProto
@@ -23,7 +23,7 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "pr
 
 private val INSTALL_FAKE_SERVICE_KEY = booleanPreferencesKey("install_fake_service")
 private val PRIVACY_STATEMENT_ACCEPTED_KEY =
-    booleanPreferencesKey("privacy_statement_accepted${BuildProp.APP_VERSION_CODE}")
+    booleanPreferencesKey("privacy_statement_accepted${BuildPropInternal.APP_VERSION_CODE}")
 private val IGNORE_FRAMEWORK_UPDATE = booleanPreferencesKey("ignore_framework_update")
 
 private val RECENT_SELECTED_ACTIONS = stringPreferencesKey("recent_selected_actions")

@@ -1,5 +1,7 @@
+import tornaco.project.android.shortx.Configs
 import tornaco.project.android.shortx.Configs.sxPackageName
 import tornaco.project.android.shortx.addAidlTask
+import java.util.UUID
 
 plugins {
     alias(libs.plugins.gmazzo.buildconfig)
@@ -13,6 +15,14 @@ buildConfig {
     packageName("${sxPackageName}.core")
     className("BuildPropInternal")
     useKotlinOutput { internalVisibility = false }
+
+    buildConfigField("String", "APP_PACKAGE_NAME", provider { "\"${sxPackageName}\"" })
+    buildConfigField("String", "APP_VERSION_NAME", provider { "\"${Configs.sxVersionName}\"" })
+    buildConfigField("String", "APP_VERSION_NAME_SUFFIX", provider { "\"${Configs.sxVersionNameSuffix}\"" })
+    buildConfigField("int", "APP_VERSION_CODE", provider { "${Configs.sxVersionCode}" })
+    buildConfigField("boolean", "APP_IS_DEBUG", provider { "${Configs.sxIsDebugBuild}" })
+    buildConfigField("long", "BUILD_TIME", "${System.currentTimeMillis()}L")
+    buildConfigField("String", "BUILD_FINGERPRINT", "\"${UUID.randomUUID()}\"")
 
     buildConfigField(
         "String",

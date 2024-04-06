@@ -25,7 +25,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.StateViewModel
@@ -76,7 +76,10 @@ class DanmuUISettingsViewModel @Inject constructor(@ApplicationContext context: 
         shortXManager.setDanmuUISettings(settings.toDanmuUISettings())
         previewJob = viewModelScope.launch {
             delay(300)
-            shortXManager.showDanmu("Hello ShortX, Awesome", "app://${BuildProp.APP_PACKAGE_NAME}")
+            shortXManager.showDanmu(
+                "Hello ShortX, Awesome",
+                "app://${BuildPropInternal.APP_PACKAGE_NAME}"
+            )
         }
     }
 }

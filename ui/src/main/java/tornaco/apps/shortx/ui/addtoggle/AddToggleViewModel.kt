@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
@@ -37,7 +37,7 @@ import tornaco.apps.shortx.ui.addrule.condition.op.toOp
 import tornaco.apps.shortx.ui.addtoggle.model.ToggleStateHandle
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.settings.pref.Pref
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 
 fun defaultNewToggleId() = "toggle-" + UUID.randomUUID().toString()
@@ -176,7 +176,7 @@ class AddToggleViewModel @Inject constructor(@ApplicationContext context: Contex
                 }
                 .addAllExtras(mutableListOf<StringPair>().apply {
                     if (!token.isNullOrEmpty()) {
-                        add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                        add((BuildPropInternal.APP_PACKAGE_NAME to token).toStringPair())
                     }
                 })
                 .build()

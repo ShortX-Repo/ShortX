@@ -13,7 +13,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.util.Logger
 import java.time.Duration
 import java.util.Objects
@@ -139,6 +139,6 @@ abstract class AppServiceProxy(
     }
 
     companion object {
-        private const val DEBUG_PROXY = BuildProp.APP_IS_DEBUG
+        private const val DEBUG_PROXY = BuildPropInternal.APP_IS_DEBUG
     }
 }

@@ -14,7 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.util.Logger
@@ -42,7 +42,7 @@ abstract class BaseComposeView(
             LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT
         )
 
-        val appResources = AppResources(context, BuildProp.APP_PACKAGE_NAME)
+        val appResources = AppResources(context, BuildPropInternal.APP_PACKAGE_NAME)
         val appContext = appResources.appContext
 
         // WTF?

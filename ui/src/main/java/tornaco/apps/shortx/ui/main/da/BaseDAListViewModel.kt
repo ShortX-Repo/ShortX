@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.da.DirectAction
@@ -236,7 +236,7 @@ abstract class BaseDAListViewModel(context: Context) :
                     .setVersionCode(da.versionCode)
                     .addAllExtras(mutableListOf<StringPair>().apply {
                         if (!token.isNullOrEmpty()) {
-                            add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                            add((BuildPropInternal.APP_PACKAGE_NAME to token).toStringPair())
                         }
                     })
                     .build()
@@ -262,7 +262,7 @@ abstract class BaseDAListViewModel(context: Context) :
             DirectAction.newBuilder(originalDA).setDirectActionSetId(setId)
                 .addAllExtras(mutableListOf<StringPair>().apply {
                     if (!token.isNullOrEmpty()) {
-                        add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                        add((BuildPropInternal.APP_PACKAGE_NAME to token).toStringPair())
                     }
                 })
                 .build()
@@ -276,7 +276,7 @@ abstract class BaseDAListViewModel(context: Context) :
             DirectAction.newBuilder(originalDA).setDirectActionSetId("")
                 .addAllExtras(mutableListOf<StringPair>().apply {
                     if (!token.isNullOrEmpty()) {
-                        add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                        add((BuildPropInternal.APP_PACKAGE_NAME to token).toStringPair())
                     }
                 })
                 .build()

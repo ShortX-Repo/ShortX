@@ -23,9 +23,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.context.ContextDataMapping
-import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.os.UidObserverCompat
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
@@ -172,7 +172,7 @@ class AppStateService(shortXContext: ShortXContext) :
             },
             onPackageRemoved = { removed ->
                 handler.postSafety {
-                    if (removed.pkg.pkgName == BuildProp.APP_PACKAGE_NAME) {
+                    if (removed.pkg.pkgName == BuildPropInternal.APP_PACKAGE_NAME) {
                         onShortXRemoved()
                     }
                     onPackageRemovedListeners.forEach { it(removed) }

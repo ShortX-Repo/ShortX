@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.common.StringPair
@@ -153,7 +153,7 @@ abstract class BaseRuleListViewModel(context: Context) :
                     .setVersionCode(1)
                     .addAllExtras(mutableListOf<StringPair>().apply {
                         if (!token.isNullOrEmpty()) {
-                            add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                            add((BuildPropInternal.APP_PACKAGE_NAME to token).toStringPair())
                         }
                     })
                     .build()
@@ -227,7 +227,7 @@ abstract class BaseRuleListViewModel(context: Context) :
                     .setIsEnabled(false)
                     .addAllExtras(mutableListOf<StringPair>().apply {
                         if (!token.isNullOrEmpty()) {
-                            add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                            add((BuildPropInternal.APP_PACKAGE_NAME to token).toStringPair())
                         }
                     })
                     .build()
@@ -254,7 +254,7 @@ abstract class BaseRuleListViewModel(context: Context) :
             Rule.newBuilder(originalRule).setRuleSetId(id)
                 .addAllExtras(mutableListOf<StringPair>().apply {
                     if (!token.isNullOrEmpty()) {
-                        add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                        add((BuildPropInternal.APP_PACKAGE_NAME to token).toStringPair())
                     }
                 })
                 .build()
@@ -268,7 +268,7 @@ abstract class BaseRuleListViewModel(context: Context) :
             Rule.newBuilder(originalRule).setRuleSetId("")
                 .addAllExtras(mutableListOf<StringPair>().apply {
                     if (!token.isNullOrEmpty()) {
-                        add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                        add((BuildPropInternal.APP_PACKAGE_NAME to token).toStringPair())
                     }
                 })
                 .build()

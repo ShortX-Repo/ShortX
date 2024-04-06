@@ -12,6 +12,7 @@ import android.os.RemoteCallbackList
 import android.os.ServiceManager
 import kotlinx.coroutines.CoroutineScope
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.notification.INotificationPoster
 import tornaco.apps.shortx.core.notification.NotificationPoster
@@ -50,7 +51,7 @@ class NotificationService(shortXContext: ShortXContext) :
     private val appRes by lazy {
         AppResources(
             context,
-            BuildProp.APP_PACKAGE_NAME
+            BuildPropInternal.APP_PACKAGE_NAME
         )
     }
 
@@ -342,9 +343,9 @@ internal class AppNotificationServiceProxy(
             scope: CoroutineScope
         ) {
             val intent = Intent()
-            intent.setPackage(BuildProp.APP_PACKAGE_NAME)
+            intent.setPackage(BuildPropInternal.APP_PACKAGE_NAME)
             intent.component =
-                ComponentName.unflattenFromString("${BuildProp.APP_PACKAGE_NAME}/${BuildProp.APP_NOTIFICATION_SERVICE_NAME}")
+                ComponentName.unflattenFromString("${BuildPropInternal.APP_PACKAGE_NAME}/${BuildProp.APP_NOTIFICATION_SERVICE_NAME}")
             return AppNotificationServiceProxy(context, intent, scope).post(postNotification)
         }
     }

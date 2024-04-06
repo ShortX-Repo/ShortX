@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import tornaco.apps.shortx.core.BuildProp;
+import tornaco.apps.shortx.core.BuildPropInternal;
 
 /**
  * Detect single key gesture: press, long press, very long press and multi press.
@@ -40,7 +40,7 @@ import tornaco.apps.shortx.core.BuildProp;
  */
 public final class SingleKeyGestureDetector {
     private static final String TAG = "SingleKeyGesture";
-    private static final boolean DEBUG = BuildProp.APP_IS_DEBUG;
+    private static final boolean DEBUG = BuildPropInternal.APP_IS_DEBUG;
     private static final int MSG_KEY_LONG_PRESS = 0;
     private static final int MSG_KEY_DELAYED_PRESS = 2;
     private static final int MSG_KEY_UNHANDLED_DOWN = 3;

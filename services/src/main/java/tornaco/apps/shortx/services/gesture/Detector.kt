@@ -6,7 +6,7 @@ import android.graphics.Point
 import android.os.Handler
 import android.view.GestureDetector
 import android.view.MotionEvent
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.util.Logger
@@ -21,7 +21,7 @@ class Detector(
     private val service: GestureService,
 ) {
     companion object {
-        const val LOGV = BuildProp.APP_IS_DEBUG
+        const val LOGV = BuildPropInternal.APP_IS_DEBUG
     }
 
     private val logger = Logger("Detector")

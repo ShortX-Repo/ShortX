@@ -1,7 +1,7 @@
 package tornaco.apps.shortx.services.rule.fact.trigger
 
 import android.content.Context
-import tornaco.apps.shortx.core.onDebugBuild
+import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.util.LogcatManager

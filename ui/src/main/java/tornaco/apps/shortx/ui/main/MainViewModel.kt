@@ -5,13 +5,13 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IAudioRecordingListener
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.main.model.MainState
 import tornaco.apps.shortx.ui.settings.pref.Pref
-import java.util.*
 import javax.inject.Inject
 
 @SuppressLint("StaticFieldLeak")
@@ -36,7 +36,7 @@ open class MainViewModel @Inject constructor(@ApplicationContext context: Contex
         updateState {
             copy(
                 isActivated = shortXManager.isInstalled,
-                isFrameworkUpdated = shortXManager.isFrameworkUpdated,
+                isFrameworkUpdated = shortXManager.isFrameworkUpdated(BuildPropInternal.BUILD_FINGERPRINT),
                 isAudioRecording = shortXManager.isAudioRecording()
             )
         }

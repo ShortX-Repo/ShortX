@@ -3,7 +3,7 @@ package tornaco.apps.shortx.services.ui
 import android.os.Handler
 import android.os.Looper
 import kotlinx.coroutines.runBlocking
-import tornaco.apps.shortx.core.onDebugBuild
+import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.QSTileList
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings

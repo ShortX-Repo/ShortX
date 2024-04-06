@@ -1,12 +1,9 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import android.util.Log
-import android.view.IInputFilter
-import android.view.IInputFilterHost
 import android.view.InputEvent
 import de.robv.android.xposed.callbacks.XC_LoadPackage
-import tornaco.apps.shortx.core.ShortXManager
-import tornaco.apps.shortx.core.onDebugBuild
+import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
 import tornaco.apps.shortx.core.platform.Classes.inputManagerService
 import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.core.util.Logger

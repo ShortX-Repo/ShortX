@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IActionEvaluateListener
 import tornaco.apps.shortx.core.proto.action.SendSMS
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
@@ -31,7 +31,6 @@ import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.core.util.maskAll
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
-import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.addrule.condition.ConditionContentStateHandler
@@ -253,7 +252,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                 .setVersionCode(state.value.versionCode)
                 .addAllExtras(mutableListOf<StringPair>().apply {
                     if (!token.isNullOrEmpty()) {
-                        add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                        add((BuildPropInternal.APP_PACKAGE_NAME to token).toStringPair())
                     }
                 })
                 .setRuleSetId(state.value.ruleSetId)
@@ -414,7 +413,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
             viewModelScope.launch {
                 updateState { copy(onlineDALoadState = LoadState.Loading) }
                 withContext(Dispatchers.IO) {
-                    if (BuildProp.APP_IS_DEBUG) {
+                    if (BuildPropInternal.APP_IS_DEBUG) {
                         delay(1000)
                     }
                     runCatching {

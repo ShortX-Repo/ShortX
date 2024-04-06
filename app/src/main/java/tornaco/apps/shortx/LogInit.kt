@@ -7,10 +7,14 @@ import com.elvishew.xlog.flattener.ClassicFlattener
 import com.elvishew.xlog.printer.AndroidPrinter
 import com.elvishew.xlog.printer.file.clean.FileLastModifiedCleanStrategy
 import com.elvishew.xlog.printer.file.naming.DateFileNameGenerator
+import tornaco.apps.shortx.core.BuildPropExt
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.util.logAdapter
 import tornaco.apps.shortx.ui.settings.logFolderPath
 
 fun initLogger(context: Context) {
+    BuildPropExt.isDebug = BuildPropInternal.APP_IS_DEBUG
+
     with(context) {
         val androidPrinter: com.elvishew.xlog.printer.Printer = AndroidPrinter()
         val filePrinter: com.elvishew.xlog.printer.Printer =

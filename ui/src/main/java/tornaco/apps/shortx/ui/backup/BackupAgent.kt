@@ -5,7 +5,7 @@ import android.net.Uri
 import android.os.Environment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.backup.DA_FILE_NAME
 import tornaco.apps.shortx.core.backup.DA_SET_FILE_NAME
 import tornaco.apps.shortx.core.backup.GV_FILE_NAME
@@ -85,7 +85,7 @@ class BackupAgent(private val context: Context) {
 
             // Meta
             val metaFile = File(backupTempDir, META_FILE_NAME)
-            val meta = "${BuildProp.APP_VERSION_CODE}"
+            val meta = "${BuildPropInternal.APP_VERSION_CODE}"
             metaFile.writeText(meta)
 
             val backupZipRootDir =
@@ -158,7 +158,7 @@ class BackupAgent(private val context: Context) {
                     Rule.newBuilder(it).setIsEnabled(false)
                         .addAllExtras(mutableListOf<StringPair>().apply {
                             if (!token.isNullOrEmpty()) {
-                                add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                                add((BuildPropInternal.APP_PACKAGE_NAME to token).toStringPair())
                             }
                         })
                         .build()
@@ -170,7 +170,7 @@ class BackupAgent(private val context: Context) {
                     DirectAction.newBuilder(it)
                         .addAllExtras(mutableListOf<StringPair>().apply {
                             if (!token.isNullOrEmpty()) {
-                                add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                                add((BuildPropInternal.APP_PACKAGE_NAME to token).toStringPair())
                             }
                         })
                         .build()

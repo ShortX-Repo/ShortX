@@ -13,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.BiometricVerifyResultCase
 import tornaco.apps.shortx.core.shortXManager
@@ -61,7 +61,7 @@ class BiometricVerifyActivity : BaseActivity() {
                         modifier = Modifier.size(120.dp),
                         pkg = AppPkg
                             .newBuilder()
-                            .setPkgName(BuildProp.APP_PACKAGE_NAME)
+                            .setPkgName(BuildPropInternal.APP_PACKAGE_NAME)
                             .setUserId(0)
                             .build()
                     )

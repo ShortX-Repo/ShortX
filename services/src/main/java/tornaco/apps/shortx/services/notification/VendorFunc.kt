@@ -2,11 +2,10 @@ package tornaco.apps.shortx.services.notification
 
 import android.app.PendingIntent
 import android.content.Context
-
 import android.content.Intent
 import android.service.notification.StatusBarNotification
+import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
 import tornaco.apps.shortx.core.notification.getNormalizedUserId
-import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
 

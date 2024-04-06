@@ -7,7 +7,7 @@ import android.os.Handler
 import android.os.UserHandle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppCategory
@@ -196,7 +196,7 @@ class PkgPool(
         val isSuspend = !suspendAppPkg.isEnabled(pkg)
 
         // Check if it is ShortX
-        if (BuildProp.APP_PACKAGE_NAME == packageName) {
+        if (BuildPropInternal.APP_PACKAGE_NAME == packageName) {
             logger.i("ShortX app uid: $uid")
             shortXAppUids.add(uid)
         } else if ("com.android.systemui" == packageName) {

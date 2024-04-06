@@ -25,6 +25,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Handler
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.alarm.formatDuration
 import tornaco.apps.shortx.core.alarm.getTriggerTimeOffset
 import tornaco.apps.shortx.core.compat.ContextCompat
@@ -189,8 +190,8 @@ fun Context.alarmClockViewerIntent(): PendingIntent {
     return PendingIntent.getActivity(
         this,
         System.currentTimeMillis().toString().hashCode(),
-        Intent().setPackage(BuildProp.APP_PACKAGE_NAME).setComponent(
-            ComponentName.unflattenFromString("${BuildProp.APP_PACKAGE_NAME}/${BuildProp.APP_MAIN_ACTIVITY}")
+        Intent().setPackage(BuildPropInternal.APP_PACKAGE_NAME).setComponent(
+            ComponentName.unflattenFromString("${BuildPropInternal.APP_PACKAGE_NAME}/${BuildProp.APP_MAIN_ACTIVITY}")
         ),
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     )

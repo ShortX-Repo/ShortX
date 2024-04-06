@@ -6,8 +6,12 @@ import android.content.ContextWrapper
 import android.content.res.Resources
 import android.graphics.PixelFormat
 import android.graphics.Rect
-import android.view.*
+import android.view.Gravity
+import android.view.MotionEvent
+import android.view.View
 import android.view.ViewConfiguration
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.annotation.Keep
 import androidx.compose.material3.LocalContentColor
@@ -15,9 +19,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.*
-import androidx.lifecycle.*
-import tornaco.apps.shortx.core.BuildProp
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
@@ -122,7 +126,7 @@ class ComposeOverlay(
         val wrapContent = LayoutParams(
             LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT
         )
-        val appResources = AppResources(context, BuildProp.APP_PACKAGE_NAME)
+        val appResources = AppResources(context, BuildPropInternal.APP_PACKAGE_NAME)
         val appContext = appResources.appContext
 
         val contextWrapper = object : ContextWrapper(context) {

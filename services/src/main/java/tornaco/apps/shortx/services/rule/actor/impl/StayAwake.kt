@@ -5,7 +5,7 @@ import android.os.PowerManager.SCREEN_BRIGHT_WAKE_LOCK
 import android.os.PowerManager.WakeLock
 import com.google.protobuf.Message
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.common.OnOffToggle
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.powerManager
@@ -44,7 +44,7 @@ object StayAwake : Actor {
             wakeLock?.release()
             wakeLock = androidContext.powerManager.newWakeLock(
                 SCREEN_BRIGHT_WAKE_LOCK,
-                BuildProp.APP_PACKAGE_NAME + ":wakelock"
+                BuildPropInternal.APP_PACKAGE_NAME + ":wakelock"
             ).apply {
                 setReferenceCounted(false)
                 acquire()

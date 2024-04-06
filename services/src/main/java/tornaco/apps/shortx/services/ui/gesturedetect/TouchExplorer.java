@@ -16,7 +16,7 @@
 
 package tornaco.apps.shortx.services.ui.gesturedetect;
 
-import tornaco.apps.shortx.core.BuildProp;
+import tornaco.apps.shortx.core.BuildPropInternal;
 
 /**
  * This class is a strategy for performing touch exploration. It
@@ -38,5 +38,5 @@ import tornaco.apps.shortx.core.BuildProp;
  * @hide
  */
 public class TouchExplorer {
-    static final boolean DEBUG = BuildProp.APP_IS_DEBUG;
+    static final boolean DEBUG = BuildPropInternal.APP_IS_DEBUG;
 }

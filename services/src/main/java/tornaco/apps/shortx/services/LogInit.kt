@@ -12,7 +12,8 @@ import com.elvishew.xlog.printer.Printer
 import com.elvishew.xlog.printer.file.FilePrinter
 import com.elvishew.xlog.printer.file.clean.FileLastModifiedCleanStrategy
 import com.elvishew.xlog.printer.file.naming.DateFileNameGenerator
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropExt
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.ZipUtils
@@ -26,7 +27,7 @@ import java.io.FileOutputStream
 object LogInit {
     private const val LOG_PREFIX = "ShortX-Core"
 
-    private var _logDebug = BuildProp.APP_IS_DEBUG
+    private var _logDebug = BuildPropInternal.APP_IS_DEBUG
     val logDebug get() = _logDebug
 
     // Log buffer for store early log.
@@ -43,6 +44,7 @@ object LogInit {
                 Log.ERROR -> XLog.e("$tag $msg")
             }
         }
+        BuildPropExt.isDebug = BuildPropInternal.APP_IS_DEBUG
     }
 
     fun setLogDebug(enable: Boolean) {
@@ -109,7 +111,7 @@ object LogInit {
             initLogFile.appendText(System.lineSeparator())
             initLogFile.appendText("SDK: ${Build.VERSION.SDK_INT}")
             initLogFile.appendText(System.lineSeparator())
-            initLogFile.appendText("SHORTX: ${BuildProp.APP_VERSION_NAME} ${BuildProp.APP_VERSION_CODE}")
+            initLogFile.appendText("SHORTX: ${BuildPropInternal.APP_VERSION_NAME} ${BuildPropInternal.APP_VERSION_CODE}")
             initLogFile.appendText(System.lineSeparator())
             initLogFile.appendText("-------------------")
 

@@ -5,7 +5,7 @@ import android.content.Context
 import android.view.View
 import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.callbacks.XC_LoadPackage
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IShortX
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.notification.INotificationPoster
@@ -51,7 +51,7 @@ object SystemUIHook {
                                 param.thisObject,
                                 "mComponent"
                             ) as ComponentName
-                        if (name.packageName.contains(BuildProp.APP_PACKAGE_NAME)) {
+                        if (name.packageName.contains(BuildPropInternal.APP_PACKAGE_NAME)) {
                             // tornaco.apps.shortx/tornaco.apps.shortx.ui.service.tile.Tile7
                             val tileName = name.className.substringAfterLast(".")
                             val tile = StatusBarTile.valueOf(tileName)
@@ -125,7 +125,7 @@ object SystemUIHook {
         logger.d("installNotificationPoster")
         val appRes = AppResources(
             context,
-            BuildProp.APP_PACKAGE_NAME
+            BuildPropInternal.APP_PACKAGE_NAME
         )
         val notificationPoster by lazy {
             NotificationPoster(

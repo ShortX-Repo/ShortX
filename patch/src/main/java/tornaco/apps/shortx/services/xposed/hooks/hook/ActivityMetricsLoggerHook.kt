@@ -1,7 +1,7 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import de.robv.android.xposed.callbacks.XC_LoadPackage
-import tornaco.apps.shortx.core.onDebugBuild
+import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
 import tornaco.apps.shortx.core.platform.Classes.activityMetricsLoggerClass
 import tornaco.apps.shortx.core.util.Logger
 import util.ReflectionsExt

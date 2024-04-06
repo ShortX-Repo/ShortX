@@ -2,7 +2,7 @@ package tornaco.apps.shortx.services.rule.actor.impl
 
 import com.android.internal.annotations.VisibleForTesting
 import com.google.protobuf.Message
-import tornaco.apps.shortx.core.onDebugBuild
+import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
 import tornaco.apps.shortx.core.proto.action.WriteGlobalVar
 import tornaco.apps.shortx.core.proto.action.WriteGlobalVarOp
 import tornaco.apps.shortx.core.proto.gv.GlobalVar

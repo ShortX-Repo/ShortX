@@ -9,6 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
@@ -167,9 +168,9 @@ internal class AppShellServiceProxy(context: Context, intent: Intent, scope: Cor
             scope: CoroutineScope
         ): ShellRes? {
             val intent = Intent()
-            intent.setPackage(BuildProp.APP_PACKAGE_NAME)
+            intent.setPackage(BuildPropInternal.APP_PACKAGE_NAME)
             intent.component =
-                ComponentName.unflattenFromString("${BuildProp.APP_PACKAGE_NAME}/${BuildProp.APP_SHELL_SERVICE_NAME}")
+                ComponentName.unflattenFromString("${BuildPropInternal.APP_PACKAGE_NAME}/${BuildProp.APP_SHELL_SERVICE_NAME}")
             return AppShellServiceProxy(context, intent, scope).exe(arrayOf(command), singleShot)
         }
     }

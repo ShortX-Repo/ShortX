@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IActionEvaluateListener
 import tornaco.apps.shortx.core.proto.action.SendSMS
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
@@ -142,7 +142,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                 .setDirectActionSetId(state.value.daSetId)
                 .addAllExtras(mutableListOf<StringPair>().apply {
                     if (!token.isNullOrEmpty()) {
-                        add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                        add((BuildPropInternal.APP_PACKAGE_NAME to token).toStringPair())
                     }
                 })
                 .build()
@@ -209,7 +209,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
             viewModelScope.launch {
                 updateState { copy(onlineDALoadState = LoadState.Loading) }
                 withContext(Dispatchers.IO) {
-                    if (BuildProp.APP_IS_DEBUG) {
+                    if (BuildPropInternal.APP_IS_DEBUG) {
                         delay(1000)
                     }
                     runCatching {

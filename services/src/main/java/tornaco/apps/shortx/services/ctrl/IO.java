@@ -10,7 +10,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Scanner;
 
-import tornaco.apps.shortx.core.BuildProp;
+import tornaco.apps.shortx.core.BuildPropInternal;
 
 public final class IO {
     private IO() {
@@ -25,7 +25,7 @@ public final class IO {
         while (remaining > 0) {
             try {
                 int w = Os.write(fd, from);
-                if (BuildProp.APP_IS_DEBUG && w < 0) {
+                if (BuildPropInternal.APP_IS_DEBUG && w < 0) {
                     // w should not be negative, since an exception is thrown on error
                     throw new AssertionError("Os.write() returned a negative value (" + w + ")");
                 }

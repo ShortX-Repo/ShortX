@@ -14,6 +14,7 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
 import org.mvel2.MVEL
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.http.HttpCallerImpl
 import tornaco.apps.shortx.core.http.IHttpCaller
@@ -316,9 +317,9 @@ internal class AppHttpRequestServiceProxy(context: Context, intent: Intent, scop
             trustAllCerts: Boolean
         ): HttpResponseData? {
             val intent = Intent()
-            intent.setPackage(BuildProp.APP_PACKAGE_NAME)
+            intent.setPackage(BuildPropInternal.APP_PACKAGE_NAME)
             intent.component =
-                ComponentName.unflattenFromString("${BuildProp.APP_PACKAGE_NAME}/${BuildProp.APP_HTTP_REQUEST_SERVICE_NAME}")
+                ComponentName.unflattenFromString("${BuildPropInternal.APP_PACKAGE_NAME}/${BuildProp.APP_HTTP_REQUEST_SERVICE_NAME}")
             return AppHttpRequestServiceProxy(context, intent, scope).call(
                 url,
                 method,

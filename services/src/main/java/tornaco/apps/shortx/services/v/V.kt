@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.content.pm.Signature
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.common.CommonApiRes
 import tornaco.apps.shortx.core.util.Logger
@@ -20,12 +19,12 @@ val logger = Logger("ShortV")
 fun s(context: Context): Array<Signature> {
     return if (OsUtils.isPOrAbove()) {
         context.packageManager.getPackageInfo(
-            BuildProp.APP_PACKAGE_NAME,
+            BuildPropInternal.APP_PACKAGE_NAME,
             PackageManager.GET_SIGNING_CERTIFICATES
         ).signingInfo.apkContentsSigners
     } else {
         context.packageManager.getPackageInfo(
-            BuildProp.APP_PACKAGE_NAME,
+            BuildPropInternal.APP_PACKAGE_NAME,
             PackageManager.GET_SIGNATURES
         ).signatures
     }
@@ -93,7 +92,7 @@ suspend fun vb(
     onSuccess: (CommonApiRes) -> Unit,
     onError: (Throwable) -> Unit
 ) {
-    if (BuildProp.APP_IS_DEBUG) {
+    if (BuildPropInternal.APP_IS_DEBUG) {
         logger.d("vb")
     }
 
@@ -122,7 +121,7 @@ suspend fun vb(
         }.onFailure {
             onError(it)
             errorTimes += 1
-            if (BuildProp.APP_IS_DEBUG) logger.e(it, "vb error")
+            if (BuildPropInternal.APP_IS_DEBUG) logger.e(it, "vb error")
         }
     }
 }

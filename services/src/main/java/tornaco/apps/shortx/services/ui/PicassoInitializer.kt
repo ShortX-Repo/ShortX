@@ -5,7 +5,7 @@ import android.content.Context
 import com.squareup.picasso3.Picasso
 import com.squareup.picasso3.Request
 import com.squareup.picasso3.RequestHandler
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.res.Remix
@@ -78,7 +78,7 @@ object PicassoInitializer {
 
     fun install(context: Context) {
         appContext = context
-        appResources = AppResources(context, BuildProp.APP_PACKAGE_NAME)
+        appResources = AppResources(context, BuildPropInternal.APP_PACKAGE_NAME)
     }
 
     fun get() = picasso

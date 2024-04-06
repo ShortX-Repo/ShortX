@@ -32,7 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.PkgUtils
@@ -417,7 +417,7 @@ private fun daListItemOverflowMenu(
                             kotlin.runCatching {
                                 PkgUtils.launchPkgSettings(
                                     context,
-                                    BuildProp.APP_PACKAGE_NAME
+                                    BuildPropInternal.APP_PACKAGE_NAME
                                 )
                             }
                         }
