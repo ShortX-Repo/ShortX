@@ -837,6 +837,11 @@ private fun engineSettings(
         }
     )
 
+    val permissionRequester = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { _: Boolean ->
+    }
+
     return mutableListOf(
         Preference.Category(i18N["ui.settings.engine"]),
 
@@ -911,6 +916,9 @@ private fun engineSettings(
             value = state.isPostNByApp,
             onCheckChanged = { enable ->
                 vm.setPostNByAppEnabled(enable)
+                if (enable && OsUtils.isTOrAbove()) {
+                    permissionRequester.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
             }
         ),
         BuildPropInternal.APP_IS_DEBUG.select(
