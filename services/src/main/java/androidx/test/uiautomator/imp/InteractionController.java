@@ -36,12 +36,11 @@ import android.view.MotionEvent.PointerProperties;
 import android.view.ViewConfiguration;
 import android.view.accessibility.AccessibilityEvent;
 
-import androidx.test.uiautomator.imp.adapter.InstrumentationAdapter;
 import androidx.test.uiautomator.imp.adapter.IUiAutomation;
+import androidx.test.uiautomator.imp.adapter.InstrumentationAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 /**
  * The InteractionProvider is responsible for injecting user events such as touch events
@@ -164,16 +163,9 @@ class InteractionController {
      */
     private AccessibilityEvent runAndWaitForEvents(Runnable command,
                                                    AccessibilityEventFilter filter, long timeout) {
-
-        try {
-            return getUiAutomation().executeAndWaitForEvent(command, filter, timeout);
-        } catch (TimeoutException e) {
-            Log.w(LOG_TAG, "runAndwaitForEvents timed out waiting for events");
-            return null;
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "exception from executeCommandAndWaitForAccessibilityEvent", e);
-            return null;
-        }
+        command.run();
+        // TORNACO modify. bypass wait for event. to avoid ANR issue.
+        return AccessibilityEvent.obtain();
     }
 
     /**

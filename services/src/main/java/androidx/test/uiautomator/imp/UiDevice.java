@@ -54,7 +54,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeoutException;
 
 /**
  * UiDevice provides access to state information about the device.
@@ -185,31 +184,6 @@ public class UiDevice implements Searchable {
      */
     public <R> R wait(SearchCondition<R> condition, long timeout) {
         return mWaitMixin.wait(condition, timeout);
-    }
-
-    /**
-     * Performs the provided {@code action} and waits for the {@code condition} to be met.
-     *
-     * @param action    The {@link Runnable} action to perform.
-     * @param condition The {@link EventCondition} to evaluate.
-     * @param timeout   Maximum amount of time to wait in milliseconds.
-     * @return The final result returned by the condition.
-     */
-    public <R> R performActionAndWait(Runnable action, EventCondition<R> condition, long timeout) {
-
-        AccessibilityEvent event = null;
-        try {
-            event = getUiAutomation().executeAndWaitForEvent(
-                    action, new EventForwardingFilter(condition), timeout);
-        } catch (TimeoutException e) {
-            // Ignore
-        }
-
-        if (event != null) {
-            event.recycle();
-        }
-
-        return condition.getResult();
     }
 
     /**
@@ -947,51 +921,6 @@ public class UiDevice implements Searchable {
      */
     public void dumpWindowHierarchy(OutputStream out) throws IOException {
         AccessibilityNodeInfoDumper.dumpWindowHierarchy(this, out);
-    }
-
-    /**
-     * Waits for a window content update event to occur.
-     * <p>
-     * If a package name for the window is specified, but the current window
-     * does not have the same package name, the function returns immediately.
-     *
-     * @param packageName the specified window package name (can be <code>null</code>).
-     *                    If <code>null</code>, a window update from any front-end window will end the wait
-     * @param timeout     the timeout for the wait
-     * @return true if a window update occurred, false if timeout has elapsed or if the current
-     * window does not have the specified package name
-     * @since API Level 16
-     */
-    public boolean waitForWindowUpdate(final String packageName, long timeout) {
-        Tracer.trace(packageName, timeout);
-        if (packageName != null) {
-            if (!packageName.equals(getCurrentPackageName())) {
-                return false;
-            }
-        }
-        Runnable emptyRunnable = new Runnable() {
-            @Override
-            public void run() {
-            }
-        };
-        AccessibilityEventFilter checkWindowUpdate = new AccessibilityEventFilter() {
-            @Override
-            public boolean accept(AccessibilityEvent t) {
-                if (t.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
-                    return packageName == null || packageName.equals(t.getPackageName());
-                }
-                return false;
-            }
-        };
-        try {
-            getUiAutomation().executeAndWaitForEvent(emptyRunnable, checkWindowUpdate, timeout);
-        } catch (TimeoutException e) {
-            return false;
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "waitForWindowUpdate: general exception from bridge", e);
-            return false;
-        }
-        return true;
     }
 
     /**

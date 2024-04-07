@@ -85,20 +85,6 @@ class GestureController {
     }
 
     /**
-     * Performs the given gesture and waits for the {@code condition} to be met.
-     *
-     * @param condition The {@link EventCondition} to wait for.
-     * @param timeout   Maximum amount of time to wait in milliseconds.
-     * @param gestures  One or more {@link PointerGesture}s which define the gesture to be performed.
-     * @return The final result returned by the condition.
-     */
-    public <R> R performGestureAndWait(EventCondition<R> condition, long timeout,
-                                       PointerGesture... gestures) {
-
-        return getDevice().performActionAndWait(new GestureRunnable(gestures), condition, timeout);
-    }
-
-    /**
      * Performs the given gesture as represented by the given {@link PointerGesture}s.
      * <p>
      * Each {@link PointerGesture} represents the actions of a single pointer from the time when it

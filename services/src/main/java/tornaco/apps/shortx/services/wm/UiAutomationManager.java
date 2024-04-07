@@ -12,7 +12,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
-import android.os.SystemClock;
 import android.view.InputEvent;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
@@ -22,9 +21,7 @@ import android.view.accessibility.AccessibilityWindowInfo;
 
 import androidx.test.uiautomator.imp.adapter.IUiAutomation;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import tornaco.apps.shortx.core.util.Logger;
@@ -40,10 +37,6 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
     private UiAutomationConnection connection;
 
     private final Object syncLock = new Object();
-
-    private final ArrayList<AccessibilityEvent> mEventQueue = new ArrayList<>();
-    private boolean mWaitingForEventDelivery;
-    private long mLastEventTimeMillis;
 
     private UiAutomation.OnAccessibilityEventListener mOnAccessibilityEventListener;
     private final Handler mLocalCallbackHandler;
@@ -136,85 +129,6 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
     }
 
     @Override
-    public AccessibilityEvent executeAndWaitForEvent(Runnable command,
-                                                     UiAutomation.AccessibilityEventFilter filter,
-                                                     long timeoutMillis) throws TimeoutException {
-        // Acquire the lock and prepare for receiving events.
-        synchronized (syncLock) {
-            if (connectionId.get() == AccessibilityInteractionClient.NO_ID) {
-                LOGGER.e("executeAndWaitForEvent, not connected...");
-                return null;
-            }
-            mEventQueue.clear();
-            // Prepare to wait for an event.
-            mWaitingForEventDelivery = true;
-        }
-
-        // Note: We have to release the lock since calling out with this lock held
-        // can bite. We will correctly filter out events from other interactions,
-        // so starting to collect events before running the action is just fine.
-
-        // We will ignore events from previous interactions.
-        final long executionStartTimeMillis = SystemClock.uptimeMillis();
-        // Execute the command *without* the lock being held.
-        command.run();
-
-        List<AccessibilityEvent> receivedEvents = new ArrayList<>();
-
-        // Acquire the lock and wait for the event.
-        try {
-            // Wait for the event.
-            final long startTimeMillis = SystemClock.uptimeMillis();
-            while (true) {
-                List<AccessibilityEvent> localEvents;
-                synchronized (syncLock) {
-                    localEvents = new ArrayList<>(mEventQueue);
-                    mEventQueue.clear();
-                }
-                // Drain the event queue
-                while (!localEvents.isEmpty()) {
-                    AccessibilityEvent event = localEvents.remove(0);
-                    // Ignore events from previous interactions.
-                    if (event.getEventTime() < executionStartTimeMillis) {
-                        continue;
-                    }
-                    if (filter.accept(event)) {
-                        return event;
-                    }
-                    receivedEvents.add(event);
-                }
-                // Check if timed out and if not wait.
-                final long elapsedTimeMillis = SystemClock.uptimeMillis() - startTimeMillis;
-                final long remainingTimeMillis = timeoutMillis - elapsedTimeMillis;
-                if (remainingTimeMillis <= 0) {
-                    throw new TimeoutException("Expected event not received within: "
-                            + timeoutMillis + " ms among: " + receivedEvents);
-                }
-                synchronized (syncLock) {
-                    if (mEventQueue.isEmpty()) {
-                        try {
-                            syncLock.wait(remainingTimeMillis);
-                        } catch (InterruptedException ie) {
-                            /* ignore */
-                        }
-                    }
-                }
-            }
-        } finally {
-            int size = receivedEvents.size();
-            for (int i = 0; i < size; i++) {
-                receivedEvents.get(i).recycle();
-            }
-
-            synchronized (syncLock) {
-                mWaitingForEventDelivery = false;
-                mEventQueue.clear();
-                syncLock.notifyAll();
-            }
-        }
-    }
-
-    @Override
     public AccessibilityServiceInfo getServiceInfo() {
         if (connectionId.get() == AccessibilityInteractionClient.NO_ID) {
             LOGGER.e("getServiceInfo, not connected...");
@@ -271,45 +185,6 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
     }
 
     @Override
-    public void waitForIdle(long idleTimeoutMillis, long globalTimeoutMillis) throws TimeoutException {
-        synchronized (syncLock) {
-            if (connectionId.get() == AccessibilityInteractionClient.NO_ID) {
-                LOGGER.e("onAccessibilityEvent, not connected...");
-                return;
-            }
-
-            final long startTimeMillis = SystemClock.uptimeMillis();
-            if (mLastEventTimeMillis <= 0) {
-                mLastEventTimeMillis = startTimeMillis;
-            }
-
-            while (true) {
-                final long currentTimeMillis = SystemClock.uptimeMillis();
-                // Did we get idle state within the global timeout?
-                final long elapsedGlobalTimeMillis = currentTimeMillis - startTimeMillis;
-                final long remainingGlobalTimeMillis =
-                        globalTimeoutMillis - elapsedGlobalTimeMillis;
-                if (remainingGlobalTimeMillis <= 0) {
-                    throw new TimeoutException("No idle state with idle timeout: "
-                            + idleTimeoutMillis + " within global timeout: "
-                            + globalTimeoutMillis);
-                }
-                // Did we get an idle state within the idle timeout?
-                final long elapsedIdleTimeMillis = currentTimeMillis - mLastEventTimeMillis;
-                final long remainingIdleTimeMillis = idleTimeoutMillis - elapsedIdleTimeMillis;
-                if (remainingIdleTimeMillis <= 0) {
-                    return;
-                }
-                try {
-                    syncLock.wait(remainingIdleTimeMillis);
-                } catch (InterruptedException ie) {
-                    /* ignore */
-                }
-            }
-        }
-    }
-
-    @Override
     public void init(IAccessibilityServiceConnection connection, int id, IBinder iBinder) {
         synchronized (syncLock) {
             LOGGER.w("IAccessibilityServiceConnection init " + connection + id + iBinder);
@@ -340,82 +215,72 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
             return;
         }
 
+        AccessibilityEvent cloneEvent = AccessibilityEvent.obtain(event);
         mLocalCallbackHandler.post(() -> {
-            synchronized (syncLock) {
-                mLastEventTimeMillis = event.getEventTime();
-                if (mWaitingForEventDelivery) {
-                    mEventQueue.add(AccessibilityEvent.obtain(event));
-                }
-                syncLock.notifyAll();
-            }
-
             if (mOnAccessibilityEventListener != null) {
-                AccessibilityEvent cloneEvent = AccessibilityEvent.obtain(event);
-                mLocalCallbackHandler.post(() -> {
-                    mOnAccessibilityEventListener.onAccessibilityEvent(cloneEvent);
-                    cloneEvent.recycle();
-                });
+                mOnAccessibilityEventListener.onAccessibilityEvent(cloneEvent);
+                cloneEvent.recycle();
             }
         });
     }
 
     @Override
-    public void onInterrupt() throws RemoteException {
+    public void onInterrupt() {
 
     }
 
     @Override
-    public void onGesture(AccessibilityGestureEvent gestureEvent) throws RemoteException {
+    public void onGesture(AccessibilityGestureEvent gestureEvent) {
 
     }
 
     @Override
-    public void clearAccessibilityCache() throws RemoteException {
+    public void clearAccessibilityCache() {
 
     }
 
     @Override
-    public void onKeyEvent(KeyEvent event, int sequence) throws RemoteException {
+    public void onKeyEvent(KeyEvent event, int sequence) {
 
     }
 
     @Override
-    public void onMagnificationChanged(int displayId, Region region, float scale, float centerX, float centerY) throws RemoteException {
+    public void onMagnificationChanged(int displayId, Region region, float scale, float centerX, float centerY) {
 
     }
 
     @Override
-    public void onSoftKeyboardShowModeChanged(int showMode) throws RemoteException {
+    public void onSoftKeyboardShowModeChanged(int showMode) {
 
     }
 
     @Override
-    public void onPerformGestureResult(int sequence, boolean completedSuccessfully) throws RemoteException {
+    public void onPerformGestureResult(int sequence, boolean completedSuccessfully) {
 
     }
 
     @Override
-    public void onFingerprintCapturingGesturesChanged(boolean capturing) throws RemoteException {
+    public void onFingerprintCapturingGesturesChanged(boolean capturing) {
 
     }
 
     @Override
-    public void onFingerprintGesture(int gesture) throws RemoteException {
+    public void onFingerprintGesture(int gesture) {
 
     }
 
     @Override
-    public void onAccessibilityButtonClicked(int displayId) throws RemoteException {
+    public void onAccessibilityButtonClicked(int displayId) {
 
     }
 
     @Override
-    public void onAccessibilityButtonAvailabilityChanged(boolean available) throws RemoteException {
+    public void onAccessibilityButtonAvailabilityChanged(boolean available) {
 
     }
 
     @Override
-    public void onSystemActionsChanged() throws RemoteException {
+    public void onSystemActionsChanged() {
 
     }
 }

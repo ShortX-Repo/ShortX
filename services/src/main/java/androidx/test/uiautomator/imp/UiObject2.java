@@ -24,7 +24,6 @@ import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.ViewConfiguration;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import java.util.ArrayList;
@@ -424,14 +423,6 @@ public class UiObject2 implements Searchable {
     }
 
     /**
-     * Clicks on this object, and waits for the given condition to become true.
-     */
-    public <R> R clickAndWait(EventCondition<R> condition, long timeout) {
-        return mGestureController.performGestureAndWait(condition, timeout,
-                mGestures.click(getVisibleCenter()));
-    }
-
-    /**
      * Drags this object to the specified location.
      *
      * @param dest The end point that this object should be dragged to.
@@ -538,87 +529,6 @@ public class UiObject2 implements Searchable {
         }
         Rect bounds = getVisibleBoundsForGestures();
         mGestureController.performGesture(mGestures.swipeRect(bounds, direction, percent, speed));
-    }
-
-    /**
-     * Performs a scroll gesture on this object.
-     *
-     * @param direction The direction in which to scroll.
-     * @param percent   The distance to scroll as a percentage of this object's visible size.
-     * @return Whether the object can still scroll in the given direction.
-     */
-    public boolean scroll(final Direction direction, final float percent) {
-        return scroll(direction, percent, (int) (DEFAULT_SCROLL_SPEED * mDisplayMetrics.density));
-    }
-
-    /**
-     * Performs a scroll gesture on this object.
-     *
-     * @param direction The direction in which to scroll.
-     * @param percent   The distance to scroll as a percentage of this object's visible size.
-     * @param speed     The speed at which to perform this gesture in pixels per second.
-     * @return Whether the object can still scroll in the given direction.
-     */
-    public boolean scroll(Direction direction, float percent, final int speed) {
-        if (percent < 0.0f) {
-            throw new IllegalArgumentException("Percent must be greater than 0.0f");
-        }
-        if (speed < 0) {
-            throw new IllegalArgumentException("Speed cannot be negative");
-        }
-
-        // To scroll, we swipe in the opposite direction
-        final Direction swipeDirection = Direction.reverse(direction);
-
-        // Scroll by performing repeated swipes
-        Rect bounds = getVisibleBoundsForGestures();
-        for (; percent > 0.0f; percent -= 1.0f) {
-            float segment = percent > 1.0f ? 1.0f : percent;
-            PointerGesture swipe =
-                    mGestures.swipeRect(bounds, swipeDirection, segment, speed).pause(250);
-
-            // Perform the gesture and return early if we reached the end
-            if (mGestureController.performGestureAndWait(
-                    Until.scrollFinished(direction), SCROLL_TIMEOUT, swipe)) {
-                return false;
-            }
-        }
-        // We never reached the end
-        return true;
-    }
-
-    /**
-     * Performs a fling gesture on this object.
-     *
-     * @param direction The direction in which to fling.
-     * @return Whether the object can still scroll in the given direction.
-     */
-    public boolean fling(final Direction direction) {
-        return fling(direction, (int) (DEFAULT_FLING_SPEED * mDisplayMetrics.density));
-    }
-
-    /**
-     * Performs a fling gesture on this object.
-     *
-     * @param direction The direction in which to fling.
-     * @param speed     The speed at which to perform this gesture in pixels per second.
-     * @return Whether the object can still scroll in the given direction.
-     */
-    public boolean fling(final Direction direction, final int speed) {
-        ViewConfiguration vc = ViewConfiguration.get(getDevice().getInstrumentation().getContext());
-        if (speed < vc.getScaledMinimumFlingVelocity()) {
-            throw new IllegalArgumentException("Speed is less than the minimum fling velocity");
-        }
-
-        // To fling, we swipe in the opposite direction
-        final Direction swipeDirection = Direction.reverse(direction);
-
-        Rect bounds = getVisibleBoundsForGestures();
-        PointerGesture swipe = mGestures.swipeRect(bounds, swipeDirection, 1.0f, speed);
-
-        // Perform the gesture and return true if we did not reach the end
-        return !mGestureController.performGestureAndWait(
-                Until.scrollFinished(direction), FLING_TIMEOUT, swipe);
     }
 
     /**

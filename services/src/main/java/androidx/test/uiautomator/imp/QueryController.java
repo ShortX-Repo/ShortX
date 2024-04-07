@@ -22,8 +22,6 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import androidx.test.uiautomator.imp.adapter.InstrumentationAdapter;
 
-import java.util.concurrent.TimeoutException;
-
 /**
  * The QueryController main purpose is to translate a {@link UiSelector} selectors to
  * {@link AccessibilityNodeInfo}. This is all this controller does.
@@ -465,12 +463,7 @@ class QueryController {
      * @param timeout in milliseconds
      */
     public void waitForIdle(long timeout) {
-        try {
-            UiDevice.getUiAutomation(getInstrumentation())
-                    .waitForIdle(QUIET_TIME_TO_BE_CONSIDERED_IDLE_STATE, timeout);
-        } catch (TimeoutException e) {
-            Log.w(LOG_TAG, "Could not detect idle state.");
-        }
+        Log.w("ShortX", "Wait for idle skip(not supported).");
     }
 
     private String formatLog(String str) {
