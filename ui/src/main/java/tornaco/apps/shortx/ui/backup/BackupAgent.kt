@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.backup.META_FILE_NAME
 import tornaco.apps.shortx.core.backup.PKGSET_FILE_NAME
 import tornaco.apps.shortx.core.backup.RULE_FILE_NAME
 import tornaco.apps.shortx.core.backup.RULE_SET_FILE_NAME
+import tornaco.apps.shortx.core.backup.TOGGLE_FILE_NAME
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
@@ -21,6 +22,7 @@ import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleSet
 import tornaco.apps.shortx.core.proto.toStringPair
+import tornaco.apps.shortx.core.proto.toggles.Toggle
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.store.BaseDirectActionSetsStore
 import tornaco.apps.shortx.core.store.BaseDirectActionSettingsStore
@@ -28,6 +30,7 @@ import tornaco.apps.shortx.core.store.BaseGlobalVarStore
 import tornaco.apps.shortx.core.store.BasePkgSetsStore
 import tornaco.apps.shortx.core.store.BaseRuleSetsStore
 import tornaco.apps.shortx.core.store.BaseRuleSettingsStore
+import tornaco.apps.shortx.core.store.BaseToggleSettingsStore
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.ZipUtils
@@ -57,6 +60,12 @@ class BackupAgent(private val context: Context) {
             val daStore = BaseDirectActionSettingsStore(this, File(backupTempDir, DA_FILE_NAME))
             daStore.addDirectActions(das = allDAs, write = false)
             daStore.write()
+
+            // Toggles
+            val allToggles = shortXManager.getAllToggles()
+            val toggleStore = BaseToggleSettingsStore(this, File(backupTempDir, TOGGLE_FILE_NAME))
+            toggleStore.addToggles(das = allToggles, write = false)
+            toggleStore.write()
 
             // PkgSets
             val allPkgSets = shortXManager.getAllPkgSets(true)
@@ -176,6 +185,18 @@ class BackupAgent(private val context: Context) {
                         .build()
                 )
             }
+            content.toggles.forEach {
+                logger.d("restore, add toggle: ${it.title}")
+                shortXManager.addToggle(
+                    Toggle.newBuilder(it)
+                        .addAllExtras(mutableListOf<StringPair>().apply {
+                            if (!token.isNullOrEmpty()) {
+                                add((BuildPropInternal.APP_PACKAGE_NAME to token).toStringPair())
+                            }
+                        })
+                        .build()
+                )
+            }
             content.pkgSets.forEach {
                 logger.d("restore, add pkgset: ${it.label}")
                 shortXManager.addPkgSet(it)
@@ -232,6 +253,12 @@ class BackupAgent(private val context: Context) {
             daStore.read()
             val das = daStore.getAllDirectActions()
 
+            // Toggle
+            val togglePb = File(tmpExtractedFile, TOGGLE_FILE_NAME)
+            val toggleStore = BaseToggleSettingsStore(this, togglePb)
+            toggleStore.read()
+            val toggles = toggleStore.getAllToggles()
+
             // PkgSets
             val pkgSetPb = File(tmpExtractedFile, PKGSET_FILE_NAME)
             val pkgSetStore = BasePkgSetsStore(this, pkgSetPb)
@@ -263,6 +290,7 @@ class BackupAgent(private val context: Context) {
             BackupPackageContent(
                 das = das,
                 rules = rules,
+                toggles = toggles,
                 pkgSets = pkgSets,
                 gvs = gvs,
                 daSets = daSets,
@@ -290,6 +318,7 @@ class BackupAgent(private val context: Context) {
 data class BackupPackageContent(
     val das: List<DirectAction>,
     val rules: List<Rule>,
+    val toggles: List<Toggle>,
     val pkgSets: List<PkgSet>,
     val gvs: List<GlobalVar>,
     val daSets: List<DirectActionSet>,
