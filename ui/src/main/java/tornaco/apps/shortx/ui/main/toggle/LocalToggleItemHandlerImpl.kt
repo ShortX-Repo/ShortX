@@ -52,7 +52,9 @@ fun getLocalToggleItemHandler(vm: BaseToggleListViewModel): ToggleItemHandler {
                     )
                 )
             } else {
-
+                vm.toggleToShareString(toggle)?.let {
+                    shareDialogState.show(toggle.title, it)
+                }
             }
         }
 

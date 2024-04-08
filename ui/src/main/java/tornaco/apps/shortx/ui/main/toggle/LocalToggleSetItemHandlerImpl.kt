@@ -51,7 +51,7 @@ fun getLocalToggleSetItemHandler(
                     )
                 )
             } else {
-                vm.toggleToShareString(toggle)?.let {
+                vm.toggleSetToShareString(toggle)?.let {
                     shareDialogState.show(toggle.title, it)
                 }
             }

@@ -16,9 +16,11 @@ import tornaco.apps.shortx.core.rule.parseShareContentDA
 import tornaco.apps.shortx.core.rule.parseShareContentDASet
 import tornaco.apps.shortx.core.rule.parseShareContentRule
 import tornaco.apps.shortx.core.rule.parseShareContentRuleSet
+import tornaco.apps.shortx.core.rule.parseShareContentToggle
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addda.AddDirectActionScreen
 import tornaco.apps.shortx.ui.addrule.AddRuleScreen
+import tornaco.apps.shortx.ui.addtoggle.AddToggleScreen
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.LocalI18N
 import java.nio.charset.Charset
@@ -121,6 +123,20 @@ class ViewerActivity : BaseActivity() {
                         DASetViewer(it, back = {
                             finish()
                         })
+                    }
+                }
+
+                SharedData.TYPE_TOGGLE -> {
+                    val toggle = parseShareContentToggle(sharedData.data)
+                    toggle?.let {
+                        AddToggleScreen(
+                            toggle = toggle,
+                            screenTitle = toggle.title + " - " + LocalI18N.current["ui.common.share.viewer.title"],
+                            canSaveWithoutChanges = true,
+                            saveIconName = Remix.System.download_line
+                        ) {
+                            finish()
+                        }
                     }
                 }
 
