@@ -4,12 +4,16 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.*
+import tornaco.apps.shortx.core.proto.toJson
 import tornaco.apps.shortx.core.rule.ToggleObserver
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.main.ToggleSortBy
+import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.main.model.ToggleUM
 import tornaco.apps.shortx.ui.settings.ResetEventRegistry
 import tornaco.apps.shortx.ui.settings.RestoreEventRegistry
+import tornaco.apps.shortx.ui.share.SharedData
+import tornaco.apps.shortx.ui.share.addShareContentHeader
 import java.util.*
 
 data class ToggleListState(
@@ -69,4 +73,8 @@ abstract class BaseToggleListViewModel(context: Context) :
             shortXManager.setToggleEnabled(id, enable)
         }
     }
+
+    fun toggleToShareString(toggle: ToggleUM): String? =
+        shortXManager.getToggleById(toggle.id)?.toJson()
+            ?.addShareContentHeader(mapOf("type" to SharedData.TYPE_TOGGLE))
 }

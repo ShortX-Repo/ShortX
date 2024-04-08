@@ -144,7 +144,7 @@ class ViewerActivity : BaseActivity() {
     private fun parseIntent(): SharedData? {
         logger.d("parseIntent: $intent")
         return when {
-            Intent.ACTION_VIEW == intent.action ||  Intent.ACTION_SEND == intent.action -> {
+            Intent.ACTION_VIEW == intent.action || Intent.ACTION_SEND == intent.action -> {
                 var uri: Uri? = intent.data
                 if (uri == null) {
                     uri = intent.getParcelableExtra(Intent.EXTRA_STREAM)
@@ -166,6 +166,7 @@ class ViewerActivity : BaseActivity() {
                     }
                 }
             }
+
             else -> intent.getParcelableExtra("data")
         }
     }
@@ -181,5 +182,8 @@ data class SharedData(val type: String, val data: String) : Parcelable {
         const val TYPE_RULE = "rule"
         const val TYPE_RULE_SET = "ruleSet"
         const val TYPE_RULE_URL = "ruleUrl"
+        const val TYPE_TOGGLE = "toggle"
+        const val TYPE_TOGGLE_SET = "toggleSet"
+        const val TYPE_TOGGLE_URL = "toggleUrl"
     }
 }
