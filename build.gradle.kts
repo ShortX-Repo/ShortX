@@ -100,6 +100,10 @@ subprojects {
             targetCompatibility = androidTargetCompatibility
         }
     }
+
+    configurations.all {
+        resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
+    }
 }
 
 rootProject.buildDir = outDir
