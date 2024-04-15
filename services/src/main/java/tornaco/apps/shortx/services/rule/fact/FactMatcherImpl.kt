@@ -716,17 +716,25 @@ fun emptyOrRegexMatch(
     ruleField: String,
     actualField: String,
     options: RegexMatchOptions = RegexMatchOptions.RegexMatchOptions_Match
-) =
-    ruleField.isEmpty() || ruleField.toRegex().let {
-        if (options == RegexMatchOptions.RegexMatchOptions_Match) {
-            it.matches(actualField)
+) = emptyOrRegexMatchAndResults(ruleField, actualField, options).first
+
+fun emptyOrRegexMatchAndResults(
+    ruleField: String,
+    actualField: String,
+    options: RegexMatchOptions = RegexMatchOptions.RegexMatchOptions_Match
+): Pair<Boolean, List<String>> {
+    if (ruleField.isEmpty()) return true to emptyList()
+    return ruleField.toRegex().let { regex ->
+        val isMatch = if (options == RegexMatchOptions.RegexMatchOptions_Match) {
+            regex.matches(actualField)
         } else {
-            it.containsMatchIn(actualField)
+            regex.containsMatchIn(actualField)
         }
+        isMatch to (regex.findAll(actualField).map { it.value }.toList())
     }.apply {
         logger.d("emptyOrRegexMatch, regex: $ruleField, options: $options, result: $this")
     }
-
+}
 
 interface WithAppOrPkgSetListFact {
     val pkgSetList: List<String>

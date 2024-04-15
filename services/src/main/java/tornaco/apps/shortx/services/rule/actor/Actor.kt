@@ -571,6 +571,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.StopAllActions
     },
+    MatchRegex {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.MatchRegex
+    },
 
     ;
 
