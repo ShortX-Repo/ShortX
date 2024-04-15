@@ -9,7 +9,9 @@ rootProject.name = "ShortX"
 val githubProperties = Properties()
 val githubPropFile = File(rootProject.projectDir, "github.properties")
 println("githubPropFile: $githubPropFile")
-githubProperties.load(FileInputStream(githubPropFile))
+if (githubPropFile.exists()) {
+    githubProperties.load(FileInputStream(githubPropFile))
+}
 
 pluginManagement {
     repositories {
