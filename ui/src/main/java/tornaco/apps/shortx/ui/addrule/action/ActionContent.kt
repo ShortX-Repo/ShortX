@@ -55,6 +55,7 @@ import tornaco.apps.shortx.ui.addrule.action.selector.ActionSelectorActivity.Com
 import tornaco.apps.shortx.ui.addrule.action.selector.ActionSelectorActivity.Companion.toActionOrNull
 import tornaco.apps.shortx.ui.addrule.action.selector.appActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.action.selector.extActionSelectHandler
+import tornaco.apps.shortx.ui.addrule.action.selector.funcActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.action.selector.lifeActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.action.selector.miscActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.action.selector.notificationActionSelectHandler
@@ -292,6 +293,7 @@ private fun Actions(
                                 systemActionSelectHandler(addAction = editAction),
                                 extActionSelectHandler(addAction = editAction),
                                 lifeActionSelectHandler(addAction = editAction),
+                                funcActionSelectHandler(addAction = editAction),
                                 varActionSelectHandler(addAction = editAction),
                                 miscActionSelectHandler(addAction = editAction),
                             )
