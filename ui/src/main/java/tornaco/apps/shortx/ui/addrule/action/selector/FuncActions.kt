@@ -19,9 +19,15 @@ import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 
 @Composable
 fun funcActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
+    val matchRegexSelectorState = rememberMatchRegexState {
+        addAction(it)
+    }
+    MatchRegexSelectorDialog(state = matchRegexSelectorState)
+
     return { source ->
         when (source.clazz) {
             Action.MatchRegex::class -> {
+                matchRegexSelectorState.show(source.getActionAs())
                 true
             }
 
