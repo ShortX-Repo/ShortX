@@ -175,11 +175,6 @@ private fun listItemOverflowMenu(
         widthFraction = menuDropdownFraction,
         state = menuState,
         items = listOf(
-            DropdownItem(labelLines = listOf(i18N["ui.common.execute.actions"]),
-                data = ToggleItemMenuOptions.Execute,
-                icon = {
-                    RemixIcon(Remix.Media.play_fill)
-                }),
             DropdownItem(labelLines = listOf(i18N["ui.common.dup"]),
                 data = ToggleItemMenuOptions.Dup,
                 badge = badge,
@@ -197,19 +192,6 @@ private fun listItemOverflowMenu(
                 badge = badge,
                 icon = {
                     RemixIcon(Remix.System.share_line)
-                }),
-            DropdownItem(
-                labelLines = listOf(i18N["ui.common.move.to.set"]),
-                data = ToggleItemMenuOptions.MoveToSet,
-                badge = badge,
-                icon = {
-                    RemixIcon(Remix.Document.folders_fill)
-                }),
-            DropdownItem(
-                labelLines = listOf(LocalI18N.current["ui.common.move.out.set"]),
-                data = ToggleItemMenuOptions.MoveOutSet,
-                icon = {
-                    RemixIcon(Remix.Document.folder_reduce_fill)
                 }),
             DropdownItem(
                 labelLines = listOf(LocalI18N.current["ui.settings.eva.record"]),
