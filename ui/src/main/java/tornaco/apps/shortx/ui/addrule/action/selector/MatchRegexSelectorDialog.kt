@@ -1,10 +1,20 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -12,21 +22,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.common.RegexMatchOptions
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.CommonDialogState
-import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RegexMatchOptionsDropdown
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
-import tornaco.apps.shortx.ui.base.ShortXDialog
+import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
+import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
+import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 class MatchRegexState(
     val onSelected: (Action.MatchRegex) -> Unit
@@ -65,64 +76,86 @@ fun rememberMatchRegexState(
 @Composable
 fun MatchRegexSelectorDialog(state: MatchRegexState) {
     if (state.isShowing) {
-        ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
-            DialogTitle(text = LocalI18N.current["ui.action.match.regex"])
-        }, buttons = {
-            IconButton(
-                enabled = state.string.isNotEmpty(),
-                onClick = {
-                }) {
-                RemixIcon(remixName = Remix.Media.play_line)
-            }
-            IconButton(
-                enabled = state.string.isNotEmpty(),
-                onClick = {
-                    state.onSelected(
-                        Action.MatchRegex(
-                            string = state.string,
-                            regex = state.regex,
-                            matchOptions = state.matchOptions,
-                        )
-                    )
-                    state.dismiss()
-                }) {
-                RemixIcon(remixName = Remix.System.check_line)
-            }
-        }, content = {
-            Column(modifier = Modifier.fillMaxWidth()) {
+        ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
+            ShortXTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+                ) {
+                    val i18n = LocalI18N.current
+                    Scaffold(
+                        modifier = Modifier,
+                        topBar = {
+                            ShortXTopAppBar(
+                                modifier = Modifier,
+                                title = { Text(i18n["ui.action.match.regex"]) },
+                                navigationIcon = {
+                                    IconButton(onClick = {
+                                        state.dismiss()
+                                    }) {
+                                        RemixIcon(remixName = Remix.System.close_line)
+                                    }
+                                },
+                                actions = {
+                                    IconButton(onClick = {
+                                        state.onSelected(
+                                            Action.MatchRegex(
+                                                string = state.string,
+                                                regex = state.regex,
+                                                matchOptions = state.matchOptions,
+                                            )
+                                        )
+                                        state.dismiss()
+                                    }) {
+                                        RemixIcon(remixName = Remix.System.check_line)
+                                    }
 
-                FieldTitle(text = LocalI18N.current["ui.tools.regex.test.string"])
-                ShortXTextField(
-                    value = state.string,
-                    onValueChange = {
-                        state.string = it
-                    })
-                StandardSpacer()
+                                }
+                            )
+                        }) { paddingValues ->
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp)
+                                .padding(paddingValues)
+                                .animateContentSize()
+                                .verticalScroll(rememberScrollState())
+                        ) {
+                            FieldTitle(text = LocalI18N.current["ui.tools.regex.test.string"])
+                            ShortXTextField(
+                                value = state.string,
+                                onValueChange = {
+                                    state.string = it
+                                })
+                            StandardSpacer()
 
-                FieldTitle(text = LocalI18N.current["ui.tools.regex.test.regex"])
-                ShortXTextField(
-                    value = state.regex,
-                    onValueChange = {
-                        state.regex = it
-                    })
-                StandardSpacer()
+                            FieldTitle(text = LocalI18N.current["ui.tools.regex.test.regex"])
+                            ShortXTextField(
+                                value = state.regex,
+                                onValueChange = {
+                                    state.regex = it
+                                })
+                            StandardSpacer()
 
-                AnimatedVisibility(visible = state.testResult.isNotEmpty()) {
-                    Column {
-                        FieldTitle(text = LocalI18N.current["ui.tools.regex.test.result"])
-                        Text(text = state.testResult)
-                        StandardSpacer()
+                            AnimatedVisibility(visible = state.testResult.isNotEmpty()) {
+                                Column {
+                                    FieldTitle(text = LocalI18N.current["ui.tools.regex.test.result"])
+                                    Text(text = state.testResult)
+                                    StandardSpacer()
+                                }
+                            }
+
+                            RegexMatchOptionsDropdown(options = state.matchOptions) {
+                                state.matchOptions = it
+                            }
+
+                            SectionSpacer()
+                            SuggestedNavEntry()
+
+                        }
                     }
                 }
 
-                RegexMatchOptionsDropdown(options = state.matchOptions) {
-                    state.matchOptions = it
-                }
-
-                SectionSpacer()
-                SuggestedNavEntry()
-
             }
-        })
+        }
     }
 }
