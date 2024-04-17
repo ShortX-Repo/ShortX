@@ -128,6 +128,7 @@ class ViewerActivity : BaseActivity() {
 
                 SharedData.TYPE_TOGGLE -> {
                     val toggle = parseShareContentToggle(sharedData.data)
+                    logger.d("View toggle: ${toggle?.title}")
                     toggle?.let {
                         AddToggleScreen(
                             toggle = toggle,

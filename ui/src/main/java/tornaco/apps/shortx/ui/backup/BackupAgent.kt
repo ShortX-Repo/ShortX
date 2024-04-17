@@ -136,6 +136,10 @@ class BackupAgent(private val context: Context) {
                 logger.w("Delete da: ${it.title}")
                 shortXManager.deleteDirectAction(it.id)
             }
+            shortXManager.getAllToggles().forEach {
+                logger.w("Delete toggle: ${it.title}")
+                shortXManager.deleteToggle(it.id)
+            }
             shortXManager.getAllGlobalVars().forEach {
                 logger.w("Delete gv: ${it.name}")
                 shortXManager.deleteGlobalVar(it.name)
