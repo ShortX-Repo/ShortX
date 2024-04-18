@@ -258,8 +258,8 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }
         }
 
-        override fun showEdgeHint(edgeNumber: Int) {
-            shortXContext.gesture.showEdgeHint(edgeNumber)
+        override fun showEdgeHint(edgeNumber: IntArray) {
+            shortXContext.gesture.showEdgeHint(edgeNumber.toList())
         }
 
         override fun addDirectAction(da: ByteArrayWrapper) {

@@ -66,7 +66,7 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
             addFact(Fact.EdgeGesture(eg.first, eg.second, eg.third))
         },
         showEdgeHint = {
-            shortXManager.showEdgeHint(it)
+            shortXManager.showEdgeHint(listOf(it))
         })
     EdgeGestureSelector(edgeGestureSelectorState)
 

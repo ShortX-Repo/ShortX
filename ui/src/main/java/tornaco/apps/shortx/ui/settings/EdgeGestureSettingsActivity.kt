@@ -90,7 +90,14 @@ class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@Application
     fun setAreaSize(roundToInt: Int) {
         viewModelScope.launch {
             shortXManager.setGestureAreaSize(roundToInt)
-            shortXManager.showEdgeHint(Edge.RightCenter)
+            shortXManager.showEdgeHint(
+                listOf(
+                    Edge.RightCenter,
+                    Edge.BottomCenter,
+                    Edge.LeftCenter,
+                    Edge.TopCenter
+                )
+            )
             loadState()
         }
     }
@@ -105,6 +112,14 @@ class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@Application
     fun setSwipeLengthScale(float: Float) {
         viewModelScope.launch {
             shortXManager.setSwipeLengthScale(float)
+            shortXManager.showEdgeHint(
+                listOf(
+                    Edge.RightCenter,
+                    Edge.BottomCenter,
+                    Edge.LeftCenter,
+                    Edge.TopCenter
+                )
+            )
             loadState()
         }
     }

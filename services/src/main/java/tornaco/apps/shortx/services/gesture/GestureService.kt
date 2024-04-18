@@ -74,11 +74,8 @@ class GestureService(shortXContext: ShortXContext) :
         updateShouldInterceptMotionEventRect()
     }
 
-    fun showEdgeHint(edgeNumber: Int) {
-        val edge: Edge? = Edge.forNumber(edgeNumber)
-        edge?.let {
-            showGideLineViewForArea(it)
-        }
+    fun showEdgeHint(edgeNumber: List<Int>) {
+        showGideLineViewForArea(edgeNumber.mapNotNull { Edge.forNumber(it) })
     }
 
     fun onKeyEvent(onKeyEvent: (KeyEvent) -> Boolean?) {
@@ -89,7 +86,7 @@ class GestureService(shortXContext: ShortXContext) :
         this.onGestureEvent = onGestureEvent
     }
 
-    private fun showGideLineViewForArea(area: Edge) {
+    private fun showGideLineViewForArea(area: List<Edge>) {
         systemServiceScope.launchSafety {
             // Dismiss first.
             showingHints.forEach {
@@ -100,7 +97,7 @@ class GestureService(shortXContext: ShortXContext) :
             val guideLineView =
                 GuideLineView(
                     context,
-                    listOf(HotSeat(area, Color.RED)),
+                    area.map { HotSeat(it, Color.RED) },
                     getGestureAreaWidthDp()._dp,
                     getGestureLengthScale()
                 ).apply { attach() }
