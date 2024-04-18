@@ -4,5 +4,5 @@ import tornaco.apps.shortx.core.ShortXCore
 
 
 fun ensureShortXCoreBuildVersion() {
-    ShortXCore.BUILD_2
+    ShortXCore.BUILD_3
 }

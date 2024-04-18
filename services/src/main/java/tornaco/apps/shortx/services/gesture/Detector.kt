@@ -102,18 +102,20 @@ class Detector(
     private fun detectArea(downX: Float, downY: Float): Edge? {
         val currentOrientation = context.resources.configuration.orientation
         if (LOGV) logger.d("currentOrientation: $currentOrientation (ORIENTATION_PORTRAIT = 1, ORIENTATION_LANDSCAPE = 2)")
-        val area = Edge.values().firstOrNull {
+        val area = Edge.entries.firstOrNull {
             val rect = if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
                 it.getRect(
                     screenSize.x.toFloat(),
                     screenSize.y.toFloat(),
-                    service.getGestureAreaWidthDp()._dp.toFloat()
+                    service.getGestureAreaWidthDp()._dp.toFloat(),
+                    service.getGestureLengthScale()
                 )
             } else {
                 it.getRectL(
                     screenSize.x.toFloat(),
                     screenSize.y.toFloat(),
-                    service.getGestureAreaWidthDp()._dp.toFloat()
+                    service.getGestureAreaWidthDp()._dp.toFloat(),
+                    service.getGestureLengthScale()
                 )
             }
             if (LOGV) logger.d("rect: $rect (downX: $downX downY: $downY)")

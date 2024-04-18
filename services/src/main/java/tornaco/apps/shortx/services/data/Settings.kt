@@ -90,8 +90,11 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
 
     sealed class FloatSettings(key: String, defaultValue: (Context) -> Float) :
         Settings<Float>(key, defaultValue) {
-        object DanmuAlpha :
+        data object DanmuAlpha :
             FloatSettings(key = "DanmuAlpha", defaultValue = { DANMU_DEFAULT_ALPHA })
+
+        data object GestureAreaLengthScale :
+            FloatSettings(key = "GestureAreaLengthScale", defaultValue = { 1f })
     }
 
     sealed class MapSettings(

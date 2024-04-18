@@ -20,7 +20,12 @@ import tornaco.apps.shortx.services.gesture.getRect
 import util.Reflections
 
 @SuppressLint("ViewConstructor")
-class GuideLineView(context: Context, hotSeats: List<HotSeat>, areaSize: Int) :
+class GuideLineView(
+    context: Context,
+    hotSeats: List<HotSeat>,
+    areaSize: Int,
+    areaLengthScale: Float
+) :
     FrameLayout(context) {
 
     private val logger = Logger(GuideLineView::class.java.simpleName)
@@ -32,7 +37,7 @@ class GuideLineView(context: Context, hotSeats: List<HotSeat>, areaSize: Int) :
 
     init {
         addView(
-            Guideline(context, hotSeats, areaSize),
+            Guideline(context, hotSeats, areaSize, areaLengthScale  ),
             LayoutParams.MATCH_PARENT,
             LayoutParams.MATCH_PARENT
         )
@@ -86,7 +91,8 @@ class GuideLineView(context: Context, hotSeats: List<HotSeat>, areaSize: Int) :
     class Guideline(
         context: Context,
         private val hotSeats: List<HotSeat>,
-        private val areaSize: Int
+        private val areaSize: Int,
+        private val areaLengthScale: Float
     ) :
         View(context) {
         private val screenSize by lazy {
@@ -107,7 +113,8 @@ class GuideLineView(context: Context, hotSeats: List<HotSeat>, areaSize: Int) :
                 val rect = it.area.getRect(
                     screenSize.x.toFloat(),
                     screenSize.y.toFloat(),
-                    areaSize.toFloat()
+                    areaSize.toFloat(),
+                    areaLengthScale
                 )
                 canvas.drawRect(rect, paint.apply {
                     color = it.color

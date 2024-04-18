@@ -398,6 +398,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.phone.unregisterNFCTagEndpointListener(listener)
         }
 
+        override fun getSwipeLengthScale(): Float {
+            return shortXContext.gesture.getGestureLengthScale()
+        }
+
+        override fun setSwipeLengthScale(scale: Float) {
+            shortXContext.gesture.setGestureLengthScale(scale)
+        }
+
         override fun attachSUImpl(from: String?, su: ISu?) {
             shortXContext.shell.attachSUImpl(from, su)
 

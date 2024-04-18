@@ -36,6 +36,7 @@ import tornaco.apps.shortx.services.ui.GuideLineView
 import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
+import kotlin.math.abs
 
 
 private const val GUIDELINE_VIEW_SHOWN_TIME = 6000L
@@ -100,7 +101,8 @@ class GestureService(shortXContext: ShortXContext) :
                 GuideLineView(
                     context,
                     listOf(HotSeat(area, Color.RED)),
-                    getGestureAreaWidthDp()._dp
+                    getGestureAreaWidthDp()._dp,
+                    getGestureLengthScale()
                 ).apply { attach() }
             showingHints.add(guideLineView)
             delay(GUIDELINE_VIEW_SHOWN_TIME)
@@ -201,6 +203,14 @@ class GestureService(shortXContext: ShortXContext) :
 
     fun handleGestureEvent(area: Edge, gestureEvent: Gesture): Boolean {
         return onGestureEvent?.invoke(area to gestureEvent) ?: false
+    }
+
+    fun getGestureLengthScale(): Float =
+        minOf(store.read(Settings.FloatSettings.GestureAreaLengthScale), 1f)
+
+    fun setGestureLengthScale(scale: Float) {
+        store.write(Settings.FloatSettings.GestureAreaLengthScale, minOf(1f, abs(scale)))
+        updateShouldInterceptMotionEventRect()
     }
 
     fun getGestureAreaWidthDp(): Int =
@@ -312,14 +322,16 @@ class GestureService(shortXContext: ShortXContext) :
                             eg.edge.getRect(
                                 screenSize.x.toFloat(),
                                 screenSize.y.toFloat(),
-                                shortXContext.gesture.getGestureAreaWidthDp()._dp.toFloat()
+                                getGestureAreaWidthDp()._dp.toFloat(),
+                                getGestureLengthScale()
                             )
                         )
                         landRects.add(
                             eg.edge.getRectL(
                                 screenSize.x.toFloat(),
                                 screenSize.y.toFloat(),
-                                shortXContext.gesture.getGestureAreaWidthDp()._dp.toFloat()
+                                getGestureAreaWidthDp()._dp.toFloat(),
+                                getGestureLengthScale()
                             )
                         )
                     }

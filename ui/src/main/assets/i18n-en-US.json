@@ -890,6 +890,7 @@
     "ui.settings.edge.gesture.summary": "Adjust edge gesture settings",
     "ui.settings.edge.gesture.size": "Edge gesture touch size",
     "ui.settings.edge.gesture.swipe.distance": "Edge gesture swipe distance threshold",
+    "ui.settings.edge.gesture.area.length": "Edge gesture length",
     "ui.settings.edge.gesture.disable": "Disable gesture-related functions. If you encounter conflicts between this application and other gesture modules, consider disabling them as a troubleshooting step. \nEffective after restart",
     "ui.settings.edge.gesture.disabled.warn": "The gesture-related functions have been disabled",
     "ui.settings.eva.record": "ShortX Records",

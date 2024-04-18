@@ -11,19 +11,26 @@ fun Edge.getRectL(
     screenWidth: Float,
     screenHeight: Float,
     areaSize: Float,
+    areaLengthScale: Float
 ): RectF {
-    return getRect(screenHeight, screenWidth, areaSize)
+    return getRect(screenHeight, screenWidth, areaSize, areaLengthScale)
 }
 
 fun Edge.getRect(
     screenWidth: Float,
     screenHeight: Float,
     areaSize: Float,
+    areaLengthScale: Float
 ): RectF {
     return when (this) {
         Edge.BottomAll -> {
+            val length = (screenWidth - areaSize * 2) * areaLengthScale
+            val left = (screenWidth - length) / 2
+            val right = left + left
+            val top = screenHeight - areaSize
+            val bottom = screenHeight
             RectF(
-                areaSize, screenHeight - areaSize, screenWidth - areaSize, screenHeight
+                left, top - areaSize, right, bottom
             )
         }
 

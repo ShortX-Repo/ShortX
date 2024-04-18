@@ -39,13 +39,13 @@ import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.BaseActivity
-import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.base.ErrorCard
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
+import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.SwitchRow
@@ -80,6 +80,7 @@ class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@Application
                 copy(
                     areaSize = shortXManager.getGestureAreaSize(),
                     swipeDistanceThreshold = shortXManager.getSwipeDistanceThresholdDp(),
+                    swipeLengthScale = shortXManager.getSwipeLengthScale(),
                     isDisabled = shortXManager.hasHookFlags(ShortXManager.Companion.HookFlags.FLAG_DISABLE_GESTURE_HOOK)
                 )
             }
@@ -101,6 +102,13 @@ class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@Application
         }
     }
 
+    fun setSwipeLengthScale(float: Float) {
+        viewModelScope.launch {
+            shortXManager.setSwipeLengthScale(float)
+            loadState()
+        }
+    }
+
     fun setDisabled(it: Boolean) {
         viewModelScope.launch {
             if (it) {
@@ -116,6 +124,7 @@ class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@Application
 data class EdgeGestureSettings(
     val areaSize: Int = 0,
     val swipeDistanceThreshold: Int = 0,
+    val swipeLengthScale: Float = 0f,
     val isDisabled: Boolean = false
 )
 
@@ -167,6 +176,17 @@ fun EdgeGestureSettingsActivity.EdgeGestureSettingsSelector() {
                             .height(state.areaSize.dp)
                             .background(color = MaterialTheme.colorScheme.primary)
                     )
+                    SectionSpacer()
+
+                    FieldTitle(text = LocalI18N.current["ui.settings.edge.gesture.area.length"])
+                    MediumSpacer()
+                    Text(text = state.swipeLengthScale.toString())
+                    Slider(
+                        valueRange = 0f..1f,
+                        value = state.swipeLengthScale,
+                        onValueChange = {
+                            vm.setSwipeLengthScale(it)
+                        })
                     SectionSpacer()
 
                     FieldTitle(text = LocalI18N.current["ui.settings.edge.gesture.swipe.distance"])
