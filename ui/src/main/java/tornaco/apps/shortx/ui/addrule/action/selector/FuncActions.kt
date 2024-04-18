@@ -24,10 +24,20 @@ fun funcActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
     }
     MatchRegexSelectorDialog(state = matchRegexSelectorState)
 
+    val replaceRegexState = rememberReplaceRegexState {
+        addAction(it)
+    }
+    ReplaceRegexSelectorDialog(state = replaceRegexState)
+
     return { source ->
         when (source.clazz) {
             Action.MatchRegex::class -> {
                 matchRegexSelectorState.show(source.getActionAs())
+                true
+            }
+
+            Action.ReplaceRegex::class -> {
+                replaceRegexState.show(source.getActionAs())
                 true
             }
 
@@ -49,6 +59,7 @@ fun FuncActions(
 
     val actionItems = listOf(
         Action.MatchRegex::class,
+        Action.ReplaceRegex::class,
     ).map {
         SelectorItem(
             type = it,

@@ -4,7 +4,6 @@ import io.kotest.matchers.shouldBe
 import org.junit.Before
 import org.junit.Test
 import tornaco.apps.shortx.core.util.logAdapter
-import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 class RegexTest {
@@ -22,17 +21,21 @@ class RegexTest {
 
     @Test
     fun testRegex3() {
-        "(.|\n)*".toRegex().matches("""
+        "(.|\n)*".toRegex().matches(
+            """
             Global pattern flags 
             g modifier: global. All matches (don't return after first match)
             m modifier: multi line. Causes ^ and ${'$'} to match the begin/end of each line (not only begin/end of string)
-        """.trimIndent()) shouldBe true
+        """.trimIndent()
+        ) shouldBe true
 
-        ".*".toRegex().containsMatchIn("""
+        ".*".toRegex().containsMatchIn(
+            """
             Global pattern flags 
             g modifier: global. All matches (don't return after first match)
             m modifier: multi line. Causes ^ and ${'$'} to match the begin/end of each line (not only begin/end of string)
-        """.trimIndent()) shouldBe true
+        """.trimIndent()
+        ) shouldBe true
     }
 
     @Test
@@ -50,5 +53,11 @@ class RegexTest {
             println("NOT FOUND")
         }
 
+    }
+
+    @Test
+    fun testRegex4() {
+        val res = "[32条]长鹏: 记性不行了".replace("\\[\\d+条]".toRegex(), "-")
+        println(res)
     }
 }

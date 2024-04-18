@@ -1,7 +1,8 @@
 package tornaco.apps.shortx
 
-import tornaco.apps.shortx.core.Noop
+import tornaco.apps.shortx.core.ShortXCore
+
 
 fun ensureShortXCoreBuildVersion() {
-    Noop.BUILD_1
+    ShortXCore.BUILD_2
 }
