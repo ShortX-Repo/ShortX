@@ -50,6 +50,8 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.SwitchRow
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import java.math.BigDecimal
+import java.math.RoundingMode
 import kotlin.math.roundToInt
 
 @AndroidEntryPoint
@@ -91,12 +93,7 @@ class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@Application
         viewModelScope.launch {
             shortXManager.setGestureAreaSize(roundToInt)
             shortXManager.showEdgeHint(
-                listOf(
-                    Edge.RightCenter,
-                    Edge.BottomCenter,
-                    Edge.LeftCenter,
-                    Edge.TopCenter
-                )
+                Edge.entries.filterNot { it == Edge.UNRECOGNIZED || it.isAll }
             )
             loadState()
         }
@@ -110,15 +107,14 @@ class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@Application
     }
 
     fun setSwipeLengthScale(float: Float) {
+        val scaledFloat = BigDecimal(float.toString())
+            .setScale(1, RoundingMode.HALF_DOWN)
+            .toFloat()
         viewModelScope.launch {
-            shortXManager.setSwipeLengthScale(float)
+            shortXManager.setSwipeLengthScale(scaledFloat)
             shortXManager.showEdgeHint(
-                listOf(
-                    Edge.RightCenter,
-                    Edge.BottomCenter,
-                    Edge.LeftCenter,
-                    Edge.TopCenter
-                )
+                Edge.entries.filterNot { it == Edge.UNRECOGNIZED || it.isAll }
+                // Edge.entries.filter { it.isAll }
             )
             loadState()
         }
@@ -248,3 +244,8 @@ fun EdgeGestureSettingsActivity.EdgeGestureSettingsSelector() {
         }
     }
 }
+
+val Edge.isAll
+    get() = listOf(Edge.BottomAll, Edge.TopAll, Edge.LeftAll, Edge.RightAll).contains(
+        this
+    )

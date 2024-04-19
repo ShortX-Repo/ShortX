@@ -24,108 +24,134 @@ fun Edge.getRect(
 ): RectF {
     return when (this) {
         Edge.BottomAll -> {
-            val length = (screenWidth - areaSize * 2) * areaLengthScale
-            val left = (screenWidth - length) / 2
-            val right = left + left
-            val top = screenHeight - areaSize
-            val bottom = screenHeight
             RectF(
-                left, top - areaSize, right, bottom
+                areaSize, screenHeight - areaSize, screenWidth - areaSize, screenHeight
             )
         }
 
         Edge.BottomCenter -> {
-            val splitSize = (screenWidth - 2 * areaSize) / 3
-            RectF(
-                areaSize + splitSize,
-                screenHeight - areaSize,
-                areaSize + splitSize * 2,
-                screenHeight
-            )
+            val splitSize = ((screenWidth - 2 * areaSize) / 3)
+            val length = splitSize * areaLengthScale
+            val left = (screenWidth - length) / 2
+            val right = left + length
+            val top = screenHeight - areaSize
+            val bottom = screenHeight
+            RectF(left, top, right, bottom)
         }
 
         Edge.BottomLeft -> {
-            val splitSize = (screenWidth - 2 * areaSize) / 3
-            RectF(
-                areaSize, screenHeight - areaSize, areaSize + splitSize, screenHeight
-            )
+            val splitSize = ((screenWidth - 2 * areaSize) / 3)
+            val length = splitSize * areaLengthScale
+            val left = areaSize + (splitSize - length) / 2
+            val right = left + length
+            val top = screenHeight - areaSize
+            val bottom = screenHeight
+            RectF(left, top, right, bottom)
         }
 
         Edge.BottomRight -> {
-            val splitSize = (screenWidth - 2 * areaSize) / 3
-            RectF(
-                areaSize + 2 * splitSize,
-                screenHeight - areaSize,
-                screenWidth - areaSize,
-                screenHeight
-            )
+            val splitSize = ((screenWidth - 2 * areaSize) / 3)
+            val length = splitSize * areaLengthScale
+            val left = areaSize + splitSize * 2 + (splitSize - length) / 2
+            val right = left + length
+            val top = screenHeight - areaSize
+            val bottom = screenHeight
+            RectF(left, top, right, bottom)
         }
 
-        Edge.LeftAll -> RectF()
+        Edge.LeftAll -> RectF(0f, 0f, areaSize, screenHeight)
+
         Edge.LeftTop -> {
             val splitSize = screenHeight / 3
-            RectF(
-                0f, 0f, areaSize, splitSize
-            )
+            val length = splitSize * areaLengthScale
+            val left = 0f
+            val right = areaSize
+            val top = (splitSize - length) / 2
+            val bottom = top + length
+            RectF(left, top, right, bottom)
         }
 
         Edge.LeftCenter -> {
             val splitSize = screenHeight / 3
-            RectF(
-                0f, splitSize, areaSize, splitSize * 2
-            )
+            val length = splitSize * areaLengthScale
+            val left = 0f
+            val right = areaSize
+            val top = splitSize + (splitSize - length) / 2
+            val bottom = top + length
+            RectF(left, top, right, bottom)
         }
 
         Edge.LeftBottom -> {
             val splitSize = screenHeight / 3
-            RectF(
-                0f, splitSize * 2, areaSize, screenHeight
-            )
+            val length = splitSize * areaLengthScale
+            val left = 0f
+            val right = areaSize
+            val top = splitSize * 2 + (splitSize - length) / 2
+            val bottom = top + length
+            RectF(left, top, right, bottom)
         }
 
 
-        Edge.RightAll -> RectF()
+        Edge.RightAll -> RectF(screenWidth - areaSize, 0f, screenWidth, screenHeight)
         Edge.RightCenter -> {
             val splitSize = screenHeight / 3
-            RectF(
-                screenWidth - areaSize, splitSize, screenWidth, splitSize * 2
-            )
+            val length = splitSize * areaLengthScale
+            val left = screenWidth - areaSize
+            val right = screenWidth
+            val top = splitSize + (splitSize - length) / 2
+            val bottom = top + length
+            RectF(left, top, right, bottom)
         }
 
         Edge.RightTop -> {
             val splitSize = screenHeight / 3
-            RectF(
-                screenWidth - areaSize, 0f, screenWidth, splitSize
-            )
+            val length = splitSize * areaLengthScale
+            val left = screenWidth - areaSize
+            val right = screenWidth
+            val top = (splitSize - length) / 2
+            val bottom = top + length
+            RectF(left, top, right, bottom)
         }
 
         Edge.RightBottom -> {
             val splitSize = screenHeight / 3
-            RectF(
-                screenWidth - areaSize, splitSize * 2, screenWidth, screenHeight
-            )
+            val length = splitSize * areaLengthScale
+            val left = screenWidth - areaSize
+            val right = screenWidth
+            val top = splitSize * 2 + (splitSize - length) / 2
+            val bottom = top + length
+            RectF(left, top, right, bottom)
         }
 
-        Edge.TopAll -> RectF()
+        Edge.TopAll -> RectF(areaSize, 0f, screenWidth - areaSize, areaSize)
         Edge.TopCenter -> {
-            val splitSize = (screenWidth - 2 * areaSize) / 3
-            RectF(
-                areaSize + splitSize, 0f, areaSize + splitSize * 2, areaSize
-            )
+            val splitSize = ((screenWidth - 2 * areaSize) / 3)
+            val length = splitSize * areaLengthScale
+            val left = (screenWidth - length) / 2
+            val right = left + length
+            val top = 0f
+            val bottom = areaSize
+            RectF(left, top, right, bottom)
         }
 
         Edge.TopLeft -> {
-            val splitSize = (screenWidth - 2 * areaSize) / 3
-            RectF(
-                areaSize, 0f, areaSize + splitSize, areaSize
-            )
+            val splitSize = ((screenWidth - 2 * areaSize) / 3)
+            val length = splitSize * areaLengthScale
+            val left = areaSize + (splitSize - length) / 2
+            val right = left + length
+            val top = 0f
+            val bottom = areaSize
+            RectF(left, top, right, bottom)
         }
 
         Edge.TopRight -> {
-            val splitSize = (screenWidth - 2 * areaSize) / 3
-            RectF(
-                areaSize + 2 * splitSize, 0f, screenWidth - areaSize, areaSize
-            )
+            val splitSize = ((screenWidth - 2 * areaSize) / 3)
+            val length = splitSize * areaLengthScale
+            val left = areaSize + splitSize * 2 + (splitSize - length) / 2
+            val right = left + length
+            val top = 0f
+            val bottom = areaSize
+            RectF(left, top, right, bottom)
         }
 
         Edge.UNRECOGNIZED -> {

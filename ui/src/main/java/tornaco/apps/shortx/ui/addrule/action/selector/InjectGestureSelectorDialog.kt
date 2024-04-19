@@ -17,6 +17,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -44,7 +45,7 @@ class InjectGestureRecordDialogState(
     val onSelected: (Action.InjectGestureRecording) -> Unit
 ) : CommonDialogState() {
     var selectedGesture: GestureRecord? by mutableStateOf(null)
-    var speed by mutableStateOf(1f)
+    var speed by mutableFloatStateOf(1f)
     var showGesturePathView by mutableStateOf(false)
 
     fun show(current: Action.InjectGestureRecording? = null) {

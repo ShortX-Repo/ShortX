@@ -2,7 +2,6 @@ package tornaco.apps.shortx.services.gesture
 
 import android.content.Context
 import android.content.res.Configuration
-import android.graphics.Color
 import android.graphics.RectF
 import android.os.SystemClock
 import android.view.InputEvent
@@ -36,6 +35,7 @@ import tornaco.apps.shortx.services.ui.GuideLineView
 import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
+import tornaco.apps.shortx.services.wm.ColorPalette
 import kotlin.math.abs
 
 
@@ -97,7 +97,9 @@ class GestureService(shortXContext: ShortXContext) :
             val guideLineView =
                 GuideLineView(
                     context,
-                    area.map { HotSeat(it, Color.RED) },
+                    area.mapIndexed { index, area ->
+                        HotSeat(area, ColorPalette[index % ColorPalette.size])
+                    },
                     getGestureAreaWidthDp()._dp,
                     getGestureLengthScale()
                 ).apply { attach() }
