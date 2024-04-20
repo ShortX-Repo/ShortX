@@ -30,6 +30,7 @@ fun AppConditions(
         Condition.CurrentActivity::class,
         Condition.AppHasNotification::class,
         Condition.AppHasTask::class,
+        Condition.AppHasTaskByPkg::class,
         Condition.AppHasWindowFocus::class,
     ).map {
         SelectorItem(

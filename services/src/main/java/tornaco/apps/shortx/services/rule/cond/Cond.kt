@@ -215,6 +215,10 @@ enum class PrebuiltCond : CondProvider {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.AppHasTask
     },
+    AppHasTaskByPkg {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.AppHasTaskByPkg
+    },
     RequireAPMMode {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.RequireAPMMode
