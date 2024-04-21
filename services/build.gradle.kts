@@ -17,6 +17,8 @@ dependencies {
     implementation(project(":services-33"))
     implementation(project(":services-34"))
 
+    implementation(libs.tinypinyin)
+
     implementation(libs.shortx.ext.utils)
     implementation(libs.shortx.ext.picasso)
     implementation(libs.shortx.ext.rhino.android)

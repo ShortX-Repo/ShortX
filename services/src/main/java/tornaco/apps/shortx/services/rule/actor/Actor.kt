@@ -579,6 +579,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.ReplaceRegex
     },
+    TextProcessing {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.TextProcessing
+    },
 
     ;
 
