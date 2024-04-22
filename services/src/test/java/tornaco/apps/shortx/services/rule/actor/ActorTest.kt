@@ -5,6 +5,18 @@ import org.junit.Test
 import tornaco.apps.shortx.core.proto.action.OuterActions
 
 class ActorTest {
+    private val ignoreProtoClass = listOf(
+        "HttpRequestHeaderBodyJsonMapAdapter",
+        "HttpRequestJsonMapAdapter",
+        "HttpRequestRawAdapter",
+        "DialogMenuItem",
+        "NotificationButton",
+        "SwitchCase_Case",
+        "SwitchCase_Default",
+        "TextProcessingTrimLength",
+        "TextProcessingTrimSpace",
+        "TextProcessingToPinyin",
+    )
 
     @Test
     fun `can handle class should not dup`() {
@@ -17,8 +29,7 @@ class ActorTest {
     @Test
     fun `should handle all proto actions`() {
         val allActionNames = OuterActions.getDescriptor().messageTypes.map { it.name }.filter {
-            "HttpRequestHeaderBodyJsonMapAdapter" != it && "HttpRequestJsonMapAdapter" != it && "HttpRequestRawAdapter" != it && "DialogMenuItem" != it
-                    && "NotificationButton" != it && "SwitchCase_Case" != it && "SwitchCase_Default" != it
+            !ignoreProtoClass.contains(it)
         }
 
         allActionNames.forEach { actionProtoName ->
