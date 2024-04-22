@@ -140,7 +140,16 @@ data class SwitchCaseSelectorDialogDialogState(
     val cases: List<Action.SwitchCase.Case> = emptyList(),
     val deft: Action.SwitchCase.Default = Action.SwitchCase.Default(),
     val isChanged: Boolean = false
-)
+) {
+    fun toAction(): Action.SwitchCase {
+        return Action.SwitchCase(
+            id = this.id,
+            note = this.note,
+            cases = this.cases,
+            deft = this.deft
+        )
+    }
+}
 
 @Composable
 private fun BaseSelectorActivity<Action.SwitchCase>.SwitchCaseSelectorDialogSelector(currentAction: Action.SwitchCase?) {
@@ -177,14 +186,14 @@ private fun BaseSelectorActivity<Action.SwitchCase>.SwitchCaseSelectorDialogSele
                             IconButton(
                                 enabled = dialogState.isChanged,
                                 onClick = {
-                                    setResultAndFinish(
-                                        Action.SwitchCase(
-                                            id = dialogState.id,
-                                            note = dialogState.note,
-                                            cases = dialogState.cases,
-                                            deft = dialogState.deft
-                                        )
-                                    )
+                                    setResult(dialogState.toAction())
+                                }) {
+                                RemixIcon(remixName = Remix.Device.save_2_line)
+                            }
+                            IconButton(
+                                enabled = dialogState.isChanged,
+                                onClick = {
+                                    setResultAndFinish(dialogState.toAction())
                                 }) {
                                 RemixIcon(remixName = Remix.System.check_line)
                             }

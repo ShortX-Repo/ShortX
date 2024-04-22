@@ -65,13 +65,17 @@ abstract class BaseSelectorActivity<T : Parcelable> : BaseActivity() {
     }
 
     fun setResultAndFinish(action: T) {
+        setResult(action)
+        finish()
+    }
+
+    fun setResult(action: T) {
         val cacheKey = newCacheKey()
         selectorCache[cacheKey] = action
         setResult(
             Activity.RESULT_OK,
             Intent().putExtra(INTENT_EXTRA_KEY_CURRENT_CACHE_KEY, cacheKey)
         )
-        finish()
     }
 
     @Composable
