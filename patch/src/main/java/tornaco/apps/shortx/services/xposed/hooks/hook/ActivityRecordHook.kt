@@ -5,6 +5,7 @@ import android.os.IBinder
 import android.os.UserHandle
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.platform.ActivityRecordUtils
 import tornaco.apps.shortx.core.platform.Classes.activityRecordClass
 import tornaco.apps.shortx.core.platform.Classes.activityStoppedMethod
@@ -14,6 +15,7 @@ import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXService
+import util.Reflections
 
 object ActivityRecordHook {
     private val logger = Logger("ShortXHook.ActivityRecordHook")
@@ -31,6 +33,7 @@ object ActivityRecordHook {
             hookActivityResumedAndroid9_(lpparam)
         }
         hookActivityStopped(lpparam)
+        hookSetState(lpparam)
     }
 
     private fun handleActivityResumed(
@@ -131,4 +134,72 @@ object ActivityRecordHook {
         logger.e(it, "hookActivityStopped")
     }
 
+    private fun hookSetState(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
+        val activityRecordClazz = lpparam.classLoader.activityRecordClass()
+        beforeMethod(
+            activityRecordClazz,
+            Methods.setState
+        ) { param ->
+            logger.d("SetState: ${param.args.map { it }}")
+            if (param.args[0] == null) return@beforeMethod
+            val state = State.valueOf(param.args[0].toString())
+            logger.d("SetState, state: $state")
+            val getState: Any =
+                Reflections.callMethod(param.thisObject, "getState") ?: return@beforeMethod
+            val currentState = State.valueOf(getState.toString())
+            logger.d("SetState, currentState: $state")
+
+            if (currentState != State.DESTROYED && state == State.DESTROYED) {
+                val activityRecord = param.thisObject
+                val intent = ActivityRecordUtils.getIntent(activityRecord)
+                val uid = ActivityRecordUtils.getUid(activityRecord)
+                if (intent == null || uid < 0) {
+                    logger.e("destroyed, can not get intent or user for activityRecord: $activityRecord")
+                    return@beforeMethod
+                }
+                val displayId = ActivityRecordUtils.getDisplayId(activityRecord)
+                logger.i("destroyed, uid: $uid, displayId: $displayId, intent: $intent")
+
+                val componentName = intent.component
+                if (componentName == null) {
+                    logger.e("destroyed, can not get component from Intent: $intent")
+                    return@beforeMethod
+                }
+                ShortXService.shortXContext.appState.onActivityDestroyed(
+                    componentName, UserHandle.getUserId(uid)
+                )
+            }
+        }
+    }.onFailure {
+        logger.e(it, "hookActivityStopped")
+    }
+
+}
+
+@DoNotStrip
+internal enum class State {
+    INITIALIZING,
+    STARTED,
+    RESUMED,
+    PAUSING,
+    PAUSED,
+    STOPPING,
+    STOPPED,
+    FINISHING,
+    DESTROYING,
+    DESTROYED,
+    RESTARTING_PROCESS
+
+    // Android 9 http://aospxref.com/android-9.0.0_r61/xref/frameworks/base/services/core/java/com/android/server/am/ActivityStack.java?fi=ActivityState#ActivityState
+    //     enum ActivityState {
+    //244          INITIALIZING,
+    //245          RESUMED,
+    //246          PAUSING,
+    //247          PAUSED,
+    //248          STOPPING,
+    //249          STOPPED,
+    //250          FINISHING,
+    //251          DESTROYING,
+    //252          DESTROYED
+    //253      }
 }

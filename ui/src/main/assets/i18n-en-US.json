@@ -189,6 +189,7 @@
     "ui.fact.activity.started.any": "Any activity",
     "ui.fact.activity.started.specific": "Specific activity",
     "ui.fact.activity.stopped": "Activity stopped",
+    "ui.fact.activity.destroyed": "Activity destroyed",
     "ui.fact.key.event": "Key event",
     "ui.fact.key.event.adv": "Key event(advanced)",
     "ui.fact.key.event.adv.is.intercept.mode": "Intercept mode",

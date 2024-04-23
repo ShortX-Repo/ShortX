@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.appComponentToString
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.fact.ActivityDestroyed
 import tornaco.apps.shortx.core.proto.fact.ActivityStarted
 import tornaco.apps.shortx.core.proto.fact.ActivityStopped
 import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
@@ -90,6 +91,27 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
         shortXContext.rule.publishFact(
             reason = "onActivityStopped",
             fact = ActivityStopped.newBuilder()
+                .addComponents(activity)
+                .build()
+        ) {
+            mapOf(
+                ContextDataMapping.ActivityStopped.pkgName.name to activity.pkg.pkgName,
+                ContextDataMapping.ActivityStopped.userId.name to activity.pkg.userId,
+                ContextDataMapping.ActivityStopped.componentName.name to componentName.flattenToShortString(),
+                ContextDataMapping.ActivityStopped.appLabel.name to (shortXContext.appState.getAppLabel(
+                    activity.pkg
+                ) ?: activity.pkg.pkgName),
+            )
+        }
+    }
+
+    fun onActivityDestroyed(componentName: ComponentName, userId: Int) {
+        logger.d("onActivityDestroyed: $componentName userId: $userId")
+
+        val activity = componentName.toAppComponent(userId)
+        shortXContext.rule.publishFact(
+            reason = "onActivityDestroyed",
+            fact = ActivityDestroyed.newBuilder()
                 .addComponents(activity)
                 .build()
         ) {

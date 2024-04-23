@@ -21,6 +21,7 @@ fun AppFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: (Fa
         Fact.AnyActivityStarted::class,
         Fact.ActivityStarted::class,
         Fact.ActivityStopped::class,
+        Fact.ActivityDestroyed::class,
 
         Fact.AppBecomeBackground::class,
         Fact.AppBecomeForeground::class,

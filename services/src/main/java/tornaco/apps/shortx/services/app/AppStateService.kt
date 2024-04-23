@@ -253,6 +253,10 @@ class AppStateService(shortXContext: ShortXContext) :
         activityState.onActivityStopped(componentName, userId)
     }
 
+    fun onActivityDestroyed(componentName: ComponentName, userId: Int) {
+        activityState.onActivityDestroyed(componentName, userId)
+    }
+
     fun AppPkg.isRunning() = AMSFuncs.hasRunningAppProcessForPackage(context, this)
 
     fun AppComponent.isServiceRunning() = AMSFuncs.isServiceRunning(context, this)

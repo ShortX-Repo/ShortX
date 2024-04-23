@@ -189,6 +189,7 @@
     "ui.fact.activity.started.any": "任意活动",
     "ui.fact.activity.started.specific": "指定的活动",
     "ui.fact.activity.stopped": "Activity停止",
+    "ui.fact.activity.destroyed": "Activity销毁",
     "ui.fact.key.event": "按键",
     "ui.fact.key.event.adv": "按键（高级）",
     "ui.fact.key.event.adv.is.intercept.mode": "拦截模式",

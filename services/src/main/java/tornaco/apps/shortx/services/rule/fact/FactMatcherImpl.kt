@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.RegexMatchOptions
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.fact.APMStatusChanged
+import tornaco.apps.shortx.core.proto.fact.ActivityDestroyed
 import tornaco.apps.shortx.core.proto.fact.ActivityStarted
 import tornaco.apps.shortx.core.proto.fact.ActivityStopped
 import tornaco.apps.shortx.core.proto.fact.AdvancedKeyEvent
@@ -174,6 +175,12 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
         register(ActivityStopped::class.java) { actual, rule ->
             val aa = actual as ActivityStopped
             val ra = rule as ActivityStopped
+            (ra.componentsList.isEmpty() || ra.componentsList.containsAll(aa.componentsList))
+        }
+
+        register(ActivityDestroyed::class.java) { actual, rule ->
+            val aa = actual as ActivityDestroyed
+            val ra = rule as ActivityDestroyed
             (ra.componentsList.isEmpty() || ra.componentsList.containsAll(aa.componentsList))
         }
 

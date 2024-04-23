@@ -69,6 +69,19 @@ fun appFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean
     }
     SingleAppSelectorDialog(state = activityStopSingleAppSelectorState)
 
+    val activityDestroyedAppComponentSelectorState = rememberAppComponentSelectorState(
+        types = listOf(ComponentType.Activity),
+        onAppComponentSelected = { infoList ->
+            setFact(Fact.ActivityDestroyed(infoList.map { it.component }))
+        }
+    )
+    AppComponentSelectorDialog(activityDestroyedAppComponentSelectorState)
+
+    val activityDestroyedSingleAppSelectorState = rememberSingleAppPkgSelectorState {
+        activityDestroyedAppComponentSelectorState.show(it.pkg)
+    }
+    SingleAppSelectorDialog(state = activityDestroyedSingleAppSelectorState)
+
     val activityStartAppComponentSelectorState = rememberAppComponentSelectorState(
         types = listOf(ComponentType.Activity),
         onAppComponentSelected = { infoList ->
@@ -191,6 +204,11 @@ fun appFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean
 
             Fact.ActivityStopped::class -> {
                 activityStopSingleAppSelectorState.show()
+                true
+            }
+
+            Fact.ActivityDestroyed::class -> {
+                activityDestroyedSingleAppSelectorState.show()
                 true
             }
 
