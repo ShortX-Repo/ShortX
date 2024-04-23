@@ -253,7 +253,9 @@ class AppStateService(shortXContext: ShortXContext) :
         activityState.onActivityStopped(componentName, userId)
     }
 
-    fun onActivityDestroyed(componentName: ComponentName, userId: Int) {
+    fun onActivityDestroyed(componentName: ComponentName, userId: Int, taskId: Int) {
+        val taskLabel = TaskMapping.getLabelForTaskId(context, taskId)
+        logger.d("onActivityDestroyed, taskLabel: $taskLabel")
         activityState.onActivityDestroyed(componentName, userId)
     }
 

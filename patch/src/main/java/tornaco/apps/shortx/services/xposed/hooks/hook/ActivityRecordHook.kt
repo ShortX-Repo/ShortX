@@ -16,6 +16,7 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXService
 import util.Reflections
+import util.ReflectionsExt
 
 object ActivityRecordHook {
     private val logger = Logger("ShortXHook.ActivityRecordHook")
@@ -165,8 +166,14 @@ object ActivityRecordHook {
                     logger.e("destroyed, can not get component from Intent: $intent")
                     return@beforeMethod
                 }
+
+                val task = Reflections.callMethod(param.thisObject, "getTask")
+                logger.d("destroyed, task: $task")
+                val taskId = ReflectionsExt.getIntFieldWithPotentialNames(task, "mTaskId", "taskId")
+                logger.d("destroyed, taskId: $taskId")
+
                 ShortXService.shortXContext.appState.onActivityDestroyed(
-                    componentName, UserHandle.getUserId(uid)
+                    componentName, UserHandle.getUserId(uid), taskId
                 )
             }
         }

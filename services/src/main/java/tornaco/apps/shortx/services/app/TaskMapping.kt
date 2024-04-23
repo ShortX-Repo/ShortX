@@ -59,6 +59,28 @@ object TaskMapping {
         return null
     }
 
+    fun getLabelForTaskId(context: Context, taskId: Int): String? {
+        val am = context.activityManager
+        // Assume calling pkg has this permission.
+        val tasks = am.getRecentTasks(TASK_QUERY_SIZE, ActivityManager.RECENT_WITH_EXCLUDED)
+        logger.d("getPackageNameForTaskId, RecentTaskInfo tasks: $tasks")
+        if (tasks != null) {
+            for (rc in tasks) {
+                // persistentId: Deprecated
+                // As of Build.VERSION_CODES.Q, use taskId.
+                logger.d("getPackageNameForTaskId, RecentTaskInfo rc: $rc, persistentId: ${rc?.persistentId}")
+                if (rc != null && rc.persistentId == taskId) {
+                    val description = rc.taskDescription
+                    if (description != null) {
+                        return description.label
+                    }
+                    break
+                }
+            }
+        }
+        return null
+    }
+
     fun getTasksIdForPackage(
         context: Context,
         pkgList: List<AppPkg>,
