@@ -42,6 +42,7 @@ import tornaco.apps.shortx.core.proto.action.ToggleGestureRecording
 import tornaco.apps.shortx.core.proto.action.WaitUtilConditionMatch
 import tornaco.apps.shortx.core.proto.condition.AppHasAudioFocus
 import tornaco.apps.shortx.core.proto.condition.AppHasTask
+import tornaco.apps.shortx.core.proto.condition.AppHasTaskByPkg
 import tornaco.apps.shortx.core.proto.condition.AppHasWindowFocus
 import tornaco.apps.shortx.core.proto.condition.ConnectedWifiSignal
 import tornaco.apps.shortx.core.proto.condition.RequireBTDeviceFound
@@ -49,6 +50,9 @@ import tornaco.apps.shortx.core.proto.condition.RequireFactTag
 import tornaco.apps.shortx.core.proto.condition.RequireIMEVisibility
 import tornaco.apps.shortx.core.proto.condition.RequireMobileDataEnabled
 import tornaco.apps.shortx.core.proto.condition.TheXXTimeToday
+import tornaco.apps.shortx.core.proto.fact.ActivityDestroyed
+import tornaco.apps.shortx.core.proto.fact.ActivityStarted
+import tornaco.apps.shortx.core.proto.fact.ActivityStopped
 import tornaco.apps.shortx.core.proto.fact.AdvancedKeyEvent
 import tornaco.apps.shortx.core.proto.fact.AppGainWindowFocus
 import tornaco.apps.shortx.core.proto.fact.AppLostWindowFocus
@@ -83,11 +87,15 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         IMEVisibilityChange::class,
         ConnectedWifiSignalLevelChanged::class,
         NFCTagDiscover::class,
+        ActivityDestroyed::class,
+        ActivityStarted::class,
+        ActivityStopped::class,
 
         AppHasAudioFocus::class,
         RequireMobileDataEnabled::class,
         RequireFactTag::class,
         AppHasTask::class,
+        AppHasTaskByPkg::class,
         AppHasWindowFocus::class,
         RequireIMEVisibility::class,
         ConnectedWifiSignal::class,
