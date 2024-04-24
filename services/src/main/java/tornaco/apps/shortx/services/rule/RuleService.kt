@@ -1194,6 +1194,9 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     fun setRuleFeatureEnabled(enable: Boolean) {
         store.write(Settings.BoolSettings.EnableRuleFeature, enable)
+        if (!enable) {
+            shortXContext.wm.ensureAutomationDisconnected("Disable Rule feature")
+        }
     }
 
     fun isRuleFeatureEnabled(): Boolean {

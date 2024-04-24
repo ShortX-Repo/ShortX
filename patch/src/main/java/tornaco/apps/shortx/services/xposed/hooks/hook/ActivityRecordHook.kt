@@ -63,8 +63,14 @@ object ActivityRecordHook {
             logger.e("activityResumedLocked, can not get component from Intent: $intent")
             return
         }
+
+        val task = Reflections.callMethod(activityRecord, "getTask")
+        logger.d("activityResumedLocked, task: $task")
+        val taskId = ReflectionsExt.getIntFieldWithPotentialNames(task, "mTaskId", "taskId")
+        logger.d("activityResumedLocked, taskId: $taskId")
+
         ShortXService.shortXContext.appState.onActivityResumed(
-            componentName, UserHandle.getUserId(uid), intentUri
+            componentName, UserHandle.getUserId(uid), intentUri, taskId
         )
     }
 
@@ -127,8 +133,14 @@ object ActivityRecordHook {
                 logger.e("activityStopped, can not get component from Intent: $intent")
                 return@afterMethod
             }
+
+            val task = Reflections.callMethod(activityRecord, "getTask")
+            logger.d("activityResumedLocked, task: $task")
+            val taskId = ReflectionsExt.getIntFieldWithPotentialNames(task, "mTaskId", "taskId")
+            logger.d("activityResumedLocked, taskId: $taskId")
+
             ShortXService.shortXContext.appState.onActivityStopped(
-                componentName, UserHandle.getUserId(uid)
+                componentName, UserHandle.getUserId(uid), taskId
             )
         }
     }.onFailure {

@@ -9,6 +9,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
@@ -245,18 +246,24 @@ class AppStateService(shortXContext: ShortXContext) :
         return activityState.currentResumedActivities.toList()
     }
 
-    fun onActivityResumed(componentName: ComponentName, userId: Int, intentUri: String) {
-        activityState.onActivityResumed(componentName, userId, intentUri)
+    fun onActivityResumed(
+        componentName: ComponentName,
+        userId: Int,
+        intentUri: String,
+        taskId: Int
+    ) {
+        val label = getTaskLabel(componentName, taskId)
+        activityState.onActivityResumed(componentName, userId, intentUri, label)
     }
 
-    fun onActivityStopped(componentName: ComponentName, userId: Int) {
-        activityState.onActivityStopped(componentName, userId)
+    fun onActivityStopped(componentName: ComponentName, userId: Int, taskId: Int) {
+        val label = getTaskLabel(componentName, taskId)
+        activityState.onActivityStopped(componentName, userId, label)
     }
 
     fun onActivityDestroyed(componentName: ComponentName, userId: Int, taskId: Int) {
-        val taskLabel = TaskMapping.getLabelForTaskId(context, taskId)
-        logger.d("onActivityDestroyed, taskLabel: $taskLabel")
-        activityState.onActivityDestroyed(componentName, userId)
+        val label = getTaskLabel(componentName, taskId)
+        activityState.onActivityDestroyed(componentName, userId, label)
     }
 
     fun AppPkg.isRunning() = AMSFuncs.hasRunningAppProcessForPackage(context, this)
@@ -760,5 +767,15 @@ class AppStateService(shortXContext: ShortXContext) :
         ignoreNotRunning: Boolean
     ): Boolean {
         return TaskMapping.hasRecentTaskForPkg(context, pkg, ignoreNotRunning)
+    }
+
+    private fun getTaskLabel(name: ComponentName, taskId: Int): String {
+        val label = TaskMapping.getTaskLabel(context, taskId)
+        if (label != null) return label
+
+        val activityInfo =
+            context.packageManager.getActivityInfo(name, PackageManager.GET_META_DATA)
+        val pm = context.packageManager
+        return activityInfo.loadLabel(pm)?.toString().orEmpty()
     }
 }

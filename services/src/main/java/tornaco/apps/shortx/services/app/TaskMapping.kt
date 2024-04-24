@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.app
 
 import android.app.ActivityManager
+import android.app.ActivityManager.TaskDescription
 import android.content.Context
 import android.text.TextUtils
 import com.elvishew.xlog.XLog
@@ -10,8 +11,11 @@ import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.activityManager
 
+
 object TaskMapping {
     private val logger = Logger("TaskMapping")
+
+    private val taskDescriptionCache: MutableMap<Int, String> = mutableMapOf()
 
     private const val TASK_QUERY_SIZE = 200
 
@@ -59,26 +63,32 @@ object TaskMapping {
         return null
     }
 
-    fun getLabelForTaskId(context: Context, taskId: Int): String? {
+    private fun getTaskDescriptionForTaskId(context: Context, taskId: Int): TaskDescription? {
         val am = context.activityManager
         // Assume calling pkg has this permission.
         val tasks = am.getRecentTasks(TASK_QUERY_SIZE, ActivityManager.RECENT_WITH_EXCLUDED)
-        logger.d("getPackageNameForTaskId, RecentTaskInfo tasks: $tasks")
+        logger.d("getLabelForTaskId for task: $taskId, RecentTaskInfo tasks: $tasks")
         if (tasks != null) {
             for (rc in tasks) {
                 // persistentId: Deprecated
                 // As of Build.VERSION_CODES.Q, use taskId.
-                logger.d("getPackageNameForTaskId, RecentTaskInfo rc: $rc, persistentId: ${rc?.persistentId}")
+                logger.d("getLabelForTaskId, RecentTaskInfo rc: $rc, persistentId: ${rc?.persistentId}")
                 if (rc != null && rc.persistentId == taskId) {
                     val description = rc.taskDescription
-                    if (description != null) {
-                        return description.label
-                    }
-                    break
+                    logger.d("getLabelForTaskId, description rc: $description")
+                    return description
                 }
             }
         }
         return null
+    }
+
+    fun getTaskLabel(context: Context, taskId: Int): String? {
+        val cachedLabel = taskDescriptionCache[taskId]
+        if (cachedLabel != null) return cachedLabel
+        return (getTaskDescriptionForTaskId(context, taskId)?.label)?.also {
+            taskDescriptionCache[taskId] = it
+        }
     }
 
     fun getTasksIdForPackage(

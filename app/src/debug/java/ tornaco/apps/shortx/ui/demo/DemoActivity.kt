@@ -2,9 +2,11 @@
 
 package tornaco.apps.shortx.ui.demo
 
+import android.app.ActivityManager
 import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.widget.ArrayAdapter
 import android.widget.Toast
@@ -54,6 +56,11 @@ class DemoActivity : BaseActivity() {
                     .show()
             }
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setTaskDescription(ActivityManager.TaskDescription("Task description"))
     }
 
     override fun onResume() {

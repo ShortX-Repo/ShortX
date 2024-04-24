@@ -197,7 +197,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
     }
 
-    private fun ensureAutomationDisconnected(reason: String) {
+    fun ensureAutomationDisconnected(reason: String) {
         synchronized(uiAutoLock) {
             kotlin.runCatching {
                 logger.w("ensureAutomationDisConnected:  $reason")

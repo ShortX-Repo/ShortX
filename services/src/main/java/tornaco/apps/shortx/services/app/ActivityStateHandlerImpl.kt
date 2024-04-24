@@ -58,8 +58,13 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
         return topVisibleActivities.any { it.pkg == appPkg }
     }
 
-    fun onActivityResumed(componentName: ComponentName, userId: Int, intentUri: String) {
-        logger.d("onActivityResumed: $componentName userId: $userId, intentUri: $intentUri")
+    fun onActivityResumed(
+        componentName: ComponentName,
+        userId: Int,
+        intentUri: String,
+        taskLabel: String?
+    ) {
+        logger.d("onActivityResumed: $componentName userId: $userId, intentUri: $intentUri $taskLabel")
 
         onActivityStateChanged()
 
@@ -74,6 +79,7 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
                 ContextDataMapping.ActivityStarted.activityIntentUri.name to intentUri,
                 ContextDataMapping.ActivityStarted.pkgName.name to activity.pkg.pkgName,
                 ContextDataMapping.ActivityStarted.userId.name to activity.pkg.userId,
+                ContextDataMapping.ActivityStarted.taskLabel.name to taskLabel.orEmpty(),
                 ContextDataMapping.ActivityStarted.componentName.name to componentName.flattenToShortString(),
                 ContextDataMapping.ActivityStarted.appLabel.name to (shortXContext.appState.getAppLabel(
                     activity.pkg
@@ -82,9 +88,9 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
         }
     }
 
-    fun onActivityStopped(componentName: ComponentName, userId: Int) {
+    fun onActivityStopped(componentName: ComponentName, userId: Int, taskLabel: String?) {
         // Just dump.
-        logger.d("onActivityStopped: $componentName userId: $userId")
+        logger.d("onActivityStopped: $componentName userId: $userId $taskLabel")
         onActivityStateChanged()
 
         val activity = componentName.toAppComponent(userId)
@@ -97,6 +103,7 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
             mapOf(
                 ContextDataMapping.ActivityStopped.pkgName.name to activity.pkg.pkgName,
                 ContextDataMapping.ActivityStopped.userId.name to activity.pkg.userId,
+                ContextDataMapping.ActivityStarted.taskLabel.name to taskLabel.orEmpty(),
                 ContextDataMapping.ActivityStopped.componentName.name to componentName.flattenToShortString(),
                 ContextDataMapping.ActivityStopped.appLabel.name to (shortXContext.appState.getAppLabel(
                     activity.pkg
@@ -105,8 +112,8 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
         }
     }
 
-    fun onActivityDestroyed(componentName: ComponentName, userId: Int) {
-        logger.d("onActivityDestroyed: $componentName userId: $userId")
+    fun onActivityDestroyed(componentName: ComponentName, userId: Int, taskLabel: String?) {
+        logger.d("onActivityDestroyed: $componentName userId: $userId $taskLabel")
 
         val activity = componentName.toAppComponent(userId)
         shortXContext.rule.publishFact(
@@ -119,6 +126,7 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
                 ContextDataMapping.ActivityStopped.pkgName.name to activity.pkg.pkgName,
                 ContextDataMapping.ActivityStopped.userId.name to activity.pkg.userId,
                 ContextDataMapping.ActivityStopped.componentName.name to componentName.flattenToShortString(),
+                ContextDataMapping.ActivityStarted.taskLabel.name to taskLabel.orEmpty(),
                 ContextDataMapping.ActivityStopped.appLabel.name to (shortXContext.appState.getAppLabel(
                     activity.pkg
                 ) ?: activity.pkg.pkgName),
