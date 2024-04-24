@@ -97,6 +97,9 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Fact.ActivityStarted::class,
     Fact.ActivityStopped::class,
     Fact.ActivityDestroyed::class,
+    Fact.AnyActivityStarted::class,
+    Fact.AnyActivityStopped::class,
+    Fact.AnyActivityDestroyed::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 
     Condition.AppHasAudioFocus::class,

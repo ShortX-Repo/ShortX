@@ -217,6 +217,16 @@ fun appFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean
                 true
             }
 
+            Fact.AnyActivityStopped::class -> {
+                setFact(Fact.AnyActivityStopped())
+                true
+            }
+
+            Fact.AnyActivityDestroyed::class -> {
+                setFact(Fact.AnyActivityDestroyed())
+                true
+            }
+
             Fact.TaskRemoved::class -> {
                 taskRemovedAppSelectorState.show(
                     source.getFactAs<Fact.TaskRemoved>()?.apps,
