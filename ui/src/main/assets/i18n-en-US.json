@@ -139,6 +139,7 @@
     "ui.condition.headset.plugged": "Plugged",
     "ui.condition.headset.unplugged": "Unplugged",
     "ui.condition.app.has.window.focus": "App has window focus",
+    "ui.fact.logcat": "Logcat",
     "ui.fact.app.gain.window.focus": "App gain window focus",
     "ui.fact.app.lost.window.focus": "App lost window focus",
     "ui.fact.has.found.node.on.screen": "Target view found",

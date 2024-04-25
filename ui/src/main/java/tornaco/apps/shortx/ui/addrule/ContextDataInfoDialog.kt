@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -97,29 +99,32 @@ fun ContextDataInfoDialog(state: ContextDataInfoDialogState) {
             )
 
             val context = LocalContext.current
-            state.contextData.forEach { contextData ->
-                ContextDataItem(
-                    title = contextData.selectedKey,
-                    text1 = contextData.description,
-                    text2 = i18N["ui.context.data.example", mapOf("eg" to contextData.selectedKey.asAccessExample())],
-                    onClick = {
-                        ClipboardUtils.copyToClipboard(
-                            context,
-                            "context",
-                            contextData.selectedKey.asAccessExample()
-                        )
-                        Toast.makeText(
-                            context,
-                            i18N["ui.common.copied.to.clipboard"],
-                            Toast.LENGTH_LONG
-                        ).show()
-                    },
-                    canEditKey = state.canSetCustomKey,
-                    isCustomKey = !contextData.customKey.isNullOrEmpty(),
-                    setCustomKey = {
-                        state.updateCustomKey((contextData.key to it).toStringPair())
-                    }
-                )
+
+            LazyColumn {
+                items(state.contextData) { contextData ->
+                    ContextDataItem(
+                        title = contextData.selectedKey,
+                        text1 = contextData.description,
+                        text2 = i18N["ui.context.data.example", mapOf("eg" to contextData.selectedKey.asAccessExample())],
+                        onClick = {
+                            ClipboardUtils.copyToClipboard(
+                                context,
+                                "context",
+                                contextData.selectedKey.asAccessExample()
+                            )
+                            Toast.makeText(
+                                context,
+                                i18N["ui.common.copied.to.clipboard"],
+                                Toast.LENGTH_LONG
+                            ).show()
+                        },
+                        canEditKey = state.canSetCustomKey,
+                        isCustomKey = !contextData.customKey.isNullOrEmpty(),
+                        setCustomKey = {
+                            state.updateCustomKey((contextData.key to it).toStringPair())
+                        }
+                    )
+                }
             }
         }
     }

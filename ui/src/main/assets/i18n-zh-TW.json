@@ -139,6 +139,7 @@
     "ui.condition.headset.plugged": "已插入",
     "ui.condition.headset.unplugged": "未插入",
     "ui.condition.app.has.window.focus": "应用有窗口焦点",
+    "ui.fact.logcat": "Logcat",
     "ui.fact.app.gain.window.focus": "应用获得窗口焦点",
     "ui.fact.app.lost.window.focus": "应用失去窗口焦点",
     "ui.fact.has.found.node.on.screen": "发现页面视图",
