@@ -34,7 +34,7 @@ object TTS : Actor {
 
         val speakRes1 = requireNotNull(tts) { "TTS is null" }.speak(
             text,
-            TextToSpeech.QUEUE_FLUSH,
+            TextToSpeech.QUEUE_ADD,
             null
         )
         logger.d("speakRes1: $speakRes1 (SUCCESS: 0, ERROR: -1)")
@@ -47,7 +47,7 @@ object TTS : Actor {
 
             val speakRes2 = requireNotNull(tts) { "TTS is null" }.speak(
                 text,
-                TextToSpeech.QUEUE_FLUSH,
+                TextToSpeech.QUEUE_ADD,
                 null
             )
 
