@@ -702,6 +702,7 @@
     "ui.action.post.notification.large.icon": "大图标（可选）",
     "ui.action.post.notification.important": "重要通知",
     "ui.action.post.notification.sound": "播放声音",
+    "ui.action.post.notification.ongoing": "常驻",
     "ui.action.post.notification.vibrate": "振动",
     "ui.action.post.notification.button": "通知按钮",
     "ui.action.post.notification.button.text": "按钮文本",

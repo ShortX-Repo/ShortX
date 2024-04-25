@@ -703,6 +703,7 @@
     "ui.action.post.notification.important": "重要通知",
     "ui.action.post.notification.sound": "播放聲音",
     "ui.action.post.notification.vibrate": "振動",
+    "ui.action.post.notification.ongoing": "常驻",
     "ui.action.post.notification.button": "通知按钮",
     "ui.action.post.notification.button.text": "按钮文本",
     "ui.action.post.notification.on.click": "点击动作",

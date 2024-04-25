@@ -27,6 +27,7 @@ data class PostNotificationSelectorState(
     val smallIcon: String,
     val isImportant: Boolean,
     val vibrate: Boolean,
+    val ongoing: Boolean,
     val sound: Boolean,
     val buttonAndHandlers: List<NotificationButtonAndHandler>,
     val onClickHandler: ActionContentStateHandler,
@@ -51,6 +52,7 @@ fun PostNotificationSelectorState.toAction(): Action.PostNotification {
         isImportant = this.isImportant,
         vibrate = this.vibrate,
         sound = this.sound,
+        ongoing = this.ongoing,
         buttons = this.buttonAndHandlers.map { buttonAndHandler ->
             NotificationButton.newBuilder()
                 .setLabel(buttonAndHandler.label)
@@ -77,6 +79,7 @@ class PostNotificationSelectorViewModel @Inject constructor(@ApplicationContext 
                 isImportant = false,
                 vibrate = false,
                 sound = false,
+                ongoing = false,
                 buttonAndHandlers = emptyList(),
                 onClickHandler = ActionContentStateHandler()
             )
@@ -118,6 +121,7 @@ class PostNotificationSelectorViewModel @Inject constructor(@ApplicationContext 
                 isImportant = settings.isImportant,
                 vibrate = settings.vibrate,
                 sound = settings.sound,
+                ongoing = settings.ongoing,
                 evaluatingActions = shortXManager.getEvaluatingActions(),
                 buttonAndHandlers = settings.buttons.map { notificationButton ->
                     NotificationButtonAndHandler(
@@ -189,6 +193,10 @@ class PostNotificationSelectorViewModel @Inject constructor(@ApplicationContext 
 
     fun setVibrate(it: Boolean) {
         updateState { copy(vibrate = it) }
+    }
+
+    fun setOngoing(it: Boolean) {
+        updateState { copy(ongoing = it) }
     }
 
     fun setSound(it: Boolean) {
