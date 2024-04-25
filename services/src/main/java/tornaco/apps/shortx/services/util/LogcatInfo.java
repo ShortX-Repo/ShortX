@@ -1,6 +1,5 @@
 package tornaco.apps.shortx.services.util;
 
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -86,12 +85,6 @@ public final class LogcatInfo {
     private static final Pattern LOG_PATTERN_ADD_UID = Pattern.compile(LOG_TIME + LOG_SEPARATOR + LOG_UID +
             LOG_SEPARATOR + LOG_PID + LOG_SEPARATOR + LOG_TID + LOG_SEPARATOR +
             LOG_LEVEL + LOG_SEPARATOR + LOG_TAG + LOG_SEPARATOR + LOG_CONTENT);
-
-    static final ArrayList<String> IGNORED_LOG = new ArrayList<String>() {{
-        add("--------- beginning of crash");
-        add("--------- beginning of main");
-        add("--------- beginning of system");
-    }};
 
     /**
      * 时间

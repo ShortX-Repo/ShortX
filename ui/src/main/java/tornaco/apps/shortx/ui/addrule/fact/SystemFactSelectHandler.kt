@@ -372,6 +372,14 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     }
     NFCTagSelectorDialog(state = nfcTagSelectorDialogState)
 
+    val logcatRegexDialogState = rememberRegexTextInputState(
+        title = LocalI18N.current["ui.fact.logcat"],
+        message = null
+    ) { str, op ->
+        addFact(Fact.Logcat(regex = str, regexMatchOptions = op))
+    }
+    RegexTextInputDialog(state = logcatRegexDialogState)
+
     return { source ->
         when (source.clazz) {
             Fact.KeyEvent::class -> {
@@ -629,6 +637,14 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
             Fact.NFCTagDiscover::class -> {
                 nfcTagSelectorDialogState.show()
+                true
+            }
+
+            Fact.Logcat::class -> {
+                logcatRegexDialogState.show(
+                    initialValue = source.getFactAs<Fact.Logcat>()?.regex ?: "",
+                    options = source.getFactAs<Fact.Logcat>()?.regexMatchOptions
+                )
                 true
             }
 

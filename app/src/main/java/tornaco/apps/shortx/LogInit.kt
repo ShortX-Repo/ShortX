@@ -7,6 +7,7 @@ import com.elvishew.xlog.flattener.ClassicFlattener
 import com.elvishew.xlog.printer.AndroidPrinter
 import com.elvishew.xlog.printer.file.clean.FileLastModifiedCleanStrategy
 import com.elvishew.xlog.printer.file.naming.DateFileNameGenerator
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.BuildPropExt
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.util.logAdapter
@@ -26,7 +27,7 @@ fun initLogger(context: Context) {
         XLog.init(
             com.elvishew.xlog.LogConfiguration.Builder()
                 .logLevel(com.elvishew.xlog.LogLevel.ALL)
-                .tag("ShortX-App")
+                .tag("${BuildProp.LOG_PREFIX}App")
                 .build(),
             filePrinter,
             androidPrinter

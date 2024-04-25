@@ -6,61 +6,37 @@ import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * author : Android 轮子哥
- * github : https://github.com/getActivity/Logcat
- * time   : 2020/01/24
- * desc   : 日志管理类
- * doc    : https://developer.android.google.cn/studio/command-line/logcat
- */
-@SuppressWarnings("AlibabaAvoidManuallyCreateThread")
-public final class LogcatManager {
+import tornaco.apps.shortx.core.BuildProp;
 
-    /**
-     * 日志捕捉监听对象
-     */
+public final class LogcatManager {
     private static volatile Callback sCallback;
-    /**
-     * 日志捕捉标记
-     */
+    private static volatile boolean isStarted;
     private static volatile boolean FLAG_WORK;
 
-    /**
-     * Log 哈希存放集合
-     */
+    // Max 1000
     private static final Set<String> LOG_HASH = new HashSet<>();
 
     public static void setCallback(Callback callback) {
         sCallback = callback;
     }
 
-    /**
-     * 开始捕捉
-     */
+    public static boolean isStarted() {
+        return isStarted;
+    }
+
     public static void start() {
         FLAG_WORK = true;
-        new Thread(new LogRunnable()).start();
+        isStarted = true;
+        new Thread(new LogRunnable(), "ShortXLogcat").start();
     }
 
-    /**
-     * 停止捕捉
-     */
-    public static void destroy() {
+    public static void pause() {
         FLAG_WORK = false;
-        // 把监听对象置空，不然会导致内存泄漏
-        sCallback = null;
     }
 
-    /**
-     * 清空日志
-     */
     public static void clear() {
         try {
             new ProcessBuilder("logcat", "-c").start();
@@ -85,22 +61,17 @@ public final class LogcatManager {
         return new BufferedReader(new InputStreamReader(process.getInputStream()));
     }
 
-    /**
-     * 关闭流
-     */
     private static void closeStream(Closeable closeable) {
         if (closeable == null) {
             return;
         }
         try {
             closeable.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
         }
     }
 
     private static class LogRunnable implements Runnable {
-
         @Override
         public void run() {
             BufferedReader reader = null;
@@ -112,14 +83,12 @@ public final class LogcatManager {
                         try {
                             reader = createLogcatBufferedReader();
                         } catch (IOException e) {
-                            e.printStackTrace();
                             break;
                         }
                     }
                     try {
                         line = reader.readLine();
                     } catch (IOException e) {
-                        e.printStackTrace();
                         closeStream(reader);
                         break;
                     }
@@ -139,11 +108,9 @@ public final class LogcatManager {
                         continue;
                     }
 
-                    if (LogcatInfo.IGNORED_LOG.contains(line)) {
-                        continue;
-                    }
+                    if (line.contains(BuildProp.LOG_PREFIX)) continue;
 
-                    String md5 = computeMD5Hash(line);
+                    String md5 = StringMD5.INSTANCE.md5(line);
                     if (LOG_HASH.contains(md5)) {
                         // 之前已经读取过这条日志了，这就不再触发了
                         // 搞这一波操作是为了上面兼容有些手机获取到的最新日志为空而做处理
@@ -152,12 +119,11 @@ public final class LogcatManager {
                         // 所以这里需要过滤掉这些重复的日志，对日志内容进行哈希计算并进行保存
                         continue;
                     }
+                    if (LOG_HASH.size() >= 1000) {
+                        LOG_HASH.clear();
+                    }
                     LOG_HASH.add(md5);
 
-                    LogcatInfo info = LogcatInfo.create(line, true);
-                    if (info == null) {
-                        continue;
-                    }
                     if (!FLAG_WORK) {
                         continue;
                     }
@@ -166,42 +132,13 @@ public final class LogcatManager {
                     if (callback == null) {
                         return;
                     }
-                    callback.onReceiveLog(info);
+                    callback.onReceiveLog(line);
                 }
             }
         }
     }
 
-    private static final Charset CHARSET_UTF_8 = StandardCharsets.UTF_8;
-
-    /**
-     * 计算字符串 md5 哈希值
-     */
-    public static String computeMD5Hash(String string) {
-        byte[] hash;
-
-        try {
-            hash = MessageDigest.getInstance("MD5").digest(string.getBytes(CHARSET_UTF_8));
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        StringBuilder hex = new StringBuilder(hash.length * 2);
-        for (byte b : hash) {
-            if ((b & 0xFF) < 0x10)
-                hex.append("0");
-            hex.append(Integer.toHexString(b & 0xFF));
-        }
-
-        return hex.toString();
-    }
-
     public interface Callback {
-
-        /**
-         * 收到日志
-         */
-        void onReceiveLog(LogcatInfo info);
+        void onReceiveLog(String line);
     }
 }

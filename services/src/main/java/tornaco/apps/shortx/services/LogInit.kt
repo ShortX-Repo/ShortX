@@ -12,6 +12,7 @@ import com.elvishew.xlog.printer.Printer
 import com.elvishew.xlog.printer.file.FilePrinter
 import com.elvishew.xlog.printer.file.clean.FileLastModifiedCleanStrategy
 import com.elvishew.xlog.printer.file.naming.DateFileNameGenerator
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.BuildPropExt
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.util.DateUtils
@@ -25,7 +26,7 @@ import java.io.FileOutputStream
 
 
 object LogInit {
-    private const val LOG_PREFIX = "ShortX-Core"
+    private const val LOG_PREFIX = "${BuildProp.LOG_PREFIX}Core"
 
     private var _logDebug = BuildPropInternal.APP_IS_DEBUG
     val logDebug get() = _logDebug

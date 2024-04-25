@@ -49,6 +49,7 @@ import tornaco.apps.shortx.core.proto.fact.HotSpotStatusChanged
 import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.fact.LocationStatusChanged
+import tornaco.apps.shortx.core.proto.fact.Logcat
 import tornaco.apps.shortx.core.proto.fact.MediaStoreInsert
 import tornaco.apps.shortx.core.proto.fact.MobileDataStatusChanged
 import tornaco.apps.shortx.core.proto.fact.NFCStatusChanged
@@ -558,6 +559,11 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
             val actualN = (actual as NFCTagDiscover)
             val ruleN = (rule as NFCTagDiscover)
             ruleN.uid.isEmpty || ruleN.uid == actualN.uid
+        }
+        register(Logcat::class.java) { actual, rule ->
+            val actualN = (actual as Logcat)
+            val ruleN = (rule as Logcat)
+            ruleN.id == actualN.id
         }
 
         logger.i("Init complete.")

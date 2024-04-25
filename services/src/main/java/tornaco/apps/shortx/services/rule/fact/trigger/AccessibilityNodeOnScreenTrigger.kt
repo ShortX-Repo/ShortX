@@ -9,6 +9,7 @@ import android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
 import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen
+import tornaco.apps.shortx.core.proto.factsAndQuitFacts
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
@@ -78,18 +79,20 @@ class AccessibilityNodeOnScreenTrigger(
         nodeMatchers.clear()
 
         shortXContext.rule.getAllEnabledRules().forEach { rule ->
-            (rule.factsList + rule.quit.factsList).forEach { factProtoAny ->
+            (rule.factsAndQuitFacts).forEach { factProtoAny ->
                 if (factProtoAny is_ HasFoundNodeOnScreen::class.java) {
                     val fact = factProtoAny unpack_ HasFoundNodeOnScreen::class.java
-                    fact.extractMatchers().let {
-                        val brief = HasFoundNodeOnScreenBrief(
-                            fact.id,
-                            fact.packageName,
-                            ComponentName.unflattenFromString(fact.componentName),
-                            fact.detectTimeout
-                        )
-                        logger.d("brief: $brief")
-                        nodeMatchers[brief] = it
+                    if (!fact.isDisabled) {
+                        fact.extractMatchers().let {
+                            val brief = HasFoundNodeOnScreenBrief(
+                                fact.id,
+                                fact.packageName,
+                                ComponentName.unflattenFromString(fact.componentName),
+                                fact.detectTimeout
+                            )
+                            logger.d("brief: $brief")
+                            nodeMatchers[brief] = it
+                        }
                     }
                 }
             }
