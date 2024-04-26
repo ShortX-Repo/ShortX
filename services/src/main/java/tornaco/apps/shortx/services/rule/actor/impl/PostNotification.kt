@@ -64,22 +64,22 @@ object PostNotification : Actor {
 
             val paramsId = evaluateContext.srcTitle + "-" + evaluateContext.srcId + "-" + d.id
 
-            val extras = listOf(d.title, d.message, d.overrideAppName).mapNotNull {
+            val globalVarExtras = listOf(d.title, d.message, d.overrideAppName).mapNotNull {
                 if (!it.contains(GLOBAL_VAR_REF_PREFIX)) null
                 else {
                     AndroidIntentExtra.newBuilder().setKey(it).setValue("ShortX").build()
                 }
             }
-            logger.p("extras: $extras")
+            logger.p("extras: $globalVarExtras")
 
-            visibleParams[paramsId] = params
+            if (globalVarExtras.isNotEmpty()) visibleParams[paramsId] = params
 
             val inflatedN =
                 PostNotification.newBuilder(d)
                     .setTitle(inflatedTitle)
                     .setMessage(inflatedMessage)
                     .setOverrideAppName(inflatedAppName)
-                    .addAllExtras(extras)
+                    .addAllExtras(globalVarExtras)
                     .addExtras(
                         AndroidIntentExtra.newBuilder().setKey(PARAMS_ID).setValue(paramsId).build()
                     )
