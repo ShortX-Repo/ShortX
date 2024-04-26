@@ -78,6 +78,8 @@ class NotificationService(shortXContext: ShortXContext) :
     private val nls = Nls(shortXContext)
     private val nms by lazy { ServiceRetriever(context.classLoader).getNMS() }
 
+    private val internalNotificationListeners = mutableListOf<() -> Unit>()
+
     @SuppressLint("MissingPermission", "NewApi")
     override fun systemReady() {
         super.systemReady()
@@ -167,6 +169,7 @@ class NotificationService(shortXContext: ShortXContext) :
                 n.contextMap()
             )
         }
+        internalNotificationListeners.forEach { it() }
     }
 
     fun registerUpdatedByApp(n: Notification) {
@@ -189,6 +192,7 @@ class NotificationService(shortXContext: ShortXContext) :
                 n.contextMap()
             )
         }
+        internalNotificationListeners.forEach { it() }
     }
 
     fun registerRemovedByApp(n: Notification) {
@@ -200,6 +204,11 @@ class NotificationService(shortXContext: ShortXContext) :
                 n.contextMap()
             )
         }
+        internalNotificationListeners.forEach { it() }
+    }
+
+    fun registerInternalNotificationListener(listener: () -> Unit) {
+        internalNotificationListeners.add(listener)
     }
 
     fun removeNotificationForPackage(appPkgs: List<AppPkg>) {

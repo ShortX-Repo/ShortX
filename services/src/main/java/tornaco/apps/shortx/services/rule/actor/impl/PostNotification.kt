@@ -45,6 +45,11 @@ object PostNotification : Actor {
             override fun onDelete(id: String?) {
             }
         })
+
+        shortXContext.notification.registerInternalNotificationListener {
+            logger.d("Notifications change")
+            cleanUpVisibleParams(shortXContext)
+        }
     }
 
     override suspend fun handle(
@@ -57,7 +62,7 @@ object PostNotification : Actor {
             val inflatedMessage = d.message.compileContextAndVars(cv)
             val inflatedAppName = d.overrideAppName.compileContextAndVars(cv)
 
-            val paramsId = evaluateContext.srcId + "-" + d.id
+            val paramsId = evaluateContext.srcTitle + "-" + evaluateContext.srcId + "-" + d.id
 
             val extras = listOf(d.title, d.message, d.overrideAppName).mapNotNull {
                 if (!it.contains(GLOBAL_VAR_REF_PREFIX)) null
@@ -83,36 +88,60 @@ object PostNotification : Actor {
         }
     }
 
-    private suspend fun updateN(shortXContext: ShortXContext, globalVar: GlobalVar) {
-        logger.d("updateN for gv: ${globalVar.name}")
-        val globalVarNotifications =
-            shortXContext.notification.getActiveNotifications().mapNotNull { notification ->
-                val extras = notification.extrasList
-                val params = extras.firstOrNull { it.key == PARAMS_ID }
-
-                if (params == null) {
-                    null
-                } else {
-                    val isGV = notification.extrasList.any {
-                        it.key.contains(
-                            "${GLOBAL_VAR_REF_PREFIX}${globalVar.name}"
-                        )
-                    }
-                    if (isGV) {
-                        params.value
-                    } else {
-                        null
-                    }
+    private fun cleanUpVisibleParams(shortXContext: ShortXContext) {
+        if (visibleParams.isNotEmpty()) {
+            val activeGVNotificationParamIds =
+                getActiveGVNotificationParamIds(shortXContext)
+            visibleParams.keys.forEach {
+                if (!activeGVNotificationParamIds.contains(it)) {
+                    visibleParams.remove(it)
+                    logger.d("Remove visibleParams: $it")
                 }
-
-            }
-
-        logger.d("globalVarNotifications: $globalVarNotifications")
-
-        globalVarNotifications.forEach { n ->
-            visibleParams[n]?.let {
-                handle(it)
             }
         }
+    }
+
+    private suspend fun updateN(shortXContext: ShortXContext, globalVar: GlobalVar) {
+        if (visibleParams.isNotEmpty()) {
+            logger.d("updateN for gv: ${globalVar.name}")
+            val activeGVNotificationParamIds =
+                getActiveGVNotificationParamIds(shortXContext, globalVar)
+            logger.d("globalVarNotifications: $activeGVNotificationParamIds")
+            activeGVNotificationParamIds.forEach { n ->
+                visibleParams[n]?.let {
+                    handle(it)
+                }
+            }
+        }
+    }
+
+    private fun getActiveGVNotificationParamIds(
+        shortXContext: ShortXContext,
+        globalVar: GlobalVar
+    ) = shortXContext.notification.getActiveNotifications().mapNotNull { notification ->
+        val extras = notification.extrasList
+        val params = extras.firstOrNull { it.key == PARAMS_ID }
+
+        if (params == null) {
+            null
+        } else {
+            val isGV = notification.extrasList.any {
+                it.key.contains(
+                    "${GLOBAL_VAR_REF_PREFIX}${globalVar.name}"
+                )
+            }
+            if (isGV) {
+                params.value
+            } else {
+                null
+            }
+        }
+    }
+
+    private fun getActiveGVNotificationParamIds(
+        shortXContext: ShortXContext,
+    ) = shortXContext.notification.getActiveNotifications().mapNotNull { notification ->
+        val extras = notification.extrasList
+        extras.firstOrNull { it.key == PARAMS_ID }?.value
     }
 }
