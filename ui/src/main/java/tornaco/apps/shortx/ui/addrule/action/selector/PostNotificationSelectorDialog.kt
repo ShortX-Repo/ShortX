@@ -240,6 +240,13 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
             onCheckChange = {
                 vm.setVibrate(it)
             })
+        SectionSpacer()
+        SwitchRow(
+            text = LocalI18N.current["ui.action.post.notification.ongoing"],
+            isChecked = state.ongoing,
+            onCheckChange = {
+                vm.setOngoing(it)
+            })
 
 
         SectionSpacer()
