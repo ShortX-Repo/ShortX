@@ -89,6 +89,7 @@ object PostNotification : Actor {
     }
 
     private fun cleanUpVisibleParams(shortXContext: ShortXContext) {
+        logger.d("cleanUpVisibleParams: $visibleParams")
         if (visibleParams.isNotEmpty()) {
             val activeGVNotificationParamIds =
                 getActiveGVNotificationParamIds(shortXContext)
@@ -102,6 +103,7 @@ object PostNotification : Actor {
     }
 
     private suspend fun updateN(shortXContext: ShortXContext, globalVar: GlobalVar) {
+        logger.d("updateN: $visibleParams")
         if (visibleParams.isNotEmpty()) {
             logger.d("updateN for gv: ${globalVar.name}")
             val activeGVNotificationParamIds =
