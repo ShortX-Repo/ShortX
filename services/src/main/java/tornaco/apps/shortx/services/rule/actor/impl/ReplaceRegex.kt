@@ -3,8 +3,10 @@ package tornaco.apps.shortx.services.rule.actor.impl
 import com.google.protobuf.Message
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
@@ -25,6 +27,9 @@ object ReplaceRegex : Actor {
         val regex = data.regex.compileContextAndVars(cv).toRegex()
         val result = data.string.compileContextAndVars(cv)
             .replace(regex, data.replacement.compileContextAndVars(cv))
-        contextData.add(ContextDataMapping.ReplaceRegex.replaceResult.name, result)
+        contextData.add(
+            data.customContextDataKey.forKey(ContextDataMapping.ReplaceRegex.replaceResult.name)
+                .fallbackOnEmpty(ContextDataMapping.ReplaceRegex.replaceResult.name), result
+        )
     }
 }
