@@ -227,6 +227,10 @@ enum class PrebuiltCond : CondProvider {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.RequireIMEVisibility
     },
+    RequireNotificationPanelExpanded {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.RequireNotificationPanelExpanded
+    },
     TheXXTimeToday {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.TheXXTimeToday

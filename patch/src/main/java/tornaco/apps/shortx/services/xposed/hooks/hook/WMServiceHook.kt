@@ -44,8 +44,10 @@ object WMServiceHook {
                 logger.d("notifyFocusChanged: $focused")
                 if (focused != null) {
                     val ownerUid = Reflections.getIntField(focused, "mOwnerUid")
-                    logger.d("notifyFocusChanged: $focused, owner: $ownerUid")
-                    ShortXService.shortXContext.wm.onWindowFocusChanged(ownerUid)
+                    val windowTag =
+                        Reflections.callMethod(focused, "getWindowTag")?.toString().orEmpty()
+                    logger.d("notifyFocusChanged: $focused, owner: $ownerUid, tag: $windowTag")
+                    ShortXService.shortXContext.wm.onWindowFocusChanged(ownerUid, windowTag)
                 }
             }
         }.onFailure {

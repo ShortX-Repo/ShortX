@@ -280,15 +280,15 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     MenuDialog(state = imeVisibilitySelectorState)
 
     val notificationPanelExpandState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.conditions.n.panel.expanded"],
+        title = LocalI18N.current["ui.condition.n.panel.expanded"],
         menuItems = listOf(
             MenuDialogItem(
                 id = true.toString(),
-                title = LocalI18N.current["ui.conditions.n.panel.expanded.y"],
+                title = LocalI18N.current["ui.condition.n.panel.expanded.y"],
             ),
             MenuDialogItem(
                 id = false.toString(),
-                title = LocalI18N.current["ui.conditions.n.panel.expanded.n"],
+                title = LocalI18N.current["ui.condition.n.panel.expanded.n"],
             ),
         ),
         onItemSelected = { _, id ->

@@ -59,6 +59,12 @@ class WindowManagerService(shortXContext: ShortXContext) :
     private var _currentFocusedWindowOwner: AppPkg = unKnownPkg
     val currentFocusedWindowOwner get() = _currentFocusedWindowOwner
 
+    private var _currentFocusedWindowTag: String = ""
+    val currentFocusedWindowTag get() = _currentFocusedWindowTag
+
+    private var _isNotificationPanelExpanded: Boolean = false
+    val isNotificationPanelExpanded get() = _isNotificationPanelExpanded
+
     var screenRotateDegree: ScreenRotateDegree = ScreenRotateDegree.ScreenRotateDegree_0
         set(value) {
             field = value
@@ -721,40 +727,54 @@ class WindowManagerService(shortXContext: ShortXContext) :
         return false
     }
 
-    fun onWindowFocusChanged(ownerUid: Int) {
+    fun onWindowFocusChanged(ownerUid: Int, windowTag: String) {
         systemServiceScope.launchSafety {
-            val app = shortXContext.appState.uidToApp(ownerUid)
-            app?.let {
-                val newAppPkg = app.pkg
-                if (_currentFocusedWindowOwner != newAppPkg) {
-                    // Lost current
-                    shortXContext.rule.publishFact(
-                        "onWindowFocusChanged", AppLostWindowFocus.newBuilder()
-                            .addApps(_currentFocusedWindowOwner)
-                            .build()
-                    ) {
-                        mapOf(
-                            ContextDataMapping.AppLostWindowFocus.pkgName.name to _currentFocusedWindowOwner.pkgName,
-                            ContextDataMapping.AppLostWindowFocus.userId.name to _currentFocusedWindowOwner.userId,
-                        )
-                    }
+            windowOwnerUIDChanged(ownerUid)
+            windowTagChanged(windowTag)
+        }
+    }
 
-                    // Gain new
-                    shortXContext.rule.publishFact(
-                        "onWindowFocusChanged", AppGainWindowFocus.newBuilder()
-                            .addApps(newAppPkg)
-                            .build()
-                    ) {
-                        mapOf(
-                            ContextDataMapping.AppGainWindowFocus.pkgName.name to newAppPkg.pkgName,
-                            ContextDataMapping.AppGainWindowFocus.userId.name to newAppPkg.userId,
-                        )
-                    }
-
-                    _currentFocusedWindowOwner = newAppPkg
-                    logger.d("onWindowFocusChanged: $ownerUid - ${_currentFocusedWindowOwner.appPkgToString()}")
+    private fun windowOwnerUIDChanged(ownerUid: Int) {
+        val app = shortXContext.appState.uidToApp(ownerUid)
+        app?.let {
+            val newAppPkg = app.pkg
+            if (_currentFocusedWindowOwner != newAppPkg) {
+                // Lost current
+                shortXContext.rule.publishFact(
+                    "onWindowFocusChanged", AppLostWindowFocus.newBuilder()
+                        .addApps(_currentFocusedWindowOwner)
+                        .build()
+                ) {
+                    mapOf(
+                        ContextDataMapping.AppLostWindowFocus.pkgName.name to _currentFocusedWindowOwner.pkgName,
+                        ContextDataMapping.AppLostWindowFocus.userId.name to _currentFocusedWindowOwner.userId,
+                    )
                 }
+
+                // Gain new
+                shortXContext.rule.publishFact(
+                    "onWindowFocusChanged", AppGainWindowFocus.newBuilder()
+                        .addApps(newAppPkg)
+                        .build()
+                ) {
+                    mapOf(
+                        ContextDataMapping.AppGainWindowFocus.pkgName.name to newAppPkg.pkgName,
+                        ContextDataMapping.AppGainWindowFocus.userId.name to newAppPkg.userId,
+                    )
+                }
+
+                _currentFocusedWindowOwner = newAppPkg
+                logger.d("onWindowFocusChanged: $ownerUid - ${_currentFocusedWindowOwner.appPkgToString()}")
             }
+        }
+    }
+
+    private fun windowTagChanged(windowTag: String) {
+        _currentFocusedWindowTag = windowTag
+
+        val isNotificationPanelExpandedNew = "NotificationShade" == _currentFocusedWindowTag
+        if (isNotificationPanelExpandedNew != _isNotificationPanelExpanded) {
+            _isNotificationPanelExpanded = isNotificationPanelExpandedNew
         }
     }
 }

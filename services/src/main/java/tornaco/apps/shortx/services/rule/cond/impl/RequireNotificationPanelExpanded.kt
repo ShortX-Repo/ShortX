@@ -12,7 +12,7 @@ object RequireNotificationPanelExpanded : Cond {
         return with(param) {
             val data =
                 condition unpack_ tornaco.apps.shortx.core.proto.condition.RequireNotificationPanelExpanded::class.java
-            val res = false
+            val res = shortXContext.wm.isNotificationPanelExpanded
             Cond.Result(
                 if (data.isInvert) {
                     !res
