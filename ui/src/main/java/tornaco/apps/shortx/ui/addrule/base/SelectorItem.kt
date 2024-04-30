@@ -156,10 +156,9 @@ private fun SelectorListItem(
                         textAlign = TextAlign.Center
                     )
                     if (text1 != null && text1.length < 10) {
-                        TinySpacer()
                         Text(
                             text = text1,
-                            fontSize = 11.sp,
+                            fontSize = 10.sp,
                             textAlign = TextAlign.Center
                         )
                     }
@@ -187,7 +186,7 @@ private fun SelectorListItemPreview() {
         Column {
             SelectorListItem(
                 icon = Remix.System.apps_line,
-                iconColor = Color.Yellow,
+                iconColor = Color.Red,
                 title = "Just do it",
                 text1 = null,
                 isForSubscribedOnly = true,
@@ -198,10 +197,21 @@ private fun SelectorListItemPreview() {
 
             SelectorListItem(
                 icon = Remix.System.apps_line,
-                iconColor = Color.Yellow,
+                iconColor = Color.Red,
                 title = "Just do it",
                 text1 = "This is a good question",
                 isForSubscribedOnly = false,
+                onClick = {}
+            )
+
+            SectionSpacer()
+
+            SelectorListItem(
+                icon = Remix.System.apps_line,
+                iconColor = Color.Red,
+                title = "Just do it",
+                text1 = "Question",
+                isForSubscribedOnly = true,
                 onClick = {}
             )
         }
