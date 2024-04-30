@@ -111,7 +111,7 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
 
     val plugStateSelectorState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.conditions.plug.state"],
-        menuItems = PlugType.values().filterNot { it == PlugType.UNRECOGNIZED }.map {
+        menuItems = PlugType.entries.filterNot { it == PlugType.UNRECOGNIZED }.map {
             MenuDialogItem(
                 id = it.name,
                 title = LocalI18N.current["ui.conditions.plug.type.${it.name.lowercase()}"]
@@ -179,7 +179,7 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
 
     val screenRotateSelectorState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.fact.screen.rotate"],
-        menuItems = ScreenRotateDegree.values()
+        menuItems = ScreenRotateDegree.entries
             .filterNot { it == ScreenRotateDegree.UNRECOGNIZED || it == ScreenRotateDegree.ScreenRotateDegree_Any }
             .map {
                 MenuDialogItem(it.name, title = LocalI18N.current[it.factLabelKey()])
@@ -193,7 +193,7 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
 
     val windowRotationSelectorState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.fact.window.rotate"],
-        menuItems = ScreenRotateDegree.values()
+        menuItems = ScreenRotateDegree.entries
             .filterNot { it == ScreenRotateDegree.UNRECOGNIZED || it == ScreenRotateDegree.ScreenRotateDegree_Any }
             .map {
                 MenuDialogItem(it.name, title = LocalI18N.current[it.factLabelKey()])
@@ -227,7 +227,7 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
 
     val tileStateSelectorState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.conditions.tile.state"],
-        menuItems = QSTileState.values()
+        menuItems = QSTileState.entries
             .filterNot { it == QSTileState.UNRECOGNIZED }
             .map {
                 MenuDialogItem(it.name, title = LocalI18N.current[it.labelKey()])
@@ -278,6 +278,25 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
         }
     )
     MenuDialog(state = imeVisibilitySelectorState)
+
+    val notificationPanelExpandState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.conditions.n.panel.expanded"],
+        menuItems = listOf(
+            MenuDialogItem(
+                id = true.toString(),
+                title = LocalI18N.current["ui.conditions.n.panel.expanded.y"],
+            ),
+            MenuDialogItem(
+                id = false.toString(),
+                title = LocalI18N.current["ui.conditions.n.panel.expanded.n"],
+            ),
+        ),
+        onItemSelected = { _, id ->
+            val isExpand = id.toBoolean()
+            addCondition(Condition.RequireNotificationPanelExpanded(isExpand = isExpand))
+        }
+    )
+    MenuDialog(state = notificationPanelExpandState)
 
 
     return { source ->
@@ -405,6 +424,11 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
 
             Condition.RequireIMEVisibility::class -> {
                 imeVisibilitySelectorState.show()
+                true
+            }
+
+            Condition.RequireNotificationPanelExpanded::class -> {
+                notificationPanelExpandState.show()
                 true
             }
 

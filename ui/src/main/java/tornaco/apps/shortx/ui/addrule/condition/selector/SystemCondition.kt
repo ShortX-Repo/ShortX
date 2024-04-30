@@ -45,6 +45,7 @@ fun SystemConditions(
         Condition.RequireTileState::class,
         Condition.RequireAPMMode::class,
         Condition.RequireIMEVisibility::class,
+        Condition.RequireNotificationPanelExpanded::class,
     ).map {
         SelectorItem(
             type = it,
