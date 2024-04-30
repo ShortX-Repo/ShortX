@@ -85,6 +85,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Fact.BTConnectedTo::class,
     Fact.BTDisconnectedFrom::class,
     Fact.TaskRemoved::class,
+    Fact.TaskRemovedAny::class,
     Fact.AdvancedKeyEvent::class,
     Fact.FixedInPeriod::class,
     Fact.OnQSTileClick::class,
@@ -100,6 +101,8 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Fact.AnyActivityStarted::class,
     Fact.AnyActivityStopped::class,
     Fact.AnyActivityDestroyed::class,
+    Fact.UserPresentAtTheFirstTime::class,
+    Fact.BatteryTemperatureChanged::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 
     Condition.AppHasAudioFocus::class,
@@ -112,6 +115,15 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Condition.ConnectedWifiSignal::class,
     Condition.TheXXTimeToday::class,
     Condition.RequireBTDeviceFound::class,
+    Condition.RequireNotificationPanelExpanded::class,
+    Condition.RequireWindowRotation::class,
+    Condition.RequireScreenRotate::class,
+    Condition.RequireWifiConnected::class,
+    Condition.RequireWifiDisconnected::class,
+    Condition.RequireBTConnected::class,
+    Condition.RequireBTDisconnected::class,
+    Condition.VPNIsConnected::class,
+    Condition.RequireTileState::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 
     Action.LaunchAppByPkg::class,
@@ -157,6 +169,11 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Action.Toggle5G::class,
     Action.SendSMS::class,
     Action.SwitchCase::class,
+    Action.ReplaceRegex::class,
+    Action.MatchRegex::class,
+    Action.DownloadFile::class,
+    Action.InjectKeyCode::class,
+    Action.InjectCombineKeyCode::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 )
 
