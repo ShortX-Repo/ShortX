@@ -21,6 +21,7 @@ import tornaco.apps.shortx.core.proto.common.SensorUsage
 import tornaco.apps.shortx.ui.backup.BackupAgent
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.settings.pref.Pref
+import tornaco.apps.shortx.ui.theme.ThemePref
 import java.io.File
 import javax.inject.Inject
 
@@ -47,6 +48,7 @@ data class SettingsState(
     val ruleFeatureEnabled: Boolean = false,
     val isPostNByApp: Boolean = false,
     val isForceDisableShortXByKeyPress: Boolean = false,
+    val dynamicColor: Boolean = true,
     val sensorUsages: List<SensorUsage> = emptyList()
 )
 
@@ -56,7 +58,7 @@ sealed interface BackupResult {
 }
 
 sealed interface RestoreResult {
-    object Success : RestoreResult
+    data object Success : RestoreResult
     data class Failed(val error: String) : RestoreResult
 }
 
@@ -80,6 +82,7 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
     val logExportPerformed = _logExportPerformed.asSharedFlow()
 
     private val pref by lazy { Pref(context) }
+    private val themePref by lazy { ThemePref(context) }
 
     private val sensorListener = object : ISensorUsageListener.Stub() {
         override fun onUpdate() {
@@ -151,6 +154,18 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 logger.d("uiEnableHttpChucker changed: $it")
                 updateState { copy(enableHttpChucker = it) }
             }
+        }
+        viewModelScope.launch {
+            themePref.themeDynamicColor.collectLatest {
+                logger.d("themeDynamicColor changed: $it")
+                updateState { copy(dynamicColor = it) }
+            }
+        }
+    }
+
+    fun setDynamicColor(dynamic: Boolean) {
+        viewModelScope.launch {
+            themePref.setThemeDynamicColor(dynamic)
         }
     }
 

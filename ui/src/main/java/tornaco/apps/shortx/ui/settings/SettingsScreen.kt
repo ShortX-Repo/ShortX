@@ -508,6 +508,14 @@ private fun miscSettings(
                 goToFeatToggle()
             }
         ),
+        Preference.SwitchPreference(icon = Remix.Design.palette_fill,
+            title = LocalI18N.current["ui.settings.theme.dynamic.color"],
+            summary = LocalI18N.current["ui.settings.theme.dynamic.color.summary"],
+            value = state.dynamicColor,
+            onCheckChanged = {
+                vm.setDynamicColor(!state.dynamicColor)
+            }
+        ),
     )
 }
 
