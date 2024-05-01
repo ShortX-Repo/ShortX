@@ -66,7 +66,12 @@ class LogcatTrigger(
                 if (factProtoAny is_ Logcat::class.java) {
                     val fact = factProtoAny unpack_ Logcat::class.java
                     if (!fact.isDisabled) {
-                        regexMatchers.add(fact to fact.regex.toRegex())
+                        runCatching { fact.regex.toRegex() }.getOrElse {
+                            logger.e(it, "updateTriggerState, regex error")
+                            null
+                        }?.let {
+                            regexMatchers.add(fact to it)
+                        }
                     }
                 }
             }
