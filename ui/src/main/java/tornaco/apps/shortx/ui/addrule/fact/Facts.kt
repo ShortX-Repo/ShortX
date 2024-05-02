@@ -2,6 +2,8 @@
 
 package tornaco.apps.shortx.ui.addrule.fact
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
@@ -23,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
@@ -40,8 +43,8 @@ import tornaco.apps.shortx.ui.addrule.fact.mapper.labelAndDescriptionForFactSele
 import tornaco.apps.shortx.ui.addrule.fact.mapper.labelForFact
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.contextData
-import tornaco.apps.shortx.ui.addrule.fact.selector.FactSelectorDialog
-import tornaco.apps.shortx.ui.addrule.fact.selector.rememberFactSelectorDialogState
+import tornaco.apps.shortx.ui.addrule.fact.selector.FactSelectorActivity
+import tornaco.apps.shortx.ui.addrule.fact.selector.FactSelectorActivity.Companion.toFactOrNull
 import tornaco.apps.shortx.ui.addrule.rememberContextDataInfoDialogState
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.DropdownItem
@@ -91,10 +94,15 @@ fun FactSelectors(
     handler: FactHandler,
     readOnly: Boolean = false,
 ) {
-    val factSelectorState = rememberFactSelectorDialogState<String>(onSelected = { fact, _ ->
-        handler.addFact(fact)
-    })
-    FactSelectorDialog(state = factSelectorState)
+    val context = LocalContext.current
+    val factSelectActivityLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = {
+            val fact = it.toFactOrNull()
+            composeLogger.d("factSelectActivityLauncher, onResult: $it $fact")
+            fact?.let { handler.addFact(fact) }
+        }
+    )
 
     Column(modifier = Modifier.fillMaxWidth()) {
         header()
@@ -121,7 +129,7 @@ fun FactSelectors(
                     Button(
                         modifier = Modifier.padding(horizontal = 16.dp),
                         onClick = {
-                            factSelectorState.show()
+                            factSelectActivityLauncher.launch(FactSelectorActivity.newIntent(context))
                         }) {
                         RemixIcon(
                             modifier = Modifier.size(16.dp),

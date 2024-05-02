@@ -23,7 +23,7 @@ class ServiceLifecycle(private val shortXContext: ShortXContext) {
         }
     }
 
-    fun systemReady() {
+    fun systemReady(callbackComplete: () -> Unit) {
         logger.d("systemReady")
         exe.execute {
             shortXContext.allServices.forEach {
@@ -33,6 +33,7 @@ class ServiceLifecycle(private val shortXContext: ShortXContext) {
                 logger.i("systemReady---> $it take $taken(ms)")
             }
             isSystemReadyCalled = true
+            callbackComplete()
         }
     }
 

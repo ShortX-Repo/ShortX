@@ -251,10 +251,16 @@
             android:name="tornaco.apps.shortx.ui.addrule.condition.selector.ConditionSelectorActivity"
             android:exported="false" />
         <activity
+            android:name="tornaco.apps.shortx.ui.addrule.fact.selector.FactSelectorActivity"
+            android:exported="false" />
+        <activity
             android:name="tornaco.apps.shortx.ui.addrule.action.selector.SwitchCaseCaseSelectorActivity"
             android:exported="false" />
         <activity
             android:name="tornaco.apps.shortx.ui.addrule.action.selector.SwitchCaseSelectorActivity"
+            android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.addrule.fact.selector.MethodHookSelectorActivity"
             android:exported="false" />
 
         <service

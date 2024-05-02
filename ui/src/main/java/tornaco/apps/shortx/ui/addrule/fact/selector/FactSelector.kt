@@ -15,11 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.orbitmvi.orbit.compose.collectAsState
@@ -29,7 +25,6 @@ import tornaco.apps.shortx.ui.addrule.fact.model.allFactClasses
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
-import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
@@ -43,48 +38,9 @@ enum class FactCategory(val i18NKey: String, val icon: String) {
     Misc("ui.action.misc", Remix.System.settings_2_line),
 }
 
-class FactSelectorDialogState<ARGS>(val onSelected: (Fact, ARGS?) -> Unit) {
-    var isShowing by mutableStateOf(false)
-    var args: ARGS? = null
-
-    fun show(args: ARGS? = null) {
-        isShowing = true
-        this.args = args
-    }
-
-    fun dismiss() {
-        isShowing = false
-    }
-}
-
 @Composable
-fun <ARGS> rememberFactSelectorDialogState(onSelected: (Fact, ARGS?) -> Unit): FactSelectorDialogState<ARGS> {
-    return remember {
-        FactSelectorDialogState(onSelected)
-    }
-}
-
-@Composable
-fun <ARGS> rememberFactSelectorDialogState(onSelected: (Fact) -> Unit): FactSelectorDialogState<ARGS> {
-    return remember {
-        FactSelectorDialogState { action, _ ->
-            onSelected(action)
-        }
-    }
-}
-
-@Composable
-fun <ARGS> FactSelectorDialog(state: FactSelectorDialogState<ARGS>) {
-    if (state.isShowing) {
-        ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
-            FactSelector(state)
-        }
-    }
-}
-
-@Composable
-private fun <ARGS> FactSelector(
-    state: FactSelectorDialogState<ARGS>
+fun FactSelector(
+    close: () -> Unit, onSelected: (Fact) -> Unit
 ) {
     ShortXTheme {
         Surface(
@@ -97,7 +53,7 @@ private fun <ARGS> FactSelector(
                         title = { Text(text = LocalI18N.current["ui.fact.select"]) },
                         actions = {
                             IconButton(onClick = {
-                                state.dismiss()
+                                close()
                             }) {
                                 RemixIcon(remixName = Remix.System.close_line)
                             }
@@ -105,8 +61,7 @@ private fun <ARGS> FactSelector(
                     )
                 }) { paddingValues ->
                 val setFact: (Fact) -> Unit = {
-                    state.onSelected(it, state.args)
-                    state.dismiss()
+                    onSelected(it)
                 }
                 Column(
                     modifier = Modifier

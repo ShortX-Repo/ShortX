@@ -22,6 +22,7 @@ fun MiscFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: (F
         Fact.OnQSTileClick::class,
         Fact.DeepLinkCall::class,
         Fact.GlobalVarChanged::class,
+        Fact.MethodHook::class,
     ).apply {
         onDebugBuild {
             add(Fact.AnyFact::class)

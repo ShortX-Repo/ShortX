@@ -12,6 +12,7 @@ object HookStub {
         if (PackageNames.android == lpparam.packageName) {
             logger.i("Loading android.")
             androidHooks(lpparam)
+            CustomHook.hookAndroidSystem(lpparam)
         } else {
             SystemUIHook.hookApp(lpparam)
             SystemUIHook.hookTile(lpparam)

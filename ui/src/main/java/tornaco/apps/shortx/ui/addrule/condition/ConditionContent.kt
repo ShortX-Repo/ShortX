@@ -438,7 +438,7 @@ private fun ConditionSelector(
             contract = ActivityResultContracts.StartActivityForResult(),
             onResult = {
                 val condition = it.toConditionOrNull()
-                composeLogger.d("newActionSelectActivityLauncher, onResult: $it $condition")
+                composeLogger.d("conditionSelectActivityLauncher, onResult: $it $condition")
                 condition?.let { it1 -> selectCondition(it1) }
             }
         )

@@ -8,7 +8,10 @@ import androidx.compose.ui.platform.LocalContext
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.selector.GVSelectorDialog
+import tornaco.apps.shortx.ui.addrule.fact.selector.MethodHookSelectorActivity
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberGVSelectorState
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberTextInputState
@@ -51,6 +54,14 @@ fun miscFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolea
     }
     TextInputDialog(state = deepLinkCallState)
 
+    val methodHookLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val fact = result.popupSelectorResult<Fact.MethodHook>()
+            fact?.let { addFact(it) }
+        }
+    )
+
     return { source ->
         when (source.clazz) {
             Fact.AnyFact::class -> {
@@ -70,6 +81,17 @@ fun miscFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolea
 
             Fact.DeepLinkCall::class -> {
                 deepLinkCallState.show(source.getFactAs<Fact.DeepLinkCall>()?.deepLinkTag)
+                true
+            }
+
+            Fact.MethodHook::class -> {
+                methodHookLauncher.launch(
+                    BaseSelectorActivity.newIntent(
+                        context,
+                        source.getFactAs<Fact.MethodHook>(),
+                        MethodHookSelectorActivity::class.java
+                    )
+                )
                 true
             }
 
