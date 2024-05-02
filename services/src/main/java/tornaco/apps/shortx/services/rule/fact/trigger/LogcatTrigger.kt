@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.rule.fact.trigger
 
 import android.content.Context
 import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
+import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.common.RegexMatchOptions
 import tornaco.apps.shortx.core.proto.fact.Logcat
 import tornaco.apps.shortx.core.proto.factsAndQuitFacts
@@ -44,7 +45,7 @@ class LogcatTrigger(
                         shortXContext.rule.publishFact(
                             "Logcat",
                             Logcat.newBuilder().setId(it.first.id).build()
-                        ) { emptyMap() }
+                        ) { mapOf(ContextDataMapping.Logcat.line.name to line) }
                     }
                 }
             }
@@ -86,6 +87,9 @@ class LogcatTrigger(
             if (!LogcatManager.isStarted()) {
                 logger.i("Start.")
                 LogcatManager.start()
+            } else {
+                logger.i("Resume.")
+                LogcatManager.resume()
             }
         }
     }

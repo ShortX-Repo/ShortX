@@ -37,6 +37,10 @@ public final class LogcatManager {
         FLAG_WORK = false;
     }
 
+    public static void resume() {
+        FLAG_WORK = true;
+    }
+
     public static void clear() {
         try {
             new ProcessBuilder("logcat", "-c").start();
