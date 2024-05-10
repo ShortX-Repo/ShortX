@@ -17,7 +17,7 @@ import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.ui.BaseComposeView
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
-import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
 
 @SuppressLint("ViewConstructor")
 class DrawBoardView(
@@ -34,7 +34,7 @@ class DrawBoardView(
 
     @Composable
     private fun DrawBoardContent(onBack: () -> Unit) {
-        ShortXTheme {
+        ShortXServiceUITheme {
             val controlBarState = rememberCommonDialogState()
             LaunchedEffect(controlBarState) {
                 delay(250)
