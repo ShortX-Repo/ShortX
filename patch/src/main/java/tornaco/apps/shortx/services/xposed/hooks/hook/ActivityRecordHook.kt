@@ -16,7 +16,6 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXService
 import util.Reflections
-import util.ReflectionsExt
 
 object ActivityRecordHook {
     private val logger = Logger("ShortXHook.ActivityRecordHook")
@@ -64,9 +63,7 @@ object ActivityRecordHook {
             return
         }
 
-        val task = Reflections.callMethod(activityRecord, "getTask")
-        logger.d("activityResumedLocked, task: $task")
-        val taskId = ReflectionsExt.getIntFieldWithPotentialNames(task, "mTaskId", "taskId")
+        val taskId = ActivityRecordUtils.getTaskId(activityRecord)
         logger.d("activityResumedLocked, taskId: $taskId")
 
         ShortXService.shortXContext.appState.onActivityResumed(
@@ -134,9 +131,7 @@ object ActivityRecordHook {
                 return@afterMethod
             }
 
-            val task = Reflections.callMethod(activityRecord, "getTask")
-            logger.d("activityResumedLocked, task: $task")
-            val taskId = ReflectionsExt.getIntFieldWithPotentialNames(task, "mTaskId", "taskId")
+            val taskId = ActivityRecordUtils.getTaskId(activityRecord)
             logger.d("activityResumedLocked, taskId: $taskId")
 
             ShortXService.shortXContext.appState.onActivityStopped(
@@ -179,9 +174,7 @@ object ActivityRecordHook {
                     return@beforeMethod
                 }
 
-                val task = Reflections.callMethod(param.thisObject, "getTask")
-                logger.d("destroyed, task: $task")
-                val taskId = ReflectionsExt.getIntFieldWithPotentialNames(task, "mTaskId", "taskId")
+                val taskId = ActivityRecordUtils.getTaskId(activityRecord)
                 logger.d("destroyed, taskId: $taskId")
 
                 ShortXService.shortXContext.appState.onActivityDestroyed(

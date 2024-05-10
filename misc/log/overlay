@@ -1,0 +1,33 @@
+       E  DefaultRuleEngine [DefaultDispatcher-worker-5] evaluate fail --- java.lang.NoClassDefFoundError: kotlinx.coroutines.internal.MainDispatcherLoader
+                                                                                                    	at kotlinx.coroutines.Dispatchers.getMain(Dispatchers.kt:20)
+                                                                                                    	at tornaco.apps.shortx.services.rule.actor.impl.HideOverlayButton.handle(HideOverlayButton.kt:21)
+                                                                                                    	at tornaco.apps.shortx.services.rule.actor.ActionEvaluatorImpl.evaluate(ActionEvaluatorImpl.kt:77)
+                                                                                                    	at tornaco.apps.shortx.services.rule.actor.ActionEvaluator$DefaultImpls.evaluate$default(ActionEvaluator.kt:12)
+                                                                                                    	at tornaco.apps.shortx.services.rule.DefaultRuleEngine$evaluateActions$job$1$1.invokeSuspend(Engine.kt:543)
+                                                                                                    	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+                                                                                                    	at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:104)
+                                                                                                    	at kotlinx.coroutines.internal.LimitedDispatcher$Worker.run(LimitedDispatcher.kt:111)
+                                                                                                    	at kotlinx.coroutines.scheduling.TaskImpl.run(Tasks.kt:99)
+                                                                                                    	at kotlinx.coroutines.scheduling.CoroutineScheduler.runSafely(CoroutineScheduler.kt:585)
+                                                                                                    	at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.executeTask(CoroutineScheduler.kt:802)
+                                                                                                    	at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.runWorker(CoroutineScheduler.kt:706)
+                                                                                                    	at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.run(CoroutineScheduler.kt:693)
+                                                                                                    Caused by: java.lang.ExceptionInInitializerError
+                                                                                                    	at kotlinx.coroutines.Dispatchers.getMain(Dispatchers.kt:20)
+                                                                                                    	at tornaco.apps.shortx.services.rule.actor.impl.ShowDanmu.handle(ShowDanmu.kt:24)
+                                                                                                    	at tornaco.apps.shortx.services.rule.actor.ActionEvaluatorImpl.evaluate(ActionEvaluatorImpl.kt:77)
+                                                                                                    	at tornaco.apps.shortx.services.rule.actor.ActionEvaluator$DefaultImpls.evaluate$default(ActionEvaluator.kt:12)
+                                                                                                    	at tornaco.apps.shortx.services.rule.DefaultRuleEngine$runActionsJob$runActions$1.invokeSuspend(Engine.kt:462)
+                                                                                                    	at tornaco.apps.shortx.services.rule.DefaultRuleEngine$runActionsJob$runActions$1.invoke(Engine.kt:0)
+                                                                                                    	at tornaco.apps.shortx.services.rule.DefaultRuleEngine$runActionsJob$runActions$1.invoke(Engine.kt:0)
+2024-05-10 16:15:26.984  1564-2718  ShortX-Core             pid-1564                             E  	at tornaco.apps.shortx.services.rule.DefaultRuleEngine.runActionsJob(Engine.kt:489)
+                                                                                                    	at tornaco.apps.shortx.services.rule.DefaultRuleEngine.access$runActionsJob(Engine.kt:95)
+                                                                                                    	at tornaco.apps.shortx.services.rule.DefaultRuleEngine$fire$1$job$1$1.invokeSuspend(Engine.kt:311)
+                                                                                                    	... 8 more
+                                                                                                    Caused by: java.lang.IllegalStateException: Module with the Main dispatcher is missing. Add dependency providing the Main dispatcher, e.g. 'kotlinx-coroutines-android' and ensure it has the same version as 'kotlinx-coroutines-core'
+                                                                                                    	at kotlinx.coroutines.internal.MainDispatchersKt.throwMissingMainDispatcherException(MainDispatchers.kt:77)
+                                                                                                    	at kotlinx.coroutines.internal.MainDispatchersKt.createMissingDispatcher(MainDispatchers.kt:74)
+                                                                                                    	at kotlinx.coroutines.internal.MainDispatchersKt.createMissingDispatcher$default(MainDispatchers.kt:72)
+                                                                                                    	at kotlinx.coroutines.internal.MainDispatcherLoader.loadMainDispatcher(MainDispatchers.kt:35)
+                                                                                                    	at kotlinx.coroutines.internal.MainDispatcherLoader.<clinit>(MainDispatchers.kt:18)
+                                                                                                    	... 18 more
