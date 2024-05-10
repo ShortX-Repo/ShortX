@@ -185,6 +185,8 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
     val serviceBinder = object : IShortX.Stub() {
         private val directActionQueryCache =
             mutableMapOf("Dummy" to Batch<DirectAction>(emptyList()))
+        private val ruleQueryCache =
+            mutableMapOf("Dummy" to Batch<Rule>(emptyList()))
 
         override fun version(): Version {
             return Version(
@@ -235,10 +237,35 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.rule.setRuleEnabled(ruleId, enable)
         }
 
-        override fun getAllRules(): List<ByteArrayWrapper> {
+        override fun getAllRules(
+            queryId: String,
+            pageNumber: Int,
+            pageSize: Int
+        ): List<ByteArrayWrapper> {
+            logger.d("getAllRules-$queryId")
             return v(context) {
-                shortXContext.rule.getAllRules().map {
-                    ByteArrayWrapper(it.toByteArray())
+                synchronized(ruleQueryCache) {
+                    val cache = ruleQueryCache[queryId]
+                    // Keep only one.
+                    if (cache == null) {
+                        ruleQueryCache.clear()
+                    } else {
+                        logger.d("Use ruleQueryCache")
+                    }
+                    val batches =
+                        cache ?: ListBatchUtils.toArrayBatch(
+                            shortXContext.rule.getAllRules(),
+                            pageSize
+                        ).also {
+                            ruleQueryCache[queryId] = it
+                        }
+
+                    val totalBatchCount: Int = batches.batches.size
+                    if (pageNumber >= totalBatchCount) {
+                        emptyList()
+                    } else batches.batches[pageNumber].map {
+                        ByteArrayWrapper(it.toByteArray())
+                    }
                 }
             } ?: emptyList()
         }
@@ -294,7 +321,11 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                 synchronized(directActionQueryCache) {
                     val cache = directActionQueryCache[queryId]
                     // Keep only one.
-                    if (cache == null) directActionQueryCache.clear()
+                    if (cache == null) {
+                        directActionQueryCache.clear()
+                    } else {
+                        logger.d("Use directActionQueryCache")
+                    }
                     val batches =
                         cache ?: ListBatchUtils.toArrayBatch(
                             shortXContext.rule.getAllDirectAction(),

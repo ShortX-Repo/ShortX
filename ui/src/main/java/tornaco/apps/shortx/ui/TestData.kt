@@ -1,14 +1,18 @@
 package tornaco.apps.shortx.ui
 
 import tornaco.apps.shortx.core.proto.action.ShowDanmu
+import tornaco.apps.shortx.core.proto.condition.True
 import tornaco.apps.shortx.core.proto.da.DirectAction
+import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
+import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addda.defaultNewDAId
+import tornaco.apps.shortx.ui.addrule.defaultNewRuleId
 import java.util.UUID
 
 object TestData {
-    fun insertTestData() {
+    fun insertDATestData() {
         repeat(100) {
             val da = DirectAction.newBuilder().setTitle("TestData-$it")
                 .setId(defaultNewDAId())
@@ -22,6 +26,30 @@ object TestData {
                 .build()
 
             shortXManager.addDirectAction(da)
+        }
+    }
+
+    fun insertRuleTestData() {
+        repeat(100) {
+            val rule = Rule.newBuilder()
+                .setId(defaultNewRuleId())
+                .setCreateTime(System.currentTimeMillis())
+                .setTitle("TestData-$it")
+                .addAllFacts(
+                    listOf(NotificationUpdated.newBuilder().build().pack_())
+                )
+                .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
+                .addAllActions(
+                    listOf(
+                        ShowDanmu.newBuilder()
+                            .setIcon("app://{pkgName}")
+                            .setText(LONG_TEXT).build()
+                            .pack_()
+                    )
+                )
+                .build()
+
+            shortXManager.addRule(rule)
         }
     }
 

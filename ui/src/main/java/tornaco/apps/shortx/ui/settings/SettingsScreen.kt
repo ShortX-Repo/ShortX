@@ -763,10 +763,19 @@ private fun devSettings(
 
                         add(Preference.TextPreference(
                             icon = Remix.System.loader_2_line,
-                            title = "Insert test data",
-                            summary = "Insert 100 da",
+                            title = "Insert DA",
+                            summary = "Insert 100 da test data",
                             onClick = {
-                                TestData.insertTestData()
+                                TestData.insertDATestData()
+                            }
+                        ))
+
+                        add(Preference.TextPreference(
+                            icon = Remix.System.loader_2_line,
+                            title = "Insert Rule",
+                            summary = "Insert 100 rule test data",
+                            onClick = {
+                                TestData.insertRuleTestData()
                             }
                         ))
                     },
