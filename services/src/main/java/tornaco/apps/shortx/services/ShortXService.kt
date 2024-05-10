@@ -79,6 +79,8 @@ import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper
 import tornaco.apps.shortx.services.rule.nextEvaluateContextSerialNumber
 import tornaco.apps.shortx.services.ui.I18NCache
 import tornaco.apps.shortx.services.ui.i18NIns
+import tornaco.apps.shortx.services.util.ListBatchUtils
+import tornaco.apps.shortx.services.util.ListBatchUtils.Batch
 import tornaco.apps.shortx.services.v.v
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
@@ -181,6 +183,9 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
     }
 
     val serviceBinder = object : IShortX.Stub() {
+        private val directActionQueryCache =
+            mutableMapOf("Dummy" to Batch<DirectAction>(emptyList()))
+
         override fun version(): Version {
             return Version(
                 name = BuildPropInternal.APP_VERSION_NAME,
@@ -279,10 +284,31 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }
         }
 
-        override fun getAllDirectAction(): List<ByteArrayWrapper> {
+        override fun getAllDirectAction(
+            queryId: String,
+            pageNumber: Int,
+            pageSize: Int
+        ): List<ByteArrayWrapper> {
+            logger.d("getAllDirectAction-$queryId")
             return v(context) {
-                shortXContext.rule.getAllDirectAction().map {
-                    ByteArrayWrapper(it.toByteArray())
+                synchronized(directActionQueryCache) {
+                    val cache = directActionQueryCache[queryId]
+                    // Keep only one.
+                    if (cache == null) directActionQueryCache.clear()
+                    val batches =
+                        cache ?: ListBatchUtils.toArrayBatch(
+                            shortXContext.rule.getAllDirectAction(),
+                            pageSize
+                        ).also {
+                            directActionQueryCache[queryId] = it
+                        }
+
+                    val totalBatchCount: Int = batches.batches.size
+                    if (pageNumber >= totalBatchCount) {
+                        emptyList()
+                    } else batches.batches[pageNumber].map {
+                        ByteArrayWrapper(it.toByteArray())
+                    }
                 }
             } ?: emptyList()
         }
