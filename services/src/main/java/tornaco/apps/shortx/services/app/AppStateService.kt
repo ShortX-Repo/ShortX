@@ -5,6 +5,7 @@ import android.app.ActivityManager
 import android.app.ActivityTaskManager
 import android.app.AlertDialog
 import android.app.IActivityManager
+import android.app.TaskStackListener
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -26,6 +27,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
 import tornaco.apps.shortx.core.BuildPropInternal
+import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.os.UidObserverCompat
 import tornaco.apps.shortx.core.proto.common.App
@@ -121,6 +123,55 @@ class AppStateService(shortXContext: ShortXContext) :
                     }
                 }
             }
+        }
+
+        systemServiceScope.launchSafety {
+            ActivityManager.getService().registerTaskStackListener(
+                @DoNotStrip
+                object : TaskStackListener() {
+                    override fun onTaskCreated(taskId: Int, componentName: ComponentName?) {
+                        super.onTaskCreated(taskId, componentName)
+                        logger.d("TaskStackListener onTaskCreated- $taskId $componentName")
+                    }
+
+                    override fun onTaskDescriptionChanged(taskInfo: ActivityManager.RunningTaskInfo?) {
+                        super.onTaskDescriptionChanged(taskInfo)
+                        taskInfo?.let {
+                            val description = if (OsUtils.isQOrAbove()) {
+                                taskInfo.taskDescription?.label.orEmpty()
+                            } else {
+                                taskInfo.description?.toString().orEmpty()
+                            }
+                            val taskId = if (OsUtils.isQOrAbove()) {
+                                taskInfo.taskId
+                            } else {
+                                taskInfo.id
+                            }
+                            logger.d("TaskStackListener onTaskDescriptionChanged $taskId - $description")
+                            TaskMapping.taskDescriptionCache[taskId] = description
+                        }
+                    }
+
+                    override fun onTaskStackChanged() {
+                        super.onTaskStackChanged()
+                        logger.d("TaskStackListener onTaskStackChanged")
+                    }
+
+                    override fun onTaskRemoved(taskId: Int) {
+                        super.onTaskRemoved(taskId)
+                        logger.d("TaskStackListener onTaskRemoved $taskId")
+                    }
+
+                    override fun onTaskFocusChanged(taskId: Int, focused: Boolean) {
+                        super.onTaskFocusChanged(taskId, focused)
+                        logger.d("TaskStackListener onTaskFocusChanged $taskId $focused")
+                    }
+
+                    override fun onTaskMovedToFront(taskInfo: ActivityManager.RunningTaskInfo?) {
+                        super.onTaskMovedToFront(taskInfo)
+                        logger.d("TaskStackListener onTaskMovedToFront- $taskInfo")
+                    }
+                })
         }
 
         onDebugBuild {
@@ -252,18 +303,24 @@ class AppStateService(shortXContext: ShortXContext) :
         intentUri: String,
         taskId: Int
     ) {
-        val label = getTaskLabel(componentName, taskId)
-        activityState.onActivityResumed(componentName, userId, intentUri, label)
+        systemServiceScope.launchSafety {
+            val label = getTaskLabel(componentName, taskId)
+            activityState.onActivityResumed(componentName, userId, intentUri, label)
+        }
     }
 
     fun onActivityStopped(componentName: ComponentName, userId: Int, taskId: Int) {
-        val label = getTaskLabel(componentName, taskId)
-        activityState.onActivityStopped(componentName, userId, label)
+        systemServiceScope.launchSafety {
+            val label = getTaskLabel(componentName, taskId)
+            activityState.onActivityStopped(componentName, userId, label)
+        }
     }
 
     fun onActivityDestroyed(componentName: ComponentName, userId: Int, taskId: Int) {
-        val label = getTaskLabel(componentName, taskId)
-        activityState.onActivityDestroyed(componentName, userId, label)
+        systemServiceScope.launchSafety {
+            val label = getTaskLabel(componentName, taskId)
+            activityState.onActivityDestroyed(componentName, userId, label)
+        }
     }
 
     fun AppPkg.isRunning() = AMSFuncs.hasRunningAppProcessForPackage(context, this)
@@ -770,7 +827,7 @@ class AppStateService(shortXContext: ShortXContext) :
     }
 
     private fun getTaskLabel(name: ComponentName, taskId: Int): String {
-        val label = TaskMapping.getTaskLabel(context, taskId)
+        val label = TaskMapping.taskDescriptionCache[taskId]
         if (label != null) return label
 
         val activityInfo =

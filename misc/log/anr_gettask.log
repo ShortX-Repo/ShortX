@@ -1,0 +1,29 @@
+
+"binder:2912_F" prio=5 tid=277 Blocked
+  | group="main" sCount=1 ucsCount=0 flags=1 obj=0x12cd3118 self=0xb400006f960f4a70
+  | sysTid=5306 nice=-10 cgrp=foreground sched=0/0 handle=0x6cf69bfcb0
+  | state=S schedstat=( 565437948 1318454999 3096 ) utm=39 stm=16 core=5 HZ=100
+  | stack=0x6cf68c8000-0x6cf68ca000 stackSize=991KB
+  | held mutexes=
+  at com.android.server.am.ActivityManagerService.getRunningAppProcesses(ActivityManagerService.java:9919)
+  - waiting to lock <0x04048a0c> (a com.android.server.am.ActivityManagerProcLock) held by thread 11
+  at android.os.UserHandle.isFlymeLauncherCalling(UserHandle.java:799)
+  at com.android.server.wm.ActivityTaskManagerService.getRecentTasks(ActivityTaskManagerService.java:2542)
+  at android.app.ActivityTaskManager.getRecentTasks(ActivityTaskManager.java:427)
+  at android.app.ActivityManager.getRecentTasks(ActivityManager.java:2589)
+  at shortx.et.t(unavailable:30)
+  at shortx.et.A(unavailable:0)
+  at tornaco.apps.shortx.services.xposed.hooks.hook.ActivityRecordHook.handleActivityResumed(unavailable:177)
+  at tornaco.apps.shortx.services.xposed.hooks.hook.ActivityRecordHook.access$handleActivityResumed(unavailable:0)
+  at tornaco.apps.shortx.services.xposed.hooks.hook.ActivityRecordHook$hookActivityResumedAndroid12_plus$1$1.invoke(SourceFile:2)
+  at tornaco.apps.shortx.services.xposed.hooks.hook.ActivityRecordHook$hookActivityResumedAndroid12_plus$1$1.invoke(SourceFile:1)
+  at tornaco.apps.shortx.services.xposed.hooks.hook.HooksKt$afterMethod$1.afterHookedMethod(unavailable:11)
+  at de.robv.android.xposed.XposedBridge$LegacyApiSupport.handleAfter(unavailable:33)
+  at J.callback(unavailable:292)
+  at LSPHooker_.activityResumedLocked(unavailable:15)
+  at com.android.server.wm.ActivityClientController.activityResumed(ActivityClientController.java:192)
+  - locked <0x07a7213f> (a com.android.server.wm.WindowManagerGlobalLock)
+  at android.app.IActivityClientController$Stub.onTransact(IActivityClientController.java:641)
+  at com.android.server.wm.ActivityClientController.onTransact(ActivityClientController.java:159)
+  at android.os.Binder.execTransactInternal(Binder.java:1344)
+  at android.os.Binder.execTransact(Binder.java:1275)

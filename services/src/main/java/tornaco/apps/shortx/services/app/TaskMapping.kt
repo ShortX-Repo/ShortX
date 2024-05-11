@@ -15,10 +15,9 @@ import tornaco.apps.shortx.core.util.activityManager
 object TaskMapping {
     private val logger = Logger("TaskMapping")
 
-    private val taskDescriptionCache: MutableMap<Int, String> = mutableMapOf()
+    val taskDescriptionCache: MutableMap<Int, String> = mutableMapOf()
 
     private const val TASK_QUERY_SIZE = 200
-
 
     fun getLastTaskIdExcludeLauncher(context: Context, homePkgs: List<String>): Int {
         val am = context.activityManager
@@ -63,6 +62,9 @@ object TaskMapping {
         return null
     }
 
+    // DO NOT call this fun inside Activity onResume lifecycle.
+    // See anr_gettask.log
+    @Deprecated("Get from cache.")
     private fun getTaskDescriptionForTaskId(context: Context, taskId: Int): TaskDescription? {
         val am = context.activityManager
         // Assume calling pkg has this permission.
@@ -81,14 +83,6 @@ object TaskMapping {
             }
         }
         return null
-    }
-
-    fun getTaskLabel(context: Context, taskId: Int): String? {
-        val cachedLabel = taskDescriptionCache[taskId]
-        if (cachedLabel != null) return cachedLabel
-        return (getTaskDescriptionForTaskId(context, taskId)?.label)?.also {
-            taskDescriptionCache[taskId] = it
-        }
     }
 
     fun getTasksIdForPackage(
