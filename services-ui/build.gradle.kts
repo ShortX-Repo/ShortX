@@ -39,6 +39,8 @@ dependencies {
     implementation(libs.compose.material3)
     implementation(libs.compose.material)
 
+    implementation(libs.accompanist.systemuicontroller)
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.core.ktx)

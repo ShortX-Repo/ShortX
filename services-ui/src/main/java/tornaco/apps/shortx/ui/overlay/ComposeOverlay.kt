@@ -29,7 +29,7 @@ import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.core.util.windowManager
-import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
 
 @SuppressLint("ViewConstructor")
 @Keep
@@ -137,7 +137,7 @@ class ComposeOverlay(
 
         val composeView = ComposeView(contextWrapper).apply {
             setContent {
-                ShortXTheme {
+                ShortXServiceUITheme {
                     val contentColor: Color = contentColorFor(MaterialTheme.colorScheme.surface)
                     CompositionLocalProvider(
                         LocalContext provides appContext,

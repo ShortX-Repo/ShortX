@@ -96,8 +96,10 @@ private fun ExpandablePreferenceUi(preference: Preference.ExpandablePreference) 
                 )
             )
         }, expandContent = {
-            preference.preferences.forEach {
-                PreferenceUi(it)
+            Column {
+                preference.preferences.forEach {
+                    PreferenceUi(it)
+                }
             }
         })
 }

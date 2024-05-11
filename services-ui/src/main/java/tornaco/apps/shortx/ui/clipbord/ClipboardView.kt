@@ -61,7 +61,7 @@ import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.theme.PrefIcon
-import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
 import java.util.Date
 import java.util.UUID
 
@@ -79,7 +79,7 @@ class ClipboardView(
 
     @Composable
     override fun ComposeContent() {
-        ShortXTheme {
+        ShortXServiceUITheme {
             val interactionSource = remember { MutableInteractionSource() }
             val requester = remember { FocusRequester() }
             Box(

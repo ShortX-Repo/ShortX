@@ -51,6 +51,7 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.select
+import tornaco.apps.shortx.ui.TestData
 import tornaco.apps.shortx.ui.backup.autoGenBackupFileName
 import tornaco.apps.shortx.ui.base.AppIcon
 import tornaco.apps.shortx.ui.base.ConfirmDialog
@@ -713,46 +714,73 @@ private fun devSettings(
         )
     ).apply {
         if (BuildPropInternal.APP_IS_DEBUG) {
-            add(Preference.SwitchPreference(
-                icon = Remix.Business.global_fill,
-                title = LocalI18N.current["ui.settings.http:chucker"],
-                summary = LocalI18N.current["ui.settings.http:chucker.description"],
-                value = state.enableHttpChucker,
-                onCheckChanged = { enable ->
-                    vm.setEnableHttpChucker(enable)
-                    if (enable && OsUtils.isTOrAbove()) {
-                        permissionRequester.launch(Manifest.permission.POST_NOTIFICATIONS)
-                    }
-                }
-            ))
-            add(Preference.TextPreference(
-                icon = Remix.System.download_fill,
-                title = "Import prebuilt data",
-                summary = "Include prebuilt direct actions and rules.",
-                onClick = {
-                    vm.importPrebuilts(props.firstOrNull())
-                }
-            ))
+            add(
+                Preference.ExpandablePreference(
+                    icon = Remix.Development.code_fill,
+                    title = "Dev options",
+                    summary = "Tools settings for developer",
+                    preferences = mutableListOf<Preference>().apply {
+                        add(Preference.SwitchPreference(
+                            icon = Remix.Business.global_fill,
+                            title = LocalI18N.current["ui.settings.http:chucker"],
+                            summary = LocalI18N.current["ui.settings.http:chucker.description"],
+                            value = state.enableHttpChucker,
+                            onCheckChanged = { enable ->
+                                vm.setEnableHttpChucker(enable)
+                                if (enable && OsUtils.isTOrAbove()) {
+                                    permissionRequester.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                }
+                            }
+                        ))
+                        add(Preference.TextPreference(
+                            icon = Remix.System.download_fill,
+                            title = "Import prebuilt data",
+                            summary = "Include prebuilt direct actions and rules.",
+                            onClick = {
+                                vm.importPrebuilts(props.firstOrNull())
+                            }
+                        ))
 
-            add(Preference.SwitchPreference(
-                icon = Remix.Device.install_fill,
-                title = "Install fake service",
-                summary = "For debug purpose, restart app to take effect",
-                value = state.installFakeService,
-                onCheckChanged = { enable ->
-                    vm.setInstallFakeService(enable)
-                }
-            ))
+                        add(Preference.SwitchPreference(
+                            icon = Remix.Device.install_fill,
+                            title = "Install fake service",
+                            summary = "For debug purpose, restart app to take effect",
+                            value = state.installFakeService,
+                            onCheckChanged = { enable ->
+                                vm.setInstallFakeService(enable)
+                            }
+                        ))
 
-            add(Preference.SwitchPreference(
-                icon = Remix.Device.install_fill,
-                title = "Ignore framework update",
-                summary = "Do not show framework updated tips on main screen",
-                value = state.isIgnoreFrameworkUpdate,
-                onCheckChanged = { enable ->
-                    vm.setIgnoreFrameworkUpdate(enable)
-                }
-            ))
+                        add(Preference.SwitchPreference(
+                            icon = Remix.Device.install_fill,
+                            title = "Ignore framework update",
+                            summary = "Do not show framework updated tips on main screen",
+                            value = state.isIgnoreFrameworkUpdate,
+                            onCheckChanged = { enable ->
+                                vm.setIgnoreFrameworkUpdate(enable)
+                            }
+                        ))
+
+                        add(Preference.TextPreference(
+                            icon = Remix.System.loader_2_line,
+                            title = "Insert DA",
+                            summary = "Insert 100 da test data",
+                            onClick = {
+                                TestData.insertDATestData()
+                            }
+                        ))
+
+                        add(Preference.TextPreference(
+                            icon = Remix.System.loader_2_line,
+                            title = "Insert Rule",
+                            summary = "Insert 100 rule test data",
+                            onClick = {
+                                TestData.insertRuleTestData()
+                            }
+                        ))
+                    },
+                ),
+            )
         }
     }
 }
