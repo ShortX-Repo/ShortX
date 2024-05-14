@@ -1,7 +1,8 @@
 package tornaco.apps.shortx.ui.util
 
 import android.content.Context
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropExt
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.shortcut.ShortcutStubInfo
 import java.io.BufferedInputStream
@@ -40,7 +41,7 @@ object StubApkGen {
         try {
             if (!keystoreDownloadFile.exists()) {
                 keystoreDownloadFile.parentFile?.mkdirs()
-                downloadFile(BuildProp.SHORTCUT_STUB_KEYSTORE_URL, keystoreDownloadFile)
+                downloadFile(BuildPropInternal.SHORTCUT_STUB_KEYSTORE_URL, keystoreDownloadFile)
                 logger.d("Download keystore success.")
             } else {
                 logger.d("keystore exists.")
@@ -48,7 +49,7 @@ object StubApkGen {
 
             if (!apkTemplateDownloadFile.exists()) {
                 apkTemplateDownloadFile.parentFile?.mkdirs()
-                downloadFile(BuildProp.SHORTCUT_STUB_APK_URL, apkTemplateDownloadFile)
+                downloadFile(BuildPropInternal.SHORTCUT_STUB_APK_URL, apkTemplateDownloadFile)
                 logger.d("Download apk success.")
             } else {
                 logger.d("apk exists.")
