@@ -24,8 +24,9 @@ class ClipboardTrigger(override val context: Context, override val shortXContext
                 shortXContext.rule.publishFact(
                     reason = "Clipboard",
                     fact = ClipboardContentChanged.newBuilder().setContent(clipText).build(),
-                    initialContextData = mapOf(ContextDataMapping.ClipboardContentChanged.clipboardContent.name to clipText)
-                )
+                ) {
+                    mapOf(ContextDataMapping.ClipboardContentChanged.clipboardContent.name to clipText)
+                }
 
                 shortXContext.input.addClipboardText(clipText)
             } else {

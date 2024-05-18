@@ -5,6 +5,7 @@ import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.proto.clipboard.ClipboardItem
 import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
 import tornaco.apps.shortx.core.util.OsUtils
+import tornaco.apps.shortx.core.util.clipboardManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.ShortXService
 import tornaco.apps.shortx.services.SystemService
@@ -55,6 +56,14 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         }
 
         clipboardStore.readBlocking()
+
+        context.clipboardManager.apply {
+            addPrimaryClipChangedListener {
+                val text = primaryClip?.getItemAt(0)?.text?.toString().orEmpty()
+                logger.d("ClipChangedListener, onPrimaryClipChanged, text: $text")
+                onClipboardChange(text)
+            }
+        }
     }
 
     override fun userPresent(isFirstTime: Boolean) {
