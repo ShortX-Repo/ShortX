@@ -303,7 +303,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
     fun click(x: Int, y: Int) {
         synchronized(uiAutoLock) {
             if (!isSystemReady) return
-            logger.d("click ($x, $y), execute@uid - ${Binder.getCallingUid()}.")
+            logger.i("click ($x, $y), execute@uid - ${Binder.getCallingUid()}.")
             if (!automationManager.isConnected) {
                 logger.w("click ($x, $y), not connected.")
                 return
