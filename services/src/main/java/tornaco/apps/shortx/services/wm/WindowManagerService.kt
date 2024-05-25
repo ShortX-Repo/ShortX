@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.wm
 
 import android.app.UiAutomation.OnAccessibilityEventListener
 import android.content.ClipData
+import android.os.Binder
 import android.os.Handler
 import android.os.Looper
 import android.view.Surface
@@ -302,7 +303,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
     fun click(x: Int, y: Int) {
         synchronized(uiAutoLock) {
             if (!isSystemReady) return
-            logger.d("click ($x, $y), execute.")
+            logger.d("click ($x, $y), execute@uid - ${Binder.getCallingUid()}.")
             if (!automationManager.isConnected) {
                 logger.w("click ($x, $y), not connected.")
                 return
