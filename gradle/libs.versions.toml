@@ -71,6 +71,7 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-scripting = { id = "org.jetbrains.kotlin.plugin.scripting", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
 dagger-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "dagger" }
 protobuf-gradle-plugin = { id = "com.google.protobuf", version = "0.9.4" }
@@ -137,7 +138,6 @@ compose-animation = { module = "androidx.compose.animation:animation", version.r
 compose-animation-core = { module = "androidx.compose.animation:animation-core", version.ref = "compose-animation" }
 compose-animation-graphics = { module = "androidx.compose.animation:animation-graphics", version.ref = "compose-animation" }
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
-compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compose-compiler" }
 compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }
 compose-foundation-layout = { module = "androidx.compose.foundation:foundation-layout", version.ref = "compose-foundation" }
 compose-material = { module = "androidx.compose.material:material", version.ref = "compose-material" }
