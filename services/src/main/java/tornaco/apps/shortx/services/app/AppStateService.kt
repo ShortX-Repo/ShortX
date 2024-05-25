@@ -830,9 +830,11 @@ class AppStateService(shortXContext: ShortXContext) :
         val label = TaskMapping.taskDescriptionCache[taskId]
         if (label != null) return label
 
-        val activityInfo =
-            context.packageManager.getActivityInfo(name, PackageManager.GET_META_DATA)
-        val pm = context.packageManager
-        return activityInfo.loadLabel(pm)?.toString().orEmpty()
+        return kotlin.runCatching {
+            val activityInfo =
+                context.packageManager.getActivityInfo(name, PackageManager.GET_META_DATA)
+            val pm = context.packageManager
+            activityInfo.loadLabel(pm)?.toString().orEmpty()
+        }.getOrElse { "" }
     }
 }
