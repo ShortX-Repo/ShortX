@@ -12,5 +12,6 @@
 /captures
 .externalNativeBuild
 .idea/
+.kotlin/
 out/
 /github.properties
