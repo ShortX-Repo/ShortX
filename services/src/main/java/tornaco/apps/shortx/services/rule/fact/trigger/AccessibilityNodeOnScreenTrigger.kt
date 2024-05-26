@@ -6,6 +6,8 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
 import android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen
@@ -15,7 +17,6 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
-import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.wm.NodeMatcher
 import tornaco.apps.shortx.services.wm.NodeMatcher.extractMatchers
@@ -38,6 +39,8 @@ class AccessibilityNodeOnScreenTrigger(
     private val nodeMatchers = mutableMapOf<HasFoundNodeOnScreenBrief, NodeMatcher.MatcherList>()
     private var currentClassName: String? = null
     private var currentClassTimeMillis: Long = 0L
+
+    private val scope by lazy { CoroutineScope(SupervisorJob()) }
 
     override fun onRuleEnabled(ruleId: String) {
         super.onRuleEnabled(ruleId)
@@ -69,7 +72,7 @@ class AccessibilityNodeOnScreenTrigger(
     }
 
     override fun register() {
-        shortXContext.rule.systemServiceScope.launchSafety {
+        scope.launchSafety {
             doRegister()
         }
     }

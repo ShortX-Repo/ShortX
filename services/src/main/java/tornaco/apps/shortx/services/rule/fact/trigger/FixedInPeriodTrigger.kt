@@ -1,6 +1,8 @@
 package tornaco.apps.shortx.services.rule.fact.trigger
 
 import android.content.Context
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.factsAndQuitFacts
@@ -10,9 +12,8 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
-import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.rule.fact.fixed.FixedInPeriodScheduler
-import tornaco.apps.shortx.services.systemServiceScope
+import tornaco.apps.shortx.services.watchdog.launchSafety
 
 class FixedInPeriodTrigger(
     override val context: Context,
@@ -20,6 +21,7 @@ class FixedInPeriodTrigger(
 ) :
     Trigger {
     private val logger = Logger("ShortXFixedInPeriodTrigger")
+    private val scope by lazy { CoroutineScope(SupervisorJob()) }
     private val fixedInPeriodScheduler by lazy {
         FixedInPeriodScheduler(context, shortXContext.rule.handler) { ruleTitle, ruleId, factId ->
             logger.i("onAlarm: $ruleTitle $ruleId $factId")
@@ -58,7 +60,7 @@ class FixedInPeriodTrigger(
                 initialContextDataLazy = { emptyMap() }
             )
 
-            shortXContext.rule.systemServiceScope.launchSafety {
+            scope.launchSafety {
                 // Schedule after 3s
                 logger.i("Schedule Next FixedInPeriod")
                 delay(3000)

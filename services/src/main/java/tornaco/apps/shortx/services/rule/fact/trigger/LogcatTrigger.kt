@@ -15,7 +15,6 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
-import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.util.logcat.LoggingRepository
 import tornaco.apps.shortx.services.watchdog.launchSafety
 
@@ -68,7 +67,7 @@ class LogcatTrigger(
     }
 
     override fun unRegister() {
-        shortXContext.rule.systemServiceScope.launchSafety { logcat.stopLogging() }
+        logScope.launchSafety { logcat.stopLogging() }
     }
 
     private suspend fun updateTriggerState() {

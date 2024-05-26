@@ -7,6 +7,7 @@ import android.os.IBinder
 import com.google.protobuf.Message
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -37,7 +38,6 @@ import tornaco.apps.shortx.services.data.SettingsStore
 import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
-import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.util.AppServiceProxy
 import tornaco.apps.shortx.services.util.TestUtils
 import java.time.Duration
@@ -48,6 +48,7 @@ import java.util.concurrent.atomic.AtomicReference
 
 object HttpRequest : Actor {
     lateinit var localCallerImpl: HttpCallerImpl
+    private val scope by lazy { CoroutineScope(SupervisorJob()) }
 
     private val httpLogger: (String) -> Unit = {
         if (!TestUtils.isUnitTestEnv && HttpRequestLogging.isLogEnabled) {
@@ -63,7 +64,7 @@ object HttpRequest : Actor {
             SettingsStore(
                 androidContext,
                 "PersistentCookieJar",
-                shortXContext.rule.systemServiceScope
+                scope
             )
         )
         this.localCallerImpl = HttpCallerImpl(persistor, httpLogger)
