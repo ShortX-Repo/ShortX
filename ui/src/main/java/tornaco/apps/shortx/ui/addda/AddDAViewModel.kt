@@ -127,7 +127,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
         updateState {
             copy(parameters = parameters.toMutableList().apply {
                 add(parameter)
-            })
+            }, daChanged = true)
         }
     }
 
@@ -135,7 +135,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
         updateState {
             copy(parameters = parameters.toMutableList().apply {
                 removeIf { it.name == parameter.name }
-            })
+            }, daChanged = true)
         }
     }
 
