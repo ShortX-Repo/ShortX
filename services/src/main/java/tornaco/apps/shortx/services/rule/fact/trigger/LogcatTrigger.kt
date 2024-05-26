@@ -1,6 +1,10 @@
 package tornaco.apps.shortx.services.rule.fact.trigger
 
 import android.content.Context
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.common.RegexMatchOptions
@@ -12,7 +16,7 @@ import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.systemServiceScope
-import tornaco.apps.shortx.services.util.LogcatManager
+import tornaco.apps.shortx.services.util.logcat.LoggingRepository
 import tornaco.apps.shortx.services.watchdog.launchSafety
 
 class LogcatTrigger(
@@ -28,39 +32,46 @@ class LogcatTrigger(
 
     private val regexMatchers = mutableListOf<Pair<Logcat, Regex>>()
 
-    override fun register() {
-        LogcatManager.setCallback { line ->
-            if (!line.contains(LOG_TAG)) {
-                onDebugBuild { logger.d("---- catching log: $line") }
+    private val logScope = CoroutineScope(SupervisorJob())
+    private val logcat by lazy { LoggingRepository(shortXContext, logScope) }
 
-                regexMatchers.forEach {
-                    val regex = it.second
-                    val options = it.first.regexMatchOptions
-                    val isMatched = if (options == RegexMatchOptions.RegexMatchOptions_Match) {
-                        regex.matches(line)
-                    } else {
-                        regex.containsMatchIn(line)
-                    }
-                    if (isMatched) {
-                        shortXContext.rule.publishFact(
-                            "Logcat",
-                            Logcat.newBuilder().setId(it.first.id).build()
-                        ) { mapOf(ContextDataMapping.Logcat.line.name to line) }
+    override fun register() {
+        logScope.launchSafety {
+            withContext(Dispatchers.Default) {
+                logcat.logsFlow.collect { logLine ->
+                    if (logLine == null) return@collect
+                    if (logLine.content.contains(LOG_TAG)) return@collect
+
+                    onDebugBuild { logger.d("---- catching log: $logLine") }
+
+                    val content = logLine.content
+                    regexMatchers.forEach {
+                        val regex = it.second
+                        val options = it.first.regexMatchOptions
+                        val isMatched = if (options == RegexMatchOptions.RegexMatchOptions_Match) {
+                            regex.matches(content)
+                        } else {
+                            regex.containsMatchIn(content)
+                        }
+                        if (isMatched) {
+                            shortXContext.rule.publishFact(
+                                "Logcat",
+                                Logcat.newBuilder().setId(it.first.id).build()
+                            ) { mapOf(ContextDataMapping.Logcat.line.name to content) }
+                        }
                     }
                 }
             }
         }
 
-        shortXContext.rule.systemServiceScope.launchSafety {
-            updateTriggerState()
-        }
+        logScope.launchSafety { updateTriggerState() }
     }
 
     override fun unRegister() {
-        LogcatManager.pause()
+        shortXContext.rule.systemServiceScope.launchSafety { logcat.stopLogging() }
     }
 
-    private fun updateTriggerState() {
+    private suspend fun updateTriggerState() {
         regexMatchers.clear()
         shortXContext.rule.getAllEnabledRules().forEach { rule ->
             (rule.factsAndQuitFacts).forEach { factProtoAny ->
@@ -82,15 +93,10 @@ class LogcatTrigger(
 
         if (regexMatchers.isEmpty()) {
             logger.i("Disable logcat manager, no fact.")
-            LogcatManager.pause()
+            logcat.stopLogging()
         } else {
-            if (!LogcatManager.isStarted()) {
-                logger.i("Start.")
-                LogcatManager.start()
-            } else {
-                logger.i("Resume.")
-                LogcatManager.resume()
-            }
+            logger.i("Start logging.")
+            logcat.startLoggingIfNot()
         }
     }
 
@@ -98,7 +104,7 @@ class LogcatTrigger(
         super.onRuleEnabled(ruleId)
         val rule = shortXContext.rule.getRuleById(ruleId)
         if (rule != null && rule.factsAndQuitFacts.any { it is_ Logcat::class.java }) {
-            updateTriggerState()
+            logScope.launchSafety { updateTriggerState() }
         }
     }
 
@@ -106,7 +112,7 @@ class LogcatTrigger(
         super.onRuleDisabled(ruleId)
         val rule = shortXContext.rule.getRuleById(ruleId)
         if (rule != null && rule.factsAndQuitFacts.any { it is_ Logcat::class.java }) {
-            updateTriggerState()
+            logScope.launchSafety { updateTriggerState() }
         }
     }
 
@@ -114,7 +120,7 @@ class LogcatTrigger(
         super.onUpdateRule(oldRule, newRule)
         if (oldRule.factsAndQuitFacts.any { it is_ Logcat::class.java }
             || newRule.factsAndQuitFacts.any { it is_ Logcat::class.java }) {
-            updateTriggerState()
+            logScope.launchSafety { updateTriggerState() }
         }
     }
 }
