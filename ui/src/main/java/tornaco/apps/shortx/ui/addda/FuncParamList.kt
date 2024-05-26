@@ -6,6 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.proto.func.FuncParameter
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.rule.FUNC_PARAM_REF_PREFIX
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumSpacer
@@ -21,7 +22,8 @@ fun FuncParamList(
 ) {
     MediumTitleWithTip(
         text = LocalI18N.current["ui.da.params"],
-        tipText = LocalI18N.current["ui.da.params.description"]
+        tipText = LocalI18N.current["ui.da.params.description",
+            mapOf("arg" to "${FUNC_PARAM_REF_PREFIX}${LocalI18N.current["ui.da.params.name"]}")]
     )
     SmallSpacer()
 
@@ -43,7 +45,7 @@ fun FuncParamList(
             }
         )
     }
-    MediumSpacer()
+    if (params.isNotEmpty()) MediumSpacer()
 
     Button(onClick = {
         add(FuncParameter.newBuilder().setName("Test").setDefaultValue("123").build())
