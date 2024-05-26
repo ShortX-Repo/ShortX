@@ -12,6 +12,10 @@ private val uidRegex = "u(.+?).*a(.+)".toRegex()
 private val uidsCache = LruCache<String, String>(200)
 
 fun LogLine(
+    line: String,
+) = LogLine(id = 0L, content = "", original = line)
+
+fun LogLine(
     id: Long,
     line: String,
     shortXContext: ShortXContext
@@ -37,16 +41,16 @@ fun LogLine(
         }
 
         LogLine(
-            id,
-            time,
-            uid,
-            groupValues[3].replace(" ", ""),
-            groupValues[4].replace(" ", ""),
-            packageName,
-            mapLevel(groupValues[5]),
-            groupValues[6].trim(),
-            groupValues[7],
-            groupValues[0]
+            id = id,
+            dateAndTime = time,
+            uid = uid,
+            pid = groupValues[3].replace(" ", ""),
+            tid = groupValues[4].replace(" ", ""),
+            packageName = packageName,
+            level = mapLevel(groupValues[5]),
+            tag = groupValues[6].trim(),
+            content = groupValues[7],
+            original = groupValues[0]
         )
     }
 }.getOrNull()

@@ -40,11 +40,11 @@ class LogcatTrigger(
             withContext(Dispatchers.Default) {
                 logcat.logsFlow.collect { logLine ->
                     if (logLine == null) return@collect
-                    if (logLine.content.contains(LOG_TAG)) return@collect
+                    if (logLine.original.contains(LOG_TAG)) return@collect
 
-                    onDebugBuild { logger.d("---- catching log: $logLine") }
+                    onDebugBuild { logger.d("---- catching log: ${logLine.original}") }
 
-                    val content = logLine.content
+                    val content = logLine.original
                     regexMatchers.forEach {
                         val regex = it.second
                         val options = it.first.regexMatchOptions
