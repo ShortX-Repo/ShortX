@@ -37,6 +37,7 @@ import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
+import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.rule.ActionEvaluateRecord
 import tornaco.apps.shortx.core.proto.rule.ConditionEvaluateRecord
@@ -57,6 +58,7 @@ import tornaco.apps.shortx.core.rule.IToggleObserver
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
+import tornaco.apps.shortx.core.rule.asDefaultInput
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.unpack_
@@ -418,6 +420,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         actions: List<ProtoAny>,
         initialContextData: Map<String, Any> = emptyMap(),
         localVars: LocalVars = LocalVars.obtain(),
+        parameterInputs: List<FuncParameterInput> = emptyList(),
         conflictStrategy: ConflictStrategy,
         onComplete: () -> Unit = {}
     ) {
@@ -428,6 +431,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 actions = actions,
                 initialContextData = initialContextData,
                 localVars = localVars,
+                parameterInputs = parameterInputs,
                 conflictStrategy = conflictStrategy,
                 onComplete = onComplete,
             )
@@ -670,11 +674,14 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     fun getDirectActionCount() = dasSettingsStore.getDirectActionCount()
 
     fun executeDirectionActionById(context: EvaluateContext, id: String) {
-        getDirectActionById(id)?.let {
+        getDirectActionById(id)?.let { directAction ->
             executeActions(
                 context = context,
-                actions = it.actionsList,
-                conflictStrategy = it.conflictPolicy
+                actions = directAction.actionsList,
+                parameterInputs = directAction.parametersList.map {
+                    it.asDefaultInput()
+                },
+                conflictStrategy = directAction.conflictPolicy
             )
         }
     }
@@ -686,6 +693,9 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         executeActions(
             context = context,
             actions = directAction.actionsList,
+            parameterInputs = directAction.parametersList.map {
+                it.asDefaultInput()
+            },
             conflictStrategy = directAction.conflictPolicy
         )
     }

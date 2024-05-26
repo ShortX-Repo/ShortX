@@ -11,6 +11,7 @@ import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
+import tornaco.apps.shortx.core.rule.toLogString
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
@@ -59,6 +60,7 @@ class ActionEvaluatorImpl(
             "Can not find Actor for: ${action.typeUrl}"
         }
         logger.d("evaluate: ${evaluateContext.srcTitle} - ${action.typeUrl}, actor: $actor")
+        logger.p("parameters: ${parameterInputs.joinToString { it.toLogString() }}")
 
         // Do not worry about unpack cost, protobuf has cache.
         val unPacked = action unpack_ actor.actionsCanHandle()

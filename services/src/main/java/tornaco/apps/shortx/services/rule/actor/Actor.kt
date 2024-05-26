@@ -551,10 +551,6 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.PlayRingtone
     },
-    InvokeFunc {
-        override val actor: Actor
-            get() = tornaco.apps.shortx.services.rule.actor.impl.InvokeFunc
-    },
     Toggle5G {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.Toggle5G

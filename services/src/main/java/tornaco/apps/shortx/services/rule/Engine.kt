@@ -17,6 +17,7 @@ import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.condition.TheXXTimeToday
 import tornaco.apps.shortx.core.proto.fact.SystemReady
+import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.rule.AsyncMode
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
@@ -75,6 +76,7 @@ interface Engine {
         actions: List<ProtoAny>,
         initialContextData: Map<String, Any>,
         localVars: LocalVars = LocalVars.obtain(),
+        parameterInputs: List<FuncParameterInput> = emptyList(),
         conflictStrategy: ConflictStrategy,
         onComplete: () -> Unit = {}
     )
@@ -510,6 +512,7 @@ class DefaultRuleEngine(
         actions: List<ProtoAny>,
         initialContextData: Map<String, Any>,
         localVars: LocalVars,
+        parameterInputs: List<FuncParameterInput>,
         conflictStrategy: ConflictStrategy,
         onComplete: () -> Unit
     ) {
@@ -544,7 +547,8 @@ class DefaultRuleEngine(
                             evaluateContext = context,
                             action = it,
                             contextData = contextData,
-                            localVars = localVars
+                            localVars = localVars,
+                            parameterInputs = parameterInputs
                         )
                         if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
                             logger.e(evaRes.error, "evaluate fail")
