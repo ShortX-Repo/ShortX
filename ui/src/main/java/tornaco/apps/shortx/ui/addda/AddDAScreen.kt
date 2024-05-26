@@ -332,6 +332,14 @@ private fun DAContent(
                 setConflictStrategy = {
                     vm.setConflictStrategy(it)
                 })
+
+            SectionSpacer()
+
+            FuncParamList(addDirectActionState.parameters,
+                add = {
+                    vm.addParameter(it)
+                },
+                remove = { vm.removeParameter(it) })
         }
     }
 

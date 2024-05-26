@@ -210,6 +210,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                     SendSMS.getDefaultInstance().pack_().typeUrl,
                 )
                 val hasAnySMSAction = da.containsAnyTypeUrl(smsTyprUrls)
+                val hasAnyParam = da.parametersList.isNotEmpty()
                 updateState {
                     copy(
                         id = da.id,
@@ -223,7 +224,8 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                         daSetId = da.directActionSetId,
                         securityCheckRes = Security.checkSecurity(da),
                         hasSMSAction = hasAnySMSAction,
-                        parameters = da.parametersList
+                        parameters = da.parametersList,
+                        showAdvancedOptions = hasAnyParam
                     )
                 }
             }
