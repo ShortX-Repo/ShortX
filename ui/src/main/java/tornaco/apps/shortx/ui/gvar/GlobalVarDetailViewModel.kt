@@ -30,7 +30,7 @@ data class GlobalVarDetailState(
     val isLoading: Boolean = false
 )
 
-class GlobalVarDetailViewModel : StateViewModel<GlobalVarDetailState>({ GlobalVarDetailState() }) {
+class GlobalVarDetailViewModel : StateViewModel<GlobalVarDetailState, Unit>({ GlobalVarDetailState() }) {
     private val logger = Logger("GlobalVarDetailViewModel")
 
     fun loadState(id: String) {

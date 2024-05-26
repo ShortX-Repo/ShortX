@@ -114,7 +114,8 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                             directAction = DirectAction.getDefaultInstance(),
                             versionCode = 0,
                             isDirectActionSet = true,
-                            itemsCount = subDAs.size
+                            itemsCount = subDAs.size,
+                            hasAnyParameter = false
                         )
                     }
 

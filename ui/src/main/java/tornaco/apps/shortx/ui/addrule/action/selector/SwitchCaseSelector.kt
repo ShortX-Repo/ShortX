@@ -61,7 +61,7 @@ class SwitchCaseSelectorActivity : BaseSelectorActivity<Action.SwitchCase>() {
     }
 }
 
-class SwitchCaseSelectorViewModel : StateViewModel<SwitchCaseSelectorDialogDialogState>(
+class SwitchCaseSelectorViewModel : StateViewModel<SwitchCaseSelectorDialogDialogState, Unit>(
     initState = {
         SwitchCaseSelectorDialogDialogState()
     }

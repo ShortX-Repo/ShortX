@@ -56,7 +56,7 @@ fun UISettings.toDanmuUISettings(): DanmuUISettings =
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class DanmuUISettingsViewModel @Inject constructor(@ApplicationContext context: Context) :
-    StateViewModel<UISettingsState>(
+    StateViewModel<UISettingsState, Unit>(
         {
             UISettingsState(
                 shortXManager.getDanmuUISettings().toUISettings()

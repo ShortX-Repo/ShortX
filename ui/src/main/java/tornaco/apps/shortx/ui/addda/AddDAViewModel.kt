@@ -7,8 +7,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -19,6 +17,7 @@ import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.containsAnyTypeUrl
 import tornaco.apps.shortx.core.proto.da.DirectAction
+import tornaco.apps.shortx.core.proto.func.FuncParameter
 import tornaco.apps.shortx.core.proto.toStringPair
 import tornaco.apps.shortx.core.rule.Security
 import tornaco.apps.shortx.core.rule.pack_
@@ -29,8 +28,8 @@ import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
-import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.base.LoadState
+import tornaco.apps.shortx.ui.base.ShortXContextViewModelWithEffect
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import java.net.URL
 import java.util.Date
@@ -56,15 +55,21 @@ data class AddDirectActionState(
     val onlineDALoadState: LoadState<Unit> = LoadState.Success(Unit),
     val securityCheckRes: Boolean = true,
     val hasSMSAction: Boolean = false,
+    // Param
+    val parameters: List<FuncParameter> = emptyList()
 )
+
+sealed interface AddDAEffect {
+    data class DASaved(val daId: String) : AddDAEffect
+    data class AddParamFailNameExists(val name: String) : AddDAEffect
+}
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ShortXContextViewModel<AddDirectActionState>(context, { AddDirectActionState() }) {
-
-    private val _daSaved = MutableSharedFlow<String>()
-    val daSaved = _daSaved.asSharedFlow()
+    ShortXContextViewModelWithEffect<AddDirectActionState, AddDAEffect>(
+        context,
+        { AddDirectActionState() }) {
 
     val actionContentStateHandler = ActionContentStateHandler()
     val pref by lazy { Pref(context) }
@@ -114,6 +119,26 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
         updateState { copy(conflictStrategy = conflictStrategy, daChanged = true) }
     }
 
+    fun addParameter(parameter: FuncParameter) {
+        if (state.value.parameters.any { it.name.lowercase() == parameter.name.lowercase() }) {
+            postSideEffect(AddDAEffect.AddParamFailNameExists(parameter.name))
+            return
+        }
+        updateState {
+            copy(parameters = parameters.toMutableList().apply {
+                add(parameter)
+            })
+        }
+    }
+
+    fun removeParameter(parameter: FuncParameter) {
+        updateState {
+            copy(parameters = parameters.toMutableList().apply {
+                removeIf { it.name == parameter.name }
+            })
+        }
+    }
+
     // Save with token to check subscribe state.
     fun save(token: String?) {
         logger.p("save with token: ${token?.maskAll()}")
@@ -145,10 +170,11 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                         add((BuildPropInternal.APP_PACKAGE_NAME to token).toStringPair())
                     }
                 })
+                .addAllParameters(state.value.parameters)
                 .build()
 
             shortXManager.addDirectAction(da)
-            _daSaved.emit(da.id)
+            postSideEffect(AddDAEffect.DASaved(da.id))
         }
     }
 
@@ -197,6 +223,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                         daSetId = da.directActionSetId,
                         securityCheckRes = Security.checkSecurity(da),
                         hasSMSAction = hasAnySMSAction,
+                        parameters = da.parametersList
                     )
                 }
             }

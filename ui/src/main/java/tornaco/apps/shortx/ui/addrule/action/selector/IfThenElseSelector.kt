@@ -54,7 +54,7 @@ class IfThenElseSelectorActivity : BaseSelectorActivity<Action.IfThenElse>() {
     }
 }
 
-class IfThenElseSelectorViewModel : StateViewModel<IfThenElseSelectorDialogDialogState>(
+class IfThenElseSelectorViewModel : StateViewModel<IfThenElseSelectorDialogDialogState, Unit>(
     initState = {
         IfThenElseSelectorDialogDialogState()
     }

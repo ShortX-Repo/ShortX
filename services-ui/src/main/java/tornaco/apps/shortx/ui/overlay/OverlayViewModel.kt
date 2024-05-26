@@ -19,7 +19,7 @@ data class OverlayState(
     val localVars: LocalVars? = null,
 )
 
-class OverlayViewModel : StateViewModel<OverlayState>({ OverlayState() }) {
+class OverlayViewModel : StateViewModel<OverlayState, Unit>({ OverlayState() }) {
     private val logger = Logger("OverlayViewModel")
 
     private val globalVarObs = object : IGlobalVarObserver.Stub() {

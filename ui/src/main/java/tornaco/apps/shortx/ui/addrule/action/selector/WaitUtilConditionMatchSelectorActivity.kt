@@ -66,7 +66,7 @@ class WaitUtilConditionMatchSelectorActivity :
 }
 
 class WaitUtilConditionMatchSelectorViewModel :
-    StateViewModel<WaitUtilConditionMatchSelectorDialogDialogState>(
+    StateViewModel<WaitUtilConditionMatchSelectorDialogDialogState, Unit>(
         initState = {
             WaitUtilConditionMatchSelectorDialogDialogState()
         }

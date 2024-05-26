@@ -64,7 +64,7 @@ class ForEachPkgSetSelectorActivity : BaseSelectorActivity<Action.ForEachPkgSet>
     }
 }
 
-class ForEachPkgSetSelectorViewModel : StateViewModel<ForEachPkgSetSelectorDialogDialogState>(
+class ForEachPkgSetSelectorViewModel : StateViewModel<ForEachPkgSetSelectorDialogDialogState, Unit>(
     initState = {
         ForEachPkgSetSelectorDialogDialogState()
     }

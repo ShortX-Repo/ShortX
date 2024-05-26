@@ -19,7 +19,7 @@ data class PkgSetListState(
     val isLoading: Boolean = false
 )
 
-class PkgSetListViewModel : StateViewModel<PkgSetListState>({ PkgSetListState() }) {
+class PkgSetListViewModel : StateViewModel<PkgSetListState, Unit>({ PkgSetListState() }) {
     private val obs = object : IPkgSetObserver.Stub() {
         override fun onAddOrUpdate(id: String?) {
             loadState()

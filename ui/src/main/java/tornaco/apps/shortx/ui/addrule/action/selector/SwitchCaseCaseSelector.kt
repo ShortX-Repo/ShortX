@@ -56,11 +56,12 @@ class SwitchCaseCaseSelectorActivity : BaseSelectorActivity<Action.SwitchCase.Ca
     }
 }
 
-class SwitchCaseCaseSelectorViewModel : StateViewModel<SwitchCaseCaseSelectorDialogDialogState>(
-    initState = {
-        SwitchCaseCaseSelectorDialogDialogState()
-    }
-) {
+class SwitchCaseCaseSelectorViewModel :
+    StateViewModel<SwitchCaseCaseSelectorDialogDialogState, Unit>(
+        initState = {
+            SwitchCaseCaseSelectorDialogDialogState()
+        }
+    ) {
     private val logger = Logger("SwitchCaseCaseSelectorViewModel")
 
     val actionHandler: ActionContentStateHandler = ActionContentStateHandler()

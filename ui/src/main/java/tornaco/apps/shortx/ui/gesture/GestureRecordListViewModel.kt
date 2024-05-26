@@ -13,7 +13,7 @@ data class GestureRecordListState(
 )
 
 class GestureRecordListViewModel :
-    StateViewModel<GestureRecordListState>({ GestureRecordListState() }) {
+    StateViewModel<GestureRecordListState, Unit>({ GestureRecordListState() }) {
     fun loadState() {
         viewModelScope.launch(Dispatchers.IO) {
             updateState { copy(isLoading = true) }

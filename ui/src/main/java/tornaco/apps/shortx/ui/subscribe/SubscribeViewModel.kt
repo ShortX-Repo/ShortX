@@ -45,7 +45,7 @@ enum class CodeVerifyEvent {
 @HiltViewModel
 @SuppressLint("StaticFieldLeak")
 class SubscribeViewModel @Inject constructor(@ApplicationContext val context: Context) :
-    StateViewModel<SubscriptionState>({ SubscriptionState() }) {
+    StateViewModel<SubscriptionState, Unit>({ SubscriptionState() }) {
     private val logger = Logger("ShortX")
 
     private val repo by lazy { Repo(context) }

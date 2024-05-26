@@ -24,7 +24,7 @@ data class PkgSetDetailState(
     val isLoading: Boolean = true
 )
 
-class PkgSetDetailViewModel : StateViewModel<PkgSetDetailState>({ PkgSetDetailState() }) {
+class PkgSetDetailViewModel : StateViewModel<PkgSetDetailState, Unit>({ PkgSetDetailState() }) {
 
     fun loadState(label: String) {
         updateState { copy(originalLabel = label) }

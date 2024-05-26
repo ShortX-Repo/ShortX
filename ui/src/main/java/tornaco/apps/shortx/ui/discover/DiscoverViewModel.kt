@@ -5,8 +5,10 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
 import tornaco.apps.shortx.core.BuildProp.SHORTX_DISCOVERY_DEFAULT_ONLINE_REPO_URL
 import tornaco.apps.shortx.core.proto.da.DirectAction
@@ -16,8 +18,8 @@ import tornaco.apps.shortx.core.rule.repo.inflateOnlineFileUrl
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.action.mapper.randomActionColor
 import tornaco.apps.shortx.ui.backup.BackupAgent
-import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.base.LoadState
+import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.base.colorFromHex
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.main.model.RuleUM
@@ -26,7 +28,7 @@ import tornaco.apps.shortx.ui.main.model.ruleToRuleUM
 import tornaco.apps.shortx.ui.remote.OnlineRepo
 import tornaco.apps.shortx.ui.settings.pref.DiscoveryRepoSetting
 import tornaco.apps.shortx.ui.settings.pref.Pref
-import java.util.*
+import java.util.Date
 import javax.inject.Inject
 
 sealed interface DiscoverRepo {
@@ -259,7 +261,8 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                     url = inflateOnlineFileUrl(url, it.fileUrl, "da"),
                     versionCode = it.versionCode,
                     isInstalled = installedDAOrNull != null,
-                    hasUpdate = installedDAOrNull != null && installedDAOrNull.versionCode < it.versionCode
+                    hasUpdate = installedDAOrNull != null && installedDAOrNull.versionCode < it.versionCode,
+                    hasAnyParameter = false
                 )
             }
             updateState { copy(data = LoadState.Success(DiscoverData(rules, das))) }

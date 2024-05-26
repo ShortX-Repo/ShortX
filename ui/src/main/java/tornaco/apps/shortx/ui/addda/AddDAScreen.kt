@@ -36,7 +36,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.select
@@ -62,6 +61,7 @@ import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.WarningCard
+import tornaco.apps.shortx.ui.base.handleSideEffect
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.record.EvaRecordSetting
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
@@ -124,8 +124,11 @@ fun AddDirectActionScreen(
     val context = LocalContext.current
     val i18n = LocalI18N.current
     val savedMessage = i18n["ui.toast.da.saved"]
-    val showToast = {
+    val showDASavedToast = {
         Toast.makeText(context, savedMessage, Toast.LENGTH_SHORT).show()
+    }
+    val showParamAlreadyExistsToast: (String) -> Unit = {
+        Toast.makeText(context, "$it already exists", Toast.LENGTH_SHORT).show()
     }
 
     LaunchedEffect(vm) {
@@ -133,8 +136,17 @@ fun AddDirectActionScreen(
         vm.initFromDirectActionId(daId)
         vm.initFromDirectAction(da)
         vm.initFromUrl(url)
-        vm.daSaved.collectLatest {
-            showToast()
+    }
+
+    vm.handleSideEffect {
+        when (it) {
+            is AddDAEffect.AddParamFailNameExists -> {
+                showParamAlreadyExistsToast(it.name)
+            }
+
+            is AddDAEffect.DASaved -> {
+                showDASavedToast()
+            }
         }
     }
 
