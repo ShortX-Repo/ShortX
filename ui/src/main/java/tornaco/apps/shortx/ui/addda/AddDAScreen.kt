@@ -336,8 +336,8 @@ private fun DAContent(
             SectionSpacer()
 
             FuncParamList(addDirectActionState.parameters,
-                add = {
-                    vm.addParameter(it)
+                add = { param, override ->
+                    vm.addParameter(param, override)
                 },
                 remove = { vm.removeParameter(it) })
         }

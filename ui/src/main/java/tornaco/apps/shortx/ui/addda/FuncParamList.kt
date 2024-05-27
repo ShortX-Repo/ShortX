@@ -11,13 +11,15 @@ import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.MediumTitleWithTip
+import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.StandardSpacer
 
 @Composable
 fun FuncParamList(
     params: List<FuncParameter>,
-    add: (FuncParameter) -> Unit,
+    add: (FuncParameter, override: Boolean) -> Unit,
     remove: (FuncParameter) -> Unit
 ) {
     MediumTitleWithTip(
@@ -27,28 +29,46 @@ fun FuncParamList(
     )
     SmallSpacer()
 
-    params.forEach {
+    val editFuncState = rememberNewFuncParameterState {
+        add(it, true)
+    }
+    NewFunctionParameterDialog(state = editFuncState)
+
+    params.forEach { funcParameter ->
         ListItem(
-            titleLines = listOf(
-                it.name,
-                LocalI18N.current["ui.da.params.default.value"] + " ${it.defaultValue}"
+            titleLines = listOfNotNull(
+                funcParameter.name,
+                LocalI18N.current["ui.da.params.default.value"] + " ${funcParameter.defaultValue}",
+                funcParameter.comments.takeIf { it.isNotBlank() }
             ),
             action1 = {
+                if (funcParameter.isRequired) {
+                    OutlineBadge(text = LocalI18N.current["ui.da.params.is.required"])
+                    StandardSpacer()
+                }
                 IconButton(onClick = {
-                    remove(it)
+                    remove(funcParameter)
                 }) {
                     RemixIcon(remixName = Remix.System.close_line)
                 }
             },
             icon = {
                 RemixIcon(remixName = Remix.Development.parentheses_fill)
+            },
+            onClick = {
+                editFuncState.show(funcParameter)
             }
         )
     }
     if (params.isNotEmpty()) MediumSpacer()
 
+    val addFuncState = rememberNewFuncParameterState {
+        add(it, false)
+    }
+    NewFunctionParameterDialog(state = addFuncState)
+
     Button(onClick = {
-        add(FuncParameter.newBuilder().setName("Test").setDefaultValue("123").build())
+        addFuncState.show()
     }) {
         Text(text = LocalI18N.current["ui.common.add"])
     }

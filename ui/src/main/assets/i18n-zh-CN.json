@@ -470,6 +470,7 @@
     "ui.da.params.name": "参数名",
     "ui.da.params.value": "参数值",
     "ui.da.params.default.value": "默认值",
+    "ui.da.params.access.example": "通过 {arg} 来读取该参数",
     "ui.da.params.is.required": "必填",
     "ui.feat.label.da": "一键指令",
     "ui.feat.label.rule": "自动指令",

@@ -470,6 +470,7 @@
     "ui.da.params.name": "Name",
     "ui.da.params.value": "Value",
     "ui.da.params.default.value": "Default value",
+    "ui.da.params.access.example": "Read this param with {arg}",
     "ui.da.params.is.required": "Required",
     "ui.feat.label.da": "Direct Action",
     "ui.feat.label.rule": "Rule",

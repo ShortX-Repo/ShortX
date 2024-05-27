@@ -119,14 +119,19 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
         updateState { copy(conflictStrategy = conflictStrategy, daChanged = true) }
     }
 
-    fun addParameter(parameter: FuncParameter) {
-        if (state.value.parameters.any { it.name.lowercase() == parameter.name.lowercase() }) {
+    fun addParameter(parameter: FuncParameter, override: Boolean) {
+        if (!override && state.value.parameters.any { it.name.lowercase() == parameter.name.lowercase() }) {
             postSideEffect(AddDAEffect.AddParamFailNameExists(parameter.name))
             return
         }
         updateState {
             copy(parameters = parameters.toMutableList().apply {
-                add(parameter)
+                val index = indexOfFirst { it.name == parameter.name }
+                if (index >= 0) {
+                    set(index, parameter)
+                } else {
+                    add(parameter)
+                }
             }, daChanged = true)
         }
     }
