@@ -61,6 +61,7 @@ import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.asDefaultInput
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.pack_
+import tornaco.apps.shortx.core.rule.toLogString
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.maskAll
 import tornaco.apps.shortx.core.util.select
@@ -673,13 +674,25 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     fun getDirectActionCount() = dasSettingsStore.getDirectActionCount()
 
-    fun executeDirectionActionById(context: EvaluateContext, id: String) {
+    fun executeDirectionActionById(
+        context: EvaluateContext,
+        id: String,
+        parameterInputs: List<FuncParameterInput>
+    ) {
         getDirectActionById(id)?.let { directAction ->
             executeActions(
                 context = context,
                 actions = directAction.actionsList,
-                parameterInputs = directAction.parametersList.map {
-                    it.asDefaultInput()
+                parameterInputs = parameterInputs.toMutableList().apply {
+                    val addParams = directAction.parametersList
+                        .filterNot { param ->
+                            any { input -> param.name == input.name }
+                        }
+                        .map {
+                            it.asDefaultInput()
+                        }
+                    logger.d("addParams: ${addParams.map { it.toLogString() }}")
+                    addAll(addParams)
                 },
                 conflictStrategy = directAction.conflictPolicy
             )
@@ -840,13 +853,14 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             .setId("UI#executeShellCommand")
             .build()
 
-        val callbackDeadReceipt = object : IBinder.DeathRecipient {
-            @DoNotStrip
-            override fun binderDied() {
-                logger.w("executeShell, callback binderDied.")
-                signal.cancel()
+        @Suppress("ObjectLiteralToLambda") val callbackDeadReceipt =
+            object : IBinder.DeathRecipient {
+                @DoNotStrip
+                override fun binderDied() {
+                    logger.w("executeShell, callback binderDied.")
+                    signal.cancel()
+                }
             }
-        }
 
         val asBinder = callback.asBinder()
         val job = systemServiceScope.launchSafety {

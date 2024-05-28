@@ -44,6 +44,7 @@ import tornaco.apps.shortx.core.proto.common.UserInfo
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.core.proto.fact.DeepLinkCall
+import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
@@ -65,6 +66,7 @@ import tornaco.apps.shortx.core.rule.action.emptyByteArrayWrapper
 import tornaco.apps.shortx.core.rule.action.su.ISu
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.replaceLocalVarValues
+import tornaco.apps.shortx.core.rule.toLogString
 import tornaco.apps.shortx.core.systemui.IQSTileHost
 import tornaco.apps.shortx.core.util.ApkUtils
 import tornaco.apps.shortx.core.util.BitmapUtils
@@ -150,7 +152,8 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         val nextArgs: String? = shellCommand.nextArg
         if (nextArgs == null) {
             pw.println("Welcome to ShortX(${BuildPropInternal.APP_VERSION_NAME}). Command usage:")
-            pw.println("shortx run [ID]")
+            pw.println("shortx run [ID] [arg1]=[value] [arg2]=[value] ...")
+            pw.println("Example: shortx run 7da392dxfjysl size=24 color=#ffffff")
             pw.println("      Run a Rule.")
             pw.println("shortx dump")
             pw.println("      Dump ShortX states.")
@@ -163,6 +166,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                 pw.flush()
                 return 1
             }
+
             pw.println("Checking id: $id")
             val da = shortXContext.rule.getDirectActionById(id)
             if (da == null) {
@@ -172,6 +176,16 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }
             pw.println("About to run: ${da.title}")
             pw.flush()
+
+            val args = mutableListOf<FuncParameterInput>()
+            var nextArgParam = shellCommand.nextArg
+            while (nextArgParam != null) {
+                val kv = nextArgParam.split("=")
+                args.add(FuncParameterInput.newBuilder().setName(kv[0]).setValue(kv[1]).build())
+                nextArgParam = shellCommand.nextArg
+            }
+            pw.println("args: ${args.map { it.toLogString() }}")
+
             shortXContext.rule.executeDirectionActionById(
                 context = EvaluateContext.newBuilder()
                     .setSrcId(id)
@@ -179,7 +193,8 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                     .setSrcEvent(ContextSrcEvent.ContextSrc_DirectAction)
                     .setSerialNumber(nextEvaluateContextSerialNumber())
                     .build(),
-                id = id
+                id = id,
+                parameterInputs = args
             )
             return 0
         } else if (nextArgs == "dump") {
@@ -367,7 +382,8 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             enforceCallingPermissions()
             shortXContext.rule.executeDirectionActionById(
                 context = EvaluateContext.parseFrom(evaluateContext.byteData),
-                id = id
+                id = id,
+                parameterInputs = emptyList()
             )
         }
 
