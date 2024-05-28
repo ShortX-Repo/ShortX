@@ -616,6 +616,7 @@
     "ui.condition.warning.message.pkgset.missing": "应用集 {label} 不存在，请进入设置，应用集，创建或导入",
     "ui.title.ui.clipboard": "全局剪贴板",
     "ui.title.select.action": "选择动作",
+    "ui.title.select.da": "选择指令",
     "ui.title.select.component": "选择组件",
     "ui.action.hide.overlay": "隐藏悬浮工具",
     "ui.action.hide.all.overlay": "隐藏所有悬浮工具",

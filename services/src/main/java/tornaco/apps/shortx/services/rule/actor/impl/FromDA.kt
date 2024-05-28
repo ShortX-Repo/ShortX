@@ -2,6 +2,8 @@ package tornaco.apps.shortx.services.rule.actor.impl
 
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.proto.action.FromDA
+import tornaco.apps.shortx.core.rule.asDefaultInput
+import tornaco.apps.shortx.core.rule.toLogString
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.actor.ActionEvaluator
 import tornaco.apps.shortx.services.rule.actor.Actor
@@ -21,6 +23,27 @@ object FromDA : Actor {
             "Direct action not found: ${d.daId}"
         }
 
+        val allParameters = d.funcParameterInputsList.toMutableList().apply {
+            if (da.parametersList.isNotEmpty()) {
+                logger.i("Inflate default parameters.")
+                val inflatingParameters = da.parametersList
+                    .filterNot { funcParamF ->
+                        // Contains in FromDA.input or FromDA.DA.input
+                        parameterInputs.any { funcParamI ->
+                            funcParamI.name == funcParamF.name
+                        } || d.funcParameterInputsList.any { funcParamI ->
+                            funcParamI.name == funcParamF.name
+                        }
+                    }
+                    .map { it.asDefaultInput() }
+
+                logger.p("inflatingParameters: ${inflatingParameters.map { it.toLogString() }}")
+
+                addAll(inflatingParameters)
+            }
+        } + parameterInputs
+        logger.p("allParameters: ${allParameters.map { it.toLogString() }}")
+
         run loop@{
             if (da.actionsList.isNullOrEmpty().not()) {
                 da.actionsList.forEach { actionProto ->
@@ -30,7 +53,7 @@ object FromDA : Actor {
                             actionProto,
                             contextData,
                             localVars,
-                            parameterInputs
+                            allParameters
                         )
                     if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
                         logger.e(evaRes.error, "evaluate fail")

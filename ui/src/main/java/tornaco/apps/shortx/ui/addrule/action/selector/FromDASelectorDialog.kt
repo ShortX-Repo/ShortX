@@ -1,7 +1,8 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class)
 
 package tornaco.apps.shortx.ui.addrule.action.selector
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,8 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -20,62 +21,44 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.rule.FUNC_PARAM_REF_PREFIX
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
-import tornaco.apps.shortx.ui.addrule.action.mapper.labelLinesForAction
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.ColoredIcon
-import tornaco.apps.shortx.ui.base.CommonDialogState
+import tornaco.apps.shortx.ui.base.FieldTitleWithTip
+import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
-import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
-import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.TextInputDialog
+import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
-
-class FromDADialogState(
-    val onSelected: (Action.FromDA) -> Unit
-) : CommonDialogState() {
-    var currentSettings: Action.FromDA? = null
-
-    fun show(currentSettings: Action.FromDA? = null) {
-        this.currentSettings = currentSettings
-        show()
+@AndroidEntryPoint
+class FromDASelectorActivity : BaseSelectorActivity<Action.FromDA>() {
+    @Composable
+    override fun BaseSelectorActivity<Action.FromDA>.SelectorContent(currentData: Action.FromDA?) {
+        FromDASelector(currentData = currentData)
     }
+
 }
 
 @Composable
-fun rememberFromDADialogState(
-    onSelected: (Action.FromDA) -> Unit
-): FromDADialogState {
-    return remember {
-        FromDADialogState(onSelected)
-    }
-}
-
-@Composable
-fun FromDASelectorDialog(state: FromDADialogState) {
-    if (state.isShowing) {
-        ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
-            FromDASelector(state)
-        }
-    }
-}
-
-@Composable
-private fun FromDASelector(dialogState: FromDADialogState) {
-    val vm = hiltViewModel<FromDADialogSelectorViewModel>().apply { resetState() }
-    LaunchedEffect(dialogState.currentSettings) {
-        dialogState.currentSettings?.let {
-            vm.initFrom(it)
-        }
+private fun BaseSelectorActivity<Action.FromDA>.FromDASelector(currentData: Action.FromDA?) {
+    val vm = hiltViewModel<FromDADialogSelectorViewModel>()
+    LaunchedEffect(vm) {
+        vm.initFrom(currentData)
     }
 
     val state by vm.state.collectAsState()
@@ -91,16 +74,23 @@ private fun FromDASelector(dialogState: FromDADialogState) {
                         title = { Text(LocalI18N.current["ui.action.from.da"]) },
                         navigationIcon = {
                             IconButton(onClick = {
-                                dialogState.dismiss()
+                                cancelAndFinish()
                             }) {
                                 RemixIcon(remixName = Remix.System.close_line)
                             }
                         },
                         actions = {
                             IconButton(onClick = {
-                                if (state.data.daId.isNotBlank()) {
-                                    dialogState.onSelected(state.data)
-                                    dialogState.dismiss()
+                                if (state.daId.isNotBlank()) {
+                                    setResultAndFinish(
+                                        Action.FromDA(
+                                            daId = state.daId,
+                                            title = state.title,
+                                            description = state.description,
+                                            parameters = state.parameters,
+                                            parameterInputs = state.parameterInputs
+                                        )
+                                    )
                                 }
                             }) {
                                 RemixIcon(remixName = Remix.System.check_line)
@@ -126,28 +116,72 @@ private fun FromDASelector(dialogState: FromDADialogState) {
 
                     StandardSpacer()
                     Column(verticalArrangement = Arrangement.Center) {
-                        SmallTitle(
-                            modifier = Modifier.padding(vertical = 12.dp),
-                            LocalI18N.current["ui.title.select.action"]
-                        )
-
-                        if (state.data.daId.isNotBlank()) {
-                            ListItem(titleLines = labelLinesForAction(action = state.data),
+                        if (state.daId.isNotBlank()) {
+                            ListItem(
+                                titleLines = listOf(state.title ?: state.daId),
                                 icon = {
                                     ColoredIcon(size = 36.dp) {
                                         RemixIcon(remixName = imageVectorForAction(action = Action.FromDA::class))
                                     }
                                 })
                         }
-                        FilledTonalIconButton(onClick = {
+                        Button(onClick = {
                             daSelectorState.show()
                         }) {
-                            RemixIcon(remixName = Remix.System.settings_2_line)
+                            Text(text = LocalI18N.current["ui.title.select.da"])
+                        }
+
+                        LargeSpacer()
+
+                        AnimatedVisibility(visible = state.parameterInputs.isNotEmpty()) {
+                            Column {
+                                FieldTitleWithTip(
+                                    text = LocalI18N.current["ui.da.params"],
+                                    tipText = LocalI18N.current["ui.da.params.description",
+                                        mapOf("arg" to "$FUNC_PARAM_REF_PREFIX${LocalI18N.current["ui.da.params.name"]}")]
+                                )
+                                TinySpacer()
+                                DAFunctionParams(state) {
+                                    vm.updateParamInput(it)
+                                }
+                            }
                         }
                     }
                 }
             }
         }
     }
+}
 
+@Composable
+private fun DAFunctionParams(
+    fromDA: FromDASelectorState,
+    updateParamInput: (FuncParameterInput) -> Unit
+) {
+    fromDA.parameterInputs.forEach { input ->
+        val param = fromDA.parameters.firstOrNull { it.name == input.name }
+
+        val editValueDialogState = rememberTextInputState(title = input.name, message = null) {
+            updateParamInput(FuncParameterInput.newBuilder(input).setValue(it).build())
+        }
+        TextInputDialog(state = editValueDialogState)
+
+        ListItem(
+            titleLines = listOf(
+                LocalI18N.current["ui.da.params.name"] + " " + input.name,
+                LocalI18N.current["ui.da.params.value"] + " " + input.value,
+            ),
+            action1 = {
+                if (param?.isRequired == true) {
+                    OutlineBadge(text = LocalI18N.current["ui.da.params.is.required"])
+                }
+            },
+            icon = {
+                RemixIcon(remixName = Remix.Editor.functions)
+            },
+            onClick = {
+                editValueDialogState.show(input.value)
+            }
+        )
+    }
 }

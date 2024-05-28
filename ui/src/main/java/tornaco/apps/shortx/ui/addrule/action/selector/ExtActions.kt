@@ -79,10 +79,15 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         }
     )
 
-    val fromDASelectorState = rememberFromDADialogState {
-        addAction(it)
-    }
-    FromDASelectorDialog(state = fromDASelectorState)
+    val fromDASelectorState = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action.FromDA>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
 
     val setRuleEnabledState = rememberSetRuleEnabledDialogState(
         onSelected = {
@@ -211,7 +216,13 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             }
 
             Action.FromDA::class -> {
-                fromDASelectorState.show()
+                fromDASelectorState.launch(
+                    newIntent(
+                        context,
+                        source.getActionAs<Action.FromDA>(),
+                        FromDASelectorActivity::class.java
+                    )
+                )
                 true
             }
 

@@ -53,7 +53,7 @@ fun FuncParamList(
                 }
             },
             icon = {
-                RemixIcon(remixName = Remix.Development.parentheses_fill)
+                RemixIcon(remixName = Remix.Editor.functions)
             },
             onClick = {
                 editFuncState.show(funcParameter)

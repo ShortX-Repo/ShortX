@@ -626,6 +626,7 @@
     "ui.action.hide.all.overlay": "Hide all overlays",
     "ui.title.ui.clipboard": "Clipboard",
     "ui.title.select.action": "Select action",
+    "ui.title.select.da": "Select action",
     "ui.title.select.component": "Select component",
     "ui.action.show.overlay": "Show overlay buttons",
     "ui.action.show.overlay.button.of": "Button of {index}",

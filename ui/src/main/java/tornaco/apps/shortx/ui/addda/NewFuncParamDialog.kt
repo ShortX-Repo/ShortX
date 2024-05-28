@@ -158,7 +158,7 @@ fun NewFunctionParameterDialog(state: NewFuncParameterState) {
                                 }) {
                                     UnderlineSmallText(
                                         text = LocalI18N.current["ui.da.params.access.example", mapOf(
-                                            "arg" to "$GLOBAL_VAR_REF_PREFIX${state.name}"
+                                            "arg" to "$FUNC_PARAM_REF_PREFIX${state.name}"
                                         )]
                                     )
                                 }
