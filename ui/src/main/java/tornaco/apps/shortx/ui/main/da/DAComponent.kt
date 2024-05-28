@@ -37,6 +37,7 @@ import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
+import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlphaLarge
 import tornaco.apps.shortx.ui.base.ClickAnimateContainer
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.ConfirmDialog
@@ -88,6 +89,7 @@ fun DirectActionItem(
                 icon = da.icon,
                 iconColor = Color(da.iconColor),
                 runningInsCount = da.runningInsCount,
+                hasFuncParameter = da.hasAnyParameter,
                 onClick = { handler.click(da) },
                 run = {
                     clickAnimateState.startAllAnim()
@@ -181,6 +183,7 @@ private fun DAListItem(
     runningInsCount: Int = 0,
     icon: String,
     iconColor: Color,
+    hasFuncParameter: Boolean,
     onClick: () -> Unit,
     run: () -> Unit,
     onLongClick: () -> Unit,
@@ -200,20 +203,42 @@ private fun DAListItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ColoredIcon(
-                size = Dimens.DAIconSize,
-                padding = 0.dp,
-                color = iconColor.copy(alpha = ActionColorBgAlpha),
-                onClick = {
-                    onLongClick()
+            Box {
+                ColoredIcon(
+                    modifier = Modifier.align(Alignment.Center),
+                    size = Dimens.DAIconSize,
+                    padding = 0.dp,
+                    color = iconColor.copy(alpha = ActionColorBgAlpha),
+                    onClick = {
+                        onLongClick()
+                    }
+                ) {
+                    RemixIcon(
+                        modifier = Modifier.size(16.dp),
+                        remixName = icon,
+                        tint = iconColor
+                    )
                 }
-            ) {
-                RemixIcon(
-                    modifier = Modifier.size(16.dp),
-                    remixName = icon,
-                    tint = iconColor
-                )
+
+                if (hasFuncParameter) {
+                    ColoredIcon(
+                        modifier = Modifier.align(Alignment.TopEnd),
+                        size = 12.dp,
+                        padding = 0.dp,
+                        color = iconColor.copy(alpha = ActionColorBgAlphaLarge),
+                        onClick = {
+                            onLongClick()
+                        }
+                    ) {
+                        RemixIcon(
+                            modifier = Modifier.size(8.dp),
+                            remixName = Remix.Editor.functions,
+                            tint = iconColor
+                        )
+                    }
+                }
             }
+
 
             IconButton(onClick = {
                 run()
@@ -529,6 +554,7 @@ private fun DAListItemPreview() {
             runningInsCount = 2,
             icon = Remix.Media.broadcast_line,
             iconColor = VipColorGold,
+            hasFuncParameter = true,
             onClick = {},
             run = {},
             onLongClick = {},
