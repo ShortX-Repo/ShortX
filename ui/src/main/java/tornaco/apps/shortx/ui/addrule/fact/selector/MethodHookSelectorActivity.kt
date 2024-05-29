@@ -2,6 +2,7 @@
 
 package tornaco.apps.shortx.ui.addrule.fact.selector
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -105,37 +106,6 @@ class MethodHookSelectorActivity : BaseSelectorActivity<Fact.MethodHook>() {
                             .animateContentSize()
                             .verticalScroll(rememberScrollState())
                     ) {
-                        FieldTitleWithTip(
-                            text = LocalI18N.current["Package name"],
-                            LocalI18N.current["Remember to enable target App scope in Xposed Manager"]
-                        )
-                        SmallSpacer()
-                        ShortXTextField(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = state.packageName,
-                            onValueChange = { vm.setPackageName(it) })
-                        StandardSpacer()
-
-                        FieldTitle(
-                            text = LocalI18N.current["Class name"]
-                        )
-                        SmallSpacer()
-                        ShortXTextField(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = state.className,
-                            onValueChange = { vm.setClassName(it) })
-                        StandardSpacer()
-
-                        FieldTitle(
-                            text = LocalI18N.current["Method name"]
-                        )
-                        SmallSpacer()
-                        ShortXTextField(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = state.methodName,
-                            onValueChange = { vm.setMethodName(it) })
-                        StandardSpacer()
-
                         FieldTitle(
                             text = LocalI18N.current["Lifecycle"]
                         )
@@ -166,6 +136,41 @@ class MethodHookSelectorActivity : BaseSelectorActivity<Fact.MethodHook>() {
                                     vm.setLifecycle(it.data)
                                 })
                         }
+                        StandardSpacer()
+
+                        AnimatedVisibility(state.lifecycle != MethodHookLifecycle.InitZygote) {
+                            Column {
+                                FieldTitleWithTip(
+                                    text = LocalI18N.current["Package name"],
+                                    LocalI18N.current["Remember to enable target App scope in Xposed Manager"]
+                                )
+                                SmallSpacer()
+                                ShortXTextField(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    value = state.packageName,
+                                    onValueChange = { vm.setPackageName(it) })
+                                StandardSpacer()
+                            }
+                        }
+
+                        FieldTitle(
+                            text = LocalI18N.current["Class name"]
+                        )
+                        SmallSpacer()
+                        ShortXTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = state.className,
+                            onValueChange = { vm.setClassName(it) })
+                        StandardSpacer()
+
+                        FieldTitle(
+                            text = LocalI18N.current["Method name"]
+                        )
+                        SmallSpacer()
+                        ShortXTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = state.methodName,
+                            onValueChange = { vm.setMethodName(it) })
                         StandardSpacer()
                     }
                 }

@@ -1,6 +1,5 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
-import android.app.AndroidAppHelper
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.proto.fact.MethodHookLifecycle
@@ -37,7 +36,7 @@ object HookStub {
         ContextImplHook.onPackageLoaded()
         CustomHook.hookApp(
             null,
-            AndroidAppHelper.currentPackageName(),
+            null,
             MethodHookLifecycle.InitZygote
         )
     }

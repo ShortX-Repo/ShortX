@@ -40,7 +40,7 @@ object CustomHook {
 
     fun hookApp(
         classLoader: ClassLoader?,
-        currentProcessPkgName: String,
+        currentProcessPkgName: String?,
         lifecycle: MethodHookLifecycle
     ) {
         installHookForRules(
@@ -60,7 +60,7 @@ object CustomHook {
     private fun installHookForRules(
         rules: List<Rule>,
         classLoader: ClassLoader?,
-        currentProcessPkgName: String,
+        currentProcessPkgName: String?,
         lifecycle: MethodHookLifecycle,
         onMethodCall: (MethodHookParam, MethodHook) -> Unit,
         log: (String) -> Unit
@@ -70,7 +70,9 @@ object CustomHook {
             rule.factsAndQuitFacts.forEach { proto ->
                 if (proto is_ MethodHook::class.java) {
                     val mh = proto unpack_ MethodHook::class.java
-                    if (mh.packageName == currentProcessPkgName && mh.lifecycle == lifecycle) {
+                    if ((currentProcessPkgName == null || mh.packageName == currentProcessPkgName)
+                        && mh.lifecycle == lifecycle
+                    ) {
                         log("Installing method hook: ${mh.className}-${mh.methodName}")
                         mh.install(classLoader, onMethodCall, log)
                     }
