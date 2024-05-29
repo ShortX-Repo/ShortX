@@ -7,8 +7,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -19,6 +17,7 @@ import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.containsAnyTypeUrl
+import tornaco.apps.shortx.core.proto.func.FuncParameter
 import tornaco.apps.shortx.core.proto.rule.AsyncMode
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleHook
@@ -42,8 +41,8 @@ import tornaco.apps.shortx.ui.addrule.condition.op.toOp
 import tornaco.apps.shortx.ui.addrule.fact.FactContentStateHandler
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.addrule.fact.model.toProtoFact
-import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.base.LoadState
+import tornaco.apps.shortx.ui.base.ShortXContextViewModelWithEffect
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import java.net.URL
 import java.util.UUID
@@ -73,15 +72,20 @@ data class AddRuleState(
     val onlineDALoadState: LoadState<Unit> = LoadState.Success(Unit),
     val securityCheckRes: Boolean = true,
     val hasSMSAction: Boolean = false,
+    // Param
+    val parameters: List<FuncParameter> = emptyList()
 )
+
+sealed interface AddRuleEffect {
+    data class RuleSaved(val ruleId: String) : AddRuleEffect
+    data class AddParamFailNameExists(val name: String) : AddRuleEffect
+}
+
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ShortXContextViewModel<AddRuleState>(context, { AddRuleState() }) {
-
-    private val _ruleSaved = MutableSharedFlow<String>()
-    val ruleSaved = _ruleSaved.asSharedFlow()
+    ShortXContextViewModelWithEffect<AddRuleState, AddRuleEffect>(context, { AddRuleState() }) {
 
     val pref by lazy { Pref(context) }
 
@@ -263,10 +267,11 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         setRuleInstanceIdGenerator(ruleInsGenProtoOrNull)
                     }
                 }
+                .addAllParameters(state.value.parameters)
                 .build()
 
             shortXManager.addRule(rule)
-            _ruleSaved.emit(rule.id)
+            postSideEffect(AddRuleEffect.RuleSaved(rule.id))
         }
     }
 
@@ -400,7 +405,8 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         evaluatingActions = evaluatingActions,
                         ruleSetId = r.ruleSetId,
                         securityCheckRes = Security.checkSecurity(r),
-                        hasSMSAction = hasAnySMSAction
+                        hasSMSAction = hasAnySMSAction,
+                        parameters = r.parametersList,
                     )
                 }
             }
@@ -437,5 +443,30 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
 
     fun toggleQuitEnable() {
         updateState { copy(isQuitEnabled = !isQuitEnabled, ruleChanged = true) }
+    }
+
+    fun addParameter(parameter: FuncParameter, override: Boolean) {
+        if (!override && state.value.parameters.any { it.name.lowercase() == parameter.name.lowercase() }) {
+            postSideEffect(AddRuleEffect.AddParamFailNameExists(parameter.name))
+            return
+        }
+        updateState {
+            copy(parameters = parameters.toMutableList().apply {
+                val index = indexOfFirst { it.name == parameter.name }
+                if (index >= 0) {
+                    set(index, parameter)
+                } else {
+                    add(parameter)
+                }
+            }, ruleChanged = true)
+        }
+    }
+
+    fun removeParameter(parameter: FuncParameter) {
+        updateState {
+            copy(parameters = parameters.toMutableList().apply {
+                removeIf { it.name == parameter.name }
+            }, ruleChanged = true)
+        }
     }
 }

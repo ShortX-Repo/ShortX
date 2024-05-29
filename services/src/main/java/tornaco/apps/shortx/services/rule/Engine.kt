@@ -25,6 +25,7 @@ import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleInstanceIdGenerator_Static
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
+import tornaco.apps.shortx.core.rule.asDefaultInput
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.unpack_
@@ -310,6 +311,8 @@ class DefaultRuleEngine(
                                 updateTheXXTimeToday(shortXContext, rule.conditionsList)
 
                                 val localVars = LocalVars.obtain()
+                                val parameterInputs =
+                                    rule.parametersList.map { it.asDefaultInput() }
                                 runActionsJob(
                                     ruleTitleForLog = rule.title,
                                     asyncMode = rule.asyncMode,
@@ -317,7 +320,8 @@ class DefaultRuleEngine(
                                     actionsToRun = rule.actionsList,
                                     evaluateContext = evaluateContext,
                                     contextData = contextData,
-                                    localVars = localVars
+                                    localVars = localVars,
+                                    parameterInputs = parameterInputs
                                 )
                             } else {
                                 logger.d("Won't runActions since condition not match.")
@@ -424,6 +428,8 @@ class DefaultRuleEngine(
 
                                     updateTheXXTimeToday(shortXContext, quit.conditionsList)
 
+                                    val parameterInputs =
+                                        rule.parametersList.map { it.asDefaultInput() }
                                     runActionsJob(
                                         ruleTitleForLog = "$LOG_TAG_RULE_QUIT-${rule.title}",
                                         asyncMode = rule.asyncMode,
@@ -431,7 +437,8 @@ class DefaultRuleEngine(
                                         actionsToRun = quit.actionsList,
                                         evaluateContext = evaluateContext,
                                         contextData = contextData,
-                                        localVars = localVars
+                                        localVars = localVars,
+                                        parameterInputs = parameterInputs
                                     )
                                 }
                                 // Launch End
@@ -452,7 +459,8 @@ class DefaultRuleEngine(
         actionsToRun: List<ProtoAny>,
         evaluateContext: EvaluateContext,
         contextData: ContextData,
-        localVars: LocalVars
+        localVars: LocalVars,
+        parameterInputs: List<FuncParameterInput>
     ) {
         // By default, execute action in IO
         logger.d("job for rule: $ruleTitleForLog start.")
@@ -466,6 +474,7 @@ class DefaultRuleEngine(
                         action = it,
                         contextData = contextData,
                         localVars = localVars,
+                        parameterInputs = parameterInputs
                     )
                     logger.d("action evaluate res: $evaRes")
                     if (evaRes is ActionEvaluator.EvaluateResult.Fail) {

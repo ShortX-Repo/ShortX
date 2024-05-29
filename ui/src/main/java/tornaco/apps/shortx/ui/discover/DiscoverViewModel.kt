@@ -234,7 +234,8 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                     url = inflateOnlineFileUrl(url, it.fileUrl, "rule"),
                     versionCode = it.versionCode,
                     isInstalled = installedRuleOrNull != null,
-                    hasUpdate = installedRuleOrNull != null && installedRuleOrNull.versionCode < it.versionCode
+                    hasUpdate = installedRuleOrNull != null && installedRuleOrNull.versionCode < it.versionCode,
+                    hasAnyParameter = false
                 )
             }
             val das = index.directActions.map {

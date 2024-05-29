@@ -39,11 +39,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.rule.AsyncMode
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.addda.FuncParamList
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.ActionContentState
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
@@ -83,6 +83,7 @@ import tornaco.apps.shortx.ui.base.SplitLines
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.WarningCard
+import tornaco.apps.shortx.ui.base.handleSideEffect
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.record.EvaRecordSetting
@@ -148,8 +149,11 @@ fun AddRuleScreen(
     val context = LocalContext.current
     val i18n = LocalI18N.current
     val savedMessage = i18n["ui.toast.rule.saved"]
-    val showToast = {
+    val showRuleSavedToast = {
         Toast.makeText(context, savedMessage, Toast.LENGTH_SHORT).show()
+    }
+    val showParamAlreadyExistsToast: (String) -> Unit = {
+        Toast.makeText(context, "$it already exists", Toast.LENGTH_SHORT).show()
     }
 
     val actionHandler = remember(vm) { vm.actionContentStateHandler }
@@ -184,8 +188,17 @@ fun AddRuleScreen(
         vm.initFromRuleId(ruleId)
         vm.initFromRule(rule)
         vm.initFromUrl(url)
-        vm.ruleSaved.collectLatest {
-            showToast()
+    }
+
+    vm.handleSideEffect {
+        when (it) {
+            is AddRuleEffect.AddParamFailNameExists -> {
+                showParamAlreadyExistsToast(it.name)
+            }
+
+            is AddRuleEffect.RuleSaved -> {
+                showRuleSavedToast()
+            }
         }
     }
 
@@ -372,7 +385,10 @@ private fun RuleContent(
                         .fillMaxWidth()
                         .padding(16.dp)
                 ) {
-                    Text(text = LocalI18N.current["ui.rule.contains.send.sms.message"], style = MaterialTheme.typography.titleSmall)
+                    Text(
+                        text = LocalI18N.current["ui.rule.contains.send.sms.message"],
+                        style = MaterialTheme.typography.titleSmall
+                    )
                 }
             }
             LargeSpacer()
@@ -408,6 +424,22 @@ private fun RuleContent(
 
     EvaRecordSetting(id = addRuleState.id)
     SectionSpacer()
+
+
+    AnimatedVisibility(addRuleState.parameters.isNotEmpty() && !addRuleState.showAdvancedOptions) {
+        Column {
+            FuncParamList(
+                params = addRuleState.parameters,
+                add = { param, override ->
+                    vm.addParameter(param, override)
+                },
+                remove = {
+                    vm.removeParameter(it)
+                })
+            SectionSpacer()
+        }
+    }
+
     StandardSpacer()
 
     ExpandableSectionBar(
@@ -461,6 +493,17 @@ private fun RuleContent(
             }
             SplitLines(modifier = Modifier.padding(vertical = 30.dp))
 
+            FuncParamList(
+                params = addRuleState.parameters,
+                add = { param, override ->
+                    vm.addParameter(param, override)
+                },
+                remove = {
+                    vm.removeParameter(it)
+                })
+            SplitLines(modifier = Modifier.padding(vertical = 30.dp))
+
+            SectionSpacer()
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -489,7 +532,6 @@ private fun RuleContent(
                         handler = quitFactHandler.asFactHandler(),
                         readOnly = readOnly
                     )
-
                     SectionSpacer()
 
                     ConditionContent(
@@ -579,7 +621,6 @@ private fun RuleContent(
         }
     }
     SectionSpacer()
-    StandardSpacer()
 
     ExpandableSectionBar(
         isExpand = addRuleState.showGeeksOptions,

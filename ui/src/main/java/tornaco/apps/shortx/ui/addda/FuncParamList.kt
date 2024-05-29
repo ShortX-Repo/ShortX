@@ -27,8 +27,6 @@ fun FuncParamList(
         tipText = LocalI18N.current["ui.da.params.description",
             mapOf("arg" to "${FUNC_PARAM_REF_PREFIX}${LocalI18N.current["ui.da.params.name"]}")]
     )
-    SmallSpacer()
-
     val editFuncState = rememberNewFuncParameterState {
         add(it, true)
     }

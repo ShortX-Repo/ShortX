@@ -105,7 +105,8 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                             isRuleSet = true,
                             isEnabled = subRules.isNotEmpty() && subRules.all { it.isEnabled },
                             hasAnyEnabled = subRules.isNotEmpty() && subRules.any { it.isEnabled },
-                            itemsCount = subRules.size
+                            itemsCount = subRules.size,
+                            hasAnyParameter = false
                         )
                     }
                 val ruleSetFilters = listOf(
