@@ -2,6 +2,8 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import org.mvel2.MVEL
+import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.fact.MethodHook
 import tornaco.apps.shortx.core.proto.fact.MethodHookLifecycle
 import tornaco.apps.shortx.core.proto.factsAndQuitFacts
@@ -17,23 +19,27 @@ object CustomHook {
 
     fun hookAndroidSystem(lpparam: XC_LoadPackage.LoadPackageParam) {
         ShortXService.registerLifecycleSystemReadyCallback {
-            ShortXService.serviceBinder.log("System ready.", LOG_REDIRECT)
+            val log: (String) -> Unit = {
+                ShortXService.serviceBinder.log(it, LOG_REDIRECT)
+            }
+            log("System ready.")
             installHookForRules(
                 rules = ShortXService.shortXContext.rule.getAllEnabledRules(),
                 classLoader = lpparam.classLoader,
                 currentProcessPkgName = "android",
                 onMethodCall = { param, hook ->
+                    val contextDataList = hook.compileExpressions(param, log)
                     ShortXService.shortXContext.rule.publishFact(
                         "Custom hook",
                         MethodHook.newBuilder(hook).build()
                     ) {
-                        emptyMap()
+                        contextDataList.associate {
+                            it.first to it.second
+                        }
                     }
                 },
                 lifecycle = MethodHookLifecycle.LoadedPackage,
-                log = {
-                    ShortXService.serviceBinder.log(it, LOG_REDIRECT)
-                }
+                log = log
             )
         }
     }
@@ -43,17 +49,19 @@ object CustomHook {
         currentProcessPkgName: String?,
         lifecycle: MethodHookLifecycle
     ) {
+        val log: (String) -> Unit = {
+            shortXManager.log(it, LOG_REDIRECT)
+        }
         installHookForRules(
             rules = shortXManager.getAllRules(),
             classLoader = classLoader,
             currentProcessPkgName = currentProcessPkgName,
             lifecycle = lifecycle,
             onMethodCall = { param, hook ->
-                shortXManager.onHookedMethodCalled(hook, emptyList())
+                val contextDataList = hook.compileExpressions(param, log)
+                shortXManager.onHookedMethodCalled(hook, contextDataList)
             },
-            log = {
-                shortXManager.log(it, LOG_REDIRECT)
-            }
+            log = log
         )
     }
 
@@ -96,6 +104,34 @@ object CustomHook {
             }
         }.onFailure {
             log(it.stackTraceToString())
+        }
+    }
+
+    private fun MethodHook.compileExpressions(
+        methodHookParam: MethodHookParam,
+        log: (String) -> Unit
+    ): List<StringPair> {
+        val expressions = expressionsList
+        return expressions.map {
+            val value = executeMVEL(it.expressionMVEL, methodHookParam, log)
+            log("Execute expression: ${it.expressionMVEL}")
+            log("Execute expression, result: $value")
+            StringPair.newBuilder().setFirst(it.contextKey).setSecond(value).build()
+        }
+    }
+
+    private fun executeMVEL(
+        expression: String,
+        methodHookParam: MethodHookParam,
+        log: (String) -> Unit
+    ): String {
+        val varsMap: Map<String, Any?> = mapOf("param" to methodHookParam)
+        return kotlin.runCatching {
+            MVEL.executeExpression(MVEL.compileExpression(expression), varsMap)?.toString()
+                .orEmpty()
+        }.getOrElse {
+            log(it.stackTraceToString())
+            ""
         }
     }
 }

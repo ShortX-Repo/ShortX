@@ -9,4 +9,6 @@ dependencies {
     implementation(project(":services"))
     implementation(project(":core"))
     implementation(libs.shortx.ext.dex.maker)
+
+    implementation(libs.mvel2)
 }

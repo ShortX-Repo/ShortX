@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
@@ -29,6 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import tornaco.apps.shortx.core.proto.fact.MethodHookExpressions
 import tornaco.apps.shortx.core.proto.fact.MethodHookLifecycle
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
@@ -37,7 +39,9 @@ import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.FieldTitleWithTip
+import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
@@ -172,9 +176,63 @@ class MethodHookSelectorActivity : BaseSelectorActivity<Fact.MethodHook>() {
                             value = state.methodName,
                             onValueChange = { vm.setMethodName(it) })
                         StandardSpacer()
+
+                        Expressions(
+                            expressions = state.expressions,
+                            add = { vm.addExpression(it) },
+                            remove = { vm.removeExpression(it) }
+                        )
                     }
                 }
             }
+        }
+    }
+
+    @Composable
+    private fun Expressions(
+        expressions: List<MethodHookExpressions>,
+        add: (MethodHookExpressions) -> Unit,
+        remove: (MethodHookExpressions) -> Unit
+    ) {
+        val editState = rememberNewMethodHookExpressionState {
+            add(it)
+        }
+        NewMethodHookExpressionDialog(editState)
+
+        FieldTitleWithTip(
+            text = "Context data expressions",
+            tipText = "Add an MVEL expression to parse the Method hook param, and the parsed result will be set as Context data"
+        )
+        SmallSpacer()
+        expressions.forEach {
+            ListItem(
+                titleLines = listOf(it.contextKey, it.expressionMVEL),
+                icon = {
+                    RemixIcon(remixName = Remix.Development.code_line)
+                },
+                action1 = {
+                    IconButton(onClick = {
+                        remove(it)
+                    }) {
+                        RemixIcon(remixName = Remix.System.close_line)
+                    }
+                },
+                onClick = {
+                    editState.show(it)
+                })
+        }
+
+        if (expressions.isNotEmpty()) MediumSpacer()
+
+        val addState = rememberNewMethodHookExpressionState {
+            add(it)
+        }
+        NewMethodHookExpressionDialog(state = addState)
+
+        Button(onClick = {
+            addState.show()
+        }) {
+            Text(text = LocalI18N.current["ui.common.add"])
         }
     }
 }

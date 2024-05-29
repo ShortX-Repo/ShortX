@@ -504,7 +504,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                 "App hook",
                 MethodHook.newBuilder(hook).build()
             ) {
-                emptyMap()
+                args.associate { it.first to it.second }
             }
         }
 
