@@ -65,13 +65,13 @@ object CustomHook {
         onMethodCall: (MethodHookParam, MethodHook) -> Unit,
         log: (String) -> Unit
     ) {
+        log("Checking rules for app: $currentProcessPkgName - $lifecycle")
         rules.filter { it.isEnabled }.forEach { rule ->
             rule.factsAndQuitFacts.forEach { proto ->
                 if (proto is_ MethodHook::class.java) {
                     val mh = proto unpack_ MethodHook::class.java
-                    log("Check method hook for package: ${mh.packageName}")
                     if (mh.packageName == currentProcessPkgName && mh.lifecycle == lifecycle) {
-                        log("install method hook: ${mh.className}-${mh.methodName}")
+                        log("Installing method hook: ${mh.className}-${mh.methodName}")
                         mh.install(classLoader, onMethodCall, log)
                     }
                 }
@@ -87,9 +87,9 @@ object CustomHook {
     ) {
         kotlin.runCatching {
             val clazz = Reflections.findClass(className, classLoader)
-            log("class instance: $clazz")
+            log("Class instance: $clazz")
             afterMethod(clazz, methodName) {
-                log("afterMethod $className-$methodName")
+                log("----> onMethodCall $className-$methodName")
                 onMethodCall(it, this)
             }
         }.onFailure {
