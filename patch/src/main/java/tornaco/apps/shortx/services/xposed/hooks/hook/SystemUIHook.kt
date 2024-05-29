@@ -19,6 +19,7 @@ import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.proto.common.QSTile
 import tornaco.apps.shortx.core.proto.common.QSTileList
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
+import tornaco.apps.shortx.core.proto.fact.MethodHookLifecycle
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.res.AppResources
@@ -109,7 +110,11 @@ object SystemUIHook {
                 installShellImpl(shortx)
                 installNotificationPoster(shortx, app)
 
-                CustomHook.hookApp(lpparam.classLoader, PackageNames.systemUI)
+                CustomHook.hookApp(
+                    lpparam.classLoader,
+                    PackageNames.systemUI,
+                    MethodHookLifecycle.LoadedPackage
+                )
             }
         }
     }.onFailure {

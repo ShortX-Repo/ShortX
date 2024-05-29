@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import tornaco.apps.shortx.core.proto.fact.MethodHookLifecycle
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import javax.inject.Inject
@@ -13,6 +14,7 @@ data class MethodHookSelectorState(
     val packageName: String = "android",
     val className: String = "",
     val methodName: String = "",
+    val lifecycle: MethodHookLifecycle = MethodHookLifecycle.LoadedPackage,
 ) {
     fun toFact(): Fact.MethodHook {
         return Fact.MethodHook(
@@ -20,11 +22,10 @@ data class MethodHookSelectorState(
             className = className,
             methodName = methodName,
             beforeMethod = false,
-            argExpressionsMVEL = emptyList()
+            argExpressionsMVEL = emptyList(),
+            lifecycle = lifecycle
         )
     }
-
-
 }
 
 @SuppressLint("StaticFieldLeak")
@@ -40,7 +41,8 @@ class MethodHookSelectorViewModel @Inject constructor(@ApplicationContext contex
                 copy(
                     packageName = it.packageName,
                     className = it.className,
-                    methodName = it.methodName
+                    methodName = it.methodName,
+                    lifecycle = it.lifecycle
                 )
             }
         }
@@ -56,5 +58,9 @@ class MethodHookSelectorViewModel @Inject constructor(@ApplicationContext contex
 
     fun setMethodName(it: String) {
         updateState { copy(methodName = it) }
+    }
+
+    fun setLifecycle(lifecycle: MethodHookLifecycle) {
+        updateState { copy(lifecycle = lifecycle) }
     }
 }

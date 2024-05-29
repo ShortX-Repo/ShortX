@@ -1,7 +1,9 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
+import android.app.AndroidAppHelper
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.platform.PackageNames
+import tornaco.apps.shortx.core.proto.fact.MethodHookLifecycle
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXService
 
@@ -21,7 +23,11 @@ object HookStub {
             NFCServiceHook.hook(lpparam)
 
             if (lpparam.packageName != PackageNames.systemUI) {
-                CustomHook.hookApp(lpparam.classLoader, lpparam.packageName)
+                CustomHook.hookApp(
+                    lpparam.classLoader,
+                    lpparam.packageName,
+                    MethodHookLifecycle.LoadedPackage
+                )
             }
         }
     }
@@ -29,6 +35,11 @@ object HookStub {
     fun onPackageLoaded() {
         RuntimeInitHook.hookUncaughtException()
         ContextImplHook.onPackageLoaded()
+        CustomHook.hookApp(
+            null,
+            AndroidAppHelper.currentPackageName(),
+            MethodHookLifecycle.InitZygote
+        )
     }
 
     private fun androidHooks(lpparam: XC_LoadPackage.LoadPackageParam) {

@@ -3,12 +3,16 @@
 package tornaco.apps.shortx.ui.addrule.fact.selector
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -18,21 +22,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import tornaco.apps.shortx.core.proto.fact.MethodHookLifecycle
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
+import tornaco.apps.shortx.ui.base.DropdownItem
+import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.FieldTitle
+import tornaco.apps.shortx.ui.base.FieldTitleWithTip
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.settings.log.hook.MethodHookLogActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -95,30 +105,68 @@ class MethodHookSelectorActivity : BaseSelectorActivity<Fact.MethodHook>() {
                             .animateContentSize()
                             .verticalScroll(rememberScrollState())
                     ) {
-
-                        FieldTitle(text = LocalI18N.current["Package name"])
+                        FieldTitleWithTip(
+                            text = LocalI18N.current["Package name"],
+                            LocalI18N.current["Remember to enable target App scope in Xposed Manager"]
+                        )
                         SmallSpacer()
                         ShortXTextField(
+                            modifier = Modifier.fillMaxWidth(),
                             value = state.packageName,
                             onValueChange = { vm.setPackageName(it) })
                         StandardSpacer()
 
-                        FieldTitle(text = LocalI18N.current["Class name"])
+                        FieldTitle(
+                            text = LocalI18N.current["Class name"]
+                        )
                         SmallSpacer()
                         ShortXTextField(
+                            modifier = Modifier.fillMaxWidth(),
                             value = state.className,
                             onValueChange = { vm.setClassName(it) })
                         StandardSpacer()
 
-
-                        FieldTitle(text = LocalI18N.current["Method name"])
+                        FieldTitle(
+                            text = LocalI18N.current["Method name"]
+                        )
                         SmallSpacer()
                         ShortXTextField(
+                            modifier = Modifier.fillMaxWidth(),
                             value = state.methodName,
                             onValueChange = { vm.setMethodName(it) })
                         StandardSpacer()
 
-
+                        FieldTitle(
+                            text = LocalI18N.current["Lifecycle"]
+                        )
+                        SmallSpacer()
+                        val lifecycleDropdownState = rememberDropdownSelectorState()
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            FilledTonalButton(onClick = {
+                                lifecycleDropdownState.open()
+                            }) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(text = state.lifecycle.name)
+                                    StandardSpacer()
+                                    RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
+                                }
+                            }
+                            DropdownSelector(
+                                state = lifecycleDropdownState,
+                                items = MethodHookLifecycle.entries
+                                    .filterNot { it == MethodHookLifecycle.UNRECOGNIZED }.map {
+                                        DropdownItem(
+                                            labelLines = listOf(
+                                                LocalI18N.current[it.name]
+                                            ),
+                                            data = it
+                                        )
+                                    },
+                                onSelect = {
+                                    vm.setLifecycle(it.data)
+                                })
+                        }
+                        StandardSpacer()
                     }
                 }
             }

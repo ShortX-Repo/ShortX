@@ -77,6 +77,7 @@ import tornaco.apps.shortx.core.proto.fact.ConnectedWifiSignalLevelChanged
 import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen
 import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
+import tornaco.apps.shortx.core.proto.fact.MethodHook
 import tornaco.apps.shortx.core.proto.fact.NFCTagDiscover
 import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
@@ -108,6 +109,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         ActivityStopped::class,
         UserPresentAtTheFirstTime::class,
         BatteryTemperatureChanged::class,
+        MethodHook::class,
 
         AppHasAudioFocus::class,
         RequireMobileDataEnabled::class,
