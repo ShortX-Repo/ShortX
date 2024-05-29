@@ -22,6 +22,7 @@ object ShowOverlayButton : Actor {
             shortXContext.overlay.postShowOverlay(
                 evaluateContext,
                 localVars,
+                parameterInputs,
                 ShowOverlayButton.newBuilder(d).apply {
                     if (d.tag.isBlank()) {
                         logger.i("Use action id as overlay tag: ${d.id}")

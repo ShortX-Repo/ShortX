@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
+import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.util.Logger
@@ -37,6 +38,7 @@ class ComposeOverlay(
     context: Context,
     private val action: ShowOverlayButton,
     private val localVars: LocalVars,
+    private val parameters: List<FuncParameterInput>,
     private val initialPos: Pair<Int, Int>,
     private val onPosChange: (Int, Int) -> Unit,
     private val onButtonClick: (OverlayButtonSetting) -> Unit,
@@ -146,6 +148,7 @@ class ComposeOverlay(
                         OverlayContent(
                             action = action,
                             localVars = localVars,
+                            parameters = parameters,
                             dragHandleMotionEvent = {
                                 touchListener.onTouch(
                                     this@ComposeOverlay, it

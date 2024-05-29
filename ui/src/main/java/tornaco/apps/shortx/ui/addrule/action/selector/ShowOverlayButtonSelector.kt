@@ -310,6 +310,7 @@ private fun Content(
         OverlayContent(
             action = action.value as ShowOverlayButton,
             localVars = LocalVars.obtain(),
+            parameters = emptyList(),
             onButtonClick = {},
             onButtonLongClick = {},
             dragHandleMotionEvent = {},

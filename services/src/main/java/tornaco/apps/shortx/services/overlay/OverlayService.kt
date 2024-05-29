@@ -6,8 +6,10 @@ import android.os.Looper
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
+import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
+import tornaco.apps.shortx.core.rule.toLogString
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.Settings
@@ -37,9 +39,12 @@ class OverlayService(shortXContext: ShortXContext) :
     fun postShowOverlay(
         evaluateContext: EvaluateContext,
         localVars: LocalVars,
+        parameters: List<FuncParameterInput>,
         action: ShowOverlayButton
     ) = mainHandler.postSafety {
-        logger.d("showOverlay: ${action.tag}, current showing: ${showingOverlays.map { it.tag }} local vars: ${localVars.all.joinToString { it.name }}")
+        logger.d("showOverlay: ${action.tag}, current showing: ${showingOverlays.map { it.tag }}")
+        logger.p("local vars: ${localVars.all.joinToString { it.name }}")
+        logger.p("parameters: ${parameters.joinToString { it.toLogString() }}")
 
         if (showingOverlays.any {
                 it.tag == action.tag
@@ -55,6 +60,7 @@ class OverlayService(shortXContext: ShortXContext) :
             context = context,
             action = action,
             localVars = localVars,
+            parameters = parameters,
             initialPos = posX to posY,
             onPosChange = { x, y ->
                 handler.postSafety {

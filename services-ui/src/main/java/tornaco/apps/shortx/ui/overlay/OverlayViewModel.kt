@@ -4,8 +4,10 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
+import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
+import tornaco.apps.shortx.core.rule.replaceFuncParameterInputs
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.replaceLocalVarValues
 import tornaco.apps.shortx.core.shortXManager
@@ -17,6 +19,7 @@ data class ButtonState(val formattedLabel: String, val setting: OverlayButtonSet
 data class OverlayState(
     val buttons: List<ButtonState> = emptyList(),
     val localVars: LocalVars? = null,
+    val parameters: List<FuncParameterInput> = emptyList(),
 )
 
 class OverlayViewModel : StateViewModel<OverlayState, Unit>({ OverlayState() }) {
@@ -38,13 +41,18 @@ class OverlayViewModel : StateViewModel<OverlayState, Unit>({ OverlayState() }) 
         shortXManager.registerGlobalVarObs(globalVarObs)
     }
 
-    fun init(action: ShowOverlayButton, localVars: LocalVars) {
+    fun init(
+        action: ShowOverlayButton,
+        localVars: LocalVars,
+        parameters: List<FuncParameterInput>
+    ) {
         updateState {
             copy(
                 buttons = action.buttonSettingsList.map {
                     ButtonState(it.label, it)
                 },
-                localVars = localVars
+                localVars = localVars,
+                parameters = parameters
             )
         }
         formatValues()
@@ -55,8 +63,11 @@ class OverlayViewModel : StateViewModel<OverlayState, Unit>({ OverlayState() }) 
             updateState {
                 copy(buttons = buttons.map { button ->
                     val formattedLabel =
-                        button.setting.label.replaceGlobalVarValues { shortXManager.getAllGlobalVars() }
+                        button.setting.label
+                            .replaceFuncParameterInputs(parameters)
+                            .replaceGlobalVarValues { shortXManager.getAllGlobalVars() }
                             .replaceLocalVarValues(localVars ?: LocalVars.obtain())
+
                     ButtonState(formattedLabel, button.setting)
                 })
             }

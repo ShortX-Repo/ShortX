@@ -716,11 +716,12 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     fun directExecuteRuleActions(context: EvaluateContext, ruleId: String) {
         val rule = getRuleById(ruleId)
         logger.d("directExecuteRuleActions: $ruleId ${rule?.title}")
-        rule?.let {
-            val actions = it.actionsList
+        rule?.let { r ->
+            val actions = r.actionsList
             executeActions(
                 context = context,
                 actions = actions,
+                parameterInputs = r.parametersList.map { it.asDefaultInput() },
                 conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth
             )
         }
