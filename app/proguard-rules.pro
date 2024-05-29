@@ -201,6 +201,7 @@
 -dontwarn java.beans.PropertyDescriptor
 -dontwarn javax.lang.model.SourceVersion
 -dontwarn java.beans.FeatureDescriptor
+-dontwarn android.app.AndroidAppHelper
 
 -dontwarn com.android.internal.telephony.ITelephony$Stub
 -dontwarn com.android.internal.telephony.ITelephony
