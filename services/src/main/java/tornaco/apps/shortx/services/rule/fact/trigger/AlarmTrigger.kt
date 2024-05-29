@@ -1,6 +1,10 @@
 package tornaco.apps.shortx.services.rule.fact.trigger
 
 import android.content.Context
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.alarm.isNo
 import tornaco.apps.shortx.core.proto.fact.Alarm
 import tornaco.apps.shortx.core.proto.factsAndQuitFacts
@@ -11,6 +15,50 @@ import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.fact.alarm.AlarmScheduler
+
+// [ 2024-05-27T21:39:47.706    10284:  4122:  4122 I/LSPosed-Bridge  ]   Loading class one.yufz.hmspush.hook.XposedMod
+//[ 2024-05-27T21:39:47.817    10284:  4122:  4122 I/LSPosed-Bridge  ] [HMSPush]  XposedMod  Loaded app: com.huawei.hwid process:com.huawei.hwid.container2
+//[ 2024-05-27T21:39:47.884     1000:  1762:  1762 I/LSPosed-Bridge  ] Crash unexpectedly: java.lang.RuntimeException: Error receiving broadcast Intent { act=android.app.action.NEXT_ALARM_CLOCK_CHANGED flg=0x21000010 } in com.android.server.power.PowerOffAlarmService$1@9a8888c
+//	at android.app.LoadedApk$ReceiverDispatcher$Args.lambda$getRunnable$0(LoadedApk.java:1818)
+//	at android.app.LoadedApk$ReceiverDispatcher$Args.$r8$lambda$mcNAAl1SQ4MyJPyDg8TJ2x2h0Rk(Unknown Source:0)
+//	at android.app.LoadedApk$ReceiverDispatcher$Args$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:0)
+//	at android.os.Handler.handleCallback(Handler.java:959)
+//	at android.os.Handler.dispatchMessage(Handler.java:100)
+//	at android.os.Looper.loopOnce(Looper.java:232)
+//	at android.os.Looper.loop(Looper.java:317)
+//	at com.android.server.SystemServer.run(SystemServer.java:1009)
+//	at com.android.server.SystemServer.main(SystemServer.java:693)
+//	at java.lang.reflect.Method.invoke(Native Method)
+//	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:554)
+//	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:856)
+//Caused by: java.lang.NullPointerException: Attempt to invoke virtual method 'void android.app.NotificationManager.cancel(int)' on a null object reference
+//	at com.android.server.power.PowerOffAlarmService.updateNotification(PowerOffAlarmService.java:164)
+//	at com.android.server.power.PowerOffAlarmService.updateAlarms(PowerOffAlarmService.java:136)
+//	at com.android.server.power.PowerOffAlarmService.-$$Nest$mupdateAlarms(PowerOffAlarmService.java:0)
+//	at com.android.server.power.PowerOffAlarmService$1.onReceive(PowerOffAlarmService.java:112)
+//	at android.app.LoadedApk$ReceiverDispatcher$Args.lambda$getRunnable$0(LoadedApk.java:1810)
+//	... 11 more
+//[ 2024-05-27T21:39:47.887     1000:  1762:  1762 E/AndroidRuntime  ] *** FATAL EXCEPTION IN SYSTEM PROCESS: main
+//java.lang.RuntimeException: Error receiving broadcast Intent { act=android.app.action.NEXT_ALARM_CLOCK_CHANGED flg=0x21000010 } in com.android.server.power.PowerOffAlarmService$1@9a8888c
+//	at android.app.LoadedApk$ReceiverDispatcher$Args.lambda$getRunnable$0(LoadedApk.java:1818)
+//	at android.app.LoadedApk$ReceiverDispatcher$Args.$r8$lambda$mcNAAl1SQ4MyJPyDg8TJ2x2h0Rk(Unknown Source:0)
+//	at android.app.LoadedApk$ReceiverDispatcher$Args$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:0)
+//	at android.os.Handler.handleCallback(Handler.java:959)
+//	at android.os.Handler.dispatchMessage(Handler.java:100)
+//	at android.os.Looper.loopOnce(Looper.java:232)
+//	at android.os.Looper.loop(Looper.java:317)
+//	at com.android.server.SystemServer.run(SystemServer.java:1009)
+//	at com.android.server.SystemServer.main(SystemServer.java:693)
+//	at java.lang.reflect.Method.invoke(Native Method)
+//	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:554)
+//	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:856)
+//Caused by: java.lang.NullPointerException: Attempt to invoke virtual method 'void android.app.NotificationManager.cancel(int)' on a null object reference
+//	at com.android.server.power.PowerOffAlarmService.updateNotification(PowerOffAlarmService.java:164)
+//	at com.android.server.power.PowerOffAlarmService.updateAlarms(PowerOffAlarmService.java:136)
+//	at com.android.server.power.PowerOffAlarmService.-$$Nest$mupdateAlarms(PowerOffAlarmService.java:0)
+//	at com.android.server.power.PowerOffAlarmService$1.onReceive(PowerOffAlarmService.java:112)
+//	at android.app.LoadedApk$ReceiverDispatcher$Args.lambda$getRunnable$0(LoadedApk.java:1810)
+const val ALARM_SCHEDULE_DELAY = 10 * 1000L
 
 class AlarmTrigger(
     override val context: Context,
@@ -62,10 +110,15 @@ class AlarmTrigger(
         }
     }
 
+    private val scope = CoroutineScope(SupervisorJob())
+
     override fun register() {
-        alarmScheduler.systemReady()
-        shortXContext.rule.getAllEnabledRules().forEach { rule ->
-            checkAndScheduleAlarmForRule(rule) { "AlarmTrigger.register for rule: ${rule.title}" }
+        scope.launch {
+            delay(ALARM_SCHEDULE_DELAY)
+            alarmScheduler.systemReady()
+            shortXContext.rule.getAllEnabledRules().forEach { rule ->
+                checkAndScheduleAlarmForRule(rule) { "AlarmTrigger.register for rule: ${rule.title}" }
+            }
         }
     }
 

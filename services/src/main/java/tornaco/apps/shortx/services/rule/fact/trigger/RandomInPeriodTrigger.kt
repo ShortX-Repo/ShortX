@@ -1,6 +1,10 @@
 package tornaco.apps.shortx.services.rule.fact.trigger
 
 import android.content.Context
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.alarm.isNo
 import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
 import tornaco.apps.shortx.core.proto.factsAndQuitFacts
@@ -64,10 +68,15 @@ class RandomInPeriodTrigger(
         }
     }
 
+    private val scope by lazy { CoroutineScope(SupervisorJob()) }
+
     override fun register() {
-        scheduler.systemReady()
-        shortXContext.rule.getAllEnabledRules().forEach { rule ->
-            checkAndSchedulePeriodForRule(rule) { "PeriodTrigger.register for rule: ${rule.title}" }
+        scope.launch {
+            delay(ALARM_SCHEDULE_DELAY)
+            scheduler.systemReady()
+            shortXContext.rule.getAllEnabledRules().forEach { rule ->
+                checkAndSchedulePeriodForRule(rule) { "PeriodTrigger.register for rule: ${rule.title}" }
+            }
         }
     }
 
@@ -91,7 +100,8 @@ class RandomInPeriodTrigger(
 
     private fun cancelPeriodForRule(rule: Rule, reason: () -> String) {
         val periods =
-            rule.factsAndQuitFacts.filter { it.isPeriod() }.map { it unpack_ RandomInPeriod::class.java }
+            rule.factsAndQuitFacts.filter { it.isPeriod() }
+                .map { it unpack_ RandomInPeriod::class.java }
         if (periods.isNotEmpty()) {
             periods.forEach { period ->
                 scheduler.cancel(rule, period, reason())

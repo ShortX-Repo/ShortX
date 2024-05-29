@@ -4,6 +4,7 @@ import android.content.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.factsAndQuitFacts
 import tornaco.apps.shortx.core.proto.rule.Rule
@@ -70,9 +71,12 @@ class FixedInPeriodTrigger(
     }
 
     override fun register() {
-        fixedInPeriodScheduler.systemReady()
-        shortXContext.rule.getAllEnabledRules().forEach { rule ->
-            checkAndScheduleFixedInPeriodForRule(rule) { "FixedInPeriodTrigger.register for rule: ${rule.title}" }
+        scope.launch {
+            delay(ALARM_SCHEDULE_DELAY)
+            fixedInPeriodScheduler.systemReady()
+            shortXContext.rule.getAllEnabledRules().forEach { rule ->
+                checkAndScheduleFixedInPeriodForRule(rule) { "FixedInPeriodTrigger.register for rule: ${rule.title}" }
+            }
         }
     }
 
