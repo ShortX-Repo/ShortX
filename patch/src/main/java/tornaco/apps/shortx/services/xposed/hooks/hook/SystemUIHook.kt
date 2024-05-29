@@ -108,6 +108,8 @@ object SystemUIHook {
                 logger.d("After onCreate: $app")
                 installShellImpl(shortx)
                 installNotificationPoster(shortx, app)
+
+                CustomHook.hookApp(lpparam.classLoader, PackageNames.systemUI)
             }
         }
     }.onFailure {

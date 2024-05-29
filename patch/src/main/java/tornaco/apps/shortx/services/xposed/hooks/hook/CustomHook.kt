@@ -1,41 +1,91 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
+import de.robv.android.xposed.XC_MethodHook.MethodHookParam
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.proto.fact.MethodHook
 import tornaco.apps.shortx.core.proto.factsAndQuitFacts
+import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
-import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.services.ShortXService
 import util.Reflections
 
 object CustomHook {
-    private val logger = Logger("CustomHook")
+    private const val LOG_REDIRECT = "method_hook"
 
     fun hookAndroidSystem(lpparam: XC_LoadPackage.LoadPackageParam) {
         ShortXService.registerLifecycleSystemReadyCallback {
-            logger.d("System ready.")
-            ShortXService.shortXContext.rule.getAllEnabledRules().forEach { rule ->
-                rule.factsAndQuitFacts.forEach { proto ->
-                    if (proto is_ MethodHook::class.java) {
-                        val mh = proto unpack_ MethodHook::class.java
-                        logger.d("method hook for package: ${mh.packageName}")
-                        if (mh.packageName == "android") {
-                            logger.d("android method hook: ${mh.className}-${mh.methodName}")
-                            runCatching { mh.install(lpparam) }.onFailure {
-                                logger.e(it, "hook method fail.")
-                            }
-                        }
+            ShortXService.serviceBinder.log("System ready.", LOG_REDIRECT)
+            installHookForRules(
+                ShortXService.shortXContext.rule.getAllEnabledRules(),
+                lpparam.classLoader,
+                "android",
+                onMethodCall = { param, hook ->
+                    ShortXService.shortXContext.rule.publishFact(
+                        "Custom hook",
+                        MethodHook.newBuilder(hook).build()
+                    ) {
+                        emptyMap()
+                    }
+                },
+                log = {
+                    ShortXService.serviceBinder.log(it, LOG_REDIRECT)
+                }
+            )
+        }
+    }
+
+    fun hookApp(classLoader: ClassLoader, currentProcessPkgName: String) {
+        installHookForRules(
+            rules = shortXManager.getAllRules(),
+            classLoader = classLoader,
+            currentProcessPkgName = currentProcessPkgName,
+            onMethodCall = { param, hook ->
+                shortXManager.onHookedMethodCalled(hook, emptyList())
+            },
+            log = {
+                shortXManager.log(it, LOG_REDIRECT)
+            }
+        )
+    }
+
+    private fun installHookForRules(
+        rules: List<Rule>,
+        classLoader: ClassLoader,
+        currentProcessPkgName: String,
+        onMethodCall: (MethodHookParam, MethodHook) -> Unit,
+        log: (String) -> Unit
+    ) {
+        rules.filter { it.isEnabled }.forEach { rule ->
+            rule.factsAndQuitFacts.forEach { proto ->
+                if (proto is_ MethodHook::class.java) {
+                    val mh = proto unpack_ MethodHook::class.java
+                    log("Check method hook for package: ${mh.packageName}")
+                    if (mh.packageName == currentProcessPkgName) {
+                        log("install method hook: ${mh.className}-${mh.methodName}")
+                        mh.install(classLoader, onMethodCall, log)
                     }
                 }
             }
         }
     }
 
-    private fun MethodHook.install(lpparam: XC_LoadPackage.LoadPackageParam) {
-        val clazz = Reflections.findClass(className, lpparam.classLoader)
-        afterMethod(clazz, methodName) {
-            logger.d("afterMethod $className-$methodName")
+
+    private fun MethodHook.install(
+        classLoader: ClassLoader,
+        onMethodCall: (MethodHookParam, MethodHook) -> Unit,
+        log: (String) -> Unit
+    ) {
+        kotlin.runCatching {
+            val clazz = Reflections.findClass(className, classLoader)
+            log("class instance: $clazz")
+            afterMethod(clazz, methodName) {
+                log("afterMethod $className-$methodName")
+                onMethodCall(it, this)
+            }
+        }.onFailure {
+            log(it.stackTraceToString())
         }
     }
 }

@@ -40,10 +40,12 @@ import tornaco.apps.shortx.core.proto.common.AudioRecordFile
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
+import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.common.UserInfo
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.core.proto.fact.DeepLinkCall
+import tornaco.apps.shortx.core.proto.fact.MethodHook
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
@@ -83,6 +85,7 @@ import tornaco.apps.shortx.services.ui.I18NCache
 import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.util.ListBatchUtils
 import tornaco.apps.shortx.services.util.ListBatchUtils.Batch
+import tornaco.apps.shortx.services.util.MethodHookLogging
 import tornaco.apps.shortx.services.v.v
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
@@ -491,6 +494,40 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.gesture.setGestureLengthScale(scale)
         }
 
+        override fun onHookedMethodCalled(
+            hookData: ByteArrayWrapper,
+            argsData: MutableList<ByteArrayWrapper>
+        ) {
+            val hook = MethodHook.parseFrom(hookData.byteData)
+            val args = argsData.map { StringPair.parseFrom(it.byteData) }
+            shortXContext.rule.publishFact(
+                "App hook",
+                MethodHook.newBuilder(hook).build()
+            ) {
+                emptyMap()
+            }
+        }
+
+        override fun getMethodHookLogFD(): ParcelFileDescriptor? {
+            return kotlin.runCatching {
+                ParcelFileDescriptor.open(
+                    MethodHookLogging.logFile,
+                    ParcelFileDescriptor.MODE_READ_ONLY
+                )
+            }.getOrElse {
+                logger.e(it, "getMethodHookLogFD error")
+                null
+            }
+        }
+
+        override fun getMethodHookLogPath(): String {
+            return MethodHookLogging.logFile.absolutePath
+        }
+
+        override fun clearMethodHookLogs() {
+            MethodHookLogging.clearLogs()
+        }
+
         override fun attachSUImpl(from: String?, su: ISu?) {
             shortXContext.shell.attachSUImpl(from, su)
 
@@ -531,6 +568,8 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                 logger.i("EXTERNAL: $message")
             } else if ("http" == redirectTo) {
                 message?.let { HttpRequestLogging.log(it) }
+            } else if ("method_hook" == redirectTo) {
+                message?.let { MethodHookLogging.log(it) }
             }
         }
 

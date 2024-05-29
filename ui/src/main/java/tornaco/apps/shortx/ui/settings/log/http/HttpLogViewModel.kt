@@ -15,7 +15,7 @@
  *
  */
 
-package tornaco.apps.shortx.ui.settings.log
+package tornaco.apps.shortx.ui.settings.log.http
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -29,21 +29,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.ui.settings.log.LogState
 import java.io.BufferedReader
 import java.io.FileInputStream
 import java.io.InputStreamReader
 import javax.inject.Inject
 
-data class LogState(
-    val isLogEnabled: Boolean = false,
-    val isLoading: Boolean = false,
-    val horizontalScrollEnabled: Boolean = false,
-    val logs: List<String> = emptyList()
-)
-
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
-class LogViewModel @Inject constructor(@ApplicationContext private val context: Context) :
+class HttpLogViewModel @Inject constructor(@ApplicationContext private val context: Context) :
     ViewModel() {
     private val _state =
         MutableStateFlow(

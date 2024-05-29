@@ -197,7 +197,10 @@
             android:name="tornaco.apps.shortx.ui.shortcut.ShortcutStubManageActivity"
             android:exported="false" />
         <activity
-            android:name="tornaco.apps.shortx.ui.settings.log.HttpLogActivity"
+            android:name="tornaco.apps.shortx.ui.settings.log.http.HttpLogActivity"
+            android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.settings.log.hook.MethodHookLogActivity"
             android:exported="false" />
         <activity
             android:name="tornaco.apps.shortx.ui.addrule.action.selector.http.HttpRequestSelectorActivity"

@@ -19,6 +19,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,6 +33,7 @@ import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.settings.log.hook.MethodHookLogActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 
@@ -45,6 +47,7 @@ class MethodHookSelectorActivity : BaseSelectorActivity<Fact.MethodHook>() {
 
     @Composable
     private fun CombineKeyEventSelector(currentFact: Fact.MethodHook?) {
+        val context = LocalContext.current
         val vm = hiltViewModel<MethodHookSelectorViewModel>()
         LaunchedEffect(vm) {
             vm.initFrom(currentFact)
@@ -69,6 +72,12 @@ class MethodHookSelectorActivity : BaseSelectorActivity<Fact.MethodHook>() {
                                 }
                             },
                             actions = {
+                                IconButton(onClick = {
+                                    MethodHookLogActivity.Starter.start(context)
+                                }) {
+                                    RemixIcon(remixName = Remix.Document.file_text_line)
+                                }
+
                                 IconButton(onClick = {
                                     setResultAndFinish(state.toFact())
                                 }) {

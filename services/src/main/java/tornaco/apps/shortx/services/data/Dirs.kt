@@ -13,6 +13,7 @@ object Dirs {
     fun picassoCacheDir() = File(baseServerCacheDir(), "picasso")
     fun jsCacheDir() = File(baseServerCacheDir(), "js")
     fun httpDir() = File(baseServerCacheDir(), "http")
+    fun methodHookDir() = File(baseServerCacheDir(), "hook")
 
     fun baseServerDataDir(userId: Int = UserHandle.USER_SYSTEM) =
         File(baseServerDir(), "data/u/$userId")

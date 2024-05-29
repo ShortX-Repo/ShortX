@@ -18,8 +18,11 @@ object HookStub {
             SystemUIHook.hookTile(lpparam)
             SystemUIHook.hookQS(lpparam)
             MediaProviderHook.hook(lpparam)
-
             NFCServiceHook.hook(lpparam)
+
+            if (lpparam.packageName != PackageNames.systemUI) {
+                CustomHook.hookApp(lpparam.classLoader, lpparam.packageName)
+            }
         }
     }
 

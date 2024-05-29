@@ -84,7 +84,7 @@ import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.composeLogger
-import tornaco.apps.shortx.ui.settings.log.HttpLogActivity
+import tornaco.apps.shortx.ui.settings.log.http.HttpLogActivity
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.ClipboardUtils
