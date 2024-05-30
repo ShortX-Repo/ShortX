@@ -11,4 +11,11 @@ dependencies {
     implementation(libs.shortx.ext.dex.maker)
 
     implementation(libs.mvel2)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.kotest.assertions.core)
+    testImplementation(libs.kotest.property)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlin.reflect)
 }

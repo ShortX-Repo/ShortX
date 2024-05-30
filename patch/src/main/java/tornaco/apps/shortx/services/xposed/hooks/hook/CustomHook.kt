@@ -1,18 +1,25 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
+import com.android.internal.annotations.VisibleForTesting
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import org.mvel2.MVEL
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.fact.MethodHook
+import tornaco.apps.shortx.core.proto.fact.MethodHookConstraintParamsCount
+import tornaco.apps.shortx.core.proto.fact.MethodHookConstraintParamsType
+import tornaco.apps.shortx.core.proto.fact.MethodHookConstraintReturnType
 import tornaco.apps.shortx.core.proto.fact.MethodHookLifecycle
 import tornaco.apps.shortx.core.proto.factsAndQuitFacts
 import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.services.ShortXService
+import util.ReflectionUtils
 import util.Reflections
+import java.lang.reflect.Method
 
 object CustomHook {
     private const val LOG_REDIRECT = "method_hook"
@@ -98,12 +105,48 @@ object CustomHook {
         kotlin.runCatching {
             val clazz = Reflections.findClass(className, classLoader)
             log("Class instance: $clazz")
-            afterMethod(clazz, methodName) {
+            val constraints = constraintList
+            val methodsNameFiltered = ReflectionUtils.getDeclaredMethods(clazz)
+                .filter { it.name == methodName }
+            log("Methods match name: ${methodsNameFiltered.joinToString()}")
+            val methodConstraintsFiltered =
+                methodsNameFiltered.filter { matchConstraints(it, constraints) }
+            require(methodConstraintsFiltered.isNotEmpty()) {
+                "No method match your constraints"
+            }
+            val firstMethod = methodConstraintsFiltered.first()
+            log("Pick first methods match constraints: $firstMethod")
+            afterMethod(firstMethod) {
                 log("----> onMethodCall $className-$methodName")
                 onMethodCall(it, this)
             }
         }.onFailure {
             log(it.stackTraceToString())
+        }
+    }
+
+    private fun matchConstraints(method: Method, constraints: List<ProtoAny>): Boolean {
+        if (constraints.isEmpty()) return true
+        return constraints.all {
+            matchConstraint(method, it)
+        }
+    }
+
+    @VisibleForTesting
+    fun matchConstraint(method: Method, constraint: ProtoAny): Boolean {
+        return if (constraint is_ MethodHookConstraintParamsCount::class.java) {
+            val count = constraint unpack_ MethodHookConstraintParamsCount::class.java
+            method.parameters.size == count.count
+        } else if (constraint is_ MethodHookConstraintParamsType::class.java) {
+            val type = constraint unpack_ MethodHookConstraintParamsType::class.java
+            method.parameters.map {
+                it.type.name
+            } == type.typeList
+        } else if (constraint is_ MethodHookConstraintReturnType::class.java) {
+            val type = constraint unpack_ MethodHookConstraintReturnType::class.java
+            method.returnType.name == type.type
+        } else {
+            false
         }
     }
 
