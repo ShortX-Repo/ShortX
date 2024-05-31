@@ -5,6 +5,6 @@ data class MainState(
     val isActivated: Boolean = false,
     val isFrameworkUpdated: Boolean = false,
     val isIgnoreFrameworkUpdate: Boolean = false,
-    val isPrivacyStatementAccepted: Boolean = false,
+    val isPrivacyStatementAccepted: Boolean = true,
     val isAudioRecording: Boolean = false
 )
