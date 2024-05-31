@@ -16,7 +16,8 @@ data class MethodHookSelectorState(
     val className: String = "",
     val methodName: String = "",
     val lifecycle: MethodHookLifecycle = MethodHookLifecycle.LoadedPackage,
-    val expressions: List<MethodHookExpressions> = emptyList()
+    val expressions: List<MethodHookExpressions> = emptyList(),
+    val constraints: List<Fact.MethodHook.Constraint> = emptyList()
 ) {
     fun toFact(): Fact.MethodHook {
         return Fact.MethodHook(
@@ -25,7 +26,8 @@ data class MethodHookSelectorState(
             methodName = methodName,
             beforeMethod = false,
             expressions = expressions,
-            lifecycle = lifecycle
+            lifecycle = lifecycle,
+            constraints = constraints
         )
     }
 }
@@ -45,7 +47,8 @@ class MethodHookSelectorViewModel @Inject constructor(@ApplicationContext contex
                     className = it.className,
                     methodName = it.methodName,
                     lifecycle = it.lifecycle,
-                    expressions = it.expressions
+                    expressions = it.expressions,
+                    constraints = it.constraints
                 )
             }
         }
@@ -87,6 +90,36 @@ class MethodHookSelectorViewModel @Inject constructor(@ApplicationContext contex
             copy(
                 expressions = expressions.toMutableList().apply {
                     removeIf { it.contextKey == expression.contextKey }
+                }
+            )
+        }
+    }
+
+    fun addConstraint(constraint: Fact.MethodHook.Constraint) {
+        updateState {
+            copy(
+                constraints = constraints.toMutableList().apply {
+                    add(constraint)
+                }
+            )
+        }
+    }
+
+    fun updateConstraint(constraint: Fact.MethodHook.Constraint, index: Int) {
+        updateState {
+            copy(
+                constraints = constraints.toMutableList().apply {
+                    set(index, constraint)
+                }
+            )
+        }
+    }
+
+    fun removeConstraint(constraint: Fact.MethodHook.Constraint) {
+        updateState {
+            copy(
+                constraints = constraints.toMutableList().apply {
+                    remove(constraint)
                 }
             )
         }

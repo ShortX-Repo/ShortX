@@ -177,11 +177,24 @@ class MethodHookSelectorActivity : BaseSelectorActivity<Fact.MethodHook>() {
                             onValueChange = { vm.setMethodName(it) })
                         StandardSpacer()
 
+                        Constraints(
+                            constraints = state.constraints,
+                            add = {
+                                vm.addConstraint(it)
+                            },
+                            update = { c, index ->
+                                vm.updateConstraint(c, index)
+                            },
+                            remove = {
+                                vm.removeConstraint(it)
+                            })
+
                         Expressions(
                             expressions = state.expressions,
                             add = { vm.addExpression(it) },
                             remove = { vm.removeExpression(it) }
                         )
+                        StandardSpacer()
                     }
                 }
             }
@@ -233,6 +246,67 @@ class MethodHookSelectorActivity : BaseSelectorActivity<Fact.MethodHook>() {
             addState.show()
         }) {
             Text(text = LocalI18N.current["ui.common.add"])
+        }
+    }
+
+
+    @Composable
+    private fun Constraints(
+        constraints: List<Fact.MethodHook.Constraint>,
+        add: (Fact.MethodHook.Constraint) -> Unit,
+        update: (Fact.MethodHook.Constraint, Int) -> Unit,
+        remove: (Fact.MethodHook.Constraint) -> Unit
+    ) {
+        FieldTitleWithTip(
+            text = "Constraints",
+            tipText = "Add constraints to filter the target Method"
+        )
+        SmallSpacer()
+        constraints.forEach {
+            ListItem(
+                titleLines = listOf(it.toString()),
+                icon = {
+                    RemixIcon(remixName = Remix.Development.code_line)
+                },
+                action1 = {
+                    IconButton(onClick = {
+                        remove(it)
+                    }) {
+                        RemixIcon(remixName = Remix.System.close_line)
+                    }
+                },
+                onClick = {
+                })
+        }
+
+        if (constraints.isNotEmpty()) MediumSpacer()
+
+        val dropdownState = rememberDropdownSelectorState()
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Button(onClick = {
+                dropdownState.open()
+            }) {
+                Text(text = LocalI18N.current["ui.common.add"])
+            }
+            DropdownSelector(
+                state = dropdownState,
+                items = listOf(
+                    DropdownItem(
+                        labelLines = listOf("Method parameter types"),
+                        data = Fact.MethodHook.Constraint.ParamsType::class.java
+                    ),
+                    DropdownItem(
+                        labelLines = listOf("Method parameter count"),
+                        data = Fact.MethodHook.Constraint.ParamsCount::class.java
+                    ),
+                    DropdownItem(
+                        labelLines = listOf("Method return type"),
+                        data = Fact.MethodHook.Constraint.ReturnType::class.java
+                    )
+                ),
+                onSelect = {
+
+                })
         }
     }
 }
