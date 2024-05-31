@@ -409,5 +409,15 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/ui_file_paths" />
         </provider>
+
+        <receiver android:name=".widget.MyAppWidgetReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/ui_app_widget_info" />
+        </receiver>
     </application>
 </manifest>

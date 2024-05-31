@@ -125,6 +125,11 @@ dependencies {
 
     implementation(libs.apksig)
 
+    // For AppWidgets support
+    implementation( libs.androidx.glance.appwidget )
+    // For interop APIs with Material 3
+    implementation( libs.androidx.glance.material3 )
+
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)

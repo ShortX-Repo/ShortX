@@ -4,6 +4,7 @@ activity-compose = "1.9.0"
 agp = "8.4.1"
 apksig = "8.4.1"
 biometric = "1.2.0-alpha05"
+glance-appwidget = "1.0.0"
 shortx-core = "1.1.0-SNAPSHOT"
 rang-vikalp = "1.0.0-alpha02"
 sardine-android = "v0.9"
@@ -78,6 +79,8 @@ kover = { id = "org.jetbrains.kotlinx.kover", version = "0.8.0" }
 
 [libraries]
 androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
+androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glance-appwidget" }
+androidx-glance-material3 = { module = "androidx.glance:glance-material3", version.ref = "glance-appwidget" }
 apksig = { module = "com.android.tools.build:apksig", version.ref = "apksig" }
 
 shortx-core = { module = "shortx:core", version.ref = "shortx-core" }
