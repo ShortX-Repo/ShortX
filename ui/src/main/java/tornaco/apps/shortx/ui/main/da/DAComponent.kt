@@ -37,7 +37,6 @@ import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
-import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlphaLarge
 import tornaco.apps.shortx.ui.base.ClickAnimateContainer
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.ConfirmDialog
@@ -63,6 +62,7 @@ import tornaco.apps.shortx.ui.theme.Dimens
 import tornaco.apps.shortx.ui.theme.Dimens.menuDropdownFraction
 import tornaco.apps.shortx.ui.theme.NoteTextColor
 import tornaco.apps.shortx.ui.theme.VipColorGold
+import tornaco.apps.shortx.ui.util.darkenColor
 
 
 @Composable
@@ -70,7 +70,8 @@ fun DirectActionItem(
     modifier: Modifier,
     da: DirectActionUM,
     isSubscribed: Boolean,
-    isLongClickEnabled: Boolean
+    isLongClickEnabled: Boolean,
+    colorfulCard: Boolean,
 ) {
     Box {
         val popMenuState = daListItemOverflowMenu(
@@ -90,6 +91,7 @@ fun DirectActionItem(
                 iconColor = Color(da.iconColor),
                 runningInsCount = da.runningInsCount,
                 hasFuncParameter = da.hasAnyParameter,
+                colorfulCard = colorfulCard,
                 onClick = { handler.click(da) },
                 run = {
                     clickAnimateState.startAllAnim()
@@ -184,6 +186,7 @@ private fun DAListItem(
     icon: String,
     iconColor: Color,
     hasFuncParameter: Boolean,
+    colorfulCard: Boolean,
     onClick: () -> Unit,
     run: () -> Unit,
     onLongClick: () -> Unit,
@@ -203,9 +206,9 @@ private fun DAListItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box {
+            if (colorfulCard) {
                 ColoredIcon(
-                    modifier = Modifier.align(Alignment.Center),
+                    modifier = Modifier,
                     size = Dimens.DAIconSize,
                     padding = 0.dp,
                     color = iconColor.copy(alpha = ActionColorBgAlpha),
@@ -219,23 +222,21 @@ private fun DAListItem(
                         tint = iconColor
                     )
                 }
-
-                if (hasFuncParameter) {
-                    ColoredIcon(
-                        modifier = Modifier.align(Alignment.TopEnd),
-                        size = 12.dp,
-                        padding = 0.dp,
-                        color = iconColor.copy(alpha = ActionColorBgAlphaLarge),
-                        onClick = {
-                            onLongClick()
-                        }
-                    ) {
-                        RemixIcon(
-                            modifier = Modifier.size(8.dp),
-                            remixName = Remix.Editor.functions,
-                            tint = iconColor
-                        )
+            } else {
+                ColoredIcon(
+                    modifier = Modifier,
+                    size = Dimens.DAIconSize,
+                    padding = 0.dp,
+                    color = iconColor.copy(alpha = ActionColorBgAlpha),
+                    onClick = {
+                        onLongClick()
                     }
+                ) {
+                    RemixIcon(
+                        modifier = Modifier.size(16.dp),
+                        remixName = icon,
+                        tint = iconColor
+                    )
                 }
             }
 
@@ -243,7 +244,14 @@ private fun DAListItem(
             IconButton(onClick = {
                 run()
             }) {
-                RemixIcon(remixName = Remix.Media.play_circle_line, tint = NoteTextColor)
+                if (colorfulCard) {
+                    RemixIcon(
+                        remixName = Remix.Media.play_line,
+                        tint = darkenColor(iconColor, 0.4f)
+                    )
+                } else {
+                    RemixIcon(remixName = Remix.Media.play_circle_line, tint = NoteTextColor)
+                }
             }
         }
 
@@ -251,16 +259,19 @@ private fun DAListItem(
 
         Column(modifier = Modifier) {
             Text(
-                text = title, style = MaterialTheme.typography.titleMedium.copy(
+                text = title,
+                style = MaterialTheme.typography.titleMedium.copy(
                     fontSize = 16.sp
-                )
+                ),
+                color = if (colorfulCard) darkenColor(iconColor) else Color.Unspecified
             )
             SmallSpacer()
             Text(
                 text = description,
                 style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
                 maxLines = 3,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                color = if (colorfulCard) darkenColor(iconColor) else Color.Unspecified
             )
             MediumSpacer()
             TinySpacer()
@@ -555,6 +566,7 @@ private fun DAListItemPreview() {
             icon = Remix.Media.broadcast_line,
             iconColor = VipColorGold,
             hasFuncParameter = true,
+            colorfulCard = true,
             onClick = {},
             run = {},
             onLongClick = {},

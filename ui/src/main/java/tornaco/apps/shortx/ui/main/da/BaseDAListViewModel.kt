@@ -51,6 +51,7 @@ data class DAListState(
     val selectedDASetFilter: CommonSetFilter = CommonSetFilter.PinnedAll,
     val daSortBy: DASortBy = DASortBy.CreateTime,
     val isShowDetailedDAItem: Boolean = true,
+    val colorfulCard: Boolean = true,
     val isLoading: Boolean = true,
 )
 

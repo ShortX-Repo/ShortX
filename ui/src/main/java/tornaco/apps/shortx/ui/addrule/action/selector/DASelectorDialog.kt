@@ -126,6 +126,7 @@ private fun DASelector(dialogState: DADialogState) {
                             selectedDASetFilter = daListState.selectedDASetFilter,
                             selectDASetFilter = { daListViewModel.selectDASetFilter(it) },
                             showOverflowMenu = false,
+                            colorfulCard = false
                         )
                     }
                 }

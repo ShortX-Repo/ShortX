@@ -111,12 +111,12 @@ class CreateShortcutActivity : BaseActivity() {
                                 selectedDASetFilter = daListState.selectedDASetFilter,
                                 selectDASetFilter = { daListViewModel.selectDASetFilter(it) },
                                 showOverflowMenu = false,
+                                colorfulCard = false
                             )
                         }
                     }
 
                 }
-
             }
         }
     }

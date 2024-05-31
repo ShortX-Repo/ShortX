@@ -30,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -38,6 +39,8 @@ import kotlinx.coroutines.flow.collectLatest
 import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addda.AddDirectActionActivity
+import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
+import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.EmptyList
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.ProgressDialog
@@ -173,6 +176,7 @@ fun DirectActionListScreen() {
                 lazyStaggeredGridState = lazyStaggeredGridState,
                 isLoading = daListState.isLoading,
                 isShowDetailedDAItem = daListState.isShowDetailedDAItem,
+                colorfulCard = daListState.colorfulCard,
                 das = daListState.das,
                 daSetFilters = daListState.daSetFilters,
                 selectedDASetFilter = daListState.selectedDASetFilter,
@@ -188,6 +192,7 @@ fun DirectActionListContent(
     lazyStaggeredGridState: LazyStaggeredGridState = rememberLazyStaggeredGridState(),
     isLoading: Boolean,
     isShowDetailedDAItem: Boolean,
+    colorfulCard: Boolean,
     das: List<DirectActionUM>,
     showOverflowMenu: Boolean = false,
     daSetFilters: List<CommonSetFilter> = emptyList(),
@@ -231,6 +236,7 @@ fun DirectActionListContent(
                     lazyStaggeredGridState = lazyStaggeredGridState,
                     das = das,
                     isSubscribed = subscribeState.isSubscribed,
+                    colorfulCard = colorfulCard,
                     showOverflowMenu = showOverflowMenu,
                 )
             } else {
@@ -249,6 +255,7 @@ private fun DAListContent(
     lazyStaggeredGridState: LazyStaggeredGridState,
     das: List<DirectActionUM>,
     isSubscribed: Boolean,
+    colorfulCard: Boolean,
     showOverflowMenu: Boolean,
 ) {
     LazyVerticalStaggeredGrid(
@@ -260,7 +267,12 @@ private fun DAListContent(
         items(items = das, key = { it.id }) { da ->
             ShortXCard(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                backgroundColor = if (colorfulCard) {
+                    Color(da.iconColor).copy(alpha = ActionColorBgAlpha)
+                } else {
+                    ColorDefaults.backgroundSurfaceColor()
+                },
             ) {
                 Box {
                     if (da.isDirectActionSet) {
@@ -274,7 +286,8 @@ private fun DAListContent(
                             modifier = Modifier,
                             da = da,
                             isSubscribed = isSubscribed,
-                            isLongClickEnabled = showOverflowMenu
+                            isLongClickEnabled = showOverflowMenu,
+                            colorfulCard = colorfulCard
                         )
                     }
                 }
