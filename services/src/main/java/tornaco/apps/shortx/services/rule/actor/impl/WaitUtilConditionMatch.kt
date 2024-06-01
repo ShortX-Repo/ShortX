@@ -52,7 +52,7 @@ object WaitUtilConditionMatch : Actor {
                 val factMatch = factMatcher.match(fact, d.quitFactsList)
                 logger.d("WaitUtilConditionMatch, fact: $fact match: $factMatch")
                 if (factMatch.isMatch) {
-                    val condRes = d.quitConditionList.isNotEmpty() && conditionEvaluator.evaluate(
+                    val condRes = d.quitConditionList.isNotEmpty() || conditionEvaluator.evaluate(
                         evaluateContext,
                         d.quitConditionOp,
                         d.quitCondOpPayload,
