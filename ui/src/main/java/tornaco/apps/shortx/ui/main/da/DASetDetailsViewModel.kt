@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.ui.base.afterNavDelay
 import tornaco.apps.shortx.ui.main.model.daToDirectActionUM
 
 class DASetDetailsViewModel constructor(
@@ -17,6 +18,7 @@ class DASetDetailsViewModel constructor(
         viewModelScope.launch {
             updateState { copy(isLoading = true) }
             withContext(Dispatchers.IO) {
+                val startLoadingTime = System.currentTimeMillis()
                 val activeJobs = shortXManager.getActiveJobs().apply {
                     logger.d("activeJobs: $this")
                 }
@@ -34,6 +36,9 @@ class DASetDetailsViewModel constructor(
                             null
                         }
                     }
+                if (das.size > 3) {
+                    afterNavDelay(System.currentTimeMillis() - startLoadingTime)
+                }
                 updateState {
                     copy(das = das, isLoading = false)
                 }

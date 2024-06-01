@@ -30,7 +30,7 @@ fun RuleDetailsBottomSheet(dialogState: ShortXBottomSheetState) {
         CompositionLocalProvider(LocalRuleItemHandler provides daHandler,
             LocalRuleSetItemHandler provides object : RuleSetItemHandler {}) {
             RuleContent(
-                isLoading = false,
+                isLoading = state.isLoading,
                 rules = state.rules,
                 colorfulCard = state.colorfulCard
             )

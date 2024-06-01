@@ -30,7 +30,7 @@ fun DADetailsBottomSheet(dialogState: ShortXBottomSheetState) {
         CompositionLocalProvider(LocalDAItemHandler provides daHandler,
             LocalDASetItemHandler provides object : DASetItemHandler {}) {
             DirectActionListContent(
-                isLoading = false,
+                isLoading = state.isLoading,
                 isShowDetailedDAItem = true,
                 das = state.das,
                 showOverflowMenu = true,

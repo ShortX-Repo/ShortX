@@ -1,10 +1,11 @@
-@file:OptIn(ExperimentalLayoutApi::class)
+@file:OptIn(ExperimentalLayoutApi::class, ExperimentalMaterialApi::class)
 
 package tornaco.apps.shortx.ui.main.rule
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -14,12 +15,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -136,44 +143,59 @@ fun RuleContent(
     selectedRuleSetFilter: CommonSetFilter = CommonSetFilter.PinnedAll,
     selectRuleSetFilter: (CommonSetFilter) -> Unit = {},
 ) {
-    Column {
-        if (ruleSetFilters.any { !it.isStock }) {
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start
-            ) {
-                ruleSetFilters.forEach {
-                    ShortXFilterChip(
-                        modifier = Modifier.padding(start = 16.dp),
-                        selected = selectedRuleSetFilter == it,
-                        label = {
-                            Text(text = it.title)
-                        },
-                        onClick = {
-                            selectRuleSetFilter(it)
-                        })
+    val refreshState = rememberPullRefreshState(isLoading, onRefresh = {
+    })
+    Box(
+        Modifier
+            .fillMaxSize()
+            .pullRefresh(refreshState)
+    ) {
+        Column {
+            if (ruleSetFilters.any { !it.isStock }) {
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    ruleSetFilters.forEach {
+                        ShortXFilterChip(
+                            modifier = Modifier.padding(start = 16.dp),
+                            selected = selectedRuleSetFilter == it,
+                            label = {
+                                Text(text = it.title)
+                            },
+                            onClick = {
+                                selectRuleSetFilter(it)
+                            })
+                    }
                 }
             }
-        }
 
-        if (!isLoading && rules.isEmpty()) {
-            EmptyList(modifier = Modifier.fillMaxSize())
-        } else {
-            if (!isLoading) {
-                UserTip(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    tipId = TipIds.commonRuleItem,
-                    message = LocalI18N.current["ui.common.rule.item.tip"]
+            if (!isLoading && rules.isEmpty()) {
+                EmptyList(modifier = Modifier.fillMaxSize())
+            } else {
+                if (!isLoading) {
+                    UserTip(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        tipId = TipIds.commonRuleItem,
+                        message = LocalI18N.current["ui.common.rule.item.tip"]
+                    )
+                }
+
+                val subscribeState by LVLStateHolder.collectAsState()
+                RuleListContent(
+                    isSubscribed = subscribeState.isSubscribed,
+                    rules = rules,
+                    colorfulCard = colorfulCard
                 )
             }
-
-            val subscribeState by LVLStateHolder.collectAsState()
-            RuleListContent(
-                isSubscribed = subscribeState.isSubscribed,
-                rules = rules,
-                colorfulCard = colorfulCard
-            )
         }
+
+        PullRefreshIndicator(
+            isLoading,
+            refreshState,
+            Modifier.align(Alignment.TopCenter),
+            contentColor = MaterialTheme.colorScheme.primary
+        )
     }
 }
 
