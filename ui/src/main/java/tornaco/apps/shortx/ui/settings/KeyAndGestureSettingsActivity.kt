@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +30,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
@@ -40,26 +43,30 @@ import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ErrorCard
-import tornaco.apps.shortx.ui.base.FieldTitle
+import tornaco.apps.shortx.ui.base.LargeSpacer
+import tornaco.apps.shortx.ui.base.LargeTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
+import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShapeXL
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.SwitchRow
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import java.math.BigDecimal
 import java.math.RoundingMode
 import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 @AndroidEntryPoint
-class EdgeGestureSettingsActivity : BaseActivity() {
+class KeyAndGestureSettingsActivity : BaseActivity() {
     companion object {
         @JvmStatic
         fun start(context: Context) {
-            val starter = Intent(context, EdgeGestureSettingsActivity::class.java)
+            val starter = Intent(context, KeyAndGestureSettingsActivity::class.java)
             context.startActivity(starter)
         }
     }
@@ -74,16 +81,17 @@ class EdgeGestureSettingsActivity : BaseActivity() {
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@ApplicationContext context: Context) :
-    ShortXContextViewModel<EdgeGestureSettings>(context, { EdgeGestureSettings() }) {
+    ShortXContextViewModel<KeyAndGestureSettings>(context, { KeyAndGestureSettings() }) {
 
     fun loadState() {
         viewModelScope.launch {
             updateState {
                 copy(
-                    areaSize = shortXManager.getGestureAreaSize(),
+                    gestureAreaSize = shortXManager.getGestureAreaSize(),
                     swipeDistanceThreshold = shortXManager.getSwipeDistanceThresholdDp(),
                     swipeLengthScale = shortXManager.getSwipeLengthScale(),
-                    isDisabled = shortXManager.hasHookFlags(ShortXManager.Companion.HookFlags.FLAG_DISABLE_GESTURE_HOOK)
+                    isEdgeGestureDisabled = shortXManager.hasHookFlags(ShortXManager.Companion.HookFlags.FLAG_DISABLE_GESTURE_HOOK),
+                    keyDetectorLongPressTimeoutMS = shortXManager.getKeyDetectorLongPressTimeoutMS()
                 )
             }
         }
@@ -130,17 +138,26 @@ class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@Application
             loadState()
         }
     }
+
+    fun setKeyDetectorLongPressTimeoutMS(timeout: Long) {
+        viewModelScope.launch {
+            shortXManager.setKeyDetectorLongPressTimeoutMS(timeout)
+            loadState()
+        }
+    }
 }
 
-data class EdgeGestureSettings(
-    val areaSize: Int = 0,
+data class KeyAndGestureSettings(
+    val gestureAreaSize: Int = 0,
     val swipeDistanceThreshold: Int = 0,
     val swipeLengthScale: Float = 0f,
-    val isDisabled: Boolean = false
+    val isEdgeGestureDisabled: Boolean = false,
+    // Key
+    val keyDetectorLongPressTimeoutMS: Long = 0,
 )
 
 @Composable
-fun EdgeGestureSettingsActivity.EdgeGestureSettingsSelector() {
+fun KeyAndGestureSettingsActivity.EdgeGestureSettingsSelector() {
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -155,7 +172,7 @@ fun EdgeGestureSettingsActivity.EdgeGestureSettingsSelector() {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.settings.edge.gesture"]) },
+                        title = { Text(text = LocalI18N.current["ui.settings.key.and.gesture"]) },
                         actions = {},
                         navigationIcon = {
                             IconButton(onClick = {
@@ -171,25 +188,30 @@ fun EdgeGestureSettingsActivity.EdgeGestureSettingsSelector() {
                         .fillMaxSize()
                         .padding(paddingValues)
                         .padding(16.dp)
+                        .verticalScroll(rememberScrollState())
                 ) {
-                    FieldTitle(text = LocalI18N.current["ui.settings.edge.gesture.size"])
+                    LargeTitle(text = LocalI18N.current["ui.settings.edge.gesture"])
+                    StandardSpacer()
+
+                    SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.size"])
                     MediumSpacer()
-                    Text(text = state.areaSize.toString())
+                    Text(text = state.gestureAreaSize.toString())
                     Slider(
                         valueRange = 1f..88f,
-                        value = state.areaSize.toFloat(),
+                        value = state.gestureAreaSize.toFloat(),
                         onValueChange = {
                             vm.setAreaSize(it.roundToInt())
                         })
                     Spacer(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(state.areaSize.dp)
+                            .height(state.gestureAreaSize.dp)
+                            .clip(ShortXCardRoundedCornerShapeXL)
                             .background(color = MaterialTheme.colorScheme.primary)
                     )
-                    SectionSpacer()
+                    LargeSpacer()
 
-                    FieldTitle(text = LocalI18N.current["ui.settings.edge.gesture.area.length"])
+                    SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.area.length"])
                     MediumSpacer()
                     Text(text = state.swipeLengthScale.toString())
                     Slider(
@@ -198,9 +220,9 @@ fun EdgeGestureSettingsActivity.EdgeGestureSettingsSelector() {
                         onValueChange = {
                             vm.setSwipeLengthScale(it)
                         })
-                    SectionSpacer()
+                    LargeSpacer()
 
-                    FieldTitle(text = LocalI18N.current["ui.settings.edge.gesture.swipe.distance"])
+                    SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.swipe.distance"])
                     MediumSpacer()
                     Text(text = state.swipeDistanceThreshold.toString())
                     Slider(
@@ -217,27 +239,40 @@ fun EdgeGestureSettingsActivity.EdgeGestureSettingsSelector() {
                             modifier = Modifier
                                 .width(state.swipeDistanceThreshold.dp)
                                 .height(6.dp)
+                                .clip(ShortXCardRoundedCornerShapeXL)
                                 .background(color = MaterialTheme.colorScheme.primary)
                         )
                     }
-
-                    SectionSpacer()
-                    SectionSpacer()
+                    LargeSpacer()
                     SwitchRow(
                         text = LocalI18N.current["ui.settings.edge.gesture.disable"],
-                        isChecked = state.isDisabled,
+                        isChecked = state.isEdgeGestureDisabled,
                         onCheckChange = {
                             vm.setDisabled(it)
                         }
                     )
-                    StandardSpacer()
-                    AnimatedVisibility(visible = state.isDisabled) {
+                    AnimatedVisibility(visible = state.isEdgeGestureDisabled) {
                         ErrorCard(
                             modifier = Modifier.fillMaxWidth(),
                             title = LocalI18N.current["ui.settings.edge.gesture.disabled.warn"],
                             warnings = emptyList()
                         )
                     }
+
+                    SectionSpacer()
+                    SectionSpacer()
+
+                    // Keys
+                    LargeTitle(text = LocalI18N.current["ui.settings.key"])
+                    SmallTitle(text = LocalI18N.current["ui.settings.key.long.press.timeout"])
+                    MediumSpacer()
+                    Text(text = "${state.keyDetectorLongPressTimeoutMS} ms")
+                    Slider(
+                        valueRange = 200f..5000f,
+                        value = state.keyDetectorLongPressTimeoutMS.toFloat(),
+                        onValueChange = {
+                            vm.setKeyDetectorLongPressTimeoutMS(it.roundToLong())
+                        })
 
                 }
             }

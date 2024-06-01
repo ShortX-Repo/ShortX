@@ -84,6 +84,9 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
         data object SwipeDistanceThresholdDp :
             IntSettings(key = "SwipeDistanceThresholdDp", defaultValue = { 24 })
 
+        data object KeyDetectorLongPressTimeoutMS :
+            IntSettings(key = "KeyDetectorLongPressTimeoutMS", defaultValue = { 499 })
+
         data class DidSomethingAtDay(val day: String, val what: String) :
             IntSettings(key = "DidSomethingAtDay_${day}_${what}", defaultValue = { 0 })
     }

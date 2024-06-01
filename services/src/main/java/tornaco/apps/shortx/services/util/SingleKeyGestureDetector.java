@@ -59,7 +59,7 @@ public final class SingleKeyGestureDetector {
      */
     public static final int KEY_LONGPRESS = 1 << 1;
     static final long MULTI_PRESS_TIMEOUT = 240;
-    static long sDefaultLongPressTimeout;
+    public static long sDefaultLongPressTimeout;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(prefix = {"KEY_"}, value = {
@@ -155,11 +155,7 @@ public final class SingleKeyGestureDetector {
     }
 
     public static SingleKeyGestureDetector get() {
-        SingleKeyGestureDetector detector = new SingleKeyGestureDetector();
-        // context.getResources().getInteger(
-        //                com.android.internal.R.integer.config_globalActionsKeyTimeout);
-        sDefaultLongPressTimeout = 500;
-        return detector;
+        return new SingleKeyGestureDetector();
     }
 
     private SingleKeyGestureDetector() {

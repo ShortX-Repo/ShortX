@@ -470,10 +470,10 @@ private fun generalSettings(
         ),
 
         Preference.TextPreference(icon = Remix.Editor.sketching,
-            title = LocalI18N.current["ui.settings.edge.gesture"],
-            summary = LocalI18N.current["ui.settings.edge.gesture.summary"],
+            title = LocalI18N.current["ui.settings.key.and.gesture"],
+            summary = LocalI18N.current["ui.settings.key.and.gesture.summary"],
             onClick = {
-                EdgeGestureSettingsActivity.start(context)
+                KeyAndGestureSettingsActivity.start(context)
             }
         ),
 

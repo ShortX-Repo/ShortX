@@ -228,7 +228,7 @@
             android:name="tornaco.apps.shortx.ui.addtoggle.AddToggleActivity"
             android:exported="false" />
         <activity
-            android:name="tornaco.apps.shortx.ui.settings.EdgeGestureSettingsActivity"
+            android:name="tornaco.apps.shortx.ui.settings.KeyAndGestureSettingsActivity"
             android:exported="false" />
         <activity
             android:name="tornaco.apps.shortx.ui.base.code.ShellCommandEditorActivity"

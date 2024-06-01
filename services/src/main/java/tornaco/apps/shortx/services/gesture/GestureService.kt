@@ -33,6 +33,7 @@ import tornaco.apps.shortx.services.input.IMSFunc
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.GuideLineView
 import tornaco.apps.shortx.services.ui.i18NIns
+import tornaco.apps.shortx.services.util.SingleKeyGestureDetector
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
 import tornaco.apps.shortx.services.wm.ColorPalette
@@ -226,6 +227,17 @@ class GestureService(shortXContext: ShortXContext) :
     fun setSwipeDistanceThresholdDp(thr: Int) {
         store.write(Settings.IntSettings.SwipeDistanceThresholdDp, thr)
         gestureDetector?.setSwipeDistanceThresholdDp(thr)
+    }
+
+    fun getKeyDetectorLongPressTimeoutMS() =
+        store.read(Settings.IntSettings.KeyDetectorLongPressTimeoutMS)
+
+    fun setKeyDetectorLongPressTimeoutMS(timeout: Int) {
+        store.write(Settings.IntSettings.KeyDetectorLongPressTimeoutMS, timeout)
+        SingleKeyGestureDetector.sDefaultLongPressTimeout =
+            shortXContext.gesture.getKeyDetectorLongPressTimeoutMS().toLong().apply {
+                logger.i("setKeyDetectorLongPressTimeoutMS, sDefaultLongPressTimeout: $this")
+            }
     }
 
     fun addGestureRecord(record: GestureRecord) {

@@ -528,6 +528,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             MethodHookLogging.clearLogs()
         }
 
+        override fun setKeyDetectorLongPressTimeoutMS(p0: Long) {
+            shortXContext.gesture.setKeyDetectorLongPressTimeoutMS(p0.toInt())
+        }
+
+        override fun getKeyDetectorLongPressTimeoutMS(): Long {
+            return shortXContext.gesture.getKeyDetectorLongPressTimeoutMS().toLong()
+        }
+
         override fun attachSUImpl(from: String?, su: ISu?) {
             shortXContext.shell.attachSUImpl(from, su)
 

@@ -142,7 +142,14 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             })
     }
 
-    private val singleKeyGestureDetector: SingleKeyGestureDetector by lazy { SingleKeyGestureDetector.get() }
+    private val singleKeyGestureDetector: SingleKeyGestureDetector by lazy {
+        SingleKeyGestureDetector.get().also {
+            SingleKeyGestureDetector.sDefaultLongPressTimeout =
+                shortXContext.gesture.getKeyDetectorLongPressTimeoutMS().toLong().apply {
+                    logger.i("sDefaultLongPressTimeout: $this")
+                }
+        }
+    }
     private val singleKeyRuleTrigger by lazy {
         SingleKeyRuleTrigger(
             context,
