@@ -497,6 +497,10 @@ private fun miscSettings(
     vm: SettingsViewModel,
     goToFeatToggle: () -> Unit,
 ): List<Preference> {
+    val badge = if (mainState.isSubscribed) {
+        null
+    } else LocalI18N.current["ui.subscription.subscribed.only"]
+
     val subscribeDialogState = rememberShortXBottomSheetState()
     FeatureAccessDialog(subscribeDialogState)
 
@@ -521,8 +525,13 @@ private fun miscSettings(
             title = LocalI18N.current["ui.settings.colorful.card"],
             summary = LocalI18N.current["ui.settings.colorful.card.summary"],
             value = state.colorfulCard,
+            badge = badge,
             onCheckChanged = {
-                vm.setColorfulCard(!state.colorfulCard)
+                if (mainState.isSubscribed) {
+                    vm.setColorfulCard(!state.colorfulCard)
+                } else {
+                    subscribeDialogState.show()
+                }
             }
         ),
     )
