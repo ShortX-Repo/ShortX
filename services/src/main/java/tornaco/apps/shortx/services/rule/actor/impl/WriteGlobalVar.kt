@@ -14,7 +14,6 @@ import tornaco.apps.shortx.core.rule.isList
 import tornaco.apps.shortx.core.rule.setValue
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.rule.valueList
-import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
@@ -42,7 +41,7 @@ object WriteGlobalVar : Actor {
 
         val newGlobalVar = handleGVOp(globalVar, op, stringValueToWrite)
 
-        shortXManager.addGlobalVar(newGlobalVar)
+        shortXContext.rule.addGlobalVar(newGlobalVar)
     }
 
     @VisibleForTesting
