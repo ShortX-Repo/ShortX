@@ -1283,18 +1283,24 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     }
 
     internal fun registerInternalFactListener(listener: InternalFactListener) {
-        internalFactListeners.add(listener)
+        synchronized(internalFactListeners) {
+            internalFactListeners.add(listener)
+        }
     }
 
     internal fun unregisterInternalFactListener(listener: InternalFactListener) {
-        internalFactListeners.remove(listener).also {
-            if (it) logger.d("did unregisterInternalFactListener: ${listener.usage}")
+        synchronized(internalFactListeners) {
+            internalFactListeners.remove(listener).also {
+                if (it) logger.d("did unregisterInternalFactListener: ${listener.usage}")
+            }
         }
     }
 
     internal fun unregisterInternalFactListener(usage: String) {
-        internalFactListeners.removeIf { it.usage == usage }.also {
-            if (it) logger.d("did unregisterInternalFactListener: $usage")
+        synchronized(internalFactListeners) {
+            internalFactListeners.removeIf { it.usage == usage }.also {
+                if (it) logger.d("did unregisterInternalFactListener: $usage")
+            }
         }
     }
 
@@ -1303,8 +1309,11 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         initialContextDataLazy: () -> Map<String, Any>
     ) {
         systemServiceScope.launchSafety {
+            val listeners: Array<InternalFactListener> = synchronized(internalFactListeners) {
+                internalFactListeners.toTypedArray()
+            }
             withContext(Dispatchers.IO) {
-                internalFactListeners.forEach { it.onFact(fact, initialContextDataLazy) }
+                listeners.forEach { it.onFact(fact, initialContextDataLazy) }
             }
         }
     }
