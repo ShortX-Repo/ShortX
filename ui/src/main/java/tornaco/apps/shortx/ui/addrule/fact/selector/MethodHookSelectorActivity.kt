@@ -47,7 +47,10 @@ import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.settings.log.hook.MethodHookLogActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -77,7 +80,7 @@ class MethodHookSelectorActivity : BaseSelectorActivity<Fact.MethodHook>() {
                     topBar = {
                         ShortXTopAppBar(
                             modifier = Modifier,
-                            title = { Text(LocalI18N.current["Method hook"]) },
+                            title = { Text(LocalI18N.current["ui.fact.method.hook"]) },
                             navigationIcon = {
                                 IconButton(onClick = {
                                     setResult(RESULT_CANCELED)
@@ -110,8 +113,9 @@ class MethodHookSelectorActivity : BaseSelectorActivity<Fact.MethodHook>() {
                             .animateContentSize()
                             .verticalScroll(rememberScrollState())
                     ) {
-                        FieldTitle(
-                            text = LocalI18N.current["Lifecycle"]
+                        FieldTitleWithTip(
+                            text = LocalI18N.current["ui.fact.method.hook.lifecycle"],
+                            tipText = LocalI18N.current["ui.fact.method.hook.xposed.tip"]
                         )
                         SmallSpacer()
                         val lifecycleDropdownState = rememberDropdownSelectorState()
@@ -144,10 +148,7 @@ class MethodHookSelectorActivity : BaseSelectorActivity<Fact.MethodHook>() {
 
                         AnimatedVisibility(state.lifecycle != MethodHookLifecycle.InitZygote) {
                             Column {
-                                FieldTitleWithTip(
-                                    text = LocalI18N.current["Package name"],
-                                    LocalI18N.current["Remember to enable target App scope in Xposed Manager"]
-                                )
+                                FieldTitle(text = LocalI18N.current["ui.fact.method.hook.package"])
                                 SmallSpacer()
                                 ShortXTextField(
                                     modifier = Modifier.fillMaxWidth(),
@@ -158,7 +159,7 @@ class MethodHookSelectorActivity : BaseSelectorActivity<Fact.MethodHook>() {
                         }
 
                         FieldTitle(
-                            text = LocalI18N.current["Class name"]
+                            text = LocalI18N.current["ui.fact.method.hook.class"]
                         )
                         SmallSpacer()
                         ShortXTextField(
@@ -168,7 +169,7 @@ class MethodHookSelectorActivity : BaseSelectorActivity<Fact.MethodHook>() {
                         StandardSpacer()
 
                         FieldTitle(
-                            text = LocalI18N.current["Method name"]
+                            text = LocalI18N.current["ui.fact.method.hook.method"]
                         )
                         SmallSpacer()
                         ShortXTextField(
@@ -213,8 +214,8 @@ class MethodHookSelectorActivity : BaseSelectorActivity<Fact.MethodHook>() {
         NewMethodHookExpressionDialog(editState)
 
         FieldTitleWithTip(
-            text = "Context data expressions",
-            tipText = "Add an MVEL expression to parse the Method hook param, and the parsed result will be set as Context data"
+            text = LocalI18N.current["ui.fact.method.hook.context.data.expression"],
+            tipText = LocalI18N.current["ui.fact.method.hook.context.data.expression.description"]
         )
         SmallSpacer()
         expressions.forEach {
@@ -258,24 +259,92 @@ class MethodHookSelectorActivity : BaseSelectorActivity<Fact.MethodHook>() {
         remove: (Fact.MethodHook.Constraint) -> Unit
     ) {
         FieldTitleWithTip(
-            text = "Constraints",
-            tipText = "Add constraints to filter the target Method"
+            text = LocalI18N.current["ui.fact.method.hook.method.constraints"],
+            tipText = LocalI18N.current["ui.fact.method.hook.method.constraints.description"]
         )
         SmallSpacer()
-        constraints.forEach {
+        constraints.forEachIndexed { index, constraint ->
+            val updateParamsTypeDialogState = rememberTextInputState(
+                title = LocalI18N.current["ui.fact.method.hook.method.constraints.parameter.type"],
+                message = LocalI18N.current["ui.fact.method.hook.method.constraints.parameter.type.tip"]
+            ) { input ->
+                val types = input.split(",").filter { it.isNotBlank() }.map { it.trim() }
+                if (types.isNotEmpty()) {
+                    update(Fact.MethodHook.Constraint.ParamsType(types), index)
+                }
+            }
+            TextInputDialog(state = updateParamsTypeDialogState)
+
+            val updateParamsCountDialogState = rememberTextInputState(
+                title = LocalI18N.current["ui.fact.method.hook.method.constraints.parameter.count"],
+                message = LocalI18N.current["ui.fact.method.hook.method.constraints.parameter.count.tip"]
+            ) {
+                val countInt = it.toIntOrNull() ?: 0
+                update(Fact.MethodHook.Constraint.ParamsCount(countInt), index)
+            }
+            TextInputDialog(state = updateParamsCountDialogState)
+
+            val updateReturnTypeDialogState = rememberTextInputState(
+                title = LocalI18N.current["ui.fact.method.hook.method.constraints.return.type"],
+                message = LocalI18N.current["ui.fact.method.hook.method.constraints.return.type.tip"]
+            ) { input ->
+                val types =
+                    input.split(",").filter { it.isNotBlank() }.map { it.trim() }.firstOrNull()
+                        ?: "void"
+                if (types.isNotEmpty()) {
+                    update(Fact.MethodHook.Constraint.ReturnType(types), index)
+                }
+            }
+            TextInputDialog(state = updateReturnTypeDialogState)
+
             ListItem(
-                titleLines = listOf(it.toString()),
+                titleLines = when (constraint) {
+                    is Fact.MethodHook.Constraint.ParamsCount -> {
+                        listOf(
+                            LocalI18N.current["ui.fact.method.hook.method.constraints.parameter.count"],
+                            constraint.count.toString()
+                        )
+                    }
+
+                    is Fact.MethodHook.Constraint.ParamsType -> {
+                        composeLogger.d("ParamsType- $constraint")
+                        listOf(
+                            LocalI18N.current["ui.fact.method.hook.method.constraints.parameter.type"],
+                            constraint.types.joinToString(",")
+                        )
+                    }
+
+                    is Fact.MethodHook.Constraint.ReturnType -> {
+                        listOf(
+                            LocalI18N.current["ui.fact.method.hook.method.constraints.return.type"],
+                            constraint.type
+                        )
+                    }
+                },
                 icon = {
                     RemixIcon(remixName = Remix.Development.code_line)
                 },
                 action1 = {
                     IconButton(onClick = {
-                        remove(it)
+                        remove(constraint)
                     }) {
                         RemixIcon(remixName = Remix.System.close_line)
                     }
                 },
                 onClick = {
+                    when (constraint) {
+                        is Fact.MethodHook.Constraint.ParamsCount -> {
+                            updateParamsCountDialogState.show(constraint.count.toString())
+                        }
+
+                        is Fact.MethodHook.Constraint.ParamsType -> {
+                            updateParamsTypeDialogState.show(constraint.types.joinToString(","))
+                        }
+
+                        is Fact.MethodHook.Constraint.ReturnType -> {
+                            updateReturnTypeDialogState.show(constraint.type)
+                        }
+                    }
                 })
         }
 
@@ -288,24 +357,71 @@ class MethodHookSelectorActivity : BaseSelectorActivity<Fact.MethodHook>() {
             }) {
                 Text(text = LocalI18N.current["ui.common.add"])
             }
+
+            val addParamsTypeDialogState = rememberTextInputState(
+                title = LocalI18N.current["ui.fact.method.hook.method.constraints.parameter.type"],
+                message = LocalI18N.current["ui.fact.method.hook.method.constraints.parameter.type.tip"]
+            ) { input ->
+                val types = input.split(",").filter { it.isNotBlank() }.map { it.trim() }
+                composeLogger.d("types- $types")
+                if (types.isNotEmpty()) {
+                    add(Fact.MethodHook.Constraint.ParamsType(types))
+                }
+            }
+            TextInputDialog(state = addParamsTypeDialogState)
+
+            val addParamsCountDialogState = rememberTextInputState(
+                title = LocalI18N.current["ui.fact.method.hook.method.constraints.parameter.count"],
+                message = LocalI18N.current["ui.fact.method.hook.method.constraints.parameter.count.tip"]
+            ) {
+                val countInt = it.toIntOrNull() ?: 0
+                add(Fact.MethodHook.Constraint.ParamsCount(countInt))
+            }
+            TextInputDialog(state = addParamsCountDialogState)
+
+            val addReturnTypeDialogState = rememberTextInputState(
+                title = LocalI18N.current["ui.fact.method.hook.method.constraints.return.type"],
+                message = LocalI18N.current["ui.fact.method.hook.method.constraints.return.type.tip"]
+            ) { input ->
+                val types =
+                    input.split(",").filter { it.isNotBlank() }.map { it.trim() }.firstOrNull()
+                        ?: "void"
+                if (types.isNotEmpty()) {
+                    add(Fact.MethodHook.Constraint.ReturnType(types))
+                }
+            }
+            TextInputDialog(state = addReturnTypeDialogState)
+
             DropdownSelector(
                 state = dropdownState,
                 items = listOf(
                     DropdownItem(
-                        labelLines = listOf("Method parameter types"),
+                        labelLines = listOf(LocalI18N.current["ui.fact.method.hook.method.constraints.parameter.type"]),
                         data = Fact.MethodHook.Constraint.ParamsType::class.java
                     ),
                     DropdownItem(
-                        labelLines = listOf("Method parameter count"),
+                        labelLines = listOf(LocalI18N.current["ui.fact.method.hook.method.constraints.parameter.count"]),
                         data = Fact.MethodHook.Constraint.ParamsCount::class.java
                     ),
                     DropdownItem(
-                        labelLines = listOf("Method return type"),
+                        labelLines = listOf(LocalI18N.current["ui.fact.method.hook.method.constraints.return.type"]),
                         data = Fact.MethodHook.Constraint.ReturnType::class.java
                     )
                 ),
                 onSelect = {
+                    when (it.data) {
+                        Fact.MethodHook.Constraint.ParamsType::class.java -> {
+                            addParamsTypeDialogState.show()
+                        }
 
+                        Fact.MethodHook.Constraint.ParamsCount::class.java -> {
+                            addParamsCountDialogState.show()
+                        }
+
+                        else -> {
+                            addReturnTypeDialogState.show()
+                        }
+                    }
                 })
         }
     }

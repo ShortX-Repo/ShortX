@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import io.kotest.matchers.shouldBe
 import org.junit.Test
+import tornaco.apps.shortx.core.proto.fact.MethodHookConstraintParamsCount
 import tornaco.apps.shortx.core.proto.fact.MethodHookConstraintParamsType
 import tornaco.apps.shortx.core.proto.fact.MethodHookConstraintReturnType
 import tornaco.apps.shortx.core.rule.pack_
@@ -18,13 +19,13 @@ class CustomHookTest {
         CustomHook.matchConstraint(
             method1,
             MethodHookConstraintParamsType.newBuilder().build().pack_()
-        ) shouldBe true
+        ) { println(it) } shouldBe true
 
         CustomHook.matchConstraint(
             method1,
             MethodHookConstraintParamsType.newBuilder().addAllType(listOf(String::class.java.name))
                 .build().pack_()
-        ) shouldBe false
+        ) { println(it) } shouldBe false
 
         val method2 = Reflections.findMethodExact(
             JavaClass::class.java,
@@ -38,7 +39,7 @@ class CustomHookTest {
             MethodHookConstraintParamsType.newBuilder()
                 .addAllType(listOf(String::class.java.name, Int::class.java.name))
                 .build().pack_()
-        ) shouldBe true
+        ) { println(it) } shouldBe true
     }
 
     @Test
@@ -56,7 +57,7 @@ class CustomHookTest {
             MethodHookConstraintReturnType.newBuilder()
                 .setType("void")
                 .build().pack_()
-        ) shouldBe true
+        ) { println(it) } shouldBe true
 
 
         val method3 = Reflections.findMethodExact(
@@ -71,6 +72,24 @@ class CustomHookTest {
             MethodHookConstraintReturnType.newBuilder()
                 .setType("java.util.Date")
                 .build().pack_()
-        ) shouldBe true
+        ) { println(it) } shouldBe true
+    }
+
+    @Test
+    fun testMatchConstraintParamCount() {
+        val method2 = Reflections.findMethodExact(
+            JavaClass::class.java,
+            "method2",
+            String::class.java,
+            Int::class.java
+        )
+        println(method2)
+        println(method2.parameters.size)
+        CustomHook.matchConstraint(
+            method2,
+            MethodHookConstraintParamsCount.newBuilder()
+                .setCount(2)
+                .build().pack_()
+        ) { println(it) } shouldBe true
     }
 }

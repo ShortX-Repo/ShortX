@@ -110,7 +110,7 @@ object CustomHook {
                 .filter { it.name == methodName }
             log("Methods match name: ${methodsNameFiltered.joinToString()}")
             val methodConstraintsFiltered =
-                methodsNameFiltered.filter { matchConstraints(it, constraints) }
+                methodsNameFiltered.filter { matchConstraints(it, constraints, log) }
             require(methodConstraintsFiltered.isNotEmpty()) {
                 "No method match your constraints"
             }
@@ -125,25 +125,32 @@ object CustomHook {
         }
     }
 
-    private fun matchConstraints(method: Method, constraints: List<ProtoAny>): Boolean {
+    private fun matchConstraints(
+        method: Method,
+        constraints: List<ProtoAny>,
+        log: (String) -> Unit
+    ): Boolean {
         if (constraints.isEmpty()) return true
         return constraints.all {
-            matchConstraint(method, it)
+            matchConstraint(method, it, log)
         }
     }
 
     @VisibleForTesting
-    fun matchConstraint(method: Method, constraint: ProtoAny): Boolean {
+    fun matchConstraint(method: Method, constraint: ProtoAny, log: (String) -> Unit): Boolean {
         return if (constraint is_ MethodHookConstraintParamsCount::class.java) {
             val count = constraint unpack_ MethodHookConstraintParamsCount::class.java
+            log("MethodHookConstraintParamsCount: $count")
             method.parameters.size == count.count
         } else if (constraint is_ MethodHookConstraintParamsType::class.java) {
             val type = constraint unpack_ MethodHookConstraintParamsType::class.java
+            log("MethodHookConstraintParamsType: ${type.typeList.joinToString(",")}")
             method.parameters.map {
                 it.type.name
             } == type.typeList
         } else if (constraint is_ MethodHookConstraintReturnType::class.java) {
             val type = constraint unpack_ MethodHookConstraintReturnType::class.java
+            log("MethodHookConstraintReturnType: ${type.type}")
             method.returnType.name == type.type
         } else {
             false

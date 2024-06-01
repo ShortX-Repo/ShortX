@@ -40,6 +40,7 @@ class MethodHookSelectorViewModel @Inject constructor(@ApplicationContext contex
     ) {
 
     fun initFrom(current: Fact.MethodHook?) {
+        logger.d("init form MethodHook: $current")
         current?.let {
             updateState {
                 copy(
@@ -96,6 +97,7 @@ class MethodHookSelectorViewModel @Inject constructor(@ApplicationContext contex
     }
 
     fun addConstraint(constraint: Fact.MethodHook.Constraint) {
+        logger.d("addConstraint: $constraint")
         updateState {
             copy(
                 constraints = constraints.toMutableList().apply {
@@ -106,6 +108,7 @@ class MethodHookSelectorViewModel @Inject constructor(@ApplicationContext contex
     }
 
     fun updateConstraint(constraint: Fact.MethodHook.Constraint, index: Int) {
+        logger.d("updateConstraint: $constraint")
         updateState {
             copy(
                 constraints = constraints.toMutableList().apply {
