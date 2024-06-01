@@ -49,6 +49,7 @@ data class SettingsState(
     val isPostNByApp: Boolean = false,
     val isForceDisableShortXByKeyPress: Boolean = false,
     val dynamicColor: Boolean = true,
+    val colorfulCard: Boolean = true,
     val sensorUsages: List<SensorUsage> = emptyList()
 )
 
@@ -161,11 +162,22 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 updateState { copy(dynamicColor = it) }
             }
         }
+        viewModelScope.launch {
+            pref.uiColorfulCard.collectLatest {
+                updateState { copy(colorfulCard = it) }
+            }
+        }
     }
 
     fun setDynamicColor(dynamic: Boolean) {
         viewModelScope.launch {
             themePref.setThemeDynamicColor(dynamic)
+        }
+    }
+
+    fun setColorfulCard(color: Boolean) {
+        viewModelScope.launch {
+            pref.enableColorfulCard(color)
         }
     }
 

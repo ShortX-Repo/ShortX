@@ -31,7 +31,8 @@ fun RuleDetailsBottomSheet(dialogState: ShortXBottomSheetState) {
             LocalRuleSetItemHandler provides object : RuleSetItemHandler {}) {
             RuleContent(
                 isLoading = false,
-                rules = state.rules
+                rules = state.rules,
+                colorfulCard = state.colorfulCard
             )
         }
     }

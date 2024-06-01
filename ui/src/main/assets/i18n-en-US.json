@@ -904,6 +904,8 @@
     "ui.settings.settings.catcher.summary": "Record System settings write and read records. \nNeed to select Settings Provider app scope in Xposed Manager and reboot device",
     "ui.settings.settings.catcher.record": "Settings records",
     "ui.settings.settings.catcher.record.summary": "View catched records",
+    "ui.settings.colorful.card": "Colorful card",
+    "ui.settings.colorful.card.summary": "Enable colorful card background",
     "ui.settings.feat.toggle": "Feature toggle",
     "ui.settings.feat.toggle.summary": "Enable or disable app features",
     "ui.settings.sb.tile": "QS tile",

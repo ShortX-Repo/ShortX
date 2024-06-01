@@ -34,7 +34,7 @@ fun DADetailsBottomSheet(dialogState: ShortXBottomSheetState) {
                 isShowDetailedDAItem = true,
                 das = state.das,
                 showOverflowMenu = true,
-                colorfulCard = false
+                colorfulCard = state.colorfulCard
             )
         }
     }

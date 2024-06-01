@@ -349,16 +349,6 @@ fun SettingsScreen(
                                 goToGestureRecord = goToGestureRecord,
                             )
                         )
-                        addAll(dataSettings(
-                            state = state,
-                            mainState = subscribeState,
-                            vm = vm,
-                            pickRestoreFile = {
-                                pickFileLauncher.launch("application/zip")
-                            }, resetData = {
-                                deleteDialogState.show()
-                            })
-                        )
                         addAll(
                             systemSettings(
                                 state = state,
@@ -381,6 +371,16 @@ fun SettingsScreen(
                                 vm = vm,
                                 goToFeatToggle = goToFeatToggle
                             )
+                        )
+                        addAll(dataSettings(
+                            state = state,
+                            mainState = subscribeState,
+                            vm = vm,
+                            pickRestoreFile = {
+                                pickFileLauncher.launch("application/zip")
+                            }, resetData = {
+                                deleteDialogState.show()
+                            })
                         )
                         addAll(shareSettings(state = state, vm = vm))
                         addAll(devSettings(state = state, vm = vm))
@@ -515,6 +515,14 @@ private fun miscSettings(
             value = state.dynamicColor,
             onCheckChanged = {
                 vm.setDynamicColor(!state.dynamicColor)
+            }
+        ),
+        Preference.SwitchPreference(icon = Remix.Design.pantone_fill,
+            title = LocalI18N.current["ui.settings.colorful.card"],
+            summary = LocalI18N.current["ui.settings.colorful.card.summary"],
+            value = state.colorfulCard,
+            onCheckChanged = {
+                vm.setColorfulCard(!state.colorfulCard)
             }
         ),
     )

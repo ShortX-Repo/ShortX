@@ -21,12 +21,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.ui.addrule.AddRuleActivity
+import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
+import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.EmptyList
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.ShortXCard
@@ -111,6 +114,7 @@ fun RuleScreen() {
         ) {
             RuleContent(
                 isLoading = ruleListState.isLoading,
+                colorfulCard = ruleListState.colorfulCard,
                 rules = ruleListState.rules,
                 ruleSetFilters = ruleListState.ruleSetFilters,
                 selectedRuleSetFilter = ruleListState.selectedRuleSetFilter,
@@ -126,6 +130,7 @@ fun RuleScreen() {
 @Composable
 fun RuleContent(
     isLoading: Boolean,
+    colorfulCard: Boolean,
     rules: List<RuleUM>,
     ruleSetFilters: List<CommonSetFilter> = emptyList(),
     selectedRuleSetFilter: CommonSetFilter = CommonSetFilter.PinnedAll,
@@ -165,7 +170,8 @@ fun RuleContent(
             val subscribeState by LVLStateHolder.collectAsState()
             RuleListContent(
                 isSubscribed = subscribeState.isSubscribed,
-                rules = rules
+                rules = rules,
+                colorfulCard = colorfulCard
             )
         }
     }
@@ -174,6 +180,7 @@ fun RuleContent(
 @Composable
 private fun RuleListContent(
     isSubscribed: Boolean,
+    colorfulCard: Boolean,
     rules: List<RuleUM>,
 ) {
     LazyVerticalStaggeredGrid(
@@ -187,6 +194,11 @@ private fun RuleListContent(
             ShortXCard(
                 modifier = Modifier
                     .padding(horizontal = 16.dp, vertical = 8.dp),
+                backgroundColor = if (!colorfulCard || rule.isRuleSet) {
+                    ColorDefaults.backgroundSurfaceColor()
+                } else {
+                    Color(rule.factIconColor).copy(alpha = ActionColorBgAlpha)
+                }
             ) {
                 if (rule.isRuleSet) {
                     RuleSetItem(
@@ -197,6 +209,7 @@ private fun RuleListContent(
                     RuleItem(
                         rule = rule,
                         isSubscribed = isSubscribed,
+                        colorfulCard = colorfulCard
                     )
                 }
             }

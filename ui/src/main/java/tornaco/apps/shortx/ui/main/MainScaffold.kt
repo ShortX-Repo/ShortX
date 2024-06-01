@@ -48,7 +48,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.text.HtmlCompat
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.core.res.Remix
@@ -79,7 +78,6 @@ import tornaco.apps.shortx.ui.base.rememberFabState
 import tornaco.apps.shortx.ui.base.rememberShareDialogState
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
-import tornaco.apps.shortx.ui.base.toAnnotatedString
 import tornaco.apps.shortx.ui.main.model.MainState
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
@@ -262,7 +260,7 @@ fun MainScaffold(
                 val context = LocalContext.current
 
                 AnimatedVisibility(
-                    visible = !subscribeState.isSubscribed
+                    visible = subscribeState.isInited && !subscribeState.isSubscribed
                             && !state.isHideSubscribeInfo
                 ) {
                     Card(

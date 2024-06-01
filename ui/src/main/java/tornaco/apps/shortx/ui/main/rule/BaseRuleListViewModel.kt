@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IJobStatusListener
@@ -50,6 +51,7 @@ data class RuleListState(
     val selectedRuleSetFilter: CommonSetFilter = CommonSetFilter.PinnedAll,
     val ruleSortBy: RuleSortBy = RuleSortBy.CreateTime,
     val isLoading: Boolean = true,
+    val colorfulCard: Boolean = false,
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -109,6 +111,12 @@ abstract class BaseRuleListViewModel(context: Context) :
             RestoreEventRegistry.dataRestoreComplete.collect {
                 logger.d("reload data since data restored")
                 loadRuleList()
+            }
+        }
+
+        viewModelScope.launch {
+            pref.uiColorfulCard.collectLatest {
+                updateState { copy(colorfulCard = it) }
             }
         }
     }

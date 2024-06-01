@@ -17,7 +17,7 @@ import tornaco.apps.shortx.ui.subscribe.util.getLVLToken
 object LVLStateHolder : ContainerHost<LVLStateHolder.State, LVLStateHolder.Effect> {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    data class State(val isSubscribed: Boolean, val token: String?)
+    data class State(val isSubscribed: Boolean, val token: String?, val isInited: Boolean)
     sealed interface Effect {
         data class StateChanged(val state: State) : Effect
 
@@ -26,21 +26,37 @@ object LVLStateHolder : ContainerHost<LVLStateHolder.State, LVLStateHolder.Effec
     }
 
     override val container: Container<State, Effect> = scope.container(
-        initialState = State(false, null)
+        initialState = State(false, null, false)
     )
 
     fun setSubscribed(token: String) = intent {
         reduce {
-            state.copy(isSubscribed = true, token = token)
+            state.copy(isSubscribed = true, token = token, isInited = true)
         }
-        postSideEffect(Effect.StateChanged(State(isSubscribed = true, token = token)))
+        postSideEffect(
+            Effect.StateChanged(
+                State(
+                    isSubscribed = true,
+                    token = token,
+                    isInited = true
+                )
+            )
+        )
     }
 
     fun setNotSubscribed() = intent {
         reduce {
-            state.copy(isSubscribed = false, token = null)
+            state.copy(isSubscribed = false, token = null, isInited = true)
         }
-        postSideEffect(Effect.StateChanged(State(isSubscribed = false, token = null)))
+        postSideEffect(
+            Effect.StateChanged(
+                State(
+                    isSubscribed = false,
+                    token = null,
+                    isInited = true
+                )
+            )
+        )
     }
 
     fun fab() = intent {

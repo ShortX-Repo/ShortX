@@ -1,10 +1,19 @@
 package tornaco.apps.shortx.ui.util
 
 import androidx.annotation.ColorInt
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.Composable
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import android.graphics.Color as AndroidColor
+
+
+@Composable
+fun themedTextColor(color: Color): Color {
+    val isDarkTheme = isSystemInDarkTheme()
+    return if (isDarkTheme) Color.Unspecified else darkenColor(color)
+}
 
 @ColorInt
 fun darkenColor(color: Color, factor: Float = 0.27f): Color {

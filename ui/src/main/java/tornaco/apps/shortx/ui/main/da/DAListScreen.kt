@@ -268,10 +268,10 @@ private fun DAListContent(
             ShortXCard(
                 modifier = Modifier
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                backgroundColor = if (colorfulCard) {
-                    Color(da.iconColor).copy(alpha = ActionColorBgAlpha)
-                } else {
+                backgroundColor = if (!colorfulCard || da.isDirectActionSet) {
                     ColorDefaults.backgroundSurfaceColor()
+                } else {
+                    Color(da.iconColor).copy(alpha = ActionColorBgAlpha)
                 },
             ) {
                 Box {
@@ -279,7 +279,7 @@ private fun DAListContent(
                         DirectActionSetItem(
                             modifier = Modifier,
                             da = da,
-                            isSubscribed = isSubscribed,
+                            isSubscribed = isSubscribed
                         )
                     } else {
                         DirectActionItem(

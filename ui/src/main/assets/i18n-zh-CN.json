@@ -903,6 +903,8 @@
     "ui.action.media.play.back.ff": "快进",
     "ui.action.media.play.back.rewind": "倒带",
     "ui.action.media.play.back.stop": "停止",
+    "ui.settings.colorful.card": "多彩卡片",
+    "ui.settings.colorful.card.summary": "开启多彩指令卡片",
     "ui.settings.feat.toggle": "功能开关",
     "ui.settings.feat.toggle.summary": "开启或关闭应用功能",
     "ui.settings.sb.tile": "快速设置磁贴",

@@ -63,6 +63,7 @@ import tornaco.apps.shortx.ui.theme.Dimens.menuDropdownFraction
 import tornaco.apps.shortx.ui.theme.NoteTextColor
 import tornaco.apps.shortx.ui.theme.VipColorGold
 import tornaco.apps.shortx.ui.util.darkenColor
+import tornaco.apps.shortx.ui.util.themedTextColor
 
 
 @Composable
@@ -211,7 +212,7 @@ private fun DAListItem(
                     modifier = Modifier,
                     size = Dimens.DAIconSize,
                     padding = 0.dp,
-                    color = iconColor.copy(alpha = ActionColorBgAlpha),
+                    color = iconColor,
                     onClick = {
                         onLongClick()
                     }
@@ -219,7 +220,7 @@ private fun DAListItem(
                     RemixIcon(
                         modifier = Modifier.size(16.dp),
                         remixName = icon,
-                        tint = iconColor
+                        tint = Color.White
                     )
                 }
             } else {
@@ -263,7 +264,7 @@ private fun DAListItem(
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontSize = 16.sp
                 ),
-                color = if (colorfulCard) darkenColor(iconColor) else Color.Unspecified
+                color = if (colorfulCard) themedTextColor(iconColor) else Color.Unspecified
             )
             SmallSpacer()
             Text(
@@ -271,7 +272,7 @@ private fun DAListItem(
                 style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
-                color = if (colorfulCard) darkenColor(iconColor) else Color.Unspecified
+                color = if (colorfulCard) themedTextColor(iconColor) else Color.Unspecified
             )
             MediumSpacer()
             TinySpacer()

@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlphaLarge
 import tornaco.apps.shortx.ui.base.ClickAnimateContainer
@@ -52,13 +53,15 @@ import tornaco.apps.shortx.ui.record.EvaRecordActivity
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.theme.Dimens
 import tornaco.apps.shortx.ui.theme.Dimens.menuDropdownFraction
+import tornaco.apps.shortx.ui.util.themedTextColor
 
 
 @Composable
 fun RuleItem(
     modifier: Modifier = Modifier,
     rule: RuleUM,
-    isSubscribed: Boolean
+    isSubscribed: Boolean,
+    colorfulCard: Boolean,
 ) {
     val handler = LocalRuleItemHandler.current
     // TODO Animate item
@@ -70,7 +73,7 @@ fun RuleItem(
         val clickAnimateState =
             rememberClickAnimateState(animateColor = Color(rule.actionIconColor))
         ClickAnimateContainer(clickAnimateState) {
-            RuleItem(modifier.then(it), popMenuState, rule)
+            RuleItem(modifier.then(it), popMenuState, rule, colorfulCard)
         }
     }
 }
@@ -79,7 +82,8 @@ fun RuleItem(
 private fun RuleItem(
     modifier: Modifier,
     popMenuState: DropdownSelectorState,
-    rule: RuleUM
+    rule: RuleUM,
+    colorfulCard: Boolean,
 ) {
     val handler = LocalRuleItemHandler.current
     Column(modifier = modifier
@@ -97,7 +101,7 @@ private fun RuleItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            RuleIcon(rule) {
+            RuleIcon(rule, colorfulCard) {
                 popMenuState.open()
             }
             ShortXSwitch(
@@ -114,8 +118,13 @@ private fun RuleItem(
                 .padding(top = 6.dp)
         ) {
             Text(
-                text = rule.title, style = MaterialTheme.typography.titleMedium.copy(
+                text = rule.title,
+                style = MaterialTheme.typography.titleMedium.copy(
                     fontSize = 16.sp
+                ),
+                color = colorfulCard.select(
+                    themedTextColor(color = Color(rule.factIconColor)),
+                    Color.Unspecified
                 )
             )
             TinySpacer()
@@ -123,7 +132,11 @@ private fun RuleItem(
                 text = rule.description,
                 style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
                 maxLines = 3,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                color = colorfulCard.select(
+                    themedTextColor(color = Color(rule.factIconColor)),
+                    Color.Unspecified
+                )
             )
         }
 
@@ -140,17 +153,23 @@ private fun RuleItem(
 }
 
 @Composable
-fun RuleIcon(rule: RuleUM, onClick: (() -> Unit)) {
+fun RuleIcon(rule: RuleUM, colorfulCard: Boolean, onClick: (() -> Unit)) {
     ColoredIcon(
         onClick = onClick,
         size = Dimens.RuleIconSize,
         padding = 0.dp,
-        color = Color(rule.factIconColor).copy(alpha = if (rule.isEnabled) ActionColorBgAlphaLarge else ActionColorBgAlpha)
+        color = colorfulCard.select(
+            t = {
+                Color(rule.factIconColor)
+            },
+            f = {
+                Color(rule.factIconColor).copy(alpha = if (rule.isEnabled) ActionColorBgAlphaLarge else ActionColorBgAlpha)
+            })
     ) {
         RemixIcon(
             modifier = Modifier.size(16.dp),
             remixName = rule.factIcon,
-            tint = Color(rule.factIconColor)
+            tint = colorfulCard.select(Color.White, Color(rule.factIconColor))
         )
     }
 }

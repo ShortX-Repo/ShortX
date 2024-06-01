@@ -31,6 +31,9 @@ private val RECENT_SELECTED_ACTIONS = stringPreferencesKey("recent_selected_acti
 private val UI_SHOW_DETAILED_DA_ITEM_CONTENT =
     booleanPreferencesKey("ui_show_detailed_da_item_content")
 
+private val UI_COLORFUL_CARD =
+    booleanPreferencesKey("ui_colorful_card")
+
 private val UI_HIDE_SUBSCRIBE_INFO =
     booleanPreferencesKey("ui_hide_subscribe_info")
 
@@ -93,6 +96,10 @@ class Pref(val context: Context) {
         preferences[UI_SHOW_DETAILED_DA_ITEM_CONTENT] ?: true
     }
 
+    val uiColorfulCard: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[UI_COLORFUL_CARD] ?: false
+    }
+
     val uiEnableHttpChucker: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[UI_ENABLE_HTTP_CHUCKER] ?: false
     }
@@ -153,6 +160,12 @@ class Pref(val context: Context) {
     suspend fun setShowDetailedDAItemContent(value: Boolean) {
         context.dataStore.edit { settings ->
             settings[UI_SHOW_DETAILED_DA_ITEM_CONTENT] = value
+        }
+    }
+
+    suspend fun enableColorfulCard(value: Boolean) {
+        context.dataStore.edit { settings ->
+            settings[UI_COLORFUL_CARD] = value
         }
     }
 

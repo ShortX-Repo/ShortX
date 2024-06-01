@@ -51,7 +51,7 @@ data class DAListState(
     val selectedDASetFilter: CommonSetFilter = CommonSetFilter.PinnedAll,
     val daSortBy: DASortBy = DASortBy.CreateTime,
     val isShowDetailedDAItem: Boolean = true,
-    val colorfulCard: Boolean = true,
+    val colorfulCard: Boolean = false,
     val isLoading: Boolean = true,
 )
 
@@ -123,6 +123,12 @@ abstract class BaseDAListViewModel(context: Context) :
                 loadDAList()
             }
         }
+
+        viewModelScope.launch {
+            pref.uiColorfulCard.collectLatest {
+                updateState { copy(colorfulCard = it) }
+            }
+        }
     }
 
     override fun onCleared() {
@@ -136,7 +142,6 @@ abstract class BaseDAListViewModel(context: Context) :
             pref.setShowDetailedDAItemContent(!state.value.isShowDetailedDAItem)
         }
     }
-
 
     abstract fun loadDAList(delay: Boolean = false)
 
