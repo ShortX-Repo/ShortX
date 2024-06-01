@@ -73,6 +73,13 @@ class WatchDogService(shortXContext: ShortXContext) :
     }
 
     fun onFatalError(error: Throwable, method: String = "") {
+        val alreadyReported =
+            fatalErrors.any { it.stackTraceToString() == error.stackTraceToString() }
+        if (alreadyReported) {
+            logger.e(error, "FATAL(+1): $method got error in SYSTEM PROCESS")
+            return
+        }
+
         fatalErrors.add(error)
         logger.e(error, "FATAL: $method got error in SYSTEM PROCESS")
         // Write to file
