@@ -30,6 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.fact.MethodHookExpressions
 import tornaco.apps.shortx.core.proto.fact.MethodHookLifecycle
 import tornaco.apps.shortx.core.res.Remix
@@ -39,6 +40,7 @@ import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.FieldTitleWithTip
+import tornaco.apps.shortx.ui.base.LinkText
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumSpacer
@@ -53,6 +55,7 @@ import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.settings.log.hook.MethodHookLogActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.ui.util.BrowserUtils
 
 
 @AndroidEntryPoint
@@ -80,7 +83,14 @@ class MethodHookSelectorActivity : BaseSelectorActivity<Fact.MethodHook>() {
                     topBar = {
                         ShortXTopAppBar(
                             modifier = Modifier,
-                            title = { Text(LocalI18N.current["ui.fact.method.hook"]) },
+                            title = {
+                                Column {
+                                    Text(LocalI18N.current["ui.fact.method.hook"])
+                                    LinkText(text = LocalI18N.current["ui.user.guide"]) {
+                                        BrowserUtils.launch(context, BuildProp.METHOD_HOOK_WIKI_URL)
+                                    }
+                                }
+                            },
                             navigationIcon = {
                                 IconButton(onClick = {
                                     setResult(RESULT_CANCELED)
