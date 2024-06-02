@@ -4,6 +4,7 @@ import com.android.internal.annotations.VisibleForTesting
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import org.mvel2.MVEL
+import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.fact.MethodHook
 import tornaco.apps.shortx.core.proto.fact.MethodHookConstraintParamsCount
@@ -22,9 +23,11 @@ import util.Reflections
 import java.lang.reflect.Method
 
 object CustomHook {
+    private const val IS_FEATURE_ENABLED = true
     private const val LOG_REDIRECT = "method_hook"
 
     fun hookAndroidSystem(lpparam: XC_LoadPackage.LoadPackageParam) {
+        if (!IS_FEATURE_ENABLED) return
         ShortXService.registerLifecycleSystemReadyCallback {
             val log: (String) -> Unit = {
                 ShortXService.serviceBinder.log(it, LOG_REDIRECT)
@@ -56,8 +59,9 @@ object CustomHook {
         currentProcessPkgName: String?,
         lifecycle: MethodHookLifecycle
     ) {
+        if (!IS_FEATURE_ENABLED) return
         val log: (String) -> Unit = {
-            shortXManager.log(it, LOG_REDIRECT)
+            ShortXManagerNative.shortX?.log(it, LOG_REDIRECT)
         }
         installHookForRules(
             rules = shortXManager.getAllRules(),

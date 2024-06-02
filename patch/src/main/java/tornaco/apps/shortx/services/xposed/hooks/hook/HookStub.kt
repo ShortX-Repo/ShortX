@@ -10,6 +10,7 @@ object HookStub {
     private val logger = Logger("ShortXHook.HookStub")
 
     fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam) {
+        logger.p("handleLoadPackage- ${lpparam.packageName}")
         if (PackageNames.android == lpparam.packageName) {
             logger.i("Loading android.")
             androidHooks(lpparam)

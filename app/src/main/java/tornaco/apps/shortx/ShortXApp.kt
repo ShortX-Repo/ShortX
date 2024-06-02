@@ -36,7 +36,7 @@ class ShortXApp : Application() {
             if (shouldInstall) {
                 logger.w("Installing fake service.")
                 FakeServiceInstaller(applicationContext).install().apply {
-                    ShortXManagerNative.shortXInjection = this
+                    ShortXManagerNative.attachLocalService(this)
                 }
             }
         }

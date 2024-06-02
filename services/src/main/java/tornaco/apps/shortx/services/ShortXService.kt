@@ -27,6 +27,7 @@ import tornaco.apps.shortx.core.IPC_CODE
 import tornaco.apps.shortx.core.ISensorUsageListener
 import tornaco.apps.shortx.core.IShortX
 import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener
+import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.Version
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.http.toHttpRequestBody
@@ -98,6 +99,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
     fun main() {
         LogInit.initEarlyLogging()
+        ShortXManagerNative.attachLocalService(serviceBinder)
     }
 
     override fun start(context: Context) {
