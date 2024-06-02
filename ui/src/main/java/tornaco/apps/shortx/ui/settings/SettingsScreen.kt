@@ -45,7 +45,6 @@ import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.BuildPropInternal
-import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.proto.common.Author
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.OsUtils
@@ -53,11 +52,9 @@ import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.TestData
 import tornaco.apps.shortx.ui.backup.autoGenBackupFileName
-import tornaco.apps.shortx.ui.base.AppIcon
 import tornaco.apps.shortx.ui.base.ConfirmDialog
 import tornaco.apps.shortx.ui.base.ErrorCard
 import tornaco.apps.shortx.ui.base.LinkText
-import tornaco.apps.shortx.ui.base.LocalAppName
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalShortXProps
 import tornaco.apps.shortx.ui.base.MenuDialog
@@ -69,6 +66,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.SwitchBar
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.fontFamilyProductSansBold
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
@@ -78,6 +76,7 @@ import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.LottieLoadingView
 import tornaco.apps.shortx.ui.subscribe.SubscribeActivity
+import tornaco.apps.shortx.ui.theme.ShortXRed
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.BrowserUtils
 import tornaco.apps.shortx.ui.util.ClipboardUtils
@@ -154,12 +153,20 @@ fun SettingsScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    AppIcon(
-                                        modifier = Modifier.size(32.dp),
-                                        pkg = Pkg(BuildPropInternal.APP_PACKAGE_NAME)
+                                    Text(
+                                        text = "Short",
+                                        fontFamily = fontFamilyProductSansBold(),
+                                        modifier = Modifier.alignByBaseline(),
+                                        fontSize = 24.sp
                                     )
-                                    TinySpacer()
-                                    Text(text = LocalAppName.current)
+                                    Text(
+                                        text = "X",
+                                        fontFamily = fontFamilyProductSansBold(),
+                                        modifier = Modifier.alignByBaseline(),
+                                        color = ShortXRed,
+                                        fontSize = 24.sp
+                                    )
+
                                     TinySpacer()
                                     BuildPropInternal.APP_VERSION_NAME_SUFFIX.ifEmpty { null }
                                         ?.let {

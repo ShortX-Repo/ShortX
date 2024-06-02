@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.view.WindowCompat
-import tornaco.apps.shortx.core.util.ApkUtils
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.subscribe.ShortXProps
 
@@ -19,7 +18,7 @@ abstract class BaseActivity : AppCompatActivity() {
         logger.i("onCreate")
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        val appName = ApkUtils.loadNameByPkgName(this, packageName) ?: ""
+        val appName = "ShortX"
         setContent {
             CompositionLocalProvider(
                 LocalI18N provides i18NIns,
