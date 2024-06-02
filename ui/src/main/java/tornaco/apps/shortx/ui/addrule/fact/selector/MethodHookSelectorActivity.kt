@@ -3,7 +3,6 @@
 package tornaco.apps.shortx.ui.addrule.fact.selector
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -120,7 +119,6 @@ class MethodHookSelectorActivity : BaseSelectorActivity<Fact.MethodHook>() {
                             .fillMaxSize()
                             .padding(16.dp)
                             .padding(paddingValues)
-                            .animateContentSize()
                             .verticalScroll(rememberScrollState())
                     ) {
                         FieldTitleWithTip(

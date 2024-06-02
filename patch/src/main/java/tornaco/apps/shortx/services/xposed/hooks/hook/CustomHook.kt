@@ -1,10 +1,13 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
+import android.app.AndroidAppHelper
 import com.android.internal.annotations.VisibleForTesting
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import org.mvel2.MVEL
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.ShortXManagerNative
+import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.fact.MethodHook
 import tornaco.apps.shortx.core.proto.fact.MethodHookConstraintParamsCount
@@ -69,8 +72,14 @@ object CustomHook {
             currentProcessPkgName = currentProcessPkgName,
             lifecycle = lifecycle,
             onMethodCall = { param, hook ->
-                val contextDataList = hook.compileExpressions(param, log)
-                shortXManager.onHookedMethodCalled(hook, contextDataList)
+                val currentPkgName = kotlin.runCatching { AndroidAppHelper.currentPackageName() }
+                    .getOrElse { "android" }
+                if (currentPkgName != BuildPropInternal.APP_PACKAGE_NAME) {
+                    val contextDataList = hook.compileExpressions(param, log)
+                    shortXManager.onHookedMethodCalled(hook, contextDataList)
+                } else {
+                    // Prevent hook ShortX
+                }
             },
             log = log
         )
@@ -179,7 +188,11 @@ object CustomHook {
         methodHookParam: MethodHookParam,
         log: (String) -> Unit
     ): String {
-        val varsMap: Map<String, Any?> = mapOf("param" to methodHookParam)
+        val varsMap: Map<String, Any?> =
+            mapOf(
+                "param" to methodHookParam,
+                "helper" to InjectedAndroidAppHelper()
+            )
         return kotlin.runCatching {
             MVEL.executeExpression(MVEL.compileExpression(expression), varsMap)?.toString()
                 .orEmpty()
@@ -188,4 +201,12 @@ object CustomHook {
             ""
         }
     }
+}
+
+@DoNotStrip
+class InjectedAndroidAppHelper {
+    val currentProcessName get() = AndroidAppHelper.currentProcessName()
+    val currentPackageName get() = AndroidAppHelper.currentPackageName()
+    val currentApplication get() = AndroidAppHelper.currentApplication()
+    val currentApplicationInfo get() = AndroidAppHelper.currentApplicationInfo()
 }

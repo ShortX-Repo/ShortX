@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.context.ContextDataMapping.asAccessExample
 import tornaco.apps.shortx.core.proto.fact.MethodHookExpressions
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
@@ -109,69 +108,66 @@ fun NewMethodHookExpressionDialog(state: NewMethodHookExpressionState) {
                             },
                         )
                     }) { paddingValues ->
-                        ClickOutsideClearFocusBox {
-                            Column(
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(paddingValues)
+                                .padding(16.dp)
+                        ) {
+                            val context = LocalContext.current
+                            val i18N = LocalI18N.current
+
+                            FieldTitle(
+                                modifier = Modifier.padding(vertical = 12.dp),
+                                text = "Context data key"
+                            )
+                            SmallSpacer()
+                            ShortXTextField(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                value = state.contextKey,
+                                showSymbolButton = false,
+                                onValueChange = {
+                                    state.contextKey = it
+                                })
+                            SmallSpacer()
+                            TextButton(onClick = {
+                                ClipboardUtils.copyToClipboard(
+                                    context,
+                                    "key",
+                                    "{${state.contextKey}}"
+                                )
+                                Toast.makeText(
+                                    context,
+                                    i18N["ui.common.copied.to.clipboard"],
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }) {
+                                UnderlineSmallText(
+                                    text = LocalI18N.current["ui.context.data.example", mapOf(
+                                        "eg" to state.contextKey.asAccessExample()
+                                    )]
+                                )
+                            }
+
+                            FieldTitle(
+                                modifier = Modifier.padding(vertical = 12.dp),
+                                text = "MVEL expression"
+                            )
+                            MediumSpacer()
+                            ShortXTextField(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(paddingValues)
-                                    .padding(16.dp)
-                            ) {
-                                val context = LocalContext.current
-                                val i18N = LocalI18N.current
+                                    .heightIn(max = 400.dp)
+                                    .verticalScroll(rememberScrollState()),
+                                value = state.expression,
+                                showSymbolButton = true,
+                                onValueChange = {
+                                    state.expression = it
+                                })
 
-                                FieldTitle(
-                                    modifier = Modifier.padding(vertical = 12.dp),
-                                    text = "Context data key"
-                                )
-                                SmallSpacer()
-                                ShortXTextField(
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                                    value = state.contextKey,
-                                    showSymbolButton = false,
-                                    onValueChange = {
-                                        state.contextKey = it
-                                    })
-                                SmallSpacer()
-                                TextButton(onClick = {
-                                    ClipboardUtils.copyToClipboard(
-                                        context,
-                                        "key",
-                                        "{${state.contextKey}}"
-                                    )
-                                    Toast.makeText(
-                                        context,
-                                        i18N["ui.common.copied.to.clipboard"],
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                }) {
-                                    UnderlineSmallText(
-                                        text = LocalI18N.current["ui.context.data.example", mapOf(
-                                            "eg" to state.contextKey.asAccessExample()
-                                        )]
-                                    )
-                                }
-
-                                FieldTitle(
-                                    modifier = Modifier.padding(vertical = 12.dp),
-                                    text = "MVEL expression"
-                                )
-                                MediumSpacer()
-                                ShortXTextField(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .heightIn(max = 120.dp)
-                                        .verticalScroll(rememberScrollState()),
-                                    value = state.expression,
-                                    showSymbolButton = false,
-                                    onValueChange = {
-                                        state.expression = it
-                                    })
-
-                                LargeSpacer()
-                            }
+                            LargeSpacer()
                         }
-
                     }
                 }
 
