@@ -20,7 +20,7 @@ import tornaco.apps.shortx.services.systemServiceScope
 
 
 object PostNotification : Actor {
-    private const val PARAMS_ID = "paramsId"
+    const val PARAMS_ID = "paramsId"
     private val visibleParams = mutableMapOf<String, HandleParams>()
 
     override fun actionsCanHandle(): Class<out Message> {

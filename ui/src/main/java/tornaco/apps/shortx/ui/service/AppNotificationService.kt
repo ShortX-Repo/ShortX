@@ -67,6 +67,12 @@ class AppNotificationService : Service() {
                 notificationPoster.invoke(n)
             }
         }
+
+        override fun cancel(tag: String) {
+            kotlin.runCatching {
+                notificationPoster.cancelNotification(tag)
+            }
+        }
     }
 
     override fun onBind(intent: Intent): IBinder {

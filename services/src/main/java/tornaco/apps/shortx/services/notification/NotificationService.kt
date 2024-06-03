@@ -136,18 +136,34 @@ class NotificationService(shortXContext: ShortXContext) :
         }
     }
 
+    private fun cancelShortXN(tag: String) {
+        logger.i("cancelShortXN: $tag")
+        AppNotificationServiceProxy.cancel(context, tag, systemServiceScope)
+        cancelByAttached(tag)
+    }
+
     private fun postByAttached(postNotification: PostNotification): Boolean {
+        return callAttachedPoster {
+            it.post(ByteArrayWrapper(postNotification.toByteArray()))
+        }
+    }
+
+    private fun cancelByAttached(tag: String): Boolean {
+        return callAttachedPoster { it.cancel(tag) }
+    }
+
+    private fun callAttachedPoster(action: (INotificationPoster) -> Unit): Boolean {
         synchronized(attachedPoster) {
             val itemCount = attachedPoster.beginBroadcast()
             if (itemCount == 0) {
-                logger.d("post, no registered poster.")
+                logger.d("callAttachedPoster, no registered poster.")
                 return false
             }
             val first = attachedPoster.getBroadcastItem(0)
-            logger.d("Using poster: $first")
-            kotlin.runCatching { first.post(ByteArrayWrapper(postNotification.toByteArray())) }
+            logger.d("callAttachedPoster poster: $first")
+            kotlin.runCatching { action(first) }
                 .getOrElse {
-                    logger.e(it, "Error call post")
+                    logger.e(it, "Error callAttachedPoster")
                     null
                 }
             attachedPoster.finishBroadcast()
@@ -234,11 +250,23 @@ class NotificationService(shortXContext: ShortXContext) :
                     actual = NotificationWrapper(it),
                     rule = NotificationWrapper(notification)
                 ) && matchNotificationTagTitleContent(it, notification)
-            }.forEach {
-                val pkg = it.appsList[0]
-                logger.d("removeNotification, pkg: ${pkg.appPkgToString()}, key: ${it.key}")
+            }.forEach { nProto ->
+                val isShortXN = kotlin.runCatching {
+                    nProto.extrasList.any {
+                        it.key == tornaco.apps.shortx.services.rule.actor.impl.PostNotification.PARAMS_ID
+                    }
+                }.getOrElse {
+                    logger.e(it, "Check if is ShortX N.")
+                    false
+                }
+                val pkg = nProto.appsList[0]
+                logger.d("removeNotification, pkg: ${pkg.appPkgToString()}, key: ${nProto.key}, tag: ${nProto.tag}, isShortXN: $isShortXN")
                 nls.waitForBind()
-                nls.cancelNotification(it.key)
+                nls.cancelNotification(nProto.key)
+
+                if (isShortXN) {
+                    nProto.tag?.let { cancelShortXN(it) }
+                }
             }
     }
 
@@ -345,6 +373,19 @@ internal class AppNotificationServiceProxy(
         })
     }
 
+    fun cancel(tag: String) {
+        setTask(object : ProxyTask {
+            override suspend fun run() {
+                runCatching {
+                    logger.i("call cancel: $impl")
+                    requireNotNull(impl) { "impl is null." }.cancel(tag)
+                }.onFailure {
+                    logger.e(it, "ProxyTask")
+                }
+            }
+        })
+    }
+
     companion object {
         fun post(
             context: Context,
@@ -356,6 +397,18 @@ internal class AppNotificationServiceProxy(
             intent.component =
                 ComponentName.unflattenFromString("${BuildPropInternal.APP_PACKAGE_NAME}/${BuildProp.APP_NOTIFICATION_SERVICE_NAME}")
             return AppNotificationServiceProxy(context, intent, scope).post(postNotification)
+        }
+
+        fun cancel(
+            context: Context,
+            tag: String,
+            scope: CoroutineScope
+        ) {
+            val intent = Intent()
+            intent.setPackage(BuildPropInternal.APP_PACKAGE_NAME)
+            intent.component =
+                ComponentName.unflattenFromString("${BuildPropInternal.APP_PACKAGE_NAME}/${BuildProp.APP_NOTIFICATION_SERVICE_NAME}")
+            return AppNotificationServiceProxy(context, intent, scope).cancel(tag)
         }
     }
 }

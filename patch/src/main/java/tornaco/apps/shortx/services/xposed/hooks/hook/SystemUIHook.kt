@@ -185,6 +185,12 @@ object SystemUIHook {
                     notificationPoster.invoke(n)
                 }
             }
+
+            override fun cancel(tag: String) {
+                runCatching {
+                    notificationPoster.cancelNotification(tag)
+                }
+            }
         }
 
         shortx.attachNotificationPoster("SystemUI", stub)
