@@ -7,6 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 import tornaco.apps.shortx.core.BuildProp;
+import tornaco.apps.shortx.core.BuildPropInternal;
 import tornaco.apps.shortx.core.CommonApiResWrapper;
 
 // Workaround, make return type to Call.
@@ -26,7 +27,7 @@ public interface Api {
     );
 
     class Factory {
-        private static final String BASE_URL = BuildProp.API_BASE_URL;
+        private static final String BASE_URL = BuildPropInternal.API_BASE_URL;
 
         public static Api create() {
             return new Retrofit.Builder()

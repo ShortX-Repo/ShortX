@@ -51,6 +51,8 @@ buildConfig {
     // Play.
     buildConfigField("String", "SIGNATURES2", "\"66999CBE10A8E546E869F16B68C356280FA60BE6\"")
     buildConfigField("String", "SIGNATURES2_MD5", "\"77d65c17c9cda7b74551a5699969cbce\"")
+
+    buildConfigField("String", "API_BASE_URL", "\"http://shortx.emui.tech/api/\"")
 }
 
 dependencies {

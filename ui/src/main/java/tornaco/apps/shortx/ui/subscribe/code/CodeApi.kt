@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.CommonApiResWrapper
 
 interface CodeApi {
@@ -19,7 +19,7 @@ interface CodeApi {
     suspend fun getSubscriptionConfig(): SubscriptionConfig
 
     companion object {
-        private const val BASE_URL = BuildProp.API_BASE_URL
+        private const val BASE_URL = BuildPropInternal.API_BASE_URL
 
         fun create(context: Context): CodeApi {
             val retrofit: Retrofit = Retrofit.Builder()
