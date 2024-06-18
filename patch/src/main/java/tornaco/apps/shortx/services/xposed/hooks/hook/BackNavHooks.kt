@@ -2,9 +2,11 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import android.os.Bundle
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import tornaco.apps.shortx.core.platform.Classes.backNavControllerClass
+import tornaco.apps.shortx.core.platform.Methods.onBackNavigationDone
+import tornaco.apps.shortx.core.platform.Methods.startBackNavigation
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
-import util.Reflections
 
 object BackNavHooks {
     private val logger = Logger("ShortXHook.BackNavHooks")
@@ -12,10 +14,7 @@ object BackNavHooks {
     fun hookStartNav(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
         if (OsUtils.isTOrAbove()) {
             beforeMethod(
-                Reflections.findClass(
-                    "com.android.server.wm.BackNavigationController",
-                    lpparam.classLoader
-                ), "startBackNavigation"
+                lpparam.classLoader.backNavControllerClass(), startBackNavigation
             ) { param ->
                 val command = param.args.joinToString { it?.toString().orEmpty() }
                 logger.d("BackNavigationController - startBackNavigation: $command")
@@ -28,10 +27,7 @@ object BackNavHooks {
     fun hookOnNavDone(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
         if (OsUtils.isTOrAbove()) {
             beforeMethod(
-                Reflections.findClass(
-                    "com.android.server.wm.BackNavigationController",
-                    lpparam.classLoader
-                ), "onBackNavigationDone"
+                lpparam.classLoader.backNavControllerClass(), onBackNavigationDone
             ) { param ->
                 val command = param.args.joinToString { it?.toString().orEmpty() }
                 val key = "TriggerBack";
