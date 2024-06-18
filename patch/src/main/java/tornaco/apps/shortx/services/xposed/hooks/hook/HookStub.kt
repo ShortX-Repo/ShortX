@@ -46,6 +46,8 @@ object HookStub {
         ShortXService.main()
         AMSHook.hookAMS(lpparam)
         AMSHook.hookAMSShellCommand(lpparam)
+        BackNavHooks.hookStartNav(lpparam)
+        BackNavHooks.hookOnNavDone(lpparam)
         InputManagerHook.hookInputManager(lpparam)
         AppWidgetServiceHook.hookAppWidgetService(lpparam)
         NotificationUsageStatsHook.hookNotificationUsageStats(lpparam)
