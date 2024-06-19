@@ -19,6 +19,8 @@ import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.fact.AppGainWindowFocus
 import tornaco.apps.shortx.core.proto.fact.AppLostWindowFocus
+import tornaco.apps.shortx.core.proto.fact.BackNavDone
+import tornaco.apps.shortx.core.proto.fact.BackNavStart
 import tornaco.apps.shortx.core.proto.fact.ScreenRotate
 import tornaco.apps.shortx.core.ui.TextViewNode
 import tornaco.apps.shortx.core.ui.ViewNode
@@ -576,11 +578,12 @@ class WindowManagerService(shortXContext: ShortXContext) :
                     Toast.LENGTH_LONG
                 ).show()
             } else if (matchNodes.size == 1) {
-                context.clipboardManager.primaryClip =
+                context.clipboardManager.setPrimaryClip(
                     ClipData.newPlainText(
                         "ShortX-ViewId",
                         matchNodes[0].viewId
                     )
+                )
                 Toast.makeText(
                     context,
                     i18NIns["ui.common.copied.to.clipboard"] + "\t" + matchNodes[0].viewId,
@@ -776,6 +779,26 @@ class WindowManagerService(shortXContext: ShortXContext) :
         val isNotificationPanelExpandedNew = "NotificationShade" == _currentFocusedWindowTag
         if (isNotificationPanelExpandedNew != _isNotificationPanelExpanded) {
             _isNotificationPanelExpanded = isNotificationPanelExpandedNew
+        }
+    }
+
+    fun onBackNavDone(triggerBack: Boolean, type: Int) {
+        shortXContext.rule.publishFact(
+            "onBackNavDone",
+            BackNavDone.newBuilder()
+                .setBackType(triggerBack)
+                .build()
+        ) {
+            emptyMap()
+        }
+    }
+
+    fun onBackNavStart() {
+        shortXContext.rule.publishFact(
+            "onBackNavStart",
+            BackNavStart.newBuilder().build()
+        ) {
+            emptyMap()
         }
     }
 }

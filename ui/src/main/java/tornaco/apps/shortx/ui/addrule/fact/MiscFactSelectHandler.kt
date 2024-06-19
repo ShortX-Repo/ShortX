@@ -69,6 +69,16 @@ fun miscFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolea
                 true
             }
 
+            Fact.BackNavStart::class -> {
+                addFact(Fact.BackNavStart())
+                true
+            }
+
+            Fact.BackNavDone::class -> {
+                addFact(Fact.BackNavDone())
+                true
+            }
+
             Fact.OnQSTileClick::class -> {
                 qsTileSelectState.launch(TileSettingsActivity.intent(context, true))
                 true

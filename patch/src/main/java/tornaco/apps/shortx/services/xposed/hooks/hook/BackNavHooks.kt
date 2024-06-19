@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.platform.Methods.onBackNavigationDone
 import tornaco.apps.shortx.core.platform.Methods.startBackNavigation
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
+import tornaco.apps.shortx.services.ShortXService
 
 object BackNavHooks {
     private val logger = Logger("ShortXHook.BackNavHooks")
@@ -18,6 +19,7 @@ object BackNavHooks {
             ) { param ->
                 val command = param.args.joinToString { it?.toString().orEmpty() }
                 logger.d("BackNavigationController - startBackNavigation: $command")
+                ShortXService.shortXContext.wm.onBackNavStart()
             }
         }
     }.onFailure {
@@ -32,7 +34,10 @@ object BackNavHooks {
                 val command = param.args.joinToString { it?.toString().orEmpty() }
                 val key = "TriggerBack";
                 val triggerBack = (param.args[0] as? Bundle)?.getBoolean(key, false) ?: false
-                logger.d("BackNavigationController - onBackNavigationDone(triggerBack-$triggerBack): $command")
+                // Android 13 http://aospxref.com/android-13.0.0_r3/xref/frameworks/base/services/core/java/com/android/server/wm/BackNavigationController.java
+                val type = Int.MIN_VALUE
+                logger.d("BackNavigationController - onBackNavigationDone(triggerBack-$triggerBack type-$type): $command")
+                ShortXService.shortXContext.wm.onBackNavDone(triggerBack, type)
             }
         }
     }.onFailure {

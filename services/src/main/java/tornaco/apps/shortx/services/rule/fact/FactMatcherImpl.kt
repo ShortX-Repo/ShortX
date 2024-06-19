@@ -28,6 +28,8 @@ import tornaco.apps.shortx.core.proto.fact.AudioFocusLost
 import tornaco.apps.shortx.core.proto.fact.BTConnectedTo
 import tornaco.apps.shortx.core.proto.fact.BTDisconnectedFrom
 import tornaco.apps.shortx.core.proto.fact.BTStatusChanged
+import tornaco.apps.shortx.core.proto.fact.BackNavDone
+import tornaco.apps.shortx.core.proto.fact.BackNavStart
 import tornaco.apps.shortx.core.proto.fact.BatteryLevelChanged
 import tornaco.apps.shortx.core.proto.fact.BatteryTemperatureChanged
 import tornaco.apps.shortx.core.proto.fact.Broadcast
@@ -572,6 +574,13 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
             val actualN = (actual as MethodHook)
             val ruleN = (rule as MethodHook)
             ruleN.id == actualN.id
+        }
+
+        register(BackNavStart::class.java) { actual, rule ->
+            true
+        }
+        register(BackNavDone::class.java) { actual, rule ->
+            true
         }
 
         logger.i("Init complete.")
