@@ -171,6 +171,11 @@ class AppStateService(shortXContext: ShortXContext) :
                         super.onTaskMovedToFront(taskInfo)
                         logger.d("TaskStackListener onTaskMovedToFront- $taskInfo")
                     }
+
+                    override fun onBackPressedOnTaskRoot(taskInfo: ActivityManager.RunningTaskInfo?) {
+                        super.onBackPressedOnTaskRoot(taskInfo)
+                        logger.d("TaskStackListener onBackPressedOnTaskRoot- $taskInfo")
+                    }
                 })
         }
 
