@@ -65,5 +65,7 @@ object HookStub {
         WMServiceHook.hook(lpparam)
         AccManagerHook.hook(lpparam)
         ActivityMetricsLoggerHook.hook(lpparam)
+        TaskOrganizerControllerHooks.hookHandleInterceptBackPressedOnTaskRoot(lpparam)
+        ActivityClientControllerHooks.hookOnBackPressed(lpparam)
     }
 }
