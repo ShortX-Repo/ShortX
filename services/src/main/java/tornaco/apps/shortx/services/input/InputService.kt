@@ -1,7 +1,10 @@
 package tornaco.apps.shortx.services.input
 
+import android.view.KeyEvent
 import com.android.internal.view.IInputContext
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import tornaco.apps.shortx.core.proto.clipboard.ClipboardItem
 import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
 import tornaco.apps.shortx.core.util.OsUtils
@@ -45,6 +48,16 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
             ) {
                 "ServiceIns is null"
             })
+    }
+
+    // Code-Time
+    private val _lastInputKey =
+        MutableStateFlow(KeyEvent.KEYCODE_UNKNOWN to System.currentTimeMillis())
+    val lastInputKey get() = _lastInputKey.value
+
+    fun updateLastInputKey(keycode: Int, source: String) {
+        logger.d("updateLastInputKey- $keycode $source")
+        _lastInputKey.update { keycode to System.currentTimeMillis() }
     }
 
     override fun systemReady() {

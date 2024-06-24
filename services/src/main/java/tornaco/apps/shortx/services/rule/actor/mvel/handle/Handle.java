@@ -11,6 +11,7 @@ import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.ActivityImpl;
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.BatteryImpl;
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.DataImpl;
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.HwImpl;
+import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.InputImpl;
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.UIImpl;
 
 public enum Handle {
@@ -26,10 +27,18 @@ public enum Handle {
         public Object getHandle(Context context, ShortXContext shortXContext) {
             return new UIImpl(context, shortXContext);
         }
-    }, Data {
+    },
+    Data {
         @Override
         public Object getHandle(Context context, ShortXContext shortXContext) {
             return new DataImpl(context, shortXContext);
+        }
+    },
+
+    Input {
+        @Override
+        public Object getHandle(Context context, ShortXContext shortXContext) {
+            return new InputImpl(shortXContext);
         }
     },
 

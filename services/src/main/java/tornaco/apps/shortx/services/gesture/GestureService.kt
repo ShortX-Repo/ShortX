@@ -181,6 +181,9 @@ class GestureService(shortXContext: ShortXContext) :
     }
 
     fun handleKeyEvent(event: KeyEvent): Boolean? {
+        // update last key.
+        shortXContext.input.updateLastInputKey(event.keyCode, "handleKeyEvent")
+
         // Stop play gesture if necessary
         if (event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || event.keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
             if (gesturPlayer.isInjecting) {

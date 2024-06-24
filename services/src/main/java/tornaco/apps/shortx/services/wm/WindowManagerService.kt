@@ -5,6 +5,7 @@ import android.content.ClipData
 import android.os.Binder
 import android.os.Handler
 import android.os.Looper
+import android.view.KeyEvent
 import android.view.Surface
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
@@ -783,6 +784,10 @@ class WindowManagerService(shortXContext: ShortXContext) :
     }
 
     fun onBackNavDone(triggerBack: Boolean, type: Int) {
+        if (triggerBack) {
+            shortXContext.input.updateLastInputKey(KeyEvent.KEYCODE_BACK, "onBackNavDone")
+        }
+
         shortXContext.rule.publishFact(
             "onBackNavDone",
             BackNavDone.newBuilder()
