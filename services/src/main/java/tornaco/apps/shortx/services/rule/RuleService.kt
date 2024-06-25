@@ -251,7 +251,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     }
 
     private val publishInterceptor by lazy {
-        FactPublishInterceptor(shortXContext)
+        FactPublishInterceptor(shortXContext, systemServiceScope)
     }
 
     override fun systemReady() {
@@ -305,8 +305,6 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                     .build()
             )
         }
-
-        publishInterceptor.toString()
     }
 
     override fun shutdown() {
@@ -411,21 +409,26 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         fact: ProtoMessage,
         initialContextDataLazy: () -> Map<String, Any>
     ) {
-        val publishTimeMillis = System.currentTimeMillis()
-        handler.postSafety {
-            logger.i("publishFact, ${fact::class.java}: $reason")
-            logger.p("publishFact: $fact")
-            val anyMatch = engine.fire(
-                fact = fact,
-                rules = getAllEnabledRules(),
-                initialContextDataLazy = initialContextDataLazy
-            )
+        val interceptRes = publishInterceptor.intercept(fact)
+        if (interceptRes) {
+            val publishTimeMillis = System.currentTimeMillis()
+            handler.postSafety {
+                logger.i("publishFact, ${fact::class.java}: $reason")
+                logger.p("publishFact: $fact")
+                val anyMatch = engine.fire(
+                    fact = fact,
+                    rules = getAllEnabledRules(),
+                    initialContextDataLazy = initialContextDataLazy
+                )
 
-            if (anyMatch) {
-                factPublishRecorder.add(fact.toFactPublishRecord(publishTimeMillis))
+                if (anyMatch) {
+                    factPublishRecorder.add(fact.toFactPublishRecord(publishTimeMillis))
+                }
+
+                notifyInternalFactListeners(fact, initialContextDataLazy)
             }
-
-            notifyInternalFactListeners(fact, initialContextDataLazy)
+        } else {
+            logger.i("publishFact $fact, Skip since interceptRes is false.")
         }
     }
 

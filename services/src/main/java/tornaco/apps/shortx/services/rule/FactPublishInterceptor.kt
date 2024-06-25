@@ -2,20 +2,26 @@
 
 package tornaco.apps.shortx.services.rule
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.proto.findTypeUrls
+import tornaco.apps.shortx.core.proto.getTypeUrl
 import tornaco.apps.shortx.core.rule.DAObserver
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.RuleObserver
 import tornaco.apps.shortx.core.rule.ToggleObserver
-import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
 
-class FactPublishInterceptor(private val shortXContext: ShortXContext) {
+class FactPublishInterceptor(
+    private val shortXContext: ShortXContext,
+    private val scope: CoroutineScope
+) {
     companion object {
         const val BUILD_CACHE_DELAY_MS = 1000L
     }
@@ -28,10 +34,7 @@ class FactPublishInterceptor(private val shortXContext: ShortXContext) {
     private val protoUrlCacheFlow = changeTime
         .debounce(BUILD_CACHE_DELAY_MS)
         .map {
-            buildCache().apply {
-                protoUrlCache.clear()
-                protoUrlCache.addAll(this)
-            }
+            buildCache()
         }
 
     init {
@@ -71,11 +74,19 @@ class FactPublishInterceptor(private val shortXContext: ShortXContext) {
             }
         })
 
+        scope.launch {
+            protoUrlCacheFlow.collectLatest {
+                logger.d("protoUrlCacheFlow update: $it")
+                protoUrlCache.clear()
+                protoUrlCache.addAll(it)
+            }
+        }
+
         postInvalidate()
     }
 
     fun intercept(fact: ProtoMessage): Boolean {
-        return protoUrlCache.contains(fact.pack_().typeUrl)
+        return protoUrlCache.contains(fact.getTypeUrl())
     }
 
     private fun postInvalidate() {
