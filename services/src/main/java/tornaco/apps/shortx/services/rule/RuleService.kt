@@ -250,6 +250,10 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         )
     }
 
+    private val publishInterceptor by lazy {
+        FactPublishInterceptor(shortXContext)
+    }
+
     override fun systemReady() {
         super.systemReady()
 
@@ -301,6 +305,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                     .build()
             )
         }
+
+        publishInterceptor.toString()
     }
 
     override fun shutdown() {
