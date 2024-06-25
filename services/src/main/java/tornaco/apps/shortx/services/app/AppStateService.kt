@@ -37,6 +37,7 @@ import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.ProcessName
 import tornaco.apps.shortx.core.proto.common.ProcessRecord
 import tornaco.apps.shortx.core.proto.common.RecentTask
+import tornaco.apps.shortx.core.proto.fact.AppProcessRemoved
 import tornaco.apps.shortx.core.proto.fact.AppProcessStarted
 import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
@@ -587,6 +588,30 @@ class AppStateService(shortXContext: ShortXContext) :
     @Synchronized
     fun onProcessRemoved(process: ProcessRecord) {
         logger.d("onProcessRemoved: ${process.owner.pkgName} - ${process.owner.userId} - ${process.processName}")
+
+        if (isSystemReady) {
+            shortXContext.rule.publishFact(
+                reason = "onProcessRemoved",
+                fact = AppProcessRemoved.newBuilder().addAllProcessName(
+                    listOf(
+                        ProcessName.newBuilder().setUserId(process.owner.userId)
+                            .setProcessName(process.processName).build()
+                    )
+                )
+                    .build(),
+                initialContextDataLazy = {
+                    mapOf(
+                        ContextDataMapping.AppProcessRemoved.processName.name to process.processName,
+                        ContextDataMapping.AppProcessRemoved.appLabel.name to (pkgToApp(process.owner)?.label.fallbackOnEmpty(
+                            ""
+                        )),
+                        ContextDataMapping.AppProcessRemoved.userId.name to process.owner.userId,
+                        ContextDataMapping.AppProcessRemoved.pkgName.name to process.owner.pkgName,
+                    )
+                }
+            )
+        }
+
         val isPkgStillRunning = process.owner.isRunning()
         if (isPkgStillRunning) {
             logger.d("${process.owner} is still running.")
@@ -606,26 +631,28 @@ class AppStateService(shortXContext: ShortXContext) :
 
     fun onProcessStarted(process: ProcessRecord) {
         logger.d("onProcessStarted: ${process.owner.pkgName} - ${process.owner.userId} - ${process.processName}")
-        shortXContext.rule.publishFact(
-            reason = "onProcessStarted",
-            fact = AppProcessStarted.newBuilder().addAllProcessName(
-                listOf(
-                    ProcessName.newBuilder().setUserId(process.owner.userId)
-                        .setProcessName(process.processName).build()
+        if (isSystemReady) {
+            shortXContext.rule.publishFact(
+                reason = "onProcessStarted",
+                fact = AppProcessStarted.newBuilder().addAllProcessName(
+                    listOf(
+                        ProcessName.newBuilder().setUserId(process.owner.userId)
+                            .setProcessName(process.processName).build()
+                    )
                 )
+                    .build(),
+                initialContextDataLazy = {
+                    mapOf(
+                        ContextDataMapping.AppProcessStarted.processName.name to process.processName,
+                        ContextDataMapping.AppProcessStarted.appLabel.name to (pkgToApp(process.owner)?.label.fallbackOnEmpty(
+                            ""
+                        )),
+                        ContextDataMapping.AppProcessStarted.userId.name to process.owner.userId,
+                        ContextDataMapping.AppProcessStarted.pkgName.name to process.owner.pkgName,
+                    )
+                }
             )
-                .build(),
-            initialContextDataLazy = {
-                mapOf(
-                    ContextDataMapping.AppProcessStarted.processName.name to process.processName,
-                    ContextDataMapping.AppProcessStarted.appLabel.name to (pkgToApp(process.owner)?.label.fallbackOnEmpty(
-                        ""
-                    )),
-                    ContextDataMapping.AppProcessStarted.userId.name to process.owner.userId,
-                    ContextDataMapping.AppProcessStarted.pkgName.name to process.owner.pkgName,
-                )
-            }
-        )
+        }
     }
 
     private fun onPkgStopRunning(pkg: AppPkg) {

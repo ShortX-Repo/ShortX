@@ -19,6 +19,7 @@ import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
 import tornaco.apps.shortx.core.proto.fact.AppGainWindowFocus
 import tornaco.apps.shortx.core.proto.fact.AppLostWindowFocus
+import tornaco.apps.shortx.core.proto.fact.AppProcessRemoved
 import tornaco.apps.shortx.core.proto.fact.AppProcessStarted
 import tornaco.apps.shortx.core.proto.fact.AppRemoved
 import tornaco.apps.shortx.core.proto.fact.AppUpdated
@@ -499,6 +500,18 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
         register(AppProcessStarted::class.java) { actual, rule ->
             val actualN = (actual as AppProcessStarted)
             val ruleN = (rule as AppProcessStarted)
+            val actualProcessName = actualN.processNameList[0]
+            ruleN.processNameList.any {
+                it.userId == actualProcessName.userId && emptyOrRegexMatch(
+                    it.processName,
+                    actualProcessName.processName
+                )
+            }
+        }
+
+        register(AppProcessRemoved::class.java) { actual, rule ->
+            val actualN = (actual as AppProcessRemoved)
+            val ruleN = (rule as AppProcessRemoved)
             val actualProcessName = actualN.processNameList[0]
             ruleN.processNameList.any {
                 it.userId == actualProcessName.userId && emptyOrRegexMatch(

@@ -189,11 +189,21 @@ fun appFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean
     })
     ProcessListSelectorDialog(state = appProcessStartedSelectorState)
 
+    val appProcessRemovedSelectorState = rememberProcessListSelectorState(onSelected = {
+        setFact(Fact.AppProcessRemoved(processNames = it))
+    })
+    ProcessListSelectorDialog(state = appProcessRemovedSelectorState)
+
 
     return { source ->
         when (source.clazz) {
             Fact.AppProcessStarted::class -> {
                 appProcessStartedSelectorState.show(source.getFactAs<Fact.AppProcessStarted>()?.processNames)
+                true
+            }
+
+            Fact.AppProcessRemoved::class -> {
+                appProcessRemovedSelectorState.show(source.getFactAs<Fact.AppProcessRemoved>()?.processNames)
                 true
             }
 

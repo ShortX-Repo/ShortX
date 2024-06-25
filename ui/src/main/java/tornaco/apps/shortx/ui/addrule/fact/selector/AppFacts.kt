@@ -29,6 +29,7 @@ fun AppFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: (Fa
         Fact.AppBecomeForeground::class,
 
         Fact.AppProcessStarted::class,
+        Fact.AppProcessRemoved::class,
 
         Fact.NotificationPosted::class,
         Fact.NotificationRemoved::class,
