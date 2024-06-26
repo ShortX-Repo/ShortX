@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule
 
 import android.annotation.TestApi
+import android.content.Context
 import android.os.IBinder
 import android.os.ParcelFileDescriptor
 import android.os.RemoteCallbackList
@@ -37,6 +38,7 @@ import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
+import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.getTypeUrl
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
@@ -253,6 +255,12 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     private val publishInterceptor by lazy {
         FactPublishInterceptor(shortXContext, systemServiceScope)
+    }
+
+    override fun start(context: Context) {
+        super.start(context)
+        // Call this to init the cache.
+        publishInterceptor.intercept(SystemReady.getDefaultInstance())
     }
 
     override fun systemReady() {

@@ -3,12 +3,14 @@
 package tornaco.apps.shortx.services.rule
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.fact.AnyFact
 import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.findTypeUrls
@@ -19,6 +21,7 @@ import tornaco.apps.shortx.core.rule.RuleObserver
 import tornaco.apps.shortx.core.rule.ToggleObserver
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
+import java.util.concurrent.atomic.AtomicBoolean
 
 class FactPublishInterceptor(
     private val shortXContext: ShortXContext,
@@ -43,6 +46,8 @@ class FactPublishInterceptor(
         .map {
             buildCache()
         }
+
+    private val cacheHasBeenBuilt = AtomicBoolean(false)
 
     init {
         shortXContext.rule.registerRuleObs(object : RuleObserver() {
@@ -82,10 +87,14 @@ class FactPublishInterceptor(
         })
 
         scope.launch {
-            protoUrlCacheFlow.collectLatest {
-                logger.d("protoUrlCacheFlow update: $it")
-                enabledProtoUrlCache.clear()
-                enabledProtoUrlCache.addAll(it)
+            withContext(Dispatchers.IO) {
+                protoUrlCacheFlow.collectLatest {
+                    logger.d("protoUrlCacheFlow update: $it")
+                    cacheHasBeenBuilt.set(false)
+                    enabledProtoUrlCache.clear()
+                    enabledProtoUrlCache.addAll(it)
+                    cacheHasBeenBuilt.set(true)
+                }
             }
         }
 
@@ -94,9 +103,13 @@ class FactPublishInterceptor(
 
     // True: block.
     fun intercept(fact: ProtoMessage): Boolean {
-        return if (alwaysPublishUrls.contains(fact.getTypeUrl())) false
-        else if (enabledProtoUrlCache.contains(fact.getTypeUrl())) false
-        else true
+        if (alwaysPublishUrls.contains(fact.getTypeUrl())) return false
+        if (!cacheHasBeenBuilt.get()) {
+            logger.w("Cache has not built, do not intercept.")
+            return false
+        }
+        if (enabledProtoUrlCache.contains(fact.getTypeUrl())) return false
+        return true
     }
 
     private fun postInvalidate() {
