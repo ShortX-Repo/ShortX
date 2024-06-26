@@ -5,6 +5,7 @@ import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.fact.ClipboardContentChanged
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.FactPublishData
 import java.util.concurrent.atomic.AtomicReference
 
 // Need ClipboardServiceHook to hook clipboardAccessAllowed
@@ -21,11 +22,13 @@ class ClipboardTrigger(override val context: Context, override val shortXContext
             if (System.currentTimeMillis() - lastTriggerTime.get() >= 1000
                 || lastText.get() != clipText
             ) {
-                shortXContext.rule.publishFact(
-                    reason = "Clipboard",
-                    fact = ClipboardContentChanged.newBuilder().setContent(clipText).build(),
-                ) {
-                    mapOf(ContextDataMapping.ClipboardContentChanged.clipboardContent.name to clipText)
+                shortXContext.rule.publishFactChecked(ClipboardContentChanged.getDefaultInstance()) {
+                    FactPublishData(
+                        reason = "Clipboard",
+                        fact = ClipboardContentChanged.newBuilder().setContent(clipText).build(),
+                    ) {
+                        mapOf(ContextDataMapping.ClipboardContentChanged.clipboardContent.name to clipText)
+                    }
                 }
 
                 shortXContext.input.addClipboardText(clipText)

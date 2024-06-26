@@ -20,6 +20,7 @@ import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.core.util.wifiManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
+import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.rule.fact.trigger.wifi.WifiSignalState
 import tornaco.apps.shortx.services.rule.fact.trigger.wifi.WifiState
 import tornaco.apps.shortx.services.rule.fact.trigger.wifi.WifiStatusTracker
@@ -65,17 +66,25 @@ class NetworkService(shortXContext: ShortXContext) :
         if (currentState != detailedState) {
             if (detailedState == DetailedState.CONNECTED) {
                 logger.i("VPN connected.")
-                shortXContext.rule.publishFact(
-                    reason = "onVpnStateChanged",
-                    fact = VPNConnected.newBuilder().build()
-                )
+                shortXContext.rule.publishFactChecked(
+                    factDefaultInstance = VPNConnected.getDefaultInstance()
+                ) {
+                    FactPublishData(
+                        reason = "onVpnStateChanged",
+                        fact = VPNConnected.newBuilder().build()
+                    )
+                }
 
             } else if (detailedState == DetailedState.DISCONNECTED) {
                 logger.i("VPN disconnected.")
-                shortXContext.rule.publishFact(
-                    reason = "onVpnStateChanged",
-                    fact = VPNDisconnected.newBuilder().build()
-                )
+                shortXContext.rule.publishFactChecked(
+                    factDefaultInstance = VPNDisconnected.getDefaultInstance()
+                ) {
+                    FactPublishData(
+                        reason = "onVpnStateChanged",
+                        fact = VPNDisconnected.newBuilder().build()
+                    )
+                }
             }
         }
         _currentVpnState.value = detailedState
@@ -119,19 +128,23 @@ class NetworkService(shortXContext: ShortXContext) :
             val ssid = wifiStatusTracker.ssid
             val statusLabel = wifiStatusTracker.statusLabel
 
-            shortXContext.rule.publishFact(
-                "checkWifiSignalChange",
-                ConnectedWifiSignalLevelChanged.newBuilder()
-                    .setLevel(signalState.level)
-                    .setRssi(rssi)
-                    .build()
+            shortXContext.rule.publishFactChecked(
+                ConnectedWifiSignalLevelChanged.getDefaultInstance()
             ) {
-                mapOf(
-                    ContextDataMapping.ConnectedWifiSignalLevelChanged.level.name to signalState.level,
-                    ContextDataMapping.ConnectedWifiSignalLevelChanged.rssi.name to rssi,
-                    ContextDataMapping.ConnectedWifiSignalLevelChanged.ssid.name to ssid,
-                    ContextDataMapping.ConnectedWifiSignalLevelChanged.statusLabel.name to statusLabel,
-                )
+                FactPublishData(
+                    "checkWifiSignalChange",
+                    ConnectedWifiSignalLevelChanged.newBuilder()
+                        .setLevel(signalState.level)
+                        .setRssi(rssi)
+                        .build()
+                ) {
+                    mapOf(
+                        ContextDataMapping.ConnectedWifiSignalLevelChanged.level.name to signalState.level,
+                        ContextDataMapping.ConnectedWifiSignalLevelChanged.rssi.name to rssi,
+                        ContextDataMapping.ConnectedWifiSignalLevelChanged.ssid.name to ssid,
+                        ContextDataMapping.ConnectedWifiSignalLevelChanged.statusLabel.name to statusLabel,
+                    )
+                }
             }
         }
     }
@@ -149,36 +162,50 @@ class NetworkService(shortXContext: ShortXContext) :
 
         if (ws.ssid != null && lastConnectedSSID != ws.ssid) {
             logger.i("Connect changed to: ${ws.ssid}")
-            shortXContext.rule.publishFact(
-                reason = "Wifi SSID changed.",
-                fact = WifiConnectedTo.newBuilder()
-                    .addAllSsidList(listOf(ws.ssid)).build(),
-                initialContextData = mapOf(
-                    ContextDataMapping.WifiConnectedTo.ssid.name to ws.ssid.fallbackOnEmpty(""),
-                    ContextDataMapping.WifiConnectedTo.isWifiEnabled.name to ws.enabled.toString(),
-                    ContextDataMapping.WifiConnectedTo.wifiStatusLabel.name to ws.statusLabel.fallbackOnEmpty(
-                        ""
-                    )
+            shortXContext.rule.publishFactChecked(
+                WifiConnectedTo.getDefaultInstance()
+            ) {
+                FactPublishData(
+                    reason = "Wifi SSID changed.",
+                    fact = WifiConnectedTo.newBuilder()
+                        .addAllSsidList(listOf(ws.ssid)).build(),
+                    initialContextDataLazy = {
+                        mapOf(
+                            ContextDataMapping.WifiConnectedTo.ssid.name to ws.ssid.fallbackOnEmpty(
+                                ""
+                            ),
+                            ContextDataMapping.WifiConnectedTo.isWifiEnabled.name to ws.enabled.toString(),
+                            ContextDataMapping.WifiConnectedTo.wifiStatusLabel.name to ws.statusLabel.fallbackOnEmpty(
+                                ""
+                            )
+                        )
+                    }
                 )
-            )
+            }
         }
 
         if (ws.ssid == null && lastConnectedSSID != null) {
             logger.i("Disconnected from: $lastConnectedSSID")
-            shortXContext.rule.publishFact(
-                reason = "Wifi disconnected.",
-                fact = WifiDisconnectedFrom.newBuilder()
-                    .addAllSsidList(listOf(lastConnectedSSID)).build(),
-                initialContextData = mapOf(
-                    ContextDataMapping.WifiDisconnectedFrom.ssid.name to lastConnectedSSID.fallbackOnEmpty(
-                        ""
-                    ),
-                    ContextDataMapping.WifiDisconnectedFrom.isWifiEnabled.name to ws.enabled.toString(),
-                    ContextDataMapping.WifiDisconnectedFrom.wifiStatusLabel.name to ws.statusLabel.fallbackOnEmpty(
-                        ""
-                    )
+            shortXContext.rule.publishFactChecked(
+                WifiDisconnectedFrom.getDefaultInstance()
+            ) {
+                FactPublishData(
+                    reason = "Wifi disconnected.",
+                    fact = WifiDisconnectedFrom.newBuilder()
+                        .addAllSsidList(listOf(lastConnectedSSID)).build(),
+                    initialContextDataLazy = {
+                        mapOf(
+                            ContextDataMapping.WifiDisconnectedFrom.ssid.name to lastConnectedSSID.fallbackOnEmpty(
+                                ""
+                            ),
+                            ContextDataMapping.WifiDisconnectedFrom.isWifiEnabled.name to ws.enabled.toString(),
+                            ContextDataMapping.WifiDisconnectedFrom.wifiStatusLabel.name to ws.statusLabel.fallbackOnEmpty(
+                                ""
+                            )
+                        )
+                    }
                 )
-            )
+            }
         }
 
         _connectedWifiSSID.set(ws.ssid)

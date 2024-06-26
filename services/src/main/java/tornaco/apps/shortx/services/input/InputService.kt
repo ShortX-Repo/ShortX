@@ -17,6 +17,7 @@ import tornaco.apps.shortx.services.data.ClipboardStore
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
+import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
@@ -220,9 +221,11 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
 
     private fun imeVisibilityChanged() {
         logger.d("imeVisibilityChanged, isIMEShown? ${isIMEShown.get()}")
-        shortXContext.rule.publishFact(
-            "imeVisibilityChanged",
-            IMEVisibilityChange.newBuilder().setIsShown(isIMEShown.get()).build()
-        ) { emptyMap() }
+        shortXContext.rule.publishFactChecked(IMEVisibilityChange.getDefaultInstance()) {
+            FactPublishData(
+                reason = "imeVisibilityChanged",
+                fact = IMEVisibilityChange.newBuilder().setIsShown(isIMEShown.get()).build()
+            )
+        }
     }
 }

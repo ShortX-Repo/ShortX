@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.proto.fact.AppRemoved
 import tornaco.apps.shortx.core.proto.fact.AppUpdated
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.FactPublishData
 
 class PackageInstallTrigger(
     override val context: Context,
@@ -43,17 +44,19 @@ class PackageInstallTrigger(
 
         shortXContext.appState.onPackageUpdated { from, to ->
             logger.d("onPackageUpdated: $from ---> $to")
-            shortXContext.rule.publishFact(
-                "onPackageUpdated",
-                AppUpdated.newBuilder().addAllApps(listOf(to.pkg)).build()
-            ) {
-                mapOf(
-                    ContextDataMapping.AppUpdated.userId.name to to.pkg.userId,
-                    ContextDataMapping.AppUpdated.pkgName.name to to.pkg.pkgName,
-                    ContextDataMapping.AppUpdated.label.name to to.label,
-                    ContextDataMapping.AppUpdated.fromVersionCode.name to from.versionCode,
-                    ContextDataMapping.AppUpdated.toVersionCode.name to to.versionCode,
-                )
+            shortXContext.rule.publishFactChecked(AppUpdated.getDefaultInstance()) {
+                FactPublishData(
+                    "onPackageUpdated",
+                    AppUpdated.newBuilder().addAllApps(listOf(to.pkg)).build()
+                ) {
+                    mapOf(
+                        ContextDataMapping.AppUpdated.userId.name to to.pkg.userId,
+                        ContextDataMapping.AppUpdated.pkgName.name to to.pkg.pkgName,
+                        ContextDataMapping.AppUpdated.label.name to to.label,
+                        ContextDataMapping.AppUpdated.fromVersionCode.name to from.versionCode,
+                        ContextDataMapping.AppUpdated.toVersionCode.name to to.versionCode,
+                    )
+                }
             }
         }
     }

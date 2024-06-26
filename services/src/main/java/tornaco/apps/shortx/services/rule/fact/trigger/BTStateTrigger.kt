@@ -25,6 +25,7 @@ import tornaco.apps.shortx.core.proto.fact.BTDisconnectedFrom
 import tornaco.apps.shortx.core.proto.fact.BTStatusChanged
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper.btDeviceToProtoDevice
 import tornaco.apps.shortx.services.util.SafeBroadcastReceiver
 
@@ -47,26 +48,32 @@ class BTStateTrigger(override val context: Context, override val shortXContext: 
                     if (state == BluetoothAdapter.STATE_OFF) {
                         logger.d("State off")
 
-                        shortXContext.rule.publishFact(
-                            "btStateChanged to btStateOff",
-                            BTStatusChanged.newBuilder()
-                                .setOoa(OnOffAny.Off)
-                                .build()
-                        ) { emptyMap() }
+                        shortXContext.rule.publishFactChecked(BTStatusChanged.getDefaultInstance()) {
+                            FactPublishData(
+                                reason = "btStateChanged to btStateOff",
+                                fact = BTStatusChanged.newBuilder()
+                                    .setOoa(OnOffAny.Off)
+                                    .build()
+                            )
+                        }
 
                         // Also publish disconnect state, because ACTION_ACL_CONNECTED wont do this.
                         BTHelper._connectedDevices.value.forEach { device ->
                             logger.d("will publish disconnect fact on STATE_OFF")
-                            shortXContext.rule.publishFact(
-                                reason = "BT device disconnected(STATE_OFF)",
-                                fact = BTDisconnectedFrom.newBuilder().addAllDevice(
-                                    listOf(device.alias)
-                                ).build()
+                            shortXContext.rule.publishFactChecked(
+                                BTDisconnectedFrom.getDefaultInstance()
                             ) {
-                                mapOf(
-                                    ContextDataMapping.BTDeviceDisConnected.btDeviceAlias.name to device.alias,
-                                    ContextDataMapping.BTDeviceDisConnected.btDeviceAddress.name to device.address,
-                                )
+                                FactPublishData(
+                                    reason = "BT device disconnected(STATE_OFF)",
+                                    fact = BTDisconnectedFrom.newBuilder().addAllDevice(
+                                        listOf(device.alias)
+                                    ).build()
+                                ) {
+                                    mapOf(
+                                        ContextDataMapping.BTDeviceDisConnected.btDeviceAlias.name to device.alias,
+                                        ContextDataMapping.BTDeviceDisConnected.btDeviceAddress.name to device.address,
+                                    )
+                                }
                             }
                         }
 
@@ -75,12 +82,14 @@ class BTStateTrigger(override val context: Context, override val shortXContext: 
                     } else if (state == BluetoothAdapter.STATE_ON) {
                         logger.d("State on")
                         BTHelper._connectedDevices.value = emptyList()
-                        shortXContext.rule.publishFact(
-                            "btStateChanged to btStateOn",
-                            BTStatusChanged.newBuilder()
-                                .setOoa(OnOffAny.On)
-                                .build()
-                        ) { emptyMap() }
+                        shortXContext.rule.publishFactChecked(BTStatusChanged.getDefaultInstance()) {
+                            FactPublishData(
+                                "btStateChanged to btStateOn",
+                                BTStatusChanged.newBuilder()
+                                    .setOoa(OnOffAny.On)
+                                    .build()
+                            )
+                        }
                     }
                 } else if (BluetoothDevice.ACTION_ACL_CONNECTED == action) {
                     val device =
@@ -97,16 +106,18 @@ class BTStateTrigger(override val context: Context, override val shortXContext: 
                             add(device)
                         }
 
-                    shortXContext.rule.publishFact(
-                        reason = "BT device connected",
-                        fact = BTConnectedTo.newBuilder().addAllDevice(listOf(device.alias))
-                            .build(),
-                    ) {
-                        mapOf(
-                            ContextDataMapping.BTDeviceConnected.btDeviceAlias.name to device.alias,
-                            ContextDataMapping.BTDeviceConnected.btDeviceAddress.name to device.address,
-                            ContextDataMapping.BTDeviceConnected.btDeviceBatteryLevel.name to device.batteryLevel
-                        )
+                    shortXContext.rule.publishFactChecked(BTConnectedTo.getDefaultInstance()) {
+                        FactPublishData(
+                            reason = "BT device connected",
+                            fact = BTConnectedTo.newBuilder().addAllDevice(listOf(device.alias))
+                                .build(),
+                        ) {
+                            mapOf(
+                                ContextDataMapping.BTDeviceConnected.btDeviceAlias.name to device.alias,
+                                ContextDataMapping.BTDeviceConnected.btDeviceAddress.name to device.address,
+                                ContextDataMapping.BTDeviceConnected.btDeviceBatteryLevel.name to device.batteryLevel
+                            )
+                        }
                     }
                 } else if (BluetoothDevice.ACTION_ACL_DISCONNECTED == action) {
                     val device =
@@ -122,16 +133,18 @@ class BTStateTrigger(override val context: Context, override val shortXContext: 
                             removeIf { it.address == device.address }
                         }
 
-                    shortXContext.rule.publishFact(
-                        reason = "BT device disconnected",
-                        fact = BTDisconnectedFrom.newBuilder().addAllDevice(
-                            listOf(device.alias)
-                        ).build()
-                    ) {
-                        mapOf(
-                            ContextDataMapping.BTDeviceDisConnected.btDeviceAlias.name to device.alias,
-                            ContextDataMapping.BTDeviceDisConnected.btDeviceAddress.name to device.address,
-                        )
+                    shortXContext.rule.publishFactChecked(BTDisconnectedFrom.getDefaultInstance()) {
+                        FactPublishData(
+                            reason = "BT device disconnected",
+                            fact = BTDisconnectedFrom.newBuilder().addAllDevice(
+                                listOf(device.alias)
+                            ).build()
+                        ) {
+                            mapOf(
+                                ContextDataMapping.BTDeviceDisConnected.btDeviceAlias.name to device.alias,
+                                ContextDataMapping.BTDeviceDisConnected.btDeviceAddress.name to device.address,
+                            )
+                        }
                     }
                 }
             }

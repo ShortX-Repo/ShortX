@@ -17,6 +17,7 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.wm.NodeMatcher
 import tornaco.apps.shortx.services.wm.NodeMatcher.extractMatchers
@@ -148,36 +149,44 @@ class AccessibilityNodeOnScreenTrigger(
                                                     NodeMatcher.matchNode(matcherAny, viewNode)
                                                 when (matchRes) {
                                                     is NodeMatcherRes.MatchById -> {
-                                                        shortXContext.rule.publishFact(
-                                                            reason = "Match MatchById",
-                                                            fact = HasFoundNodeOnScreen.newBuilder()
-                                                                .setId(brief.id)
-                                                                .build(),
-                                                            initialContextDataLazy = {
-                                                                mapOf(
-                                                                    ContextDataMapping.HasFoundNodeOnScreen.matchedViewId.name to matchRes.matchViewIdContextData,
-                                                                    ContextDataMapping.HasFoundNodeOnScreen.sourceNodeId.name to matchRes.sourceNodeId,
-                                                                    ContextDataMapping.HasFoundNodeOnScreen.windowId.name to matchRes.windowId,
-                                                                )
-                                                            }
-                                                        )
+                                                        shortXContext.rule.publishFactChecked(
+                                                            HasFoundNodeOnScreen.getDefaultInstance()
+                                                        ) {
+                                                            FactPublishData(
+                                                                reason = "Match MatchById",
+                                                                fact = HasFoundNodeOnScreen.newBuilder()
+                                                                    .setId(brief.id)
+                                                                    .build(),
+                                                                initialContextDataLazy = {
+                                                                    mapOf(
+                                                                        ContextDataMapping.HasFoundNodeOnScreen.matchedViewId.name to matchRes.matchViewIdContextData,
+                                                                        ContextDataMapping.HasFoundNodeOnScreen.sourceNodeId.name to matchRes.sourceNodeId,
+                                                                        ContextDataMapping.HasFoundNodeOnScreen.windowId.name to matchRes.windowId,
+                                                                    )
+                                                                }
+                                                            )
+                                                        }
                                                     }
 
                                                     is NodeMatcherRes.MatchByText -> {
-                                                        shortXContext.rule.publishFact(
-                                                            reason = "Match MatchByText",
-                                                            fact = HasFoundNodeOnScreen.newBuilder()
-                                                                .setId(brief.id)
-                                                                .build(),
-                                                            initialContextDataLazy = {
-                                                                mapOf(
-                                                                    ContextDataMapping.HasFoundNodeOnScreen.matchedViewText.name to matchRes.matchTextContextData,
-                                                                    ContextDataMapping.HasFoundNodeOnScreen.matchedViewTextIsRegex.name to matchRes.matchIsRegexContextData,
-                                                                    ContextDataMapping.HasFoundNodeOnScreen.sourceNodeId.name to matchRes.sourceNodeId,
-                                                                    ContextDataMapping.HasFoundNodeOnScreen.windowId.name to matchRes.windowId,
-                                                                )
-                                                            }
-                                                        )
+                                                        shortXContext.rule.publishFactChecked(
+                                                            HasFoundNodeOnScreen.getDefaultInstance()
+                                                        ) {
+                                                            FactPublishData(
+                                                                reason = "Match MatchByText",
+                                                                fact = HasFoundNodeOnScreen.newBuilder()
+                                                                    .setId(brief.id)
+                                                                    .build(),
+                                                                initialContextDataLazy = {
+                                                                    mapOf(
+                                                                        ContextDataMapping.HasFoundNodeOnScreen.matchedViewText.name to matchRes.matchTextContextData,
+                                                                        ContextDataMapping.HasFoundNodeOnScreen.matchedViewTextIsRegex.name to matchRes.matchIsRegexContextData,
+                                                                        ContextDataMapping.HasFoundNodeOnScreen.sourceNodeId.name to matchRes.sourceNodeId,
+                                                                        ContextDataMapping.HasFoundNodeOnScreen.windowId.name to matchRes.windowId,
+                                                                    )
+                                                                }
+                                                            )
+                                                        }
                                                     }
 
                                                     NodeMatcherRes.NotMatch -> {

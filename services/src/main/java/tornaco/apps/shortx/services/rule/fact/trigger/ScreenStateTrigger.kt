@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.proto.fact.UserPresent
 import tornaco.apps.shortx.core.proto.fact.UserPresentAtTheFirstTime
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.util.SafeBroadcastReceiver
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -35,16 +36,22 @@ class ScreenStateTrigger(override val context: Context, override val shortXConte
                     }
 
                     Intent.ACTION_USER_PRESENT -> {
-                        shortXContext.rule.publishFact(
-                            "ACTION_USER_PRESENT",
-                            UserPresent.newBuilder().build()
-                        ) { emptyMap() }
+                        shortXContext.rule.publishFactChecked(UserPresent.getDefaultInstance()) {
+                            FactPublishData(
+                                reason = "ACTION_USER_PRESENT",
+                                fact = UserPresent.newBuilder().build()
+                            )
+                        }
 
                         if (firstTimeUserPresentTriggered.compareAndSet(false, true)) {
-                            shortXContext.rule.publishFact(
-                                "ACTION_USER_PRESENT 1st time",
-                                UserPresentAtTheFirstTime.newBuilder().build()
-                            ) { emptyMap() }
+                            shortXContext.rule.publishFactChecked(
+                                UserPresentAtTheFirstTime.getDefaultInstance()
+                            ) {
+                                FactPublishData(
+                                    reason = "ACTION_USER_PRESENT 1st time",
+                                    fact = UserPresentAtTheFirstTime.newBuilder().build()
+                                )
+                            }
 
                             shortXContext.serviceLifecycle.userPresent(true)
                         } else {

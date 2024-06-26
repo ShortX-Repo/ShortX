@@ -38,6 +38,7 @@ import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
+import tornaco.apps.shortx.core.proto.getTypeUrl
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.rule.ActionEvaluateRecord
 import tornaco.apps.shortx.core.proto.rule.ConditionEvaluateRecord
@@ -395,7 +396,10 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         return engine.shouldFire(rules = rules, fact = fact, checkCondition = checkCondition)
     }
 
-    @Deprecated("use publishFact with initialContextDataLazy")
+    @Deprecated(
+        "use publishFact with initialContextDataLazy",
+        ReplaceWith("publishFact(factDefaultInstance, dataProvider)")
+    )
     fun publishFact(
         reason: String,
         fact: ProtoMessage,
@@ -404,31 +408,39 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         publishFact(reason, fact) { initialContextData }
     }
 
+    fun <T : ProtoMessage> publishFactChecked(
+        factDefaultInstance: ProtoMessage,
+        dataProvider: () -> FactPublishData<T>
+    ) {
+        val interceptRes = publishInterceptor.intercept(factDefaultInstance)
+        if (!interceptRes) {
+            val data = dataProvider()
+            publishFact(data.reason, data.fact, data.initialContextDataLazy)
+        } else {
+            logger.i("publishFact ${factDefaultInstance.getTypeUrl()}, Skip intercepted.")
+        }
+    }
+
     fun publishFact(
         reason: String,
         fact: ProtoMessage,
         initialContextDataLazy: () -> Map<String, Any>
     ) {
-        val interceptRes = publishInterceptor.intercept(fact)
-        if (interceptRes) {
-            val publishTimeMillis = System.currentTimeMillis()
-            handler.postSafety {
-                logger.i("publishFact, ${fact::class.java}: $reason")
-                logger.p("publishFact: $fact")
-                val anyMatch = engine.fire(
-                    fact = fact,
-                    rules = getAllEnabledRules(),
-                    initialContextDataLazy = initialContextDataLazy
-                )
+        val publishTimeMillis = System.currentTimeMillis()
+        handler.postSafety {
+            logger.i("publishFact, ${fact::class.java}: $reason")
+            logger.p("publishFact: $fact")
+            val anyMatch = engine.fire(
+                fact = fact,
+                rules = getAllEnabledRules(),
+                initialContextDataLazy = initialContextDataLazy
+            )
 
-                if (anyMatch) {
-                    factPublishRecorder.add(fact.toFactPublishRecord(publishTimeMillis))
-                }
-
-                notifyInternalFactListeners(fact, initialContextDataLazy)
+            if (anyMatch) {
+                factPublishRecorder.add(fact.toFactPublishRecord(publishTimeMillis))
             }
-        } else {
-            logger.i("publishFact $fact, Skip since interceptRes is false.")
+
+            notifyInternalFactListeners(fact, initialContextDataLazy)
         }
     }
 

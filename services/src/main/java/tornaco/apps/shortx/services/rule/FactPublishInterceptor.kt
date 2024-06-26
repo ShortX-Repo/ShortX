@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import tornaco.apps.shortx.core.proto.fact.AnyFact
+import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.findTypeUrls
 import tornaco.apps.shortx.core.proto.getTypeUrl
 import tornaco.apps.shortx.core.rule.DAObserver
@@ -29,7 +31,12 @@ class FactPublishInterceptor(
     private val logger = Logger("FactPublishInterceptor")
     private val changeTime = MutableStateFlow(System.currentTimeMillis())
 
-    private val protoUrlCache: MutableSet<String> = mutableSetOf()
+    private val enabledProtoUrlCache: MutableSet<String> = mutableSetOf()
+
+    private val alwaysPublishUrls = listOf(
+        AnyFact.getDefaultInstance(),
+        SystemReady.getDefaultInstance(),
+    ).map { it.getTypeUrl() }
 
     private val protoUrlCacheFlow = changeTime
         .debounce(BUILD_CACHE_DELAY_MS)
@@ -77,16 +84,19 @@ class FactPublishInterceptor(
         scope.launch {
             protoUrlCacheFlow.collectLatest {
                 logger.d("protoUrlCacheFlow update: $it")
-                protoUrlCache.clear()
-                protoUrlCache.addAll(it)
+                enabledProtoUrlCache.clear()
+                enabledProtoUrlCache.addAll(it)
             }
         }
 
         postInvalidate()
     }
 
+    // True: block.
     fun intercept(fact: ProtoMessage): Boolean {
-        return protoUrlCache.contains(fact.getTypeUrl())
+        return if (alwaysPublishUrls.contains(fact.getTypeUrl())) false
+        else if (enabledProtoUrlCache.contains(fact.getTypeUrl())) false
+        else true
     }
 
     private fun postInvalidate() {

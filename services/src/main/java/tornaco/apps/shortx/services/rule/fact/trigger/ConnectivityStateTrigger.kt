@@ -9,6 +9,7 @@ import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.fact.MobileDataStatusChanged
 import tornaco.apps.shortx.core.util.connectivityManager
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.FactPublishData
 
 class ConnectivityStateTrigger(
     override val context: Context,
@@ -17,22 +18,30 @@ class ConnectivityStateTrigger(
     private val callback = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
             super.onAvailable(network)
-            shortXContext.rule.publishFact(
-                "ConnectivityState onAvailable",
-                MobileDataStatusChanged.newBuilder()
-                    .setOoa(OnOffAny.On)
-                    .build()
-            ) { emptyMap() }
+            shortXContext.rule.publishFactChecked(
+                MobileDataStatusChanged.getDefaultInstance()
+            ) {
+                FactPublishData(
+                    "ConnectivityState onAvailable",
+                    MobileDataStatusChanged.newBuilder()
+                        .setOoa(OnOffAny.On)
+                        .build()
+                )
+            }
         }
 
         override fun onLost(network: Network) {
             super.onLost(network)
-            shortXContext.rule.publishFact(
-                "ConnectivityState onLost",
-                MobileDataStatusChanged.newBuilder()
-                    .setOoa(OnOffAny.Off)
-                    .build()
-            ) { emptyMap() }
+            shortXContext.rule.publishFactChecked(
+                MobileDataStatusChanged.getDefaultInstance()
+            ) {
+                FactPublishData(
+                    "ConnectivityState onLost",
+                    MobileDataStatusChanged.newBuilder()
+                        .setOoa(OnOffAny.Off)
+                        .build()
+                )
+            }
         }
     }
 

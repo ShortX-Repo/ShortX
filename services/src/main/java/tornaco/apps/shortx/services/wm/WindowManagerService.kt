@@ -33,6 +33,7 @@ import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.core.util.windowManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
+import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.rule.fact.trigger.rotationToDegree
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
@@ -116,10 +117,12 @@ class WindowManagerService(shortXContext: ShortXContext) :
                 if (degree != shortXContext.wm.screenRotateDegree) {
                     logger.d("onProposedRotationChanged: $rotation $degree")
                     shortXContext.wm.screenRotateDegree = degree
-                    shortXContext.rule.publishFact(
-                        reason = "onProposedRotationChanged",
-                        fact = ScreenRotate.newBuilder().setDegree(degree).build()
-                    ) { emptyMap() }
+                    shortXContext.rule.publishFactChecked(ScreenRotate.getDefaultInstance()) {
+                        FactPublishData(
+                            reason = "onProposedRotationChanged",
+                            fact = ScreenRotate.newBuilder().setDegree(degree).build()
+                        )
+                    }
                 }
             }
         }
@@ -745,27 +748,33 @@ class WindowManagerService(shortXContext: ShortXContext) :
             val newAppPkg = app.pkg
             if (_currentFocusedWindowOwner != newAppPkg) {
                 // Lost current
-                shortXContext.rule.publishFact(
-                    "onWindowFocusChanged", AppLostWindowFocus.newBuilder()
-                        .addApps(_currentFocusedWindowOwner)
-                        .build()
-                ) {
-                    mapOf(
-                        ContextDataMapping.AppLostWindowFocus.pkgName.name to _currentFocusedWindowOwner.pkgName,
-                        ContextDataMapping.AppLostWindowFocus.userId.name to _currentFocusedWindowOwner.userId,
-                    )
+                shortXContext.rule.publishFactChecked(AppLostWindowFocus.getDefaultInstance()) {
+                    FactPublishData(
+                        reason = "onWindowFocusChanged",
+                        fact = AppLostWindowFocus.newBuilder()
+                            .addApps(_currentFocusedWindowOwner)
+                            .build()
+                    ) {
+                        mapOf(
+                            ContextDataMapping.AppLostWindowFocus.pkgName.name to _currentFocusedWindowOwner.pkgName,
+                            ContextDataMapping.AppLostWindowFocus.userId.name to _currentFocusedWindowOwner.userId,
+                        )
+                    }
                 }
 
                 // Gain new
-                shortXContext.rule.publishFact(
-                    "onWindowFocusChanged", AppGainWindowFocus.newBuilder()
-                        .addApps(newAppPkg)
-                        .build()
-                ) {
-                    mapOf(
-                        ContextDataMapping.AppGainWindowFocus.pkgName.name to newAppPkg.pkgName,
-                        ContextDataMapping.AppGainWindowFocus.userId.name to newAppPkg.userId,
-                    )
+                shortXContext.rule.publishFactChecked(AppGainWindowFocus.getDefaultInstance()) {
+                    FactPublishData(
+                        reason = "onWindowFocusChanged",
+                        fact = AppGainWindowFocus.newBuilder()
+                            .addApps(newAppPkg)
+                            .build()
+                    ) {
+                        mapOf(
+                            ContextDataMapping.AppGainWindowFocus.pkgName.name to newAppPkg.pkgName,
+                            ContextDataMapping.AppGainWindowFocus.userId.name to newAppPkg.userId,
+                        )
+                    }
                 }
 
                 _currentFocusedWindowOwner = newAppPkg
@@ -788,22 +797,22 @@ class WindowManagerService(shortXContext: ShortXContext) :
             shortXContext.input.updateLastInputKey(KeyEvent.KEYCODE_BACK, "onBackNavDone")
         }
 
-        shortXContext.rule.publishFact(
-            "onBackNavDone",
-            BackNavDone.newBuilder()
-                .setBackType(triggerBack)
-                .build()
-        ) {
-            emptyMap()
+        shortXContext.rule.publishFactChecked(BackNavDone.getDefaultInstance()) {
+            FactPublishData(
+                reason = "onBackNavDone",
+                fact = BackNavDone.newBuilder()
+                    .setBackType(triggerBack)
+                    .build()
+            )
         }
     }
 
     fun onBackNavStart() {
-        shortXContext.rule.publishFact(
-            "onBackNavStart",
-            BackNavStart.newBuilder().build()
-        ) {
-            emptyMap()
+        shortXContext.rule.publishFactChecked(BackNavStart.getDefaultInstance()) {
+            FactPublishData(
+                reason = "onBackNavStart",
+                fact = BackNavStart.newBuilder().build()
+            )
         }
     }
 }

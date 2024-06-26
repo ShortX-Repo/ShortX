@@ -21,6 +21,7 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.services.ShortXService
+import tornaco.apps.shortx.services.rule.FactPublishData
 import util.ReflectionUtils
 import util.Reflections
 import java.lang.reflect.Method
@@ -42,12 +43,16 @@ object CustomHook {
                 currentProcessPkgName = "android",
                 onMethodCall = { param, hook ->
                     val contextDataList = hook.compileExpressions(param, log)
-                    ShortXService.shortXContext.rule.publishFact(
-                        "Custom hook",
-                        MethodHook.newBuilder(hook).build()
+                    ShortXService.shortXContext.rule.publishFactChecked(
+                        factDefaultInstance = MethodHook.getDefaultInstance(),
                     ) {
-                        contextDataList.associate {
-                            it.first to it.second
+                        FactPublishData(
+                            reason = "Custom hook",
+                            fact = MethodHook.newBuilder(hook).build()
+                        ) {
+                            contextDataList.associate {
+                                it.first to it.second
+                            }
                         }
                     }
                 },

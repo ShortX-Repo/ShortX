@@ -15,6 +15,7 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.util.logcat.LoggingRepository
 import tornaco.apps.shortx.services.watchdog.launchSafety
 
@@ -53,10 +54,12 @@ class LogcatTrigger(
                             regex.containsMatchIn(content)
                         }
                         if (isMatched) {
-                            shortXContext.rule.publishFact(
-                                "Logcat",
-                                Logcat.newBuilder().setId(it.first.id).build()
-                            ) { mapOf(ContextDataMapping.Logcat.line.name to content) }
+                            shortXContext.rule.publishFactChecked(Logcat.getDefaultInstance()) {
+                                FactPublishData(
+                                    reason = "Logcat",
+                                    fact = Logcat.newBuilder().setId(it.first.id).build()
+                                ) { mapOf(ContextDataMapping.Logcat.line.name to content) }
+                            }
                         }
                     }
                 }

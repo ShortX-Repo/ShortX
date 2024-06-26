@@ -9,6 +9,7 @@ import tornaco.apps.shortx.core.proto.fact.ChargerPlug
 import tornaco.apps.shortx.core.proto.fact.ChargerUnplug
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.BatteryImpl
 import tornaco.apps.shortx.services.util.SafeBroadcastReceiver
 
@@ -32,15 +33,23 @@ class ChargeStateTrigger(
 
                     if (shortXContext.user.isSystemReadyTriggered) {
                         if (newState.isAnyPlug) {
-                            shortXContext.rule.publishFact(
-                                reason = "isAnyPlug state changed",
-                                fact = ChargerPlug.newBuilder().build(),
-                            ) { emptyMap() }
+                            shortXContext.rule.publishFactChecked(
+                                ChargerPlug.getDefaultInstance()
+                            ) {
+                                FactPublishData(
+                                    reason = "isAnyPlug state changed",
+                                    fact = ChargerPlug.newBuilder().build(),
+                                )
+                            }
                         } else {
-                            shortXContext.rule.publishFact(
-                                reason = "isAnyPlug state changed",
-                                fact = ChargerUnplug.newBuilder().build(),
-                            ) { emptyMap() }
+                            shortXContext.rule.publishFactChecked(
+                                ChargerUnplug.getDefaultInstance()
+                            ) {
+                                FactPublishData(
+                                    reason = "isAnyPlug state changed",
+                                    fact = ChargerUnplug.newBuilder().build(),
+                                )
+                            }
                         }
                     } else {
                         logger.w("isSystemReadyTriggered is false. ignore.")

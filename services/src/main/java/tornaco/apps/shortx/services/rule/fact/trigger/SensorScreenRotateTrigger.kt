@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.proto.fact.ScreenRotate
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.FactPublishData
 
 class SensorScreenRotateTrigger(
     override val context: Context,
@@ -34,10 +35,12 @@ class SensorScreenRotateTrigger(
                         if (degree != shortXContext.wm.screenRotateDegree) {
                             logger.d("orientation changed: $orientation $degree")
                             shortXContext.wm.screenRotateDegree = degree
-                            shortXContext.rule.publishFact(
-                                reason = "onOrientationChanged",
-                                fact = ScreenRotate.newBuilder().setDegree(degree).build()
-                            ) { emptyMap() }
+                            shortXContext.rule.publishFactChecked(ScreenRotate.getDefaultInstance()) {
+                                FactPublishData(
+                                    reason = "onOrientationChanged",
+                                    fact = ScreenRotate.newBuilder().setDegree(degree).build()
+                                )
+                            }
                         }
                     }
                 }.onFailure {

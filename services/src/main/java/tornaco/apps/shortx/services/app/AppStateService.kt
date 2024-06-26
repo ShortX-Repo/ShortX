@@ -59,6 +59,7 @@ import tornaco.apps.shortx.services.app.pm.PmSetAppEnabledApplicationPackageEnab
 import tornaco.apps.shortx.services.app.pm.PmSuspendApplicationPackageEnabler
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.os.UserEvent
+import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.runClearCallingIdentity
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
@@ -570,18 +571,21 @@ class AppStateService(shortXContext: ShortXContext) :
     fun onTaskRemoved(task: RecentTask) {
         logger.d("onTaskRemoved: ${task.owner.pkgName} - ${task.owner.userId} - ${task.taskId}")
         val app = pkgToApp(task.owner)
-        shortXContext.rule.publishFact(
-            "onTaskRemoved",
-            TaskRemoved.newBuilder()
-                .addAllApps(listOf(task.owner))
-                .build()
-        ) {
-            mapOf(
-                ContextDataMapping.TaskRemoved.appLabel.name to (app?.label ?: task.owner.pkgName),
-                ContextDataMapping.TaskRemoved.taskId.name to "${task.taskId}",
-                ContextDataMapping.TaskRemoved.userId.name to "${task.owner.userId}",
-                ContextDataMapping.TaskRemoved.pkgName.name to task.owner.pkgName,
-            )
+        shortXContext.rule.publishFactChecked(TaskRemoved.getDefaultInstance()) {
+            FactPublishData(
+                reason = "onTaskRemoved",
+                fact = TaskRemoved.newBuilder()
+                    .addAllApps(listOf(task.owner))
+                    .build()
+            ) {
+                mapOf(
+                    ContextDataMapping.TaskRemoved.appLabel.name to (app?.label
+                        ?: task.owner.pkgName),
+                    ContextDataMapping.TaskRemoved.taskId.name to "${task.taskId}",
+                    ContextDataMapping.TaskRemoved.userId.name to "${task.owner.userId}",
+                    ContextDataMapping.TaskRemoved.pkgName.name to task.owner.pkgName,
+                )
+            }
         }
     }
 
@@ -590,26 +594,28 @@ class AppStateService(shortXContext: ShortXContext) :
         logger.d("onProcessRemoved: ${process.owner.pkgName} - ${process.owner.userId} - ${process.processName}")
 
         if (isSystemReady) {
-            shortXContext.rule.publishFact(
-                reason = "onProcessRemoved",
-                fact = AppProcessRemoved.newBuilder().addAllProcessName(
-                    listOf(
-                        ProcessName.newBuilder().setUserId(process.owner.userId)
-                            .setProcessName(process.processName).build()
+            shortXContext.rule.publishFactChecked(AppProcessRemoved.getDefaultInstance()) {
+                FactPublishData(
+                    reason = "onProcessRemoved",
+                    fact = AppProcessRemoved.newBuilder().addAllProcessName(
+                        listOf(
+                            ProcessName.newBuilder().setUserId(process.owner.userId)
+                                .setProcessName(process.processName).build()
+                        )
                     )
+                        .build(),
+                    initialContextDataLazy = {
+                        mapOf(
+                            ContextDataMapping.AppProcessRemoved.processName.name to process.processName,
+                            ContextDataMapping.AppProcessRemoved.appLabel.name to (pkgToApp(process.owner)?.label.fallbackOnEmpty(
+                                ""
+                            )),
+                            ContextDataMapping.AppProcessRemoved.userId.name to process.owner.userId,
+                            ContextDataMapping.AppProcessRemoved.pkgName.name to process.owner.pkgName,
+                        )
+                    }
                 )
-                    .build(),
-                initialContextDataLazy = {
-                    mapOf(
-                        ContextDataMapping.AppProcessRemoved.processName.name to process.processName,
-                        ContextDataMapping.AppProcessRemoved.appLabel.name to (pkgToApp(process.owner)?.label.fallbackOnEmpty(
-                            ""
-                        )),
-                        ContextDataMapping.AppProcessRemoved.userId.name to process.owner.userId,
-                        ContextDataMapping.AppProcessRemoved.pkgName.name to process.owner.pkgName,
-                    )
-                }
-            )
+            }
         }
 
         val isPkgStillRunning = process.owner.isRunning()
@@ -632,42 +638,48 @@ class AppStateService(shortXContext: ShortXContext) :
     fun onProcessStarted(process: ProcessRecord) {
         logger.d("onProcessStarted: ${process.owner.pkgName} - ${process.owner.userId} - ${process.processName}")
         if (isSystemReady) {
-            shortXContext.rule.publishFact(
-                reason = "onProcessStarted",
-                fact = AppProcessStarted.newBuilder().addAllProcessName(
-                    listOf(
-                        ProcessName.newBuilder().setUserId(process.owner.userId)
-                            .setProcessName(process.processName).build()
+            shortXContext.rule.publishFactChecked(
+                AppProcessStarted.getDefaultInstance()
+            ) {
+                FactPublishData(
+                    reason = "onProcessStarted",
+                    fact = AppProcessStarted.newBuilder().addAllProcessName(
+                        listOf(
+                            ProcessName.newBuilder().setUserId(process.owner.userId)
+                                .setProcessName(process.processName).build()
+                        )
                     )
+                        .build(),
+                    initialContextDataLazy = {
+                        mapOf(
+                            ContextDataMapping.AppProcessStarted.processName.name to process.processName,
+                            ContextDataMapping.AppProcessStarted.appLabel.name to (pkgToApp(process.owner)?.label.fallbackOnEmpty(
+                                ""
+                            )),
+                            ContextDataMapping.AppProcessStarted.userId.name to process.owner.userId,
+                            ContextDataMapping.AppProcessStarted.pkgName.name to process.owner.pkgName,
+                        )
+                    }
                 )
-                    .build(),
-                initialContextDataLazy = {
-                    mapOf(
-                        ContextDataMapping.AppProcessStarted.processName.name to process.processName,
-                        ContextDataMapping.AppProcessStarted.appLabel.name to (pkgToApp(process.owner)?.label.fallbackOnEmpty(
-                            ""
-                        )),
-                        ContextDataMapping.AppProcessStarted.userId.name to process.owner.userId,
-                        ContextDataMapping.AppProcessStarted.pkgName.name to process.owner.pkgName,
-                    )
-                }
-            )
+            }
         }
     }
 
     private fun onPkgStopRunning(pkg: AppPkg) {
         logger.d("onPkgStopRunning: $pkg")
 
-        shortXContext.rule.publishFact(
-            "onPkgStopRunning",
-            PkgStopRunning.newBuilder()
-                .addAllApps(listOf(pkg))
-                .build()
-        ) {
-            mapOf(
-                ContextDataMapping.PkgStopRunning.userId.name to "${pkg.userId}",
-                ContextDataMapping.PkgStopRunning.pkgName.name to pkg.pkgName,
-            )
+        shortXContext.rule.publishFactChecked(PkgStopRunning.getDefaultInstance()) {
+            FactPublishData(
+                "onPkgStopRunning",
+                PkgStopRunning.newBuilder()
+                    .addAllApps(listOf(pkg))
+                    .build()
+            ) {
+                mapOf(
+                    ContextDataMapping.PkgStopRunning.userId.name to "${pkg.userId}",
+                    ContextDataMapping.PkgStopRunning.pkgName.name to pkg.pkgName,
+                )
+            }
         }
     }
 

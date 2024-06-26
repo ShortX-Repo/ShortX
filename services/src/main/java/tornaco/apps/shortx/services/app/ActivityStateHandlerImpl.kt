@@ -18,6 +18,7 @@ import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.appPkgToString
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.android.ServiceRetriever
+import tornaco.apps.shortx.services.rule.FactPublishData
 
 class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXContext) {
     private val logger = Logger("ActivityStateHandlerImpl")
@@ -69,22 +70,26 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
         onActivityStateChanged()
 
         val activity = componentName.toAppComponent(userId)
-        shortXContext.rule.publishFact(
-            reason = "onActivityResumed",
-            fact = ActivityStarted.newBuilder()
-                .addComponents(activity)
-                .build()
+        shortXContext.rule.publishFactChecked(
+            ActivityStarted.getDefaultInstance()
         ) {
-            mapOf(
-                ContextDataMapping.ActivityStarted.activityIntentUri.name to intentUri,
-                ContextDataMapping.ActivityStarted.pkgName.name to activity.pkg.pkgName,
-                ContextDataMapping.ActivityStarted.userId.name to activity.pkg.userId,
-                ContextDataMapping.ActivityStarted.taskLabel.name to taskLabel.orEmpty(),
-                ContextDataMapping.ActivityStarted.componentName.name to componentName.flattenToShortString(),
-                ContextDataMapping.ActivityStarted.appLabel.name to (shortXContext.appState.getAppLabel(
-                    activity.pkg
-                ) ?: activity.pkg.pkgName),
-            )
+            FactPublishData(
+                reason = "onActivityResumed",
+                fact = ActivityStarted.newBuilder()
+                    .addComponents(activity)
+                    .build()
+            ) {
+                mapOf(
+                    ContextDataMapping.ActivityStarted.activityIntentUri.name to intentUri,
+                    ContextDataMapping.ActivityStarted.pkgName.name to activity.pkg.pkgName,
+                    ContextDataMapping.ActivityStarted.userId.name to activity.pkg.userId,
+                    ContextDataMapping.ActivityStarted.taskLabel.name to taskLabel.orEmpty(),
+                    ContextDataMapping.ActivityStarted.componentName.name to componentName.flattenToShortString(),
+                    ContextDataMapping.ActivityStarted.appLabel.name to (shortXContext.appState.getAppLabel(
+                        activity.pkg
+                    ) ?: activity.pkg.pkgName),
+                )
+            }
         }
     }
 
@@ -94,43 +99,49 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
         onActivityStateChanged()
 
         val activity = componentName.toAppComponent(userId)
-        shortXContext.rule.publishFact(
-            reason = "onActivityStopped",
-            fact = ActivityStopped.newBuilder()
-                .addComponents(activity)
-                .build()
+        shortXContext.rule.publishFactChecked(
+            ActivityStopped.getDefaultInstance()
         ) {
-            mapOf(
-                ContextDataMapping.ActivityStopped.pkgName.name to activity.pkg.pkgName,
-                ContextDataMapping.ActivityStopped.userId.name to activity.pkg.userId,
-                ContextDataMapping.ActivityStarted.taskLabel.name to taskLabel.orEmpty(),
-                ContextDataMapping.ActivityStopped.componentName.name to componentName.flattenToShortString(),
-                ContextDataMapping.ActivityStopped.appLabel.name to (shortXContext.appState.getAppLabel(
-                    activity.pkg
-                ) ?: activity.pkg.pkgName),
-            )
+            FactPublishData(
+                reason = "onActivityStopped",
+                fact = ActivityStopped.newBuilder()
+                    .addComponents(activity)
+                    .build()
+            ) {
+                mapOf(
+                    ContextDataMapping.ActivityStopped.pkgName.name to activity.pkg.pkgName,
+                    ContextDataMapping.ActivityStopped.userId.name to activity.pkg.userId,
+                    ContextDataMapping.ActivityStarted.taskLabel.name to taskLabel.orEmpty(),
+                    ContextDataMapping.ActivityStopped.componentName.name to componentName.flattenToShortString(),
+                    ContextDataMapping.ActivityStopped.appLabel.name to (shortXContext.appState.getAppLabel(
+                        activity.pkg
+                    ) ?: activity.pkg.pkgName),
+                )
+            }
         }
     }
 
     fun onActivityDestroyed(componentName: ComponentName, userId: Int, taskLabel: String?) {
         logger.d("onActivityDestroyed: $componentName userId: $userId $taskLabel")
 
-        val activity = componentName.toAppComponent(userId)
-        shortXContext.rule.publishFact(
-            reason = "onActivityDestroyed",
-            fact = ActivityDestroyed.newBuilder()
-                .addComponents(activity)
-                .build()
-        ) {
-            mapOf(
-                ContextDataMapping.ActivityStopped.pkgName.name to activity.pkg.pkgName,
-                ContextDataMapping.ActivityStopped.userId.name to activity.pkg.userId,
-                ContextDataMapping.ActivityStopped.componentName.name to componentName.flattenToShortString(),
-                ContextDataMapping.ActivityStarted.taskLabel.name to taskLabel.orEmpty(),
-                ContextDataMapping.ActivityStopped.appLabel.name to (shortXContext.appState.getAppLabel(
-                    activity.pkg
-                ) ?: activity.pkg.pkgName),
-            )
+        shortXContext.rule.publishFactChecked(ActivityDestroyed.getDefaultInstance()) {
+            val activity = componentName.toAppComponent(userId)
+            FactPublishData(
+                reason = "onActivityDestroyed",
+                fact = ActivityDestroyed.newBuilder()
+                    .addComponents(activity)
+                    .build()
+            ) {
+                mapOf(
+                    ContextDataMapping.ActivityStopped.pkgName.name to activity.pkg.pkgName,
+                    ContextDataMapping.ActivityStopped.userId.name to activity.pkg.userId,
+                    ContextDataMapping.ActivityStopped.componentName.name to componentName.flattenToShortString(),
+                    ContextDataMapping.ActivityStarted.taskLabel.name to taskLabel.orEmpty(),
+                    ContextDataMapping.ActivityStopped.appLabel.name to (shortXContext.appState.getAppLabel(
+                        activity.pkg
+                    ) ?: activity.pkg.pkgName),
+                )
+            }
         }
     }
 
@@ -215,33 +226,43 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
 
         addedApps.forEach {
             logger.i("+++++++++> Pkg to FRONT: $it")
-            shortXContext.rule.publishFact(
-                reason = "onActivityResumed",
-                fact = AppBecomeFg.newBuilder().addApps(it).build(),
-                initialContextData = mapOf(
-                    ContextDataMapping.AppBecomeFg.pkgName.name to it.pkgName,
-                    ContextDataMapping.AppBecomeFg.userId.name to it.userId,
-                    ContextDataMapping.AppBecomeFg.appLabel.name to (shortXContext.appState.getAppLabel(
-                        it
-                    ) ?: it.pkgName),
+            shortXContext.rule.publishFactChecked(
+                AppBecomeFg.getDefaultInstance()
+            ) {
+                FactPublishData(
+                    reason = "onActivityResumed",
+                    fact = AppBecomeFg.newBuilder().addApps(it).build(),
+                    initialContextDataLazy = {
+                        mapOf(
+                            ContextDataMapping.AppBecomeFg.pkgName.name to it.pkgName,
+                            ContextDataMapping.AppBecomeFg.userId.name to it.userId,
+                            ContextDataMapping.AppBecomeFg.appLabel.name to (shortXContext.appState.getAppLabel(
+                                it
+                            ) ?: it.pkgName),
+                        )
+                    }
                 )
-            )
+            }
         }
 
         removedApps.forEach {
             logger.i("---------> Pkg to BACKGROUND: $it")
-            shortXContext.rule.publishFact(
-                reason = "onActivityResumed",
-                fact = AppBecomeBg.newBuilder().addApps(it).build(),
-                initialContextData = mapOf(
-                    ContextDataMapping.AppBecomeBg.pkgName.name to it.pkgName,
-                    ContextDataMapping.AppBecomeBg.userId.name to it.userId,
-                    ContextDataMapping.AppBecomeBg.appLabel.name to (shortXContext.appState.getAppLabel(
-                        it
-                    )
-                        ?: it.pkgName),
+            shortXContext.rule.publishFactChecked(AppBecomeBg.getDefaultInstance()) {
+                FactPublishData(
+                    reason = "onActivityResumed",
+                    fact = AppBecomeBg.newBuilder().addApps(it).build(),
+                    initialContextDataLazy = {
+                        mapOf(
+                            ContextDataMapping.AppBecomeBg.pkgName.name to it.pkgName,
+                            ContextDataMapping.AppBecomeBg.userId.name to it.userId,
+                            ContextDataMapping.AppBecomeBg.appLabel.name to (shortXContext.appState.getAppLabel(
+                                it
+                            )
+                                ?: it.pkgName),
+                        )
+                    }
                 )
-            )
+            }
         }
         logger.i("----> Update _currentResumedActivities to: ${topVisibleActivities.map { it.appComponentToString() }}")
         _currentResumedActivities.value = topVisibleActivities
