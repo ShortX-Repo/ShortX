@@ -32,7 +32,7 @@ object CustomHook {
 
     fun hookAndroidSystem(lpparam: XC_LoadPackage.LoadPackageParam) {
         if (!IS_FEATURE_ENABLED) return
-        ShortXService.registerLifecycleSystemReadyCallback {
+        ShortXService.shortXContext.serviceLifecycle.registerLifecycleSystemReadyCallback {
             val log: (String) -> Unit = {
                 ShortXService.serviceBinder.log(it, LOG_REDIRECT)
             }

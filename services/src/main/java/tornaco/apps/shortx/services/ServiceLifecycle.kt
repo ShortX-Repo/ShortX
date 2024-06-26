@@ -8,6 +8,8 @@ class ServiceLifecycle(private val shortXContext: ShortXContext) {
     private val logger = Logger("ServiceLifecycle")
     private val exe = Executors.newSingleThreadExecutor()
 
+    private val lifecycleSystemReadyCallbacks = mutableListOf<() -> Unit>()
+
     var isSystemReadyCalled: Boolean = false
         private set
 
@@ -23,7 +25,8 @@ class ServiceLifecycle(private val shortXContext: ShortXContext) {
         }
     }
 
-    fun systemReady(callbackComplete: () -> Unit) {
+    @Synchronized
+    fun systemReady() {
         logger.d("systemReady")
         exe.execute {
             shortXContext.allServices.forEach {
@@ -33,7 +36,7 @@ class ServiceLifecycle(private val shortXContext: ShortXContext) {
                 logger.i("systemReady---> $it take $taken(ms)")
             }
             isSystemReadyCalled = true
-            callbackComplete()
+            lifecycleSystemReadyCallbacks.forEach { it.invoke() }
         }
     }
 
@@ -70,6 +73,15 @@ class ServiceLifecycle(private val shortXContext: ShortXContext) {
                 val taken = System.currentTimeMillis() - startTime
                 logger.i("userPresent---> $it take $taken(ms)")
             }
+        }
+    }
+
+    @Synchronized
+    fun registerLifecycleSystemReadyCallback(callback: () -> Unit) {
+        if (isSystemReadyCalled) {
+            callback()
+        } else {
+            lifecycleSystemReadyCallbacks.add(callback)
         }
     }
 }

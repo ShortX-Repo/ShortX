@@ -8,6 +8,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -32,7 +33,7 @@ class FactPublishInterceptor(
     }
 
     private val logger = Logger("FactPublishInterceptor")
-    private val changeTime = MutableStateFlow(System.currentTimeMillis())
+    private val changeTime = MutableStateFlow(0L)
 
     private val enabledProtoUrlCache: MutableSet<String> = mutableSetOf()
 
@@ -43,6 +44,9 @@ class FactPublishInterceptor(
 
     private val protoUrlCacheFlow = changeTime
         .debounce(BUILD_CACHE_DELAY_MS)
+        .filter {
+            shortXContext.serviceLifecycle.isSystemReadyCalled
+        }
         .map {
             buildCache()
         }
@@ -98,27 +102,34 @@ class FactPublishInterceptor(
             }
         }
 
-        postInvalidate()
+        shortXContext.serviceLifecycle.registerLifecycleSystemReadyCallback {
+            postInvalidate()
+        }
     }
 
     // True: block.
     fun intercept(fact: ProtoMessage): Boolean {
         if (alwaysPublishUrls.contains(fact.getTypeUrl())) return false
         if (!cacheHasBeenBuilt.get()) {
-            logger.w("Cache has not built, do not intercept.")
+            logger.i("Cache has not built, do not intercept.")
             return false
         }
         if (enabledProtoUrlCache.contains(fact.getTypeUrl())) return false
+
+        logger.p { "-------- DUMP START ---------" }
+        logger.p { enabledProtoUrlCache.joinToString(System.lineSeparator()) }
+        logger.p { "-------- DUMP END ---------" }
+
         return true
     }
 
     private fun postInvalidate() {
-        logger.w("postInvalidate.")
+        logger.i("postInvalidate.")
         changeTime.value = System.currentTimeMillis()
     }
 
     private fun buildCache(): Set<String> {
-        logger.w("buildCache.")
+        logger.i("buildCache.")
 
         val enabledRules =
             shortXContext.rule.getAllEnabledRules().map { it.findTypeUrls() }.flatten()

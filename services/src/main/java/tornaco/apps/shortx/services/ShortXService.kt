@@ -95,8 +95,6 @@ import java.io.File
 
 @SuppressLint("StaticFieldLeak")
 object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
-    private val lifecycleSystemReadyCallbacks = mutableListOf<() -> Unit>()
-
     fun main() {
         LogInit.initEarlyLogging()
         ShortXManagerNative.attachLocalService(serviceBinder)
@@ -117,17 +115,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         I18NCache.init(appRes.appContext, localeName)
         val testRes = i18NIns["ui.common.delete"]
         logger.d("testRes: $testRes")
-        shortXContext.serviceLifecycle.systemReady {
-            lifecycleSystemReadyCallbacks.forEach { it.invoke() }
-        }
-    }
-
-    fun registerLifecycleSystemReadyCallback(callback: () -> Unit) {
-        if (shortXContext.serviceLifecycle.isSystemReadyCalled) {
-            callback()
-        } else {
-            lifecycleSystemReadyCallbacks.add(callback)
-        }
+        shortXContext.serviceLifecycle.systemReady()
     }
 
     private fun newBinderProxy(orig: Binder): tornaco.apps.shortx.services.util.BinderProxy {
