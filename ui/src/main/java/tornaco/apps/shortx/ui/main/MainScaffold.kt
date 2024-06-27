@@ -9,6 +9,8 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -69,7 +71,6 @@ import tornaco.apps.shortx.ui.base.RebootConfirmDialog
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShareDialog
 import tornaco.apps.shortx.ui.base.ShortXAlertDialog
-import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.TextInputDialog
@@ -191,19 +192,17 @@ fun MainScaffold(
     var isShowActiveDialog by remember {
         mutableStateOf(false)
     }
-
-
     Surface(
         modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
     ) {
-        val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+        val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
         val snackbarHostState = remember { SnackbarHostState() }
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             snackbarHost = { SnackbarHost(snackbarHostState) },
             topBar = {
                 if (state.isActivated) {
-                    ShortXMediumTopAppBar(
+                    ShortXTopAppBar(
                         title = {
                             Text(
                                 text = LocalI18N.current[appBarTitleKey]
@@ -240,7 +239,6 @@ fun MainScaffold(
             },
             floatingActionButton = floatingActionButton
         ) { paddingValues ->
-
             val shareDialogState = rememberShareDialogState("share.shortx")
             ShareDialog(state = shareDialogState)
 
@@ -250,15 +248,16 @@ fun MainScaffold(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
+                    .consumeWindowInsets(paddingValues)
                     .let {
                         if (enableMask) {
                             it.blur(12.dp)
                         } else it
                     },
             ) {
-                val context = LocalContext.current
+                Spacer(Modifier.size(paddingValues.calculateTopPadding()))
 
+                val context = LocalContext.current
                 AnimatedVisibility(
                     visible = subscribeState.isInited && !subscribeState.isSubscribed
                             && !state.isHideSubscribeInfo
@@ -385,6 +384,8 @@ fun MainScaffold(
                             acceptPrivacyStatement()
                         })
                 }
+
+                Spacer(Modifier.size(paddingValues.calculateBottomPadding()))
             }
 
             if (enableMask) {

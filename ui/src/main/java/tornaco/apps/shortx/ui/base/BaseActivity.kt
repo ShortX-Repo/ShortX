@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.base
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -16,14 +17,14 @@ abstract class BaseActivity : AppCompatActivity() {
         beforeOnCreate()
         super.onCreate(savedInstanceState)
         logger.i("onCreate")
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        enableEdgeToEdge()
 
         val appName = "ShortX"
         setContent {
             CompositionLocalProvider(
                 LocalI18N provides i18NIns,
                 LocalActivity provides this,
-                LocalAppName provides appName.toString()
+                LocalAppName provides appName
             ) {
                 ShortXProps {
                     Content()

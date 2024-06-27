@@ -33,6 +33,7 @@
         <activity
             android:name=".main.MainActivity"
             android:exported="true"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/UiTheme.AppSplash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
