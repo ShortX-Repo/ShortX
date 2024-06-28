@@ -166,6 +166,13 @@ fun DirectActionListScreen() {
         },
         acceptPrivacyStatement = {
             mainViewModel.acceptPrivacyStatement()
+        },
+        appBarContent = {
+            DASetFilterFlowRow(
+                daSetFilters = daListState.daSetFilters,
+                selectedDASetFilter = daListState.selectedDASetFilter,
+                selectDASetFilter = { daListViewModel.selectDASetFilter(it) },
+            )
         }
     ) {
         val bottomSheetState = rememberShortXBottomSheetState()
@@ -187,11 +194,34 @@ fun DirectActionListScreen() {
                 isShowDetailedDAItem = daListState.isShowDetailedDAItem,
                 colorfulCard = daListState.colorfulCard,
                 das = daListState.das,
-                daSetFilters = daListState.daSetFilters,
-                selectedDASetFilter = daListState.selectedDASetFilter,
-                selectDASetFilter = { daListViewModel.selectDASetFilter(it) },
                 showOverflowMenu = true
             )
+        }
+    }
+}
+
+@Composable
+fun DASetFilterFlowRow(
+    daSetFilters: List<CommonSetFilter> = emptyList(),
+    selectedDASetFilter: CommonSetFilter = CommonSetFilter.PinnedAll,
+    selectDASetFilter: (CommonSetFilter) -> Unit = {},
+) {
+    if (daSetFilters.any { !it.isStock }) {
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            daSetFilters.forEach {
+                ShortXFilterChip(
+                    modifier = Modifier.padding(start = 16.dp),
+                    selected = selectedDASetFilter == it,
+                    label = {
+                        Text(text = it.title)
+                    },
+                    onClick = {
+                        selectDASetFilter(it)
+                    })
+            }
         }
     }
 }
@@ -204,9 +234,6 @@ fun DirectActionListContent(
     colorfulCard: Boolean,
     das: List<DirectActionUM>,
     showOverflowMenu: Boolean = false,
-    daSetFilters: List<CommonSetFilter> = emptyList(),
-    selectedDASetFilter: CommonSetFilter = CommonSetFilter.PinnedAll,
-    selectDASetFilter: (CommonSetFilter) -> Unit = {},
 ) {
     val refreshState = rememberPullRefreshState(isLoading, onRefresh = {
     })
@@ -216,25 +243,6 @@ fun DirectActionListContent(
             .pullRefresh(refreshState)
     ) {
         Column {
-            if (daSetFilters.any { !it.isStock }) {
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    daSetFilters.forEach {
-                        ShortXFilterChip(
-                            modifier = Modifier.padding(start = 16.dp),
-                            selected = selectedDASetFilter == it,
-                            label = {
-                                Text(text = it.title)
-                            },
-                            onClick = {
-                                selectDASetFilter(it)
-                            })
-                    }
-                }
-            }
-
             if (!isLoading && das.isEmpty()) {
                 EmptyList(modifier = Modifier.fillMaxSize())
             } else {

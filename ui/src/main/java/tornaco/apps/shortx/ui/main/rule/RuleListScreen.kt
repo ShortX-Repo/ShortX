@@ -78,6 +78,9 @@ fun RuleScreen() {
             ViewerActivity.start(context, fileUri)
         }
     }
+
+
+
     MainScaffold(
         state = mainState,
         appBarTitleKey = "ui.feat.label.rule",
@@ -107,6 +110,15 @@ fun RuleScreen() {
         },
         acceptPrivacyStatement = {
             mainViewModel.acceptPrivacyStatement()
+        },
+        appBarContent = {
+            RuleSetFlowRow(
+                ruleSetFilters = ruleListState.ruleSetFilters,
+                selectedRuleSetFilter = ruleListState.selectedRuleSetFilter,
+                selectRuleSetFilter = {
+                    ruleListViewModel.selectRuleSetFilter(it)
+                }
+            )
         }
     ) {
         val bottomSheetState = rememberShortXBottomSheetState()
@@ -122,12 +134,7 @@ fun RuleScreen() {
             RuleContent(
                 isLoading = ruleListState.isLoading,
                 colorfulCard = ruleListState.colorfulCard,
-                rules = ruleListState.rules,
-                ruleSetFilters = ruleListState.ruleSetFilters,
-                selectedRuleSetFilter = ruleListState.selectedRuleSetFilter,
-                selectRuleSetFilter = {
-                    ruleListViewModel.selectRuleSetFilter(it)
-                }
+                rules = ruleListState.rules
             )
         }
     }
@@ -135,13 +142,36 @@ fun RuleScreen() {
 }
 
 @Composable
-fun RuleContent(
-    isLoading: Boolean,
-    colorfulCard: Boolean,
-    rules: List<RuleUM>,
+fun RuleSetFlowRow(
     ruleSetFilters: List<CommonSetFilter> = emptyList(),
     selectedRuleSetFilter: CommonSetFilter = CommonSetFilter.PinnedAll,
     selectRuleSetFilter: (CommonSetFilter) -> Unit = {},
+) {
+    if (ruleSetFilters.any { !it.isStock }) {
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            ruleSetFilters.forEach {
+                ShortXFilterChip(
+                    modifier = Modifier.padding(start = 16.dp),
+                    selected = selectedRuleSetFilter == it,
+                    label = {
+                        Text(text = it.title)
+                    },
+                    onClick = {
+                        selectRuleSetFilter(it)
+                    })
+            }
+        }
+    }
+}
+
+@Composable
+fun RuleContent(
+    isLoading: Boolean,
+    colorfulCard: Boolean,
+    rules: List<RuleUM>
 ) {
     val refreshState = rememberPullRefreshState(isLoading, onRefresh = {
     })
@@ -151,25 +181,6 @@ fun RuleContent(
             .pullRefresh(refreshState)
     ) {
         Column {
-            if (ruleSetFilters.any { !it.isStock }) {
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    ruleSetFilters.forEach {
-                        ShortXFilterChip(
-                            modifier = Modifier.padding(start = 16.dp),
-                            selected = selectedRuleSetFilter == it,
-                            label = {
-                                Text(text = it.title)
-                            },
-                            onClick = {
-                                selectRuleSetFilter(it)
-                            })
-                    }
-                }
-            }
-
             if (!isLoading && rules.isEmpty()) {
                 EmptyList(modifier = Modifier.fillMaxSize())
             } else {

@@ -31,6 +31,7 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.main.CommonSetFilter
 import tornaco.apps.shortx.ui.main.da.DAItemHandler
 import tornaco.apps.shortx.ui.main.da.DAListViewModel
+import tornaco.apps.shortx.ui.main.da.DASetFilterFlowRow
 import tornaco.apps.shortx.ui.main.da.DASetItemHandler
 import tornaco.apps.shortx.ui.main.da.DirectActionListContent
 import tornaco.apps.shortx.ui.main.da.LocalDAItemHandler
@@ -100,11 +101,11 @@ private fun DASelector(dialogState: DADialogState) {
                         actions = {
                         },
                     )
-                }) {
+                }) { paddingValues ->
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(it)
+                        .padding(paddingValues)
                 ) {
                     val daItemHandler = object : DAItemHandler {
                         override fun click(da: DirectActionUM) {
@@ -118,13 +119,15 @@ private fun DASelector(dialogState: DADialogState) {
                         LocalDAItemHandler provides daItemHandler,
                         LocalDASetItemHandler provides setItemHandler
                     ) {
+                        DASetFilterFlowRow(
+                            daSetFilters = daListState.daSetFilters,
+                            selectedDASetFilter = daListState.selectedDASetFilter,
+                            selectDASetFilter = { daListViewModel.selectDASetFilter(it) },
+                        )
                         DirectActionListContent(
                             isLoading = daListState.isLoading,
                             isShowDetailedDAItem = daListState.isShowDetailedDAItem,
                             das = daListState.das,
-                            daSetFilters = daListState.daSetFilters,
-                            selectedDASetFilter = daListState.selectedDASetFilter,
-                            selectDASetFilter = { daListViewModel.selectDASetFilter(it) },
                             showOverflowMenu = false,
                             colorfulCard = false
                         )

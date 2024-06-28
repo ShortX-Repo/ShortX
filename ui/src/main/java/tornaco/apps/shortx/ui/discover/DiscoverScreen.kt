@@ -201,18 +201,19 @@ fun DiscoverScreen() {
         onMaskClickOutside = {},
         acceptPrivacyStatement = {
             vm.acceptPrivacyStatement()
-        }
+        },
+        appBarContent = {}
     ) {
         val pagerState = rememberPagerState(
             initialPage = initialPageIndex,
             pageCount = {
-                DiscoverTabItem.values().size
+                DiscoverTabItem.entries.size
             })
         val scope = rememberCoroutineScope()
 
         Column {
             ShortXTabRow(
-                items = DiscoverTabItem.values().map { LocalI18N.current[it.titleKey] },
+                items = DiscoverTabItem.entries.map { LocalI18N.current[it.titleKey] },
                 selectedTabIndex = pagerState.currentPage,
                 onSelectedTab = {
                     scope.launch { pagerState.animateScrollToPage(it) }

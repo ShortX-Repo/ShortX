@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -97,6 +98,7 @@ fun MainScaffold(
     onUrlClick: (String) -> Unit,
     onNewSetClick: (String) -> Unit,
     acceptPrivacyStatement: () -> Unit,
+    appBarContent: @Composable ColumnScope.() -> Unit = {},
     content: @Composable () -> Unit
 ) {
     val subscribeState by LVLStateHolder.collectAsState()
@@ -173,6 +175,7 @@ fun MainScaffold(
             AddOptionsFab(fabState)
         },
         onMaskClickOutside = { fabState.collapse() },
+        appBarContent = appBarContent,
         content = content
     )
 }
@@ -187,7 +190,8 @@ fun MainScaffold(
     acceptPrivacyStatement: () -> Unit,
     floatingActionButton: @Composable () -> Unit = {},
     onMaskClickOutside: () -> Unit,
-    content: @Composable () -> Unit
+    appBarContent: @Composable ColumnScope.() -> Unit,
+    content: @Composable () -> Unit,
 ) {
     var isShowActiveDialog by remember {
         mutableStateOf(false)
@@ -201,38 +205,42 @@ fun MainScaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             snackbarHost = { SnackbarHost(snackbarHostState) },
             topBar = {
-                if (state.isActivated) {
-                    ShortXTopAppBar(
-                        title = {
-                            Text(
-                                text = LocalI18N.current[appBarTitleKey]
-                            )
-                        },
-                        navigationIcon = {
-                            SettingsAppBarActions()
-                        },
-                        actions = {
-                            appBarActions()
-                        },
-                        scrollBehavior = scrollBehavior,
-                    )
-                } else {
-                    ShortXTopAppBar(
-                        title = {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(text = LocalAppName.current)
-                                SmallSpacer()
-                                ClickableBadge(text = LocalI18N.current["ui.settings.core.info.na"]) {
-                                    isShowActiveDialog = true
+                Column {
+                    if (state.isActivated) {
+                        ShortXTopAppBar(
+                            title = {
+                                Text(
+                                    text = LocalI18N.current[appBarTitleKey]
+                                )
+                            },
+                            navigationIcon = {
+                                SettingsAppBarActions()
+                            },
+                            actions = {
+                                appBarActions()
+                            },
+                            scrollBehavior = scrollBehavior,
+                        )
+                    } else {
+                        ShortXTopAppBar(
+                            title = {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(text = LocalAppName.current)
+                                    SmallSpacer()
+                                    ClickableBadge(text = LocalI18N.current["ui.settings.core.info.na"]) {
+                                        isShowActiveDialog = true
+                                    }
                                 }
-                            }
-                        },
-                        navigationIcon = {
-                            SettingsAppBarActions()
-                        },
-                        actions = {
-                            appBarActions()
-                        })
+                            },
+                            navigationIcon = {
+                                SettingsAppBarActions()
+                            },
+                            actions = {
+                                appBarActions()
+                            })
+                    }
+
+                    appBarContent()
                 }
             },
             bottomBar = {
