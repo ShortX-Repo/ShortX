@@ -4,16 +4,8 @@ package tornaco.apps.shortx.ui.addrule.condition.selector
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -23,9 +15,8 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.model.allConditionClasses
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
-import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
@@ -45,68 +36,52 @@ fun ConditionSelector(
     close: () -> Unit, onSelected: (Condition) -> Unit
 ) {
     ShortXTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+        ShortXAppBarScaffold(
+            title = LocalI18N.current["ui.conditions.add"],
+            onBackPressed = { close() },
         ) {
-            Scaffold(modifier = Modifier,
-                topBar = {
-                    ShortXTopAppBar(
-                        modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.conditions.add"]) },
-                        actions = {
-                            IconButton(onClick = {
-                                close()
-                            }) {
-                                RemixIcon(remixName = Remix.System.close_line)
-                            }
-                        },
-                    )
-                }) { paddingValues ->
-                Column(
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                        .padding(paddingValues)
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    val searchBarState = rememberSearchBarState(
-                        itemCount = allConditionClasses.size,
-                        keywordChanged = { })
-                    SearchBar(searchBarState = searchBarState)
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+            ) {
+                val searchBarState = rememberSearchBarState(
+                    itemCount = allConditionClasses.size,
+                    keywordChanged = { })
+                SearchBar(searchBarState = searchBarState)
 
-                    val setCondition: (Condition) -> Unit = {
-                        onSelected(it)
-                    }
-
-                    val subscribeState by LVLStateHolder.collectAsState()
-
-                    UIConditions(
-                        keyword = searchBarState.keyword,
-                        subscribeState = subscribeState,
-                        setCondition = setCondition
-                    )
-                    StandardSpacer()
-
-                    AppConditions(
-                        keyword = searchBarState.keyword,
-                        subscribeState = subscribeState,
-                        setCondition = setCondition
-                    )
-                    StandardSpacer()
-
-                    SystemConditions(
-                        searchBarState.keyword,
-                        subscribeState,
-                        setCondition = setCondition
-                    )
-                    StandardSpacer()
-
-                    OtherConditions(
-                        searchBarState.keyword,
-                        subscribeState,
-                        setCondition = setCondition
-                    )
-                    StandardSpacer()
+                val setCondition: (Condition) -> Unit = {
+                    onSelected(it)
                 }
+
+                val subscribeState by LVLStateHolder.collectAsState()
+
+                UIConditions(
+                    keyword = searchBarState.keyword,
+                    subscribeState = subscribeState,
+                    setCondition = setCondition
+                )
+                StandardSpacer()
+
+                AppConditions(
+                    keyword = searchBarState.keyword,
+                    subscribeState = subscribeState,
+                    setCondition = setCondition
+                )
+                StandardSpacer()
+
+                SystemConditions(
+                    searchBarState.keyword,
+                    subscribeState,
+                    setCondition = setCondition
+                )
+                StandardSpacer()
+
+                OtherConditions(
+                    searchBarState.keyword,
+                    subscribeState,
+                    setCondition = setCondition
+                )
+                StandardSpacer()
             }
         }
     }

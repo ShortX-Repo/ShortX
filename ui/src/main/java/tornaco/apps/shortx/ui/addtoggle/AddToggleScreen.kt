@@ -13,19 +13,12 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -36,7 +29,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -65,7 +57,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalShortXProps
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
-import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
+import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
@@ -74,7 +66,6 @@ import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.record.EvaRecordSetting
 import tornaco.apps.shortx.ui.settings.TileSettingsActivity
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
-import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
 class AddToggleActivity : BaseActivity() {
@@ -162,101 +153,80 @@ fun AddToggleScreen(
     val actionOnDeletedState by actionOnDeletedHandler.state.collectAsState()
 
 
-    ShortXTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
-        ) {
-            val backConfirmDialogState = rememberConfirmDialogState()
-            ConfirmDialog(
-                title = i18n["ui.edit.discard.dialog.title"],
-                messageHint = {
-                    i18n["ui.edit.discard.dialog.message"]
-                },
-                confirmButton = i18n["ui.edit.discard.dialog.discard"],
-                dismissButton = i18n["ui.edit.discard.dialog.stay"],
-                state = backConfirmDialogState,
-                data = "",
-                onConfirm = {
-                    back(false)
-                })
+    val backConfirmDialogState = rememberConfirmDialogState()
+    ConfirmDialog(
+        title = i18n["ui.edit.discard.dialog.title"],
+        messageHint = {
+            i18n["ui.edit.discard.dialog.message"]
+        },
+        confirmButton = i18n["ui.edit.discard.dialog.discard"],
+        dismissButton = i18n["ui.edit.discard.dialog.stay"],
+        state = backConfirmDialogState,
+        data = "",
+        onConfirm = {
+            back(false)
+        })
 
-            val hasAnyChanges = remember(
-                addToggleState,
-                actionOnEnabledState,
-                actionOnDisabledState,
-                actionOnDeletedState,
+    val hasAnyChanges = remember(
+        addToggleState,
+        actionOnEnabledState,
+        actionOnDisabledState,
+        actionOnDeletedState,
+    ) {
+        addToggleState.toggleChanged
+                || actionOnEnabledState.isChanged
+                || actionOnDisabledState.isChanged
+                || actionOnDeletedState.isChanged
+                || conditionContentState.isChanged
+    }
+
+
+    BackHandler {
+        if (hasAnyChanges) {
+            backConfirmDialogState.show()
+        } else {
+            back(false)
+        }
+    }
+
+    ShortXAppBarScaffold(
+        title = screenTitle,
+        onBackPressed = {
+            if (hasAnyChanges) {
+                backConfirmDialogState.show()
+            } else {
+                back(false)
+            }
+        },
+        actions = {
+            IconButton(
+                enabled = canSaveWithoutChanges || hasAnyChanges,
+                onClick = {
+                    vm.save(shortXProps.firstOrNull())
+                    back(true)
+                }) {
+                RemixIcon(remixName = saveIconName)
+            }
+        }) {
+        ClickOutsideClearFocusBox {
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .animateContentSize()
             ) {
-                addToggleState.toggleChanged
-                        || actionOnEnabledState.isChanged
-                        || actionOnDisabledState.isChanged
-                        || actionOnDeletedState.isChanged
-                        || conditionContentState.isChanged
-            }
-
-
-            BackHandler {
-                if (hasAnyChanges) {
-                    backConfirmDialogState.show()
-                } else {
-                    back(false)
-                }
-            }
-
-            val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-            Scaffold(
-                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                topBar = {
-                    ShortXMediumTopAppBar(
-                        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                        title = { Text(text = screenTitle) },
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                if (hasAnyChanges) {
-                                    backConfirmDialogState.show()
-                                } else {
-                                    back(false)
-                                }
-                            }) {
-                                RemixIcon(remixName = Remix.System.close_line)
-                            }
-                        },
-                        actions = {
-                            IconButton(
-                                enabled = canSaveWithoutChanges || hasAnyChanges,
-                                onClick = {
-                                    vm.save(shortXProps.firstOrNull())
-                                    back(true)
-                                }) {
-                                RemixIcon(remixName = saveIconName)
-                            }
-                        },
-                        scrollBehavior = scrollBehavior
-                    )
-                }) { paddingValues ->
-                val scrollState = rememberScrollState()
-                ClickOutsideClearFocusBox {
-                    Column(
-                        modifier = Modifier
-                            .verticalScroll(scrollState)
-                            .padding(paddingValues)
-                            .padding(horizontal = 16.dp)
-                            .animateContentSize()
-                    ) {
-                        ToggleContent(
-                            addToggleState = addToggleState,
-                            vm = vm,
-                            readOnly = readOnly,
-                            conditionContentState = conditionContentState,
-                            conditionHandler = conditionHandler,
-                            actionOnEnabledState = actionOnEnabledState,
-                            actionOnEnabledHandler = actionOnEnabledHandler,
-                            actionOnDisabledState = actionOnDisabledState,
-                            actionOnDisabledHandler = actionOnDisabledHandler,
-                            actionOnDeletedState = actionOnDeletedState,
-                            actionOnDeletedHandler = actionOnDeletedHandler
-                        )
-                    }
-                }
+                ToggleContent(
+                    addToggleState = addToggleState,
+                    vm = vm,
+                    readOnly = readOnly,
+                    conditionContentState = conditionContentState,
+                    conditionHandler = conditionHandler,
+                    actionOnEnabledState = actionOnEnabledState,
+                    actionOnEnabledHandler = actionOnEnabledHandler,
+                    actionOnDisabledState = actionOnDisabledState,
+                    actionOnDisabledHandler = actionOnDisabledHandler,
+                    actionOnDeletedState = actionOnDeletedState,
+                    actionOnDeletedHandler = actionOnDeletedHandler
+                )
             }
         }
     }

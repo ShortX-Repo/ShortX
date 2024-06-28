@@ -6,9 +6,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.core.view.WindowCompat
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.subscribe.ShortXProps
+import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 abstract class BaseActivity : AppCompatActivity() {
     private val logger = Logger("ActivityLifecycle")
@@ -27,7 +27,9 @@ abstract class BaseActivity : AppCompatActivity() {
                 LocalAppName provides appName
             ) {
                 ShortXProps {
-                    Content()
+                    ShortXTheme {
+                        Content()
+                    }
                 }
             }
         }

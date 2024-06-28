@@ -14,16 +14,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -34,7 +29,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -75,7 +69,7 @@ import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.MediumTitleWithTip
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
-import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
+import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
@@ -88,7 +82,6 @@ import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.record.EvaRecordSetting
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
-import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
 class AddRuleActivity : BaseActivity() {
@@ -202,134 +195,113 @@ fun AddRuleScreen(
         }
     }
 
-    ShortXTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
-        ) {
+    val backConfirmDialogState = rememberConfirmDialogState()
+    ConfirmDialog(
+        title = i18n["ui.edit.discard.dialog.title"],
+        messageHint = {
+            i18n["ui.edit.discard.dialog.message"]
+        },
+        confirmButton = i18n["ui.edit.discard.dialog.discard"],
+        dismissButton = i18n["ui.edit.discard.dialog.stay"],
+        state = backConfirmDialogState,
+        data = "",
+        onConfirm = {
+            back(false)
+        })
 
-            val backConfirmDialogState = rememberConfirmDialogState()
-            ConfirmDialog(
-                title = i18n["ui.edit.discard.dialog.title"],
-                messageHint = {
-                    i18n["ui.edit.discard.dialog.message"]
-                },
-                confirmButton = i18n["ui.edit.discard.dialog.discard"],
-                dismissButton = i18n["ui.edit.discard.dialog.stay"],
-                state = backConfirmDialogState,
-                data = "",
-                onConfirm = {
-                    back(false)
-                })
+    val hasAnyChanges = remember(
+        addRuleState,
+        factContentState,
+        actionContentState,
+        conditionContentState,
+        actionOnEnabledState,
+        actionOnDisabledState,
+        actionOnDeletedState,
+        quitFactContentState,
+        quitConditionContentState,
+        quitActionState
+    ) {
+        addRuleState.ruleChanged
+                || factContentState.isChanged
+                || actionContentState.isChanged
+                || conditionContentState.isChanged
+                || actionOnEnabledState.isChanged
+                || actionOnDisabledState.isChanged
+                || actionOnDeletedState.isChanged
+                || quitFactContentState.isChanged
+                || quitConditionContentState.isChanged
+                || quitActionState.isChanged
+    }
 
-            val hasAnyChanges = remember(
-                addRuleState,
-                factContentState,
-                actionContentState,
-                conditionContentState,
-                actionOnEnabledState,
-                actionOnDisabledState,
-                actionOnDeletedState,
-                quitFactContentState,
-                quitConditionContentState,
-                quitActionState
+    BackHandler {
+        if (hasAnyChanges) {
+            backConfirmDialogState.show()
+        } else {
+            back(false)
+        }
+    }
+
+    ShortXAppBarScaffold(
+        title = screenTitle,
+        onBackPressed = {
+            if (hasAnyChanges) {
+                backConfirmDialogState.show()
+            } else {
+                back(false)
+            }
+        },
+        actions = {
+            IconButton(
+                enabled = canSaveWithoutChanges || hasAnyChanges,
+                onClick = {
+                    vm.save(shortXProps.firstOrNull())
+                    back(true)
+                }) {
+                RemixIcon(remixName = saveIconName)
+            }
+        },
+    ) {
+        ClickOutsideClearFocusBox {
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .animateContentSize()
             ) {
-                addRuleState.ruleChanged
-                        || factContentState.isChanged
-                        || actionContentState.isChanged
-                        || conditionContentState.isChanged
-                        || actionOnEnabledState.isChanged
-                        || actionOnDisabledState.isChanged
-                        || actionOnDeletedState.isChanged
-                        || quitFactContentState.isChanged
-                        || quitConditionContentState.isChanged
-                        || quitActionState.isChanged
-            }
-
-            BackHandler {
-                if (hasAnyChanges) {
-                    backConfirmDialogState.show()
-                } else {
-                    back(false)
-                }
-            }
-
-            val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-            Scaffold(
-                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                topBar = {
-                    ShortXMediumTopAppBar(
-                        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                        title = { Text(text = screenTitle) },
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                if (hasAnyChanges) {
-                                    backConfirmDialogState.show()
-                                } else {
-                                    back(false)
-                                }
-                            }) {
-                                RemixIcon(remixName = Remix.System.close_line)
-                            }
-                        },
-                        actions = {
-                            IconButton(
-                                enabled = canSaveWithoutChanges || hasAnyChanges,
-                                onClick = {
-                                    vm.save(shortXProps.firstOrNull())
-                                    back(true)
-                                }) {
-                                RemixIcon(remixName = saveIconName)
-                            }
-                        },
-                        scrollBehavior = scrollBehavior
-                    )
-                }) { paddingValues ->
-                val scrollState = rememberScrollState()
-                ClickOutsideClearFocusBox {
-                    Column(
-                        modifier = Modifier
-                            .verticalScroll(scrollState)
-                            .padding(paddingValues)
-                            .padding(horizontal = 16.dp)
-                            .animateContentSize()
-                    ) {
-                        when (addRuleState.onlineDALoadState) {
-                            is LoadState.Error -> {
-                                LoadError(modifier = Modifier.fillMaxSize()) {
-                                    vm.initFromUrl(url)
-                                }
-                            }
-
-                            LoadState.Loading -> {
-                                Loading(modifier = Modifier.fillMaxSize())
-                            }
-
-                            is LoadState.Success -> {
-                                RuleContent(
-                                    addRuleState = addRuleState,
-                                    vm = vm,
-                                    readOnly = readOnly,
-                                    factContentState = factContentState,
-                                    factHandler = factHandler,
-                                    conditionContentState = conditionContentState,
-                                    conditionHandler = conditionHandler,
-                                    actionContentState = actionContentState,
-                                    actionHandler = actionHandler,
-                                    quitFactContentState = quitFactContentState,
-                                    quitFactHandler = quitFactHandler,
-                                    quitConditionContentState = quitConditionContentState,
-                                    quitConditionHandler = quitConditionHandler,
-                                    quitActionState = quitActionState,
-                                    quitActionHandler = quitActionHandler,
-                                    actionOnEnabledState = actionOnEnabledState,
-                                    actionOnEnabledHandler = actionOnEnabledHandler,
-                                    actionOnDisabledState = actionOnDisabledState,
-                                    actionOnDisabledHandler = actionOnDisabledHandler,
-                                    actionOnDeletedState = actionOnDeletedState,
-                                    actionOnDeletedHandler = actionOnDeletedHandler
-                                )
-                            }
+                when (addRuleState.onlineDALoadState) {
+                    is LoadState.Error -> {
+                        LoadError(modifier = Modifier.fillMaxSize()) {
+                            vm.initFromUrl(url)
                         }
+                    }
+
+                    LoadState.Loading -> {
+                        Loading(modifier = Modifier.fillMaxSize())
+                    }
+
+                    is LoadState.Success -> {
+                        RuleContent(
+                            addRuleState = addRuleState,
+                            vm = vm,
+                            readOnly = readOnly,
+                            factContentState = factContentState,
+                            factHandler = factHandler,
+                            conditionContentState = conditionContentState,
+                            conditionHandler = conditionHandler,
+                            actionContentState = actionContentState,
+                            actionHandler = actionHandler,
+                            quitFactContentState = quitFactContentState,
+                            quitFactHandler = quitFactHandler,
+                            quitConditionContentState = quitConditionContentState,
+                            quitConditionHandler = quitConditionHandler,
+                            quitActionState = quitActionState,
+                            quitActionHandler = quitActionHandler,
+                            actionOnEnabledState = actionOnEnabledState,
+                            actionOnEnabledHandler = actionOnEnabledHandler,
+                            actionOnDisabledState = actionOnDisabledState,
+                            actionOnDisabledHandler = actionOnDisabledHandler,
+                            actionOnDeletedState = actionOnDeletedState,
+                            actionOnDeletedHandler = actionOnDeletedHandler
+                        )
                     }
                 }
             }

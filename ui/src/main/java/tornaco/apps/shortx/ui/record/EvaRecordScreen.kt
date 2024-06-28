@@ -33,7 +33,6 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -78,9 +77,9 @@ import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
-import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextDisplayActivity
@@ -147,32 +146,23 @@ fun EvaRecordScreen(pinSrcId: String?, back: () -> Unit) {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
-            Scaffold(modifier = Modifier,
-                topBar = {
-                    ShortXTopAppBar(
-                        modifier = Modifier,
-                        title = { Text(text = i18N["ui.settings.eva.record"]) },
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                back()
-                            }) {
-                                RemixIcon(remixName = Remix.System.close_line)
-                            }
-                        },
-                        actions = {
-                            IconButton(onClick = {
-                                vm.clearRecords()
-                            }) {
-                                RemixIcon(remixName = Remix.System.delete_bin_5_line)
-                            }
-                            IconButton(onClick = {
-                                openBottomSheet = true
-                            }) {
-                                RemixIcon(remixName = Remix.System.filter_2_line)
-                            }
-                        }
-                    )
-                }) { paddingValues ->
+            ShortXAppBarScaffold(
+                title = i18N["ui.settings.eva.record"],
+                verticalScroll = false,
+                onBackPressed = { back() },
+                actions = {
+                    IconButton(onClick = {
+                        vm.clearRecords()
+                    }) {
+                        RemixIcon(remixName = Remix.System.delete_bin_5_line)
+                    }
+                    IconButton(onClick = {
+                        openBottomSheet = true
+                    }) {
+                        RemixIcon(remixName = Remix.System.filter_2_line)
+                    }
+                }
+            ) {
                 val pullRefreshState =
                     rememberPullRefreshState(state.isLoading, { vm.loadRecords() })
 
@@ -185,7 +175,6 @@ fun EvaRecordScreen(pinSrcId: String?, back: () -> Unit) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(paddingValues)
                         .pullRefresh(pullRefreshState),
                 ) {
                     LazyColumn(

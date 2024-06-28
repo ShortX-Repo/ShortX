@@ -10,20 +10,12 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import org.orbitmvi.orbit.compose.collectAsState
@@ -35,11 +27,10 @@ import tornaco.apps.shortx.ui.addrule.base.ActionCategory
 import tornaco.apps.shortx.ui.addrule.base.rememberCategoryState
 import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
 import tornaco.apps.shortx.ui.base.SearchBarState
+import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.ShortXFilterChip
-import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
@@ -71,81 +62,53 @@ val initialPageIndex = TabItems.All.ordinal
 @Composable
 fun ActionSelector(close: () -> Unit, onSelected: (Action) -> Unit) {
     ShortXTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
-        ) {
-            val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-            Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                topBar = {
-                    ShortXMediumTopAppBar(
-                        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                        title = { Text(text = LocalI18N.current["ui.title.select.action"]) },
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                close()
-                            }) {
-                                RemixIcon(remixName = Remix.System.close_line)
-                            }
-                        },
-                        actions = {},
-                        scrollBehavior = scrollBehavior
-                    )
-                }) { paddingValues ->
-
+        ShortXAppBarScaffold(
+            title = LocalI18N.current["ui.title.select.action"],
+            onBackPressed = { close() }) {
+            ClickOutsideClearFocusBox {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(paddingValues),
+                        .padding(horizontal = 8.dp),
+                    verticalArrangement = Arrangement.Top
                 ) {
-                    ClickOutsideClearFocusBox {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 8.dp)
-                                .verticalScroll(
-                                    rememberScrollState()
-                                ),
-                            verticalArrangement = Arrangement.Top
-                        ) {
-                            val selectorVM = hiltViewModel<ActionSelectorViewModel>()
-                            val selectorState by selectorVM.state.collectAsState()
-                            val addAction: (Action) -> Unit = {
-                                onSelected(it)
-                                selectorVM.onActionAdd(it)
-                            }
+                    val selectorVM = hiltViewModel<ActionSelectorViewModel>()
+                    val selectorState by selectorVM.state.collectAsState()
+                    val addAction: (Action) -> Unit = {
+                        onSelected(it)
+                        selectorVM.onActionAdd(it)
+                    }
 
-                            val searchBarState = rememberSearchBarState(
-                                itemCount = allActionClasses.size,
-                                keywordChanged = { })
-                            SearchBar(searchBarState = searchBarState)
+                    val searchBarState = rememberSearchBarState(
+                        itemCount = allActionClasses.size,
+                        keywordChanged = { })
+                    SearchBar(searchBarState = searchBarState)
 
-                            val selectedFilter = selectorState.selectedFilter
-                            FlowRow(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Start
-                            ) {
-                                ActionCategory.entries.forEach {
-                                    ShortXFilterChip(
-                                        modifier = Modifier.padding(start = 16.dp),
-                                        selected = selectedFilter == it,
-                                        label = {
-                                            Text(text = LocalI18N.current[it.i18NKey])
-                                        },
-                                        onClick = {
-                                            selectorVM.selectFilterCategory(it)
-                                        })
-                                }
-                            }
-
-                            StandardSpacer()
-                            AllActions(
-                                selectedFilter = selectedFilter,
-                                recentActions = selectorState.recentActions,
-                                searchBarState = searchBarState,
-                                addAction = addAction
-                            )
+                    val selectedFilter = selectorState.selectedFilter
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        ActionCategory.entries.forEach {
+                            ShortXFilterChip(
+                                modifier = Modifier.padding(start = 16.dp),
+                                selected = selectedFilter == it,
+                                label = {
+                                    Text(text = LocalI18N.current[it.i18NKey])
+                                },
+                                onClick = {
+                                    selectorVM.selectFilterCategory(it)
+                                })
                         }
                     }
+
+                    StandardSpacer()
+                    AllActions(
+                        selectedFilter = selectedFilter,
+                        recentActions = selectorState.recentActions,
+                        searchBarState = searchBarState,
+                        addAction = addAction
+                    )
                 }
             }
         }

@@ -11,9 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,7 +35,6 @@ import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
-import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
 class BiometricVerifySelectorActivity : BaseSelectorActivity<Action.BiometricVerify>() {
@@ -56,100 +53,93 @@ private fun BaseSelectorActivity<Action.BiometricVerify>.BiometricVerifySelector
 
     val state by vm.state.collectAsState()
 
-    ShortXTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+    Scaffold(modifier = Modifier,
+        topBar = {
+            ShortXTopAppBar(
+                modifier = Modifier,
+                title = { Text(LocalI18N.current["ui.action.biometric.verify"]) },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        cancelAndFinish()
+                    }) {
+                        RemixIcon(remixName = Remix.System.close_line)
+                    }
+                },
+                actions = {
+                    IconButton(onClick = {
+                        setResultAndFinish(vm.getAction())
+                    }) {
+                        RemixIcon(remixName = Remix.System.check_line)
+                    }
+
+                },
+            )
+        }) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .padding(paddingValues)
+                .animateContentSize()
+                .verticalScroll(rememberScrollState())
         ) {
-            Scaffold(modifier = Modifier,
-                topBar = {
-                    ShortXTopAppBar(
-                        modifier = Modifier,
-                        title = { Text(LocalI18N.current["ui.action.biometric.verify"]) },
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                cancelAndFinish()
-                            }) {
-                                RemixIcon(remixName = Remix.System.close_line)
-                            }
-                        },
-                        actions = {
-                            IconButton(onClick = {
-                                setResultAndFinish(vm.getAction())
-                            }) {
-                                RemixIcon(remixName = Remix.System.check_line)
-                            }
+            FieldTitle(
+                modifier = Modifier.fillMaxWidth(),
+                text = LocalI18N.current["ui.action.biometric.verify.title"]
+            )
+            MediumSpacer()
+            ShortXTextField(
+                value = state.title,
+                onValueChange = {
+                    vm.updateTitle(it)
+                }, showSymbolButton = true
+            )
+            StandardSpacer()
 
-                        },
-                    )
-                }) { paddingValues ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                        .padding(paddingValues)
-                        .animateContentSize()
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    FieldTitle(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = LocalI18N.current["ui.action.biometric.verify.title"]
-                    )
-                    MediumSpacer()
-                    ShortXTextField(
-                        value = state.title,
-                        onValueChange = {
-                            vm.updateTitle(it)
-                        }, showSymbolButton = true
-                    )
-                    StandardSpacer()
-
-                    FieldTitle(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = LocalI18N.current["ui.action.biometric.verify.subtitle"]
-                    )
-                    MediumSpacer()
-                    ShortXTextField(
-                        value = state.subtitle,
-                        onValueChange = {
-                            vm.updateSubtitle(it)
-                        }, showSymbolButton = true
-                    )
-                    StandardSpacer()
-                    StandardSpacer()
+            FieldTitle(
+                modifier = Modifier.fillMaxWidth(),
+                text = LocalI18N.current["ui.action.biometric.verify.subtitle"]
+            )
+            MediumSpacer()
+            ShortXTextField(
+                value = state.subtitle,
+                onValueChange = {
+                    vm.updateSubtitle(it)
+                }, showSymbolButton = true
+            )
+            StandardSpacer()
+            StandardSpacer()
 
 
-                    val allowHandler = remember(vm) { vm.allowedActionHandler }
-                    val allowState by allowHandler.state.collectAsState()
-                    FieldTitle(text = LocalI18N.current["ui.action.biometric.verify.allow.action"])
-                    MediumSpacer()
-                    tornaco.apps.shortx.ui.addrule.action.ActionContent(
-                        actions = allowState.actions,
-                        evaluatingActions = state.evaluatingActions,
-                        warnings = emptyMap(),
-                        handler = allowHandler.asActionHandler()
-                    )
-                    StandardSpacer()
-                    StandardSpacer()
+            val allowHandler = remember(vm) { vm.allowedActionHandler }
+            val allowState by allowHandler.state.collectAsState()
+            FieldTitle(text = LocalI18N.current["ui.action.biometric.verify.allow.action"])
+            MediumSpacer()
+            tornaco.apps.shortx.ui.addrule.action.ActionContent(
+                actions = allowState.actions,
+                evaluatingActions = state.evaluatingActions,
+                warnings = emptyMap(),
+                handler = allowHandler.asActionHandler()
+            )
+            StandardSpacer()
+            StandardSpacer()
 
-                    val denyHandler = remember(vm) { vm.deniedActionHandler }
-                    val denyState by denyHandler.state.collectAsState()
-                    FieldTitle(text = LocalI18N.current["ui.action.biometric.verify.deny.action"])
-                    MediumSpacer()
-                    tornaco.apps.shortx.ui.addrule.action.ActionContent(
-                        actions = denyState.actions,
-                        evaluatingActions = state.evaluatingActions,
-                        warnings = emptyMap(),
-                        handler = denyHandler.asActionHandler()
-                    )
-                    StandardSpacer()
+            val denyHandler = remember(vm) { vm.deniedActionHandler }
+            val denyState by denyHandler.state.collectAsState()
+            FieldTitle(text = LocalI18N.current["ui.action.biometric.verify.deny.action"])
+            MediumSpacer()
+            tornaco.apps.shortx.ui.addrule.action.ActionContent(
+                actions = denyState.actions,
+                evaluatingActions = state.evaluatingActions,
+                warnings = emptyMap(),
+                handler = denyHandler.asActionHandler()
+            )
+            StandardSpacer()
 
-                    SectionSpacer()
-                    SectionSpacer()
-                    SuggestedNavEntry()
+            SectionSpacer()
+            SectionSpacer()
+            SuggestedNavEntry()
 
-                }
-            }
         }
     }
-
 }

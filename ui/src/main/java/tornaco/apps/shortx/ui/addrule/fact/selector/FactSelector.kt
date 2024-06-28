@@ -6,14 +6,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -23,9 +16,8 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.allFactClasses
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
-import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
@@ -43,49 +35,33 @@ fun FactSelector(
     close: () -> Unit, onSelected: (Fact) -> Unit
 ) {
     ShortXTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+        ShortXAppBarScaffold(
+            title = LocalI18N.current["ui.fact.select"],
+            onBackPressed = { close() },
         ) {
-            Scaffold(modifier = Modifier,
-                topBar = {
-                    ShortXTopAppBar(
-                        modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.fact.select"]) },
-                        actions = {
-                            IconButton(onClick = {
-                                close()
-                            }) {
-                                RemixIcon(remixName = Remix.System.close_line)
-                            }
-                        },
-                    )
-                }) { paddingValues ->
-                val setFact: (Fact) -> Unit = {
-                    onSelected(it)
-                }
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                        .padding(horizontal = 8.dp)
-                        .verticalScroll(rememberScrollState()),
-                ) {
-                    val searchBarState = rememberSearchBarState(
-                        itemCount = allFactClasses.size,
-                        keywordChanged = { })
-                    SearchBar(searchBarState = searchBarState)
+            val setFact: (Fact) -> Unit = {
+                onSelected(it)
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 8.dp)
+            ) {
+                val searchBarState = rememberSearchBarState(
+                    itemCount = allFactClasses.size,
+                    keywordChanged = { })
+                SearchBar(searchBarState = searchBarState)
 
-                    val subscribeState by LVLStateHolder.collectAsState()
+                val subscribeState by LVLStateHolder.collectAsState()
 
-                    AppFacts(searchBarState.keyword, subscribeState, setFact = setFact)
-                    StandardSpacer()
+                AppFacts(searchBarState.keyword, subscribeState, setFact = setFact)
+                StandardSpacer()
 
-                    SystemFacts(searchBarState.keyword, subscribeState, setFact = setFact)
-                    StandardSpacer()
+                SystemFacts(searchBarState.keyword, subscribeState, setFact = setFact)
+                StandardSpacer()
 
-                    MiscFacts(searchBarState.keyword, subscribeState, setFact = setFact)
-                    StandardSpacer()
-                }
+                MiscFacts(searchBarState.keyword, subscribeState, setFact = setFact)
+                StandardSpacer()
             }
         }
     }

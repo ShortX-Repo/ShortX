@@ -30,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -154,7 +155,7 @@ private fun AppPkgSelector(state: AppPkgSelectorDialogState) {
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
             var selectedTabIndex by remember {
-                mutableStateOf(0)
+                mutableIntStateOf(0)
             }
             Scaffold(modifier = Modifier,
                 topBar = {
