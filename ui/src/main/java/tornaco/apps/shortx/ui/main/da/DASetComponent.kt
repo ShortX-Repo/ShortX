@@ -29,7 +29,6 @@ import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.TextInputDialog
-import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
@@ -109,6 +108,32 @@ private fun DASetListItem(
     }
 }
 
+
+@Composable
+fun DASetListItemCompat(
+    modifier: Modifier,
+    da: DirectActionUM,
+    isSubscribed: Boolean,
+) {
+    Box {
+        val popMenuState = daSetListItemOverflowMenu(
+            da = da,
+            isSubscribed = isSubscribed
+        )
+
+        val handler = LocalDASetItemHandler.current
+        DAListItemCompat(
+            modifier = modifier,
+            title = da.title,
+            icon = Remix.Document.folder_2_fill,
+            iconColor = MaterialTheme.colorScheme.primary,
+            onLongClick = { popMenuState.open() },
+            onClick = {
+                handler.click(da)
+            }
+        )
+    }
+}
 
 @Composable
 private fun daSetListItemOverflowMenu(

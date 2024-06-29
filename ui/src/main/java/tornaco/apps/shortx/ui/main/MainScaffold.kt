@@ -2,6 +2,7 @@
 
 package tornaco.apps.shortx.ui.main
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -31,7 +33,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -70,6 +71,8 @@ import tornaco.apps.shortx.ui.base.MultiFabItem
 import tornaco.apps.shortx.ui.base.MultiFloatingActionButton
 import tornaco.apps.shortx.ui.base.RebootConfirmDialog
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.SearchBar
+import tornaco.apps.shortx.ui.base.SearchBarState
 import tornaco.apps.shortx.ui.base.ShareDialog
 import tornaco.apps.shortx.ui.base.ShortXAlertDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
@@ -77,6 +80,7 @@ import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberFabState
+import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.base.rememberShareDialogState
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
@@ -92,6 +96,8 @@ fun MainScaffold(
     state: MainState,
     appBarTitleKey: String,
     appBarActions: @Composable () -> Unit = {},
+    enableSearch: Boolean = false,
+    searchBarState: SearchBarState = rememberSearchBarState(),
     onClipboardClick: () -> Unit,
     onFileClick: () -> Unit,
     onAddClick: () -> Unit,
@@ -168,6 +174,8 @@ fun MainScaffold(
         state = state,
         subscribeState = subscribeState,
         appBarTitleKey = appBarTitleKey,
+        enableSearch = enableSearch,
+        searchBarState = searchBarState,
         enableMask = enableFabMask,
         appBarActions = appBarActions,
         acceptPrivacyStatement = acceptPrivacyStatement,
@@ -186,6 +194,8 @@ fun MainScaffold(
     subscribeState: LVLStateHolder.State,
     appBarTitleKey: String,
     enableMask: Boolean,
+    enableSearch: Boolean = false,
+    searchBarState: SearchBarState = rememberSearchBarState(),
     appBarActions: @Composable () -> Unit = {},
     acceptPrivacyStatement: () -> Unit,
     floatingActionButton: @Composable () -> Unit = {},
@@ -196,39 +206,44 @@ fun MainScaffold(
     var isShowActiveDialog by remember {
         mutableStateOf(false)
     }
-    Surface(
-        modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
-    ) {
-        val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-        val snackbarHostState = remember { SnackbarHostState() }
-        Scaffold(
-            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-            snackbarHost = { SnackbarHost(snackbarHostState) },
-            topBar = {
-                Column {
-                    if (state.isActivated) {
-                        ShortXTopAppBar(
-                            title = {
-                                Text(
-                                    text = LocalI18N.current[appBarTitleKey]
-                                )
-                            },
-                            navigationIcon = {
-                                SettingsAppBarActions()
-                            },
-                            actions = {
-                                appBarActions()
-                            },
-                            scrollBehavior = scrollBehavior,
-                        )
-                    } else {
+
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val snackbarHostState = remember { SnackbarHostState() }
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        topBar = {
+            Box(modifier = Modifier) {
+                var showSearch by remember { mutableStateOf(false) }
+                BackHandler(enabled = showSearch) { showSearch = false }
+                AnimatedVisibility(
+                    visible = showSearch,
+                ) {
+                    SearchBar(
+                        searchBarState = searchBarState,
+                        modifier = Modifier
+                            .systemBarsPadding()
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 16.dp)
+                    ) {
+                        showSearch = false
+                    }
+                }
+                AnimatedVisibility(
+                    visible = !showSearch,
+                ) {
+                    Column {
                         ShortXTopAppBar(
                             title = {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text(text = LocalAppName.current)
-                                    SmallSpacer()
-                                    ClickableBadge(text = LocalI18N.current["ui.settings.core.info.na"]) {
-                                        isShowActiveDialog = true
+                                    Text(
+                                        text = LocalI18N.current[appBarTitleKey]
+                                    )
+                                    if (!state.isActivated) {
+                                        SmallSpacer()
+                                        ClickableBadge(text = LocalI18N.current["ui.settings.core.info.na"]) {
+                                            isShowActiveDialog = true
+                                        }
                                     }
                                 }
                             },
@@ -237,175 +252,183 @@ fun MainScaffold(
                             },
                             actions = {
                                 appBarActions()
-                            })
-                    }
-
-                    appBarContent()
-                }
-            },
-            bottomBar = {
-            },
-            floatingActionButton = floatingActionButton
-        ) { paddingValues ->
-            val shareDialogState = rememberShareDialogState("share.shortx")
-            ShareDialog(state = shareDialogState)
-
-            val rebootDialogState = rememberCommonDialogState()
-            RebootConfirmDialog(state = rebootDialogState)
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .consumeWindowInsets(paddingValues)
-                    .let {
-                        if (enableMask) {
-                            it.blur(12.dp)
-                        } else it
-                    },
-            ) {
-                Spacer(Modifier.size(paddingValues.calculateTopPadding()))
-
-                val context = LocalContext.current
-                AnimatedVisibility(
-                    visible = subscribeState.isInited && !subscribeState.isSubscribed
-                            && !state.isHideSubscribeInfo
-                ) {
-                    Card(
-                        modifier = Modifier
-                            .padding(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .clickable {
-                                    SubscribeActivity.start(context)
-                                }
-                                .padding(16.dp)
-                        ) {
-                            Row {
-                                RemixIcon(
-                                    modifier = Modifier.offset(y = 2.dp),
-                                    remixName = Remix.Finance.gift_2_line
-                                )
-                                MediumSpacer()
-                                Text(
-                                    LocalI18N.current["ui.subscription.intro.message"],
-                                )
-                            }
-
-                            Box(
-                                modifier = Modifier.fillMaxWidth(),
-                                contentAlignment = Alignment.CenterEnd
-                            ) {
-                                val scope = rememberCoroutineScope()
-                                TextButton(onClick = {
-                                    scope.launch {
-                                        Pref(context).hideSubscribeInfo()
+                                if (enableSearch) {
+                                    IconButton(onClick = {
+                                        showSearch = true
+                                    }) {
+                                        RemixIcon(remixName = Remix.System.search_line)
                                     }
-                                }) {
-                                    Text(text = stringResource(id = android.R.string.ok))
                                 }
+                            },
+                            scrollBehavior = scrollBehavior,
+                        )
+                        appBarContent()
+                    }
+                }
+            }
+        },
+        bottomBar = {
+        },
+        floatingActionButton = floatingActionButton
+    ) { paddingValues ->
+        val shareDialogState = rememberShareDialogState("share.shortx")
+        ShareDialog(state = shareDialogState)
+
+        val rebootDialogState = rememberCommonDialogState()
+        RebootConfirmDialog(state = rebootDialogState)
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .consumeWindowInsets(paddingValues)
+                .let {
+                    if (enableMask) {
+                        it.blur(12.dp)
+                    } else it
+                },
+        ) {
+            Spacer(Modifier.size(paddingValues.calculateTopPadding()))
+
+            val context = LocalContext.current
+            AnimatedVisibility(
+                visible = subscribeState.isInited && !subscribeState.isSubscribed
+                        && !state.isHideSubscribeInfo
+            ) {
+                Card(
+                    modifier = Modifier
+                        .padding(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .clickable {
+                                SubscribeActivity.start(context)
+                            }
+                            .padding(16.dp)
+                    ) {
+                        Row {
+                            RemixIcon(
+                                modifier = Modifier.offset(y = 2.dp),
+                                remixName = Remix.Finance.gift_2_line
+                            )
+                            MediumSpacer()
+                            Text(
+                                LocalI18N.current["ui.subscription.intro.message"],
+                            )
+                        }
+
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
+                            val scope = rememberCoroutineScope()
+                            TextButton(onClick = {
+                                scope.launch {
+                                    Pref(context).hideSubscribeInfo()
+                                }
+                            }) {
+                                Text(text = stringResource(id = android.R.string.ok))
                             }
                         }
                     }
                 }
+            }
 
-                AnimatedVisibility(
-                    visible = state.isAudioRecording
+            AnimatedVisibility(
+                visible = state.isAudioRecording
+            ) {
+                Card(
+                    modifier = Modifier
+                        .padding(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
                 ) {
-                    Card(
+                    Row(
                         modifier = Modifier
-                            .padding(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .clickable {
-                                    shortXManager.stopAudioRecording()
-                                }
-                                .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            ColoredIcon(size = 24.dp, color = Color.Red) {
-                                RemixIcon(
-                                    modifier = Modifier.size(16.dp),
-                                    remixName = Remix.Media.mic_2_fill,
-                                    tint = Color.White
-                                )
+                            .clickable {
+                                shortXManager.stopAudioRecording()
                             }
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        ColoredIcon(size = 24.dp, color = Color.Red) {
+                            RemixIcon(
+                                modifier = Modifier.size(16.dp),
+                                remixName = Remix.Media.mic_2_fill,
+                                tint = Color.White
+                            )
+                        }
+                        MediumSpacer()
+                        Text(
+                            LocalI18N.current["ui.action.audio.recording.card.text"],
+                        )
+                    }
+                }
+            }
+
+            AnimatedVisibility(
+                visible = subscribeState.isSubscribed
+                        && state.isFrameworkUpdated
+                        && !state.isIgnoreFrameworkUpdate
+            ) {
+                Card(
+                    modifier = Modifier
+                        .padding(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .clickable {
+                                rebootDialogState.show()
+                            }
+                            .padding(16.dp)
+                    ) {
+                        Row {
+                            RemixIcon(
+                                modifier = Modifier.offset(y = 2.dp),
+                                remixName = Remix.System.alarm_warning_line
+                            )
                             MediumSpacer()
                             Text(
-                                LocalI18N.current["ui.action.audio.recording.card.text"],
+                                LocalI18N.current["ui.framework.updated", mapOf("app_name" to LocalAppName.current)],
                             )
                         }
                     }
                 }
-
-                AnimatedVisibility(
-                    visible = subscribeState.isSubscribed
-                            && state.isFrameworkUpdated
-                            && !state.isIgnoreFrameworkUpdate
-                ) {
-                    Card(
-                        modifier = Modifier
-                            .padding(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .clickable {
-                                    rebootDialogState.show()
-                                }
-                                .padding(16.dp)
-                        ) {
-                            Row {
-                                RemixIcon(
-                                    modifier = Modifier.offset(y = 2.dp),
-                                    remixName = Remix.System.alarm_warning_line
-                                )
-                                MediumSpacer()
-                                Text(
-                                    LocalI18N.current["ui.framework.updated", mapOf("app_name" to LocalAppName.current)],
-                                )
-                            }
-                        }
-                    }
-                }
-
-                CompositionLocalProvider(LocalSnackbarHostState provides snackbarHostState) {
-                    content()
-                }
-
-                if (isShowActiveDialog) {
-                    ActiveDialog(onDismissRequest = {
-                        isShowActiveDialog = false
-                    })
-                }
-
-                val activity = LocalActivity.current
-                if (!state.isPrivacyStatementAccepted && !isShowActiveDialog) {
-                    PrivacyStatementDialog(
-                        onDismissRequest = {
-                            activity.finishAffinity()
-                        },
-                        onAccept = {
-                            acceptPrivacyStatement()
-                        })
-                }
-
-                Spacer(Modifier.size(paddingValues.calculateBottomPadding()))
             }
 
-            if (enableMask) {
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background.copy(alpha = 0.4f))
-                    .pointerInput(key1 = "MASK") {
-                        detectTapGestures(onTap = {
-                            onMaskClickOutside()
-                        })
-                    }) {
-                }
+            CompositionLocalProvider(LocalSnackbarHostState provides snackbarHostState) {
+                content()
+            }
+
+            if (isShowActiveDialog) {
+                ActiveDialog(onDismissRequest = {
+                    isShowActiveDialog = false
+                })
+            }
+
+            val activity = LocalActivity.current
+            if (!state.isPrivacyStatementAccepted && !isShowActiveDialog) {
+                PrivacyStatementDialog(
+                    onDismissRequest = {
+                        activity.finishAffinity()
+                    },
+                    onAccept = {
+                        acceptPrivacyStatement()
+                    })
+            }
+
+            Spacer(Modifier.size(paddingValues.calculateBottomPadding()))
+        }
+
+        if (enableMask) {
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background.copy(alpha = 0.4f))
+                .pointerInput(key1 = "MASK") {
+                    detectTapGestures(onTap = {
+                        onMaskClickOutside()
+                    })
+                }) {
             }
         }
     }
@@ -421,7 +444,6 @@ private fun SettingsAppBarActions() {
         Icon(imageVector = Icons.Outlined.Menu)
     }
 }
-
 
 @Composable
 private fun ActiveDialog(

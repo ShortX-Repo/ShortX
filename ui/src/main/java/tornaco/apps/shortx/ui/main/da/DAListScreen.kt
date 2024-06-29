@@ -62,6 +62,7 @@ import tornaco.apps.shortx.ui.base.UserTip
 import tornaco.apps.shortx.ui.base.adaptiveLauncherIconSizeMin
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
 import tornaco.apps.shortx.ui.base.rememberProgressDialogState
+import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.main.CommonSetFilter
@@ -128,9 +129,18 @@ fun DirectActionListScreen() {
             ViewerActivity.start(context, fileUri)
         }
     }
+
+    val searchBarState = rememberSearchBarState(
+        keywordChanged = {
+
+        }
+    )
+
     MainScaffold(
         state = mainState,
         appBarTitleKey = "ui.feat.label.da",
+        enableSearch = true,
+        searchBarState = searchBarState,
         appBarActions = {
             IconButton(onClick = {
                 daListViewModel.toggleShowDetailedDAItem()
@@ -266,6 +276,7 @@ fun DirectActionListContent(
                 } else {
                     DAListContentCompat(
                         das = das,
+                        isSubscribed = subscribeState.isSubscribed,
                         showOverflowMenu = showOverflowMenu,
                     )
                 }
@@ -332,21 +343,29 @@ private fun DAListContent(
 @Composable
 private fun DAListContentCompat(
     das: List<DirectActionUM>,
+    isSubscribed: Boolean,
     showOverflowMenu: Boolean
 ) {
-    val subscribeState by LVLStateHolder.collectAsState()
     LazyVerticalGrid(
         modifier = Modifier.fillMaxSize(),
         columns = GridCells.Adaptive(adaptiveLauncherIconSizeMin),
-        contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp, start = 16.dp, end = 16.dp)
+        contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
     ) {
         items(items = das, key = { it.id }) { da ->
-            DirectActionItemCompat(
-                modifier = Modifier,
-                da = da,
-                isSubscribed = subscribeState.isSubscribed,
-                isLongClickEnabled = showOverflowMenu,
-            )
+            if (da.isDirectActionSet) {
+                DASetListItemCompat(
+                    modifier = Modifier,
+                    da = da,
+                    isSubscribed = isSubscribed
+                )
+            } else {
+                DAListItemCompat(
+                    modifier = Modifier,
+                    da = da,
+                    isSubscribed = isSubscribed,
+                    isLongClickEnabled = showOverflowMenu,
+                )
+            }
         }
     }
 }

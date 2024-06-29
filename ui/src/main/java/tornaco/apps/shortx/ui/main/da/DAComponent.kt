@@ -108,7 +108,7 @@ fun DirectActionItem(
 }
 
 @Composable
-fun DirectActionItemCompat(
+fun DAListItemCompat(
     modifier: Modifier,
     da: DirectActionUM,
     isSubscribed: Boolean,
@@ -132,7 +132,7 @@ fun DirectActionItemCompat(
 }
 
 @Composable
-private fun DAListItemCompat(
+fun DAListItemCompat(
     modifier: Modifier,
     title: String,
     icon: String,
