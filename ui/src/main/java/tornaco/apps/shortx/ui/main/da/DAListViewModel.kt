@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.lifecycle.viewModelScope
+import com.github.promeg.pinyinhelper.Pinyin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -99,6 +100,7 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                         DirectActionUM(
                             id = directActionSet.id,
                             title = directActionSet.title,
+                            titlePinyin = Pinyin.toPinyin(directActionSet.title, "").lowercase(),
                             description = directActionSet.description,
                             updateTime = FuzzyDateTimeFormatter.getTimeAgo(
                                 context,
@@ -124,22 +126,32 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                     CommonSetFilter.PinnedAllFlat
                 ) + sets.map { CommonSetFilter.UserSet(it.id, it.title) }
 
+                val finalDAS = when (selectedDASetFilter) {
+                    CommonSetFilter.PinnedAll -> {
+                        // No filter, show set and das.
+                        sets + das
+                    }
+
+                    CommonSetFilter.PinnedAllFlat -> {
+                        das
+                    }
+
+                    else -> {
+                        das
+                    }
+                }.filter {
+                    state.value.searchQuery.isBlank() || it.title.contains(
+                        state.value.searchQuery,
+                        true
+                    ) || it.titlePinyin.contains(
+                        state.value.searchQuery.lowercase(),
+                        true
+                    )
+                }
+
                 updateState {
                     copy(
-                        das = when (selectedDASetFilter) {
-                            CommonSetFilter.PinnedAll -> {
-                                // No filter, show set and das.
-                                sets + das
-                            }
-
-                            CommonSetFilter.PinnedAllFlat -> {
-                                das
-                            }
-
-                            else -> {
-                                das
-                            }
-                        },
+                        das = finalDAS,
                         daSetFilters = daSetFilters,
                         isLoading = false
                     )

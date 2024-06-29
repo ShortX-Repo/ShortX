@@ -57,6 +57,7 @@ import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.select
+import tornaco.apps.shortx.ui.base.AnimateExpand
 import tornaco.apps.shortx.ui.base.ClickableBadge
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.FabState
@@ -215,56 +216,59 @@ fun MainScaffold(
         topBar = {
             Box(modifier = Modifier) {
                 var showSearch by remember { mutableStateOf(false) }
-                BackHandler(enabled = showSearch) { showSearch = false }
-                AnimatedVisibility(
-                    visible = showSearch,
-                ) {
-                    SearchBar(
-                        searchBarState = searchBarState,
-                        modifier = Modifier
-                            .systemBarsPadding()
-                            .padding(horizontal = 16.dp)
-                            .padding(top = 16.dp)
-                    ) {
-                        showSearch = false
-                    }
+                BackHandler(enabled = showSearch) {
+                    showSearch = false
+                    searchBarState.inputKeyword("")
                 }
-                AnimatedVisibility(
-                    visible = !showSearch,
-                ) {
-                    Column {
-                        ShortXTopAppBar(
-                            title = {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text(
-                                        text = LocalI18N.current[appBarTitleKey]
-                                    )
-                                    if (!state.isActivated) {
-                                        SmallSpacer()
-                                        ClickableBadge(text = LocalI18N.current["ui.settings.core.info.na"]) {
-                                            isShowActiveDialog = true
+
+                AnimateExpand(
+                    expanded = showSearch,
+                    expandedContent = {
+                        SearchBar(
+                            searchBarState = searchBarState,
+                            modifier = Modifier
+                                .systemBarsPadding()
+                                .padding(horizontal = 16.dp)
+                                .padding(top = 16.dp)
+                        ) {
+                            showSearch = false
+                        }
+                    },
+                    unExpandedContent = {
+                        Column {
+                            ShortXTopAppBar(
+                                title = {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Text(
+                                            text = LocalI18N.current[appBarTitleKey]
+                                        )
+                                        if (!state.isActivated) {
+                                            SmallSpacer()
+                                            ClickableBadge(text = LocalI18N.current["ui.settings.core.info.na"]) {
+                                                isShowActiveDialog = true
+                                            }
                                         }
                                     }
-                                }
-                            },
-                            navigationIcon = {
-                                SettingsAppBarActions()
-                            },
-                            actions = {
-                                appBarActions()
-                                if (enableSearch) {
-                                    IconButton(onClick = {
-                                        showSearch = true
-                                    }) {
-                                        RemixIcon(remixName = Remix.System.search_line)
+                                },
+                                navigationIcon = {
+                                    SettingsAppBarActions()
+                                },
+                                actions = {
+                                    appBarActions()
+                                    if (enableSearch) {
+                                        IconButton(onClick = {
+                                            showSearch = true
+                                        }) {
+                                            RemixIcon(remixName = Remix.System.search_line)
+                                        }
                                     }
-                                }
-                            },
-                            scrollBehavior = scrollBehavior,
-                        )
-                        appBarContent()
+                                },
+                                scrollBehavior = scrollBehavior,
+                            )
+                            appBarContent()
+                        }
                     }
-                }
+                )
             }
         },
         bottomBar = {

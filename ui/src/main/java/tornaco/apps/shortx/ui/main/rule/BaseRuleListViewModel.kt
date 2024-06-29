@@ -52,6 +52,7 @@ data class RuleListState(
     val ruleSortBy: RuleSortBy = RuleSortBy.CreateTime,
     val isLoading: Boolean = true,
     val colorfulCard: Boolean = false,
+    val searchQuery: String = "",
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -281,5 +282,12 @@ abstract class BaseRuleListViewModel(context: Context) :
                 })
                 .build()
         )
+    }
+
+    fun updateSearchQuery(query: String) {
+        viewModelScope.launch {
+            updateState { copy(searchQuery = query) }
+            delayLoadRule()
+        }
     }
 }

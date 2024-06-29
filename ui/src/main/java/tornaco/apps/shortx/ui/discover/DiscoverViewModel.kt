@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.discover
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.viewModelScope
+import com.github.promeg.pinyinhelper.Pinyin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -210,6 +211,7 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                 val installedRuleOrNull = shortXManager.getRuleById(it.id)
                 RuleUM(
                     title = it.title,
+                    titlePinyin = Pinyin.toPinyin(it.title, "").lowercase(),
                     description = it.description.fallbackOnEmpty(it.title),
                     createTime = FuzzyDateTimeFormatter.getTimeAgo(
                         context,
@@ -242,6 +244,7 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                 val installedDAOrNull = shortXManager.getDirectActionById(it.id)
                 DirectActionUM(
                     title = it.title,
+                    titlePinyin = Pinyin.toPinyin(it.title, "").lowercase(),
                     description = it.description.fallbackOnEmpty(it.title),
                     createTime = FuzzyDateTimeFormatter.getTimeAgo(
                         context,

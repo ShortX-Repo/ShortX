@@ -53,6 +53,7 @@ data class DAListState(
     val isShowDetailedDAItem: Boolean = true,
     val colorfulCard: Boolean = false,
     val isLoading: Boolean = true,
+    val searchQuery: String = "",
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -287,5 +288,12 @@ abstract class BaseDAListViewModel(context: Context) :
                 })
                 .build()
         )
+    }
+
+    fun updateSearchQuery(query: String) {
+        viewModelScope.launch {
+            updateState { copy(searchQuery = query) }
+            delayLoadDAList()
+        }
     }
 }

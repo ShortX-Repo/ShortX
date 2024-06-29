@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.main.rule
 import android.content.Context
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewModelScope
+import com.github.promeg.pinyinhelper.Pinyin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -101,6 +102,7 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                             actionIconColor = Color.Red.value,
                             id = ruleSet.id,
                             title = ruleSet.title,
+                            titlePinyin = Pinyin.toPinyin(ruleSet.title, "").lowercase(),
                             description = ruleSet.description,
                             isRuleSet = true,
                             isEnabled = subRules.isNotEmpty() && subRules.all { it.isEnabled },
@@ -114,21 +116,31 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                     CommonSetFilter.PinnedAllFlat
                 ) + sets.map { CommonSetFilter.UserSet(it.id, it.title) }
 
+                val finalRules = when {
+                    state.value.selectedRuleSetFilter == CommonSetFilter.PinnedAll -> {
+                        sets + rules
+                    }
+
+                    selectedDASetFilter == CommonSetFilter.PinnedAllFlat -> {
+                        rules
+                    }
+
+                    else -> {
+                        rules
+                    }
+                }.filter {
+                    state.value.searchQuery.isBlank() || it.title.contains(
+                        state.value.searchQuery,
+                        true
+                    ) || it.titlePinyin.contains(
+                        state.value.searchQuery.lowercase(),
+                        true
+                    )
+                }
+
                 updateState {
                     copy(
-                        rules = when {
-                            selectedRuleSetFilter == CommonSetFilter.PinnedAll -> {
-                                sets + rules
-                            }
-
-                            selectedDASetFilter == CommonSetFilter.PinnedAllFlat -> {
-                                rules
-                            }
-
-                            else -> {
-                                rules
-                            }
-                        },
+                        rules = finalRules,
                         ruleSetFilters = ruleSetFilters,
                         isLoading = false
                     )

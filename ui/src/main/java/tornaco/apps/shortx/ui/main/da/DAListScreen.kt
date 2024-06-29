@@ -132,7 +132,7 @@ fun DirectActionListScreen() {
 
     val searchBarState = rememberSearchBarState(
         keywordChanged = {
-
+            daListViewModel.updateSearchQuery(it)
         }
     )
 

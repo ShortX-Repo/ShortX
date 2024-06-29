@@ -44,6 +44,7 @@ import tornaco.apps.shortx.ui.base.ShortXFilterChip
 import tornaco.apps.shortx.ui.base.TipIds
 import tornaco.apps.shortx.ui.base.UserTip
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
+import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.main.CommonSetFilter
 import tornaco.apps.shortx.ui.main.MainScaffold
@@ -79,11 +80,17 @@ fun RuleScreen() {
         }
     }
 
-
+    val searchBarState = rememberSearchBarState(
+        keywordChanged = {
+            ruleListViewModel.updateSearchQuery(it)
+        }
+    )
 
     MainScaffold(
         state = mainState,
         appBarTitleKey = "ui.feat.label.rule",
+        enableSearch = true,
+        searchBarState = searchBarState,
         appBarActions = {
         },
         onClipboardClick = {
