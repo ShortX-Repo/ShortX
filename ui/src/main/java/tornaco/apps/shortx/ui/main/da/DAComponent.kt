@@ -262,7 +262,7 @@ private fun DAListItem(
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium.copy(
-                    fontSize = 16.sp
+                    fontSize = 14.5.sp
                 ),
                 color = if (colorfulCard) themedTextColor(iconColor) else Color.Unspecified
             )

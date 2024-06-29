@@ -129,7 +129,7 @@ private fun RuleItem(
             Text(
                 text = rule.title,
                 style = MaterialTheme.typography.titleMedium.copy(
-                    fontSize = 16.sp
+                    fontSize = if (showDescription) 14.5.sp else 12.5.sp
                 ),
                 color = colorfulCard.select(
                     themedTextColor(color = Color(rule.factIconColor)),
