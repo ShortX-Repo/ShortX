@@ -41,7 +41,6 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.TextInputDialog
-import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberClickAnimateState
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
@@ -62,6 +61,7 @@ fun RuleItem(
     rule: RuleUM,
     isSubscribed: Boolean,
     colorfulCard: Boolean,
+    showDescription: Boolean = true,
 ) {
     val handler = LocalRuleItemHandler.current
     // TODO Animate item
@@ -73,7 +73,13 @@ fun RuleItem(
         val clickAnimateState =
             rememberClickAnimateState(animateColor = Color(rule.actionIconColor))
         ClickAnimateContainer(clickAnimateState) {
-            RuleItem(modifier.then(it), popMenuState, rule, colorfulCard)
+            RuleItem(
+                modifier = modifier.then(it),
+                popMenuState = popMenuState,
+                rule = rule,
+                colorfulCard = colorfulCard,
+                showDescription = showDescription
+            )
         }
     }
 }
@@ -84,6 +90,7 @@ private fun RuleItem(
     popMenuState: DropdownSelectorState,
     rule: RuleUM,
     colorfulCard: Boolean,
+    showDescription: Boolean
 ) {
     val handler = LocalRuleItemHandler.current
     Column(modifier = modifier
@@ -94,7 +101,9 @@ private fun RuleItem(
         }) {
             handler.click(rule)
         }
-        .padding(16.dp)
+        .padding(horizontal = 16.dp)
+        .padding(top = 16.dp)
+        .padding(bottom = 12.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -127,17 +136,19 @@ private fun RuleItem(
                     Color.Unspecified
                 )
             )
-            TinySpacer()
-            Text(
-                text = rule.description,
-                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis,
-                color = colorfulCard.select(
-                    themedTextColor(color = Color(rule.factIconColor)),
-                    Color.Unspecified
+            androidx.compose.animation.AnimatedVisibility(showDescription) {
+                Text(
+                    modifier = Modifier.padding(top = 0.dp),
+                    text = rule.description,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                    color = colorfulCard.select(
+                        themedTextColor(color = Color(rule.factIconColor)),
+                        Color.Unspecified
+                    )
                 )
-            )
+            }
         }
 
         AnimatedVisibility(visible = rule.runningInsCount > 0) {

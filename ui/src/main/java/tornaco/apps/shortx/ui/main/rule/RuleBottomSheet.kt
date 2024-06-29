@@ -32,7 +32,8 @@ fun RuleDetailsBottomSheet(dialogState: ShortXBottomSheetState) {
             RuleContent(
                 isLoading = state.isLoading,
                 rules = state.rules,
-                colorfulCard = state.colorfulCard
+                colorfulCard = state.colorfulCard,
+                showDescription = true
             )
         }
     }

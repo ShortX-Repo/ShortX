@@ -31,6 +31,9 @@ private val RECENT_SELECTED_ACTIONS = stringPreferencesKey("recent_selected_acti
 private val UI_SHOW_DETAILED_DA_ITEM_CONTENT =
     booleanPreferencesKey("ui_show_detailed_da_item_content")
 
+private val UI_SHOW_RULE_DESCRIPTION =
+    booleanPreferencesKey("ui_show_rule_description")
+
 private val UI_COLORFUL_CARD =
     booleanPreferencesKey("ui_colorful_card")
 
@@ -94,6 +97,10 @@ class Pref(val context: Context) {
 
     val uiShowDetailedDAItemContent: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[UI_SHOW_DETAILED_DA_ITEM_CONTENT] ?: true
+    }
+
+    val uiShowRuleDescription: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[UI_SHOW_RULE_DESCRIPTION] ?: true
     }
 
     val uiColorfulCard: Flow<Boolean> = context.dataStore.data.map { preferences ->
@@ -160,6 +167,12 @@ class Pref(val context: Context) {
     suspend fun setShowDetailedDAItemContent(value: Boolean) {
         context.dataStore.edit { settings ->
             settings[UI_SHOW_DETAILED_DA_ITEM_CONTENT] = value
+        }
+    }
+
+    suspend fun setShowRuleDescription(value: Boolean) {
+        context.dataStore.edit { settings ->
+            settings[UI_SHOW_RULE_DESCRIPTION] = value
         }
     }
 

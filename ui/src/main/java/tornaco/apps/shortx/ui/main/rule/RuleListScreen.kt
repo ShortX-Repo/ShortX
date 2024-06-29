@@ -19,6 +19,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,11 +35,13 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import org.orbitmvi.orbit.compose.collectAsState
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.AddRuleActivity
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.EmptyList
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXFilterChip
 import tornaco.apps.shortx.ui.base.TipIds
@@ -92,6 +95,11 @@ fun RuleScreen() {
         enableSearch = true,
         searchBarState = searchBarState,
         appBarActions = {
+            IconButton(onClick = {
+                ruleListViewModel.toggleShowRuleDescription()
+            }) {
+                RemixIcon(remixName = Remix.Design.collage_line)
+            }
         },
         onClipboardClick = {
             ClipboardUtils.readClipboard(context)?.let { clip ->
@@ -141,7 +149,8 @@ fun RuleScreen() {
             RuleContent(
                 isLoading = ruleListState.isLoading,
                 colorfulCard = ruleListState.colorfulCard,
-                rules = ruleListState.rules
+                rules = ruleListState.rules,
+                showDescription = ruleListState.showDescription
             )
         }
     }
@@ -178,6 +187,7 @@ fun RuleSetFlowRow(
 fun RuleContent(
     isLoading: Boolean,
     colorfulCard: Boolean,
+    showDescription: Boolean,
     rules: List<RuleUM>
 ) {
     val refreshState = rememberPullRefreshState(isLoading, onRefresh = {
@@ -203,7 +213,8 @@ fun RuleContent(
                 RuleListContent(
                     isSubscribed = subscribeState.isSubscribed,
                     rules = rules,
-                    colorfulCard = colorfulCard
+                    colorfulCard = colorfulCard,
+                    showDescription = showDescription
                 )
             }
         }
@@ -221,6 +232,7 @@ fun RuleContent(
 private fun RuleListContent(
     isSubscribed: Boolean,
     colorfulCard: Boolean,
+    showDescription: Boolean,
     rules: List<RuleUM>,
 ) {
     LazyVerticalStaggeredGrid(
@@ -249,7 +261,8 @@ private fun RuleListContent(
                     RuleItem(
                         rule = rule,
                         isSubscribed = isSubscribed,
-                        colorfulCard = colorfulCard
+                        colorfulCard = colorfulCard,
+                        showDescription = showDescription
                     )
                 }
             }

@@ -145,11 +145,7 @@ fun DirectActionListScreen() {
             IconButton(onClick = {
                 daListViewModel.toggleShowDetailedDAItem()
             }) {
-                if (daListState.isShowDetailedDAItem) {
-                    RemixIcon(remixName = Remix.Document.bill_line)
-                } else {
-                    RemixIcon(remixName = Remix.Document.article_line)
-                }
+                RemixIcon(remixName = Remix.Design.collage_line)
             }
         },
         onClipboardClick = {

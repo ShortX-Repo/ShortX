@@ -52,6 +52,7 @@ data class RuleListState(
     val ruleSortBy: RuleSortBy = RuleSortBy.CreateTime,
     val isLoading: Boolean = true,
     val colorfulCard: Boolean = false,
+    val showDescription: Boolean = true,
     val searchQuery: String = "",
 )
 
@@ -118,6 +119,12 @@ abstract class BaseRuleListViewModel(context: Context) :
         viewModelScope.launch {
             pref.uiColorfulCard.collectLatest {
                 updateState { copy(colorfulCard = it) }
+            }
+        }
+
+        viewModelScope.launch {
+            pref.uiShowRuleDescription.collectLatest {
+                updateState { copy(showDescription = it) }
             }
         }
     }
@@ -288,6 +295,12 @@ abstract class BaseRuleListViewModel(context: Context) :
         viewModelScope.launch {
             updateState { copy(searchQuery = query) }
             delayLoadRule()
+        }
+    }
+
+    fun toggleShowRuleDescription() {
+        viewModelScope.launch {
+            pref.setShowRuleDescription(!state.value.showDescription)
         }
     }
 }
