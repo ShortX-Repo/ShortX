@@ -19,7 +19,6 @@ import tornaco.apps.shortx.ui.base.rememberMDIconSelectorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
-import kotlin.reflect.full.createInstance
 
 
 @Composable
@@ -42,6 +41,14 @@ fun miscActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
     }
     DownloadFileSelectorDialog(state = downloadFileSelectorState)
 
+    val backupFileDialogState = rememberTextInputState(
+        title = LocalI18N.current["ui.action.backup"],
+        message = LocalI18N.current["ui.action.backup.dest.dir"]
+    ) {
+        addAction(Action.ExportBackup(destDir = it))
+    }
+    TextInputDialog(state = backupFileDialogState)
+
     return { source ->
         when (source.clazz) {
             Action.NoAction::class -> {
@@ -60,7 +67,12 @@ fun miscActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
             }
 
             Action.StopAllActions::class -> {
-                addAction(source.clazz.createInstance())
+                addAction(Action.StopAllActions())
+                true
+            }
+
+            Action.ExportBackup::class -> {
+                backupFileDialogState.show(source.getActionAs<Action.ExportBackup>()?.destDir)
                 true
             }
 
@@ -85,6 +97,7 @@ fun MiscActions(
         Action.DownloadFile::class,
         Action.NoAction::class,
         Action.StopAllActions::class,
+        Action.ExportBackup::class,
     ).map {
         SelectorItem(
             it,

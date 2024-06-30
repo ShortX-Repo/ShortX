@@ -226,6 +226,7 @@ fun MainScaffold(
                     expandedContent = {
                         SearchBar(
                             searchBarState = searchBarState,
+                            autoFocus = true,
                             modifier = Modifier
                                 .systemBarsPadding()
                                 .padding(horizontal = 16.dp)

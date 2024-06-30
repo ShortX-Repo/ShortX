@@ -518,6 +518,8 @@
     "ui.action.enable.universal.copy.text.not.found": "没有文本可以复制",
     "ui.action.enable.universal.copy.edit.message": "编辑后，点击确定即可写入剪贴板",
     "ui.action.enable.view.id.viewer": "查看View详情",
+    "ui.action.backup": "ShortX备份",
+    "ui.action.backup.dest.dir": "请输入备份文件保存路径，注意：ShortX需要通过Shell命令才能拷贝文件到目标路径，请注意检查shell权限。\n\n路径可以留空，届时备份文件将存储到ShortX临时目录，你可访问上下文变量获取该路径以自行拷贝",
     "ui.action.read.clipboard": "读取剪贴板",
     "ui.action.write.clipboard": "写入剪贴板",
     "ui.action.get.text.from.node": "读取视图文本",

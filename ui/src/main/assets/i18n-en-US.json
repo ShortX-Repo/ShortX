@@ -579,6 +579,8 @@
     "ui.action.enable.universal.copy.text.not.found": "No text to copy",
     "ui.action.enable.universal.copy.edit.message": "Edit text and click copy to write it to clipboard",
     "ui.action.enable.view.id.viewer": "View id lookup",
+    "ui.action.backup": "ShortX backup",
+    "ui.action.backup.dest.dir": "Please enter the backup file save path. Note: ShortX requires shell commands to copy files to the target path, so please check shell permissions. \n\nYou can leave the path empty, in which case the backup file will be stored in the ShortX temporary directory. You can access the context variable to get this path and copy the file manually.",
     "ui.action.read.clipboard": "Read clipboard",
     "ui.action.write.clipboard": "Write clipboard",
     "ui.action.get.text.from.node": "Get text from view",

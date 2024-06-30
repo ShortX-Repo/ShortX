@@ -14,6 +14,7 @@ object Dirs {
     fun jsCacheDir() = File(baseServerCacheDir(), "js")
     fun httpDir() = File(baseServerCacheDir(), "http")
     fun methodHookDir() = File(baseServerCacheDir(), "hook")
+    fun backupCacheDir() = File(baseServerCacheDir(), "backup")
 
     fun baseServerDataDir(userId: Int = UserHandle.USER_SYSTEM) =
         File(baseServerDir(), "data/u/$userId")
