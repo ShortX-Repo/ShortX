@@ -45,7 +45,7 @@ object ExportBackup : Actor {
 
             val destDir = data.destDir
             if (destDir.isNotBlank()) {
-                val destFile = File(destDir.compileContextAndVars(cv))
+                val destFile = File(File(destDir.compileContextAndVars(cv)), backup.name)
                 logger.d("Copy backup to $destFile")
 
                 requireNotNull(
