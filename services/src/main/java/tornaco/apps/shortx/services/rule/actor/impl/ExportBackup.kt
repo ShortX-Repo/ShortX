@@ -33,6 +33,8 @@ object ExportBackup : Actor {
                 object : BackupSettings {
                     override val cacheDir: File
                         get() = Dirs.backupCacheDir()
+                    override val destDir: File
+                        get() = Dirs.backupCacheDir()
                     override val versionCode: Long
                         get() = BuildPropInternal.APP_VERSION_CODE.toLong()
                 }

@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.backup
 
 import android.content.Context
 import android.net.Uri
+import android.os.Environment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildPropInternal
@@ -44,6 +45,8 @@ class BackupAgent(private val context: Context) : CoreBackupAgent(
     object : BackupSettings {
         override val cacheDir: File
             get() = context.cacheDir
+        override val destDir: File
+            get() = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
         override val versionCode: Long
             get() = BuildPropInternal.APP_VERSION_CODE.toLong()
     }
