@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +29,7 @@ import tornaco.apps.shortx.ui.addrule.base.ActionCategory
 import tornaco.apps.shortx.ui.addrule.base.rememberCategoryState
 import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.SearchBar
 import tornaco.apps.shortx.ui.base.SearchBarState
 import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
@@ -91,7 +94,6 @@ fun ActionSelector(close: () -> Unit, onSelected: (Action) -> Unit) {
                     ) {
                         ActionCategory.entries.forEach {
                             ShortXFilterChip(
-                                modifier = Modifier.padding(start = 16.dp),
                                 selected = selectedFilter == it,
                                 label = {
                                     Text(text = LocalI18N.current[it.i18NKey])
@@ -99,6 +101,7 @@ fun ActionSelector(close: () -> Unit, onSelected: (Action) -> Unit) {
                                 onClick = {
                                     selectorVM.selectFilterCategory(it)
                                 })
+                            MediumSpacer()
                         }
                     }
 
