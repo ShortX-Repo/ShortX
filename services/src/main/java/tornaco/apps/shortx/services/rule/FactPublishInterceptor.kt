@@ -30,6 +30,7 @@ class FactPublishInterceptor(
 ) {
     companion object {
         const val BUILD_CACHE_DELAY_MS = 1000L
+        private const val ENABLE_DUMP_LOG = false
     }
 
     private val logger = Logger("FactPublishInterceptor")
@@ -116,10 +117,11 @@ class FactPublishInterceptor(
         }
         if (enabledProtoUrlCache.contains(fact.getTypeUrl())) return false
 
-        logger.p { "-------- DUMP START ---------" }
-        logger.p { enabledProtoUrlCache.joinToString(System.lineSeparator()) }
-        logger.p { "-------- DUMP END ---------" }
-
+        if (ENABLE_DUMP_LOG) {
+            logger.p { "-------- DUMP START ---------" }
+            logger.p { enabledProtoUrlCache.joinToString(System.lineSeparator()) }
+            logger.p { "-------- DUMP END ---------" }
+        }
         return true
     }
 

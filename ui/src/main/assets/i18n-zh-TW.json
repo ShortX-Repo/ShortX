@@ -612,6 +612,7 @@
     "ui.title.js": "Javascript",
     "ui.action.set.apm.mode": "設定飛行模式",
     "ui.condition.apm.mode": "飛行模式",
+    "ui.condition.ringer.mode": "铃音模式",
     "ui.condition.fact.tag": "觸發器標籤",
     "ui.condition.is.incall": "在通話中",
     "ui.condition.is.ringing": "正在響鈴",

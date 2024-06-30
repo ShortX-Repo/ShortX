@@ -46,6 +46,7 @@ object ExportBackup : Actor {
             val destDir = data.destDir
             if (destDir.isNotBlank()) {
                 val destFile = File(File(destDir.compileContextAndVars(cv)), backup.name)
+                destFile.parentFile.mkdirs()
                 logger.d("Copy backup to $destFile")
 
                 requireNotNull(
@@ -55,6 +56,7 @@ object ExportBackup : Actor {
                     )
                 ) { "Copy file fail - Shell res is null" }
                     .also {
+                        logger.d("Shell res: $it")
                         require(it.code == 0) { "Copy file fail: $it" }
                         backup.deleteRecursively()
                         logger.d("Backup copy success.")

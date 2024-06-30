@@ -620,6 +620,7 @@
     "ui.title.js": "JS",
     "ui.action.set.apm.mode": "Airplane mode",
     "ui.condition.apm.mode": "Airplane mode",
+    "ui.condition.ringer.mode": "Ringer mode",
     "ui.condition.fact.tag": "Fact tag",
     "ui.condition.is.incall": "Is incall",
     "ui.condition.is.ringing": "Is ringing",
