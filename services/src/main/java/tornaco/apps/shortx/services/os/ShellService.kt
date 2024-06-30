@@ -29,6 +29,8 @@ import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 
 
+const val SHELL_ERROR_NO_SUCH_FILE_OR_DIR = "No such file or directory"
+
 class ShellService(shortXContext: ShortXContext) : SystemService(shortXContext, "ShellService") {
     private val shellStubs = RemoteCallbackList<ISu>()
 

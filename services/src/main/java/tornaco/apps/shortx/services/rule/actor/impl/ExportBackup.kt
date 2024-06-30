@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.data.Dirs
+import tornaco.apps.shortx.services.os.SHELL_ERROR_NO_SUCH_FILE_OR_DIR
 import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
@@ -46,18 +47,20 @@ object ExportBackup : Actor {
             val destDir = data.destDir
             if (destDir.isNotBlank()) {
                 val destFile = File(File(destDir.compileContextAndVars(cv)), backup.name)
-                destFile.parentFile.mkdirs()
                 logger.d("Copy backup to $destFile")
 
                 requireNotNull(
                     shortXContext.shell.executeCommand(
-                        "cp ${backup.absolutePath} ${destFile.absolutePath}",
+                        "mkdir -p ${destFile.parentFile.absolutePath} && cp ${backup.absolutePath} ${destFile.absolutePath}",
                         false
                     )
                 ) { "Copy file fail - Shell res is null" }
                     .also {
                         logger.d("Shell res: $it")
                         require(it.code == 0) { "Copy file fail: $it" }
+                        require(!it.toString().contains(SHELL_ERROR_NO_SUCH_FILE_OR_DIR)) {
+                            SHELL_ERROR_NO_SUCH_FILE_OR_DIR
+                        }
                         backup.deleteRecursively()
                         logger.d("Backup copy success.")
 

@@ -12,6 +12,7 @@ import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.FileHelper
 import tornaco.apps.shortx.core.util.wallpaperManager
 import tornaco.apps.shortx.services.data.Dirs
+import tornaco.apps.shortx.services.os.SHELL_ERROR_NO_SUCH_FILE_OR_DIR
 import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
@@ -42,12 +43,15 @@ object SetWallpaper : Actor {
 
         requireNotNull(
             shortXContext.shell.executeCommand(
-                "cp $realUrl $tmpFile",
+                "mkdir -p ${tmpFile.parentFile.absolutePath} && cp $realUrl $tmpFile",
                 false
             )
         ) { "Copy file fail - Shell res is null" }
             .also {
                 require(it.code == 0) { "Copy file fail: $it" }
+                require(!it.toString().contains(SHELL_ERROR_NO_SUCH_FILE_OR_DIR)) {
+                    SHELL_ERROR_NO_SUCH_FILE_OR_DIR
+                }
             }
 
         val changeOwner = "chown system:system ${tmpFile.absolutePath}"
