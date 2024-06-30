@@ -9,9 +9,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import okhttp3.internal.toLongOrDefault
 import tornaco.apps.shortx.core.proto.action.MediaPlaybackAction
-import tornaco.apps.shortx.core.proto.action.RingerMode
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.OnOffToggle
+import tornaco.apps.shortx.core.proto.common.RingerMode
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.common.VolumeDirection
 import tornaco.apps.shortx.core.shortXManager

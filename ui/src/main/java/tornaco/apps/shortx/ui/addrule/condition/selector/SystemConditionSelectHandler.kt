@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addrule.condition.selector
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.QSTileState
+import tornaco.apps.shortx.core.proto.common.RingerMode
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.condition.PlugType
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
@@ -10,6 +11,7 @@ import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
+import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.condition.ConditionSelectSource
 import tornaco.apps.shortx.ui.addrule.condition.EvaluateGlobalVarSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.IntOpSelectorDialog
@@ -34,7 +36,9 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.rememberWifiSSIDSelectorStat
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
+import tornaco.apps.shortx.ui.base.SelectionDialog
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
+import tornaco.apps.shortx.ui.base.rememberSelectionDialogState
 import java.util.UUID
 
 @Composable
@@ -298,6 +302,18 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     )
     MenuDialog(state = notificationPanelExpandState)
 
+    val ringerModeSelectDialogState = rememberSelectionDialogState(
+        title = LocalI18N.current["ui.condition.ringer.mode"],
+        message = null,
+        selectionLabel2Ids = listOf(RingerMode.normal, RingerMode.vibrate, RingerMode.silent).map {
+            LocalI18N.current[it.labelKey()] to it.name
+        },
+        onSelect = {
+            val mode: RingerMode = RingerMode.valueOf(it)
+            addCondition(Condition.RequireRingerMode(mode = mode))
+        }
+    )
+    SelectionDialog(state = ringerModeSelectDialogState)
 
     return { source ->
         when (source.clazz) {
@@ -429,6 +445,11 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
 
             Condition.RequireNotificationPanelExpanded::class -> {
                 notificationPanelExpandState.show()
+                true
+            }
+
+            Condition.RequireRingerMode::class -> {
+                ringerModeSelectDialogState.show()
                 true
             }
 
