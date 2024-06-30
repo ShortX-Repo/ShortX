@@ -131,6 +131,7 @@ fun DirectActionListScreen() {
     }
 
     val searchBarState = rememberSearchBarState(
+        itemCount = daListState.das.size,
         keywordChanged = {
             daListViewModel.updateSearchQuery(it)
         }

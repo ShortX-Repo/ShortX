@@ -84,6 +84,7 @@ fun RuleScreen() {
     }
 
     val searchBarState = rememberSearchBarState(
+        itemCount = ruleListState.rules.size,
         keywordChanged = {
             ruleListViewModel.updateSearchQuery(it)
         }
