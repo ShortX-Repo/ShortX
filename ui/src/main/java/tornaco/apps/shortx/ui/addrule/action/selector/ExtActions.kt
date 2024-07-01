@@ -170,6 +170,11 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     )
     MenuDialog(state = brkScopeSelectorState)
 
+    val websocketDialogState = rememberTextInputState(title = "Url", message = null) {
+        addAction(Action.WebSocketConnect(url = it))
+    }
+    TextInputDialog(state = websocketDialogState)
+
     return { source ->
         when (source.clazz) {
             Action.ShellCommand::class -> {
@@ -285,6 +290,11 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.WebSocketConnect::class -> {
+                websocketDialogState.show(source.getActionAs<Action.WebSocketConnect>()?.url)
+                true
+            }
+
             else -> {
                 false
             }
@@ -314,6 +324,7 @@ fun ExtActions(
         Action.WhileLoop::class,
         Action.WaitUtilConditionMatch::class,
         Action.HttpRequest::class,
+        Action.WebSocketConnect::class,
         Action.ExecuteJS::class,
     ).map {
         SelectorItem(
