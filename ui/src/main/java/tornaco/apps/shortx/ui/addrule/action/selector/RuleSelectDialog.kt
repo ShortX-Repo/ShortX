@@ -5,7 +5,6 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
@@ -27,7 +26,6 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
-import tornaco.apps.shortx.ui.base.adaptiveCardSizeMin
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -89,10 +87,12 @@ private fun RuleSelectSelector(dialogState: RuleSelectDialogState) {
                 ) {
                     items(allRules) {
                         ShortXCard(modifier = Modifier.padding(16.dp)) {
-                            ListItem(title = it.title, onClick = {
-                                dialogState.onSelected(it)
-                                dialogState.dismiss()
-                            })
+                            ListItem(title = it.title,
+                                text1 = it.description,
+                                onClick = {
+                                    dialogState.onSelected(it)
+                                    dialogState.dismiss()
+                                })
                         }
                     }
                 }
