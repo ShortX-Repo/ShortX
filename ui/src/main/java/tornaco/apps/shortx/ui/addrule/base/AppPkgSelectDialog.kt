@@ -18,10 +18,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -59,6 +58,7 @@ import tornaco.apps.shortx.ui.base.SearchBar
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
@@ -100,6 +100,13 @@ open class BaseAppPkgSelectorDialogState {
             if (contains(app).not()) {
                 add(app)
             }
+        }
+    }
+
+    fun clearAndAddApps(apps: List<App>) {
+        _selectedApps = selectedApps.toMutableList().apply {
+            clear()
+            addAll(apps)
         }
     }
 
@@ -151,70 +158,66 @@ fun AppPkgSelectorDialog(state: AppPkgSelectorDialogState) {
 @Composable
 private fun AppPkgSelector(state: AppPkgSelectorDialogState) {
     ShortXTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
-        ) {
-            var selectedTabIndex by remember {
-                mutableIntStateOf(0)
-            }
-            Scaffold(modifier = Modifier,
-                topBar = {
-                    TopAppBar(
-                        modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.dialog.title.select.app"]) },
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                state.dismiss()
-                            }) {
-                                RemixIcon(remixName = Remix.System.close_line)
-                            }
-                        },
-                        actions = {
-                            IconButton(onClick = {
-                                if (selectedTabIndex == 0) {
-                                    state.onAppListSelected(state.selectedApps)
-                                } else {
-                                    state.onPkgSetSelected?.invoke(state.selectedPkgSets.filter {
-                                        shortXManager.getPkgSetByLabel(it.label) != null
-                                    })
-                                }
-                                state.dismiss()
-
-                            }) {
-                                RemixIcon(remixName = Remix.System.check_line)
-                            }
+        var selectedTabIndex by remember {
+            mutableIntStateOf(0)
+        }
+        Scaffold(modifier = Modifier,
+            topBar = {
+                TopAppBar(
+                    modifier = Modifier,
+                    title = { Text(text = LocalI18N.current["ui.dialog.title.select.app"]) },
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            state.dismiss()
+                        }) {
+                            RemixIcon(remixName = Remix.System.close_line)
                         }
-                    )
-                }) { paddingValues ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                ) {
-                    TabRow(selectedTabIndex = selectedTabIndex) {
-                        val titles = mutableListOf(
-                            LocalI18N.current["ui.dialog.title.select.app"],
-                        ).apply {
-                            if (state.onPkgSetSelected != null) {
-                                add(LocalI18N.current["ui.pkg.set.title"])
-                            }
-                        }
-                        titles.forEachIndexed { index, title ->
-                            Tab(selected = selectedTabIndex == index,
-                                onClick = { selectedTabIndex = index },
-                                text = {
-                                    Text(
-                                        text = title, maxLines = 2, overflow = TextOverflow.Ellipsis
-                                    )
+                    },
+                    actions = {
+                        IconButton(onClick = {
+                            if (selectedTabIndex == 0) {
+                                state.onAppListSelected(state.selectedApps)
+                            } else {
+                                state.onPkgSetSelected?.invoke(state.selectedPkgSets.filter {
+                                    shortXManager.getPkgSetByLabel(it.label) != null
                                 })
+                            }
+                            state.dismiss()
+
+                        }) {
+                            RemixIcon(remixName = Remix.System.check_line)
                         }
                     }
-
-                    if (selectedTabIndex == 0) {
-                        AppListContent(state)
-                    } else {
-                        PkgSetContent(state)
+                )
+            }) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                TabRow(selectedTabIndex = selectedTabIndex) {
+                    val titles = mutableListOf(
+                        LocalI18N.current["ui.dialog.title.select.app"],
+                    ).apply {
+                        if (state.onPkgSetSelected != null) {
+                            add(LocalI18N.current["ui.pkg.set.title"])
+                        }
                     }
+                    titles.forEachIndexed { index, title ->
+                        Tab(selected = selectedTabIndex == index,
+                            onClick = { selectedTabIndex = index },
+                            text = {
+                                Text(
+                                    text = title, maxLines = 2, overflow = TextOverflow.Ellipsis
+                                )
+                            })
+                    }
+                }
+
+                if (selectedTabIndex == 0) {
+                    AppListContent(state)
+                } else {
+                    PkgSetContent(state)
                 }
             }
         }
@@ -287,39 +290,56 @@ fun AppListContent(dialogState: BaseAppPkgSelectorDialogState) {
         }
 
         item {
-            Box(modifier = Modifier.padding(horizontal = 12.dp)) {
-                val allPkgSets = shortXManager.getAllPkgSets(false)
-                val dropdownState = rememberDropdownSelectorState()
-                FilledTonalButton(onClick = {
-                    dropdownState.open()
-                }) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        RemixIcon(
-                            modifier = Modifier.size(16.dp),
-                            remixName = Remix.System.filter_line
-                        )
-                        SmallSpacer()
-                        Text(text = dialogState.selectedAppFilterPkgSetLabel.let {
-                            LocalI18N.current["ui.common.app.${it.lowercase()}", emptyMap(), it]
-                        })
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(modifier = Modifier.padding(horizontal = 12.dp)) {
+                    val allPkgSets = shortXManager.getAllPkgSets(false)
+                    val dropdownState = rememberDropdownSelectorState()
+                    FilledTonalButton(onClick = {
+                        dropdownState.open()
+                    }) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            RemixIcon(
+                                modifier = Modifier.size(16.dp),
+                                remixName = Remix.System.filter_line
+                            )
+                            SmallSpacer()
+                            Text(text = dialogState.selectedAppFilterPkgSetLabel.let {
+                                LocalI18N.current["ui.common.app.${it.lowercase()}", emptyMap(), it]
+                            })
+                        }
+
                     }
+
+                    DropdownSelector(
+                        widthFraction = 0.6f,
+                        state = dropdownState,
+                        items = allPkgSets.map {
+                            DropdownItem(
+                                labelLines = listOf(LocalI18N.current["ui.common.app.${it.label.lowercase()}", emptyMap(), it.label]),
+                                data = it.label
+                            )
+                        },
+                        onSelect = {
+                            dialogState.selectedAppFilterPkgSetLabel = it.data
+                            vm.loadInstalledApps(dialogState.selectedAppFilterPkgSetLabel)
+                        })
 
                 }
 
-                DropdownSelector(
-                    widthFraction = 0.6f,
-                    state = dropdownState,
-                    items = allPkgSets.map {
-                        DropdownItem(
-                            labelLines = listOf(LocalI18N.current["ui.common.app.${it.label.lowercase()}", emptyMap(), it.label]),
-                            data = it.label
-                        )
-                    },
-                    onSelect = {
-                        dialogState.selectedAppFilterPkgSetLabel = it.data
-                        vm.loadInstalledApps(dialogState.selectedAppFilterPkgSetLabel)
-                    })
+                StandardSpacer()
 
+                FilledTonalIconButton(onClick = {
+                    val currentDisplayingApps = state.installedApps.filterSearchKeyword(
+                        searchBarState.keyword
+                    ).map { it.app }
+                    if (dialogState.selectedApps != currentDisplayingApps) {
+                        dialogState.clearAndAddApps(currentDisplayingApps)
+                    } else {
+                        dialogState.clearAndAddApps(emptyList())
+                    }
+                }) {
+                    RemixIcon(remixName = Remix.System.checkbox_multiple_line)
+                }
             }
         }
 
