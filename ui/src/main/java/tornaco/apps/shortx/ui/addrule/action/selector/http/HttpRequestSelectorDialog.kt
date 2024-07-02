@@ -14,16 +14,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -70,9 +65,9 @@ import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.MenuDialogState
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
+import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXTextField
-import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.SwitchRow
@@ -86,7 +81,6 @@ import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.settings.log.http.HttpLogActivity
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
-import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 @AndroidEntryPoint
@@ -171,198 +165,179 @@ private fun BaseSelectorActivity<Action.HttpRequest>.HttpRequestSelector(current
             })
     TextInputDialog(state = httpCanaryHcyInputDialogState)
 
-    ShortXTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
-        ) {
-            Scaffold(modifier = Modifier,
-                topBar = {
-                    ShortXTopAppBar(
-                        modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.action.http.request"]) },
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                cancelAndFinish()
-                            }) {
-                                RemixIcon(remixName = Remix.System.close_line)
-                            }
-                        },
-                        actions = {
-                            Box {
-                                val moreActionsDropdown = rememberDropdownSelectorState()
-                                DropdownSelector(
-                                    widthFraction = 0.5f,
-                                    state = moreActionsDropdown,
-                                    items = listOf(
-                                        DropdownItem(
-                                            labelLines = listOf(LocalI18N.current["ui.action.http.request.from.curl"]),
-                                            data = MoreMenuOptions.FromCurl
-                                        ),
-                                        DropdownItem(
-                                            labelLines = listOf(LocalI18N.current["ui.action.http.request.from.http.canary"]),
-                                            data = MoreMenuOptions.FromHttpCanaryJson
-                                        ),
-                                        DropdownItem(
-                                            labelLines = listOf(LocalI18N.current["ui.action.http.request.from.http.canary.hcy"]),
-                                            data = MoreMenuOptions.FromHttpCanaryHcy
-                                        ),
-                                    ),
-                                    onSelect = {
-                                        when (it.data) {
-                                            MoreMenuOptions.FromCurl -> {
-                                                curlInputDialogState.show()
-                                            }
-
-                                            MoreMenuOptions.FromHttpCanaryJson -> {
-                                                httpCanaryJsonInputDialogState.show()
-                                            }
-
-                                            MoreMenuOptions.FromHttpCanaryHcy -> {
-                                                httpCanaryHcyInputDialogState.show()
-                                            }
-                                        }
-                                    })
-                                IconButton(onClick = {
-                                    moreActionsDropdown.open()
-                                }) {
-                                    RemixIcon(remixName = Remix.System.more_2_fill)
-                                }
+    ShortXAppBarScaffold(
+        title = LocalI18N.current["ui.action.http.request"],
+        onBackPressed = {
+            cancelAndFinish()
+        },
+        actions = {
+            Box {
+                val moreActionsDropdown = rememberDropdownSelectorState()
+                DropdownSelector(
+                    widthFraction = 0.5f,
+                    state = moreActionsDropdown,
+                    items = listOf(
+                        DropdownItem(
+                            labelLines = listOf(LocalI18N.current["ui.action.http.request.from.curl"]),
+                            data = MoreMenuOptions.FromCurl
+                        ),
+                        DropdownItem(
+                            labelLines = listOf(LocalI18N.current["ui.action.http.request.from.http.canary"]),
+                            data = MoreMenuOptions.FromHttpCanaryJson
+                        ),
+                        DropdownItem(
+                            labelLines = listOf(LocalI18N.current["ui.action.http.request.from.http.canary.hcy"]),
+                            data = MoreMenuOptions.FromHttpCanaryHcy
+                        ),
+                    ),
+                    onSelect = {
+                        when (it.data) {
+                            MoreMenuOptions.FromCurl -> {
+                                curlInputDialogState.show()
                             }
 
-                            IconButton(onClick = {
-                                HttpLogActivity.Starter.start(context)
-                            }) {
-                                RemixIcon(remixName = Remix.Document.file_text_line)
+                            MoreMenuOptions.FromHttpCanaryJson -> {
+                                httpCanaryJsonInputDialogState.show()
                             }
 
-                            val scope = rememberCoroutineScope()
-                            val outputTitle = LocalI18N.current["ui.action.http.request"]
-
-                            IconButton(
-                                enabled = !selectorState.isTesting,
-                                onClick = {
-                                    if (selectorState.url.isNotBlank()) {
-                                        val request = selectorState.httpRequest
-                                        vm.setIsTesting(true)
-                                        scope.launch {
-                                            val out = withContext(Dispatchers.IO) {
-                                                shortXManager.executeHttpRequest(request.toProtoAction() as HttpRequest)
-                                            }
-                                            vm.setIsTesting(false)
-
-                                            TextDisplayActivity.start(
-                                                context,
-                                                title = outputTitle,
-                                                text = out.joinToString(separator = System.lineSeparator(),
-                                                    transform = { str ->
-                                                        runCatching {
-                                                            formatJsonString(str)
-                                                        }.getOrElse { str }
-                                                    })
-                                            )
-                                        }
-                                    }
-                                }) {
-                                if (selectorState.isTesting) {
-                                    CircularProgressIndicator(modifier = Modifier.size(20.dp))
-                                } else {
-                                    RemixIcon(remixName = Remix.Media.play_line)
-                                }
+                            MoreMenuOptions.FromHttpCanaryHcy -> {
+                                httpCanaryHcyInputDialogState.show()
                             }
-
-                            IconButton(onClick = {
-                                if (selectorState.url.isNotBlank()) {
-                                    setResultAndFinish(selectorState.httpRequest)
-                                }
-                            }) {
-                                RemixIcon(remixName = Remix.System.check_line)
-                            }
-                        },
-                    )
-                }) { paddingValues ->
-
-                ClickOutsideClearFocusBox {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues)
-                            .padding(16.dp)
-                            .verticalScroll(rememberScrollState())
-                    ) {
-                        Url(selectorState.url) {
-                            vm.setUrl(it)
                         }
-                        LargeSpacer()
-
-                        Method(method = selectorState.method) {
-                            vm.setMethod(it)
-                        }
-                        LargeSpacer()
-
-                        Headers(
-                            headers = selectorState.headers,
-                            removeHeader = { vm.removeHeader(it) },
-                            addHeader = { vm.addHeader(it) },
-                            addHeaderWithIndex = { h, i ->
-                                vm.addHeader(
-                                    h, i
-                                )
-                            })
-                        LargeSpacer()
-
-                        RequestBody(
-                            requestBody = selectorState.requestBody,
-                            requestBodyJson = selectorState.requestBodyJson,
-                            updateRequestBodyJson = {
-                                vm.setRequestBodyJson(it)
-                            },
-                            requestBodyForm = selectorState.requestBodyForm,
-                            setRequestBodyType = {
-                                vm.setRequestBodyType(it)
-                            },
-                            removeForm = {
-                                vm.removeForm(it)
-                            },
-                            addForm = {
-                                vm.addForm(it)
-                            },
-                            addFormWithIndex = { f, i ->
-                                vm.addForm(f, i)
-                            })
-                        LargeSpacer()
-
-                        ResponseAdapter(
-                            responseAdapter = selectorState.responseAdapter,
-                            update = {
-                                vm.setResponseAdapter(it)
-                            },
-                            expressions = selectorState.expressions,
-                            addExpression = {
-                                vm.addExpression(it)
-                            }, removeExpression = {
-                                vm.removeExpression(it)
-                            })
-                        SectionSpacer()
-
-                        FieldTitle(text = LocalI18N.current["ui.action.misc"])
-                        SmallSpacer()
-                        CookieJar(selectorState.withCookieJar) { vm.withCookieJar(it) }
-                        LargeSpacer()
-
-                        TrustAllCerts(selectorState.trustAllCerts) { vm.trustAllCerts(it) }
-                        LargeSpacer()
-
-                        ExecuteInAppProcess(selectorState.executeInAppProcess) { vm.executeInApp(it) }
-                        LargeSpacer()
-
-                        SectionSpacer()
-                        SuggestedNavEntry()
-                    }
+                    })
+                IconButton(onClick = {
+                    moreActionsDropdown.open()
+                }) {
+                    RemixIcon(remixName = Remix.System.more_2_fill)
                 }
+            }
+
+            IconButton(onClick = {
+                HttpLogActivity.Starter.start(context)
+            }) {
+                RemixIcon(remixName = Remix.Document.file_text_line)
+            }
+
+            val scope = rememberCoroutineScope()
+            val outputTitle = LocalI18N.current["ui.action.http.request"]
+
+            IconButton(
+                enabled = !selectorState.isTesting,
+                onClick = {
+                    if (selectorState.url.isNotBlank()) {
+                        val request = selectorState.httpRequest
+                        vm.setIsTesting(true)
+                        scope.launch {
+                            val out = withContext(Dispatchers.IO) {
+                                shortXManager.executeHttpRequest(request.toProtoAction() as HttpRequest)
+                            }
+                            vm.setIsTesting(false)
+
+                            TextDisplayActivity.start(
+                                context,
+                                title = outputTitle,
+                                text = out.joinToString(separator = System.lineSeparator(),
+                                    transform = { str ->
+                                        runCatching {
+                                            formatJsonString(str)
+                                        }.getOrElse { str }
+                                    })
+                            )
+                        }
+                    }
+                }) {
+                if (selectorState.isTesting) {
+                    CircularProgressIndicator(modifier = Modifier.size(20.dp))
+                } else {
+                    RemixIcon(remixName = Remix.Media.play_line)
+                }
+            }
+
+            IconButton(onClick = {
+                if (selectorState.url.isNotBlank()) {
+                    setResultAndFinish(selectorState.httpRequest)
+                }
+            }) {
+                RemixIcon(remixName = Remix.System.check_line)
+            }
+        }) {
+        ClickOutsideClearFocusBox {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                Url(selectorState.url) {
+                    vm.setUrl(it)
+                }
+                LargeSpacer()
+
+                Method(method = selectorState.method) {
+                    vm.setMethod(it)
+                }
+                LargeSpacer()
+
+                Headers(
+                    headers = selectorState.headers,
+                    removeHeader = { vm.removeHeader(it) },
+                    addHeader = { vm.addHeader(it) },
+                    addHeaderWithIndex = { h, i ->
+                        vm.addHeader(
+                            h, i
+                        )
+                    })
+                LargeSpacer()
+
+                RequestBody(
+                    requestBody = selectorState.requestBody,
+                    requestBodyJson = selectorState.requestBodyJson,
+                    updateRequestBodyJson = {
+                        vm.setRequestBodyJson(it)
+                    },
+                    requestBodyForm = selectorState.requestBodyForm,
+                    setRequestBodyType = {
+                        vm.setRequestBodyType(it)
+                    },
+                    removeForm = {
+                        vm.removeForm(it)
+                    },
+                    addForm = {
+                        vm.addForm(it)
+                    },
+                    addFormWithIndex = { f, i ->
+                        vm.addForm(f, i)
+                    })
+                LargeSpacer()
+
+                ResponseAdapter(
+                    responseAdapter = selectorState.responseAdapter,
+                    update = {
+                        vm.setResponseAdapter(it)
+                    },
+                    expressions = selectorState.expressions,
+                    addExpression = {
+                        vm.addExpression(it)
+                    }, removeExpression = {
+                        vm.removeExpression(it)
+                    })
+                SectionSpacer()
+
+                FieldTitle(text = LocalI18N.current["ui.action.misc"])
+                SmallSpacer()
+                CookieJar(selectorState.withCookieJar) { vm.withCookieJar(it) }
+                LargeSpacer()
+
+                TrustAllCerts(selectorState.trustAllCerts) { vm.trustAllCerts(it) }
+                LargeSpacer()
+
+                ExecuteInAppProcess(selectorState.executeInAppProcess) { vm.executeInApp(it) }
+                LargeSpacer()
+
+                SectionSpacer()
+                SuggestedNavEntry()
             }
         }
     }
-
 }
 
 @Composable
