@@ -4,6 +4,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
-suspend fun CoroutineScope.loop() {
-    while (isActive) delay(100000)
+suspend fun CoroutineScope.loopUntilQuitWithError(quit: () -> Throwable? = { null }) {
+    while (isActive) {
+        val err = quit()
+        if (err != null) throw err
+        delay(1000)
+    }
 }

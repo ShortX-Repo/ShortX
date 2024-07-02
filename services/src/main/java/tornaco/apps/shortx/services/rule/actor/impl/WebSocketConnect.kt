@@ -18,7 +18,7 @@ import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.services.util.WSCallback
 import tornaco.apps.shortx.services.util.WebSocketClient
-import tornaco.apps.shortx.services.util.loop
+import tornaco.apps.shortx.services.util.loopUntilQuitWithError
 
 object WebSocketConnect : Actor {
     private val scope by lazy { CoroutineScope(SupervisorJob()) }
@@ -35,6 +35,8 @@ object WebSocketConnect : Actor {
                 params.action unpack_ tornaco.apps.shortx.core.proto.action.WebSocketConnect::class.java
 
             withContext(Dispatchers.IO) {
+                var quitError: Throwable? = null
+
                 val callback = object : WSCallback {
                     override suspend fun onMessage(message: String) {
                         super.onMessage(message)
@@ -74,6 +76,8 @@ object WebSocketConnect : Actor {
                             reason
                         )
                         invokeCallback(data.onClosedList)
+
+                        quitError = Error(WebSocketEvent.WS_CLOSED.name)
                     }
 
                     override suspend fun onFailure(t: Throwable, response: Response?) {
@@ -84,13 +88,15 @@ object WebSocketConnect : Actor {
                             WebSocketEvent.WS_FAILURE.name
                         )
                         invokeCallback(data.onFailureList)
+
+                        quitError = Error(WebSocketEvent.WS_FAILURE.name, t)
                     }
                 }
                 val client = WebSocketClient(url = data.url, callback = callback, scope = scope)
                 var socket: WebSocket? = null
                 runCatching {
                     socket = client.start()
-                    loop()
+                    loopUntilQuitWithError(quit = { quitError })
                 }.onFailure {
                     logger.e(it, "WebSocketConnect")
                     logger.w("Closing websocket: $socket")
