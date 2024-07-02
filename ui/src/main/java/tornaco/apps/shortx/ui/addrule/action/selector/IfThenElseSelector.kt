@@ -12,9 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -127,82 +125,78 @@ private fun BaseSelectorActivity<Action.IfThenElse>.IfThenElseSelectorDialogSele
     val conditionState by condHandler.state.collectAsState()
 
     ShortXTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
-        ) {
-            Scaffold(modifier = Modifier,
-                topBar = {
-                    ShortXTopAppBar(
-                        modifier = Modifier,
-                        title = { Text(LocalI18N.current["ui.action.if.then.else"]) },
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                cancelAndFinish()
-                            }) {
-                                RemixIcon(remixName = Remix.System.close_line)
-                            }
-                        },
-                        actions = {
-                            IconButton(onClick = {
-                                setResultAndFinish(
-                                    Action.IfThenElse(
-                                        id = dialogState.id,
-                                        note = dialogState.note,
+        Scaffold(modifier = Modifier,
+            topBar = {
+                ShortXTopAppBar(
+                    modifier = Modifier,
+                    title = { Text(LocalI18N.current["ui.action.if.then.else"]) },
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            cancelAndFinish()
+                        }) {
+                            RemixIcon(remixName = Remix.System.close_line)
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = {
+                            setResultAndFinish(
+                                Action.IfThenElse(
+                                    id = dialogState.id,
+                                    note = dialogState.note,
 
-                                        ifConditionOp = conditionState.conditionOp,
-                                        ifConditions = conditionState.conditions,
-                                        ifActions = ifActionState.actions,
-                                        elseActions = elseActionState.actions
-                                    )
+                                    ifConditionOp = conditionState.conditionOp,
+                                    ifConditions = conditionState.conditions,
+                                    ifActions = ifActionState.actions,
+                                    elseActions = elseActionState.actions
                                 )
-                            }) {
-                                RemixIcon(remixName = Remix.System.check_line)
-                            }
+                            )
+                        }) {
+                            RemixIcon(remixName = Remix.System.check_line)
+                        }
 
-                        },
-                    )
-                }) { paddingValues ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                        .padding(paddingValues)
-                        .animateContentSize()
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    ConditionContent(
-                        header = {
-                            MediumTitle(LocalI18N.current["ui.action.if"])
-                        },
-                        state = conditionState,
-                        handler = condHandler.asConditionHandler()
-                    )
-                    Spacer(modifier = Modifier.size(24.dp))
+                    },
+                )
+            }) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+                    .padding(paddingValues)
+                    .animateContentSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                ConditionContent(
+                    header = {
+                        MediumTitle(LocalI18N.current["ui.action.if"])
+                    },
+                    state = conditionState,
+                    handler = condHandler.asConditionHandler()
+                )
+                Spacer(modifier = Modifier.size(24.dp))
 
-                    tornaco.apps.shortx.ui.addrule.action.ActionContent(
-                        header = {
-                            MediumTitle(LocalI18N.current["ui.action.then"])
-                        },
-                        actions = ifActionState.actions,
-                        evaluatingActions = dialogState.evaluatingActions,
-                        handler = ifHandler.asActionHandler(),
-                        warnings = ifActionState.actionWarningMessages
-                    )
-                    Spacer(modifier = Modifier.size(24.dp))
+                tornaco.apps.shortx.ui.addrule.action.ActionContent(
+                    header = {
+                        MediumTitle(LocalI18N.current["ui.action.then"])
+                    },
+                    actions = ifActionState.actions,
+                    evaluatingActions = dialogState.evaluatingActions,
+                    handler = ifHandler.asActionHandler(),
+                    warnings = ifActionState.actionWarningMessages
+                )
+                Spacer(modifier = Modifier.size(24.dp))
 
-                    tornaco.apps.shortx.ui.addrule.action.ActionContent(
-                        header = {
-                            MediumTitle(LocalI18N.current["ui.action.else"])
-                        },
-                        actions = elseActionState.actions,
-                        evaluatingActions = dialogState.evaluatingActions,
-                        handler = elseHandler.asActionHandler(),
-                        warnings = elseActionState.actionWarningMessages
-                    )
-                    Spacer(modifier = Modifier.size(24.dp))
+                tornaco.apps.shortx.ui.addrule.action.ActionContent(
+                    header = {
+                        MediumTitle(LocalI18N.current["ui.action.else"])
+                    },
+                    actions = elseActionState.actions,
+                    evaluatingActions = dialogState.evaluatingActions,
+                    handler = elseHandler.asActionHandler(),
+                    warnings = elseActionState.actionWarningMessages
+                )
+                Spacer(modifier = Modifier.size(24.dp))
 
-                    SuggestedNavEntry()
-                }
+                SuggestedNavEntry()
             }
         }
     }

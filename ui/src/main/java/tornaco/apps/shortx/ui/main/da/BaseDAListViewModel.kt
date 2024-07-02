@@ -292,9 +292,9 @@ abstract class BaseDAListViewModel(context: Context) :
 
     fun updateSearchQuery(query: String) {
         val changed = query != state.value.searchQuery
-        if (changed) viewModelScope.launch {
+        viewModelScope.launch {
             updateState { copy(searchQuery = query) }
-            delayLoadDAList()
+            if (changed) delayLoadDAList()
         }
     }
 }

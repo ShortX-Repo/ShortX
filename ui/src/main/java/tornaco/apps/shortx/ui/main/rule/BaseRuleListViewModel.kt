@@ -293,9 +293,9 @@ abstract class BaseRuleListViewModel(context: Context) :
 
     fun updateSearchQuery(query: String) {
         val changed = query != state.value.searchQuery
-        if (changed) viewModelScope.launch {
+        viewModelScope.launch {
             updateState { copy(searchQuery = query) }
-            delayLoadRule()
+            if (changed) delayLoadRule()
         }
     }
 

@@ -1,5 +1,7 @@
 package tornaco.apps.shortx.services.util
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -13,26 +15,27 @@ interface WSCallback {
         val logger: Logger get() = Logger("WSCallback")
     }
 
-    fun onOpen() {
+    suspend fun onOpen() {
         logger.d("onOpen")
     }
 
-    fun onMessage(message: String) {
+    suspend fun onMessage(message: String) {
         logger.d("onMessage: $message")
     }
 
-    fun onClosed(code: Int, reason: String) {
+    suspend fun onClosed(code: Int, reason: String) {
         logger.d("onClosed: $code $reason")
     }
 
-    fun onFailure(t: Throwable, response: Response?) {
+    suspend fun onFailure(t: Throwable, response: Response?) {
         logger.d("onFailure: $t $response")
     }
 }
 
 class WebSocketClient(
     private val url: String,
-    private val callback: WSCallback
+    private val callback: WSCallback,
+    private val scope: CoroutineScope
 ) {
     private val client = OkHttpClient()
 
@@ -43,15 +46,15 @@ class WebSocketClient(
 
         val webSocketListener = object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
-                callback.onOpen()
+                scope.launch { callback.onOpen() }
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {
-                callback.onMessage(text)
+                scope.launch { callback.onMessage(text) }
             }
 
             override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
-                callback.onMessage(bytes.toString())
+                scope.launch { callback.onMessage(bytes.toString()) }
             }
 
             override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
@@ -59,12 +62,12 @@ class WebSocketClient(
             }
 
             override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-                callback.onClosed(code, reason)
+                scope.launch { callback.onClosed(code, reason) }
             }
 
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-                callback.onFailure(t, response)
                 webSocket.close(1000, null)
+                scope.launch { callback.onFailure(t, response) }
             }
         }
 

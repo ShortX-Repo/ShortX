@@ -15,6 +15,7 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.selector.http.HttpRequestSelectorActivity
+import tornaco.apps.shortx.ui.addrule.action.selector.ws.WSSelectorActivity
 import tornaco.apps.shortx.ui.addrule.base.ActionCategory
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
@@ -157,6 +158,16 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         }
     )
 
+    val wsLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action.WebSocketConnect>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
     val brkScopeSelectorState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.action.brk.scope"],
         menuItems = BreakActionExecuteScope.entries
@@ -169,11 +180,6 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         }
     )
     MenuDialog(state = brkScopeSelectorState)
-
-    val websocketDialogState = rememberTextInputState(title = "Url", message = null) {
-        addAction(Action.WebSocketConnect(url = it))
-    }
-    TextInputDialog(state = websocketDialogState)
 
     return { source ->
         when (source.clazz) {
@@ -291,7 +297,13 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             }
 
             Action.WebSocketConnect::class -> {
-                websocketDialogState.show(source.getActionAs<Action.WebSocketConnect>()?.url)
+                wsLauncher.launch(
+                    newIntent(
+                        context,
+                        source.getActionAs<Action.WebSocketConnect>(),
+                        WSSelectorActivity::class.java
+                    )
+                )
                 true
             }
 
