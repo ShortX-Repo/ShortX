@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -77,6 +76,25 @@ fun <T : Any> SelectorList(
 @Composable
 fun <T : Any> SelectorList(
     modifier: Modifier = Modifier,
+    actionItems: List<SelectorItem<T>>,
+    selectorListItem: @Composable (SelectorItem<T>) -> Unit
+) {
+    val subscribeDialogState = rememberShortXBottomSheetState()
+    FeatureAccessDialog(subscribeDialogState)
+
+    FlowRow(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Start
+    ) {
+        actionItems.forEach {
+            selectorListItem(it)
+        }
+    }
+}
+
+@Composable
+fun <T : Any> SelectorList(
+    modifier: Modifier = Modifier,
     childModifier: Modifier = Modifier,
     actionItems: List<SelectorItem<T>>,
     itemSelected: (KClass<out T>, data: Any?) -> Unit
@@ -107,9 +125,8 @@ fun <T : Any> SelectorList(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SelectorListItem(
+fun SelectorListItem(
     modifier: Modifier = Modifier,
     icon: String,
     iconColor: Color,

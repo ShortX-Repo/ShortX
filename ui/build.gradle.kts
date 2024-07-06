@@ -118,6 +118,7 @@ dependencies {
     implementation(libs.shortx.ext.codeditor)
     implementation(libs.shortx.ext.icons)
     implementation(libs.shortx.ext.dex.maker)
+    implementation(libs.shortx.plugin.sdk)
 
     implementation(libs.mmkv)
     implementation(libs.jotp)

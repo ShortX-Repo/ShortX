@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.rule.plugin
 
 import android.content.Context
 import dalvik.system.PathClassLoader
+import tornaco.apps.shortx.core.proto.plugins.ShortXPluginAction
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.services.rule.actor.impl.PluginAction
@@ -10,22 +11,22 @@ import java.io.File
 object PluginHelper {
     private val logger = Logger("PluginHelper")
 
-    fun loadPluginObjectOrThrow(pkgName: String, context: Context, classMetaDataKey: String): Any? {
-        logger.d("loadPluginObject: $pkgName $classMetaDataKey")
+    fun loadPluginObjectOrThrow(action: ShortXPluginAction, context: Context): Any? {
+        logger.d("loadPluginObject: $action ")
         val appInfo = requireNotNull(
             PkgUtils.getApplicationInfo(
                 context,
-                pkgName
+                action.plugin.pkgName
             )
-        ) { "Plugin not installed: $pkgName" }
+        ) { "Plugin not installed: ${action.plugin.pkgName}" }
 
-        val entry: String? = appInfo.metaData.getString(classMetaDataKey)
-        require(!entry.isNullOrBlank()) {
+        val entry: String = action.evaluator
+        require(entry.isNotBlank()) {
             "Can not find plugin entry, message to dev: did you add meta data to your AndroidManifest.xml?"
         }
 
-        val apkPath: File = requireNotNull(PkgUtils.getApkPath(pkgName)) {
-            "Apk path not found for: $pkgName"
+        val apkPath: File = requireNotNull(PkgUtils.getApkPath(action.plugin.pkgName)) {
+            "Apk path not found for: ${action.plugin.pkgName}"
         }
         logger.d("Apk path $apkPath")
         return loadPluginObjectOrThrow(apkPath, entry, context)

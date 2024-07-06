@@ -7,11 +7,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.core.annotations.DoNotStrip
+import tornaco.apps.shortx.core.proto.plugins.ShortXPluginAction
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.allActionClasses
@@ -53,6 +52,7 @@ enum class ActionCategory(val i18NKey: String, val icon: String) {
     Vars("ui.action.var", Remix.System.function_fill),
     Functions("ui.action.functions", Remix.System.function_fill),
     Misc("ui.action.misc", Remix.Others.box_1_fill),
+    Plugin("ui.action.plugin", Remix.Others.box_1_fill),
 }
 
 enum class TabItems(val i18NKey: String, val icon: String) {
@@ -109,6 +109,7 @@ fun ActionSelector(close: () -> Unit, onSelected: (Action) -> Unit) {
                     AllActions(
                         selectedFilter = selectedFilter,
                         recentActions = selectorState.recentActions,
+                        pluginActions = selectorState.pluginActions,
                         searchBarState = searchBarState,
                         addAction = addAction
                     )
@@ -122,6 +123,7 @@ fun ActionSelector(close: () -> Unit, onSelected: (Action) -> Unit) {
 private fun AllActions(
     selectedFilter: ActionCategory,
     recentActions: List<KClass<out Action>>,
+    pluginActions: List<ShortXPluginAction>,
     searchBarState: SearchBarState,
     addAction: (Action) -> Unit,
 ) {
@@ -152,6 +154,13 @@ private fun AllActions(
     LifeActions(searchBarState.keyword, subscribeState, selectedFilter, addAction = addAction)
     FuncActions(searchBarState.keyword, subscribeState, selectedFilter, addAction = addAction)
     MiscActions(searchBarState.keyword, subscribeState, selectedFilter, addAction = addAction)
+    PluginActions(
+        searchBarState.keyword,
+        subscribeState,
+        selectedFilter,
+        pluginActions,
+        addAction = addAction
+    )
 }
 
 @Composable

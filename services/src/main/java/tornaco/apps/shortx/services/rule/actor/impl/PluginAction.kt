@@ -1,7 +1,6 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
 import com.google.protobuf.Message
-import shortx.plugin.Intents
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
@@ -17,15 +16,13 @@ object PluginAction : Actor {
         params: HandleParams
     ): Unit = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.PluginAction::class.java
-        logger.i("execute plugin action: ${d.pluginId}")
+        logger.i("execute plugin action: ${d.action}")
         val paramsData = d.params.toParamsData()
-        val pluginId = d.pluginId
         val actionEvaluatorIns =
             requireNotNull(
                 loadPluginObjectOrThrow(
-                    pluginId,
+                    d.action,
                     androidContext,
-                    Intents.META_DATA_ACTION_EVALUATOR_ENTRY
                 )
             ) {
                 "Can not load plugin action evaluator object."

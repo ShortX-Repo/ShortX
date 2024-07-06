@@ -28,14 +28,8 @@ import androidx.compose.ui.unit.dp
 import io.github.rosemoe.sora.app.CEActivity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import shortx.plugin.wrapper.ParamsDataWrapper
 import tornaco.apps.shortx.core.INFCTagEndpointListener
 import tornaco.apps.shortx.core.ShortXManagerNative
-import tornaco.apps.shortx.core.proto.action.PluginAction
-import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
-import tornaco.apps.shortx.core.proto.rule.EvaluateContext
-import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
-import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.BaseActivity
@@ -43,7 +37,6 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.settings.TileSettingsActivity
 import java.util.Locale
-import java.util.UUID
 
 class DemoActivity : BaseActivity() {
     private val nfcListener = object : INFCTagEndpointListener.Stub() {
@@ -139,24 +132,6 @@ class DemoActivity : BaseActivity() {
                 }
 
                 FilledTonalButton(onClick = {
-                    val evaluateContext = EvaluateContext.newBuilder()
-                        .setSrcId("Test-" + UUID.randomUUID().toString())
-                        .setSrcEvent(ContextSrcEvent.ContextSrc_ExecuteOnDAEditor)
-                        .setSrcTitle("Testing")
-                        .build()
-                    ShortXManagerNative.shortX?.executeAction(
-                        ByteArrayWrapper(evaluateContext.toByteArray()),
-                        ByteArrayWrapper(
-                            PluginAction.newBuilder()
-                                .setPluginId("shortx.pluginsdk")
-                                .setParams(
-                                    ParamsDataWrapper.newBuilder()
-                                        .putStringData("input", "Nick")
-                                        .build()
-                                )
-                                .build().pack_().toByteArray()
-                        )
-                    )
                 }) {
                     Text(text = "Plugin action")
                 }

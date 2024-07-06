@@ -527,6 +527,26 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             return shortXContext.gesture.getKeyDetectorLongPressTimeoutMS().toLong()
         }
 
+        override fun getInstalledPlugins(): List<ByteArrayWrapper> {
+            return shortXContext.plugin.getInstalledPlugins().map {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun getInstalledPluginActions(): List<ByteArrayWrapper> {
+            return shortXContext.plugin.getInstalledPluginActions().map {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun getInstalledPluginConditions(): List<ByteArrayWrapper> {
+            TODO("Not yet implemented")
+        }
+
+        override fun getInstalledPluginFacts(): List<ByteArrayWrapper> {
+            TODO("Not yet implemented")
+        }
+
         override fun attachSUImpl(from: String?, su: ISu?) {
             shortXContext.shell.attachSUImpl(from, su)
 

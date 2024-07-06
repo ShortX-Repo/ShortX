@@ -5,9 +5,12 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.proto.plugins.ShortXPluginAction
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.remote.RemoteExecuteMVELAction
@@ -26,6 +29,7 @@ interface RemoteExecuteMVELActionLoadState {
 data class SelectorState(
     val remoteActionsState: RemoteExecuteMVELActionLoadState = RemoteExecuteMVELActionLoadState.Loading,
     val recentActions: List<KClass<out Action>> = emptyList(),
+    val pluginActions: List<ShortXPluginAction> = emptyList(),
     val selectedFilter: ActionCategory = ActionCategory.All
 )
 
@@ -65,6 +69,8 @@ class ActionSelectorViewModel @Inject constructor(@ApplicationContext context: C
                 }
             }
         }
+
+        loadPluginAction()
     }
 
     fun onActionAdd(action: Action) {
@@ -103,5 +109,18 @@ class ActionSelectorViewModel @Inject constructor(@ApplicationContext context: C
                 }
             }
         }
+    }
+
+    private fun loadPluginAction() {
+        logger.d("loadPluginAction")
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                shortXManager.getInstalledPluginActions().apply {
+                    logger.d("getInstalledPluginActions: $this")
+                    updateState { copy(pluginActions = this@apply) }
+                }
+            }
+        }
+
     }
 }
