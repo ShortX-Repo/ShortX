@@ -1,11 +1,11 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.plugin.toParamsData
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.services.rule.plugin.PluginHelper.loadPluginObjectOrThrow
-import tornaco.apps.shortx.services.rule.plugin.toParamsData
 
 object PluginAction : Actor {
     override fun actionsCanHandle(): Class<out Message> {

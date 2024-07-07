@@ -1,9 +1,9 @@
 package tornaco.apps.shortx.services.rule.cond.impl
 
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.plugin.toParamsData
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.cond.Cond
-import tornaco.apps.shortx.services.rule.plugin.toParamsData
 
 object PluginCond : Cond {
     override fun condClass(): Class<out Message> =

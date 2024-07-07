@@ -1,7 +1,9 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 
+import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.runtime.Composable
@@ -11,6 +13,8 @@ import shortx.plugin.Intents
 import shortx.plugin.ParamsData
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.localvar.LocalVars
+import tornaco.apps.shortx.core.plugin.toParamsData
+import tornaco.apps.shortx.core.plugin.toParamsDataWrapper
 import tornaco.apps.shortx.core.proto.plugins.ShortXPluginAction
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.toIntent
@@ -28,6 +32,33 @@ import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 
 @Composable
+fun pluginActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
+    val pickLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            handlePickerResult(result, addAction)
+        }
+    )
+
+    return { source ->
+        when (source.clazz) {
+            Action.PluginAction::class -> {
+                val pa =
+                    requireNotNull(source.getActionAs<Action.PluginAction>()) { "Not PluginAction" }
+                pa.action.toIntent(pa.params.toParamsData())?.let {
+                    pickLauncher.launch(it)
+                }
+                true
+            }
+
+            else -> {
+                false
+            }
+        }
+    }
+}
+
+@Composable
 fun PluginActions(
     keyword: String,
     subscribeState: LVLStateHolder.State,
@@ -40,6 +71,7 @@ fun PluginActions(
     val actionItems = pluginActions.map {
         SelectorItem(
             type = it::class,
+            data = it,
             labelAndDescription = it.actionLabel to null,
             icon = Remix.Logos.mini_program_line,
             isForSubscribedOnly = remember(subscribeState) {
@@ -70,13 +102,7 @@ fun PluginActions(
                 val pickLauncher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.StartActivityForResult(),
                     onResult = { result ->
-                        val res = result.data?.getByteArrayExtra(Intents.EXTRA_ACTION_PICKER_RESULT)
-                            ?.let {
-                                ParamsData.parseFrom(it)
-                            }
-                        res?.let {
-
-                        }
+                        handlePickerResult(result, addAction)
                     }
                 )
 
@@ -91,15 +117,61 @@ fun PluginActions(
                     if (selectorItem.isForSubscribedOnly) {
                         subscribeDialogState.show()
                     } else {
-                        (selectorItem.data as? ShortXPluginAction)?.pickerIntent?.toIntent(
-                            contextData = ContextData.obtain(emptyMap()),
-                            localVars = LocalVars.obtain(),
-                            parameterInputs = emptyList(),
-                            globalVarsLazy = { emptyList() }
-                        )?.let { pickLauncher.launch(it) }
+                        composeLogger.d("selectorItem.data: ${selectorItem.data}")
+                        val pa = requireNotNull((selectorItem.data as? ShortXPluginAction)) {
+                            "Not ShortXPluginAction"
+                        }
+                        val intent = pa.toIntent()
+                        composeLogger.d("intent: $intent")
+                        intent?.let {
+                            pickLauncher.launch(it)
+                        }
                     }
                 }
             }
         )
+    }
+}
+
+private fun handlePickerResult(
+    result: ActivityResult,
+    addAction: (Action) -> Unit
+) {
+    composeLogger.d("result: $result")
+
+    val paramsData = result.data?.getByteArrayExtra(Intents.EXTRA_ACTION_PICKER_RESULT)
+        ?.let {
+            ParamsData.parseFrom(it)
+        }
+    composeLogger.d("ParamsData: $paramsData")
+
+    val request = result.data?.getByteArrayExtra(Intents.ACTION_INPUT_REQUEST)?.let {
+        ShortXPluginAction.parseFrom(it)
+    }
+    composeLogger.d("request: $request")
+
+    if (paramsData != null && request != null) {
+        addAction(
+            Action.PluginAction(
+                action = request,
+                params = paramsData.toParamsDataWrapper()
+            )
+        )
+    }
+}
+
+fun ShortXPluginAction.toIntent(paramsData: ParamsData? = null): Intent? {
+    return pickerIntent?.toIntent(
+        contextData = ContextData.obtain(emptyMap()),
+        localVars = LocalVars.obtain(),
+        parameterInputs = emptyList(),
+        globalVarsLazy = { emptyList() }
+    )?.apply {
+        // To Resolve error: Activity is launching as a new task, so cancelling activity result.
+        removeFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        putExtra(Intents.ACTION_INPUT_REQUEST, this@toIntent.toByteArray())
+        paramsData?.let {
+            putExtra(Intents.ACTION_INPUT_PARAMS, paramsData.toByteArray())
+        }
     }
 }

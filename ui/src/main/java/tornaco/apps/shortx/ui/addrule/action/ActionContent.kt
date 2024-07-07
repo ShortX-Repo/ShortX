@@ -59,6 +59,7 @@ import tornaco.apps.shortx.ui.addrule.action.selector.funcActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.action.selector.lifeActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.action.selector.miscActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.action.selector.notificationActionSelectHandler
+import tornaco.apps.shortx.ui.addrule.action.selector.pluginActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.action.selector.systemActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.action.selector.uiActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.action.selector.varActionSelectHandler
@@ -296,6 +297,7 @@ private fun Actions(
                                 funcActionSelectHandler(addAction = editAction),
                                 varActionSelectHandler(addAction = editAction),
                                 miscActionSelectHandler(addAction = editAction),
+                                pluginActionSelectHandler(addAction = editAction),
                             )
 
                             val onActionClick = {
