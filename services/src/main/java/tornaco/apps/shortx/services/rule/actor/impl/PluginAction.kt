@@ -1,11 +1,15 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
+import android.content.Context
+import android.content.ContextWrapper
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.plugin.toParamsData
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.services.rule.plugin.PluginHelper.loadPluginObjectOrThrow
+import java.io.File
 
 object PluginAction : Actor {
     override fun actionsCanHandle(): Class<out Message> {
@@ -30,10 +34,16 @@ object PluginAction : Actor {
         val actionEvaluator = actionEvaluatorIns as shortx.plugin.ActionEvaluator
         actionEvaluator.evaluate(
             shortx.plugin.ActionEvaluator.Input(
-                androidContext,
+                PluginAndroidContextWrapper(androidContext),
                 emptyMap(),
                 paramsData
             )
         )
+    }
+}
+
+class PluginAndroidContextWrapper(context: Context) : ContextWrapper(context) {
+    override fun getCacheDir(): File {
+        return Dirs.pluginCacheDir()
     }
 }
