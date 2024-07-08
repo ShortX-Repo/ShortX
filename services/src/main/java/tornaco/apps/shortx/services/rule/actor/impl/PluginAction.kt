@@ -34,7 +34,7 @@ object PluginAction : Actor {
         val actionEvaluator = actionEvaluatorIns as shortx.plugin.ActionEvaluator
         actionEvaluator.evaluate(
             shortx.plugin.ActionEvaluator.Input(
-                PluginAndroidContextWrapper(androidContext),
+                PluginAndroidContextWrapper(androidContext, d.action.plugin.pkgName),
                 emptyMap(),
                 paramsData
             )
@@ -42,8 +42,9 @@ object PluginAction : Actor {
     }
 }
 
-class PluginAndroidContextWrapper(context: Context) : ContextWrapper(context) {
+class PluginAndroidContextWrapper(context: Context, private val pluginId: String) :
+    ContextWrapper(context) {
     override fun getCacheDir(): File {
-        return Dirs.pluginCacheDir()
+        return File(Dirs.pluginCacheDir(), pluginId)
     }
 }
