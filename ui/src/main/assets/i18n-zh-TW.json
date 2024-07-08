@@ -897,6 +897,7 @@
     "ui.action.download.file.title": "下載任務標題",
     "ui.action.download.file.description": "下載任務描述",
     "ui.action.download.file.tip": "將透過系統自帶下載器進行下載，文件將儲存到內部儲存的Download目錄下",
+    "ui.action.plugin": "插件",
     "ui.ringtone.type.alarm": "鬧鈴",
     "ui.ringtone.type.notification": "通知鈴音",
     "ui.ringtone.type.ringtone": "電話鈴音",
