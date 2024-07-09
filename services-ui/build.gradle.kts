@@ -50,4 +50,6 @@ dependencies {
     implementation(libs.shortx.ext.dateformatter)
     // Color picker
     implementation(libs.rang.vikalp)
+
+    implementation(libs.opencv)
 }

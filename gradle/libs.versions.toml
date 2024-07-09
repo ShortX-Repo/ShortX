@@ -7,6 +7,7 @@ biometric = "1.2.0-alpha05"
 glance-appwidget = "1.0.0"
 shortx-core = "1.1.0-SNAPSHOT"
 rang-vikalp = "1.0.0-alpha02"
+opencv = "4.9.0"
 sardine-android = "v0.9"
 shortx-plugin-sdk = "v1.1.1"
 tinypinyin = "3.0.0"
@@ -99,6 +100,7 @@ shortx-ext-rhino-android = { module = "shortx:external-rhino-android", version.r
 shortx-ext-reorderable = { module = "shortx:external-reorderable", version.ref = "shortx-core" }
 
 rang-vikalp = { module = "io.ak1:rang-vikalp", version.ref = "rang-vikalp" }
+opencv = { module = "org.opencv:opencv", version.ref = "opencv" }
 sardine-android = { module = "com.github.thegrizzlylabs:sardine-android", version.ref = "sardine-android" }
 shortx-plugin-sdk = { module = "com.github.ShortX-Repo:ShortX-Plugin-SDK", version.ref = "shortx-plugin-sdk" }
 tinypinyin = { module = "com.github.promeg:tinypinyin", version.ref = "tinypinyin" }
