@@ -23,6 +23,10 @@ import tornaco.apps.shortx.services.util.loopUntilQuitWithError
 object WebSocketConnect : Actor {
     private val scope by lazy { CoroutineScope(SupervisorJob()) }
 
+    private val livingWS: MutableMap<String, WebSocket> = mutableMapOf()
+
+    fun getLivingWSByUrl(url: String) = livingWS[url]
+
     override fun actionsCanHandle(): Class<out Message> {
         return tornaco.apps.shortx.core.proto.action.WebSocketConnect::class.java
     }
@@ -96,12 +100,20 @@ object WebSocketConnect : Actor {
                 var socket: WebSocket? = null
                 runCatching {
                     socket = client.start()
+                    synchronized(livingWS) {
+                        socket?.let { livingWS[data.url] = it }
+                        dumpWSMap()
+                    }
                     loopUntilQuitWithError(quit = { quitError })
                 }.onFailure {
                     logger.e(it, "WebSocketConnect")
                     logger.w("Closing websocket: $socket")
                     // https://datatracker.ietf.org/doc/html/rfc6455#section-7.4
                     socket?.close(1000, "Client closing connection")
+                    synchronized(livingWS) {
+                        livingWS.remove(data.url, socket)
+                        dumpWSMap()
+                    }
 
                     throw it
                 }
@@ -137,5 +149,13 @@ object WebSocketConnect : Actor {
                 }
             }
         }
+    }
+
+    private fun dumpWSMap() {
+        logger.d("====== DUMP WS Start ======")
+        livingWS.forEach {
+            logger.d("WS: ${it.key} ${it.value}")
+        }
+        logger.d("====== DUMP WS End ======")
     }
 }

@@ -36,7 +36,7 @@ import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 
 
 @AndroidEntryPoint
-class WSSelectorActivity : BaseSelectorActivity<Action.WebSocketConnect>() {
+class WSConnectSelectorActivity : BaseSelectorActivity<Action.WebSocketConnect>() {
     @Composable
     override fun BaseSelectorActivity<Action.WebSocketConnect>.SelectorContent(currentData: Action.WebSocketConnect?) {
         WSSelector(currentData)
@@ -45,7 +45,7 @@ class WSSelectorActivity : BaseSelectorActivity<Action.WebSocketConnect>() {
 
 @Composable
 private fun BaseSelectorActivity<Action.WebSocketConnect>.WSSelector(currentAction: Action.WebSocketConnect?) {
-    val vm = hiltViewModel<WSSelectorViewModel>()
+    val vm = hiltViewModel<WSConnectSelectorViewModel>()
     LaunchedEffect(vm) {
         vm.init(currentAction)
     }

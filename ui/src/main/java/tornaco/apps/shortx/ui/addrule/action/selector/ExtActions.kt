@@ -15,7 +15,8 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.selector.http.HttpRequestSelectorActivity
-import tornaco.apps.shortx.ui.addrule.action.selector.ws.WSSelectorActivity
+import tornaco.apps.shortx.ui.addrule.action.selector.ws.WSConnectSelectorActivity
+import tornaco.apps.shortx.ui.addrule.action.selector.ws.WSSendSelectorActivity
 import tornaco.apps.shortx.ui.addrule.base.ActionCategory
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
@@ -168,6 +169,16 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         }
     )
 
+    val wsSendLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action.WebSocketSend>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
     val brkScopeSelectorState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.action.brk.scope"],
         menuItems = BreakActionExecuteScope.entries
@@ -195,7 +206,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             }
 
             Action.Delay::class -> {
-                delaySelectionState.show(source.getActionAs())
+                delaySelectionState.show(source.getActionAs<Action.Delay>())
                 true
             }
 
@@ -301,7 +312,18 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                     newIntent(
                         context,
                         source.getActionAs<Action.WebSocketConnect>(),
-                        WSSelectorActivity::class.java
+                        WSConnectSelectorActivity::class.java
+                    )
+                )
+                true
+            }
+
+            Action.WebSocketSend::class -> {
+                wsSendLauncher.launch(
+                    newIntent(
+                        context,
+                        source.getActionAs<Action.WebSocketSend>(),
+                        WSSendSelectorActivity::class.java
                     )
                 )
                 true
@@ -337,6 +359,7 @@ fun ExtActions(
         Action.WaitUtilConditionMatch::class,
         Action.HttpRequest::class,
         Action.WebSocketConnect::class,
+        Action.WebSocketSend::class,
         Action.ExecuteJS::class,
     ).map {
         SelectorItem(

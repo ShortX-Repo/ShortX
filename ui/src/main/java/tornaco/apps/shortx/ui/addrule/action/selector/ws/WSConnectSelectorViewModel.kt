@@ -19,7 +19,7 @@ data class WSSelectorState(
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
-class WSSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
+class WSConnectSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
     ShortXContextViewModel<WSSelectorState>(context, {
         WSSelectorState()
     }) {

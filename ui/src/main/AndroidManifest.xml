@@ -270,8 +270,9 @@
             android:name="tornaco.apps.shortx.ui.addrule.action.selector.FromDASelectorActivity"
             android:exported="false" />
         <activity
-            android:name="tornaco.apps.shortx.ui.addrule.action.selector.ws.WSSelectorActivity"
+            android:name="tornaco.apps.shortx.ui.addrule.action.selector.ws.WSConnectSelectorActivity"
             android:exported="false" />
+        <activity android:name="tornaco.apps.shortx.ui.addrule.action.selector.ws.WSSendSelectorActivity" />
 
         <service
             android:name=".service.tile.Tile1"

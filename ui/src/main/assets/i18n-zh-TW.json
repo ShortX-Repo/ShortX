@@ -814,6 +814,7 @@
     "ui.action.unsuspend.app.by.pkg": "解除暫停程式（動態）",
     "ui.action.remove.tasks": "移除最近任務",
     "ui.action.remove.tasks.by.pkg": "移除最近任務（動態）",
+    "ui.action.websocket.send.url.tip": "Url用于查找活跃的Websocket连接，因此在使用Send动作之前，你需要先通过WebSocket connect动作建立连接",
     "ui.action.http.request": "Http請求",
     "ui.action.http.request.adapter": "適配器",
     "ui.action.http.request.raw": "Raw",

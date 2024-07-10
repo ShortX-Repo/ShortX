@@ -587,6 +587,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.WebSocketConnect
     },
+    WebSocketSend {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.WebSocketSend
+    },
 
     ;
 
