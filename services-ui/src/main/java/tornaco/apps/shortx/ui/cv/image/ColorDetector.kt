@@ -1,4 +1,4 @@
-package org.autojs.autojs.core.image
+package tornaco.apps.shortx.ui.cv.image
 
 import android.graphics.Color
 import android.graphics.Color.RGBToHSV

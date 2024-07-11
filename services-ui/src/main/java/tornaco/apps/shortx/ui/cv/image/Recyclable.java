@@ -1,7 +1,5 @@
 package tornaco.apps.shortx.ui.cv.image;
 
-import org.autojs.autojs.core.image.ImageWrapper;
-
 public interface Recyclable {
 
     void recycle();

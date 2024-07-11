@@ -2,8 +2,6 @@ package tornaco.apps.shortx.ui.cv.image;
 
 import android.graphics.Color;
 
-import org.autojs.autojs.core.image.ColorDetector;
-import org.autojs.autojs.core.image.ImageWrapper;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -16,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import shortx.plugin.cv.api.ScreenMetrics;
+import tornaco.apps.shortx.ui.cv.api.ScreenMetrics;
 import tornaco.apps.shortx.ui.cv.opencv.OpenCVHelper;
 
 /**

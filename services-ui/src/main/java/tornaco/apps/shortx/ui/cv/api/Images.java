@@ -1,6 +1,6 @@
 package tornaco.apps.shortx.ui.cv.api;
 
-import org.autojs.autojs.core.image.ImageWrapper;
+import tornaco.apps.shortx.ui.cv.image.ImageWrapper;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
@@ -8,7 +8,6 @@ import org.opencv.imgproc.Imgproc;
 
 import java.util.List;
 
-import shortx.plugin.cv.api.ScreenMetrics;
 import tornaco.apps.shortx.ui.cv.image.TemplateMatching;
 import tornaco.apps.shortx.ui.cv.opencv.OpenCVHelper;
 

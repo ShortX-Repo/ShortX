@@ -1,4 +1,4 @@
-package org.autojs.autojs.core.image
+package tornaco.apps.shortx.ui.cv.image
 
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -7,7 +7,6 @@ import org.opencv.android.Utils
 import org.opencv.core.Mat
 import org.opencv.core.Size
 import org.opencv.imgcodecs.Imgcodecs
-import tornaco.apps.shortx.ui.cv.image.Recyclable
 import tornaco.apps.shortx.ui.cv.opencv.OpenCVHelper
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
