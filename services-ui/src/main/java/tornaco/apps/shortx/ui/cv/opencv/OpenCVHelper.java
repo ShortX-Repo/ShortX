@@ -1,6 +1,5 @@
 package tornaco.apps.shortx.ui.cv.opencv;
 
-import android.content.Context;
 import android.os.Looper;
 
 import androidx.annotation.Nullable;
@@ -45,7 +44,7 @@ public class OpenCVHelper {
         return sInitialized;
     }
 
-    public synchronized static void initIfNeeded(Context context, InitializeCallback callback) {
+    public synchronized static void initIfNeeded(InitializeCallback callback) {
         if (!sInitialized) {
             sInitialized = true;
             if (Looper.getMainLooper() == Looper.myLooper()) {
