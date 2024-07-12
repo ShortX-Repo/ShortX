@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.cv
 import android.graphics.Bitmap
 import android.graphics.Point
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.util.Logger
@@ -28,13 +29,17 @@ class ShortXCVApi {
         }
     }
 
-    fun findImage(image: Bitmap, template: Bitmap): Point {
+    fun findImage(image: Bitmap, template: Bitmap): Point? {
+        runBlocking {
+            initCV()
+        }
+
         val images = Images(ScreenMetrics())
-        val point = images.findImage(
+        val point: org.opencv.core.Point? = images.findImage(
             ImageWrapper.ofBitmap(image),
             ImageWrapper.ofBitmap(template)
         )
-        return point.let {
+        return point?.let {
             Point(it.x.toInt(), it.y.toInt())
         }
     }

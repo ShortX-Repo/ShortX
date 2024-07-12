@@ -30,6 +30,7 @@ import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.Version
 import tornaco.apps.shortx.core.context.ContextData
+import tornaco.apps.shortx.core.cv.ICV
 import tornaco.apps.shortx.core.http.toHttpRequestBody
 import tornaco.apps.shortx.core.http.toHttpResponseData
 import tornaco.apps.shortx.core.localvar.LocalVars
@@ -79,6 +80,7 @@ import tornaco.apps.shortx.core.util.UserHandleUtils.userIdToUserHandle
 import tornaco.apps.shortx.core.util.powerManager
 import tornaco.apps.shortx.core.util.wifiManager
 import tornaco.apps.shortx.services.data.Dirs
+import tornaco.apps.shortx.services.rule.actor.impl.FindImagePositionFromScreen
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.handleResponseBody
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequestLogging
 import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper
@@ -545,6 +547,10 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun getInstalledPluginFacts(): List<ByteArrayWrapper> {
             TODO("Not yet implemented")
+        }
+
+        override fun attachCV(cv: ICV) {
+            FindImagePositionFromScreen.cv = cv
         }
 
         override fun attachSUImpl(from: String?, su: ISu?) {
