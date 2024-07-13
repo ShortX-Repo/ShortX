@@ -80,7 +80,6 @@ import tornaco.apps.shortx.core.util.UserHandleUtils.userIdToUserHandle
 import tornaco.apps.shortx.core.util.powerManager
 import tornaco.apps.shortx.core.util.wifiManager
 import tornaco.apps.shortx.services.data.Dirs
-import tornaco.apps.shortx.services.rule.actor.impl.FindImagePositionFromScreen
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.handleResponseBody
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequestLogging
 import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper
@@ -550,7 +549,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         }
 
         override fun attachCV(cv: ICV) {
-            FindImagePositionFromScreen.cv = cv
+            shortXContext.cv.attachCV(cv)
         }
 
         override fun attachSUImpl(from: String?, su: ISu?) {

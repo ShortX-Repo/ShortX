@@ -2,7 +2,6 @@ package tornaco.apps.shortx.services.rule.actor.impl
 
 import android.graphics.Bitmap
 import com.google.protobuf.Message
-import tornaco.apps.shortx.core.cv.ICV
 import tornaco.apps.shortx.core.os.ScreenCap
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.BitmapUtils
@@ -14,8 +13,6 @@ import java.io.File
 import java.io.FileOutputStream
 
 object FindImagePositionFromScreen : Actor {
-    var cv: ICV? = null
-
     override fun actionsCanHandle(): Class<out Message> {
         return tornaco.apps.shortx.core.proto.action.FindImagePositionFromScreen::class.java
     }
@@ -44,8 +41,9 @@ object FindImagePositionFromScreen : Actor {
         logger.d("screen: $screen")
         saveScreenBitmapToFile(screen, Dirs.baseServerCacheDir())
 
+        val cv = shortXContext.cv.requireCV()
         logger.d("cv: $cv")
-        val point = cv?.findImage(screen, target)
+        val point = cv.findImage(screen, target)
         logger.d("point: $point")
     }
 }

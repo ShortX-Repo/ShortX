@@ -4,6 +4,7 @@ import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
 import tornaco.apps.shortx.services.app.AppStateService
 import tornaco.apps.shortx.services.app.PkgSetService
 import tornaco.apps.shortx.services.audio.AudioService
+import tornaco.apps.shortx.services.cv.CVService
 import tornaco.apps.shortx.services.dev.DevService
 import tornaco.apps.shortx.services.gesture.GestureService
 import tornaco.apps.shortx.services.input.InputService
@@ -42,6 +43,7 @@ interface ShortXContext {
     val shell: ShellService
     val tile: StatusBarTileService
     val plugin: PluginService
+    val cv: CVService
     val dev: DevService
 
     val serviceLifecycle: ServiceLifecycle
@@ -67,6 +69,7 @@ interface ShortXContext {
             shell,
             tile,
             plugin,
+            cv,
         ).apply {
             onDebugBuild { add(dev) }
         }
@@ -92,6 +95,7 @@ class ShortXContextImpl : ShortXContext {
     override val shell = ShellService(this)
     override val tile = StatusBarTileService(this)
     override val plugin = PluginService(this)
+    override val cv = CVService(this)
     override val dev = DevService(this)
 
     override val serviceLifecycle = ServiceLifecycle(this)
