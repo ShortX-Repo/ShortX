@@ -272,7 +272,12 @@
         <activity
             android:name="tornaco.apps.shortx.ui.addrule.action.selector.ws.WSConnectSelectorActivity"
             android:exported="false" />
-        <activity android:name="tornaco.apps.shortx.ui.addrule.action.selector.ws.WSSendSelectorActivity" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.addrule.action.selector.ws.WSSendSelectorActivity"
+            android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.addrule.action.selector.PhotoSelectorActivity"
+            android:exported="false" />
 
         <service
             android:name=".service.tile.Tile1"
