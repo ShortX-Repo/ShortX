@@ -6,6 +6,7 @@ apksig = "8.4.1"
 biometric = "1.2.0-alpha05"
 compressor = "3.0.1"
 glance-appwidget = "1.0.0"
+paddleocr4android = "v1.1.1"
 shortx-core = "1.1.0-SNAPSHOT"
 rang-vikalp = "1.0.0-alpha02"
 opencv = "4.9.0"
@@ -88,6 +89,7 @@ androidx-ui-graphics = { module = "androidx.compose.ui:ui-graphics", version.ref
 apksig = { module = "com.android.tools.build:apksig", version.ref = "apksig" }
 
 compressor = { module = "id.zelory:compressor", version.ref = "compressor" }
+paddleocr4android = { module = "com.github.equationl:paddleocr4android", version.ref = "paddleocr4android" }
 shortx-core = { module = "shortx:core", version.ref = "shortx-core" }
 shortx-ui-base = { module = "shortx:ui-base", version.ref = "shortx-core" }
 shortx-ext-utils = { module = "shortx:external-utils", version.ref = "shortx-core" }

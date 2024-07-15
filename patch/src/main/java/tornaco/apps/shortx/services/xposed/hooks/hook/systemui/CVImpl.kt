@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.Point
 import tornaco.apps.shortx.core.cv.ICV
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.services.rule.actor.impl.FindImagePositionFromScreen
 import tornaco.apps.shortx.services.util.AppClassHelper
 import util.Reflections
 
@@ -19,7 +18,7 @@ class CVImpl(private val context: Context) : ICV.Stub() {
     }
 
     override fun findImage(image: Bitmap, template: Bitmap): Point? {
-        FindImagePositionFromScreen.logger.d("cvApiIns: $cvApiIns")
+        logger.d("cvApiIns: $cvApiIns")
 
         val point: Point? = Reflections.callMethod(cvApiIns, "findImage", image, template) as Point?
 

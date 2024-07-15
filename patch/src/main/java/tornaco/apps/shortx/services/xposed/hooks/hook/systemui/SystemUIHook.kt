@@ -24,6 +24,7 @@ import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.su.LibShKtShellImpl
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.logAdapter
+import tornaco.apps.shortx.services.util.AppAssetsHelper
 import tornaco.apps.shortx.services.xposed.hooks.hook.CustomHook
 import tornaco.apps.shortx.services.xposed.hooks.hook.afterMethod
 import util.Reflections
@@ -106,6 +107,7 @@ object SystemUIHook {
                 installShellImpl(shortx)
                 installNotificationPoster(shortx, app)
                 installCV(shortx, app)
+                installORC(shortx, app)
 
                 CustomHook.hookApp(
                     lpparam.classLoader,
@@ -130,6 +132,16 @@ object SystemUIHook {
         val cv = CVImpl(context)
         shortx.attachCV(cv)
         logger.i("installCV success.")
+    }
+
+    private fun installORC(shortx: IShortX, context: Context) {
+        logger.d("installORC")
+        val outDir = context.cacheDir.absolutePath
+        logger.d("installORC outDir: $outDir")
+        AppAssetsHelper.copyAssets(context, "ocr/ch_PP-OCRv2_det_slim_opt.nb", outDir)
+        AppAssetsHelper.copyAssets(context, "ocr/ch_PP-OCRv2_rec_slim_opt.nb", outDir)
+        AppAssetsHelper.copyAssets(context, "ocr/ch_ppocr_mobile_v2.0_cls_slim_opt.nb", outDir)
+        logger.i("installORC success.")
     }
 
     private fun installNotificationPoster(shortx: IShortX, context: Context) {

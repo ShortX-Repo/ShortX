@@ -52,4 +52,5 @@ dependencies {
     implementation(libs.rang.vikalp)
 
     implementation(libs.opencv)
+    implementation(libs.paddleocr4android)
 }
