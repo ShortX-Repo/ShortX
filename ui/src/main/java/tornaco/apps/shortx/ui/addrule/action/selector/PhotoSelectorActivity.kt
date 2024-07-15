@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -43,7 +44,7 @@ class PhotoSelectorActivity : BaseActivity() {
                     enabled = selectedImages.value.isNotEmpty(),
                     onClick = {
                         setResult(RESULT_OK, Intent().apply {
-                            putExtra("photoUrl", selectedImages.value[0].toString())
+                            setData(selectedImages.value[0])
                         })
                         finish()
                     }) {
