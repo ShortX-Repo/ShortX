@@ -1,17 +1,22 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 
+import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
+import android.net.Uri
+import android.util.Base64
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import id.zelory.compressor.Compressor
+import id.zelory.compressor.constraint.size
+import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
-import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.ui.addrule.ImagePreviewDialog
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
@@ -43,11 +48,13 @@ import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
+import java.io.File
 
 @Composable
 fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
     val i18N = LocalI18N.current
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     val shellCommandLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
@@ -191,10 +198,10 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             val uri = result.data?.data
             uri?.let {
                 runCatching {
-                    val base64 = context.contentResolver.openInputStream(uri).use {
-                        BitmapUtils.bitmapToBase64(BitmapFactory.decodeStream(it))
+                    scope.launch {
+                        val base64 = compressAndToBase64(context, uri)
+                        addAction(Action.FindImagePositionFromScreen(imageBase64 = base64))
                     }
-                    addAction(Action.FindImagePositionFromScreen(imageBase64 = base64))
                 }.onFailure {
                     TextDisplayActivity.start(context, "OOPS! WTF!", it.stackTraceToString())
                 }
@@ -431,5 +438,21 @@ fun ExtActions(
                 itemSelected(ActionSelectSource.FromClass(it))
             }
         )
+    }
+}
+
+private suspend fun compressAndToBase64(context: Context, uri: Uri): String {
+    val base64 = context.contentResolver.openInputStream(uri)?.use {
+        val actualImageFile = File.createTempFile("image", ".png")
+        it.copyTo(actualImageFile.outputStream())
+        val compressedImageFile =
+            Compressor.compress(context, actualImageFile) {
+                size(2_097_152) // 2 MB
+            }
+        val byteArray = compressedImageFile.readBytes()
+        Base64.encodeToString(byteArray, 0)
+    }
+    return requireNotNull(base64) {
+        "Fail to decode uri: $uri"
     }
 }

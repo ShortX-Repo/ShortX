@@ -126,6 +126,7 @@ dependencies {
     implementation(libs.sardine.android)
 
     implementation(libs.apksig)
+    implementation(libs.compressor)
 
     // For AppWidgets support
     implementation( libs.androidx.glance.appwidget )
