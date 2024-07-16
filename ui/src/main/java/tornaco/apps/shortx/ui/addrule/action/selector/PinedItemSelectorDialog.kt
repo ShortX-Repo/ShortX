@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.PkgUtils
+import tornaco.apps.shortx.core.util.UserHandleUtils
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.ListItem
@@ -72,9 +73,10 @@ fun PinedItemSelectorDialog(state: PinedItemSelectorState) {
                             val intent = it.intent
                             if (intent != null) {
                                 Action.LaunchPinedItem.PinedItem(
-                                    (it.shortLabel ?: it.longLabel
+                                    label = (it.shortLabel ?: it.longLabel
                                     ?: PkgUtils.packageNameOf(it.intent)).toString(),
-                                    intent
+                                    intent = intent,
+                                    userId = UserHandleUtils.userHandleToUserId(it.userHandle)
                                 )
                             } else null
                         }

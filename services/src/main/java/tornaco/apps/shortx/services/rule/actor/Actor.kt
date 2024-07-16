@@ -591,6 +591,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.WebSocketSend
     },
+    LaunchPinedItem {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.LaunchPinedItem
+    },
     FindImagePositionFromScreen {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.FindImagePositionFromScreen
