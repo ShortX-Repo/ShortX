@@ -294,6 +294,11 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         }
     )
 
+    val pinedItemSelectorState = rememberPinedItemSelectorState {
+        addAction(Action.LaunchPinedItem(item = it))
+    }
+    PinedItemSelectorDialog(state = pinedItemSelectorState)
+
 
     return { source: ActionSelectSource ->
         when (source.clazz) {
@@ -497,6 +502,11 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.LaunchPinedItem::class -> {
+                pinedItemSelectorState.show()
+                true
+            }
+
             Action.ForEachPkgSet::class -> {
                 foreachPkgSetLauncher.launch(
                     BaseSelectorActivity.newIntent(
@@ -529,6 +539,7 @@ fun AppActions(
         Action.LaunchApp::class,
         Action.LaunchAppByPkg::class,
         Action.StartLastApp::class,
+        Action.LaunchPinedItem::class,
         Action.StopApp::class,
         Action.StopAppByPkg::class,
         Action.StopCurrentApp::class,

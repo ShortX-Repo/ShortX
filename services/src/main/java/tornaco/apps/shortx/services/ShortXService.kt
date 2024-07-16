@@ -1,7 +1,9 @@
 package tornaco.apps.shortx.services
 
 import android.annotation.SuppressLint
+import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
+import android.content.pm.ShortcutInfo
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -550,6 +552,15 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun attachCV(cv: ICV) {
             shortXContext.cv.attachCV(cv)
+        }
+
+        override fun getRequestPinShortcuts(): List<ShortcutInfo> {
+            return shortXContext.user.requestPinShortcuts
+
+        }
+
+        override fun getRequestPinAppWidgets(): List<AppWidgetProviderInfo> {
+            return shortXContext.user.requestPinAppWidgets
         }
 
         override fun attachSUImpl(from: String?, su: ISu?) {

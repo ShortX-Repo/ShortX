@@ -2,11 +2,13 @@ package tornaco.apps.shortx.services.os
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.appwidget.AppWidgetProviderInfo
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.content.pm.ShortcutInfo
 import android.os.UserHandle
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -37,6 +39,9 @@ class UserService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     private val _systemReadyTriggered = AtomicBoolean(false)
     val isSystemReadyTriggered get() = _systemReadyTriggered.get()
+
+    val requestPinShortcuts = mutableListOf<ShortcutInfo>()
+    val requestPinAppWidgets = mutableListOf<AppWidgetProviderInfo>()
 
     private val userBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -157,5 +162,13 @@ class UserService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             (currentTime + 1).also {
                 logger.d("didSomethingToday, $what $dateLabel update to: $it")
             })
+    }
+
+    fun onRequestPinShortcut(shortcutInfo: ShortcutInfo) {
+        requestPinShortcuts.add(shortcutInfo)
+    }
+
+    fun onRequestPinAppWidget(appWidgetProviderInfo: AppWidgetProviderInfo) {
+        requestPinAppWidgets.add(appWidgetProviderInfo)
     }
 }
