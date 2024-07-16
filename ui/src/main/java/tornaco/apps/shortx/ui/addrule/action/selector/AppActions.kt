@@ -299,7 +299,6 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     }
     PinedItemSelectorDialog(state = pinedItemSelectorState)
 
-
     return { source: ActionSelectSource ->
         when (source.clazz) {
             Action.StartActivityIntent::class -> {
@@ -539,7 +538,6 @@ fun AppActions(
         Action.LaunchApp::class,
         Action.LaunchAppByPkg::class,
         Action.StartLastApp::class,
-        Action.LaunchPinedItem::class,
         Action.StopApp::class,
         Action.StopAppByPkg::class,
         Action.StopCurrentApp::class,
@@ -561,6 +559,7 @@ fun AppActions(
         Action.RemoveTasksByPkg::class,
         Action.KillProcessByName::class,
         Action.AppShortcut::class,
+        Action.LaunchPinedItem::class,
         Action.ForEachPkgSet::class,
     ).map {
         SelectorItem(

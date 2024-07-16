@@ -223,8 +223,8 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 MenuDialogItem(id = it.name, title = LocalI18N.current[it.labelKey()])
             },
         onItemSelected = { data, id ->
-            val scope = BreakActionExecuteScope.valueOf(id)
-            addAction(Action.Brk(scope = scope))
+            val bs = BreakActionExecuteScope.valueOf(id)
+            addAction(Action.Brk(scope = bs))
         }
     )
     MenuDialog(state = brkScopeSelectorState)

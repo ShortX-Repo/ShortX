@@ -73,6 +73,8 @@ import tornaco.apps.shortx.core.proto.fact.ScreenRotate
 import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.fact.SystemSettingsChanged
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
+import tornaco.apps.shortx.core.proto.fact.UsbDeviceAttached
+import tornaco.apps.shortx.core.proto.fact.UsbDeviceDetached
 import tornaco.apps.shortx.core.proto.fact.UserPresent
 import tornaco.apps.shortx.core.proto.fact.UserPresentAtTheFirstTime
 import tornaco.apps.shortx.core.proto.fact.VPNConnected
@@ -483,6 +485,26 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
             val actualN = (actual as ClipboardContentChanged)
             val ruleN = (rule as ClipboardContentChanged)
             emptyOrRegexMatch(ruleN.content, actualN.content, ruleN.matchOptions)
+        }
+
+        register(UsbDeviceAttached::class.java) { actual, rule ->
+            val actualN = (actual as UsbDeviceAttached)
+            val ruleN = (rule as UsbDeviceAttached)
+            emptyOrRegexMatch(
+                ruleN.deviceName,
+                actualN.deviceName,
+                ruleN.deviceNameRegexMatchOptions
+            )
+        }
+
+        register(UsbDeviceDetached::class.java) { actual, rule ->
+            val actualN = (actual as UsbDeviceDetached)
+            val ruleN = (rule as UsbDeviceDetached)
+            emptyOrRegexMatch(
+                ruleN.deviceName,
+                actualN.deviceName,
+                ruleN.deviceNameRegexMatchOptions
+            )
         }
 
         register(GlobalVarChanged::class.java) { actual, rule ->

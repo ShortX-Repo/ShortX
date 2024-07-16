@@ -60,6 +60,8 @@ fun SystemFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: 
         Fact.BatteryTemperatureChanged::class,
         Fact.ChargerPlug::class,
         Fact.ChargerUnplug::class,
+        Fact.UsbDeviceAttached::class,
+        Fact.UsbDeviceDetached::class,
 
         Fact.Broadcast::class,
         Fact.VPNConnected::class,

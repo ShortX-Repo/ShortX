@@ -264,6 +264,38 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     )
     RegexTextInputDialog(state = mediaInsertSelectorState)
 
+    val usbDeviceAttachState = rememberRegexTextInputState(
+        title = LocalI18N.current["ui.fact.usb.device.attached"],
+        message = LocalI18N.current["ui.fact.usb.device.name"],
+        showSymbolButton = false,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+        onSelected = { pathString, options ->
+            addFact(
+                Fact.UsbDeviceAttached(
+                    deviceName = pathString.fallbackOnEmpty(".*"),
+                    deviceNameRegexMatchOptions = options
+                )
+            )
+        }
+    )
+    RegexTextInputDialog(state = usbDeviceAttachState)
+
+    val usbDeviceDetachState = rememberRegexTextInputState(
+        title = LocalI18N.current["ui.fact.usb.device.detached"],
+        message = LocalI18N.current["ui.fact.usb.device.name"],
+        showSymbolButton = false,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+        onSelected = { pathString, options ->
+            addFact(
+                Fact.UsbDeviceDetached(
+                    deviceName = pathString.fallbackOnEmpty(".*"),
+                    deviceNameRegexMatchOptions = options
+                )
+            )
+        }
+    )
+    RegexTextInputDialog(state = usbDeviceDetachState)
+
     val onStartOpSelectorState = rememberAppOpSelectorState(
         title = LocalI18N.current["ui.fact.op.start"],
         message = null,
@@ -644,6 +676,22 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
                 logcatRegexDialogState.show(
                     initialValue = source.getFactAs<Fact.Logcat>()?.regex ?: "",
                     options = source.getFactAs<Fact.Logcat>()?.regexMatchOptions
+                )
+                true
+            }
+
+            Fact.UsbDeviceAttached::class -> {
+                usbDeviceAttachState.show(
+                    initialValue = source.getFactAs<Fact.UsbDeviceAttached>()?.deviceName ?: "",
+                    options = source.getFactAs<Fact.UsbDeviceAttached>()?.deviceNameRegexMatchOptions
+                )
+                true
+            }
+
+            Fact.UsbDeviceDetached::class -> {
+                usbDeviceDetachState.show(
+                    initialValue = source.getFactAs<Fact.UsbDeviceDetached>()?.deviceName ?: "",
+                    options = source.getFactAs<Fact.UsbDeviceDetached>()?.deviceNameRegexMatchOptions
                 )
                 true
             }

@@ -25,6 +25,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 
@@ -79,6 +80,10 @@ fun PinedItemSelectorDialog(state: PinedItemSelectorState) {
                                     userId = UserHandleUtils.userHandleToUserId(it.userHandle)
                                 )
                             } else null
+                        }
+
+                        item {
+                            TipRow(text = LocalI18N.current["ui.action.launch.pined.item.tip"])
                         }
 
                         items(items) {
