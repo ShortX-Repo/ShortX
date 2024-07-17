@@ -37,6 +37,7 @@ import tornaco.apps.shortx.core.http.toHttpRequestBody
 import tornaco.apps.shortx.core.http.toHttpResponseData
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.notification.INotificationPoster
+import tornaco.apps.shortx.core.ocr.IOCR
 import tornaco.apps.shortx.core.os.ICancellationSignal
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.action.HttpRequest
@@ -552,6 +553,10 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun attachCV(cv: ICV) {
             shortXContext.cv.attachCV(cv)
+        }
+
+        override fun attachOCR(p0: IOCR?) {
+            TODO("Not yet implemented")
         }
 
         override fun getRequestPinShortcuts(): List<ShortcutInfo> {
