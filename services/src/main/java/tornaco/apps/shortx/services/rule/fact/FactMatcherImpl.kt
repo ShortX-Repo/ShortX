@@ -65,6 +65,7 @@ import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
 import tornaco.apps.shortx.core.proto.fact.OnFinishOp
 import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
 import tornaco.apps.shortx.core.proto.fact.OnStartOp
+import tornaco.apps.shortx.core.proto.fact.PkgStartRunning
 import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
 import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
@@ -170,6 +171,16 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
                 shortXContextProvider,
                 PkgStopRunningWrapper(trActual),
                 PkgStopRunningWrapper(trRule)
+            )
+        }
+
+        register(PkgStartRunning::class.java) { actual, rule ->
+            val trActual = actual as PkgStartRunning
+            val trRule = rule as PkgStartRunning
+            matchWithAppOrPkgSetListFact(
+                shortXContextProvider,
+                PkgStartRunningWrapper(trActual),
+                PkgStartRunningWrapper(trRule)
             )
         }
 
@@ -853,6 +864,14 @@ class PkgStopRunningWrapper(private val stopRunning: PkgStopRunning) : WithAppOr
         get() = stopRunning.pkgSetsList ?: emptyList()
     override val appList: List<AppPkg>
         get() = stopRunning.appsList ?: emptyList()
+
+}
+
+class PkgStartRunningWrapper(private val startRunning: PkgStartRunning) : WithAppOrPkgSetListFact {
+    override val pkgSetList: List<String>
+        get() = startRunning.pkgSetsList ?: emptyList()
+    override val appList: List<AppPkg>
+        get() = startRunning.appsList ?: emptyList()
 
 }
 

@@ -122,6 +122,19 @@ fun appFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean
         })
     AppPkgSelectorDialog(state = pkgStopRunningSelectorState)
 
+    val pkgStartRunningSelectorState = rememberAppPkgSelectorState(
+        onPkgSetSelected = {
+            setFact(
+                Fact.PkgStartRunning(pkgSets = it)
+            )
+        },
+        onAppListSelected = {
+            setFact(
+                Fact.PkgStartRunning(apps = it)
+            )
+        })
+    AppPkgSelectorDialog(state = pkgStartRunningSelectorState)
+
     val appRemovedSelectorState =
         rememberAppPkgSelectorState(
             onAppListSelected = { pkg ->
@@ -260,6 +273,19 @@ fun appFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean
 
             Fact.PkgStopRunningAny::class -> {
                 setFact(Fact.PkgStopRunningAny())
+                true
+            }
+
+            Fact.PkgStartRunning::class -> {
+                pkgStartRunningSelectorState.show(
+                    source.getFactAs<Fact.PkgStartRunning>()?.apps,
+                    source.getFactAs<Fact.PkgStartRunning>()?.pkgSets
+                )
+                true
+            }
+
+            Fact.PkgStartRunningAny::class -> {
+                setFact(Fact.PkgStartRunningAny())
                 true
             }
 

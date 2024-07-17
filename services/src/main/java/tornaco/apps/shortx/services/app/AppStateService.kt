@@ -25,7 +25,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
-import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.context.ContextDataMapping
@@ -39,6 +38,7 @@ import tornaco.apps.shortx.core.proto.common.ProcessRecord
 import tornaco.apps.shortx.core.proto.common.RecentTask
 import tornaco.apps.shortx.core.proto.fact.AppProcessRemoved
 import tornaco.apps.shortx.core.proto.fact.AppProcessStarted
+import tornaco.apps.shortx.core.proto.fact.PkgStartRunning
 import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
 import tornaco.apps.shortx.core.store.WRITE_DELAY
@@ -181,34 +181,50 @@ class AppStateService(shortXContext: ShortXContext) :
                 })
         }
 
-        onDebugBuild {
-            systemServiceScope.launchSafety {
-                UidObserverRegisterCompat.register(object : UidObserverCompat {
-                    override fun onUidActive(uid: Int) {
-                        super.onUidActive(uid)
-                        val app = uidToApp(uid)
-                        logger.d("onUidActive: $uid ${app?.pkg?.appPkgToString()}")
+        systemServiceScope.launchSafety {
+            UidObserverRegisterCompat.register(object : UidObserverCompat {
+                override fun onUidActive(uid: Int) {
+                    super.onUidActive(uid)
+                    val app = uidToApp(uid)
+                    logger.d("onUidActive: $uid ${app?.pkg?.appPkgToString()}")
+                    if (app != null) {
+                        shortXContext.rule.publishFactChecked(
+                            PkgStartRunning.getDefaultInstance()
+                        ) {
+                            FactPublishData(
+                                "onUidActive",
+                                PkgStartRunning.newBuilder()
+                                    .addAllApps(listOf(app.pkg))
+                                    .build()
+                            ) {
+                                mapOf(
+                                    ContextDataMapping.PkgStopRunning.userId.name to "${app.pkg.userId}",
+                                    ContextDataMapping.PkgStopRunning.pkgName.name to app.pkg.pkgName,
+                                    ContextDataMapping.PkgStopRunning.appLabel.name to app.label,
+                                )
+                            }
+                        }
                     }
+                }
 
-                    override fun onUidGone(uid: Int) {
-                        super.onUidGone(uid)
-                        val app = uidToApp(uid)
-                        logger.d("onUidGone: $uid ${app?.pkg?.appPkgToString()}")
-                    }
+                override fun onUidGone(uid: Int) {
+                    super.onUidGone(uid)
+                    val app = uidToApp(uid)
+                    logger.d("onUidGone: $uid ${app?.pkg?.appPkgToString()}")
+                }
 
-                    override fun onUidIdle(uid: Int) {
-                        super.onUidIdle(uid)
-                        val app = uidToApp(uid)
-                        logger.d("onUidIdle: $uid ${app?.pkg?.appPkgToString()}")
-                    }
+                override fun onUidIdle(uid: Int) {
+                    super.onUidIdle(uid)
+                    val app = uidToApp(uid)
+                    logger.d("onUidIdle: $uid ${app?.pkg?.appPkgToString()}")
+                }
 
-                    override fun onUidStateChanged(uid: Int, procState: Int) {
-                        super.onUidStateChanged(uid, procState)
-                        val app = uidToApp(uid)
-                        logger.d("onUidStateChanged: $uid $procState ${app?.pkg?.appPkgToString()}")
-                    }
-                })
-            }
+                override fun onUidStateChanged(uid: Int, procState: Int) {
+                    super.onUidStateChanged(uid, procState)
+                    val app = uidToApp(uid)
+                    logger.d("onUidStateChanged: $uid $procState ${app?.pkg?.appPkgToString()}")
+                }
+            })
         }
 
         logger.w("AMS: $ams")
@@ -675,9 +691,11 @@ class AppStateService(shortXContext: ShortXContext) :
                     .addAllApps(listOf(pkg))
                     .build()
             ) {
+                val appLabel = pkgToApp(pkg)?.label
                 mapOf(
                     ContextDataMapping.PkgStopRunning.userId.name to "${pkg.userId}",
                     ContextDataMapping.PkgStopRunning.pkgName.name to pkg.pkgName,
+                    ContextDataMapping.PkgStopRunning.appLabel.name to appLabel.orEmpty(),
                 )
             }
         }

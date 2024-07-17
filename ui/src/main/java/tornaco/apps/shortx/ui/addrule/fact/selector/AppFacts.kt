@@ -42,6 +42,9 @@ fun AppFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: (Fa
         Fact.AppRemoved::class,
         Fact.AppUpdated::class,
 
+        Fact.PkgStartRunning::class,
+        Fact.PkgStartRunningAny::class,
+
         Fact.PkgStopRunning::class,
         Fact.PkgStopRunningAny::class,
 
