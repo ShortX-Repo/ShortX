@@ -14,8 +14,8 @@ import tornaco.apps.shortx.services.data.Dirs
 import java.io.File
 
 
-object AppClassHelper {
-    private val logger = Logger("AppClassHelper")
+object ExtAppClassHelper {
+    private val logger = Logger("ExtAppClassHelper")
 
     fun newInstance(androidContext: Context, className: String): Any {
         val clazz = loadAppClass(androidContext, className)
@@ -29,7 +29,7 @@ object AppClassHelper {
 
     fun loadAppClass(androidContext: Context, className: String): Class<*> {
         val appInfo =
-            PkgUtils.getApplicationInfo(androidContext, BuildPropInternal.APP_PACKAGE_NAME)
+            PkgUtils.getApplicationInfo(androidContext, BuildPropInternal.SHORTX_EXT_APP_PKG_NAME)
         logger.d("appInfo: $appInfo")
 
         val sourceDir = appInfo.sourceDir

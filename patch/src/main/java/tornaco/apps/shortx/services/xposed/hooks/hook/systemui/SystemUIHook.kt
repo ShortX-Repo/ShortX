@@ -24,7 +24,7 @@ import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.su.LibShKtShellImpl
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.logAdapter
-import tornaco.apps.shortx.services.util.AppAssetsHelper
+import tornaco.apps.shortx.services.util.ExtAppAssetsHelper
 import tornaco.apps.shortx.services.xposed.hooks.hook.CustomHook
 import tornaco.apps.shortx.services.xposed.hooks.hook.afterMethod
 import util.Reflections
@@ -138,9 +138,9 @@ object SystemUIHook {
         logger.d("installORC")
         val outDir = context.cacheDir.absolutePath
         logger.d("installORC outDir: $outDir")
-        AppAssetsHelper.copyAssets(context, "ocr/ch_PP-OCRv2_det_slim_opt.nb", outDir)
-        AppAssetsHelper.copyAssets(context, "ocr/ch_PP-OCRv2_rec_slim_opt.nb", outDir)
-        AppAssetsHelper.copyAssets(context, "ocr/ch_ppocr_mobile_v2.0_cls_slim_opt.nb", outDir)
+        ExtAppAssetsHelper.copyAssets(context, "ocr/ch_PP-OCRv2_det_slim_opt.nb", outDir)
+        ExtAppAssetsHelper.copyAssets(context, "ocr/ch_PP-OCRv2_rec_slim_opt.nb", outDir)
+        ExtAppAssetsHelper.copyAssets(context, "ocr/ch_ppocr_mobile_v2.0_cls_slim_opt.nb", outDir)
         logger.i("installORC success.")
     }
 

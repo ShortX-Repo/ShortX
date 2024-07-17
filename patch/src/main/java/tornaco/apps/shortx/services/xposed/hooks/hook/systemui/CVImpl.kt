@@ -5,13 +5,13 @@ import android.graphics.Bitmap
 import android.graphics.Point
 import tornaco.apps.shortx.core.cv.ICV
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.services.util.AppClassHelper
+import tornaco.apps.shortx.services.util.ExtAppClassHelper
 import util.Reflections
 
 class CVImpl(private val context: Context) : ICV.Stub() {
     private val logger = Logger("CVImpl")
     private val cvApiIns by lazy {
-        AppClassHelper.newInstance(
+        ExtAppClassHelper.newInstance(
             context,
             "tornaco.apps.shortx.ui.cv.ShortXCVApi"
         )
