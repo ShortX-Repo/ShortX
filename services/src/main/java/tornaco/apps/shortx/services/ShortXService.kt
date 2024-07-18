@@ -555,8 +555,8 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.cv.attachCV(cv)
         }
 
-        override fun attachOCR(p0: IOCR?) {
-            TODO("Not yet implemented")
+        override fun attachOCR(ocr: IOCR) {
+            shortXContext.ocr.attachOCR(ocr)
         }
 
         override fun getRequestPinShortcuts(): List<ShortcutInfo> {

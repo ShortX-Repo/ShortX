@@ -136,7 +136,7 @@ object SystemUIHook {
     private fun installORC(shortx: IShortX, context: Context) {
         logger.d("installORC")
         val orc = OCRImpl(context)
-        // shortx.attachOCR(orc)
+        shortx.attachOCR(orc)
         logger.i("installORC success.")
     }
 

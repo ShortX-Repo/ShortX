@@ -10,24 +10,23 @@ import dalvik.system.DexClassLoader
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.PkgUtils
-import tornaco.apps.shortx.services.data.Dirs
 import java.io.File
 
 
 object ExtAppClassHelper {
     private val logger = Logger("ExtAppClassHelper")
 
-    fun newInstance(androidContext: Context, className: String): Any {
-        val clazz = loadAppClass(androidContext, className)
-        val constructor =
-            requireNotNull(clazz.constructors.firstOrNull { it.parameters.isEmpty() }) {
-                "Missing default constructor"
-            }
-        val instance = constructor.newInstance()
-        return instance
+    fun newInstance(srcContext: Context, className: String): Any {
+        val clazz = loadAppClass(srcContext, className)
+        return requireNotNull(
+            clazz.constructors.firstOrNull { it.parameters.size == 1 }?.newInstance(srcContext)
+                ?: clazz.constructors.firstOrNull { it.parameters.isEmpty() }?.newInstance()
+        ) {
+            "No Context or empty constructor."
+        }
     }
 
-    fun loadAppClass(androidContext: Context, className: String): Class<*> {
+    private fun loadAppClass(androidContext: Context, className: String): Class<*> {
         val appInfo =
             PkgUtils.getApplicationInfo(androidContext, BuildPropInternal.SHORTX_EXT_APP_PKG_NAME)
         logger.d("appInfo: $appInfo")
@@ -50,7 +49,7 @@ object ExtAppClassHelper {
             || !optimizedDirectoryFile.canExecute()
         ) {
             optimizedDirectory = File(
-                Dirs.baseServerCacheDir(),
+                androidContext.cacheDir,
                 "opt-${BuildPropInternal.APP_VERSION_CODE}"
             ).absolutePath
             optimizedDirectoryFile = File(optimizedDirectory)

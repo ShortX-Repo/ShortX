@@ -11,6 +11,7 @@ import tornaco.apps.shortx.services.input.InputService
 import tornaco.apps.shortx.services.media.MediaService
 import tornaco.apps.shortx.services.network.NetworkService
 import tornaco.apps.shortx.services.notification.NotificationService
+import tornaco.apps.shortx.services.ocr.OCRService
 import tornaco.apps.shortx.services.os.ShellService
 import tornaco.apps.shortx.services.os.SystemSettingsService
 import tornaco.apps.shortx.services.os.UserService
@@ -44,6 +45,7 @@ interface ShortXContext {
     val tile: StatusBarTileService
     val plugin: PluginService
     val cv: CVService
+    val ocr: OCRService
     val dev: DevService
 
     val serviceLifecycle: ServiceLifecycle
@@ -70,6 +72,7 @@ interface ShortXContext {
             tile,
             plugin,
             cv,
+            ocr,
         ).apply {
             onDebugBuild { add(dev) }
         }
@@ -96,6 +99,7 @@ class ShortXContextImpl : ShortXContext {
     override val tile = StatusBarTileService(this)
     override val plugin = PluginService(this)
     override val cv = CVService(this)
+    override val ocr = OCRService(this)
     override val dev = DevService(this)
 
     override val serviceLifecycle = ServiceLifecycle(this)

@@ -13,7 +13,7 @@ class CVImpl(private val context: Context) : ICV.Stub() {
     private val cvApiIns by lazy {
         ExtAppClassHelper.newInstance(
             context,
-            "tornaco.apps.shortx.ui.cv.ShortXCVApi"
+            "tornaco.apps.shortx.ext.api.cv.ShortXCVApi"
         )
     }
 
