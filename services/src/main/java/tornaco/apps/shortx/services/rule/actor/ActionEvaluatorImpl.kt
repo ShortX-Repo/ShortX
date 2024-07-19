@@ -76,6 +76,8 @@ class ActionEvaluatorImpl(
         return kotlin.runCatching {
             evaluateStartListener(actionId)
 
+            val startTimeMills = System.currentTimeMillis()
+
             actor.handle(
                 HandleParams(
                     androidContext = context,
@@ -90,6 +92,10 @@ class ActionEvaluatorImpl(
                     parameterInputs = parameterInputs
                 )
             )
+
+            val timeTaken = System.currentTimeMillis() - startTimeMills
+            logger.d("Action evaluated in ${timeTaken}ms [$actor]")
+
             ActionEvaluator.EvaluateResult.Success(actionId, action, evaluateContext)
         }.getOrElse { throwable ->
             // Clean up registered listeners for Actor usage...

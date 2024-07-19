@@ -56,7 +56,13 @@ object FindImagePositionFromScreen : Actor {
         ).map {
             OcrResult.parseFrom(it.byteData)
         }
-        logger.d("ocrResult: $ocrResult")
+        logger.d(
+            "ocrResult: ${
+                ocrResult.joinToString {
+                    it.label
+                }
+            }"
+        )
     }
 }
 
