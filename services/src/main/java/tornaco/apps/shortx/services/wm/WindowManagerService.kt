@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.wm
 
 import android.app.UiAutomation.OnAccessibilityEventListener
 import android.content.ClipData
+import android.graphics.Rect
 import android.os.Binder
 import android.os.Handler
 import android.os.Looper
@@ -43,6 +44,7 @@ import tornaco.apps.shortx.ui.clipbord.ClipboardView
 import tornaco.apps.shortx.ui.draw.DrawBoardView
 import tornaco.apps.shortx.ui.overlay.IdViewerView
 import tornaco.apps.shortx.ui.overlay.UniversalCopyView
+import tornaco.apps.shortx.ui.screencap.AreaSelectorView
 
 class WindowManagerService(shortXContext: ShortXContext) :
     SystemService(shortXContext, "ShortXWMS"), OnAccessibilityEventListener {
@@ -56,6 +58,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
     private val showingIVHints: MutableSet<IdViewerView> = mutableSetOf()
     private val showingDrawerBoard: MutableSet<DrawBoardView> = mutableSetOf()
     private val showingClipboard: MutableSet<ClipboardView> = mutableSetOf()
+    private val showingAreaSelector: MutableSet<AreaSelectorView> = mutableSetOf()
 
     private val mainHandler by lazy {
         Handler(Looper.getMainLooper())
@@ -449,6 +452,29 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
     }
 
+    fun enableAreaSelector(onSelect: (Rect) -> Unit, onDetach: () -> Unit) {
+        disableAllOverlayViews {
+            val guideLineView =
+                AreaSelectorView(
+                    context = context,
+                    i18N = i18NIns,
+                    onDetach = {
+                        showingAreaSelector.remove(it)
+                        onDetach()
+                    },
+                    selected = onSelect
+                )
+            showingAreaSelector.add(guideLineView)
+            mainHandler.postSafety {
+                guideLineView.attach()
+            }
+        }
+    }
+
+    fun disableAreaSelector() {
+        disableAllOverlayViews { }
+    }
+
     fun showClipboard() {
         logger.p("showClipboard: ${shortXContext.input.getAllClipboardText()}")
         disableAllOverlayViews {
@@ -607,9 +633,15 @@ class WindowManagerService(shortXContext: ShortXContext) :
             }
             showingDrawerBoard.clear()
 
+            showingAreaSelector.forEach {
+                kotlin.runCatching { it.detach() }
+                    .onFailure { logger.e(it, "showingAreaSelector detach fail") }
+            }
+            showingAreaSelector.clear()
+
             showingUCHints.forEach {
                 kotlin.runCatching { it.detach() }
-                    .onFailure { logger.e(it, "disableUniversalCopy detach fail") }
+                    .onFailure { logger.e(it, "showingUCHints detach fail") }
             }
             showingUCHints.clear()
 
