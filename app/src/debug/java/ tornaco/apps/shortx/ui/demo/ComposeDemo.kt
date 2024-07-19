@@ -9,6 +9,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
 import tornaco.apps.shortx.core.proto.clipboard.ClipboardItem
 import tornaco.apps.shortx.services.ui.i18NIns
+import tornaco.apps.shortx.ui.FlashingBorderBox
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.clipbord.ClipboardView
 import tornaco.apps.shortx.ui.screencap.RectangleCaptureScreen
@@ -23,10 +24,12 @@ class ComposeDemoActivity : ComponentActivity() {
             ) {
                 val context = LocalContext.current
 
-                RectangleCaptureScreen({}) {
-                    Toast
-                        .makeText(context, "Selected Rect: $it", Toast.LENGTH_SHORT)
-                        .show()
+                FlashingBorderBox {
+                    RectangleCaptureScreen({}) {
+                        Toast
+                            .makeText(context, "Selected Rect: $it", Toast.LENGTH_SHORT)
+                            .show()
+                    }
                 }
             }
         }

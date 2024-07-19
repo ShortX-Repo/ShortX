@@ -468,12 +468,12 @@ class WindowManagerService(shortXContext: ShortXContext) :
                     onDragEnd = {
                         val everShowTips = store.read(Settings.BoolSettings.AreaSelectorTipsShown)
                         if (!everShowTips) {
-                            store.write(Settings.BoolSettings.AreaSelectorTipsShown, true)
                             showAreaSelectorTips()
                         }
                     },
                     selected = {
                         onSelect(it)
+                        store.write(Settings.BoolSettings.AreaSelectorTipsShown, true)
                     }
                 )
             showingAreaSelector.add(guideLineView)
