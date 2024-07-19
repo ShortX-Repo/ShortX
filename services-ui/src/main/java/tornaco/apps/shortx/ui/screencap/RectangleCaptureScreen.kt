@@ -19,10 +19,9 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun RectangleCaptureScreen(onSelected: (Rect) -> Unit) {
+fun RectangleCaptureScreen(onDragEnd: () -> Unit, onSelected: (Rect) -> Unit) {
     var startOffset by remember { mutableStateOf<Offset?>(null) }
     var endOffset by remember { mutableStateOf<Offset?>(null) }
-    var showButton by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -48,13 +47,12 @@ fun RectangleCaptureScreen(onSelected: (Rect) -> Unit) {
                     onDragStart = { offset ->
                         startOffset = offset
                         endOffset = offset
-                        showButton = false
                     },
                     onDrag = { change, _ ->
                         endOffset = change.position
                     },
                     onDragEnd = {
-                        showButton = true
+                        onDragEnd()
                     }
                 )
             }

@@ -86,12 +86,12 @@ abstract class BaseComposeView(
         logger.d("attach")
     }
 
-    fun detach() {
+    fun detach(callback: Boolean = true) {
         logger.d("detach")
         if (isAttached) {
             windowManager.removeViewImmediate(this)
             isAttached = false
-            onDetach(this)
+            if (callback) onDetach(this)
         }
     }
 

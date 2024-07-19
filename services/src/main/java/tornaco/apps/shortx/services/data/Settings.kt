@@ -45,6 +45,9 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
         data object EnableForceDisableShortXByKeyPress :
             BoolSettings(key = "EnableForceDisableShortXByKeyPress", defaultValue = { true })
 
+        data object AreaSelectorTipsShown :
+            BoolSettings(key = "AreaSelectorTipsShown", defaultValue = { false })
+
         data class EnableToggle(val id: String) :
             BoolSettings(key = "EnableToggle${id}", defaultValue = { false })
     }

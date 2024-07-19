@@ -23,7 +23,7 @@ class ComposeDemoActivity : ComponentActivity() {
             ) {
                 val context = LocalContext.current
 
-                RectangleCaptureScreen {
+                RectangleCaptureScreen({}) {
                     Toast
                         .makeText(context, "Selected Rect: $it", Toast.LENGTH_SHORT)
                         .show()

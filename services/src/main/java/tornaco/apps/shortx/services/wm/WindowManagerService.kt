@@ -34,6 +34,9 @@ import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.core.util.windowManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
+import tornaco.apps.shortx.services.data.Settings
+import tornaco.apps.shortx.services.data.read
+import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.rule.fact.trigger.rotationToDegree
 import tornaco.apps.shortx.services.systemServiceScope
@@ -462,12 +465,30 @@ class WindowManagerService(shortXContext: ShortXContext) :
                         showingAreaSelector.remove(it)
                         onDetach()
                     },
-                    selected = onSelect
+                    onDragEnd = {
+                        val everShowTips = store.read(Settings.BoolSettings.AreaSelectorTipsShown)
+                        if (!everShowTips) {
+                            store.write(Settings.BoolSettings.AreaSelectorTipsShown, true)
+                            showAreaSelectorTips()
+                        }
+                    },
+                    selected = {
+                        onSelect(it)
+                    }
                 )
             showingAreaSelector.add(guideLineView)
             mainHandler.postSafety {
                 guideLineView.attach()
             }
+        }
+    }
+
+    private fun showAreaSelectorTips() {
+        systemServiceScope.launchSafety {
+            shortXContext.ui.showDanmu(
+                null,
+                i18NIns["ui.action.select.screen.area.tip"]
+            )
         }
     }
 
