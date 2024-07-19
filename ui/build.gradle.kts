@@ -129,9 +129,15 @@ dependencies {
     implementation(libs.compressor)
 
     // For AppWidgets support
-    implementation( libs.androidx.glance.appwidget )
+    implementation(libs.androidx.glance.appwidget)
     // For interop APIs with Material 3
-    implementation( libs.androidx.glance.material3 )
+    implementation(libs.androidx.glance.material3)
+
+    // This dependency is downloaded from the Google’s Maven repository.
+    // So, make sure you also include that repository in your project's build.gradle file.
+    implementation("com.google.android.play:app-update:2.1.0")
+    // For Kotlin users also add the Kotlin extensions library for Play In-App Update:
+    implementation("com.google.android.play:app-update-ktx:2.1.0")
 
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit)
