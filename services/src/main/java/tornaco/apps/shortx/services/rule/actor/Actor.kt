@@ -80,6 +80,14 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.TakeScreenshot
     },
+    SelectScreenArea {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.SelectScreenArea
+    },
+    AreaScreenshot {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.AreaScreenshot
+    },
     ExpandNotification {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.ExpandNotification

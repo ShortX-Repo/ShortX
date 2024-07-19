@@ -82,7 +82,7 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
 
     val scrollToSelectorState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.action.scroll.view.to"],
-        menuItems = ScrollViewToLocation.values()
+        menuItems = ScrollViewToLocation.entries
             .filterNot { it == ScrollViewToLocation.UNRECOGNIZED }
             .map {
                 MenuDialogItem(
@@ -108,7 +108,7 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
 
     val performContextMenuSelectorState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.action.perform.context.menu.action"],
-        menuItems = ContextMenuAction.values()
+        menuItems = ContextMenuAction.entries
             .filterNot { it == ContextMenuAction.UNRECOGNIZED }
             .map {
                 MenuDialogItem(
@@ -131,6 +131,16 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
 
             Action.TakeScreenshot::class -> {
                 addAction(Action.TakeScreenshot())
+                true
+            }
+
+            Action.SelectScreenArea::class -> {
+                addAction(Action.SelectScreenArea())
+                true
+            }
+
+            Action.AreaScreenshot::class -> {
+                addAction(Action.AreaScreenshot())
                 true
             }
 
@@ -287,6 +297,8 @@ fun UiActions(
 
     val uiActionItems = listOf(
         Action.TakeScreenshot::class,
+        Action.AreaScreenshot::class,
+        Action.SelectScreenArea::class,
         Action.ShowToast::class,
         Action.ShowDanmu::class,
         Action.ShowOverlay::class,
