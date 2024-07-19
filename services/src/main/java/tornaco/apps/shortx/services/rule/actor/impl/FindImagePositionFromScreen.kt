@@ -66,7 +66,7 @@ object FindImagePositionFromScreen : Actor {
     }
 }
 
-private fun saveScreenBitmapToFile(imageData: Bitmap, dir: File) {
+fun saveScreenBitmapToFile(imageData: Bitmap, dir: File): File {
     val fileName = "screenshot-${System.currentTimeMillis()}.png"
     val filePath = File(dir, fileName).apply {
         parentFile?.mkdirs()
@@ -74,4 +74,5 @@ private fun saveScreenBitmapToFile(imageData: Bitmap, dir: File) {
     FileOutputStream(filePath).use {
         imageData.compress(Bitmap.CompressFormat.JPEG, 100, it)
     }
+    return filePath
 }

@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
+import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 
@@ -23,21 +24,7 @@ object SelectScreenArea : Actor {
         val d =
             action unpack_ tornaco.apps.shortx.core.proto.action.SelectScreenArea::class.java
 
-        val rect: Rect? = suspendCancellableCoroutine<Rect?> { con ->
-            shortXContext.wm.enableAreaSelector(
-                onSelect = {
-                    con.resume(it) {}
-                },
-                onDetach = {
-                    con.resume(null) {}
-                }
-            )
-
-            con.invokeOnCancellation {
-                shortXContext.wm.disableAreaSelector()
-            }
-        }
-
+        val rect: Rect? = startSelectScreenArea(shortXContext)
 
         requireNotNull(rect) {
             "No Rect selected."
@@ -68,5 +55,23 @@ object SelectScreenArea : Actor {
                 .fallbackOnEmpty { ContextDataMapping.Rect.rectFlattenToString.name },
             rect.flattenToString(),
         )
+    }
+
+    suspend fun startSelectScreenArea(shortXContext: ShortXContext): Rect? {
+        val rect: Rect? = suspendCancellableCoroutine<Rect?> { con ->
+            shortXContext.wm.enableAreaSelector(
+                onSelect = {
+                    con.resume(it) {}
+                },
+                onDetach = {
+                    con.resume(null) {}
+                }
+            )
+
+            con.invokeOnCancellation {
+                shortXContext.wm.disableAreaSelector()
+            }
+        }
+        return rect
     }
 }
