@@ -868,6 +868,9 @@ class WindowManagerService(shortXContext: ShortXContext) :
     }
 
     fun onBackNavStart() {
+        // Disable overlays
+        disableAllOverlayViews { }
+
         shortXContext.rule.publishFactChecked(BackNavStart.getDefaultInstance()) {
             FactPublishData(
                 reason = "onBackNavStart",
