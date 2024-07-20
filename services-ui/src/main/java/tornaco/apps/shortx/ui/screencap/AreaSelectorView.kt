@@ -15,14 +15,22 @@ class AreaSelectorView(
     i18N: I18N,
     onDetach: (BaseComposeView) -> Unit,
     private val onDragEnd: () -> Unit,
+    private val onSelectFullScreen: () -> Unit = {},
     val selected: (Rect) -> Unit,
 ) : BaseComposeView(context, i18N, onDetach) {
+    override var enableLayoutAnim = false
 
     @Composable
     override fun ComposeContent() {
         ShortXServiceUITheme {
             FlashingBorderBox {
-                RectangleCaptureScreen(onDragEnd) {
+                RectangleCaptureScreen(
+                    onDragEnd = onDragEnd,
+                    onCancel = {
+                        detach(true)
+                    },
+                    onSelectFullScreen = onSelectFullScreen
+                ) {
                     selected(
                         Rect(
                             it.left.toInt(),

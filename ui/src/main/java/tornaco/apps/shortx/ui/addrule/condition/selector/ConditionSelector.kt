@@ -1,11 +1,7 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
-
 package tornaco.apps.shortx.ui.addrule.condition.selector
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -42,12 +38,14 @@ fun ConditionSelector(
         ) {
             Column(
                 modifier = Modifier
-                    .padding(horizontal = 8.dp)
             ) {
                 val searchBarState = rememberSearchBarState(
                     itemCount = allConditionClasses.size,
                     keywordChanged = { })
-                SearchBar(searchBarState = searchBarState)
+                SearchBar(
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    searchBarState = searchBarState
+                )
 
                 val setCondition: (Condition) -> Unit = {
                     onSelected(it)
@@ -90,7 +88,7 @@ fun ConditionSelector(
 @Composable
 fun ConditionCategoryTitle(category: ConditionCategory) {
     SmallTitle(
-        modifier = Modifier.padding(vertical = 12.dp, horizontal = 4.dp),
+        modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp),
         text = LocalI18N.current[category.i18NKey]
     )
 }

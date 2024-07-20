@@ -626,7 +626,7 @@
     "ui.action.delay.input.use.alarm.summary": "A delay implemented without an Alarm may be inaccurate due to system hibernation after the screen is locked, and a delay implemented with an Alarm will wake up the system after the delay is completed, which may lead to increased power consumption. Please use this switch comprehensively",
     "ui.action.take.screenshot": "Take Screenshot",
     "ui.action.select.screen.area": "Select screen area",
-    "ui.action.select.screen.area.tip": "Tap in the area to complete",
+    "ui.action.select.screen.area.tip": "Swipe to select a rectangular area; tap inside the area to complete the selection; double-tap anywhere to select the full screen; long press anywhere to cancel.",
     "ui.action.area.screen.shot": "Area screenshot",
     "ui.title.mvel": "MVEL expression",
     "ui.title.js": "JS",

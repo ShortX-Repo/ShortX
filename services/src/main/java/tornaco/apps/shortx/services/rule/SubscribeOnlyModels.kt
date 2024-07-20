@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule
 
 import com.google.protobuf.GeneratedMessageV3
+import tornaco.apps.shortx.core.proto.action.AreaScreenshot
 import tornaco.apps.shortx.core.proto.action.AudioRecording
 import tornaco.apps.shortx.core.proto.action.BiometricVerify
 import tornaco.apps.shortx.core.proto.action.ClickNotification
@@ -21,12 +22,14 @@ import tornaco.apps.shortx.core.proto.action.InputSwipe
 import tornaco.apps.shortx.core.proto.action.InputTap
 import tornaco.apps.shortx.core.proto.action.InputText
 import tornaco.apps.shortx.core.proto.action.LaunchAppByPkg
+import tornaco.apps.shortx.core.proto.action.LaunchPinedItem
 import tornaco.apps.shortx.core.proto.action.LockDeviceNow
 import tornaco.apps.shortx.core.proto.action.MatchRegex
 import tornaco.apps.shortx.core.proto.action.PerformContextMenuAction
 import tornaco.apps.shortx.core.proto.action.RemoveNotificationForPackageByPkg
 import tornaco.apps.shortx.core.proto.action.ReplaceRegex
 import tornaco.apps.shortx.core.proto.action.ScrollViewTo
+import tornaco.apps.shortx.core.proto.action.SelectScreenArea
 import tornaco.apps.shortx.core.proto.action.SendSMS
 import tornaco.apps.shortx.core.proto.action.SetAppEnabled
 import tornaco.apps.shortx.core.proto.action.SetAppEnabledByPkg
@@ -80,6 +83,7 @@ import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
 import tornaco.apps.shortx.core.proto.fact.MethodHook
 import tornaco.apps.shortx.core.proto.fact.NFCTagDiscover
 import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
+import tornaco.apps.shortx.core.proto.fact.PkgStartRunning
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
 import tornaco.apps.shortx.core.proto.fact.UserPresentAtTheFirstTime
 import tornaco.apps.shortx.core.proto.fact.VPNConnected
@@ -110,6 +114,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         UserPresentAtTheFirstTime::class,
         BatteryTemperatureChanged::class,
         MethodHook::class,
+        PkgStartRunning::class,
 
         AppHasAudioFocus::class,
         RequireMobileDataEnabled::class,
@@ -175,4 +180,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         DownloadFile::class,
         InjectKeyCode::class,
         InjectCombineKeyCode::class,
+        AreaScreenshot::class,
+        SelectScreenArea::class,
+        LaunchPinedItem::class,
     )

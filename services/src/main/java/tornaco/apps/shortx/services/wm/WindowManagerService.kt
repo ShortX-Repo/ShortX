@@ -455,7 +455,11 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
     }
 
-    fun enableAreaSelector(onSelect: (Rect) -> Unit, onDetach: () -> Unit) {
+    fun enableAreaSelector(
+        onSelect: (Rect) -> Unit,
+        onSelectFullScreen: () -> Unit,
+        onDetach: () -> Unit
+    ) {
         disableAllOverlayViews {
             val guideLineView =
                 AreaSelectorView(
@@ -470,6 +474,9 @@ class WindowManagerService(shortXContext: ShortXContext) :
                         if (!everShowTips) {
                             showAreaSelectorTips()
                         }
+                    },
+                    onSelectFullScreen = {
+                        onSelectFullScreen()
                     },
                     selected = {
                         onSelect(it)

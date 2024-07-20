@@ -1,12 +1,8 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
-
 package tornaco.apps.shortx.ui.addrule.fact.selector
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -45,12 +41,14 @@ fun FactSelector(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 8.dp)
             ) {
                 val searchBarState = rememberSearchBarState(
                     itemCount = allFactClasses.size,
                     keywordChanged = { })
-                SearchBar(searchBarState = searchBarState)
+                SearchBar(
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    searchBarState = searchBarState
+                )
 
                 val subscribeState by LVLStateHolder.collectAsState()
 
@@ -70,7 +68,7 @@ fun FactSelector(
 @Composable
 fun FactCategoryTitle(category: FactCategory) {
     SmallTitle(
-        modifier = Modifier.padding(vertical = 12.dp, horizontal = 4.dp),
+        modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp),
         text = LocalI18N.current[category.i18NKey]
     )
 }

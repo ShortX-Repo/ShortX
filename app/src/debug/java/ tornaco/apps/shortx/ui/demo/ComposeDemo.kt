@@ -25,11 +25,23 @@ class ComposeDemoActivity : ComponentActivity() {
                 val context = LocalContext.current
 
                 FlashingBorderBox {
-                    RectangleCaptureScreen({}) {
-                        Toast
-                            .makeText(context, "Selected Rect: $it", Toast.LENGTH_SHORT)
-                            .show()
-                    }
+                    RectangleCaptureScreen(
+                        onSelectFullScreen = {
+                            Toast
+                                .makeText(context, "onSelectFullScreen", Toast.LENGTH_SHORT)
+                                .show()
+                        },
+                        onCancel = {
+                            Toast
+                                .makeText(context, "Cancelled", Toast.LENGTH_SHORT)
+                                .show()
+                        },
+                        onSelected = {
+                            Toast
+                                .makeText(context, "Selected Rect: $it", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    )
                 }
             }
         }

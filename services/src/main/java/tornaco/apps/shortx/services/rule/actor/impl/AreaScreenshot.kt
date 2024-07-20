@@ -6,6 +6,7 @@ import android.os.Environment
 import android.widget.Toast
 import com.google.protobuf.Message
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.os.ScreenCap
 import tornaco.apps.shortx.core.util.BitmapUtils
@@ -25,11 +26,14 @@ object AreaScreenshot : Actor {
     override suspend fun handle(
         params: HandleParams
     ): Unit = with(params) {
-        val rect: Rect? = startSelectScreenArea(shortXContext)
+        val area = startSelectScreenArea(shortXContext)
+        val rect: Rect? = area?.getRect(androidContext)
 
         requireNotNull(rect) {
             "No Screen Rect selected."
         }
+
+        delay(100)
 
         val screenCap = ScreenCap(androidContext)
         val screen: Bitmap = try {
@@ -39,10 +43,13 @@ object AreaScreenshot : Actor {
         }
         logger.d("screen: $screen")
 
-        val cropped = BitmapUtils.cropBitmap(screen, rect)
+        val cropped =
+            if (area is AreaSelection.FullScreen) screen else BitmapUtils.cropBitmap(screen, rect)
         logger.d("cropped: $cropped")
 
         val tmpFile = saveScreenBitmapToFile(cropped, Dirs.screenshotCacheDir())
+        cropped.recycle()
+        screen.recycle()
 
         val currentPkgName =
             shortXContext.appState.currentFrontPkgs().firstOrNull()?.pkgName.orEmpty()

@@ -19,28 +19,42 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun RectangleCaptureScreen(onDragEnd: () -> Unit, onSelected: (Rect) -> Unit) {
+fun RectangleCaptureScreen(
+    onDragEnd: () -> Unit = {},
+    onSelectFullScreen: () -> Unit = {},
+    onCancel: () -> Unit = {},
+    onSelected: (Rect) -> Unit = {},
+) {
     var startOffset by remember { mutableStateOf<Offset?>(null) }
     var endOffset by remember { mutableStateOf<Offset?>(null) }
     Box(
         modifier = Modifier
             .fillMaxSize()
             .pointerInput(Unit) {
-                detectTapGestures { offset ->
-                    startOffset?.let { start ->
-                        endOffset?.let { end ->
-                            val rect = Rect(
-                                left = start.x.coerceAtMost(end.x),
-                                top = start.y.coerceAtMost(end.y),
-                                right = start.x.coerceAtLeast(end.x),
-                                bottom = start.y.coerceAtLeast(end.y)
-                            )
-                            if (rect.contains(offset)) {
-                                onSelected(rect)
+                detectTapGestures(
+                    onDoubleTap = {
+                        if (startOffset == null && endOffset == null) {
+                            onSelectFullScreen()
+                        }
+                    },
+                    onLongPress = {
+                        onCancel()
+                    },
+                    onTap = { offset ->
+                        startOffset?.let { start ->
+                            endOffset?.let { end ->
+                                val rect = Rect(
+                                    left = start.x.coerceAtMost(end.x),
+                                    top = start.y.coerceAtMost(end.y),
+                                    right = start.x.coerceAtLeast(end.x),
+                                    bottom = start.y.coerceAtLeast(end.y)
+                                )
+                                if (rect.contains(offset)) {
+                                    onSelected(rect)
+                                }
                             }
                         }
-                    }
-                }
+                    })
             }
             .pointerInput(Unit) {
                 detectDragGestures(

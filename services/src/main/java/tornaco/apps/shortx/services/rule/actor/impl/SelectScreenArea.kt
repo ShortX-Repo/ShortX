@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
+import android.content.Context
 import android.graphics.Rect
 import com.google.protobuf.Message
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -8,6 +9,7 @@ import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
+import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
@@ -24,7 +26,7 @@ object SelectScreenArea : Actor {
         val d =
             action unpack_ tornaco.apps.shortx.core.proto.action.SelectScreenArea::class.java
 
-        val rect: Rect? = startSelectScreenArea(shortXContext)
+        val rect: Rect? = startSelectScreenArea(shortXContext)?.getRect(androidContext)
 
         requireNotNull(rect) {
             "No Rect selected."
@@ -57,11 +59,14 @@ object SelectScreenArea : Actor {
         )
     }
 
-    suspend fun startSelectScreenArea(shortXContext: ShortXContext): Rect? {
-        val rect: Rect? = suspendCancellableCoroutine<Rect?> { con ->
+    suspend fun startSelectScreenArea(shortXContext: ShortXContext): AreaSelection? {
+        val rect: AreaSelection? = suspendCancellableCoroutine<AreaSelection?> { con ->
             shortXContext.wm.enableAreaSelector(
                 onSelect = {
-                    con.resume(it) {}
+                    con.resume(AreaSelection.SelectRect(it)) {}
+                },
+                onSelectFullScreen = {
+                    con.resume(AreaSelection.FullScreen) {}
                 },
                 onDetach = {
                     con.resume(null) {}
@@ -73,5 +78,27 @@ object SelectScreenArea : Actor {
             }
         }
         return rect
+    }
+}
+
+sealed interface AreaSelection {
+    fun getRect(context: Context): Rect
+
+    data object FullScreen : AreaSelection {
+        override fun getRect(context: Context): Rect {
+            val screen = context.screenSize()
+            return Rect(
+                0,
+                0,
+                screen.x,
+                screen.y
+            )
+        }
+    }
+
+    data class SelectRect(val rect: Rect) : AreaSelection {
+        override fun getRect(context: Context): Rect {
+            return rect
+        }
     }
 }

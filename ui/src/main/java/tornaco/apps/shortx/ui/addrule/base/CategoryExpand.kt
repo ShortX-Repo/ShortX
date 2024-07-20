@@ -85,6 +85,7 @@ fun ActionCategory(categoryTitle: String, itemCount: Int, categoryState: Categor
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 8.dp)
             .clip(ShortXCardRoundedCornerShape)
             .clickable {
                 categoryState.toggle()

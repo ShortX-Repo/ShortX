@@ -37,8 +37,11 @@ import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShapeL
 import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.TipDialog
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
+import tornaco.apps.shortx.ui.base.rememberTipDialogState
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
+import tornaco.apps.shortx.ui.theme.NoteTextColor
 import kotlin.reflect.KClass
 
 data class SelectorItem<out T : Any>(
@@ -135,6 +138,9 @@ fun SelectorListItem(
     isForSubscribedOnly: Boolean,
     onClick: () -> Unit,
 ) {
+    val tipDialogState = rememberTipDialogState(title = title, tip = text1.orEmpty())
+    TipDialog(state = tipDialogState)
+
     ShortXCard(
         modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp),
         shape = ShortXCardRoundedCornerShapeL
@@ -166,18 +172,27 @@ fun SelectorListItem(
 
                 TinySpacer()
 
-                Column {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = title,
-                        fontSize = 13.sp,
+                        fontSize = 12.5.sp,
                         textAlign = TextAlign.Center
                     )
-                    if (text1 != null && text1.length < 10) {
-                        Text(
-                            text = text1,
-                            fontSize = 10.sp,
-                            textAlign = TextAlign.Center
-                        )
+                    if (text1 != null) {
+                        ColoredIcon(
+                            size = 24.dp,
+                            padding = 0.dp,
+                            color = Color.Transparent,
+                            onClick = {
+                                tipDialogState.show()
+                            }
+                        ) {
+                            RemixIcon(
+                                modifier = Modifier.size(10.dp),
+                                remixName = Remix.System.information_line,
+                                tint = NoteTextColor
+                            )
+                        }
                     }
                 }
 

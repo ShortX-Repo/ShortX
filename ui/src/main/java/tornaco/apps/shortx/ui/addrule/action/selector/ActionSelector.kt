@@ -71,8 +71,7 @@ fun ActionSelector(close: () -> Unit, onSelected: (Action) -> Unit) {
             ClickOutsideClearFocusBox {
                 Column(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 8.dp),
+                        .fillMaxSize(),
                     verticalArrangement = Arrangement.Top
                 ) {
                     val selectorVM = hiltViewModel<ActionSelectorViewModel>()
@@ -85,11 +84,16 @@ fun ActionSelector(close: () -> Unit, onSelected: (Action) -> Unit) {
                     val searchBarState = rememberSearchBarState(
                         itemCount = allActionClasses.size,
                         keywordChanged = { })
-                    SearchBar(searchBarState = searchBarState)
+                    SearchBar(
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        searchBarState = searchBarState
+                    )
 
                     val selectedFilter = selectorState.selectedFilter
                     FlowRow(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
                         horizontalArrangement = Arrangement.Start
                     ) {
                         ActionCategory.entries.forEach {

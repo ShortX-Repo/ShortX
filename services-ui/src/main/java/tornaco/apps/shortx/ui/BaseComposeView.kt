@@ -37,6 +37,8 @@ abstract class BaseComposeView(
 
     private var isAttached = false
 
+    open var enableLayoutAnim = true
+
     fun attach() {
         val wrapContent = FrameLayout.LayoutParams(
             LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT
@@ -109,7 +111,7 @@ abstract class BaseComposeView(
         }
         lp.type = WindowManager.LayoutParams.TYPE_PHONE
         lp.packageName = context.packageName
-        lp.windowAnimations = android.R.style.Animation_InputMethod
+        if (enableLayoutAnim) lp.windowAnimations = android.R.style.Animation_InputMethod
         return lp
     }
 
