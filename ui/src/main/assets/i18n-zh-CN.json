@@ -618,7 +618,7 @@
     "ui.action.delay.input.use.alarm.summary": "不使用Alarm实现的延迟在屏幕锁定后由于系统休眠可能会不准确，使用Alarm实现的延迟会在延迟完成唤醒系统，因此可能会导致耗电增加。请综合使用场景选择本开关",
     "ui.action.take.screenshot": "截屏",
     "ui.action.select.screen.area": "选择屏幕区域",
-    "ui.action.select.screen.area.tip": "滑动选择矩形区域；点击矩形区域内完成选择；双击任意位置选择全屏；长按任意位置取消",
+    "ui.action.select.screen.area.tip": "滑动选择矩形区域；点击矩形区域内完成选择；双击任意位置选择全屏",
     "ui.action.area.screen.shot": "区域截图",
     "ui.title.mvel": "MVEL表达式",
     "ui.title.js": "Javascript",

@@ -13,7 +13,6 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -27,6 +26,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -38,6 +38,7 @@ import tornaco.apps.shortx.ui.base.LocalDrawerState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortXNavigationBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextDisplayActivity
 import tornaco.apps.shortx.ui.discover.DiscoverScreen
@@ -218,7 +219,7 @@ private fun BottomNavigationContent(
     navController: NavHostController,
     items: List<BottomNavItem>,
 ) {
-    NavigationBar(
+    ShortXNavigationBar(
         modifier = modifier
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -238,7 +239,10 @@ private fun BottomNavigationContent(
                         RemixIcon(remixName = item.icon)
                     }
                 },
-                alwaysShowLabel = false,
+                label = {
+                    Text(text = LocalI18N.current[item.title], fontSize = 9.sp)
+                },
+                alwaysShowLabel = true,
                 selected = currentRoute == item.screenRoute.name,
                 onClick = {
                     navController.navigate(item.screenRoute.name) {

@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.dp
 fun RectangleCaptureScreen(
     onDragEnd: () -> Unit = {},
     onSelectFullScreen: () -> Unit = {},
-    onCancel: () -> Unit = {},
     onSelected: (Rect) -> Unit = {},
 ) {
     var startOffset by remember { mutableStateOf<Offset?>(null) }
@@ -32,14 +31,6 @@ fun RectangleCaptureScreen(
             .fillMaxSize()
             .pointerInput(Unit) {
                 detectTapGestures(
-                    onDoubleTap = {
-                        if (startOffset == null && endOffset == null) {
-                            onSelectFullScreen()
-                        }
-                    },
-                    onLongPress = {
-                        onCancel()
-                    },
                     onTap = { offset ->
                         startOffset?.let { start ->
                             endOffset?.let { end ->
@@ -51,6 +42,8 @@ fun RectangleCaptureScreen(
                                 )
                                 if (rect.contains(offset)) {
                                     onSelected(rect)
+                                } else {
+                                    onSelectFullScreen()
                                 }
                             }
                         }

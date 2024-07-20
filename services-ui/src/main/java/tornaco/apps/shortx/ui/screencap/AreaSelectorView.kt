@@ -26,10 +26,10 @@ class AreaSelectorView(
             FlashingBorderBox {
                 RectangleCaptureScreen(
                     onDragEnd = onDragEnd,
-                    onCancel = {
-                        detach(true)
-                    },
-                    onSelectFullScreen = onSelectFullScreen
+                    onSelectFullScreen = {
+                        onSelectFullScreen()
+                        detach(false)
+                    }
                 ) {
                     selected(
                         Rect(
