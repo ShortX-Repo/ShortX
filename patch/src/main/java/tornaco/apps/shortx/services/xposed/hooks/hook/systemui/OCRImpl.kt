@@ -24,7 +24,7 @@ class OCRImpl(private val context: Context) : IOCR.Stub() {
         numThread: Int,
         useSlim: Boolean
     ): List<ByteArrayWrapper> {
-        logger.d("apiIns: $apiIns")
+        logger.d("detect apiIns: $apiIns")
         val result = (Reflections.callMethod(
             apiIns,
             "detect",
@@ -34,7 +34,25 @@ class OCRImpl(private val context: Context) : IOCR.Stub() {
         ) as List<ByteArray>).map {
             ByteArrayWrapper(it)
         }
-        logger.d("result: $result")
+        logger.d("detect result: $result")
+        return result
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun recognizeText(
+        bitmap: Bitmap,
+        numThread: Int,
+        useSlim: Boolean
+    ): Array<String> {
+        logger.d("recognizeText apiIns: $apiIns")
+        val result = (Reflections.callMethod(
+            apiIns,
+            "recognizeText",
+            bitmap,
+            numThread,
+            useSlim
+        ) as Array<String>)
+        logger.d("recognizeText result: $result")
         return result
     }
 }

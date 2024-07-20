@@ -6,7 +6,6 @@ import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.os.ScreenCap
-import tornaco.apps.shortx.core.proto.common.OcrResult
 import tornaco.apps.shortx.core.proto.common.Rect
 import tornaco.apps.shortx.core.proto.common.RectSourceRect
 import tornaco.apps.shortx.core.rule.is_
@@ -73,24 +72,23 @@ object OcrDetect : Actor {
 
         logger.d("ORC Detect bitmap: $bitmap")
 
-        val ocrResult = shortXContext.ocr.requireOCR().detect(
+        val ocrResult = shortXContext.ocr.requireOCR().recognizeText(
             bitmap,
             4,
             false
-        ).map {
-            OcrResult.parseFrom(it.byteData)
-        }
+        )
 
         bitmapToRecycle.forEach { it.recycle() }
 
-        val ocrResultString = ocrResult.joinToString(data.separator) { it.label }
-        logger.d("ocrResult: $ocrResultString")
+        val ocrResultString = ocrResult.joinToString(data.separator)
 
         params.contextData.add(
             data.customContextDataKey.forKey(ContextDataMapping.OcrDetect.ocrResult.name)
                 .fallbackOnEmpty { ContextDataMapping.OcrDetect.ocrResult.name },
             ocrResultString
         )
+
+        logger.d("ocrResult: $ocrResultString")
     }
 }
 

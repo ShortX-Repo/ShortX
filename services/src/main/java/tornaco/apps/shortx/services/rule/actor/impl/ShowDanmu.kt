@@ -21,6 +21,7 @@ object ShowDanmu : Actor {
     ) = with(params) {
         // java.lang.NoClassDefFoundError: kotlinx.coroutines.internal.MainDispatcherLoader
         // Clean build will fix this error.
+        logger.d("Show.")
         withContext(Dispatchers.Main) {
             val d = action unpack_ ShowDanmu::class.java
             val cv = RuleContextAndVars(params)

@@ -20,31 +20,32 @@ interface ActionEvaluator {
     sealed interface EvaluateResult {
         val evaluateContext: EvaluateContext
         val actionId: String
+        val action: ProtoAny
 
         data class Success(
             override val actionId: String,
-            val action: ProtoAny,
+            override val action: ProtoAny,
             override val evaluateContext: EvaluateContext
         ) : EvaluateResult
 
         data class Fail(
             val shouldContinue: Boolean,
             override val actionId: String,
-            val action: ProtoAny,
+            override val action: ProtoAny,
             val error: Throwable,
             override val evaluateContext: EvaluateContext
         ) : EvaluateResult
 
         data class Break(
             override val actionId: String,
-            val action: ProtoAny,
+            override val action: ProtoAny,
             val scope: BreakActionExecuteScope,
             override val evaluateContext: EvaluateContext
         ) : EvaluateResult
 
         data class Disabled(
             override val actionId: String,
-            val action: ProtoAny,
+            override val action: ProtoAny,
             override val evaluateContext: EvaluateContext
         ) : EvaluateResult
     }

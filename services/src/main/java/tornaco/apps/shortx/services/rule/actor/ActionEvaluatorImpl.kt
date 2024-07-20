@@ -77,6 +77,7 @@ class ActionEvaluatorImpl(
             evaluateStartListener(actionId)
 
             val startTimeMills = System.currentTimeMillis()
+            logger.d("Action start evaluate [$actor]")
 
             actor.handle(
                 HandleParams(
