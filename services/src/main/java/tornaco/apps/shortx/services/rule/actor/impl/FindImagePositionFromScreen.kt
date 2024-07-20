@@ -20,6 +20,8 @@ object FindImagePositionFromScreen : Actor {
     override suspend fun handle(
         params: HandleParams
     ): Unit = with(params) {
+        androidContext.requireExt()
+
         val d =
             action unpack_ tornaco.apps.shortx.core.proto.action.FindImagePositionFromScreen::class.java
         require(androidContext.powerManager.isInteractive) {

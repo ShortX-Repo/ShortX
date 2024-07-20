@@ -23,6 +23,8 @@ object OcrDetect : Actor {
     override suspend fun handle(
         params: HandleParams
     ): Unit = with(params) {
+        androidContext.requireExt()
+
         val data =
             params.action unpack_ tornaco.apps.shortx.core.proto.action.OcrDetect::class.java
 
