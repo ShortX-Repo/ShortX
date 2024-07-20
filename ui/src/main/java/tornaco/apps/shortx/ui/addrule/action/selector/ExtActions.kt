@@ -375,6 +375,11 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.OcrDetect::class -> {
+                addAction(Action.OcrDetect(src = Action.OcrDetect.RectSrc.SelectScreenArea))
+                true
+            }
+
             else -> {
                 false
             }
@@ -408,6 +413,7 @@ fun ExtActions(
         Action.WebSocketSend::class,
         Action.ExecuteJS::class,
         Action.FindImagePositionFromScreen::class,
+        Action.OcrDetect::class,
     ).map {
         SelectorItem(
             type = it,

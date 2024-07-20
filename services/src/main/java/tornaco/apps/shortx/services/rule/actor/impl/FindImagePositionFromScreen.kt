@@ -3,7 +3,6 @@ package tornaco.apps.shortx.services.rule.actor.impl
 import android.graphics.Bitmap
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.os.ScreenCap
-import tornaco.apps.shortx.core.proto.common.OcrResult
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.powerManager
@@ -47,22 +46,6 @@ object FindImagePositionFromScreen : Actor {
         logger.d("cv: $cv")
         val point = cv.findImage(screen, target)
         logger.d("point: $point")
-
-
-        val ocrResult = shortXContext.ocr.requireOCR().detect(
-            screen,
-            4,
-            false
-        ).map {
-            OcrResult.parseFrom(it.byteData)
-        }
-        logger.d(
-            "ocrResult: ${
-                ocrResult.joinToString {
-                    it.label
-                }
-            }"
-        )
     }
 }
 

@@ -607,6 +607,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.FindImagePositionFromScreen
     },
+    OcrDetect {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.OcrDetect
+    },
 
     ;
 
