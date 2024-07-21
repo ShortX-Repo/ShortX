@@ -94,6 +94,14 @@ private fun BaseSelectorActivity<Action.OcrDetect>.BiometricVerifySelector(curre
             }
             TextInputDialog(state = rectInputDialogState)
 
+            val pathInputDialogState = rememberTextInputState(
+                title = i18N["ui.action.rect.src.path"],
+                message = null
+            ) {
+                vm.setSrc(Action.OcrDetect.RectSrc.FromPath(path = it))
+            }
+            TextInputDialog(state = pathInputDialogState)
+
             when (val currentSrc = state.src) {
                 is Action.OcrDetect.RectSrc.FromRect -> {
                     ListItem(
@@ -109,6 +117,25 @@ private fun BaseSelectorActivity<Action.OcrDetect>.BiometricVerifySelector(curre
                         onClick = {
                             rectInputDialogState.show(
                                 currentSrc.rect.toAndroidRect().flattenToString()
+                            )
+                        }
+                    )
+                }
+
+                is Action.OcrDetect.RectSrc.FromPath -> {
+                    ListItem(
+                        icon = {
+                            ColoredIcon {
+                                RemixIcon(remixName = Remix.Office.image_files)
+                            }
+                        },
+                        titleLines = listOf(
+                            i18N["ui.action.rect.src.path"],
+                            currentSrc.path
+                        ),
+                        onClick = {
+                            pathInputDialogState.show(
+                                currentSrc.path
                             )
                         }
                     )
@@ -142,6 +169,10 @@ private fun BaseSelectorActivity<Action.OcrDetect>.BiometricVerifySelector(curre
                         id = Action.OcrDetect.RectSrc.FromRect::class.java.name,
                         title = i18N["ui.action.rect.src.rect"]
                     ),
+                    MenuDialogItem(
+                        id = Action.OcrDetect.RectSrc.FromPath::class.java.name,
+                        title = i18N["ui.action.rect.src.path"]
+                    ),
                 ),
                 onItemSelected = { _, id ->
                     when (id) {
@@ -151,6 +182,10 @@ private fun BaseSelectorActivity<Action.OcrDetect>.BiometricVerifySelector(curre
 
                         Action.OcrDetect.RectSrc.FromRect::class.java.name -> {
                             rectInputDialogState.show()
+                        }
+
+                        Action.OcrDetect.RectSrc.FromPath::class.java.name -> {
+                            pathInputDialogState.show()
                         }
                     }
                 }

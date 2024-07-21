@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.data
 
 import android.os.UserHandle
+import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import java.io.File
 
 object Dirs {
@@ -17,6 +18,8 @@ object Dirs {
     fun backupCacheDir() = File(baseServerCacheDir(), "backup")
     fun pluginCacheDir() = File(baseServerCacheDir(), "plugin")
     fun screenshotCacheDir() = File(baseServerCacheDir(), "screenshot")
+    private fun ruleCacheDir() = File(baseServerCacheDir(), "rule")
+    fun ruleCacheDir(ruleSrc: EvaluateContext) = File(ruleCacheDir(), ruleSrc.srcId)
 
     fun baseServerDataDir(userId: Int = UserHandle.USER_SYSTEM) =
         File(baseServerDir(), "data/u/$userId")
