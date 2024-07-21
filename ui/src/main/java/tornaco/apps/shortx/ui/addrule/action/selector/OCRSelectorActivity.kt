@@ -20,6 +20,7 @@ import tornaco.apps.shortx.core.proto.toProtoRect
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
+import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -97,7 +98,9 @@ private fun BaseSelectorActivity<Action.OcrDetect>.BiometricVerifySelector(curre
                 is Action.OcrDetect.RectSrc.FromRect -> {
                     ListItem(
                         icon = {
-                            RemixIcon(remixName = Remix.Edit.add_text_two)
+                            ColoredIcon {
+                                RemixIcon(remixName = Remix.Edit.add_text_two)
+                            }
                         },
                         titleLines = listOf(
                             i18N["ui.action.rect.src.rect"],
@@ -114,7 +117,9 @@ private fun BaseSelectorActivity<Action.OcrDetect>.BiometricVerifySelector(curre
                 Action.OcrDetect.RectSrc.SelectScreenArea -> {
                     ListItem(
                         icon = {
-                            RemixIcon(remixName = Remix.Graphics.rectangle)
+                            ColoredIcon {
+                                RemixIcon(remixName = Remix.Graphics.rectangle)
+                            }
                         },
                         titleLines = listOf(
                             i18N["ui.action.select.screen.area"],
@@ -125,7 +130,6 @@ private fun BaseSelectorActivity<Action.OcrDetect>.BiometricVerifySelector(curre
             }
 
             StandardSpacer()
-
 
             val srcMenuState = rememberMenuDialogState<String>(
                 title = i18N["ui.action.rect.src"],
@@ -146,9 +150,7 @@ private fun BaseSelectorActivity<Action.OcrDetect>.BiometricVerifySelector(curre
                         }
 
                         Action.OcrDetect.RectSrc.FromRect::class.java.name -> {
-                            rectInputDialogState.show(
-                                Rect(392, 1089, 933, 157).flattenToString()
-                            )
+                            rectInputDialogState.show()
                         }
                     }
                 }

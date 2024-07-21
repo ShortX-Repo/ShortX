@@ -1,5 +1,6 @@
 package  tornaco.apps.shortx.ui.demo
 
+import android.graphics.Rect
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -13,6 +14,7 @@ import tornaco.apps.shortx.ui.FlashingBorderBox
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.clipbord.ClipboardView
 import tornaco.apps.shortx.ui.screencap.RectangleCaptureScreen
+import tornaco.apps.shortx.ui.util.ClipboardUtils
 import java.util.UUID
 
 class ComposeDemoActivity : ComponentActivity() {
@@ -35,6 +37,15 @@ class ComposeDemoActivity : ComponentActivity() {
                             Toast
                                 .makeText(context, "Selected Rect: $it", Toast.LENGTH_SHORT)
                                 .show()
+
+                            ClipboardUtils.copyToClipboard(
+                                context, "rect", Rect(
+                                    it.left.toInt(),
+                                    it.top.toInt(),
+                                    it.right.toInt(),
+                                    it.bottom.toInt()
+                                ).flattenToString()
+                            )
                         }
                     )
                 }
