@@ -2,8 +2,10 @@
 
 package tornaco.apps.shortx.ui.main.rule
 
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -72,8 +74,14 @@ fun RuleScreen() {
     LaunchedEffect(ruleListViewModel) {
         ruleListViewModel.loadRuleList(delay = false)
     }
-
     val context = LocalContext.current
+    val i18N = LocalI18N.current
+
+    LaunchedEffect(ruleListState.onlyShowEnabled) {
+        if (ruleListState.onlyShowEnabled) {
+            Toast.makeText(context, i18N["ui.rule.only.show.enabled"], Toast.LENGTH_SHORT).show()
+        }
+    }
 
     val pickFileLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
@@ -91,14 +99,24 @@ fun RuleScreen() {
 
     MainScaffold(
         state = mainState,
-        appBarTitleKey = "ui.feat.label.rule",
+        appBarTitle = {
+            Text(
+                modifier = Modifier.clickable {
+                    ruleListViewModel.toggleShowRuleDescription()
+                },
+                text = LocalI18N.current["ui.feat.label.rule"]
+            )
+        },
         enableSearch = true,
         searchBarState = searchBarState,
         appBarActions = {
             IconButton(onClick = {
-                ruleListViewModel.toggleShowRuleDescription()
+                ruleListViewModel.toggleOnlyShowEnabled()
             }) {
-                RemixIcon(remixName = Remix.Design.collage_line)
+                RemixIcon(
+                    remixName = Remix.Hardware.switch_one,
+                    tint = if (ruleListState.onlyShowEnabled) MaterialTheme.colorScheme.primary else Color.Unspecified
+                )
             }
         },
         onClipboardClick = {

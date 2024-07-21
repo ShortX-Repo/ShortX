@@ -36,6 +36,8 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                 val gvs = shortXManager.getAllGlobalVars()
                 val allRules = shortXManager.getAllRules().apply {
                     logger.i("all rules: ${this.joinToString { it.title }}")
+                }.filter {
+                    it.isEnabled || !state.value.onlyShowEnabled
                 }
                 val allRuleSets = shortXManager.getAllRuleSets()
 

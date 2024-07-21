@@ -25,6 +25,7 @@ class RuleSetDetailsViewModel constructor(
                 }
                 val gvs = shortXManager.getAllGlobalVars()
                 val rules = shortXManager.getAllRules()
+                    .filter { it.isEnabled || !state.value.onlyShowEnabled }
                     .filter { it.ruleSetId == ruleSetId }
                     .let(sort(state.value.ruleSortBy))
                     .mapNotNull { rule ->

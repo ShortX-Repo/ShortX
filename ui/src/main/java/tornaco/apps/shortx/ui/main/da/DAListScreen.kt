@@ -138,7 +138,11 @@ fun DirectActionListScreen() {
 
     MainScaffold(
         state = mainState,
-        appBarTitleKey = "ui.feat.label.da",
+        appBarTitle = {
+            Text(
+                text = LocalI18N.current["ui.feat.label.da"]
+            )
+        },
         enableSearch = true,
         searchBarState = searchBarState,
         appBarActions = {

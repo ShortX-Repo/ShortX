@@ -95,7 +95,7 @@ import tornaco.apps.shortx.ui.util.AssetUtils
 @Composable
 fun MainScaffold(
     state: MainState,
-    appBarTitleKey: String,
+    appBarTitle: @Composable () -> Unit,
     appBarActions: @Composable () -> Unit = {},
     enableSearch: Boolean = false,
     searchBarState: SearchBarState = rememberSearchBarState(),
@@ -174,7 +174,7 @@ fun MainScaffold(
     MainScaffold(
         state = state,
         subscribeState = subscribeState,
-        appBarTitleKey = appBarTitleKey,
+        appBarTitle = appBarTitle,
         enableSearch = enableSearch,
         searchBarState = searchBarState,
         enableMask = enableFabMask,
@@ -193,7 +193,7 @@ fun MainScaffold(
 fun MainScaffold(
     state: MainState,
     subscribeState: LVLStateHolder.State,
-    appBarTitleKey: String,
+    appBarTitle: @Composable () -> Unit,
     enableMask: Boolean,
     enableSearch: Boolean = false,
     searchBarState: SearchBarState = rememberSearchBarState(),
@@ -240,9 +240,7 @@ fun MainScaffold(
                             ShortXTopAppBar(
                                 title = {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text(
-                                            text = LocalI18N.current[appBarTitleKey]
-                                        )
+                                        appBarTitle()
                                         if (!state.isActivated) {
                                             SmallSpacer()
                                             ClickableBadge(text = LocalI18N.current["ui.settings.core.info.na"]) {

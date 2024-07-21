@@ -53,6 +53,7 @@ data class RuleListState(
     val isLoading: Boolean = true,
     val colorfulCard: Boolean = false,
     val showDescription: Boolean = true,
+    val onlyShowEnabled: Boolean = true,
     val searchQuery: String = "",
 )
 
@@ -119,6 +120,12 @@ abstract class BaseRuleListViewModel(context: Context) :
         viewModelScope.launch {
             pref.uiColorfulCard.collectLatest {
                 updateState { copy(colorfulCard = it) }
+            }
+        }
+
+        viewModelScope.launch {
+            pref.uiOnlyShowEnabled.collectLatest {
+                updateState { copy(onlyShowEnabled = it) }
             }
         }
 
@@ -302,6 +309,15 @@ abstract class BaseRuleListViewModel(context: Context) :
     fun toggleShowRuleDescription() {
         viewModelScope.launch {
             pref.setShowRuleDescription(!state.value.showDescription)
+        }
+    }
+
+    fun toggleOnlyShowEnabled() {
+        viewModelScope.launch {
+            val newState = !state.value.onlyShowEnabled
+            pref.onlyShowEnabled(newState)
+            updateState { copy(onlyShowEnabled = newState) }
+            loadRuleList()
         }
     }
 }

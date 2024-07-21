@@ -61,7 +61,6 @@ import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
-import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
@@ -175,7 +174,11 @@ fun DiscoverScreen() {
     MainScaffold(
         state = mainState,
         subscribeState = globalSubscribeState,
-        appBarTitleKey = "ui.feat.label.discover",
+        appBarTitle = {
+            Text(
+                text = LocalI18N.current["ui.feat.label.discover"]
+            )
+        },
         enableMask = false,
         appBarActions = {
             IconButton(onClick = {

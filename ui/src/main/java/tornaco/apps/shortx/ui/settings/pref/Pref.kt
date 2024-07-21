@@ -37,6 +37,9 @@ private val UI_SHOW_RULE_DESCRIPTION =
 private val UI_COLORFUL_CARD =
     booleanPreferencesKey("ui_colorful_card")
 
+private val UI_ONLY_SHOW_ENABLED =
+    booleanPreferencesKey("ui_only_show_enabled")
+
 private val UI_HIDE_SUBSCRIBE_INFO =
     booleanPreferencesKey("ui_hide_subscribe_info")
 
@@ -105,6 +108,10 @@ class Pref(val context: Context) {
 
     val uiColorfulCard: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[UI_COLORFUL_CARD] ?: false
+    }
+
+    val uiOnlyShowEnabled: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[UI_ONLY_SHOW_ENABLED] ?: false
     }
 
     val uiEnableHttpChucker: Flow<Boolean> = context.dataStore.data.map { preferences ->
@@ -179,6 +186,12 @@ class Pref(val context: Context) {
     suspend fun enableColorfulCard(value: Boolean) {
         context.dataStore.edit { settings ->
             settings[UI_COLORFUL_CARD] = value
+        }
+    }
+
+    suspend fun onlyShowEnabled(value: Boolean) {
+        context.dataStore.edit { settings ->
+            settings[UI_ONLY_SHOW_ENABLED] = value
         }
     }
 

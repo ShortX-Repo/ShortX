@@ -111,6 +111,7 @@
     "ui.action.set.rule.enabled": "開關自動指令",
     "ui.action.set.rule.enabled.select.rule": "選擇自動指令",
     "ui.action.set.rule.enabled.toggle": "設定開關",
+    "ui.rule.only.show.enabled": "仅显示已启用",
     "ui.rule.title": "標題",
     "ui.rule.description": "描述",
     "ui.rule.description.auto.template": "當{fact} \n如果{condition} \n就{action}",

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -45,7 +46,11 @@ fun ToggleListScreen() {
 
     MainScaffold(
         state = mainState,
-        appBarTitleKey = "ui.feat.label.toggles",
+        appBarTitle = {
+            Text(
+                text = LocalI18N.current["ui.feat.label.toggles"]
+            )
+        },
         appBarActions = {
         },
         onClipboardClick = {
