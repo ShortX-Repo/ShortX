@@ -12,14 +12,15 @@ object CopyFile {
         shortXContext: ShortXContext,
         srcFile: File,
         destFile: File,
-        deleteSrcOnSuccess: Boolean = true
+        deleteSrcOnSuccess: Boolean = true,
+        owner: String? = null,
     ) {
         kotlin.runCatching {
             require(srcFile.copyTo(destFile, true).exists())
             if (deleteSrcOnSuccess) kotlin.runCatching { srcFile.deleteRecursively() }
             logger.d("copyFile success - kotlin IO")
         }.onFailure {
-            copyFileByShellCommand(shortXContext, srcFile, destFile, deleteSrcOnSuccess)
+            copyFileByShellCommand(shortXContext, srcFile, destFile, deleteSrcOnSuccess, owner)
             logger.d("copyFile success - Shell")
         }
     }
@@ -28,13 +29,18 @@ object CopyFile {
         shortXContext: ShortXContext,
         srcFile: File,
         destFile: File,
-        deleteSrcOnSuccess: Boolean = true
+        deleteSrcOnSuccess: Boolean = true,
+        owner: String? = null,
     ) {
+        val cmd =
+            "mkdir -p ${destFile.parentFile.absolutePath} && cp ${srcFile.absolutePath} ${destFile.absolutePath}".let {
+                if (owner != null) {
+                    it + " && chown $owner ${destFile.absolutePath}"
+                } else it
+            }
+        logger.d("copyFileByShellCommand cmd: $cmd")
         requireNotNull(
-            shortXContext.shell.executeCommand(
-                "mkdir -p ${destFile.parentFile.absolutePath} && cp ${srcFile.absolutePath} ${destFile.absolutePath}",
-                false
-            )
+            shortXContext.shell.executeCommand(cmd, false)
         ) { "Copy file fail - Shell res is null" }
             .also {
                 logger.d("Shell res: $it")

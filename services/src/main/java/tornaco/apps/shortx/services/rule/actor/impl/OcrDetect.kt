@@ -52,15 +52,22 @@ object OcrDetect : Actor {
             val path = (src unpack_ RectSourcePath::class.java).path
             val tmpFile = File(
                 Dirs.ruleCacheDir(evaluateContext),
-                "RectSourcePath_tmp_${data.id}_${path.hashCode()}.png"
+                "ocr_tmp_${path.hashCode()}.png"
             )
             if (!tmpFile.exists()) {
-                CopyFile.copyFile(shortXContext, File(path), tmpFile, false)
+                // Unable to decode stream: java.io.FileNotFoundException:
+                // /data/system/shortx_zMQSbizboGjCfJdF/cache/rule/DA9906629e-530d-4db7-9942-13d9f86f17d5
+                // /RectSourcePath_tmp_A-8c84842c-2f1c-437e-90ed-b1a53e514ed5_-677193684.png:
+                // open failed: EACCES (Permission denied)
+                CopyFile.copyFile(shortXContext, File(path), tmpFile, false, "1000.1000")
                 logger.d("RectSourcePath new tmpFile: $tmpFile")
             } else {
                 logger.d("RectSourcePath tmpFile exists: $tmpFile")
             }
-            val bitmap = BitmapFactory.decodeFile(tmpFile.absolutePath)
+
+            val bitmap = requireNotNull(BitmapFactory.decodeFile(tmpFile.absolutePath)) {
+                "Failed to decode $tmpFile （读取文件失败）"
+            }
             logger.d("RectSourcePath bitmap: $bitmap")
             bitmap
         } else {
