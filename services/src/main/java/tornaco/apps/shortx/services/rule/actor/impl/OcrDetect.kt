@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.os.ScreenCap
 import tornaco.apps.shortx.core.proto.common.Rect
 import tornaco.apps.shortx.core.proto.common.RectSourceRect
+import tornaco.apps.shortx.core.proto.toAndroidRect
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.BitmapUtils
@@ -94,11 +95,3 @@ object OcrDetect : Actor {
     }
 }
 
-fun Rect.toAndroidRect(): android.graphics.Rect {
-    return android.graphics.Rect(
-        left,
-        top,
-        right,
-        bottom
-    )
-}

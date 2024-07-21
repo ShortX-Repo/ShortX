@@ -192,6 +192,16 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         }
     )
 
+    val ocrDetectLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action.OcrDetect>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
     val findImagePositionFromScreenLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
@@ -376,7 +386,13 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             }
 
             Action.OcrDetect::class -> {
-                addAction(Action.OcrDetect(src = Action.OcrDetect.RectSrc.SelectScreenArea))
+                ocrDetectLauncher.launch(
+                    newIntent(
+                        context,
+                        source.getActionAs<Action.OcrDetect>(),
+                        OCRSelectorActivity::class.java
+                    )
+                )
                 true
             }
 
