@@ -2,11 +2,14 @@ package tornaco.apps.shortx.ui.main.rule
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
@@ -317,6 +320,14 @@ abstract class BaseRuleListViewModel(context: Context) :
             val newState = !state.value.onlyShowEnabled
             pref.onlyShowEnabled(newState)
             updateState { copy(onlyShowEnabled = newState) }
+
+            if (newState) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, i18N["ui.rule.only.show.enabled"], Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+
             loadRuleList()
         }
     }
