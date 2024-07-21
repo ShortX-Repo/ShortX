@@ -13,9 +13,12 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.ISensorUsageListener
 import tornaco.apps.shortx.core.RuleEngineNames
 import tornaco.apps.shortx.core.Version
+import tornaco.apps.shortx.core.proto.common.App
+import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.Author
 import tornaco.apps.shortx.core.proto.common.SensorUsage
 import tornaco.apps.shortx.ui.backup.BackupAgent
@@ -50,7 +53,8 @@ data class SettingsState(
     val isForceDisableShortXByKeyPress: Boolean = false,
     val dynamicColor: Boolean = true,
     val colorfulCard: Boolean = true,
-    val sensorUsages: List<SensorUsage> = emptyList()
+    val sensorUsages: List<SensorUsage> = emptyList(),
+    val extApp: App? = null
 )
 
 sealed interface BackupResult {
@@ -129,6 +133,12 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 sensorUsages = shortXManager.querySensorUsage()
             )
         }
+
+        val extAppPkg = AppPkg.newBuilder().setPkgName(BuildPropInternal.SHORTX_EXT_APP_PKG_NAME)
+            .setUserId(0)
+            .build()
+        val extApp = shortXManager.pkgToApp(extAppPkg)
+        updateState { copy(extApp = extApp) }
 
         viewModelScope.launch {
             pref.installFakeServiceFlow.collectLatest {

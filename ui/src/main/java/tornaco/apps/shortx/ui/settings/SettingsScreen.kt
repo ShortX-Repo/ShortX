@@ -1,6 +1,9 @@
 package tornaco.apps.shortx.ui.settings
 
 import android.Manifest
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.os.Environment
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -859,6 +862,7 @@ private fun engineSettings(
     vm: SettingsViewModel,
     manageShortcutApps: () -> Unit,
 ): List<Preference> {
+    val context = LocalContext.current
     val i18N = LocalI18N.current
     val badge = if (mainState.isSubscribed) {
         null
@@ -999,7 +1003,36 @@ private fun engineSettings(
                 onClick = manageShortcutApps
             ),
             null
-        )
+        ),
+
+        Preference.TextPreference(
+            icon = Remix.Edit.extend,
+            title = i18N["ui.shortx.ext"],
+            summary = if (state.extApp == null) i18N["ui.shortx.ext.description"] else i18N["ui.shortx.ext.app.info"],
+            onClick = {
+                if (state.extApp != null) {
+                    PkgUtils.launchPkgSettings(context, state.extApp.pkg.pkgName)
+                } else {
+                    val packageName = BuildPropInternal.SHORTX_EXT_APP_PKG_NAME
+                    val intent = Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("market://details?id=$packageName")
+                    )
+                    val chooser = Intent.createChooser(intent, i18N["ui.shortx.ext"])
+                    try {
+                        context.startActivity(chooser)
+                    } catch (e: ActivityNotFoundException) {
+                        val intentGoogle = Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+                        )
+                        val chooserGoogle =
+                            Intent.createChooser(intentGoogle, i18N["ui.shortx.ext"])
+                        context.startActivity(chooserGoogle)
+                    }
+                }
+            }
+        ),
     ).filterNotNull()
 }
 
