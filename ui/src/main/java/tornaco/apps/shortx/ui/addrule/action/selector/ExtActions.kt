@@ -16,6 +16,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.size
 import kotlinx.coroutines.launch
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
 import tornaco.apps.shortx.ui.addrule.ImagePreviewDialog
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
@@ -412,7 +413,7 @@ fun ExtActions(
     addAction: (Action) -> Unit
 ) {
     val i18N = LocalI18N.current
-    val actionItems = listOf(
+    val actionItems = listOfNotNull(
         Action.FromDA::class,
         Action.SetRuleEnabled::class,
         Action.ShellCommand::class,
@@ -428,7 +429,7 @@ fun ExtActions(
         Action.WebSocketConnect::class,
         Action.WebSocketSend::class,
         Action.ExecuteJS::class,
-        Action.FindImagePositionFromScreen::class,
+        if (BuildPropInternal.APP_IS_DEBUG) Action.FindImagePositionFromScreen::class else null,
         Action.OcrDetect::class,
     ).map {
         SelectorItem(
