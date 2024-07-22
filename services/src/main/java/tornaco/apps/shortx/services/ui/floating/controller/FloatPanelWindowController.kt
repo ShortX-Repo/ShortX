@@ -3,10 +3,13 @@ package tornaco.apps.shortx.services.ui.floating.controller
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
 import tornaco.apps.shortx.core.BuildPropInternal
+import tornaco.apps.shortx.core.compat.DrawableCompat
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.res.remixResName
@@ -18,6 +21,7 @@ import tornaco.apps.shortx.services.ui.floating.ScreenUtil
 import tornaco.apps.shortx.services.ui.floating.widget.ControlPanelView
 import tornaco.apps.shortx.services.ui.floating.widget.ControlPanelView.OnPanelSizeChangeCallback
 import tornaco.apps.shortx.services.ui.floating.widget.FloatActionButton
+
 
 class FloatPanelWindowController(
     context: Context,
@@ -115,13 +119,23 @@ class FloatPanelWindowController(
         val appRes = AppResources(context, BuildPropInternal.APP_PACKAGE_NAME)
         for (i in 0..3) {
             val actionView = FloatActionButton(context)
-            val iconSize = 100
-            val iconPadding = 16
+            val iconSize = ScreenUtil.dip2px(context, 52f)
+            val iconPadding = ScreenUtil.dip2px(context, 4f)
             val params = FrameLayout.LayoutParams(iconSize, iconSize)
             params.gravity = Gravity.CENTER
             actionView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
+
             val iconResName = context.remixResName(Remix.Animals.dog)
-            actionView.setImageDrawable(appRes.getDrawable(iconResName))
+            val tintedDrawable = DrawableCompat.wrap(appRes.getDrawable(iconResName))
+            DrawableCompat.setTint(tintedDrawable, Color.WHITE)
+            actionView.setImageDrawable(tintedDrawable)
+
+            // 创建一个 GradientDrawable 并设置为圆形
+            val gradientDrawable = GradientDrawable()
+            gradientDrawable.shape = GradientDrawable.OVAL
+            gradientDrawable.setColor(Color.GRAY)
+            actionView.background = gradientDrawable;
+
             actionView.setOnClickListener { FloatServiceUtil.toggleFloatButton() }
             actionView.visibility = View.GONE
             floatControlPanelView.addView(actionView, params)

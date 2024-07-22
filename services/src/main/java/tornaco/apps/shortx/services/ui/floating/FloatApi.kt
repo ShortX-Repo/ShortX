@@ -6,8 +6,8 @@ import tornaco.apps.shortx.services.ui.floating.controller.FloatPanelWindowContr
 
 class FloatApi(private val context: Context) {
 
-    private lateinit var mFloatButtonVC: FloatButtonWindowController
-    private lateinit var mFloatPanelVC: FloatPanelWindowController
+    private lateinit var floatButtonVC: FloatButtonWindowController
+    private lateinit var floatPanelVC: FloatPanelWindowController
 
     private var isFirst = true
 
@@ -15,24 +15,27 @@ class FloatApi(private val context: Context) {
         if (isFirst) {
             val floatWindowManager = FloatWindowManager(context)
             // 填充和浮动面板浮动按钮
-            mFloatPanelVC = FloatPanelWindowController(context, floatWindowManager)
-            mFloatButtonVC = FloatButtonWindowController(context, floatWindowManager, mFloatPanelVC)
-            mFloatButtonVC.setOnFloatButtonPositionUpdateListener { newX, newY ->
-                mFloatPanelVC.followButtonPosition(
-                    newX,
-                    newY
-                )
-            }
-            mFloatPanelVC.setOnPanelSizeChangeCallback { newWidth, newHeight ->
+            floatPanelVC = FloatPanelWindowController(context, floatWindowManager)
+            floatButtonVC = FloatButtonWindowController(context, floatWindowManager, floatPanelVC)
+            floatButtonVC.setOnFloatButtonPositionUpdateListener(object :
+                FloatButtonWindowController.OnFloatButtonPositionUpdateListener {
+                override fun onFloatButtonPositionUpdate(newX: Int, newY: Int) {
+                    floatPanelVC.followButtonPosition(
+                        newX,
+                        newY
+                    )
+                }
+            })
+            floatPanelVC.setOnPanelSizeChangeCallback { newWidth, newHeight ->
                 // 使用该监听，主要是为了解决第一次进入时，没有手动移动过悬浮球，控制面板没有跟随位置的问题
-                val buttonX: Int = mFloatButtonVC.floatWindow.x
-                val buttonY: Int = mFloatButtonVC.floatWindow.y
-                mFloatPanelVC.followButtonPosition(buttonX, buttonY)
+                val buttonX: Int = floatButtonVC.floatWindow.x
+                val buttonY: Int = floatButtonVC.floatWindow.y
+                floatPanelVC.followButtonPosition(buttonX, buttonY)
             }
-            mFloatButtonVC.setOnStatusChangeListener(object :
+            floatButtonVC.setOnStatusChangeListener(object :
                 FloatButtonWindowController.OnStatusChangeListener {
                 override fun onPrepareStatusChange(prepareStatus: Int): Boolean {
-                    return mFloatPanelVC.isCanChangeStatus
+                    return floatPanelVC.isCanChangeStatus
                 }
 
                 override fun onStatusChange(newStatus: Int) {
@@ -43,22 +46,22 @@ class FloatApi(private val context: Context) {
             floatViewLiveData.addOnDataChangeCallback { isOpen ->
                 // 这里统一做UI切换
                 if (isOpen) {
-                    mFloatButtonVC.open()
-                    mFloatPanelVC.open()
+                    floatButtonVC.open()
+                    floatPanelVC.open()
 
                 } else {
-                    mFloatButtonVC.off()
-                    mFloatPanelVC.off()
+                    floatButtonVC.off()
+                    floatPanelVC.off()
 
                 }
             }
             isFirst = false
         } else {
-            mFloatButtonVC.showFloatWindow()
+            floatButtonVC.showFloatWindow()
         }
     }
 
     private fun hideFloatWindow() {
-        mFloatButtonVC.hideFloatWindow()
+        floatButtonVC.hideFloatWindow()
     }
 }
