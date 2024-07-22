@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.floating.controller;
+package tornaco.apps.shortx.services.ui.floating.controller;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -7,20 +7,14 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 
-import com.zh.touchassistant.R;
-import com.zh.touchassistant.constant.AccessibilityConstant;
-import com.zh.touchassistant.floating.FloatMoveEnum;
-import com.zh.touchassistant.floating.FloatWindow;
-import com.zh.touchassistant.floating.FloatWindowOption;
-import com.zh.touchassistant.floating.SimpleFloatWindowViewStateCallback;
-import com.zh.touchassistant.listener.DelayOnClickListener;
-import com.zh.touchassistant.util.FloatServiceUtil;
-import com.zh.touchassistant.util.Property;
-import com.zh.touchassistant.util.ScreenUtil;
-import com.zh.touchassistant.util.VibratorHelper;
-
-import tornaco.apps.shortx.ui.floating.FloatWindowManager;
-import tornaco.apps.shortx.ui.floating.widget.FloatButton;
+import tornaco.apps.shortx.services.ui.floating.FloatMoveEnum;
+import tornaco.apps.shortx.services.ui.floating.FloatServiceUtil;
+import tornaco.apps.shortx.services.ui.floating.FloatWindow;
+import tornaco.apps.shortx.services.ui.floating.FloatWindowManager;
+import tornaco.apps.shortx.services.ui.floating.FloatWindowOption;
+import tornaco.apps.shortx.services.ui.floating.ScreenUtil;
+import tornaco.apps.shortx.services.ui.floating.SimpleFloatWindowViewStateCallback;
+import tornaco.apps.shortx.services.ui.floating.widget.FloatButton;
 
 /**
  * <b>Package:</b> com.zh.touchassistant.controller <br>
@@ -34,6 +28,8 @@ public class FloatButtonWindowController extends BaseFloatWindowController {
 
     public static final int STATUS_OFF = 0;
     public static final int STATUS_OPEN = 1;
+
+    public static final float ALPHA_SHOW = 1f;
 
     private FloatButton mFloatButtonView;
     private int mCurrentStatus = STATUS_OFF;
@@ -55,16 +51,17 @@ public class FloatButtonWindowController extends BaseFloatWindowController {
     }
 
     private void init() {
-        mFloatButtonView = (FloatButton) getLayoutInflater().inflate(R.layout.float_button, null);
+        mFloatButtonView = new FloatButton(mContext);
+        mFloatButtonView.setImageResource(android.R.drawable.ic_dialog_info);
         initListener();
         attachFloatWindow();
     }
 
     private void initListener() {
-        mFloatButtonView.setOnClickListener(new DelayOnClickListener() {
+        mFloatButtonView.setOnClickListener(new View.OnClickListener() {
 
             @Override
-            public void onDelayClick(View view) {
+            public void onClick(View view) {
                 FloatServiceUtil.toggleFloatButton();
             }
         });
@@ -76,12 +73,11 @@ public class FloatButtonWindowController extends BaseFloatWindowController {
                         mFloatButtonView,
                         TAG_BUTTON,
                         FloatWindowOption.create(new FloatWindowOption.Builder()
-                                .setX(FloatServiceUtil.getFloatButtonX(getApplicationContext()))
-                                .setY(FloatServiceUtil.getFloatButtonY(getApplicationContext()))
-                                .desktopShow(true)
+                                .setX(200)
+                                .setY(800)
                                 .setFloatMoveType(FloatMoveEnum.SLIDE)
                                 .setDuration(250)
-                                .setBoundOffset(ScreenUtil.dip2px(getApplicationContext(), 5f))
+                                .setBoundOffset(ScreenUtil.dip2px(mContext, 5f))
                                 .setViewStateCallback(new SimpleFloatWindowViewStateCallback() {
 
                                     @Override
@@ -91,8 +87,9 @@ public class FloatButtonWindowController extends BaseFloatWindowController {
                                         mMainHandler.postDelayed(new Runnable() {
                                             @Override
                                             public void run() {
-                                                Property.getDefault().setProperty(AccessibilityConstant.Config.KEY_FLOAT_BUTTON_X, newX);
-                                                Property.getDefault().setProperty(AccessibilityConstant.Config.KEY_FLOAT_BUTTON_Y, newY);
+                                                // Save newX newY
+                                                FloatServiceUtil.x = newX;
+                                                FloatServiceUtil.y = newY;
                                             }
                                         }, 550);
                                         //让面板跟随按钮
@@ -103,8 +100,6 @@ public class FloatButtonWindowController extends BaseFloatWindowController {
 
                                     @Override
                                     public void onPrepareDrag() {
-                                        //拽托时，震动一下
-                                        VibratorHelper.startVibrator();
                                     }
 
                                     @Override
@@ -128,17 +123,18 @@ public class FloatButtonWindowController extends BaseFloatWindowController {
                                     @Override
                                     public void onDragging(float moveX, float moveY) {
                                         super.onDragging(moveX, moveY);
-                                        //将Alpha调整比较容易可见的值
-                                        if (getView().getAlpha() != AccessibilityConstant.Config.ALPHA_SHOW) {
-                                            getView().setAlpha(AccessibilityConstant.Config.ALPHA_SHOW);
+                                        // 将Alpha调整比较容易可见的值
+                                        if (getView().getAlpha() != ALPHA_SHOW) {
+                                            getView().setAlpha(ALPHA_SHOW);
                                         }
                                     }
 
                                     @Override
                                     public void onDragFinish() {
                                         super.onDragFinish();
-                                        if (getView().getAlpha() != AccessibilityConstant.Config.ALPHA_SHOW) {
-                                            getView().setAlpha(AccessibilityConstant.Config.ALPHA_SHOW);
+                                        // 将Alpha调整比较容易可见的值
+                                        if (getView().getAlpha() != ALPHA_SHOW) {
+                                            getView().setAlpha(ALPHA_SHOW);
                                         }
                                     }
 
@@ -237,7 +233,7 @@ public class FloatButtonWindowController extends BaseFloatWindowController {
             mOpenAnimatorSet = new AnimatorSet();
             ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(mFloatButtonView, View.SCALE_X, 0.8f);
             ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(mFloatButtonView, View.SCALE_Y, 0.8f);
-            ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(mFloatButtonView, View.ALPHA, AccessibilityConstant.Config.ALPHA_SHOW);
+            ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(mFloatButtonView, View.ALPHA, ALPHA_SHOW);
             mOpenAnimatorSet
                     .play(scaleXAnimator)
                     .with(scaleYAnimator)

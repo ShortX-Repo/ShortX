@@ -51,6 +51,7 @@ class DemoActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTaskDescription(ActivityManager.TaskDescription("Task description"))
+        startService(Intent(this, DemoService::class.java))
     }
 
     override fun onResume() {

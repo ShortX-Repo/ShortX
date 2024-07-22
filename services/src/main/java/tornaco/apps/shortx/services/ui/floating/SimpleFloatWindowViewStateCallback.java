@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.floating;
+package tornaco.apps.shortx.services.ui.floating;
 
 /**
  * <b>Package:</b> com.zh.touchassistant.floating <br>

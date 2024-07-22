@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.floating.widget;
+package tornaco.apps.shortx.services.ui.floating.widget;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -145,6 +145,7 @@ public class ControlPanelView extends FrameLayout {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         int count = getChildCount();
+        if (count == 0) return;
         //每份子控件应该占用的角度
         int childAngle = 180 / count;
         //每个子View之间的间隔，角度分成4份后，间隔的数量是份数-1

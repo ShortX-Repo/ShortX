@@ -1,11 +1,10 @@
-package tornaco.apps.shortx.ui.floating.widget;
+package tornaco.apps.shortx.services.ui.floating.widget;
 
+import android.annotation.Nullable;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ImageView;
-
-import androidx.annotation.Nullable;
 
 /**
  * <b>Package:</b> com.zh.touchassistant.widget <br>

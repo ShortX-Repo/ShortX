@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.floating;
+package tornaco.apps.shortx.services.ui.floating;
 
 import android.content.Context;
 import android.view.View;

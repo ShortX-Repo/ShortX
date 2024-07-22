@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.floating;
+package tornaco.apps.shortx.services.ui.floating;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

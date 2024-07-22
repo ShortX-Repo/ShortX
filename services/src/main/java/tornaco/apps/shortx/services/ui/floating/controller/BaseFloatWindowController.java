@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.floating.controller;
+package tornaco.apps.shortx.services.ui.floating.controller;
 
 import android.content.Context;
 import android.view.LayoutInflater;

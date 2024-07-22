@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.floating;
+package tornaco.apps.shortx.services.ui.floating;
 
 import android.animation.TimeInterpolator;
 import android.view.ViewGroup;
