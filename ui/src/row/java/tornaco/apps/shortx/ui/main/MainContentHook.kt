@@ -8,6 +8,6 @@ import androidx.compose.ui.platform.LocalContext
 fun MainContentHook() {
     val context = LocalContext.current
     LaunchedEffect(Unit) {
-        CheckForUpdate(context).invoke()
+        // CheckForUpdate(context).invoke()
     }
 }
