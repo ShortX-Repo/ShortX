@@ -22,9 +22,9 @@ import tornaco.apps.shortx.core.proto.action.NotificationButton
 import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.proto.action.ShowToast
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.res.remixResId
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.BitmapUtils
-import tornaco.apps.shortx.ui.base.remixResId
 import java.util.Date
 
 @SuppressLint("MissingPermission")

@@ -14,18 +14,18 @@ import android.view.View;
  * @author wally
  */
 public abstract class BaseFloatWindowController {
-    protected Context mContext;
-    protected LayoutInflater mInflater;
+    protected Context context;
+    protected LayoutInflater inflater;
 
     public BaseFloatWindowController(Context context) {
-        this.mContext = context;
+        this.context = context;
     }
 
     protected LayoutInflater getLayoutInflater() {
-        if (mInflater == null) {
-            mInflater = LayoutInflater.from(mContext);
+        if (inflater == null) {
+            inflater = LayoutInflater.from(context);
         }
-        return mInflater;
+        return inflater;
     }
 
     public abstract View getView();

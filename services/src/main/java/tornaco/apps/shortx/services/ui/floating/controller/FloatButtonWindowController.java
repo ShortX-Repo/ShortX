@@ -51,7 +51,7 @@ public class FloatButtonWindowController extends BaseFloatWindowController {
     }
 
     private void init() {
-        mFloatButtonView = new FloatButton(mContext);
+        mFloatButtonView = new FloatButton(context);
         mFloatButtonView.setImageResource(android.R.drawable.ic_dialog_info);
         initListener();
         attachFloatWindow();
@@ -77,7 +77,7 @@ public class FloatButtonWindowController extends BaseFloatWindowController {
                                 .setY(800)
                                 .setFloatMoveType(FloatMoveEnum.SLIDE)
                                 .setDuration(250)
-                                .setBoundOffset(ScreenUtil.dip2px(mContext, 5f))
+                                .setBoundOffset(ScreenUtil.dip2px(context, 5f))
                                 .setViewStateCallback(new SimpleFloatWindowViewStateCallback() {
 
                                     @Override

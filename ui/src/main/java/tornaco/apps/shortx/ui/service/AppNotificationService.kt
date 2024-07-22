@@ -10,10 +10,10 @@ import tornaco.apps.shortx.core.notification.NotificationPoster
 import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
+import tornaco.apps.shortx.core.res.remixResId
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.BitmapUtils
-import tornaco.apps.shortx.ui.base.remixResId
 
 @Keep
 class AppNotificationService : Service() {

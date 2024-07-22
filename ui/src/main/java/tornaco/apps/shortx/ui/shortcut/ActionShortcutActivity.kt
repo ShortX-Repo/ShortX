@@ -17,13 +17,13 @@ import androidx.core.graphics.drawable.IconCompat
 import com.elvishew.xlog.XLog
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
+import tornaco.apps.shortx.core.res.remixResId
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.shortcutManager
 import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.base.i18NIns
-import tornaco.apps.shortx.ui.base.remixResId
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 
 private const val KEY_ACTION_ID = "key_action_id"
