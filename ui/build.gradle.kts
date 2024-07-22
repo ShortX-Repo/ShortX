@@ -133,11 +133,12 @@ dependencies {
     // For interop APIs with Material 3
     implementation(libs.androidx.glance.material3)
 
+    val rowImplementation by configurations
     // This dependency is downloaded from the Google’s Maven repository.
     // So, make sure you also include that repository in your project's build.gradle file.
-    implementation("com.google.android.play:app-update:2.1.0")
+    rowImplementation(libs.app.update)
     // For Kotlin users also add the Kotlin extensions library for Play In-App Update:
-    implementation("com.google.android.play:app-update-ktx:2.1.0")
+    rowImplementation(libs.app.update.ktx)
 
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit)

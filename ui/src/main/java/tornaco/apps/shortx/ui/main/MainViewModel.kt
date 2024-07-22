@@ -3,9 +3,6 @@ package tornaco.apps.shortx.ui.main
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.viewModelScope
-import com.google.android.play.core.appupdate.AppUpdateManagerFactory
-import com.google.android.play.core.install.model.AppUpdateType
-import com.google.android.play.core.install.model.UpdateAvailability
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.collectLatest
@@ -65,8 +62,6 @@ open class MainViewModel @Inject constructor(@ApplicationContext context: Contex
                 updateState { copy(isHideSubscribeInfo = it) }
             }
         }
-
-        checkForUpdate()
     }
 
     override fun onCleared() {
@@ -82,22 +77,6 @@ open class MainViewModel @Inject constructor(@ApplicationContext context: Contex
     fun acceptPrivacyStatement() {
         viewModelScope.launch {
             pref.setPrivacyStatementAccepted(true)
-        }
-    }
-
-    private fun checkForUpdate() {
-        logger.i("checkForUpdate...")
-        val appUpdateManager = AppUpdateManagerFactory.create(context)
-        val appUpdateInfoTask = appUpdateManager.appUpdateInfo
-        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
-            logger.i("appUpdateInfo: $appUpdateInfo")
-            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-                // This example applies an immediate update. To apply a flexible update
-                // instead, pass in AppUpdateType.FLEXIBLE
-                && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
-            ) {
-                // Request the update.
-            }
         }
     }
 }

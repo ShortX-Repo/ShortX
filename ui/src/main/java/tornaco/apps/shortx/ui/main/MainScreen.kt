@@ -265,6 +265,8 @@ private fun BottomNavigationGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController
 ) {
+    MainContentHook()
+
     NavHost(
         navController = navController,
         modifier = modifier,
