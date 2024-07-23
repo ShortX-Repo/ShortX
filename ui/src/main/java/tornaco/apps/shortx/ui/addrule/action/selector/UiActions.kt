@@ -27,7 +27,6 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.TextInputDialog
-import tornaco.apps.shortx.ui.base.TextInputState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
@@ -37,7 +36,53 @@ import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
     val context = LocalContext.current
 
-    val subSelectorStates = uiActionSubSelectors(addAction)
+    val toastSelectionState =
+        rememberTextInputState(title = LocalI18N.current["ui.action.show.toast"],
+            message = null,
+            onSelected = {
+                addAction(Action.ShowToast(message = it))
+            })
+    TextInputDialog(state = toastSelectionState)
+
+    val showDanmuSettingsState = rememberShowDanmuSettingsDialogState {
+        addAction(it)
+    }
+    ShowDanmuSettingsDialog(state = showDanmuSettingsState)
+
+    val showMenuDialogState = rememberShowMenuDialogSettingsDialogState {
+        addAction(it)
+    }
+    ShowMenuDialogSettingsDialog(state = showMenuDialogState)
+
+    val hideOverlayDialogState = rememberHideOverlayDialogState {
+        addAction(it)
+    }
+    HideOverlayDialog(state = hideOverlayDialogState)
+
+    val findTextAndClickState = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action.FindAndClickViewByText>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
+    val findAndClickViewByIdSelectorState = rememberFindAndClickViewByIdSelectorState {
+        addAction(it)
+    }
+    FindAndClickViewByIdSelectorDialog(state = findAndClickViewByIdSelectorState)
+
+    val inputTapSelectorState = rememberInputTapSelectorState {
+        addAction(it)
+    }
+    InputTapSelectorDialog(state = inputTapSelectorState)
+
+    val inputSwipeSelectorState = rememberInputSwipeSelectorState {
+        addAction(it)
+    }
+    InputSwipeSelectorDialog(state = inputSwipeSelectorState)
 
     val injectGestureSelectorState = rememberInjectGestureRecordDialogState(onSelected = {
         addAction(it)
@@ -125,7 +170,7 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
     return { source ->
         when (source.clazz) {
             Action.ShowToast::class -> {
-                subSelectorStates.toastSelectionState.show(source.getActionAs<Action.ShowToast>()?.message)
+                toastSelectionState.show(source.getActionAs<Action.ShowToast>()?.message)
                 true
             }
 
@@ -150,7 +195,7 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
             }
 
             Action.HideOverlay::class -> {
-                subSelectorStates.hideOverlayDialogState.show(source.getActionAs())
+                hideOverlayDialogState.show(source.getActionAs())
                 true
             }
 
@@ -177,22 +222,28 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
             }
 
             Action.ShowMenuDialog::class -> {
-                subSelectorStates.showMenuDialogSettingsDialogState.show(source.getActionAs())
+                showMenuDialogState.show(source.getActionAs())
                 true
             }
 
             Action.ShowDanmu::class -> {
-                subSelectorStates.showDanmuSettingsState.show(source.getActionAs())
+                showDanmuSettingsState.show(source.getActionAs())
                 true
             }
 
             Action.FindAndClickViewByText::class -> {
-                subSelectorStates.findAndClickViewByTextSelectorState.show(source.getActionAs())
+                findTextAndClickState.launch(
+                    newIntent(
+                        context = context,
+                        currentData = source.getActionAs<Action.FindAndClickViewByText>(),
+                        clazz = FindAndClickViewByTextSelectorActivity::class.java
+                    )
+                )
                 true
             }
 
             Action.FindAndClickViewById::class -> {
-                subSelectorStates.findAndClickViewByIdSelectorState.show(source.getActionAs())
+                findAndClickViewByIdSelectorState.show(source.getActionAs())
                 true
             }
 
@@ -202,12 +253,12 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
             }
 
             Action.InputTap::class -> {
-                subSelectorStates.inputTapSelectorState.show(source.getActionAs())
+                inputTapSelectorState.show(source.getActionAs())
                 true
             }
 
             Action.InputSwipe::class -> {
-                subSelectorStates.inputSwipeSelectorState.show(source.getActionAs())
+                inputSwipeSelectorState.show(source.getActionAs())
                 true
             }
 
@@ -355,70 +406,3 @@ fun UiActions(
     }
 }
 
-data class UiActionSubSelectorStates(
-    val toastSelectionState: TextInputState,
-    val showMenuDialogSettingsDialogState: ShowMenuDialogSettingsDialogState,
-    val showDanmuSettingsState: ShowDanmuSettingsDialogState,
-    val hideOverlayDialogState: HideOverlayDialogState,
-    val findAndClickViewByTextSelectorState: FindAndClickViewByTextSelectorState,
-    val findAndClickViewByIdSelectorState: FindAndClickViewByIdSelectorState,
-    val inputTapSelectorState: InputTapSelectorState,
-    val inputSwipeSelectorState: InputSwipeSelectorState,
-)
-
-@Composable
-fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates {
-    val toastSelectionState =
-        rememberTextInputState(title = LocalI18N.current["ui.action.show.toast"],
-            message = null,
-            onSelected = {
-                addAction(Action.ShowToast(message = it))
-            })
-    TextInputDialog(state = toastSelectionState)
-
-    val showDanmuSettingsState = rememberShowDanmuSettingsDialogState {
-        addAction(it)
-    }
-    ShowDanmuSettingsDialog(state = showDanmuSettingsState)
-
-    val showMenuDialogState = rememberShowMenuDialogSettingsDialogState {
-        addAction(it)
-    }
-    ShowMenuDialogSettingsDialog(state = showMenuDialogState)
-
-    val hideOverlayDialogState = rememberHideOverlayDialogState {
-        addAction(it)
-    }
-    HideOverlayDialog(state = hideOverlayDialogState)
-
-    val findAndClickViewByTextSelectorState = rememberFindAndClickViewByTextSelectorState {
-        addAction(it)
-    }
-    FindAndClickViewByTextSelectorDialog(state = findAndClickViewByTextSelectorState)
-
-    val findAndClickViewByIdSelectorState = rememberFindAndClickViewByIdSelectorState {
-        addAction(it)
-    }
-    FindAndClickViewByIdSelectorDialog(state = findAndClickViewByIdSelectorState)
-
-    val inputTapSelectorState = rememberInputTapSelectorState {
-        addAction(it)
-    }
-    InputTapSelectorDialog(state = inputTapSelectorState)
-
-    val inputSwipeSelectorState = rememberInputSwipeSelectorState {
-        addAction(it)
-    }
-    InputSwipeSelectorDialog(state = inputSwipeSelectorState)
-
-    return UiActionSubSelectorStates(
-        toastSelectionState = toastSelectionState,
-        showMenuDialogSettingsDialogState = showMenuDialogState,
-        showDanmuSettingsState = showDanmuSettingsState,
-        hideOverlayDialogState = hideOverlayDialogState,
-        findAndClickViewByTextSelectorState = findAndClickViewByTextSelectorState,
-        findAndClickViewByIdSelectorState = findAndClickViewByIdSelectorState,
-        inputTapSelectorState = inputTapSelectorState,
-        inputSwipeSelectorState = inputSwipeSelectorState,
-    )
-}

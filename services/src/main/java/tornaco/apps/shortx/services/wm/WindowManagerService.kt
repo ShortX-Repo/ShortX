@@ -138,11 +138,14 @@ class WindowManagerService(shortXContext: ShortXContext) :
         automationManager.performAccessibilityAction(sourceNodeId, windowId, action)
     }
 
-    suspend fun withUiAutomation(reason: String, action: suspend (WindowManagerService) -> Unit) {
+    suspend fun <T> withUiAutomation(
+        reason: String,
+        action: suspend (WindowManagerService) -> T
+    ): T {
         ensureUserPresent()
         ensureAutomationConnected(reason)
         waitUntilConnected()
-        action.invoke(this)
+        return action.invoke(this)
     }
 
     private suspend fun ensureUserPresent() {
