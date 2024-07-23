@@ -4,9 +4,11 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.widget.ImageView
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.compat.DrawableCompat
 import tornaco.apps.shortx.core.res.AppResources
@@ -46,8 +48,14 @@ class FloatButtonWindowController(
         val iconResName = context.remixResName(Remix.Game.handle_round)
         val tintedDrawable = DrawableCompat.wrap(appRes.getDrawable(iconResName))
         DrawableCompat.setTint(tintedDrawable, Color.WHITE)
-
         floatButtonView.setImageDrawable(tintedDrawable)
+        // 创建一个 GradientDrawable 并设置为圆形
+        val gradientDrawable = GradientDrawable()
+        gradientDrawable.shape = GradientDrawable.OVAL
+        gradientDrawable.setColor(Color.GRAY)
+        floatButtonView.background = gradientDrawable
+        floatButtonView.scaleType = ImageView.ScaleType.CENTER
+
         initListener()
         attachFloatWindow()
     }

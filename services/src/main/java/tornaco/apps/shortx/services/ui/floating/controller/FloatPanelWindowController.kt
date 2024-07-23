@@ -8,6 +8,7 @@ import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.ImageView
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.compat.DrawableCompat
 import tornaco.apps.shortx.core.res.AppResources
@@ -120,7 +121,7 @@ class FloatPanelWindowController(
         for (i in 0..3) {
             val actionView = FloatActionButton(context)
             val iconSize = ScreenUtil.dip2px(context, 52f)
-            val iconPadding = ScreenUtil.dip2px(context, 4f)
+            val iconPadding = ScreenUtil.dip2px(context, 12f)
             val params = FrameLayout.LayoutParams(iconSize, iconSize)
             params.gravity = Gravity.CENTER
             actionView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
@@ -134,7 +135,8 @@ class FloatPanelWindowController(
             val gradientDrawable = GradientDrawable()
             gradientDrawable.shape = GradientDrawable.OVAL
             gradientDrawable.setColor(Color.GRAY)
-            actionView.background = gradientDrawable;
+            actionView.background = gradientDrawable
+            actionView.scaleType = ImageView.ScaleType.CENTER
 
             actionView.setOnClickListener { FloatServiceUtil.toggleFloatButton() }
             actionView.visibility = View.GONE
