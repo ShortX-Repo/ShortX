@@ -33,8 +33,9 @@ object FindAndClickViewByText : Actor {
             "Can not FindAndClickViewByText when device is not interactive"
         }
         val method: FindTextMethod = d.method
+        logger.d("method: $method")
         when (method) {
-            FindTextMethod.FTM_UI_AUTO -> {
+            FindTextMethod.FTM_UI_AUTO, FindTextMethod.UNRECOGNIZED -> {
                 val uiSuccess = clickTextByUIAuto(params, d)
                 logger.d("FTM_UI_AUTO: $uiSuccess")
             }
@@ -52,10 +53,7 @@ object FindAndClickViewByText : Actor {
                     logger.d("FTM_UI_AUTO_OCR, ocrSuccess: $ocrSuccess")
                 }
             }
-
-            FindTextMethod.UNRECOGNIZED -> throw Error("Unknown method.")
         }
-
     }
 
     private suspend fun HandleParams.clickTextByUIAuto(
