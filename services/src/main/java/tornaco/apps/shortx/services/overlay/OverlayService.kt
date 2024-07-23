@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import tornaco.apps.shortx.core.localvar.LocalVars
+import tornaco.apps.shortx.core.proto.action.ShowFloatWindow
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
@@ -15,11 +16,18 @@ import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
+import tornaco.apps.shortx.services.ui.floating.FloatApi
 import tornaco.apps.shortx.services.watchdog.postSafety
 import tornaco.apps.shortx.ui.overlay.ComposeOverlay
 
 internal data class ShowingOverlay(
     val token: ComposeOverlay,
+    val settings: List<OverlayButtonSetting>,
+    val tag: String
+)
+
+internal data class ShowingFloats(
+    val token: FloatApi,
     val settings: List<OverlayButtonSetting>,
     val tag: String
 )
@@ -31,6 +39,7 @@ class OverlayService(shortXContext: ShortXContext) :
     }
 
     private var showingOverlays: MutableList<ShowingOverlay> = mutableListOf()
+    private var showingFloats: MutableList<ShowingFloats> = mutableListOf()
 
     override fun start(context: Context) {
         super.start(context)
@@ -94,6 +103,35 @@ class OverlayService(shortXContext: ShortXContext) :
                 tag = action.tag
             ).apply {
                 token.show()
+            })
+    }
+
+    fun postShowFloatWindow(
+        evaluateContext: EvaluateContext,
+        localVars: LocalVars,
+        parameters: List<FuncParameterInput>,
+        action: ShowFloatWindow
+    ) = mainHandler.postSafety {
+        logger.d("postShowFloatWindow: ${action.tag}, current showing: ${showingFloats.map { it.tag }}")
+        logger.p("local vars: ${localVars.all.joinToString { it.name }}")
+        logger.p("parameters: ${parameters.joinToString { it.toLogString() }}")
+
+        if (showingFloats.any {
+                it.tag == action.tag
+            }) {
+            logger.d("postShowFloatWindow skip since has showing for same owner.")
+            return@postSafety
+        }
+
+        val float = FloatApi(context)
+
+        showingFloats.add(
+            ShowingFloats(
+                token = float,
+                settings = action.buttonSettingsList,
+                tag = action.tag
+            ).apply {
+                token.showFloatWindow()
             })
     }
 

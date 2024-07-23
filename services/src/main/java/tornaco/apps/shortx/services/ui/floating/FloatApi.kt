@@ -5,18 +5,18 @@ import tornaco.apps.shortx.services.ui.floating.controller.FloatButtonWindowCont
 import tornaco.apps.shortx.services.ui.floating.controller.FloatPanelWindowController
 
 class FloatApi(private val context: Context) {
-
-    private lateinit var floatButtonVC: FloatButtonWindowController
-    private lateinit var floatPanelVC: FloatPanelWindowController
+    private val floatWindowManager = FloatWindowManager(context)
+    private val floatButtonVC by lazy {
+        FloatButtonWindowController(context, floatWindowManager, floatPanelVC)
+    }
+    private val floatPanelVC by lazy {
+        FloatPanelWindowController(context, floatWindowManager)
+    }
 
     private var isFirst = true
 
     fun showFloatWindow() {
         if (isFirst) {
-            val floatWindowManager = FloatWindowManager(context)
-            // 填充和浮动面板浮动按钮
-            floatPanelVC = FloatPanelWindowController(context, floatWindowManager)
-            floatButtonVC = FloatButtonWindowController(context, floatWindowManager, floatPanelVC)
             floatButtonVC.setOnFloatButtonPositionUpdateListener(object :
                 FloatButtonWindowController.OnFloatButtonPositionUpdateListener {
                 override fun onFloatButtonPositionUpdate(newX: Int, newY: Int) {
