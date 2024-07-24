@@ -11,7 +11,6 @@ import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.fact.UsbDeviceAttached
 import tornaco.apps.shortx.core.proto.fact.UsbDeviceDetached
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.core.util.usbManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.FactPublishData
@@ -47,6 +46,19 @@ class UsbDeviceStateTrigger(
 
     private fun handleDeviceAttached(device: UsbDevice) {
         logger.p("handleDeviceAttached: $device")
+        // UsbDevice[mName=/dev/bus/usb/001/003,mVendorId=2316,mProductId=4096,mClass=0,mSubclass=0,
+        // mProtocol=0,mManufacturerName=Samsung,mProductName=Flash Drive FIT,mVersion=11.00,
+        // mSerialNumberReader=com.android.server.usb.UsbSerialReader@f5e450d, mHasAudioPlayback=false,
+        // mHasAudioCapture=false, mHasMidi=false, mHasVideoCapture=false, mHasVideoPlayback=false,
+        // mConfigurations=[
+        // UsbConfiguration[mId=1,mName=null,mAttributes=128,mMaxPower=150,mInterfaces=[
+        //
+        // UsbInterface[mId=0,mAlternateSetting=0,mName=null,mClass=8,mSubclass=6,mProtocol=80,mEndpoints=[
+        // UsbEndpoint[mAddress=1,mAttributes=2,mMaxPacketSize=512,mInterval=0]
+        // UsbEndpoint[mAddress=130,mAttributes=2,mMaxPacketSize=512,mInterval=0]]]]
+
+        val productName = device.productName
+        val manufacturerName = device.manufacturerName
 
         shortXContext.rule.publishFactChecked(UsbDeviceAttached.getDefaultInstance()) {
             FactPublishData(
@@ -55,19 +67,8 @@ class UsbDeviceStateTrigger(
                     .setDeviceName(device.deviceName).build(),
                 initialContextDataLazy = {
                     mapOf(
-                        ContextDataMapping.UsbDeviceAttachDetach.deviceName.name to device.deviceName.fallbackOnEmpty(
-                            ""
-                        ),
-                        ContextDataMapping.UsbDeviceAttachDetach.vendorId.name to device.vendorId.toString()
-                            .fallbackOnEmpty(""),
-                        ContextDataMapping.UsbDeviceAttachDetach.productId.name to device.productId.toString()
-                            .fallbackOnEmpty(""),
-                        ContextDataMapping.UsbDeviceAttachDetach.deviceClass.name to device.deviceClass.toString()
-                            .fallbackOnEmpty(""),
-                        ContextDataMapping.UsbDeviceAttachDetach.deviceSubclass.name to device.deviceSubclass.toString()
-                            .fallbackOnEmpty(""),
-                        ContextDataMapping.UsbDeviceAttachDetach.deviceProtocol.name to device.deviceProtocol.toString()
-                            .fallbackOnEmpty(""),
+                        ContextDataMapping.UsbDeviceAttachDetach.productName.name to productName.orEmpty(),
+                        ContextDataMapping.UsbDeviceAttachDetach.manufacturerName.name to manufacturerName.orEmpty(),
                     )
                 }
             )
@@ -76,7 +77,8 @@ class UsbDeviceStateTrigger(
 
     private fun handleDeviceDetached(device: UsbDevice) {
         logger.p("handleDeviceDetached: $device")
-
+        val productName = device.productName
+        val manufacturerName = device.manufacturerName
         shortXContext.rule.publishFactChecked(UsbDeviceAttached.getDefaultInstance()) {
             FactPublishData(
                 reason = "Device Detached",
@@ -84,19 +86,8 @@ class UsbDeviceStateTrigger(
                     .setDeviceName(device.deviceName).build(),
                 initialContextDataLazy = {
                     mapOf(
-                        ContextDataMapping.UsbDeviceAttachDetach.deviceName.name to device.deviceName.fallbackOnEmpty(
-                            ""
-                        ),
-                        ContextDataMapping.UsbDeviceAttachDetach.vendorId.name to device.vendorId.toString()
-                            .fallbackOnEmpty(""),
-                        ContextDataMapping.UsbDeviceAttachDetach.productId.name to device.productId.toString()
-                            .fallbackOnEmpty(""),
-                        ContextDataMapping.UsbDeviceAttachDetach.deviceClass.name to device.deviceClass.toString()
-                            .fallbackOnEmpty(""),
-                        ContextDataMapping.UsbDeviceAttachDetach.deviceSubclass.name to device.deviceSubclass.toString()
-                            .fallbackOnEmpty(""),
-                        ContextDataMapping.UsbDeviceAttachDetach.deviceProtocol.name to device.deviceProtocol.toString()
-                            .fallbackOnEmpty(""),
+                        ContextDataMapping.UsbDeviceAttachDetach.productName.name to productName.orEmpty(),
+                        ContextDataMapping.UsbDeviceAttachDetach.manufacturerName.name to manufacturerName.orEmpty(),
                     )
                 }
             )
