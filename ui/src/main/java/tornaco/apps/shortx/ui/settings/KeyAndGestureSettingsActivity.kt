@@ -244,20 +244,6 @@ fun KeyAndGestureSettingsActivity.EdgeGestureSettingsSelector() {
                         )
                     }
                     LargeSpacer()
-                    SwitchRow(
-                        text = LocalI18N.current["ui.settings.edge.gesture.disable"],
-                        isChecked = state.isEdgeGestureDisabled,
-                        onCheckChange = {
-                            vm.setDisabled(it)
-                        }
-                    )
-                    AnimatedVisibility(visible = state.isEdgeGestureDisabled) {
-                        ErrorCard(
-                            modifier = Modifier.fillMaxWidth(),
-                            title = LocalI18N.current["ui.settings.edge.gesture.disabled.warn"],
-                            warnings = emptyList()
-                        )
-                    }
 
                     SectionSpacer()
                     SectionSpacer()
@@ -274,6 +260,21 @@ fun KeyAndGestureSettingsActivity.EdgeGestureSettingsSelector() {
                             vm.setKeyDetectorLongPressTimeoutMS(it.roundToLong())
                         })
 
+                    SectionSpacer()
+                    SwitchRow(
+                        text = LocalI18N.current["ui.settings.edge.gesture.disable"],
+                        isChecked = state.isEdgeGestureDisabled,
+                        onCheckChange = {
+                            vm.setDisabled(it)
+                        }
+                    )
+                    AnimatedVisibility(visible = state.isEdgeGestureDisabled) {
+                        ErrorCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            title = LocalI18N.current["ui.settings.edge.gesture.disabled.warn"],
+                            warnings = emptyList()
+                        )
+                    }
                 }
             }
         }

@@ -14,7 +14,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
-import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.fact.Edge
@@ -25,7 +24,6 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.services.ShortXContext
-import tornaco.apps.shortx.services.ShortXService
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.GestureRecordsStore
 import tornaco.apps.shortx.services.data.Settings
@@ -61,7 +59,7 @@ class GestureService(shortXContext: ShortXContext) :
     private val showingHints: MutableSet<GuideLineView> = mutableSetOf()
 
     private val gestureRecorder by lazy { GestureRecorder(context) }
-    private val gesturPlayer by lazy { GesturePlayer(context) }
+    private val gesturePlayer by lazy { GesturePlayer(context) }
 
     private val interceptMotionPortRects = mutableListOf<RectF>()
     private val interceptMotionLandRects = mutableListOf<RectF>()
@@ -85,17 +83,12 @@ class GestureService(shortXContext: ShortXContext) :
 
         updateShouldInterceptMotionEventRect()
 
-        val hasDisableGestureFlag =
-            ShortXService.serviceBinder.hasHookFlags(ShortXManager.Companion.HookFlags.FLAG_DISABLE_GESTURE_HOOK)
-        logger.i("hasDisableGestureFlag: $hasDisableGestureFlag")
-        if (!hasDisableGestureFlag) {
-            inputMonitorHelper.enableInputReceiver({ inputEvent ->
-                // logger.d("SHORTX_INPUT_ OplusInputMonitorHelper: $inputEvent")
-                val res = filterInput(inputEvent)
-                val consumed = res != null && !res
-                consumed
-            }, false)
-        }
+        inputMonitorHelper.enableInputReceiver({ inputEvent ->
+            // logger.d("SHORTX_INPUT_ OplusInputMonitorHelper: $inputEvent")
+            val res = filterInput(inputEvent)
+            val consumed = res != null && !res
+            consumed
+        }, false)
     }
 
     fun showEdgeHint(edgeNumber: List<Int>) {
@@ -208,10 +201,10 @@ class GestureService(shortXContext: ShortXContext) :
 
         // Stop play gesture if necessary
         if (event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || event.keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-            if (gesturPlayer.isInjecting) {
+            if (gesturePlayer.isInjecting) {
                 logger.i("Stop inject gesture since VOL key event.")
                 systemServiceScope.launchSafety {
-                    gesturPlayer.stopInject()
+                    gesturePlayer.stopInject()
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             context,
@@ -303,12 +296,12 @@ class GestureService(shortXContext: ShortXContext) :
         logger.d("injectGestureRecord, gesture: $gesture")
         if (gesture != null) {
             runCatching {
-                gesturPlayer.injectGesture(gesture, speed, showGesturePathView)
+                gesturePlayer.injectGesture(gesture, speed, showGesturePathView)
             }.onFailure {
                 if (it is CancellationException) {
                     logger.i("injectGestureRecord canceled.")
                 }
-                gesturPlayer.stopInject()
+                gesturePlayer.stopInject()
                 throw it
             }
         }
