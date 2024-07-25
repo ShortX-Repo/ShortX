@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import android.util.Log
 import android.view.InputEvent
+import android.view.KeyEvent
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
 import tornaco.apps.shortx.core.platform.Classes.inputManagerService
@@ -23,11 +24,16 @@ object InputManagerHook {
 
         beforeMethod(lpparam.classLoader.inputManagerService(), Methods.filterInputEvent) { param ->
             // logger.d("filterInputEvent, event: ${param.args[0]}")
-            val res =
-                ShortXService.shortXContext.gesture.filterInput(param.args[0] as InputEvent)
-            res?.let {
-                logger.d("filterInputEvent, setResult: $it")
-                param.result = it
+
+            val inputEvent = param.args[0] as InputEvent
+            ShortXService.shortXContext.input.setHasReceivedInputFilterCallback()
+            if (inputEvent is KeyEvent) {
+                val res =
+                    ShortXService.shortXContext.gesture.filterInput(inputEvent)
+                res?.let {
+                    logger.d("filterInputEvent, setResult: $it")
+                    param.result = it
+                }
             }
         }
 

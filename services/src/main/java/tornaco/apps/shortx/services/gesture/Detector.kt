@@ -80,29 +80,31 @@ class Detector(
         }, service.getSwipeDistanceThresholdDp()._dp)
 
     private fun handleEvent(downX: Float, downY: Float, gestureEvent: Gesture): Boolean {
-        val area = detectArea(downX, downY) ?: return false
+        val area = detectArea(downX, downY)
+        if (area.isEmpty()) return false
         return handleEvent(area, gestureEvent)
     }
 
     private fun handleEvent(motionEvent: MotionEvent, gestureEvent: Gesture): Boolean {
-        val area = detectArea(motionEvent) ?: return false
+        val area = detectArea(motionEvent)
+        if (area.isEmpty()) return false
         return handleEvent(area, gestureEvent)
     }
 
-    private fun handleEvent(area: Edge, gestureEvent: Gesture): Boolean {
+    private fun handleEvent(area: Array<Edge>, gestureEvent: Gesture): Boolean {
         return service.handleGestureEvent(area, gestureEvent)
     }
 
-    private fun detectArea(event: MotionEvent): Edge? {
+    private fun detectArea(event: MotionEvent): Array<Edge> {
         val downX = event.x
         val downY = event.y
         return detectArea(downX, downY)
     }
 
-    private fun detectArea(downX: Float, downY: Float): Edge? {
+    private fun detectArea(downX: Float, downY: Float): Array<Edge> {
         val currentOrientation = context.resources.configuration.orientation
         if (LOGV) logger.d("currentOrientation: $currentOrientation (ORIENTATION_PORTRAIT = 1, ORIENTATION_LANDSCAPE = 2)")
-        val area = Edge.entries.firstOrNull {
+        val area = Edge.entries.filter {
             val rect = if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
                 it.getRect(
                     screenSize.x.toFloat(),
@@ -123,7 +125,7 @@ class Detector(
             res
         }
         if (LOGV) logger.d("detectArea, $downX $downY return: $area (screen info: $screenSize)")
-        return area
+        return area.toTypedArray()
     }
 
     fun interceptEvent(event: MotionEvent): Boolean? {

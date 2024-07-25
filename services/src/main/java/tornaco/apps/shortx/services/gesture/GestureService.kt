@@ -14,6 +14,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
+import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.fact.Edge
@@ -24,12 +25,14 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.ShortXService
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.GestureRecordsStore
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.input.IMSFunc
+import tornaco.apps.shortx.services.input.opls.OplusInputMonitorHelper
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.GuideLineView
 import tornaco.apps.shortx.services.ui.i18NIns
@@ -51,7 +54,9 @@ class GestureService(shortXContext: ShortXContext) :
     private var gestureDetector: Detector? = null
 
     private var onKeyEvent: ((KeyEvent) -> Boolean?)? = null
-    private var onGestureEvent: ((Pair<Edge, Gesture>) -> Boolean?)? = null
+    private var onGestureEvent: ((Pair<Edge, Gesture>) -> Boolean?) = {
+        false
+    }
 
     private val showingHints: MutableSet<GuideLineView> = mutableSetOf()
 
@@ -60,6 +65,12 @@ class GestureService(shortXContext: ShortXContext) :
 
     private val interceptMotionPortRects = mutableListOf<RectF>()
     private val interceptMotionLandRects = mutableListOf<RectF>()
+
+    private val inputMonitorHelper by lazy {
+        OplusInputMonitorHelper.getInstance().apply {
+            init(context)
+        }
+    }
 
     override fun start(context: Context) {
         super.start(context)
@@ -73,6 +84,18 @@ class GestureService(shortXContext: ShortXContext) :
         }
 
         updateShouldInterceptMotionEventRect()
+
+        val hasDisableGestureFlag =
+            ShortXService.serviceBinder.hasHookFlags(ShortXManager.Companion.HookFlags.FLAG_DISABLE_GESTURE_HOOK)
+        logger.i("hasDisableGestureFlag: $hasDisableGestureFlag")
+        if (!hasDisableGestureFlag) {
+            inputMonitorHelper.enableInputReceiver({ inputEvent ->
+                // logger.d("SHORTX_INPUT_ OplusInputMonitorHelper: $inputEvent")
+                val res = filterInput(inputEvent)
+                val consumed = res != null && !res
+                consumed
+            }, false)
+        }
     }
 
     fun showEdgeHint(edgeNumber: List<Int>) {
@@ -112,7 +135,6 @@ class GestureService(shortXContext: ShortXContext) :
     }
 
     fun filterInput(input: InputEvent?): Boolean? {
-        shortXContext.input.setHasReceivedInputFilterCallback()
         if (!isSystemReady) return null
         if (input == null) return null
         if (input is MotionEvent) {
@@ -153,11 +175,11 @@ class GestureService(shortXContext: ShortXContext) :
         } else {
             interceptMotionLandRects
         }
-        onDebugBuild { logger.d("filterMotionEvent, checkRects: $checkRects") }
+        // onDebugBuild { logger.d("filterMotionEvent, checkRects: $checkRects") }
         val anyIntercept = checkRects.any { it.contains(input.x, input.y) }
         val timeTaken = SystemClock.elapsedRealtimeNanos() - startTimeMillis
         onDebugBuild {
-            logger.d("filterMotionEvent, check take time: $timeTaken(nano)")
+            // logger.d("filterMotionEvent, check take time: $timeTaken(nano)")
         }
         if (anyIntercept) {
             onDebugBuild {
@@ -204,8 +226,13 @@ class GestureService(shortXContext: ShortXContext) :
         return onKeyEvent?.invoke(event)
     }
 
-    fun handleGestureEvent(area: Edge, gestureEvent: Gesture): Boolean {
-        return onGestureEvent?.invoke(area to gestureEvent) ?: false
+    fun handleGestureEvent(area: Array<Edge>, gestureEvent: Gesture): Boolean {
+        var res = false
+        area.forEach {
+            val handled = onGestureEvent(it to gestureEvent) ?: false
+            if (handled) res = true
+        }
+        return res
     }
 
     fun getGestureLengthScale(): Float =
