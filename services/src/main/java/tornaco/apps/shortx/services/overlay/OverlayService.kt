@@ -137,7 +137,10 @@ class OverlayService(shortXContext: ShortXContext) :
 
     fun postHideAllOverlay() = mainHandler.postSafety {
         logger.d("postHideAllOverlay")
-        hideAllOverlay()
+        showingOverlays.forEach {
+            it.token.dismiss()
+        }
+        showingOverlays.clear()
     }
 
     fun postHideOverlay(tags: List<String>) = mainHandler.postSafety {
@@ -150,11 +153,21 @@ class OverlayService(shortXContext: ShortXContext) :
         }
     }
 
-    private fun hideAllOverlay() {
-        logger.d("hideAllOverlay")
-        showingOverlays.forEach {
-            it.token.dismiss()
+    fun postHideAllFloatWindow() = mainHandler.postSafety {
+        logger.d("postHideAllFloatWindow")
+        showingFloats.forEach {
+            it.token.removeFloatWindow()
         }
-        showingOverlays.clear()
+        showingFloats.clear()
+    }
+
+    fun postHideFloatWindow(tags: List<String>) = mainHandler.postSafety {
+        logger.d("postHideFloatWindow: $tags")
+        showingFloats.filter { tags.contains(it.tag) }.apply {
+            showingFloats.removeAll(this)
+            forEach {
+                it.token.removeFloatWindow()
+            }
+        }
     }
 }

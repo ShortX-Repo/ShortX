@@ -115,6 +115,17 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
     )
 
 
+    val showFloatWindowLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action.ShowFloatWindow>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
+
     val getNodeTextSelectorState = rememberTextInputState(
         title = LocalI18N.current["ui.action.get.text.from.node"],
         message = LocalI18N.current["ui.action.get.text.from.node.tip.get.all"],
@@ -199,12 +210,28 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                 true
             }
 
+            Action.HideFloatWindow::class -> {
+                addAction(Action.HideFloatWindow(tags = emptyList()))
+                true
+            }
+
             Action.ShowOverlay::class -> {
                 showOverlayLauncher.launch(
                     newIntent(
                         context = context,
                         currentData = source.getActionAs<Action.ShowOverlay>(),
                         clazz = ShowOverlayButtonSelectorActivity::class.java
+                    )
+                )
+                true
+            }
+
+            Action.ShowFloatWindow::class -> {
+                showFloatWindowLauncher.launch(
+                    newIntent(
+                        context = context,
+                        currentData = source.getActionAs<Action.ShowFloatWindow>(),
+                        clazz = ShowFloatWindowSelectorActivity::class.java
                     )
                 )
                 true
@@ -355,6 +382,8 @@ fun UiActions(
         Action.ShowOverlay::class,
         Action.HideOverlay::class,
         Action.HideAllOverlay::class,
+        Action.ShowFloatWindow::class,
+        Action.HideFloatWindow::class,
         Action.ShowAlertDialog::class,
         Action.ShowMenuDialog::class,
         Action.ShowTextFieldDialog::class,

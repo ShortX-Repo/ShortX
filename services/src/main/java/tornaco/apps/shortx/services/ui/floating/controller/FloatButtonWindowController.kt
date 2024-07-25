@@ -203,6 +203,12 @@ class FloatButtonWindowController(
             .hide()
     }
 
+    fun removeFloatWindow() {
+        floatWindowManager
+            .getFloatWindow(TAG_BUTTON)
+            .remove()
+    }
+
     fun open() {
         if (offAnimatorSet != null && offAnimatorSet!!.isRunning) {
             offAnimatorSet!!.end()

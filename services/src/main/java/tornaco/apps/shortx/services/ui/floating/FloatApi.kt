@@ -61,7 +61,11 @@ class FloatApi(private val context: Context) {
         }
     }
 
-    private fun hideFloatWindow() {
+    fun hideFloatWindow() {
         floatButtonVC.hideFloatWindow()
+    }
+
+    fun removeFloatWindow() {
+        floatButtonVC.removeFloatWindow()
     }
 }

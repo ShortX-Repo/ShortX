@@ -132,6 +132,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.ShowFloatWindow
     },
+    HideFloatWindow {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.HideFloatWindow
+    },
     HideOverlayButton {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.HideOverlayButton
