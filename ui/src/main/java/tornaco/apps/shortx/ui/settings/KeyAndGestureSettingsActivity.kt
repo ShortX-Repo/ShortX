@@ -275,6 +275,10 @@ fun KeyAndGestureSettingsActivity.EdgeGestureSettingsSelector() {
                             warnings = emptyList()
                         )
                     }
+
+                    repeat(4) {
+                        SectionSpacer()
+                    }
                 }
             }
         }
