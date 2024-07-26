@@ -13,9 +13,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -97,6 +99,7 @@ class AddDirectActionActivity : BaseActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddDirectActionScreen(
     daId: String? = null,
@@ -192,6 +195,7 @@ fun AddDirectActionScreen(
                 RemixIcon(saveIconName)
             }
         },
+        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     ) {
         ClickOutsideClearFocusBox(
             modifier = Modifier

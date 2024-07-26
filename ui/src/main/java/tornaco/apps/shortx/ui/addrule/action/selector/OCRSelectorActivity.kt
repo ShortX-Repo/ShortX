@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,6 +44,7 @@ class OCRSelectorActivity : BaseSelectorActivity<Action.OcrDetect>() {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BaseSelectorActivity<Action.OcrDetect>.BiometricVerifySelector(currentAction: Action.OcrDetect?) {
     val vm = hiltViewModel<OCRSelectorViewModel>()

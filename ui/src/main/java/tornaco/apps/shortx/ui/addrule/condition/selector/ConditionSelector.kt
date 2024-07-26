@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.addrule.condition.selector
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -27,6 +28,7 @@ enum class ConditionCategory(val i18NKey: String, val icon: String) {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConditionSelector(
     close: () -> Unit, onSelected: (Condition) -> Unit

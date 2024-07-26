@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addrule.fact.selector
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -26,6 +27,7 @@ enum class FactCategory(val i18NKey: String, val icon: String) {
     Misc("ui.action.misc", Remix.System.settings_2_line),
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FactSelector(
     close: () -> Unit, onSelected: (Fact) -> Unit
