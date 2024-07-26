@@ -1,10 +1,13 @@
 package tornaco.apps.shortx.services.input
 
 import android.view.KeyEvent
+import com.android.dx.stock.ProxyBuilder
 import com.android.internal.view.IInputContext
+import com.android.server.LocalServices
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import tornaco.apps.shortx.core.BuildPropExt
 import tornaco.apps.shortx.core.proto.clipboard.ClipboardItem
 import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
 import tornaco.apps.shortx.core.util.OsUtils
@@ -14,6 +17,7 @@ import tornaco.apps.shortx.services.ShortXService
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.android.ServiceRetriever
 import tornaco.apps.shortx.services.data.ClipboardStore
+import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
@@ -22,6 +26,7 @@ import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
 import util.Reflections
+import java.lang.reflect.InvocationHandler
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -77,6 +82,24 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
                 logger.d("ClipChangedListener, onPrimaryClipChanged, text: $text")
                 onClipboardChange(text)
             }
+        }
+
+        BuildPropExt.onDebugBuild {
+            val providerClass: Class<Any> = Reflections.findClass(
+                "com.android.server.policy.GlobalActionsProvider",
+                context.classLoader
+            ) as Class<Any>
+            logger.d("providerClass: $providerClass")
+            val provider = ProxyBuilder.forClass(providerClass).dexCache(Dirs.baseServerCacheDir())
+                .withSharedClassLoader()
+                .markTrusted()
+                .handler(InvocationHandler { proxy, method, args ->
+                    logger.d("method called: $method")
+                })
+                .build()
+            logger.d("provider: $provider")
+            // LocalServices.addService(GlobalActionsProvider.class, mGlobalActionsProvider);
+            LocalServices.addService(providerClass, provider)
         }
     }
 

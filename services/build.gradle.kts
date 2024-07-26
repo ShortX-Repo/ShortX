@@ -19,6 +19,7 @@ dependencies {
 
     implementation(libs.tinypinyin)
 
+    implementation(libs.shortx.ext.dex.maker)
     implementation(libs.shortx.ext.utils)
     implementation(libs.shortx.ext.picasso)
     implementation(libs.shortx.ext.rhino.android)
