@@ -1,22 +1,42 @@
 package tornaco.apps.shortx.services.ui.floating
 
 import android.content.Context
+import tornaco.apps.shortx.core.proto.action.ShowFloatWindow
+import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.services.ui.floating.controller.FloatButtonWindowController
 import tornaco.apps.shortx.services.ui.floating.controller.FloatPanelWindowController
 
-class FloatApi(private val context: Context) {
+class FloatApi(
+    private val context: Context,
+    val action: ShowFloatWindow,
+    private val initialPos: Pair<Int, Int>,
+    private val onPosChange: (Int, Int) -> Unit,
+    private val onButtonClick: (OverlayButtonSetting) -> Unit,
+    private val onButtonLongClick: (OverlayButtonSetting) -> Unit,
+) {
     private val floatWindowManager = FloatWindowManager(context)
     private val floatButtonVC by lazy {
-        FloatButtonWindowController(context, floatWindowManager, floatPanelVC)
+        FloatButtonWindowController(context, floatWindowManager, floatPanelVC, onPosChange)
     }
     private val floatPanelVC by lazy {
-        FloatPanelWindowController(context, floatWindowManager)
+        FloatPanelWindowController(
+            context,
+            floatWindowManager,
+            action,
+            onButtonClick,
+            onButtonLongClick
+        )
     }
 
     private var isFirst = true
 
     fun showFloatWindow() {
         if (isFirst) {
+            FloatServiceUtil.x = initialPos.first
+            FloatServiceUtil.y = initialPos.second
+            FloatServiceUtil.px = initialPos.first
+            FloatServiceUtil.py = initialPos.second
+
             floatButtonVC.setOnFloatButtonPositionUpdateListener(object :
                 FloatButtonWindowController.OnFloatButtonPositionUpdateListener {
                 override fun onFloatButtonPositionUpdate(newX: Int, newY: Int) {

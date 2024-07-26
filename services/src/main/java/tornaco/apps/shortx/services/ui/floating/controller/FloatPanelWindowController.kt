@@ -11,6 +11,8 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.compat.DrawableCompat
+import tornaco.apps.shortx.core.proto.action.ShowFloatWindow
+import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.res.remixResName
@@ -26,7 +28,10 @@ import tornaco.apps.shortx.services.ui.floating.widget.FloatActionButton
 
 class FloatPanelWindowController(
     context: Context,
-    private val floatWindowManager: FloatWindowManager
+    private val floatWindowManager: FloatWindowManager,
+    private val action: ShowFloatWindow,
+    private val onButtonClick: (OverlayButtonSetting) -> Unit,
+    private val onButtonLongClick: (OverlayButtonSetting) -> Unit,
 ) :
     BaseFloatWindowController(context) {
     var isOpen: Boolean = false
@@ -90,8 +95,8 @@ class FloatPanelWindowController(
                 FloatWindowOption
                     .create(
                         FloatWindowOption.Builder()
-                            .setX(FloatServiceUtil.getFloatPanelX())
-                            .setY(FloatServiceUtil.getFloatPanelY())
+                            .setX(FloatServiceUtil.px)
+                            .setY(FloatServiceUtil.py)
                             .setShow(false)
                             .setFloatMoveType(FloatMoveEnum.INACTIVE)
                     )
@@ -118,15 +123,17 @@ class FloatPanelWindowController(
 
     private fun addActionButton() {
         val appRes = AppResources(context, BuildPropInternal.APP_PACKAGE_NAME)
-        for (i in 0..3) {
+        action.buttonSettingsList.forEach { button ->
             val actionView = FloatActionButton(context)
             val iconSize = ScreenUtil.dip2px(context, 52f)
             val iconPadding = ScreenUtil.dip2px(context, 12f)
+
             val params = FrameLayout.LayoutParams(iconSize, iconSize)
             params.gravity = Gravity.CENTER
             actionView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
 
-            val iconResName = context.remixResName(Remix.Animals.dog)
+            val iconResName =
+                context.remixResName(button.icon) ?: context.remixResName(Remix.Animals.dog)
             val tintedDrawable = DrawableCompat.wrap(appRes.getDrawable(iconResName))
             DrawableCompat.setTint(tintedDrawable, Color.WHITE)
             actionView.setImageDrawable(tintedDrawable)
@@ -138,8 +145,18 @@ class FloatPanelWindowController(
             actionView.background = gradientDrawable
             actionView.scaleType = ImageView.ScaleType.CENTER
 
-            actionView.setOnClickListener { FloatServiceUtil.toggleFloatButton() }
+            actionView.setOnClickListener {
+                FloatServiceUtil.toggleFloatButton()
+                onButtonClick(button)
+            }
+            actionView.setOnLongClickListener {
+                FloatServiceUtil.toggleFloatButton()
+                onButtonLongClick(button)
+                true
+            }
+
             actionView.visibility = View.GONE
+
             floatControlPanelView.addView(actionView, params)
         }
     }

@@ -1,7 +1,5 @@
 package tornaco.apps.shortx.services.ui.floating;
 
-import android.content.Context;
-
 /**
  * <b>Package:</b> com.zh.touchassistant.util <br>
  * <b>FileName:</b> FloatServiceUtil <br>
@@ -20,23 +18,6 @@ public class FloatServiceUtil {
 
     private FloatServiceUtil() {
     }
-
-    public static int getFloatButtonX(Context context) {
-        return x;
-    }
-
-    public static int getFloatButtonY(Context context) {
-        return y;
-    }
-
-    public static int getFloatPanelX() {
-        return px;
-    }
-
-    public static int getFloatPanelY() {
-        return py;
-    }
-
 
     public static void openFloatButton() {
         floatViewLiveData.setValue(true);

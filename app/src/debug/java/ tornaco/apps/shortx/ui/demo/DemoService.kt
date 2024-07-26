@@ -7,7 +7,6 @@ import android.os.IBinder
 import android.os.Looper
 import android.widget.Toast
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.services.ui.floating.FloatApi
 
 class DemoService : Service() {
     override fun onBind(intent: Intent?): IBinder? {
@@ -20,8 +19,6 @@ class DemoService : Service() {
             Toast.makeText(applicationContext, "DemoService start: $intent", Toast.LENGTH_LONG)
                 .show()
         }
-
-        FloatApi(this).showFloatWindow()
 
         return super.onStartCommand(intent, flags, startId)
     }

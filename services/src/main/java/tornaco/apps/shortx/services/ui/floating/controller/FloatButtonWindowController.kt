@@ -26,7 +26,8 @@ import tornaco.apps.shortx.services.ui.floating.widget.FloatButton
 class FloatButtonWindowController(
     context: Context,
     private val floatWindowManager: FloatWindowManager,
-    private val panelWindowController: FloatPanelWindowController
+    private val panelWindowController: FloatPanelWindowController,
+    private val onPosChange: (Int, Int) -> Unit,
 ) : BaseFloatWindowController(context) {
     private lateinit var floatButtonView: FloatButton
     private var currentStatus = STATUS_OFF
@@ -88,9 +89,11 @@ class FloatButtonWindowController(
                             ) {
                                 super.onPositionUpdate(oldX, oldY, newX, newY)
                                 mainHandler.removeCallbacksAndMessages(null)
-                                mainHandler.postDelayed({ // Save newX newY
+                                mainHandler.postDelayed({
+                                    // Save newX newY
                                     FloatServiceUtil.x = newX
                                     FloatServiceUtil.y = newY
+                                    onPosChange(newX, newY)
                                 }, 550)
                                 //让面板跟随按钮
                                 if (onFloatButtonPositionUpdateListener != null) {

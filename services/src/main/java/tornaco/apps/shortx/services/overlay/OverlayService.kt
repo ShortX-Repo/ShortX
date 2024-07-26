@@ -73,7 +73,7 @@ class OverlayService(shortXContext: ShortXContext) :
             initialPos = posX to posY,
             onPosChange = { x, y ->
                 handler.postSafety {
-                    logger.d("onPosChange, write settings: $x-$y")
+                    logger.d("OverlayButton onPosChange, write settings: $x-$y")
                     store.write(Settings.IntSettings.OverlayButtonPosX(action.tag), x)
                     store.write(Settings.IntSettings.OverlayButtonPosY(action.tag), y)
                 }
@@ -123,7 +123,36 @@ class OverlayService(shortXContext: ShortXContext) :
             return@postSafety
         }
 
-        val float = FloatApi(context)
+        val posX = store.read(Settings.IntSettings.FloatWindowPosX(action.tag))
+        val posY = store.read(Settings.IntSettings.FloatWindowPosX(action.tag))
+
+        val float = FloatApi(
+            context, action,
+            initialPos = posX to posY,
+            onPosChange = { x, y ->
+                handler.postSafety {
+                    logger.d("FloatWindow onPosChange, write settings: $x-$y")
+                    store.write(Settings.IntSettings.FloatWindowPosX(action.tag), x)
+                    store.write(Settings.IntSettings.FloatWindowPosX(action.tag), y)
+                }
+            },
+            onButtonClick = { button: OverlayButtonSetting ->
+                shortXContext.rule.executeActions(
+                    context = evaluateContext,
+                    actions = button.actionsList,
+                    conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
+                    localVars = localVars,
+                )
+            },
+            onButtonLongClick = { button: OverlayButtonSetting ->
+                shortXContext.rule.executeActions(
+                    context = evaluateContext,
+                    actions = button.longClickActionsList,
+                    conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
+                    localVars = localVars,
+                )
+            },
+        )
 
         showingFloats.add(
             ShowingFloats(
