@@ -5,6 +5,7 @@ import android.content.Context
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import tornaco.apps.shortx.core.IActionEvaluateListener
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
@@ -89,7 +90,13 @@ class ShowFloatWindowSelectorViewModel @Inject constructor(@ApplicationContext c
 
     fun addButton() {
         updateState {
-            copy(buttons = buttons.toMutableList().apply { add(Button()) })
+            copy(buttons = buttons.toMutableList().apply {
+                add(
+                    Button(
+                        icon = Remix.Animals.dog
+                    )
+                )
+            })
         }
         logger.d("addButton after, items size: ${state.value.buttons.size}")
     }

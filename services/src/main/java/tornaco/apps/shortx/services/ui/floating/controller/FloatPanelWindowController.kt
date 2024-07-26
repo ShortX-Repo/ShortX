@@ -162,6 +162,7 @@ class FloatPanelWindowController(
             }
 
             actionView.visibility = View.GONE
+            actionView.alpha = FloatButtonWindowController.ALPHA_SHOW
 
             floatControlPanelView.addView(actionView, params)
         }

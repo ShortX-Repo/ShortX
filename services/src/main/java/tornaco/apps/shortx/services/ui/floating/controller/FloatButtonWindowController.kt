@@ -292,6 +292,6 @@ class FloatButtonWindowController(
         const val STATUS_OFF: Int = 0
         const val STATUS_OPEN: Int = 1
 
-        const val ALPHA_SHOW: Float = 1f
+        const val ALPHA_SHOW: Float = 0.76f
     }
 }
