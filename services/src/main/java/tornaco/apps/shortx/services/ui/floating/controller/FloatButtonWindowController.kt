@@ -25,6 +25,7 @@ import tornaco.apps.shortx.services.ui.floating.widget.FloatButton
 
 class FloatButtonWindowController(
     context: Context,
+    private val floatServiceUtil: FloatServiceUtil,
     private val floatWindowManager: FloatWindowManager,
     private val panelWindowController: FloatPanelWindowController,
     private val onPosChange: (Int, Int) -> Unit,
@@ -62,7 +63,7 @@ class FloatButtonWindowController(
     }
 
     private fun initListener() {
-        floatButtonView.setOnClickListener { FloatServiceUtil.toggleFloatButton() }
+        floatButtonView.setOnClickListener { floatServiceUtil.toggleFloatButton() }
     }
 
     private fun attachFloatWindow() {
@@ -91,8 +92,8 @@ class FloatButtonWindowController(
                                 mainHandler.removeCallbacksAndMessages(null)
                                 mainHandler.postDelayed({
                                     // Save newX newY
-                                    FloatServiceUtil.x = newX
-                                    FloatServiceUtil.y = newY
+                                    floatServiceUtil.x = newX
+                                    floatServiceUtil.y = newY
                                     onPosChange(newX, newY)
                                 }, 550)
                                 //让面板跟随按钮
@@ -159,7 +160,7 @@ class FloatButtonWindowController(
                                 }
                                 //当点击悬浮按钮区域外时，如果是打开状态，则关闭
                                 if (isOpen) {
-                                    FloatServiceUtil.closeFloatButton()
+                                    floatServiceUtil.closeFloatButton()
                                 }
                             }
                         })

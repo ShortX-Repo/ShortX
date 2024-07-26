@@ -14,13 +14,15 @@ class FloatApi(
     private val onButtonClick: (OverlayButtonSetting) -> Unit,
     private val onButtonLongClick: (OverlayButtonSetting) -> Unit,
 ) {
+    private val util = FloatServiceUtil()
     private val floatWindowManager = FloatWindowManager(context)
     private val floatButtonVC by lazy {
-        FloatButtonWindowController(context, floatWindowManager, floatPanelVC, onPosChange)
+        FloatButtonWindowController(context, util, floatWindowManager, floatPanelVC, onPosChange)
     }
     private val floatPanelVC by lazy {
         FloatPanelWindowController(
             context,
+            util,
             floatWindowManager,
             action,
             onButtonClick,
@@ -32,10 +34,10 @@ class FloatApi(
 
     fun showFloatWindow() {
         if (isFirst) {
-            FloatServiceUtil.x = initialPos.first
-            FloatServiceUtil.y = initialPos.second
-            FloatServiceUtil.px = initialPos.first
-            FloatServiceUtil.py = initialPos.second
+            util.x = initialPos.first
+            util.y = initialPos.second
+            util.px = initialPos.first
+            util.py = initialPos.second
 
             floatButtonVC.setOnFloatButtonPositionUpdateListener(object :
                 FloatButtonWindowController.OnFloatButtonPositionUpdateListener {
@@ -62,7 +64,7 @@ class FloatApi(
                 }
             })
 
-            val floatViewLiveData: FloatViewLiveData = FloatServiceUtil.floatViewLiveData
+            val floatViewLiveData: FloatViewLiveData = util.floatViewLiveData
             floatViewLiveData.addOnDataChangeCallback { isOpen ->
                 // 这里统一做UI切换
                 if (isOpen) {

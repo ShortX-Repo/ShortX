@@ -16,6 +16,7 @@ import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.res.remixResName
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ui.floating.FloatMoveEnum
 import tornaco.apps.shortx.services.ui.floating.FloatServiceUtil
 import tornaco.apps.shortx.services.ui.floating.FloatWindowManager
@@ -28,12 +29,15 @@ import tornaco.apps.shortx.services.ui.floating.widget.FloatActionButton
 
 class FloatPanelWindowController(
     context: Context,
+    private val floatServiceUtil: FloatServiceUtil,
     private val floatWindowManager: FloatWindowManager,
     private val action: ShowFloatWindow,
     private val onButtonClick: (OverlayButtonSetting) -> Unit,
     private val onButtonLongClick: (OverlayButtonSetting) -> Unit,
 ) :
     BaseFloatWindowController(context) {
+    private val logger = Logger("FloatPanelWindowController")
+
     var isOpen: Boolean = false
         private set
 
@@ -50,6 +54,7 @@ class FloatPanelWindowController(
 
     init {
         init()
+        logger.d("init, floatWindowManager: $floatWindowManager")
     }
 
     private fun init() {
@@ -95,8 +100,8 @@ class FloatPanelWindowController(
                 FloatWindowOption
                     .create(
                         FloatWindowOption.Builder()
-                            .setX(FloatServiceUtil.px)
-                            .setY(FloatServiceUtil.py)
+                            .setX(floatServiceUtil.px)
+                            .setY(floatServiceUtil.py)
                             .setShow(false)
                             .setFloatMoveType(FloatMoveEnum.INACTIVE)
                     )
@@ -123,6 +128,7 @@ class FloatPanelWindowController(
 
     private fun addActionButton() {
         val appRes = AppResources(context, BuildPropInternal.APP_PACKAGE_NAME)
+        logger.d("addActionButton- ${this.hashCode()} ${action.buttonSettingsList.size}")
         action.buttonSettingsList.forEach { button ->
             val actionView = FloatActionButton(context)
             val iconSize = ScreenUtil.dip2px(context, 52f)
@@ -146,11 +152,11 @@ class FloatPanelWindowController(
             actionView.scaleType = ImageView.ScaleType.CENTER
 
             actionView.setOnClickListener {
-                FloatServiceUtil.toggleFloatButton()
+                floatServiceUtil.toggleFloatButton()
                 onButtonClick(button)
             }
             actionView.setOnLongClickListener {
-                FloatServiceUtil.toggleFloatButton()
+                floatServiceUtil.toggleFloatButton()
                 onButtonLongClick(button)
                 true
             }
@@ -186,8 +192,8 @@ class FloatPanelWindowController(
         val fixY = result[1]
         panelWindow.updateXY(fixX, fixY)
         // 记录位置
-        FloatServiceUtil.px = fixX
-        FloatServiceUtil.py = fixY
+        floatServiceUtil.px = fixX
+        floatServiceUtil.py = fixY
     }
 
     val isCanChangeStatus: Boolean

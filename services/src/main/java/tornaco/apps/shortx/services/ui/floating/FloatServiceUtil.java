@@ -8,30 +8,27 @@ package tornaco.apps.shortx.services.ui.floating;
  * <b>Description:</b>  <br>
  */
 public class FloatServiceUtil {
-    public static int x = 200;
-    public static int y = 500;
+    public int x = 200;
+    public int y = 500;
 
-    public static int px = 200;
-    public static int py = 500;
+    public int px = 200;
+    public int py = 500;
 
-    public static FloatViewLiveData floatViewLiveData = new FloatViewLiveData();
+    public final FloatViewLiveData floatViewLiveData = new FloatViewLiveData();
 
-    private FloatServiceUtil() {
-    }
-
-    public static void openFloatButton() {
+    public void openFloatButton() {
         floatViewLiveData.setValue(true);
     }
 
-    public static void closeFloatButton() {
+    public void closeFloatButton() {
         floatViewLiveData.setValue(false);
     }
 
-    public static boolean isFloatButtonOpen() {
+    public boolean isFloatButtonOpen() {
         return floatViewLiveData.isOpen();
     }
 
-    public static void toggleFloatButton() {
+    public void toggleFloatButton() {
         if (isFloatButtonOpen()) {
             closeFloatButton();
         } else {
