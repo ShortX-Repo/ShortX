@@ -6,6 +6,9 @@ import android.os.IBinder
 import android.os.ParcelFileDescriptor
 import android.os.RemoteCallbackList
 import android.util.Log
+import android.view.KeyEvent.KEYCODE_POWER
+import android.view.KeyEvent.KEYCODE_STEM_PRIMARY
+import android.view.KeyEvent.KEYCODE_VOLUME_DOWN
 import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -79,6 +82,11 @@ import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.ToggleSettingsStore
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
+import tornaco.apps.shortx.services.policy.KeyCombinationManager
+import tornaco.apps.shortx.services.policy.KeyCombinationManager.TwoKeysCombinationRule
+import tornaco.apps.shortx.services.policy.KeyCombinationTrigger
+import tornaco.apps.shortx.services.policy.SingleKeyGestureDetector
+import tornaco.apps.shortx.services.policy.SingleKeyRuleTrigger
 import tornaco.apps.shortx.services.rule.actor.ActionEvaluateRecorder
 import tornaco.apps.shortx.services.rule.actor.PrebuiltActor
 import tornaco.apps.shortx.services.rule.actor.dummyHandlerParamsForAction
@@ -95,7 +103,6 @@ import tornaco.apps.shortx.services.rule.fact.trigger.KeyPressTimesInIntervalLis
 import tornaco.apps.shortx.services.rule.fact.trigger.allTriggers
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
-import tornaco.apps.shortx.services.util.SingleKeyGestureDetector
 import tornaco.apps.shortx.services.util.callIfAlive
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
@@ -161,10 +168,27 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         )
     }
 
+    private val keyCombinationTrigger by lazy {
+        KeyCombinationTrigger(
+            context,
+            shortXContext
+        )
+    }
+
+    private val systemKeyCombineDetector by lazy {
+        KeyCombinationManager(handler).apply {
+            addRule(object : TwoKeysCombinationRule(KEYCODE_VOLUME_DOWN, KEYCODE_POWER) {
+            })
+            addRule(object : TwoKeysCombinationRule(KEYCODE_POWER, KEYCODE_STEM_PRIMARY) {
+            })
+        }
+    }
+
     private val allTriggers by lazy {
         allTriggers(context, shortXContext).apply {
             // These are internal Triggers.
             add(singleKeyRuleTrigger)
+            add(keyCombinationTrigger)
         }
     }
 
@@ -349,6 +373,25 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             // Check if it accessibility service.
             if ((it.flags and android.view.KeyEvent.FLAG_IS_ACCESSIBILITY_EVENT) != 0) {
                 return@onKeyEvent null
+            }
+
+            if ((it.flags and android.view.KeyEvent.FLAG_FALLBACK) == 0) {
+                systemKeyCombineDetector.interceptKey(it, true)
+                if (systemKeyCombineDetector.isKeyConsumed(it)) {
+                    // Check if system has handle combine key.
+                    singleKeyGestureDetector.reset()
+                    return@onKeyEvent null
+                }
+            }
+
+            if (BuildPropInternal.APP_IS_DEBUG) {
+                if ((it.flags and android.view.KeyEvent.FLAG_FALLBACK) == 0) {
+                    keyCombinationTrigger.interceptKey(it)
+                    if (keyCombinationTrigger.isKeyConsumed(it)) {
+                        singleKeyGestureDetector.reset()
+                        return@onKeyEvent false
+                    }
+                }
             }
 
             // Check ADV rules.

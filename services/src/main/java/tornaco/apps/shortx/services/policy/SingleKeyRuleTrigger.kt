@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.services.rule
+package tornaco.apps.shortx.services.policy
 
 import android.content.Context
 import android.view.KeyEvent
@@ -13,10 +13,10 @@ import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.ctrl.Device
 import tornaco.apps.shortx.services.input.IMSFunc
+import tornaco.apps.shortx.services.rule.RuleService
 import tornaco.apps.shortx.services.rule.actor.impl.device
 import tornaco.apps.shortx.services.rule.fact.trigger.Trigger
-import tornaco.apps.shortx.services.util.SingleKeyGestureDetector
-import tornaco.apps.shortx.services.util.SingleKeyGestureDetector.SingleKeyRule
+import tornaco.apps.shortx.services.policy.SingleKeyGestureDetector.SingleKeyRule
 
 
 class SingleKeyRuleTrigger(

@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.os.cpu
 
+import tornaco.apps.shortx.core.BuildPropExt
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -16,24 +17,26 @@ class CpuService(shortXContext: ShortXContext) : SystemService(shortXContext, "C
     override fun systemReady() {
         super.systemReady()
 
-        if (OsUtils.isQOrAbove()) {
-            cpuMonitorService.start(context)
-            cpuMonitorService.localService.addCpuAvailabilityCallback(
-                Executors.newSingleThreadExecutor(),
-                CpuAvailabilityMonitoringConfig.Builder(CPUSET_ALL)
-                    .addThreshold(20)
-                    .addThreshold(80)
-                    .build(),
-                object : CpuAvailabilityCallback {
-                    override fun onAvailabilityChanged(info: CpuAvailabilityInfo) {
-                        logger.d("onAvailabilityChanged: $info")
-                    }
+        BuildPropExt.onDebugBuild {
+            if (OsUtils.isQOrAbove()) {
+                cpuMonitorService.start(context)
+                cpuMonitorService.localService.addCpuAvailabilityCallback(
+                    Executors.newSingleThreadExecutor(),
+                    CpuAvailabilityMonitoringConfig.Builder(CPUSET_ALL)
+                        .addThreshold(20)
+                        .addThreshold(80)
+                        .build(),
+                    object : CpuAvailabilityCallback {
+                        override fun onAvailabilityChanged(info: CpuAvailabilityInfo) {
+                            logger.d("onAvailabilityChanged: $info")
+                        }
 
-                    override fun onMonitoringIntervalChanged(intervalMilliseconds: Long) {
-                        logger.d("onMonitoringIntervalChanged: $intervalMilliseconds")
+                        override fun onMonitoringIntervalChanged(intervalMilliseconds: Long) {
+                            logger.d("onMonitoringIntervalChanged: $intervalMilliseconds")
+                        }
                     }
-                }
-            )
+                )
+            }
         }
     }
 
