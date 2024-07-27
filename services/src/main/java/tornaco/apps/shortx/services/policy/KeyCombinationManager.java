@@ -143,6 +143,10 @@ public class KeyCombinationManager {
         mRules.remove(rule);
     }
 
+    public void clearRules() {
+        mRules.clear();
+    }
+
     /**
      * Check if the key event could be intercepted by combination key rule before it is dispatched
      * to a window.

@@ -1,7 +1,10 @@
 package tornaco.apps.shortx.ui.addrule.fact
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.core.text.isDigitsOnly
 import tornaco.apps.shortx.core.alarm.toLocalTime
@@ -11,6 +14,7 @@ import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.core.util.select
+import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.fact.mapper.factLabelKey
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.selector.AdvancedKeyEventSelector
@@ -18,6 +22,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.AlarmSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.AppOpSelectorData
 import tornaco.apps.shortx.ui.addrule.fact.selector.AppOpSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.BTDeviceSelectorDialog
+import tornaco.apps.shortx.ui.addrule.fact.selector.CombineKeyEventSelectorActivity
 import tornaco.apps.shortx.ui.addrule.fact.selector.EdgeGestureSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.FixedPeriodSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
@@ -38,6 +43,8 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.rememberOnOffAnyStateSelecto
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberRandomInPeriodSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberSystemSettingsUrlSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberWifiSSIDSelectorState
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
 import tornaco.apps.shortx.ui.base.InputValidateResult
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MenuDialog
@@ -51,6 +58,8 @@ import java.time.LocalTime
 
 @Composable
 fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolean {
+    val context = LocalContext.current
+
     val keyEventSelectorState = rememberKeyEventSelectorState(selected = { code ->
         addFact(Fact.KeyEvent(code))
     })
@@ -60,6 +69,23 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
         addFact(event)
     })
     AdvancedKeyEventSelector(advKeyEventSelectorState)
+
+    val combineKeyCodeLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action.InjectCombineKeyCode>()
+            action?.let {
+                if (it.codes.size >= 2) {
+                    addFact(
+                        Fact.CombineKeyEvent(
+                            keyCode1 = it.codes[0],
+                            keyCode2 = it.codes[1],
+                        )
+                    )
+                }
+            }
+        }
+    )
 
     val edgeGestureSelectorState = rememberEdgeGestureSelectorState(
         selected = { eg ->
@@ -414,6 +440,22 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
     return { source ->
         when (source.clazz) {
+            Fact.CombineKeyEvent::class -> {
+                val currentKey1 = source.getFactAs<Fact.CombineKeyEvent>()?.keyCode1
+                val currentKey2 = source.getFactAs<Fact.CombineKeyEvent>()?.keyCode2
+                val dummyAction = Action.InjectCombineKeyCode(
+                    codes = listOfNotNull(currentKey1, currentKey2)
+                )
+                combineKeyCodeLauncher.launch(
+                    BaseSelectorActivity.newIntent(
+                        context,
+                        dummyAction,
+                        CombineKeyEventSelectorActivity::class.java
+                    )
+                )
+                true
+            }
+
             Fact.KeyEvent::class -> {
                 keyEventSelectorState.show()
                 true

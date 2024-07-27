@@ -11,12 +11,33 @@ interface Trigger {
     fun register()
     fun unRegister()
 
-    fun onAddRule(rule: Rule) {}
-    fun onUpdateRule(oldRule: Rule, newRule: Rule) {}
-    fun onDeleteRule(rule: Rule) {}
-    fun onRuleEnabled(ruleId: String) {}
-    fun onRuleDisabled(ruleId: String) {}
+    fun onAddRule(rule: Rule) {
+        onAnyChanged()
+    }
 
-    fun onAddOrUpdateDA(daId: String) {}
-    fun onDeleteDA(daId: String) {}
+    fun onUpdateRule(oldRule: Rule, newRule: Rule) {
+        onAnyChanged()
+    }
+
+    fun onDeleteRule(rule: Rule) {
+        onAnyChanged()
+    }
+
+    fun onRuleEnabled(ruleId: String) {
+        onAnyChanged()
+    }
+
+    fun onRuleDisabled(ruleId: String) {
+        onAnyChanged()
+    }
+
+    fun onAddOrUpdateDA(daId: String) {
+        onAnyChanged()
+    }
+
+    fun onDeleteDA(daId: String) {
+        onAnyChanged()
+    }
+
+    fun onAnyChanged() {}
 }

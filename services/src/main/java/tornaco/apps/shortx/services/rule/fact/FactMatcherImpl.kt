@@ -38,6 +38,7 @@ import tornaco.apps.shortx.core.proto.fact.CallStateChanged
 import tornaco.apps.shortx.core.proto.fact.ChargerPlug
 import tornaco.apps.shortx.core.proto.fact.ChargerUnplug
 import tornaco.apps.shortx.core.proto.fact.ClipboardContentChanged
+import tornaco.apps.shortx.core.proto.fact.CombineKeyEvent
 import tornaco.apps.shortx.core.proto.fact.ConnectedWifiSignalLevelChanged
 import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
@@ -109,6 +110,11 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
         mutableMapOf()
 
     init {
+        register(CombineKeyEvent::class.java) { actual, rule ->
+            val lk = actual as CombineKeyEvent
+            val rk = rule as CombineKeyEvent
+            lk.keyCode1 == rk.keyCode1 && lk.keyCode2 == rk.keyCode2
+        }
         register(KeyEvent::class.java) { actual, rule ->
             val lk = actual as KeyEvent
             val rk = rule as KeyEvent
