@@ -80,4 +80,8 @@ class KeyCombinationTrigger(
     fun isKeyConsumed(keyEvent: KeyEvent): Boolean {
         return keyCombinationManager.isKeyConsumed(keyEvent)
     }
+
+    fun reset() {
+        keyCombinationManager.reset()
+    }
 }

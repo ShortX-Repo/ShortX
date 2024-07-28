@@ -586,7 +586,7 @@
     "ui.action.click.tile": "輕觸磁貼",
     "ui.action.click.tile.is.long.click": "長按",
     "ui.action.inject.keycode": "模擬按鍵",
-    "ui.action.inject.combine.keycode": "模擬組合按鍵",
+    "ui.action.inject.combine.keycode": "組合按鍵",
     "ui.action.custom.keycode": "自訂keycode",
     "ui.action.show.draw.board": "螢幕畫板",
     "ui.action.show.draw.board.tip": "按返回鍵退出，音量鍵展示工具欄",

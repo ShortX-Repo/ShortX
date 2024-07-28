@@ -134,7 +134,7 @@ public final class CpuMonitorService {
     public CpuMonitorService(Context context) {
         this(context, new CpuInfoReader(), new ServiceThread(TAG,
                         Process.THREAD_PRIORITY_BACKGROUND, /* allowIo= */ true),
-                Build.IS_USERDEBUG || Build.IS_ENG, NORMAL_MONITORING_INTERVAL_MILLISECONDS,
+                true, NORMAL_MONITORING_INTERVAL_MILLISECONDS,
                 DEBUG_MONITORING_INTERVAL_MILLISECONDS, LATEST_AVAILABILITY_DURATION_MILLISECONDS);
     }
 

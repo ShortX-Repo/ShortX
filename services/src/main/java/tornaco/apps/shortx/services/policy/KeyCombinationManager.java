@@ -51,7 +51,7 @@ public class KeyCombinationManager {
     private final Handler mHandler;
 
     // Keys in a key combination must be pressed within this interval of each other.
-    private static final long COMBINE_KEY_DELAY_MILLIS = 150;
+    private static final long COMBINE_KEY_DELAY_MILLIS = 180;
 
     /**
      * Rule definition for two keys combination.
@@ -145,6 +145,16 @@ public class KeyCombinationManager {
 
     public void clearRules() {
         mRules.clear();
+    }
+
+    public void reset() {
+        synchronized (mLock) {
+            mActiveRules.clear();
+            mDownTimes.clear();
+            mHandler.removeCallbacksAndMessages(null);
+            mTriggeredRule = null;
+            Log.w(TAG, "reset");
+        }
     }
 
     /**

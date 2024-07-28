@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropExt
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IActionEvaluateListener
 import tornaco.apps.shortx.core.ICallback
@@ -376,21 +377,35 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             }
 
             if ((it.flags and android.view.KeyEvent.FLAG_FALLBACK) == 0) {
-                systemKeyCombineDetector.interceptKey(it, true)
-                if (systemKeyCombineDetector.isKeyConsumed(it)) {
+                if (systemKeyCombineDetector.interceptKey(
+                        it,
+                        true
+                    ) || systemKeyCombineDetector.isKeyConsumed(it)
+                ) {
                     // Check if system has handle combine key.
                     singleKeyGestureDetector.reset()
+                    keyCombinationTrigger.reset()
                     return@onKeyEvent null
                 }
             }
 
-            if (BuildPropInternal.APP_IS_DEBUG) {
-                if ((it.flags and android.view.KeyEvent.FLAG_FALLBACK) == 0) {
-                    keyCombinationTrigger.interceptKey(it)
-                    if (keyCombinationTrigger.isKeyConsumed(it)) {
-                        singleKeyGestureDetector.reset()
-                        return@onKeyEvent false
-                    }
+            if ((it.flags and android.view.KeyEvent.FLAG_FALLBACK) == 0) {
+                val interceptKeyRes = keyCombinationTrigger.interceptKey(it)
+                BuildPropExt.onDebugBuild {
+                    logger.d("interceptKeyRes: $interceptKeyRes")
+                }
+                if (interceptKeyRes) {
+                    singleKeyGestureDetector.reset()
+                    return@onKeyEvent false
+                }
+
+                val isKeyConsumed = keyCombinationTrigger.isKeyConsumed(it)
+                BuildPropExt.onDebugBuild {
+                    logger.d("isKeyConsumed: $isKeyConsumed")
+                }
+                if (isKeyConsumed) {
+                    singleKeyGestureDetector.reset()
+                    return@onKeyEvent false
                 }
             }
 
