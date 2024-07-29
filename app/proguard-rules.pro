@@ -202,6 +202,14 @@
 -dontwarn javax.lang.model.SourceVersion
 -dontwarn java.beans.FeatureDescriptor
 -dontwarn android.app.AndroidAppHelper
+-dontwarn android.util.IntArray
+-dontwarn android.util.LongSparseLongArray
+-dontwarn android.util.TimingsTraceLog
+-dontwarn android.view.InputChannel
+-dontwarn android.view.InputEventReceiver
+-dontwarn android.view.InputMonitor
+-dontwarn com.android.internal.util.Preconditions
+-dontwarn com.android.internal.util.ToBooleanFunction
 
 -dontwarn com.android.internal.telephony.ITelephony$Stub
 -dontwarn com.android.internal.telephony.ITelephony
