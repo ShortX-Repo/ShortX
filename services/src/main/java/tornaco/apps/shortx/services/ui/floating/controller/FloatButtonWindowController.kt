@@ -67,7 +67,7 @@ class FloatButtonWindowController(
     }
 
     private fun attachFloatWindow() {
-        val iconSize = ScreenUtil.dip2px(context, 52f)
+        val iconSize = ScreenUtil.dip2px(context, 42f)
         floatWindowManager
             .makeFloatWindow(
                 floatButtonView,
