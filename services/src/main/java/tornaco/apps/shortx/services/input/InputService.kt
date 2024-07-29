@@ -2,7 +2,6 @@ package tornaco.apps.shortx.services.input
 
 import android.view.KeyEvent
 import com.android.internal.view.IInputContext
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import tornaco.apps.shortx.core.proto.clipboard.ClipboardItem
@@ -10,7 +9,6 @@ import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.clipboardManager
 import tornaco.apps.shortx.services.ShortXContext
-import tornaco.apps.shortx.services.ShortXService
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.android.ServiceRetriever
 import tornaco.apps.shortx.services.data.ClipboardStore
@@ -19,7 +17,6 @@ import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.systemServiceScope
-import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
 import util.Reflections
 import java.util.UUID
@@ -33,11 +30,6 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     private val _onClipboardListener = mutableListOf<(String) -> Unit>()
 
     private val isIMEShown = AtomicBoolean(false)
-    private var hasEverReceivedInputFilterCallback = false
-
-    private val inputFilterInstaller by lazy {
-        InputFilterInstaller(ShortXService)
-    }
 
     private val clipboardStore by lazy {
         ClipboardStore(
@@ -77,27 +69,6 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
                 logger.d("ClipChangedListener, onPrimaryClipChanged, text: $text")
                 onClipboardChange(text)
             }
-        }
-    }
-
-    override fun userPresent(isFirstTime: Boolean) {
-        super.userPresent(isFirstTime)
-        if (isFirstTime) {
-            systemServiceScope.launchSafety {
-                delay(2000)
-                if (!hasEverReceivedInputFilterCallback) {
-                    inputFilterInstaller.installInputFilter()
-                } else {
-                    logger.w("Won't install InputFilter since hasEverReceivedInputFilterCallback is true")
-                }
-            }
-        }
-    }
-
-    fun setHasReceivedInputFilterCallback() {
-        if (!hasEverReceivedInputFilterCallback) {
-            logger.i("setHasReceivedInputFilterCallback")
-            hasEverReceivedInputFilterCallback = true
         }
     }
 
