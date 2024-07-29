@@ -14,6 +14,7 @@ import tornaco.apps.shortx.core.proto.action.FindAndClickMatchedView
 import tornaco.apps.shortx.core.proto.action.FindAndClickViewById
 import tornaco.apps.shortx.core.proto.action.ForEachPkgSet
 import tornaco.apps.shortx.core.proto.action.GetTextFromScreenNode
+import tornaco.apps.shortx.core.proto.action.HideFloatWindow
 import tornaco.apps.shortx.core.proto.action.HttpRequest
 import tornaco.apps.shortx.core.proto.action.InjectCombineKeyCode
 import tornaco.apps.shortx.core.proto.action.InjectGestureRecording
@@ -38,6 +39,7 @@ import tornaco.apps.shortx.core.proto.action.SetAppSuspendByPkg
 import tornaco.apps.shortx.core.proto.action.SetScreenTimeout
 import tornaco.apps.shortx.core.proto.action.ShowClipboardView
 import tornaco.apps.shortx.core.proto.action.ShowDrawBoard
+import tornaco.apps.shortx.core.proto.action.ShowFloatWindow
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.action.StartGestureRecording
 import tornaco.apps.shortx.core.proto.action.StopAppByPkg
@@ -76,6 +78,7 @@ import tornaco.apps.shortx.core.proto.fact.AppLostWindowFocus
 import tornaco.apps.shortx.core.proto.fact.BTConnectedTo
 import tornaco.apps.shortx.core.proto.fact.BTDisconnectedFrom
 import tornaco.apps.shortx.core.proto.fact.BatteryTemperatureChanged
+import tornaco.apps.shortx.core.proto.fact.CombineKeyEvent
 import tornaco.apps.shortx.core.proto.fact.ConnectedWifiSignalLevelChanged
 import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen
@@ -85,6 +88,8 @@ import tornaco.apps.shortx.core.proto.fact.NFCTagDiscover
 import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
 import tornaco.apps.shortx.core.proto.fact.PkgStartRunning
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
+import tornaco.apps.shortx.core.proto.fact.UsbDeviceAttached
+import tornaco.apps.shortx.core.proto.fact.UsbDeviceDetached
 import tornaco.apps.shortx.core.proto.fact.UserPresentAtTheFirstTime
 import tornaco.apps.shortx.core.proto.fact.VPNConnected
 import tornaco.apps.shortx.core.proto.fact.VPNDisconnected
@@ -115,6 +120,9 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         BatteryTemperatureChanged::class,
         MethodHook::class,
         PkgStartRunning::class,
+        UsbDeviceDetached::class,
+        UsbDeviceAttached::class,
+        CombineKeyEvent::class,
 
         AppHasAudioFocus::class,
         RequireMobileDataEnabled::class,
@@ -183,4 +191,5 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         AreaScreenshot::class,
         SelectScreenArea::class,
         LaunchPinedItem::class,
+        ShowFloatWindow::class,
     )

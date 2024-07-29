@@ -105,6 +105,9 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Fact.BatteryTemperatureChanged::class,
     Fact.MethodHook::class,
     Fact.PkgStartRunning::class,
+    Fact.UsbDeviceDetached::class,
+    Fact.UsbDeviceAttached::class,
+    Fact.CombineKeyEvent::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 
     Condition.AppHasAudioFocus::class,
@@ -179,6 +182,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Action.AreaScreenshot::class,
     Action.SelectScreenArea::class,
     Action.LaunchPinedItem::class,
+    Action.ShowFloatWindow::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 )
 
