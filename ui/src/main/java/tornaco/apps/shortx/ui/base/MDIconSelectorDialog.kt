@@ -3,6 +3,9 @@
 package tornaco.apps.shortx.ui.base
 
 
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,15 +26,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import id.zelory.compressor.constraint.size
+import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.addrule.action.selector.PhotoSelectorActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.ui.util.Compressor.compressAndToBase64
 
 class MDIconSelectorState(val onSelected: (String) -> Unit) : CommonDialogState()
 
@@ -54,6 +63,30 @@ fun MDIconSelectorDialog(state: MDIconSelectorState) {
 
 @Composable
 private fun MDIconSelector(state: MDIconSelectorState) {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    val photoPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val uri = result.data?.data
+            uri?.let {
+                runCatching {
+                    scope.launch {
+                        val base64 = compressAndToBase64(context, uri) {
+                            // 10K
+                            size(maxFileSize = 10240)
+                        }
+                        state.onSelected(base64)
+                        state.dismiss()
+                    }
+                }.onFailure {
+                    TextDisplayActivity.start(context, "OOPS! WTF!", it.stackTraceToString())
+                }
+            }
+        }
+    )
+
     ShortXTheme {
         var selectedTabIndex by remember { mutableIntStateOf(0) }
         Scaffold(
@@ -70,6 +103,11 @@ private fun MDIconSelector(state: MDIconSelectorState) {
                         }
                     },
                     actions = {
+                        IconButton(onClick = {
+                            photoPicker.launch(Intent(context, PhotoSelectorActivity::class.java))
+                        }) {
+                            RemixIcon(remixName = Remix.System.external_link_line)
+                        }
                     }
                 )
             }) { paddingValues ->
