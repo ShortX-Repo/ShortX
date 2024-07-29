@@ -4,12 +4,26 @@ package tornaco.apps.shortx.ui.base
 
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -19,18 +33,7 @@ import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
-class MDIconSelectorState(val onSelected: (String) -> Unit) {
-    private var _isShow by mutableStateOf(false)
-    val isShow get() = _isShow
-
-    fun show() {
-        _isShow = true
-    }
-
-    fun dismiss() {
-        _isShow = false
-    }
-}
+class MDIconSelectorState(val onSelected: (String) -> Unit) : CommonDialogState()
 
 @Composable
 fun rememberMDIconSelectorState(onSelected: (String) -> Unit): MDIconSelectorState {
@@ -42,7 +45,7 @@ fun rememberMDIconSelectorState(onSelected: (String) -> Unit): MDIconSelectorSta
 
 @Composable
 fun MDIconSelectorDialog(state: MDIconSelectorState) {
-    if (state.isShow) {
+    if (state.isShowing) {
         ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
             MDIconSelector(state)
         }
@@ -52,71 +55,70 @@ fun MDIconSelectorDialog(state: MDIconSelectorState) {
 @Composable
 private fun MDIconSelector(state: MDIconSelectorState) {
     ShortXTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
-        ) {
-            var selectedTabIndex by remember {
-                mutableStateOf(0)
-            }
+        var selectedTabIndex by remember { mutableIntStateOf(0) }
+        Scaffold(
+            modifier = Modifier,
+            topBar = {
+                ShortXTopAppBar(
+                    modifier = Modifier,
+                    title = { Text("Icons") },
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            state.dismiss()
+                        }) {
+                            RemixIcon(remixName = Remix.System.close_line)
+                        }
+                    },
+                    actions = {
+                    }
+                )
+            }) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
 
-            Scaffold(
-                modifier = Modifier,
-                topBar = {
-                    ShortXTopAppBar(
-                        modifier = Modifier,
-                        title = { Text("Icons") },
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                state.dismiss()
-                            }) {
-                                RemixIcon(remixName = Remix.System.close_line)
-                            }
-                        },
-                        actions = {
-                        }
-                    )
-                }) { paddingValues ->
-                Column(
+                val iconCategories: List<String> = listOf("All") + Remix.all.keys.toList()
+                val indexAll = 0
+
+                ShortXScrollableTabRow(selectedTabIndex = selectedTabIndex) {
+                    iconCategories.forEachIndexed { index, categoryName ->
+                        Tab(selected = selectedTabIndex == index,
+                            onClick = { selectedTabIndex = index },
+                            text = {
+                                Text(
+                                    text = categoryName,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            })
+                    }
+                }
+
+                val searchBarState = rememberSearchBarState()
+                SearchBar(
+                    searchBarState,
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                ) {
-                    val iconCategories: List<String> = Remix.all.keys.toList()
-                    ShortXScrollableTabRow(selectedTabIndex = selectedTabIndex) {
-                        iconCategories.forEachIndexed { index, categoryName ->
-                            Tab(selected = selectedTabIndex == index,
-                                onClick = { selectedTabIndex = index },
-                                text = {
-                                    Text(
-                                        text = categoryName,
-                                        maxLines = 2,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                })
-                        }
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp)
+                )
+
+                val icons =
+                    remember(selectedTabIndex, searchBarState.keyword) {
+                        val src =
+                            if (selectedTabIndex == indexAll) Remix.allFlat else Remix.all[iconCategories[selectedTabIndex]]
+                        src?.filterKeys {
+                            searchBarState.keyword.isBlank() || it.contains(searchBarState.keyword)
+                        }?.map { it.key to it.value }
                     }
 
-                    val searchBarState = rememberSearchBarState(iconCategories.size)
-                    SearchBar(
-                        searchBarState, modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 12.dp)
-                    )
-
-                    val icons =
-                        remember(selectedTabIndex, searchBarState.keyword) {
-                            Remix.all[iconCategories[selectedTabIndex]]!!.filterKeys {
-                                searchBarState.keyword.isBlank() || it.contains(searchBarState.keyword)
-                            }.map { it.key to it.value }
-                        }
-
+                icons?.let {
                     LazyVerticalGrid(
                         modifier = Modifier
                             .fillMaxSize(),
                         columns = GridCells.Fixed(3),
                         content = {
-
-
                             itemsIndexed(icons) { _, nameAndResId ->
                                 Column(
                                     modifier = Modifier
