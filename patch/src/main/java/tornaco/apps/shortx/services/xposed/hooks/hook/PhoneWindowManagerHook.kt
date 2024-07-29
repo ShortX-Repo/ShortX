@@ -10,23 +10,28 @@ import tornaco.apps.shortx.services.ShortXService
 object PhoneWindowManagerHook {
     private val logger = Logger("ShortXHook.PhoneWindowManagerHook")
 
+    private val keyCodesToHandle = arrayOf(
+        KeyEvent.KEYCODE_HOME,
+        KeyEvent.KEYCODE_BACK,
+        KeyEvent.KEYCODE_POWER,
+    )
+
     fun hook(lpparam: XC_LoadPackage.LoadPackageParam) {
         logger.d("hook")
         // public int interceptKeyBeforeQueueing(KeyEvent event, int policyFlags) {
-        beforeMethod(
+        afterMethod(
             lpparam.classLoader.phoneWindowManagerClass(),
             Methods.interceptKeyBeforeQueueing
         ) { param ->
             logger.d("interceptKeyBeforeQueueing: ${param.args.map { it }}")
             // Only handle HOME/BACK/RECENT/POWER
-            val keyEvent = param.args[0] as KeyEvent?
-            if (keyEvent != null) {
-                val res = ShortXService.shortXContext.gesture.filterInput(keyEvent)
+            val keyEvent = param.args[0] as KeyEvent
+
+            if (keyCodesToHandle.contains(keyEvent.keyCode)) {
+                val res = ShortXService.shortXContext.gesture.handleKeyEvent(keyEvent)
                 if (res == false) {
                     param.result = 0
                 }
-            } else {
-                logger.e("Not Android.KeyEvent: $keyEvent")
             }
         }
     }

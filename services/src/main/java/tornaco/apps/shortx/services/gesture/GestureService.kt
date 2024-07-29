@@ -31,10 +31,10 @@ import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.input.IMSFunc
 import tornaco.apps.shortx.services.input.opls.OplusInputMonitorHelper
-import tornaco.apps.shortx.services.policy.SingleKeyGestureDetector
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.GuideLineView
 import tornaco.apps.shortx.services.ui.i18NIns
+import tornaco.apps.shortx.services.policy.SingleKeyGestureDetector
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
 import tornaco.apps.shortx.services.wm.ColorPalette
@@ -137,7 +137,15 @@ class GestureService(shortXContext: ShortXContext) :
             return filterMotionEvent(input)
         }
         if (input is KeyEvent) {
-            return handleKeyEvent(input)
+            // Below code is handle by PhoneWindowManager.
+            if (!arrayOf(
+                    KeyEvent.KEYCODE_HOME,
+                    KeyEvent.KEYCODE_BACK,
+                    KeyEvent.KEYCODE_POWER,
+                ).contains(input.keyCode)
+            ) {
+                return handleKeyEvent(input)
+            }
         }
         return null
     }
@@ -187,7 +195,7 @@ class GestureService(shortXContext: ShortXContext) :
         return gestureInterceptRes
     }
 
-    private fun handleKeyEvent(event: KeyEvent): Boolean? {
+    fun handleKeyEvent(event: KeyEvent): Boolean? {
         // update last key.
         shortXContext.input.updateLastInputKey(event.keyCode, "handleKeyEvent")
 

@@ -5,6 +5,7 @@ package tornaco.apps.shortx.ui.settings
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,6 +42,7 @@ import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.BaseActivity
+import tornaco.apps.shortx.ui.base.ErrorCard
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LargeTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -52,6 +54,7 @@ import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.SwitchRow
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -121,6 +124,17 @@ class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@Application
                 Edge.entries.filterNot { it == Edge.UNRECOGNIZED || it.isAll }
                 // Edge.entries.filter { it.isAll }
             )
+            loadState()
+        }
+    }
+
+    fun setDisabled(it: Boolean) {
+        viewModelScope.launch {
+            if (it) {
+                shortXManager.addHookFlags(ShortXManager.Companion.HookFlags.FLAG_DISABLE_GESTURE_HOOK)
+            } else {
+                shortXManager.removeHookFlags(ShortXManager.Companion.HookFlags.FLAG_DISABLE_GESTURE_HOOK)
+            }
             loadState()
         }
     }
@@ -245,6 +259,22 @@ fun KeyAndGestureSettingsActivity.EdgeGestureSettingsSelector() {
                         onValueChange = {
                             vm.setKeyDetectorLongPressTimeoutMS(it.roundToLong())
                         })
+
+                    SectionSpacer()
+                    SwitchRow(
+                        text = LocalI18N.current["ui.settings.edge.gesture.disable"],
+                        isChecked = state.isEdgeGestureDisabled,
+                        onCheckChange = {
+                            vm.setDisabled(it)
+                        }
+                    )
+                    AnimatedVisibility(visible = state.isEdgeGestureDisabled) {
+                        ErrorCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            title = LocalI18N.current["ui.settings.edge.gesture.disabled.warn"],
+                            warnings = emptyList()
+                        )
+                    }
 
                     repeat(4) {
                         SectionSpacer()
