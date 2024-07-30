@@ -29,7 +29,7 @@ object PicassoInitializer {
 
         override fun load(picasso: Picasso, request: Request, callback: Callback) {
             kotlin.runCatching {
-                val pkgName = request.uri!!.toString().replace("app://", "").trim()
+                val pkgName = request.uri.toString().replace("app://", "").trim()
                 logger.d("pkgName: $pkgName")
                 callback.onSuccess(
                     Result.Bitmap(
@@ -53,7 +53,7 @@ object PicassoInitializer {
 
         override fun load(picasso: Picasso, request: Request, callback: Callback) {
             kotlin.runCatching {
-                val iconName = request.uri!!.toString().replace("remix://", "")
+                val iconName = request.uri.toString().replace("remix://", "")
                 val resName = Remix.allFlat[iconName]
                 logger.d("iconName: $iconName, resName: $resName")
                 callback.onSuccess(
@@ -69,10 +69,36 @@ object PicassoInitializer {
         }
     }
 
+    private val base64IconRequestHandler = object : RequestHandler() {
+        private val logger = Logger("base64IconRequestHandler")
+
+        override fun canHandleRequest(data: Request): Boolean {
+            return data.uri?.toString()?.startsWith("base64://") ?: false
+        }
+
+        override fun load(picasso: Picasso, request: Request, callback: Callback) {
+            kotlin.runCatching {
+                val base64 = request.uri.toString().replace("base64://", "")
+                callback.onSuccess(
+                    Result.Bitmap(
+                        requireNotNull(BitmapUtils.base64ToBitmap(base64)) {
+                            "Fail to decode base64: $base64"
+                        },
+                        Picasso.LoadedFrom.DISK
+                    )
+                )
+            }.onFailure {
+                logger.e(it, "load error")
+                callback.onError(it)
+            }
+        }
+    }
+
     private val picasso: Picasso by lazy {
         Picasso.Builder(appContext).cacheDir(Dirs.picassoCacheDir())
             .addRequestHandler(appIconRequestHandler)
             .addRequestHandler(remixIconRequestHandler)
+            .addRequestHandler(base64IconRequestHandler)
             .build()
     }
 

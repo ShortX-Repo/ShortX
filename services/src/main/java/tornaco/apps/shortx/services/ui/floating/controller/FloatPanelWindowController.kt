@@ -15,8 +15,10 @@ import tornaco.apps.shortx.core.proto.action.ShowFloatWindow
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.res.isBase64Image
 import tornaco.apps.shortx.core.res.remixResName
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.services.ui.PicassoInitializer
 import tornaco.apps.shortx.services.ui.floating.FloatMoveEnum
 import tornaco.apps.shortx.services.ui.floating.FloatServiceUtil
 import tornaco.apps.shortx.services.ui.floating.FloatWindowManager
@@ -138,11 +140,15 @@ class FloatPanelWindowController(
             params.gravity = Gravity.CENTER
             actionView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
 
-            val iconResName =
-                context.remixResName(button.icon) ?: context.remixResName(Remix.Animals.dog)
-            val tintedDrawable = DrawableCompat.wrap(appRes.getDrawable(iconResName))
-            DrawableCompat.setTint(tintedDrawable, Color.WHITE)
-            actionView.setImageDrawable(tintedDrawable)
+            if (button.icon.isBase64Image(context)) {
+                PicassoInitializer.get().load("base64://${button.icon}").into(actionView)
+            } else {
+                val iconResName =
+                    context.remixResName(button.icon) ?: context.remixResName(Remix.Animals.dog)
+                val tintedDrawable = DrawableCompat.wrap(appRes.getDrawable(iconResName))
+                DrawableCompat.setTint(tintedDrawable, Color.WHITE)
+                actionView.setImageDrawable(tintedDrawable)
+            }
 
             // 创建一个 GradientDrawable 并设置为圆形
             val gradientDrawable = GradientDrawable()
