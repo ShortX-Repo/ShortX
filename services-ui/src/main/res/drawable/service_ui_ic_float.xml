@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@id/selected"
+        android:drawable="@drawable/vector_cross_large"
+        android:state_selected="true" />
+    <item
+        android:id="@id/normal"
+        android:drawable="@drawable/vector_circle_large" />
+    <transition
+        android:drawable="@drawable/animated_circle_to_cross"
+        android:fromId="@id/normal"
+        android:toId="@id/selected" />
+    <transition
+        android:drawable="@drawable/animated_cross_to_circle"
+        android:fromId="@id/selected"
+        android:toId="@id/normal" />
+</animated-selector>

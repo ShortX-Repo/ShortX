@@ -14,6 +14,8 @@ public class FloatServiceUtil {
     public int px = 200;
     public int py = 500;
 
+    public boolean isLeft = false;
+
     public final FloatViewLiveData floatViewLiveData = new FloatViewLiveData();
 
     public void openFloatButton() {

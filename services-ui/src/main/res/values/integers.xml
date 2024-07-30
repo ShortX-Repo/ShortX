@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="float_icon_viewport_height">400</integer>
+    <integer name="float_icon_viewport_pivotX">200</integer>
+    <integer name="float_icon_viewport_pivotY">200</integer>
+    <integer name="float_icon_viewport_width">400</integer>
+    <integer name="float_vector_in_delay">100</integer>
+    <integer name="float_vector_in_duration">350</integer>
+    <integer name="float_vector_out_duration">150</integer>
+    <integer name="vector_circle_strokeWidth">14</integer>
+    <integer name="vector_cross_strokeWidth">10</integer>
+
+    <dimen name="float_icon_size">48dp</dimen>
+</resources>

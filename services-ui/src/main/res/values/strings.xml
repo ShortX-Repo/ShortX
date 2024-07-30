@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vector_large_circle">M200,100 a100,100 0 1,0 1,0 z</string>
+    <string name="vector_large_crossA">M160,160 L240,240</string>
+    <string name="vector_large_crossB">M240,160 L160,240</string>
+</resources>

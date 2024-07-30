@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:ordering="sequentially">
+    <set>
+        <objectAnimator
+            android:duration="@integer/float_vector_in_delay"
+            android:interpolator="@android:anim/decelerate_interpolator"
+            android:propertyName="trimPathStart"
+            android:valueFrom="0.5"
+            android:valueTo="0.5"
+            android:valueType="floatType" />
+        <objectAnimator
+            android:duration="@integer/float_vector_in_delay"
+            android:interpolator="@android:anim/decelerate_interpolator"
+            android:propertyName="trimPathEnd"
+            android:valueFrom="0.5"
+            android:valueTo="0.5"
+            android:valueType="floatType" />
+    </set>
+    <set>
+        <objectAnimator
+            android:duration="@integer/float_vector_in_duration"
+            android:interpolator="@anim/decelerate_interpolator_more"
+            android:propertyName="trimPathStart"
+            android:valueFrom="0.5"
+            android:valueTo="0"
+            android:valueType="floatType" />
+        <objectAnimator
+            android:duration="@integer/float_vector_in_duration"
+            android:interpolator="@anim/decelerate_interpolator_more"
+            android:propertyName="trimPathEnd"
+            android:valueFrom="0.5"
+            android:valueTo="1"
+            android:valueType="floatType" />
+    </set>
+</set>

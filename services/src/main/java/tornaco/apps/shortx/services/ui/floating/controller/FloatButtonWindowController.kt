@@ -4,7 +4,6 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
 import android.os.Handler
 import android.os.Looper
 import android.view.View
@@ -12,8 +11,6 @@ import android.widget.ImageView
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.compat.DrawableCompat
 import tornaco.apps.shortx.core.res.AppResources
-import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.core.res.remixResName
 import tornaco.apps.shortx.services.ui.floating.FloatMoveEnum
 import tornaco.apps.shortx.services.ui.floating.FloatServiceUtil
 import tornaco.apps.shortx.services.ui.floating.FloatWindow
@@ -47,15 +44,11 @@ class FloatButtonWindowController(
     private fun init() {
         floatButtonView = FloatButton(context)
         val appRes = AppResources(context, BuildPropInternal.APP_PACKAGE_NAME)
-        val iconResName = context.remixResName(Remix.Game.handle_round)
-        val tintedDrawable = DrawableCompat.wrap(appRes.getDrawable(iconResName))
+        val tintedDrawable = DrawableCompat.wrap(appRes.getDrawable("service_ui_ic_float"))
         DrawableCompat.setTint(tintedDrawable, Color.WHITE)
         floatButtonView.setImageDrawable(tintedDrawable)
-        // 创建一个 GradientDrawable 并设置为圆形
-        val gradientDrawable = GradientDrawable()
-        gradientDrawable.shape = GradientDrawable.OVAL
-        gradientDrawable.setColor(Color.GRAY)
-        floatButtonView.background = gradientDrawable
+        val iconBgDrawable = appRes.getDrawable("float_icon_bg")
+        floatButtonView.background = iconBgDrawable
         floatButtonView.scaleType = ImageView.ScaleType.CENTER
 
         initListener()

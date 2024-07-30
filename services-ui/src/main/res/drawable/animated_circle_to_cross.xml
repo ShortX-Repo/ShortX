@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/vector_circle_large">
+    <target
+        android:name="crossA"
+        android:animation="@anim/anim_cross_expand" />
+    <target
+        android:name="crossB"
+        android:animation="@anim/anim_cross_expand" />
+    <target
+        android:name="circle_container"
+        android:animation="@anim/anim_scale_out" />
+    <target
+        android:name="cross_container"
+        android:animation="@anim/anim_rotate_in" />
+</animated-vector>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48.0dip"
+    android:height="48.0dip"
+    android:viewportWidth="@integer/float_icon_viewport_width"
+    android:viewportHeight="@integer/float_icon_viewport_height">
+    <group
+        android:name="circle_container"
+        android:pivotX="@integer/float_icon_viewport_pivotX"
+        android:pivotY="@integer/float_icon_viewport_pivotY"
+        android:scaleX="0.0"
+        android:scaleY="0.0">
+        <path
+            android:name="circle"
+            android:pathData="@string/vector_large_circle"
+            android:strokeWidth="@integer/vector_circle_strokeWidth"
+            android:strokeColor="@color/primary_color_normal_dark" />
+    </group>
+    <group
+        android:name="cross_container"
+        android:pivotX="@integer/float_icon_viewport_pivotX"
+        android:pivotY="@integer/float_icon_viewport_pivotY">
+        <path
+            android:name="crossA"
+            android:pathData="@string/vector_large_crossA"
+            android:strokeWidth="@integer/vector_cross_strokeWidth"
+            android:strokeColor="@color/primary_color_normal_dark"
+            android:trimPathStart="0.0"
+            android:trimPathEnd="1.0" />
+        <path
+            android:name="crossB"
+            android:pathData="@string/vector_large_crossB"
+            android:strokeWidth="@integer/vector_cross_strokeWidth"
+            android:strokeColor="@color/primary_color_normal_dark"
+            android:trimPathStart="0.0"
+            android:trimPathEnd="1.0" />
+    </group>
+</vector>

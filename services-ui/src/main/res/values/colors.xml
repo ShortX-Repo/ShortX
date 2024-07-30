@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary_color_normal">#80000000</color>
+    <!--<color name="primary_color_pressed">#30000000</color>-->
+    <color name="primary_color_pressed">#80000000</color>
+    <color name="primary_color_normal_dark">#DDFFFFFF</color>
+</resources>

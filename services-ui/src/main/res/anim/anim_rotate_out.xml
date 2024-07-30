@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <objectAnimator
+        android:duration="@integer/float_vector_out_duration"
+        android:interpolator="@android:anim/decelerate_interpolator"
+        android:propertyName="rotation"
+        android:valueFrom="-90"
+        android:valueTo="0" />
+</set>

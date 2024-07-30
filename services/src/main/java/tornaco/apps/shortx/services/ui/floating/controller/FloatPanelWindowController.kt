@@ -86,8 +86,7 @@ class FloatPanelWindowController(
         })
         // 根据数据添加子View，并先隐藏
         addActionButton()
-        // TODO 恢复上一次保存的位置
-        floatControlPanelView.setOrientation(false)
+        floatControlPanelView.setOrientation(floatServiceUtil.isLeft)
         panelContainerLayout.addView(floatControlPanelView)
 
         initListener()
@@ -133,8 +132,8 @@ class FloatPanelWindowController(
         logger.d("addActionButton- ${this.hashCode()} ${action.buttonSettingsList.size}")
         action.buttonSettingsList.forEach { button ->
             val actionView = FloatActionButton(context)
-            val iconSize = ScreenUtil.dip2px(context, 52f)
-            val iconPadding = ScreenUtil.dip2px(context, 12f)
+            val iconSize = ScreenUtil.dip2px(context, 48f)
+            val iconPadding = ScreenUtil.dip2px(context, 14f)
 
             val params = FrameLayout.LayoutParams(iconSize, iconSize)
             params.gravity = Gravity.CENTER
@@ -150,11 +149,8 @@ class FloatPanelWindowController(
                 actionView.setImageDrawable(tintedDrawable)
             }
 
-            // 创建一个 GradientDrawable 并设置为圆形
-            val gradientDrawable = GradientDrawable()
-            gradientDrawable.shape = GradientDrawable.OVAL
-            gradientDrawable.setColor(Color.GRAY)
-            actionView.background = gradientDrawable
+            val iconBgDrawable = appRes.getDrawable("float_icon_bg")
+            actionView.background = iconBgDrawable
             actionView.scaleType = ImageView.ScaleType.CENTER
 
             actionView.setOnClickListener {
@@ -190,8 +186,7 @@ class FloatPanelWindowController(
         // 判断在屏幕左边还是右边，切换位置
         val isLeft = ScreenUtil.isScreenLeft(context, buttonX)
         panelView.setOrientation(isLeft)
-        // TODO
-        // Property.getDefault().setProperty(AccessibilityConstant.Config.KEY_FLOAT_WINDOW_IS_LEFT, isLeft);
+        floatServiceUtil.isLeft = isLeft
         // 更新浮窗
         val panelWindow = floatWindowManager.getFloatWindow(TAG_PANEL)
         val result = panelView.followButtonPosition(buttonX, buttonY)
