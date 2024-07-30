@@ -5,6 +5,8 @@ package tornaco.apps.shortx.ui.shortcut
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -52,12 +54,15 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.base.BaseActivity
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
 import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.MDIconSelectorDialog
+import tornaco.apps.shortx.ui.base.MDIcon
+import tornaco.apps.shortx.ui.base.MDIconSelectorActivity
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.ProgressDialog
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -67,7 +72,6 @@ import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SplitLines
 import tornaco.apps.shortx.ui.base.StandardSpacer
-import tornaco.apps.shortx.ui.base.rememberMDIconSelectorState
 import tornaco.apps.shortx.ui.base.rememberProgressDialogState
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.shortcut.ShortcutStubManageViewModel.Companion.genPackageName
@@ -253,10 +257,15 @@ fun CreateShortcutStubContent(
                             .padding(horizontal = 16.dp)
                             .verticalScroll(rememberScrollState())
                     ) {
-                        val mdIconSelectorState = rememberMDIconSelectorState(onSelected = {
-                            state.appIcon = it
-                        })
-                        MDIconSelectorDialog(state = mdIconSelectorState)
+                        val iconLauncher = rememberLauncherForActivityResult(
+                            contract = ActivityResultContracts.StartActivityForResult(),
+                            onResult = { result ->
+                                val icon = result.popupSelectorResult<MDIcon>()
+                                icon?.let {
+                                    state.appIcon = it.iconNameOrBase64
+                                }
+                            }
+                        )
 
                         val appIconColorPickerState = remember(state) {
                             ColorPickerDialogState(
@@ -300,7 +309,17 @@ fun CreateShortcutStubContent(
 
                         FieldTitle(text = LocalI18N.current["ui.shortx.stub.apk.icon"])
                         MediumSpacer()
-                        Button(onClick = { mdIconSelectorState.show() }) {
+
+                        val context = LocalContext.current
+                        Button(onClick = {
+                            iconLauncher.launch(
+                                BaseSelectorActivity.newIntent(
+                                    context,
+                                    null,
+                                    MDIconSelectorActivity::class.java
+                                )
+                            )
+                        }) {
                             Text(text = LocalI18N.current["ui.common.picker.pick"])
                         }
                         StandardSpacer()

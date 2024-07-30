@@ -4,6 +4,8 @@ package tornaco.apps.shortx.ui.settings
 
 import android.content.Context
 import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -44,6 +46,8 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.AddRuleActivity
 import tornaco.apps.shortx.ui.addtoggle.AddToggleActivity
 import tornaco.apps.shortx.ui.base.BaseActivity
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
 import tornaco.apps.shortx.ui.base.DropdownItem
@@ -51,7 +55,8 @@ import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.InfoCard
 import tornaco.apps.shortx.ui.base.LinkText
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.MDIconSelectorDialog
+import tornaco.apps.shortx.ui.base.MDIcon
+import tornaco.apps.shortx.ui.base.MDIconSelectorActivity
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXCard
@@ -60,7 +65,6 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
-import tornaco.apps.shortx.ui.base.rememberMDIconSelectorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -195,10 +199,15 @@ private fun TileItem(
             })
     TextInputDialog(state = renameDialogState)
 
-    val iconSelectorState = rememberMDIconSelectorState(onSelected = {
-        setIcon(tile.tile, it)
-    })
-    MDIconSelectorDialog(state = iconSelectorState)
+    val iconLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val icon = result.popupSelectorResult<MDIcon>()
+            icon?.let {
+                setIcon(tile.tile, it.iconNameOrBase64)
+            }
+        }
+    )
 
     val editDropdownState = rememberDropdownSelectorState()
     Box(modifier = Modifier) {
@@ -287,7 +296,13 @@ private fun TileItem(
                     renameDialogState.show(tile.label)
                 }
                 if (it.data == "icon") {
-                    iconSelectorState.show()
+                    iconLauncher.launch(
+                        BaseSelectorActivity.newIntent(
+                            context,
+                            null,
+                            MDIconSelectorActivity::class.java
+                        )
+                    )
                 }
             })
     }

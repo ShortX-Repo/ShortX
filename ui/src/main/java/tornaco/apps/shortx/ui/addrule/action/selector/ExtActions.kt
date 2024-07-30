@@ -10,7 +10,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import id.zelory.compressor.constraint.size
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
@@ -206,10 +205,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             uri?.let {
                 runCatching {
                     scope.launch {
-                        val base64 = Compressor.compressAndToBase64(context, uri) {
-                            // 100K
-                            size(maxFileSize = 102400)
-                        }
+                        val base64 = Compressor.compressAndToBase64(context, uri)
                         addAction(Action.FindImagePositionFromScreen(imageBase64 = base64))
                     }
                 }.onFailure {

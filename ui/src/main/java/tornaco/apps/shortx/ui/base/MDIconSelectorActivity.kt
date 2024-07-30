@@ -4,6 +4,7 @@ package tornaco.apps.shortx.ui.base
 
 
 import android.content.Intent
+import android.os.Parcelable
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -35,34 +36,28 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import id.zelory.compressor.constraint.size
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.selector.PhotoSelectorActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.Compressor.compressAndToBase64
 
-class MDIconSelectorState(val onSelected: (String) -> Unit) : CommonDialogState()
+@Parcelize
+data class MDIcon(
+    val iconNameOrBase64: String,
+    val isIconName: Boolean
+) : Parcelable
 
-@Composable
-fun rememberMDIconSelectorState(onSelected: (String) -> Unit): MDIconSelectorState {
-    return remember {
-        MDIconSelectorState(onSelected)
-    }
-}
-
-
-@Composable
-fun MDIconSelectorDialog(state: MDIconSelectorState) {
-    if (state.isShowing) {
-        ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
-            MDIconSelector(state)
-        }
+class MDIconSelectorActivity : BaseSelectorActivity<MDIcon>() {
+    @Composable
+    override fun BaseSelectorActivity<MDIcon>.SelectorContent(currentData: MDIcon?) {
+        MDIconSelector()
     }
 }
 
 @Composable
-private fun MDIconSelector(state: MDIconSelectorState) {
+private fun BaseSelectorActivity<MDIcon>.MDIconSelector() {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
@@ -73,12 +68,8 @@ private fun MDIconSelector(state: MDIconSelectorState) {
             uri?.let {
                 runCatching {
                     scope.launch {
-                        val base64 = compressAndToBase64(context, uri) {
-                            // 10K
-                            size(maxFileSize = 10240)
-                        }
-                        state.onSelected(base64)
-                        state.dismiss()
+                        val base64 = compressAndToBase64(context, uri)
+                        setResultAndFinish(MDIcon(base64, false))
                     }
                 }.onFailure {
                     TextDisplayActivity.start(context, "OOPS! WTF!", it.stackTraceToString())
@@ -97,7 +88,7 @@ private fun MDIconSelector(state: MDIconSelectorState) {
                     title = { Text("Icons") },
                     navigationIcon = {
                         IconButton(onClick = {
-                            state.dismiss()
+                            cancelAndFinish()
                         }) {
                             RemixIcon(remixName = Remix.System.close_line)
                         }
@@ -161,8 +152,7 @@ private fun MDIconSelector(state: MDIconSelectorState) {
                                 Column(
                                     modifier = Modifier
                                         .clickable {
-                                            state.onSelected(nameAndResId.first)
-                                            state.dismiss()
+                                            setResultAndFinish(MDIcon(nameAndResId.first, true))
                                         }
                                         .padding(16.dp),
                                     verticalArrangement = Arrangement.Center,

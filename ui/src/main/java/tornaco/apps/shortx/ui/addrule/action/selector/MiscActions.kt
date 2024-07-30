@@ -1,9 +1,12 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
@@ -12,10 +15,12 @@ import tornaco.apps.shortx.ui.addrule.base.ActionCategory
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.base.rememberCategoryState
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.MDIconSelectorDialog
+import tornaco.apps.shortx.ui.base.MDIcon
+import tornaco.apps.shortx.ui.base.MDIconSelectorActivity
 import tornaco.apps.shortx.ui.base.TextInputDialog
-import tornaco.apps.shortx.ui.base.rememberMDIconSelectorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
@@ -23,10 +28,15 @@ import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 
 @Composable
 fun miscActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
-    val noActionIconSelectorState = rememberMDIconSelectorState(onSelected = {
-        addAction(Action.NoAction(icon = it))
-    })
-    MDIconSelectorDialog(state = noActionIconSelectorState)
+    val noActionIconLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val icon = result.popupSelectorResult<MDIcon>()
+            icon?.let {
+                addAction(Action.NoAction(icon = icon.iconNameOrBase64))
+            }
+        }
+    )
 
     val ttsDialogState = rememberTextInputState(
         title = LocalI18N.current["ui.action.tts"],
@@ -49,10 +59,18 @@ fun miscActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
     }
     TextInputDialog(state = backupFileDialogState)
 
+    val context = LocalContext.current
+
     return { source ->
         when (source.clazz) {
             Action.NoAction::class -> {
-                noActionIconSelectorState.show()
+                noActionIconLauncher.launch(
+                    BaseSelectorActivity.newIntent(
+                        context,
+                        null,
+                        MDIconSelectorActivity::class.java
+                    )
+                )
                 true
             }
 

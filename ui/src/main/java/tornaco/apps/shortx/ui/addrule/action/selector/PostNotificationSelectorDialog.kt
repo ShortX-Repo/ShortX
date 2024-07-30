@@ -2,6 +2,8 @@
 
 package tornaco.apps.shortx.ui.addrule.action.selector
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,6 +28,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,9 +36,11 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.MDIconSelectorDialog
+import tornaco.apps.shortx.ui.base.MDIcon
+import tornaco.apps.shortx.ui.base.MDIconSelectorActivity
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -49,7 +54,6 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.SwitchRow
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.TipRow
-import tornaco.apps.shortx.ui.base.rememberMDIconSelectorState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -189,12 +193,25 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
                 LocalI18N.current["ui.action.post.notification.small.icon"]
             )
             MediumSpacer()
-            val iconSelector = rememberMDIconSelectorState {
-                vm.updateSmallIcon(it)
-            }
-            MDIconSelectorDialog(state = iconSelector)
+
+            val smallIconLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.StartActivityForResult(),
+                onResult = { result ->
+                    val icon = result.popupSelectorResult<MDIcon>()
+                    icon?.let {
+                        vm.updateSmallIcon(it.iconNameOrBase64)
+                    }
+                }
+            )
+            val context = LocalContext.current
             TextButton(onClick = {
-                iconSelector.show()
+                smallIconLauncher.launch(
+                    BaseSelectorActivity.newIntent(
+                        context,
+                        null,
+                        MDIconSelectorActivity::class.java
+                    )
+                )
             }) {
                 RemixIcon(state.smallIcon)
             }
@@ -203,13 +220,27 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
             FieldTitle(text = LocalI18N.current["ui.action.post.notification.large.icon"])
-            val iconSelector = rememberMDIconSelectorState {
-                vm.updateLargeIcon(it)
-            }
+
             MediumSpacer()
-            MDIconSelectorDialog(state = iconSelector)
+
+            val largeIconLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.StartActivityForResult(),
+                onResult = { result ->
+                    val icon = result.popupSelectorResult<MDIcon>()
+                    icon?.let {
+                        vm.updateLargeIcon(it.iconNameOrBase64)
+                    }
+                }
+            )
+            val context = LocalContext.current
             TextButton(onClick = {
-                iconSelector.show()
+                largeIconLauncher.launch(
+                    BaseSelectorActivity.newIntent(
+                        context,
+                        null,
+                        MDIconSelectorActivity::class.java
+                    )
+                )
             }) {
                 if (state.largeIcon.isNotEmpty()) {
                     RemixIcon(state.largeIcon)

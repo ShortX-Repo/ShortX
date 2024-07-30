@@ -2,6 +2,8 @@
 
 package tornaco.apps.shortx.ui.addrule.action.selector
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +34,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -43,10 +46,12 @@ import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.MDIconSelectorDialog
+import tornaco.apps.shortx.ui.base.MDIcon
+import tornaco.apps.shortx.ui.base.MDIconSelectorActivity
 import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
@@ -58,7 +63,6 @@ import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipBody
-import tornaco.apps.shortx.ui.base.rememberMDIconSelectorState
 import tornaco.apps.shortx.ui.overlay.OverlayContent
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -332,10 +336,15 @@ private fun ButtonListItem(
     updateIcon: (Int, String) -> Unit,
     removeButton: (Int) -> Unit,
 ) {
-    val iconSelector = rememberMDIconSelectorState {
-        updateIcon(index, it)
-    }
-    MDIconSelectorDialog(state = iconSelector)
+    val iconLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val icon = result.popupSelectorResult<MDIcon>()
+            icon?.let {
+                updateIcon(index, it.iconNameOrBase64)
+            }
+        }
+    )
 
     ShortXCard(modifier = Modifier.padding(top = 16.dp)) {
         Column(
@@ -382,15 +391,28 @@ private fun ButtonListItem(
                         )
                     }
                 }
+                val context = LocalContext.current
                 if (button.icon.isBlank()) {
                     TextButton(onClick = {
-                        iconSelector.show()
+                        iconLauncher.launch(
+                            BaseSelectorActivity.newIntent(
+                                context,
+                                null,
+                                MDIconSelectorActivity::class.java
+                            )
+                        )
                     }) {
                         Text(text = "No icon")
                     }
                 } else {
                     IconButton(onClick = {
-                        iconSelector.show()
+                        iconLauncher.launch(
+                            BaseSelectorActivity.newIntent(
+                                context,
+                                null,
+                                MDIconSelectorActivity::class.java
+                            )
+                        )
                     }) {
                         RemixIcon(button.icon)
                     }
