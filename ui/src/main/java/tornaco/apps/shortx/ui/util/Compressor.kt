@@ -6,6 +6,7 @@ import android.net.Uri
 import android.text.TextUtils
 import android.util.Base64
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.coroutines.Dispatchers
@@ -119,13 +120,15 @@ object Compressor {
                 .asBitmap()
                 .load(inputFile)
                 .apply(requestOptions)
+                .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .submit()
                 .get()
         }
 
         withContext(Dispatchers.IO) {
             FileOutputStream(outputFile).use { out ->
-                bitmap.compress(Bitmap.CompressFormat.JPEG, quality, out) // 压缩图像并写入输出文件
+                bitmap.compress(Bitmap.CompressFormat.PNG, quality, out) // 压缩图像并写入输出文件
             }
         }
     }
