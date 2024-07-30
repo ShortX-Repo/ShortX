@@ -4,21 +4,21 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
+import com.squareup.picasso3.CropCircleTransformation
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.compat.DrawableCompat
 import tornaco.apps.shortx.core.proto.action.ShowFloatWindow
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.res.AppResources
+import tornaco.apps.shortx.core.res.PicassoInitializer
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.res.isBase64Image
 import tornaco.apps.shortx.core.res.remixResName
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.services.ui.PicassoInitializer
 import tornaco.apps.shortx.services.ui.floating.FloatMoveEnum
 import tornaco.apps.shortx.services.ui.floating.FloatServiceUtil
 import tornaco.apps.shortx.services.ui.floating.FloatWindowManager
@@ -28,6 +28,7 @@ import tornaco.apps.shortx.services.ui.floating.widget.ControlPanelView
 import tornaco.apps.shortx.services.ui.floating.widget.ControlPanelView.OnPanelSizeChangeCallback
 import tornaco.apps.shortx.services.ui.floating.widget.FloatActionButton
 
+private val CropCircleTransformation = CropCircleTransformation()
 
 class FloatPanelWindowController(
     context: Context,
@@ -139,11 +140,13 @@ class FloatPanelWindowController(
             params.gravity = Gravity.CENTER
             actionView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
 
-            if (button.icon.isBase64Image(context)) {
-                PicassoInitializer.get().load("base64://${button.icon}").into(actionView)
+            if (button.icon.isBase64Image()) {
+                PicassoInitializer.get().load("base64://${button.icon}")
+                    .transform(CropCircleTransformation)
+                    .into(actionView)
             } else {
                 val iconResName =
-                    context.remixResName(button.icon) ?: context.remixResName(Remix.Animals.dog)
+                    remixResName(button.icon) ?: remixResName(Remix.Animals.dog)
                 val tintedDrawable = DrawableCompat.wrap(appRes.getDrawable(iconResName))
                 DrawableCompat.setTint(tintedDrawable, Color.WHITE)
                 actionView.setImageDrawable(tintedDrawable)

@@ -6,7 +6,9 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.android.sec.net.S
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.isSuccess
+import tornaco.apps.shortx.core.res.PicassoInitializer
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.I18NCache
@@ -29,6 +31,12 @@ object EntryPoint {
         LVLStateHolder.init(context)
         checkCB(context)
         LCRulesAdapter.initRules(context)
+
+        PicassoInitializer.install(
+            context,
+            context.cacheDir,
+            BuildPropInternal.APP_PACKAGE_NAME
+        )
 
         // Async clean up.
         @Suppress("OPT_IN_USAGE")

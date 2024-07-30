@@ -4,14 +4,17 @@ import android.os.Handler
 import android.os.Looper
 import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.QSTileList
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
+import tornaco.apps.shortx.core.res.PicassoInitializer
 import tornaco.apps.shortx.core.rule.action.emptyByteArrayWrapper
 import tornaco.apps.shortx.core.systemui.IQSTileHost
 import tornaco.apps.shortx.core.util.RemoteCallbackListExt
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
+import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
@@ -30,7 +33,11 @@ class UIService(shortXContext: ShortXContext) : SystemService(shortXContext, "UI
 
     override fun systemReady() {
         super.systemReady()
-        PicassoInitializer.install(context)
+        PicassoInitializer.install(
+            context,
+            Dirs.picassoCacheDir(),
+            BuildPropInternal.APP_PACKAGE_NAME
+        )
     }
 
     fun showDanmu(icon: String?, text: String) {

@@ -35,6 +35,7 @@ import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.res.isBase64Image
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.base.ClickAnimateContainer
@@ -207,18 +208,19 @@ private fun DAListItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            val isImage = icon.isBase64Image()
             if (colorfulCard) {
                 ColoredIcon(
                     modifier = Modifier,
                     size = Dimens.DAIconSize,
                     padding = 0.dp,
-                    color = iconColor,
+                    color = if (isImage) Color.Transparent else iconColor,
                     onClick = {
                         onLongClick()
                     }
                 ) {
                     RemixIcon(
-                        modifier = Modifier.size(16.dp),
+                        modifier = Modifier.size(if (isImage) Dimens.DAIconSize else 16.dp),
                         remixName = icon,
                         tint = Color.White
                     )
@@ -228,13 +230,13 @@ private fun DAListItem(
                     modifier = Modifier,
                     size = Dimens.DAIconSize,
                     padding = 0.dp,
-                    color = iconColor.copy(alpha = ActionColorBgAlpha),
+                    color = if (isImage) Color.Transparent else iconColor.copy(alpha = ActionColorBgAlpha),
                     onClick = {
                         onLongClick()
                     }
                 ) {
                     RemixIcon(
-                        modifier = Modifier.size(16.dp),
+                        modifier = Modifier.size(if (isImage) Dimens.DAIconSize else 16.dp),
                         remixName = icon,
                         tint = iconColor
                     )

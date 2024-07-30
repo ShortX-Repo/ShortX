@@ -18,6 +18,7 @@ import android.widget.TextView
 import com.android.internal.R
 import com.squareup.picasso3.CropCircleTransformation
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
+import tornaco.apps.shortx.core.res.PicassoInitializer
 import tornaco.apps.shortx.core.settings.DANMU_COLOR_AUTO
 import tornaco.apps.shortx.core.util.ApkUtils
 import tornaco.apps.shortx.core.util.Logger
