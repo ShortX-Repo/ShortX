@@ -64,12 +64,6 @@ class GestureService(shortXContext: ShortXContext) :
     private val interceptMotionPortRects = mutableListOf<RectF>()
     private val interceptMotionLandRects = mutableListOf<RectF>()
 
-    private val inputMonitorHelper by lazy {
-        OplusInputMonitorHelper.getInstance().apply {
-            init(context)
-        }
-    }
-
     override fun start(context: Context) {
         super.start(context)
     }
@@ -82,13 +76,6 @@ class GestureService(shortXContext: ShortXContext) :
         }
 
         updateShouldInterceptMotionEventRect()
-
-        inputMonitorHelper.enableInputReceiver({ inputEvent ->
-            // logger.d("SHORTX_INPUT_ OplusInputMonitorHelper: $inputEvent")
-            val res = filterInput(inputEvent)
-            val consumed = res != null && !res
-            consumed
-        }, false)
     }
 
     fun showEdgeHint(edgeNumber: List<Int>) {
@@ -128,6 +115,7 @@ class GestureService(shortXContext: ShortXContext) :
     }
 
     fun filterInput(input: InputEvent?): Boolean? {
+        shortXContext.input.setHasReceivedInputFilterCallback()
         if (!isSystemReady) return null
         if (input == null) return null
         if (input is MotionEvent) {
