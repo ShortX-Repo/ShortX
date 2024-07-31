@@ -712,6 +712,7 @@ fun ActionIcon(action: Action, isEvaluating: Boolean = false, onClick: (() -> Un
             ColoredIcon(
                 size = Dimens.DAIconSize,
                 color = if (isImage) Color.Transparent else colorForAction(action::class).copy(alpha = ActionColorBgAlpha),
+                padding = if (isImage) 0.dp else 4.dp,
                 onClick = onClick
             ) {
                 RemixIcon(
