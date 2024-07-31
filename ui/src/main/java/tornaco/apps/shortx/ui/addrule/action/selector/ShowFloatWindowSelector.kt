@@ -72,7 +72,7 @@ private fun BaseSelectorActivity<Action.ShowFloatWindow>.ShowFloatWindowButtonSe
 
     ShortXTheme {
         ShortXAppBarScaffold(
-            title = LocalI18N.current["ui.action.show.overlay"],
+            title = LocalI18N.current["ui.action.show.float.window"],
             onBackPressed = {
                 cancelAndFinish()
             },

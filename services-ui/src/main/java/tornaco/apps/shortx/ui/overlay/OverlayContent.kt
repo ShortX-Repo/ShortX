@@ -63,6 +63,7 @@ import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.res.isBase64Image
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.ColoredIcon
@@ -247,10 +248,15 @@ private fun LazyGridScope.overlayButtons(
             val icon = updateButton.setting.icon
 
             if (icon.isNotBlank()) {
-                ColoredIcon(size = 26.dp, color = color) {
+                val isImage = icon.isBase64Image()
+                ColoredIcon(
+                    size = COLOR_ICON_SIZE.dp,
+                    padding = if (isImage) 0.dp else 4.dp,
+                    color = if (isImage) Color.Transparent else color
+                ) {
                     RemixIcon(
                         modifier = Modifier
-                            .size(12.dp),
+                            .size(if (isImage) COLOR_ICON_SIZE.dp else 12.dp),
                         remixName = icon,
                         tint = Color.White
                     )
@@ -364,3 +370,5 @@ private val ColorPalette = arrayOf(
     Color(0xff8B26A6),
     Color(0xffC88C32),
 )
+
+private const val COLOR_ICON_SIZE = 26

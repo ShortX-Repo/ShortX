@@ -130,46 +130,56 @@ class FloatPanelWindowController(
 
     private fun addActionButton() {
         val appRes = AppResources(context, BuildPropInternal.APP_PACKAGE_NAME)
-        logger.d("addActionButton- ${this.hashCode()} ${action.buttonSettingsList.size}")
         action.buttonSettingsList.forEach { button ->
-            val actionView = FloatActionButton(context)
+            val isBase64Image = button.icon.isBase64Image()
+
+            val actionImageView = FloatActionButton(context)
             val iconSize = ScreenUtil.dip2px(context, 48f)
             val iconPadding = ScreenUtil.dip2px(context, 14f)
 
             val params = FrameLayout.LayoutParams(iconSize, iconSize)
             params.gravity = Gravity.CENTER
-            actionView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
+            if (!isBase64Image) {
+                actionImageView.setPadding(
+                    iconPadding,
+                    iconPadding,
+                    iconPadding,
+                    iconPadding
+                )
+            }
 
-            if (button.icon.isBase64Image()) {
+            if (isBase64Image) {
                 PicassoInitializer.get().load("base64://${button.icon}")
+                    .resize(iconSize, iconSize)
+                    .centerCrop()
                     .transform(CropCircleTransformation)
-                    .into(actionView)
+                    .into(actionImageView)
             } else {
                 val iconResName =
                     remixResName(button.icon) ?: remixResName(Remix.Animals.dog)
                 val tintedDrawable = DrawableCompat.wrap(appRes.getDrawable(iconResName))
                 DrawableCompat.setTint(tintedDrawable, Color.WHITE)
-                actionView.setImageDrawable(tintedDrawable)
+                actionImageView.setImageDrawable(tintedDrawable)
             }
 
             val iconBgDrawable = appRes.getDrawable("float_icon_bg")
-            actionView.background = iconBgDrawable
-            actionView.scaleType = ImageView.ScaleType.CENTER
+            actionImageView.background = iconBgDrawable
+            actionImageView.scaleType = ImageView.ScaleType.CENTER
 
-            actionView.setOnClickListener {
+            actionImageView.setOnClickListener {
                 floatServiceUtil.toggleFloatButton()
                 onButtonClick(button)
             }
-            actionView.setOnLongClickListener {
+            actionImageView.setOnLongClickListener {
                 floatServiceUtil.toggleFloatButton()
                 onButtonLongClick(button)
                 true
             }
 
-            actionView.visibility = View.GONE
-            actionView.alpha = FloatButtonWindowController.ALPHA_SHOW
+            actionImageView.visibility = View.GONE
+            actionImageView.alpha = FloatButtonWindowController.ALPHA_SHOW
 
-            floatControlPanelView.addView(actionView, params)
+            floatControlPanelView.addView(actionImageView, params)
         }
     }
 

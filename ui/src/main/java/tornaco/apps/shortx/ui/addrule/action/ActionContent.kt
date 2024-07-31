@@ -38,6 +38,7 @@ import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
 import tornaco.apps.shortx.core.proto.common.ActionOnError
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.res.isBase64Image
 import tornaco.apps.shortx.ui.ClipboardDialog
 import tornaco.apps.shortx.ui.UiClipboard
 import tornaco.apps.shortx.ui.addrule.ContextDataIcon
@@ -94,6 +95,7 @@ import tornaco.apps.shortx.ui.base.thenIf
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.record.EvaRecordActivity
 import tornaco.apps.shortx.ui.rememberClipboardDialogState
+import tornaco.apps.shortx.ui.theme.Dimens
 import tornaco.apps.shortx.ui.theme.ErrorRed
 import kotlin.reflect.KClass
 
@@ -704,14 +706,17 @@ fun ActionIcon(action: Action, isEvaluating: Boolean = false, onClick: (() -> Un
                     strokeWidth = 2.dp
                 )
             }
+
+            val icon = imageVectorForAction(action = action)
+            val isImage = icon.isBase64Image()
             ColoredIcon(
-                size = 36.dp,
-                color = colorForAction(action::class).copy(alpha = ActionColorBgAlpha),
+                size = Dimens.DAIconSize,
+                color = if (isImage) Color.Transparent else colorForAction(action::class).copy(alpha = ActionColorBgAlpha),
                 onClick = onClick
             ) {
                 RemixIcon(
-                    modifier = Modifier.size(16.dp),
-                    remixName = imageVectorForAction(action = action),
+                    modifier = Modifier.size(if (isImage) Dimens.DAIconSize else 16.dp),
+                    remixName = icon,
                     tint = colorForAction(action::class)
                 )
             }

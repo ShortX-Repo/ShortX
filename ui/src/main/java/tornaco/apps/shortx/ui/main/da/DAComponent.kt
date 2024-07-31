@@ -66,6 +66,7 @@ import tornaco.apps.shortx.ui.theme.VipColorGold
 import tornaco.apps.shortx.ui.util.darkenColor
 import tornaco.apps.shortx.ui.util.themedTextColor
 
+private const val COMPAT_MODE_ICON_SIZE = 48
 
 @Composable
 fun DirectActionItem(
@@ -152,13 +153,14 @@ fun DAListItemCompat(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        val isImage = icon.isBase64Image()
         ColoredIcon(
-            size = 48.dp,
+            size = COMPAT_MODE_ICON_SIZE.dp,
             padding = 0.dp,
-            color = iconColor
+            color = if (isImage) Color.Transparent else iconColor
         ) {
             RemixIcon(
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(if (isImage) COMPAT_MODE_ICON_SIZE.dp else 24.dp),
                 remixName = icon,
                 tint = Color.White
             )
