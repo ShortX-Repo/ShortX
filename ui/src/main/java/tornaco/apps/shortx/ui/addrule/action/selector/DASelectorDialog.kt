@@ -17,12 +17,11 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalSnackbarHostState
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -39,20 +38,9 @@ import tornaco.apps.shortx.ui.main.da.LocalDASetItemHandler
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
-
 class DADialogState(
     val onSelected: (DirectActionUM) -> Unit
-) {
-    var isShowing by mutableStateOf(false)
-
-    fun show() {
-        isShowing = true
-    }
-
-    fun dismiss() {
-        isShowing = false
-    }
-}
+) : CommonDialogState()
 
 @Composable
 fun rememberDADialogState(
@@ -126,7 +114,7 @@ private fun DASelector(dialogState: DADialogState) {
                         )
                         DirectActionListContent(
                             isLoading = daListState.isLoading,
-                            isShowDetailedDAItem = daListState.isShowDetailedDAItem,
+                            isShowDetailedDAItem = true,
                             das = daListState.das,
                             showOverflowMenu = false,
                             colorfulCard = false
