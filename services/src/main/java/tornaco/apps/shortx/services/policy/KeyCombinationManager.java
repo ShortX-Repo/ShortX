@@ -24,11 +24,12 @@ import android.util.SparseLongArray;
 import android.view.KeyEvent;
 
 import com.android.internal.annotations.GuardedBy;
-import com.android.internal.util.ToBooleanFunction;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.function.Consumer;
+
+import tornaco.apps.shortx.services.util.ToBooleanFunction;
 
 /**
  * Handles a mapping of two keys combination.

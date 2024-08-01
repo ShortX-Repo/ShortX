@@ -363,7 +363,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 }
             }
 
-            if (it.keyCode == android.view.KeyEvent.KEYCODE_POWER) {
+            if (it.keyCode == KEYCODE_POWER) {
                 if (it.action == android.view.KeyEvent.ACTION_DOWN) {
                     forceDisableShortXListener.onKeyPressed()
                 }
