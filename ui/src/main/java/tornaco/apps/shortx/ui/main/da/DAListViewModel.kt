@@ -28,14 +28,11 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
     BaseDAListViewModel(context) {
 
     override fun loadDAList(delay: Boolean) {
-        logger.d("loadDAList")
+        logger.d("loadDAList - ${Throwable().stackTraceToString()}")
         viewModelScope.launch {
             updateState { copy(isLoading = true) }
             if (delay) afterNavLongDelay()
             withContext(Dispatchers.IO) {
-                val activeJobs = shortXManager.getActiveJobs().apply {
-                    logger.d("activeJobs: $this")
-                }
                 val gvs = shortXManager.getAllGlobalVars()
                 val allDASets = shortXManager.getAllDASets()
 
@@ -84,7 +81,7 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                     .sortedByDescending { it.createTime }
                     .mapNotNull { directAction ->
                         runCatching {
-                            daToDirectActionUM(directAction, activeJobs, gvs)
+                            daToDirectActionUM(directAction, gvs)
                         }.getOrElse {
                             logger.e(it, "daToDirectActionUM")
                             null
@@ -112,7 +109,6 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                             ),
                             icon = directActionSet.icon,
                             iconColor = Color.Red.value,
-                            runningInsCount = 0,
                             directAction = DirectAction.getDefaultInstance(),
                             versionCode = 0,
                             isDirectActionSet = true,

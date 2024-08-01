@@ -28,6 +28,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -160,7 +161,8 @@ fun RuleScreen() {
                 isLoading = ruleListState.isLoading,
                 colorfulCard = ruleListState.colorfulCard,
                 rules = ruleListState.rules,
-                showDescription = ruleListState.showDescription
+                showDescription = ruleListState.showDescription,
+                activeJobs = ruleListState.activeJobIds
             )
         }
     }
@@ -198,7 +200,8 @@ fun RuleContent(
     isLoading: Boolean,
     colorfulCard: Boolean,
     showDescription: Boolean,
-    rules: List<RuleUM>
+    rules: List<RuleUM>,
+    activeJobs: Set<String>,
 ) {
     val refreshState = rememberPullRefreshState(isLoading, onRefresh = {
     })
@@ -224,7 +227,8 @@ fun RuleContent(
                     isSubscribed = subscribeState.isSubscribed,
                     rules = rules,
                     colorfulCard = colorfulCard,
-                    showDescription = showDescription
+                    showDescription = showDescription,
+                    activeJobs = activeJobs
                 )
             }
         }
@@ -244,6 +248,7 @@ private fun RuleListContent(
     colorfulCard: Boolean,
     showDescription: Boolean,
     rules: List<RuleUM>,
+    activeJobs: Set<String>,
 ) {
     LazyVerticalStaggeredGrid(
         modifier = Modifier.fillMaxSize(),
@@ -259,7 +264,7 @@ private fun RuleListContent(
                 backgroundColor = if (!colorfulCard || rule.isRuleSet) {
                     ColorDefaults.backgroundSurfaceColor()
                 } else {
-                    Color(rule.factIconColor).copy(alpha = ActionColorBgAlpha)
+                    Color(rule.iconColor).copy(alpha = ActionColorBgAlpha)
                 }
             ) {
                 if (rule.isRuleSet) {
@@ -268,11 +273,15 @@ private fun RuleListContent(
                         isSubscribed = isSubscribed
                     )
                 } else {
+                    val runningInsCount = remember(rule.id, activeJobs) {
+                        activeJobs.count { it == rule.id }
+                    }
                     RuleItem(
                         rule = rule,
                         isSubscribed = isSubscribed,
                         colorfulCard = colorfulCard,
-                        showDescription = showDescription
+                        showDescription = showDescription,
+                        runningInsCount = runningInsCount
                     )
                 }
             }

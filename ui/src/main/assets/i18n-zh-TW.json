@@ -966,7 +966,7 @@
     "ui.settings.edge.gesture.size": "觸摸區域厚度",
     "ui.settings.edge.gesture.swipe.distance": "觸發滑動的距離閾值",
     "ui.settings.edge.gesture.area.length": "觸摸區域長度",
-    "ui.settings.edge.gesture.disable": "停用按键相關功能，如果你發現本程式和其他手勢、按键等模組衝突，可嘗試停用。重啓後生效！",
+    "ui.settings.edge.gesture.disable": "停用手势、按键相關功能，如果你發現本程式和其他手勢、按键等模組衝突，可嘗試停用。重啓後生效！",
     "ui.settings.edge.gesture.disabled.warn": "按键相關功能已被停用",
     "ui.settings.eva.record": "指令記錄",
     "ui.settings.eva.record.summary": "查看觸發器、條件、動作記錄",

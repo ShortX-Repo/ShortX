@@ -30,9 +30,6 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
             updateState { copy(isLoading = true) }
             if (delay) afterNavLongDelay()
             withContext(Dispatchers.IO) {
-                val activeJobs = shortXManager.getActiveJobs().apply {
-                    logger.d("activeJobs: $this")
-                }
                 val gvs = shortXManager.getAllGlobalVars()
                 val allRules = shortXManager.getAllRules().apply {
                     logger.i("all rules: ${this.joinToString { it.title }}")
@@ -81,7 +78,7 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                     .let(sort(state.value.ruleSortBy))
                     .mapNotNull { rule ->
                         runCatching {
-                            ruleToRuleUM(rule, activeJobs, gvs)
+                            ruleToRuleUM(rule, gvs)
                         }.getOrElse {
                             logger.e(it, "ruleToRuleUM")
                             null
@@ -95,13 +92,10 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                         RuleUM(
                             updateTime = "",
                             createTime = "",
-                            runningInsCount = 0,
                             rule = Rule.getDefaultInstance(),
                             versionCode = 0,
-                            factIcon = "",
-                            factIconColor = Color.Red.value,
-                            actionIcon = "",
-                            actionIconColor = Color.Red.value,
+                            icon = "",
+                            iconColor = Color.Red.value,
                             id = ruleSet.id,
                             title = ruleSet.title,
                             titlePinyin = Pinyin.toPinyin(ruleSet.title, "").lowercase(),

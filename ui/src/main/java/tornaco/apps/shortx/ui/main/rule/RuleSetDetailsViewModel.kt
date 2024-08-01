@@ -19,10 +19,6 @@ class RuleSetDetailsViewModel constructor(
             updateState { copy(isLoading = true) }
             withContext(Dispatchers.IO) {
                 val startLoadingTime = System.currentTimeMillis()
-
-                val activeJobs = shortXManager.getActiveJobs().apply {
-                    logger.d("activeJobs: $this")
-                }
                 val gvs = shortXManager.getAllGlobalVars()
                 val rules = shortXManager.getAllRules()
                     .filter { it.isEnabled || !state.value.onlyShowEnabled }
@@ -30,7 +26,7 @@ class RuleSetDetailsViewModel constructor(
                     .let(sort(state.value.ruleSortBy))
                     .mapNotNull { rule ->
                         runCatching {
-                            ruleToRuleUM(rule, activeJobs, gvs)
+                            ruleToRuleUM(rule, gvs)
                         }.getOrElse {
                             logger.e(it, "ruleToRuleUM")
                             null

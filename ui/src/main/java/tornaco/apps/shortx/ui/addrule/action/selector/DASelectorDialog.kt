@@ -117,7 +117,8 @@ private fun DASelector(dialogState: DADialogState) {
                             isShowDetailedDAItem = true,
                             das = daListState.das,
                             showOverflowMenu = false,
-                            colorfulCard = false
+                            colorfulCard = false,
+                            activeJobs = emptySet()
                         )
                     }
                 }

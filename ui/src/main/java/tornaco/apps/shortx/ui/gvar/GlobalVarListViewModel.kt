@@ -161,11 +161,11 @@ class GlobalVarListViewModel @Inject constructor(@ApplicationContext context: Co
             val srcId = (this unpack_ GlobalVarCreatedBy_Rule::class.java).srcId
             val ruleOrNull = shortXManager.getRuleById(srcId)
             if (ruleOrNull != null) {
-                return CreatedBy.Rule(ruleToRuleUM(ruleOrNull, emptyList(), emptyList()))
+                return CreatedBy.Rule(ruleToRuleUM(ruleOrNull, emptyList()))
             } else {
                 val daOrNull = shortXManager.getDirectActionById(srcId)
                 if (daOrNull != null) {
-                    return CreatedBy.DA(daToDirectActionUM(daOrNull, emptyList(), emptyList()))
+                    return CreatedBy.DA(daToDirectActionUM(daOrNull, emptyList()))
                 }
             }
             return CreatedBy.Unknown

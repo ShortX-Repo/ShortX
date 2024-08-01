@@ -966,7 +966,7 @@
     "ui.settings.edge.gesture.size": "触摸区域厚度",
     "ui.settings.edge.gesture.swipe.distance": "触发滑动的距离阈值",
     "ui.settings.edge.gesture.area.length": "触摸区域长度",
-    "ui.settings.edge.gesture.disable": "禁用按键相关触发器，如果你发现本应用和其他手势、按键模块冲突，可尝试禁用。重启后生效！",
+    "ui.settings.edge.gesture.disable": "禁用手势、按键相关触发器，如果你发现本应用和其他手势、按键模块冲突，可尝试禁用。重启后生效！",
     "ui.settings.edge.gesture.disabled.warn": "按键相关功能已被禁用",
     "ui.settings.eva.record": "指令记录",
     "ui.settings.eva.record.summary": "查看触发器、条件、动作记录",

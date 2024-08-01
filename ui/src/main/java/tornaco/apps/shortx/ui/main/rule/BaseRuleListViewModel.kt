@@ -58,6 +58,7 @@ data class RuleListState(
     val showDescription: Boolean = true,
     val onlyShowEnabled: Boolean = true,
     val searchQuery: String = "",
+    val activeJobIds: Set<String> = emptySet(),
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -70,17 +71,17 @@ abstract class BaseRuleListViewModel(context: Context) :
     private val jobStatusListener = object : IJobStatusListener.Stub() {
         override fun onJobStarted(id: String?) {
             logger.d("onJobStarted: $id")
-            delayLoadRule()
+            loadActiveJobs()
         }
 
         override fun onJobCompleted(id: String?) {
             logger.d("onJobCompleted: $id")
-            delayLoadRule()
+            loadActiveJobs()
         }
 
         override fun onJobCancelled(id: String?) {
             logger.d("onJobCancelled: $id")
-            delayLoadRule()
+            loadActiveJobs()
         }
     }
 
@@ -146,6 +147,20 @@ abstract class BaseRuleListViewModel(context: Context) :
     }
 
     abstract fun loadRuleList(delay: Boolean = false)
+
+    fun loadActiveJobs() {
+        viewModelScope.launch {
+            logger.d("loadActiveJobs")
+            withContext(Dispatchers.IO) {
+                val activeJobs = shortXManager.getActiveJobs().apply {
+                    logger.d("activeJobs: $this")
+                }
+                updateState {
+                    copy(activeJobIds = activeJobs.toSet())
+                }
+            }
+        }
+    }
 
     fun setRuleSortBy(ruleSortBy: RuleSortBy) {
         updateState { copy(ruleSortBy = ruleSortBy) }

@@ -75,6 +75,7 @@ fun DirectActionItem(
     isSubscribed: Boolean,
     isLongClickEnabled: Boolean,
     colorfulCard: Boolean,
+    runningInsCount: Int
 ) {
     Box {
         val popMenuState = daListItemOverflowMenu(
@@ -83,6 +84,7 @@ fun DirectActionItem(
         )
 
         val clickAnimateState = rememberClickAnimateState(animateColor = Color(da.iconColor))
+
         ClickAnimateContainer(clickAnimateState) {
             val handler = LocalDAItemHandler.current
             DAListItem(
@@ -92,7 +94,7 @@ fun DirectActionItem(
                 updateTime = da.updateTime,
                 icon = da.icon,
                 iconColor = Color(da.iconColor),
-                runningInsCount = da.runningInsCount,
+                runningInsCount = runningInsCount,
                 hasFuncParameter = da.hasAnyParameter,
                 colorfulCard = colorfulCard,
                 onClick = { handler.click(da) },

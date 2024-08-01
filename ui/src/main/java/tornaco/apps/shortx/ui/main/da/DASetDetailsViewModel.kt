@@ -8,7 +8,7 @@ import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.ui.base.afterNavDelay
 import tornaco.apps.shortx.ui.main.model.daToDirectActionUM
 
-class DASetDetailsViewModel constructor(
+class DASetDetailsViewModel(
     context: Context,
     private val daSetId: String
 ) :
@@ -19,9 +19,6 @@ class DASetDetailsViewModel constructor(
             updateState { copy(isLoading = true) }
             withContext(Dispatchers.IO) {
                 val startLoadingTime = System.currentTimeMillis()
-                val activeJobs = shortXManager.getActiveJobs().apply {
-                    logger.d("activeJobs: $this")
-                }
                 val gvs = shortXManager.getAllGlobalVars()
                 val das = shortXManager.getAllDirectAction()
                     .filter {
@@ -30,7 +27,7 @@ class DASetDetailsViewModel constructor(
                     .sortedByDescending { it.createTime }
                     .mapNotNull { directAction ->
                         runCatching {
-                            daToDirectActionUM(directAction, activeJobs, gvs)
+                            daToDirectActionUM(directAction, gvs)
                         }.getOrElse {
                             logger.e(it, "daToDirectActionUM")
                             null

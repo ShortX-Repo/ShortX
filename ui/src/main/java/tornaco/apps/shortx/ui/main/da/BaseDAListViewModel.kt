@@ -6,12 +6,14 @@ import android.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.viewModelScope
 import com.github.promeg.pinyinhelper.Pinyin
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.proto.common.StringPair
@@ -54,6 +56,7 @@ data class DAListState(
     val colorfulCard: Boolean = false,
     val isLoading: Boolean = true,
     val searchQuery: String = "",
+    val activeJobIds: Set<String> = emptySet(),
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -68,17 +71,17 @@ abstract class BaseDAListViewModel(context: Context) :
     private val jobStatusListener = object : IJobStatusListener.Stub() {
         override fun onJobStarted(id: String?) {
             logger.d("onJobStarted: $id")
-            delayLoadDAList()
+            loadActiveJobs()
         }
 
         override fun onJobCompleted(id: String?) {
             logger.d("onJobCompleted: $id")
-            delayLoadDAList()
+            loadActiveJobs()
         }
 
         override fun onJobCancelled(id: String?) {
             logger.d("onJobCancelled: $id")
-            delayLoadDAList()
+            loadActiveJobs()
         }
     }
 
@@ -145,6 +148,20 @@ abstract class BaseDAListViewModel(context: Context) :
     }
 
     abstract fun loadDAList(delay: Boolean = false)
+
+    fun loadActiveJobs() {
+        viewModelScope.launch {
+            logger.d("loadActiveJobs")
+            withContext(Dispatchers.IO) {
+                val activeJobs = shortXManager.getActiveJobs().apply {
+                    logger.d("activeJobs: $this")
+                }
+                updateState {
+                    copy(activeJobIds = activeJobs.toSet())
+                }
+            }
+        }
+    }
 
     private fun delayLoadDAList(delay: Long = 200L) {
         loadDAJob?.cancel()

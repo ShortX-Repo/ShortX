@@ -114,7 +114,8 @@ class CreateShortcutActivity : BaseActivity() {
                                 isShowDetailedDAItem = daListState.isShowDetailedDAItem,
                                 das = daListState.das,
                                 showOverflowMenu = false,
-                                colorfulCard = false
+                                colorfulCard = false,
+                                activeJobs = emptySet()
                             )
                         }
                     }

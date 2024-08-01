@@ -35,12 +35,12 @@ import javax.inject.Inject
 sealed interface DiscoverRepo {
     val repoIndexUrl: String
 
-    object PrebuiltLocal : DiscoverRepo {
+    data object PrebuiltLocal : DiscoverRepo {
         override val repoIndexUrl: String
             get() = "app://shortx"
     }
 
-    object OfficialOnline : DiscoverRepo {
+    data object OfficialOnline : DiscoverRepo {
         override val repoIndexUrl: String
             get() = SHORTX_DISCOVERY_DEFAULT_ONLINE_REPO_URL
     }
@@ -178,7 +178,7 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
             val daUMs = withContext(Dispatchers.IO) {
                 content.das.mapNotNull { directAction ->
                     runCatching {
-                        daToDirectActionUM(directAction, emptyList(), emptyList())
+                        daToDirectActionUM(directAction, emptyList())
                     }.getOrElse {
                         logger.e(it, "daToDirectActionUM")
                         null
@@ -189,7 +189,7 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                 content.rules.mapNotNull {
                     runCatching {
                         // Disable it, in-case it is enabled after import.
-                        ruleToRuleUM(it, emptyList(), emptyList()).copy(isEnabled = false)
+                        ruleToRuleUM(it, emptyList()).copy(isEnabled = false)
                     }.getOrElse {
                         logger.e(it, "ruleToRuleUM")
                         null
@@ -221,14 +221,10 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                         context,
                         Date(it.updateTimeMillis)
                     ),
-                    factIcon = it.icon ?: Remix.Development.command_line,
-                    actionIcon = it.icon ?: Remix.Development.command_line,
-                    factIconColor = it.iconColor?.let { it1 -> colorFromHex(it1) }?.value
-                        ?: randomActionColor().value,
-                    actionIconColor = it.iconColor?.let { it1 -> colorFromHex(it1) }?.value
+                    icon = it.icon ?: Remix.Development.command_line,
+                    iconColor = it.iconColor?.let { it1 -> colorFromHex(it1) }?.value
                         ?: randomActionColor().value,
                     id = it.id,
-                    runningInsCount = 0,
                     isEnabled = false,
                     rule = Rule.newBuilder().setId(it.fileUrl).build(),
                     author = it.author.fallbackOnEmpty("ShortX"),
@@ -258,7 +254,6 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                     iconColor = it.iconColor?.let { it1 -> colorFromHex(it1) }?.value
                         ?: randomActionColor().value,
                     id = it.id,
-                    runningInsCount = 0,
                     directAction = DirectAction.newBuilder().setId(it.fileUrl).build(),
                     author = it.author.fallbackOnEmpty("ShortX"),
                     isOnlineItem = true,

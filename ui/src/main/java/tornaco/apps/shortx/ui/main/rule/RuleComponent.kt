@@ -62,6 +62,7 @@ fun RuleItem(
     isSubscribed: Boolean,
     colorfulCard: Boolean,
     showDescription: Boolean = true,
+    runningInsCount: Int
 ) {
     val handler = LocalRuleItemHandler.current
     // TODO Animate item
@@ -71,14 +72,15 @@ fun RuleItem(
             isSubscribed = isSubscribed,
         )
         val clickAnimateState =
-            rememberClickAnimateState(animateColor = Color(rule.actionIconColor))
+            rememberClickAnimateState(animateColor = Color(rule.iconColor))
         ClickAnimateContainer(clickAnimateState) {
             RuleItem(
                 modifier = modifier.then(it),
                 popMenuState = popMenuState,
                 rule = rule,
                 colorfulCard = colorfulCard,
-                showDescription = showDescription
+                showDescription = showDescription,
+                runningInsCount = runningInsCount
             )
         }
     }
@@ -90,7 +92,8 @@ private fun RuleItem(
     popMenuState: DropdownSelectorState,
     rule: RuleUM,
     colorfulCard: Boolean,
-    showDescription: Boolean
+    showDescription: Boolean,
+    runningInsCount: Int,
 ) {
     val handler = LocalRuleItemHandler.current
     Column(modifier = modifier
@@ -132,7 +135,7 @@ private fun RuleItem(
                     fontSize = if (showDescription) 14.5.sp else 13.5.sp
                 ),
                 color = colorfulCard.select(
-                    themedTextColor(color = Color(rule.factIconColor)),
+                    themedTextColor(color = Color(rule.iconColor)),
                     Color.Unspecified
                 )
             )
@@ -144,17 +147,17 @@ private fun RuleItem(
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
                     color = colorfulCard.select(
-                        themedTextColor(color = Color(rule.factIconColor)),
+                        themedTextColor(color = Color(rule.iconColor)),
                         Color.Unspecified
                     )
                 )
             }
         }
 
-        AnimatedVisibility(visible = rule.runningInsCount > 0) {
+        AnimatedVisibility(visible = runningInsCount > 0) {
             RunningIndicator(
                 modifier = Modifier.padding(start = 12.dp),
-                runningInsCount = rule.runningInsCount,
+                runningInsCount = runningInsCount,
                 stopAllJobs = {
                     handler.stopAllJobs(rule)
                 }
@@ -171,16 +174,16 @@ fun RuleIcon(rule: RuleUM, colorfulCard: Boolean, onClick: (() -> Unit)) {
         padding = 0.dp,
         color = colorfulCard.select(
             t = {
-                Color(rule.factIconColor)
+                Color(rule.iconColor)
             },
             f = {
-                Color(rule.factIconColor).copy(alpha = if (rule.isEnabled) ActionColorBgAlphaLarge else ActionColorBgAlpha)
+                Color(rule.iconColor).copy(alpha = if (rule.isEnabled) ActionColorBgAlphaLarge else ActionColorBgAlpha)
             })
     ) {
         RemixIcon(
             modifier = Modifier.size(16.dp),
-            remixName = rule.factIcon,
-            tint = colorfulCard.select(Color.White, Color(rule.factIconColor))
+            remixName = rule.icon,
+            tint = colorfulCard.select(Color.White, Color(rule.iconColor))
         )
     }
 }

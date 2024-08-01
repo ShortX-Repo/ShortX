@@ -37,6 +37,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -204,6 +205,7 @@ fun DirectActionListScreen() {
                 isShowDetailedDAItem = daListState.isShowDetailedDAItem,
                 colorfulCard = daListState.colorfulCard,
                 das = daListState.das,
+                activeJobs = daListState.activeJobIds,
                 showOverflowMenu = true
             )
         }
@@ -243,6 +245,7 @@ fun DirectActionListContent(
     isShowDetailedDAItem: Boolean,
     colorfulCard: Boolean,
     das: List<DirectActionUM>,
+    activeJobs: Set<String>,
     showOverflowMenu: Boolean = false,
 ) {
     val refreshState = rememberPullRefreshState(isLoading, onRefresh = {
@@ -269,6 +272,7 @@ fun DirectActionListContent(
                     DAListContent(
                         lazyStaggeredGridState = lazyStaggeredGridState,
                         das = das,
+                        activeJobs = activeJobs,
                         isSubscribed = subscribeState.isSubscribed,
                         colorfulCard = colorfulCard,
                         showOverflowMenu = showOverflowMenu,
@@ -297,6 +301,7 @@ fun DirectActionListContent(
 private fun DAListContent(
     lazyStaggeredGridState: LazyStaggeredGridState,
     das: List<DirectActionUM>,
+    activeJobs: Set<String>,
     isSubscribed: Boolean,
     colorfulCard: Boolean,
     showOverflowMenu: Boolean,
@@ -325,12 +330,16 @@ private fun DAListContent(
                             isSubscribed = isSubscribed
                         )
                     } else {
+                        val runningInsCount = remember(da.id, activeJobs) {
+                            activeJobs.count { it == da.id }
+                        }
                         DirectActionItem(
                             modifier = Modifier,
                             da = da,
                             isSubscribed = isSubscribed,
                             isLongClickEnabled = showOverflowMenu,
-                            colorfulCard = colorfulCard
+                            colorfulCard = colorfulCard,
+                            runningInsCount = runningInsCount
                         )
                     }
                 }

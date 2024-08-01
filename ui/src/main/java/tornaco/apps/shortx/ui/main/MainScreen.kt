@@ -169,41 +169,44 @@ fun HomeScreen() {
                 },
                 content = {
                     CompositionLocalProvider(LocalDrawerState provides drawerState) {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .weight(1f, fill = false)
+                        val context = LocalContext.current
+                        val pref = remember { Pref(context) }
+                        val miscToggles by pref.miscUiToggles.collectAsState(initial = null)
+
+                        val items = miscToggles?.let {
+                            listOfNotNull(
+                                if (!it.contains(FeatureToggleActivity.FEAT_KEY_DISABLE_FEAT_DA)) BottomNavItem.DirectActions else null,
+                                if (!it.contains(FeatureToggleActivity.FEAT_KEY_DISABLE_FEAT_RULE)) BottomNavItem.Rules else null,
+                                if (!it.contains(FeatureToggleActivity.FEAT_KEY_DISABLE_FEAT_TOGGLE)) BottomNavItem.Toggles else null,
+                                if (!it.contains(FeatureToggleActivity.FEAT_KEY_DISABLE_FEAT_DISCOVER)) BottomNavItem.Discover else null,
+                            )
+                        } ?: emptyList()
+
+                        AnimatedVisibility(visible = items.isNotEmpty()) {
+                            Column(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.SpaceBetween
                             ) {
-                                BottomNavigationGraph(
+                                Box(
                                     modifier = Modifier
-                                        .fillMaxSize(),
-                                    navController = navController
-                                )
-                            }
-
-                            val context = LocalContext.current
-                            val pref = remember { Pref(context) }
-                            val miscToggles by pref.miscUiToggles.collectAsState(initial = null)
-
-                            AnimatedVisibility(visible = miscToggles != null) {
-                                miscToggles?.let {
-                                    val items = listOfNotNull(
-                                        if (!it.contains(FeatureToggleActivity.FEAT_KEY_DISABLE_FEAT_DA)) BottomNavItem.DirectActions else null,
-                                        if (!it.contains(FeatureToggleActivity.FEAT_KEY_DISABLE_FEAT_RULE)) BottomNavItem.Rules else null,
-                                        if (!it.contains(FeatureToggleActivity.FEAT_KEY_DISABLE_FEAT_TOGGLE)) BottomNavItem.Toggles else null,
-                                        if (!it.contains(FeatureToggleActivity.FEAT_KEY_DISABLE_FEAT_DISCOVER)) BottomNavItem.Discover else null,
-                                    )
-                                    BottomNavigationContent(
+                                        .fillMaxSize()
+                                        .weight(1f, fill = false)
+                                ) {
+                                    BottomNavigationGraph(
                                         modifier = Modifier
-                                            .fillMaxWidth(),
+                                            .fillMaxSize(),
                                         navController = navController,
-                                        items = items,
+                                        startDestination = items.first()
                                     )
                                 }
+
+                                BottomNavigationContent(
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    navController = navController,
+                                    items = items,
+                                )
+
                             }
                         }
                     }
@@ -263,14 +266,15 @@ private fun BottomNavigationContent(
 @Composable
 private fun BottomNavigationGraph(
     modifier: Modifier = Modifier,
-    navController: NavHostController
+    navController: NavHostController,
+    startDestination: BottomNavItem
 ) {
     MainContentHook()
 
     NavHost(
         navController = navController,
         modifier = modifier,
-        startDestination = BottomNavItem.DirectActions.screenRoute.name
+        startDestination = startDestination.screenRoute.name
     ) {
         composable(BottomNavItem.Rules.screenRoute.name) {
             RuleScreen()

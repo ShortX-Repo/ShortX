@@ -300,7 +300,7 @@ private fun DiscoverRule(discoverState: DiscoverState, refresh: () -> Unit) {
                                                 modifier = Modifier,
                                                 size = 32.dp,
                                                 padding = 0.dp,
-                                                color = Color(rule.factIconColor).copy(alpha = ActionColorBgAlpha)
+                                                color = Color(rule.iconColor).copy(alpha = ActionColorBgAlpha)
                                             ) {
                                                 RemixIcon(
                                                     modifier = Modifier.size(16.dp),
