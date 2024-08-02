@@ -138,12 +138,14 @@ dependencies {
     rowImplementation(libs.app.update)
     // For Kotlin users also add the Kotlin extensions library for Play In-App Update:
     rowImplementation(libs.app.update.ktx)
-
     // Import the Firebase BoM
-    implementation(platform(libs.firebase.bom))
+    rowImplementation(platform(libs.firebase.bom))
     // When using the BoM, don't specify versions in Firebase dependencies
-    implementation(libs.firebase.analytics)
-    implementation(libs.firebase.config)
+    rowImplementation(libs.firebase.config)
+    // Add the dependencies for the Crashlytics and Analytics libraries
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    rowImplementation(libs.firebase.crashlytics)
+    rowImplementation(libs.firebase.analytics)
 
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit)

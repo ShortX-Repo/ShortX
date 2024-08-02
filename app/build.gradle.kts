@@ -21,6 +21,7 @@ if (Configs.sxFlavor == Flavor.ROW) {
     // Add the Google services Gradle plugin
     // The google-services Gradle plugin needs to be applied on a project with com.android.application or com.android.dynamic-feature.
     plugins.apply("com.google.gms.google-services")
+    plugins.apply("com.google.firebase.crashlytics")
 }
 
 android {

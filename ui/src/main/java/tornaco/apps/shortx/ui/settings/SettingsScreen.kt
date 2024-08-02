@@ -814,6 +814,15 @@ private fun devSettings(
                                 TestData.insertRuleTestData()
                             }
                         ))
+
+                        add(Preference.TextPreference(
+                            icon = Remix.Animals.cat,
+                            title = "Crash",
+                            summary = "Crash app now",
+                            onClick = {
+                                throw Error("Test app crash")
+                            }
+                        ))
                     },
                 ),
             )

@@ -94,6 +94,7 @@ compressor = { module = "id.zelory:compressor", version.ref = "compressor" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-config = { module = "com.google.firebase:firebase-config" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 shortx-core = { module = "shortx:core", version.ref = "shortx-core" }
 shortx-ui-base = { module = "shortx:ui-base", version.ref = "shortx-core" }
 shortx-ext-utils = { module = "shortx:external-utils", version.ref = "shortx-core" }
