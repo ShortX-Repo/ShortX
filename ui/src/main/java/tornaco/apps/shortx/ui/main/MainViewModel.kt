@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IAudioRecordingListener
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
+import tornaco.apps.shortx.ui.config.config
 import tornaco.apps.shortx.ui.main.model.MainState
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import javax.inject.Inject
@@ -61,6 +62,10 @@ open class MainViewModel @Inject constructor(@ApplicationContext context: Contex
             pref.hideSubscribeInfoFlow.collectLatest {
                 updateState { copy(isHideSubscribeInfo = it) }
             }
+        }
+
+        config.isFeatureCVFindImageEnabled.let {
+            logger.d("isFeatureCVFindImageEnabled: $it")
         }
     }
 

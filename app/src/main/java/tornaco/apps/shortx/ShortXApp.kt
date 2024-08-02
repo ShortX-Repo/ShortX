@@ -9,6 +9,7 @@ import org.lsposed.hiddenapibypass.HiddenApiBypass
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.EntryPoint
+import tornaco.apps.shortx.ui.FlavorEntryPoint
 import tornaco.apps.shortx.ui.settings.pref.Pref
 
 @HiltAndroidApp
@@ -27,6 +28,8 @@ class ShortXApp : Application() {
 
         val initStartTimeMillis = System.currentTimeMillis()
         EntryPoint.onCreate(this)
+        FlavorEntryPoint.onCreate(this)
+
         logger.w("EntryPoint.onCreate taken ${System.currentTimeMillis() - initStartTimeMillis}ms")
     }
 

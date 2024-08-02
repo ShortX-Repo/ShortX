@@ -2,6 +2,7 @@ package tornaco.project.android.shortx
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import tornaco.project.android.shortx.Configs.sxFlavor
 import tornaco.project.android.shortx.Configs.sxIsDebugBuild
 import java.io.File
 import java.util.Properties
@@ -14,6 +15,7 @@ object Configs {
     var sxVersionName: String? = null
     val sxVersionNameSuffix: String get() = System.getProperty("versionNameSuffix", "")
     var sxIsDebugBuild: Boolean = false
+    var sxFlavor: Flavor = Flavor.ROW
 
     const val compileSdkVersion = 34
     const val minSdkVersion = 26
@@ -95,7 +97,9 @@ class ShortXBuildPlugin : Plugin<Project> {
 
     private fun Project.updateBuildConfigs() {
         sxIsDebugBuild = getBuildVariant() == Variant.DEBUG
+        sxFlavor = getBuildFlavor()
         log("sxIsDebugBuild: $sxIsDebugBuild")
+        log("sxFlavor: $sxFlavor")
     }
 
     private fun Project.getBuildVariant(): Variant {
@@ -111,8 +115,26 @@ class ShortXBuildPlugin : Plugin<Project> {
         }
     }
 
-    enum class Variant {
-        DEBUG,
-        RELEASE
+    private fun Project.getBuildFlavor(): Flavor {
+        val tskReqStr = gradle.startParameter.taskRequests.map {
+            it.args
+        }.toString()
+        log("getBuildFlavor, tskReqStr: $tskReqStr")
+        val isDebug = tskReqStr.contains(Flavor.PRC.name, ignoreCase = true)
+        return if (isDebug) {
+            Flavor.PRC
+        } else {
+            Flavor.ROW
+        }
     }
+}
+
+enum class Variant {
+    DEBUG,
+    RELEASE
+}
+
+enum class Flavor {
+    ROW,
+    PRC
 }

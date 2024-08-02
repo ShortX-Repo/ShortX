@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "61954421714",
+    "project_id": "shortx-b8cbb",
+    "storage_bucket": "shortx-b8cbb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:61954421714:android:fad31007aa45a4e4fc8e0b",
+        "android_client_info": {
+          "package_name": "tornaco.apps.shortx"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMjjWsx4TT0bphy9z3gWZzJykN0_hOhlM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

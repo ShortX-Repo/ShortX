@@ -1,6 +1,7 @@
 import tornaco.project.android.shortx.Configs
 import tornaco.project.android.shortx.Configs.keyStoreAlias
 import tornaco.project.android.shortx.Configs.keyStorePassword
+import tornaco.project.android.shortx.Flavor
 import tornaco.project.android.shortx.log
 
 plugins {
@@ -11,6 +12,15 @@ plugins {
     alias(libs.plugins.dagger.hilt.android)
     alias(libs.plugins.kover)
     alias(libs.plugins.compose.compiler)
+}
+
+log("sxFlavor: ${Configs.sxFlavor}")
+
+if (Configs.sxFlavor == Flavor.ROW) {
+    log("Apply Google Services plugin")
+    // Add the Google services Gradle plugin
+    // The google-services Gradle plugin needs to be applied on a project with com.android.application or com.android.dynamic-feature.
+    plugins.apply("com.google.gms.google-services")
 }
 
 android {
