@@ -44,6 +44,8 @@ class FirebaseConfig : Config {
         get() = remoteConfig?.getBoolean("feat_toggle_cv_find_image") == true
     override val forceUpgradeVersion: Long
         get() = remoteConfig?.getLong("force_upgrade_version_code") ?: 0
-    override val globalNotice: String
-        get() = remoteConfig?.getString("global_notice").orEmpty()
+    override val globalNoticeMessage: String
+        get() = remoteConfig?.getString("global_notice_message").orEmpty()
+    override val globalNoticeId: String
+        get() = remoteConfig?.getString("global_notice_id").orEmpty()
 }

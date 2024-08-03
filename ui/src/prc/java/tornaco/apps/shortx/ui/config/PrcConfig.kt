@@ -5,6 +5,8 @@ class PrcConfig : Config {
         get() = false
     override val forceUpgradeVersion: Long
         get() = 0
-    override val globalNotice: String
+    override val globalNoticeMessage: String
+        get() = ""
+    override val globalNoticeId: String
         get() = ""
 }

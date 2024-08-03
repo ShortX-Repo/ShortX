@@ -17,9 +17,8 @@ class MainActivity : BaseActivity() {
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result: ActivityResult ->
             // handle callback
             if (result.resultCode != RESULT_OK) {
-                Logger.nameless.i("Update flow failed! Result code: " + result.resultCode);
-                // If the update is canceled or fails,
-                // you can request to start the update again.
+                Logger.nameless.e("Update flow failed! Result code: " + result.resultCode)
+                finishAffinity()
             }
         }
 

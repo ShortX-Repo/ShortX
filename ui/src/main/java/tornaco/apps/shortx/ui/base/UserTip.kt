@@ -43,7 +43,8 @@ fun UserTip(modifier: Modifier = Modifier, tipId: String, message: String) {
     val scope = rememberCoroutineScope()
 
     AnimatedVisibility(
-        visible = userReadTips != null
+        visible = tipId.isNotBlank() && message.isNotBlank() &&
+                userReadTips != null
                 && !userReadTips!!.contains(tipId)
     ) {
         TipCard(

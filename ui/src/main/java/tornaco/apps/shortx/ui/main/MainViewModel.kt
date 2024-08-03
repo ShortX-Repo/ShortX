@@ -34,12 +34,15 @@ open class MainViewModel @Inject constructor(@ApplicationContext context: Contex
     }
 
     init {
-        updateState {
-            copy(
-                isActivated = shortXManager.isInstalled,
-                isFrameworkUpdated = shortXManager.isFrameworkUpdated(BuildPropInternal.BUILD_FINGERPRINT),
-                isAudioRecording = shortXManager.isAudioRecording()
-            )
+        viewModelScope.launch {
+            updateState {
+                copy(
+                    isActivated = shortXManager.isInstalled,
+                    isFrameworkUpdated = shortXManager.isFrameworkUpdated(BuildPropInternal.BUILD_FINGERPRINT),
+                    isAudioRecording = shortXManager.isAudioRecording(),
+                    globalNotice = config.globalNoticeId to config.globalNoticeMessage
+                )
+            }
         }
 
         shortXManager.registerAudioRecordingObs(audioRecordingObs)
@@ -62,10 +65,6 @@ open class MainViewModel @Inject constructor(@ApplicationContext context: Contex
             pref.hideSubscribeInfoFlow.collectLatest {
                 updateState { copy(isHideSubscribeInfo = it) }
             }
-        }
-
-        config.isFeatureCVFindImageEnabled.let {
-            logger.d("isFeatureCVFindImageEnabled: $it")
         }
     }
 

@@ -6,5 +6,6 @@ data class MainState(
     val isFrameworkUpdated: Boolean = false,
     val isIgnoreFrameworkUpdate: Boolean = false,
     val isPrivacyStatementAccepted: Boolean = true,
-    val isAudioRecording: Boolean = false
+    val isAudioRecording: Boolean = false,
+    val globalNotice: Pair<String, String> = "" to "",
 )

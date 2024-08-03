@@ -79,6 +79,7 @@ import tornaco.apps.shortx.ui.base.ShortXAlertDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.TextInputDialog
+import tornaco.apps.shortx.ui.base.UserTip
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberFabState
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
@@ -337,6 +338,8 @@ fun MainScaffold(
                 }
             }
 
+            UserTip(tipId = state.globalNotice.first, message = state.globalNotice.second)
+
             AnimatedVisibility(
                 visible = state.isAudioRecording
             ) {
@@ -372,6 +375,7 @@ fun MainScaffold(
                 visible = subscribeState.isSubscribed
                         && state.isFrameworkUpdated
                         && !state.isIgnoreFrameworkUpdate
+                        && state.globalNotice.first.isBlank()
             ) {
                 Card(
                     modifier = Modifier
