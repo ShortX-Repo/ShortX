@@ -10,11 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -101,118 +99,114 @@ sealed class BottomNavItem(
 fun HomeScreen() {
     val navController = rememberNavController()
     ShortXTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
-        ) {
-            val drawerState = rememberDrawerState(DrawerValue.Closed)
-            val scope = rememberCoroutineScope()
-            ModalNavigationDrawer(
-                drawerState = drawerState,
-                drawerContent = {
-                    ModalDrawerSheet(
-                        drawerTonalElevation = 0.5.dp
-                    ) {
-                        StandardSpacer()
+        val drawerState = rememberDrawerState(DrawerValue.Closed)
+        val scope = rememberCoroutineScope()
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                ModalDrawerSheet(
+                    drawerTonalElevation = 0.5.dp
+                ) {
+                    StandardSpacer()
 
-                        val appNavController = LocalNavHostController.current
-                        val context = LocalContext.current
+                    val appNavController = LocalNavHostController.current
+                    val context = LocalContext.current
 
-                        val statementTitle = LocalI18N.current["ui.settings.privacy.statement"]
+                    val statementTitle = LocalI18N.current["ui.settings.privacy.statement"]
 
-                        SettingsScreen(
-                            back = { scope.launch { drawerState.close() } },
-                            goToPkgSetList = {
-                                PkgSetListActivity.start(context)
-                            },
-                            goToGV = {
-                                GlobalVarListActivity.start(context)
-                            },
-                            goToDanmuUISettings = {
-                                DanmuUISettingsActivity.start(context)
-                            },
-                            goToEvaRecord = {
-                                EvaRecordActivity.start(context)
-                            },
-                            goToAudioRecord = {
-                                AudioRecordActivity.start(context)
-                            },
-                            goToGestureRecord = {
-                                GestureRecordListActivity.start(context)
-                            },
-                            goToSettingsCatcherRecord = {
-                                SettingsAccessRecordActivity.start(context)
-                            },
-                            viewOpenSourceLicense = {
-                                appNavController.navigate(AppRoute.ViewOpenSourceLicense.name)
-                            },
-                            viewPrivacyStatement = {
-                                TextDisplayActivity.start(
-                                    context = context,
-                                    title = statementTitle,
-                                    text = AssetUtils.readFileToString(
-                                        context,
-                                        "privacy/privacy_agreement.html"
-                                    )
+                    SettingsScreen(
+                        back = { scope.launch { drawerState.close() } },
+                        goToPkgSetList = {
+                            PkgSetListActivity.start(context)
+                        },
+                        goToGV = {
+                            GlobalVarListActivity.start(context)
+                        },
+                        goToDanmuUISettings = {
+                            DanmuUISettingsActivity.start(context)
+                        },
+                        goToEvaRecord = {
+                            EvaRecordActivity.start(context)
+                        },
+                        goToAudioRecord = {
+                            AudioRecordActivity.start(context)
+                        },
+                        goToGestureRecord = {
+                            GestureRecordListActivity.start(context)
+                        },
+                        goToSettingsCatcherRecord = {
+                            SettingsAccessRecordActivity.start(context)
+                        },
+                        viewOpenSourceLicense = {
+                            appNavController.navigate(AppRoute.ViewOpenSourceLicense.name)
+                        },
+                        viewPrivacyStatement = {
+                            TextDisplayActivity.start(
+                                context = context,
+                                title = statementTitle,
+                                text = AssetUtils.readFileToString(
+                                    context,
+                                    "privacy/privacy_agreement.html"
                                 )
-                            },
-                            manageShortcutApps = {
-                                ShortcutStubManageActivity.start(context)
-                            },
-                            goToFeatToggle = {
-                                FeatureToggleActivity.start(context)
-                            })
-
-                        BackHandler(enabled = drawerState.isOpen) {
-                            scope.launch { drawerState.close() }
-                        }
-                    }
-                },
-                content = {
-                    CompositionLocalProvider(LocalDrawerState provides drawerState) {
-                        val context = LocalContext.current
-                        val pref = remember { Pref(context) }
-                        val miscToggles by pref.miscUiToggles.collectAsState(initial = null)
-
-                        val items = miscToggles?.let {
-                            listOfNotNull(
-                                if (!it.contains(FeatureToggleActivity.FEAT_KEY_DISABLE_FEAT_DA)) BottomNavItem.DirectActions else null,
-                                if (!it.contains(FeatureToggleActivity.FEAT_KEY_DISABLE_FEAT_RULE)) BottomNavItem.Rules else null,
-                                if (!it.contains(FeatureToggleActivity.FEAT_KEY_DISABLE_FEAT_TOGGLE)) BottomNavItem.Toggles else null,
-                                if (!it.contains(FeatureToggleActivity.FEAT_KEY_DISABLE_FEAT_DISCOVER)) BottomNavItem.Discover else null,
                             )
-                        } ?: emptyList()
+                        },
+                        manageShortcutApps = {
+                            ShortcutStubManageActivity.start(context)
+                        },
+                        goToFeatToggle = {
+                            FeatureToggleActivity.start(context)
+                        })
 
-                        AnimatedVisibility(visible = items.isNotEmpty()) {
-                            Column(
-                                modifier = Modifier.fillMaxSize(),
-                                verticalArrangement = Arrangement.SpaceBetween
+                    BackHandler(enabled = drawerState.isOpen) {
+                        scope.launch { drawerState.close() }
+                    }
+                }
+            },
+            content = {
+                CompositionLocalProvider(LocalDrawerState provides drawerState) {
+                    val context = LocalContext.current
+                    val pref = remember { Pref(context) }
+                    val miscToggles by pref.miscUiToggles.collectAsState(initial = null)
+
+                    val items = miscToggles?.let {
+                        listOfNotNull(
+                            if (!it.contains(FeatureToggleActivity.FEAT_KEY_DISABLE_FEAT_DA)) BottomNavItem.DirectActions else null,
+                            if (!it.contains(FeatureToggleActivity.FEAT_KEY_DISABLE_FEAT_RULE)) BottomNavItem.Rules else null,
+                            if (!it.contains(FeatureToggleActivity.FEAT_KEY_DISABLE_FEAT_TOGGLE)) BottomNavItem.Toggles else null,
+                            if (!it.contains(FeatureToggleActivity.FEAT_KEY_DISABLE_FEAT_DISCOVER)) BottomNavItem.Discover else null,
+                        )
+                    } ?: emptyList()
+
+                    AnimatedVisibility(visible = items.isNotEmpty()) {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .weight(1f, fill = false)
                             ) {
-                                Box(
+                                BottomNavigationGraph(
                                     modifier = Modifier
-                                        .fillMaxSize()
-                                        .weight(1f, fill = false)
-                                ) {
-                                    BottomNavigationGraph(
-                                        modifier = Modifier
-                                            .fillMaxSize(),
-                                        navController = navController,
-                                        startDestination = items.first()
-                                    )
-                                }
-
-                                BottomNavigationContent(
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
+                                        .fillMaxSize(),
                                     navController = navController,
-                                    items = items,
+                                    startDestination = items.first()
                                 )
-
                             }
+
+                            BottomNavigationContent(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                navController = navController,
+                                items = items,
+                            )
+
                         }
                     }
                 }
-            )
-        }
+            }
+        )
     }
 }
 
