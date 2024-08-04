@@ -185,7 +185,7 @@ private fun Content(paddingValues: PaddingValues, dialogState: WriteGVDialogStat
             }
             DropdownSelector(
                 state = opDropdownState,
-                items = WriteGlobalVarOp.values()
+                items = WriteGlobalVarOp.entries
                     .filterNot { it == WriteGlobalVarOp.UNRECOGNIZED }.map {
                         DropdownItem(
                             labelLines = listOfNotNull(
