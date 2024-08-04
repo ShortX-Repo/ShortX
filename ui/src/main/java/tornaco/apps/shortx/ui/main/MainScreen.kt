@@ -1,7 +1,6 @@
 package tornaco.apps.shortx.ui.main
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -177,7 +176,7 @@ fun HomeScreen() {
                         )
                     } ?: emptyList()
 
-                    AnimatedVisibility(visible = items.isNotEmpty()) {
+                    if (items.isNotEmpty()) {
                         Column(
                             modifier = Modifier.fillMaxSize(),
                             verticalArrangement = Arrangement.SpaceBetween

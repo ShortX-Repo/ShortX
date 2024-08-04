@@ -1,5 +1,7 @@
 package tornaco.apps.shortx.services.ui.floating.controller
 
+import android.animation.Animator
+import android.animation.Animator.AnimatorListener
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
@@ -11,6 +13,7 @@ import android.widget.ImageView
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.compat.DrawableCompat
 import tornaco.apps.shortx.core.res.AppResources
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ui.floating.FloatMoveEnum
 import tornaco.apps.shortx.services.ui.floating.FloatServiceUtil
 import tornaco.apps.shortx.services.ui.floating.FloatWindow
@@ -27,6 +30,8 @@ class FloatButtonWindowController(
     private val panelWindowController: FloatPanelWindowController,
     private val onPosChange: (Int, Int) -> Unit,
 ) : BaseFloatWindowController(context) {
+    private val logger = Logger("FloatButtonWindowController")
+
     private lateinit var floatButtonView: FloatButton
     private var currentStatus = STATUS_OFF
 
@@ -35,7 +40,20 @@ class FloatButtonWindowController(
 
     private var openAnimatorSet: AnimatorSet? = null
     private var offAnimatorSet: AnimatorSet? = null
+    private var idleAnimatorSet: AnimatorSet? = null
     private val mainHandler = Handler((Looper.getMainLooper()))
+
+    private val idleRunnable = {
+        logger.d("idleRunnable run")
+        if (idleAnimatorSet != null && idleAnimatorSet!!.isRunning) {
+            idleAnimatorSet!!.end()
+        }
+        idleAnimatorSet = AnimatorSet()
+        val alphaAnimator = ObjectAnimator.ofFloat(floatButtonView, View.ALPHA, ALPHA_IDLE)
+        idleAnimatorSet!!
+            .play(alphaAnimator)
+        idleAnimatorSet!!.start()
+    }
 
     init {
         init()
@@ -60,7 +78,7 @@ class FloatButtonWindowController(
     }
 
     private fun attachFloatWindow() {
-        val iconSize = ScreenUtil.dip2px(context, 42f)
+        val iconSize = ScreenUtil.dip2px(context, SIZE)
         floatWindowManager
             .makeFloatWindow(
                 floatButtonView,
@@ -96,6 +114,9 @@ class FloatButtonWindowController(
                                         newY
                                     )
                                 }
+
+                                mainHandler.removeCallbacks(idleRunnable)
+                                mainHandler.postDelayed(idleRunnable, IDLE_DELAY)
                             }
 
                             override fun onPrepareDrag() {
@@ -118,6 +139,7 @@ class FloatButtonWindowController(
                                 if (view.alpha != ALPHA_SHOW) {
                                     view.alpha = ALPHA_SHOW
                                 }
+                                mainHandler.removeCallbacks(idleRunnable)
                             }
 
                             override fun onDragFinish() {
@@ -207,6 +229,8 @@ class FloatButtonWindowController(
     }
 
     fun open() {
+        mainHandler.removeCallbacks(idleRunnable)
+        logger.d("open")
         if (offAnimatorSet != null && offAnimatorSet!!.isRunning) {
             offAnimatorSet!!.end()
         }
@@ -239,6 +263,8 @@ class FloatButtonWindowController(
     }
 
     fun off() {
+        logger.d("Off")
+        mainHandler.removeCallbacks(idleRunnable)
         if (this.currentStatus != STATUS_OFF) {
             floatButtonView.isSelected = false
             this.currentStatus = STATUS_OFF
@@ -247,9 +273,26 @@ class FloatButtonWindowController(
             }
             offAnimatorSet = AnimatorSet()
             val scaleXAnimator = ObjectAnimator.ofFloat(floatButtonView, View.SCALE_X, 1f)
-            val scaleYAnimator = ObjectAnimator.ofFloat(floatButtonView, View.SCALE_Y, 1f)
+            val scaleYAnimator = ObjectAnimator.ofFloat(floatButtonView, View.SCALE_Y, 1f).apply {
+                addListener(object : AnimatorListener {
+                    override fun onAnimationStart(animation: Animator?) {
+                        logger.d("onAnimationStart")
+                    }
+
+                    override fun onAnimationEnd(animation: Animator?) {
+                        logger.d("onAnimationEnd")
+                        mainHandler.postDelayed(idleRunnable, IDLE_DELAY)
+                    }
+
+                    override fun onAnimationCancel(animation: Animator?) {
+                    }
+
+                    override fun onAnimationRepeat(animation: Animator?) {
+                    }
+                })
+            }
             offAnimatorSet!!
-                .play(scaleXAnimator) //2个渐变动画要一起执行
+                .play(scaleXAnimator)
                 .with(scaleYAnimator)
             offAnimatorSet!!.start()
             if (statusChangeListener != null) {
@@ -286,5 +329,10 @@ class FloatButtonWindowController(
         const val STATUS_OPEN: Int = 1
 
         const val ALPHA_SHOW: Float = 0.76f
+        const val ALPHA_IDLE: Float = 0.09f
+
+        const val SIZE = 42f
+
+        const val IDLE_DELAY = 2000L
     }
 }
