@@ -115,8 +115,7 @@ class FloatButtonWindowController(
                                     )
                                 }
 
-                                mainHandler.removeCallbacks(idleRunnable)
-                                mainHandler.postDelayed(idleRunnable, IDLE_DELAY)
+                                logger.d("onPositionUpdate")
                             }
 
                             override fun onPrepareDrag() {
@@ -148,6 +147,9 @@ class FloatButtonWindowController(
                                 if (view.alpha != ALPHA_SHOW) {
                                     view.alpha = ALPHA_SHOW
                                 }
+                                logger.d("onDragFinish")
+                                mainHandler.removeCallbacks(idleRunnable)
+                                if (!isOpen) mainHandler.postDelayed(idleRunnable, IDLE_DELAY)
                             }
 
                             override fun isCanDrag(moveX: Float, moveY: Float): Boolean {
@@ -281,6 +283,7 @@ class FloatButtonWindowController(
 
                     override fun onAnimationEnd(animation: Animator?) {
                         logger.d("onAnimationEnd")
+                        mainHandler.removeCallbacks(idleRunnable)
                         mainHandler.postDelayed(idleRunnable, IDLE_DELAY)
                     }
 
