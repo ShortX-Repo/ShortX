@@ -4,19 +4,32 @@ import android.annotation.ColorInt
 import android.graphics.Color
 import android.graphics.RectF
 import tornaco.apps.shortx.core.proto.fact.Edge
+import tornaco.apps.shortx.core.util.select
 
 data class HotSeat(val area: Edge, @ColorInt val color: Int)
 
-fun Edge.getRectL(
+fun Edge.getRect(
+    isPortrait: Boolean,
     screenWidth: Float,
     screenHeight: Float,
     areaSize: Float,
     areaLengthScale: Float
 ): RectF {
-    return getRect(screenHeight, screenWidth, areaSize, areaLengthScale)
+    return isPortrait.select(
+        { getRectP(screenWidth, screenHeight, areaSize, areaLengthScale) },
+        { getRectL(screenWidth, screenHeight, areaSize, areaLengthScale) })
 }
 
-fun Edge.getRect(
+private fun Edge.getRectL(
+    screenWidth: Float,
+    screenHeight: Float,
+    areaSize: Float,
+    areaLengthScale: Float
+): RectF {
+    return getRectP(screenHeight, screenWidth, areaSize, areaLengthScale)
+}
+
+private fun Edge.getRectP(
     screenWidth: Float,
     screenHeight: Float,
     areaSize: Float,

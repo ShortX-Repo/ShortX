@@ -30,11 +30,10 @@ import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.input.IMSFunc
-import tornaco.apps.shortx.services.input.opls.OplusInputMonitorHelper
+import tornaco.apps.shortx.services.policy.SingleKeyGestureDetector
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.GuideLineView
 import tornaco.apps.shortx.services.ui.i18NIns
-import tornaco.apps.shortx.services.policy.SingleKeyGestureDetector
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
 import tornaco.apps.shortx.services.wm.ColorPalette
@@ -342,18 +341,20 @@ class GestureService(shortXContext: ShortXContext) :
                     if (eg.isIntercept) {
                         portRects.add(
                             eg.edge.getRect(
-                                screenSize.x.toFloat(),
-                                screenSize.y.toFloat(),
-                                getGestureAreaWidthDp()._dp.toFloat(),
-                                getGestureLengthScale()
+                                isPortrait = true,
+                                screenWidth = screenSize.x.toFloat(),
+                                screenHeight = screenSize.y.toFloat(),
+                                areaSize = getGestureAreaWidthDp()._dp.toFloat(),
+                                areaLengthScale = getGestureLengthScale()
                             )
                         )
                         landRects.add(
-                            eg.edge.getRectL(
-                                screenSize.x.toFloat(),
-                                screenSize.y.toFloat(),
-                                getGestureAreaWidthDp()._dp.toFloat(),
-                                getGestureLengthScale()
+                            eg.edge.getRect(
+                                isPortrait = false,
+                                screenWidth = screenSize.x.toFloat(),
+                                screenHeight = screenSize.y.toFloat(),
+                                areaSize = getGestureAreaWidthDp()._dp.toFloat(),
+                                areaLengthScale = getGestureLengthScale()
                             )
                         )
                     }

@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -37,7 +38,7 @@ class GuideLineView(
 
     init {
         addView(
-            Guideline(context, hotSeats, areaSize, areaLengthScale  ),
+            Guideline(context, hotSeats, areaSize, areaLengthScale),
             LayoutParams.MATCH_PARENT,
             LayoutParams.MATCH_PARENT
         )
@@ -99,6 +100,12 @@ class GuideLineView(
             context.screenSize()
         }
 
+        private val currentOrientation by lazy {
+            context.resources.configuration.orientation.also {
+                Logger.nameless.d("Guideline currentOrientation: $it (ORIENTATION_PORTRAIT = 1, ORIENTATION_LANDSCAPE = 2)")
+            }
+        }
+
         private val paint by lazy {
             Paint().apply {
                 isAntiAlias = true
@@ -109,12 +116,14 @@ class GuideLineView(
 
         override fun onDraw(canvas: Canvas) {
             super.onDraw(canvas)
+            val isPortrait = currentOrientation == Configuration.ORIENTATION_PORTRAIT
             hotSeats.forEach {
                 val rect = it.area.getRect(
-                    screenSize.x.toFloat(),
-                    screenSize.y.toFloat(),
-                    areaSize.toFloat(),
-                    areaLengthScale
+                    isPortrait = isPortrait,
+                    screenWidth = screenSize.x.toFloat(),
+                    screenHeight = screenSize.y.toFloat(),
+                    areaSize = areaSize.toFloat(),
+                    areaLengthScale = areaLengthScale
                 )
                 canvas.drawRect(rect, paint.apply {
                     color = it.color
