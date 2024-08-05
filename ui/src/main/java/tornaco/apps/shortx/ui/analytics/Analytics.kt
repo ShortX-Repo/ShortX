@@ -14,31 +14,31 @@ sealed interface Event {
 
     data object AppColdStart : Event {
         override val eventName: String
-            get() = "AppColdStart"
+            get() = "cold_start"
         override val params: Map<String, String>
             get() = mapOf(
-                "AppVersion" to BuildPropInternal.APP_VERSION_NAME
+                "app_version" to BuildPropInternal.APP_VERSION_NAME
             )
     }
 
     data class AddAction(val type: String) : Event {
         override val eventName: String
-            get() = "AddAction"
+            get() = "add_action"
         override val params: Map<String, String>
-            get() = mapOf("Type" to type)
+            get() = mapOf("type" to type)
     }
 
     data class AddFact(val type: String) : Event {
         override val eventName: String
-            get() = "AddFact"
+            get() = "add_fact"
         override val params: Map<String, String>
-            get() = mapOf("Type" to type)
+            get() = mapOf("type" to type)
     }
 
     data class AddCondition(val type: String) : Event {
         override val eventName: String
-            get() = "AddCondition"
+            get() = "add_condition"
         override val params: Map<String, String>
-            get() = mapOf("Type" to type)
+            get() = mapOf("type" to type)
     }
 }
