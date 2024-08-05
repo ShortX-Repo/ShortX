@@ -20,4 +20,11 @@ sealed interface Event {
                 "AppVersion" to BuildPropInternal.APP_VERSION_NAME
             )
     }
+
+    data class AddAction(val type: String) : Event {
+        override val eventName: String
+            get() = "AddAction"
+        override val params: Map<String, String>
+            get() = mapOf("Type" to type)
+    }
 }

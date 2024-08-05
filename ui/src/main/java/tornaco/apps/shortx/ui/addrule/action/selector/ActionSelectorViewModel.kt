@@ -10,8 +10,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.proto.getTypeUrl
 import tornaco.apps.shortx.core.proto.plugins.ShortXPluginAction
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
+import tornaco.apps.shortx.ui.analytics.Event
+import tornaco.apps.shortx.ui.analytics.analytics
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.remote.RemoteExecuteMVELAction
 import tornaco.apps.shortx.ui.remote.RemoteRepo
@@ -76,6 +80,9 @@ class ActionSelectorViewModel @Inject constructor(@ApplicationContext context: C
     fun onActionAdd(action: Action) {
         viewModelScope.launch {
             pref.addRecentSelectedAction(action::class.jvmName)
+            // Analytics
+            val typeUrl = action.toProtoAction().getTypeUrl("")
+            analytics.logEvent(Event.AddAction(typeUrl))
         }
     }
 
