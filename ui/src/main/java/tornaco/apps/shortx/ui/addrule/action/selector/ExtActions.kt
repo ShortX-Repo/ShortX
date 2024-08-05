@@ -41,6 +41,7 @@ import tornaco.apps.shortx.ui.base.code.mvel.MVELEditorActivity
 import tornaco.apps.shortx.ui.base.code.toParcelableCodeOrNull
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.config.config
 import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
@@ -424,7 +425,11 @@ fun ExtActions(
         Action.WebSocketConnect::class,
         Action.WebSocketSend::class,
         Action.ExecuteJS::class,
-        if (BuildPropInternal.APP_IS_DEBUG) Action.FindImagePositionFromScreen::class else null,
+        if (config.isFeatureCVFindImageEnabled || BuildPropInternal.APP_IS_DEBUG) {
+            Action.FindImagePositionFromScreen::class
+        } else {
+            null
+        },
         Action.OcrDetect::class,
     ).map {
         SelectorItem(
