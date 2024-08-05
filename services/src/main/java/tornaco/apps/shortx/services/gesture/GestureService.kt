@@ -11,6 +11,7 @@ import android.widget.Toast
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
@@ -70,8 +71,15 @@ class GestureService(shortXContext: ShortXContext) :
     override fun systemReady() {
         super.systemReady()
         gestureRecordStore.readBlocking()
-        gestureDetector = Detector(context, handler, this).also {
-            it.dump()
+        gestureDetector = Detector(context, handler, this)
+            .also {
+                it.dump()
+            }
+
+        systemServiceScope.launchSafety {
+            shortXContext.systemSettings.currentConfig.collectLatest {
+                gestureDetector?.onConfigurationChanged()
+            }
         }
 
         updateShouldInterceptMotionEventRect()

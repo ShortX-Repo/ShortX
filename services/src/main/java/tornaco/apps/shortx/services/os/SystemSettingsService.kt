@@ -1,7 +1,15 @@
 package tornaco.apps.shortx.services.os
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.res.Configuration
 import android.provider.Settings
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.runBlocking
+import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.common.SystemSettingsAccessRecord
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -11,12 +19,27 @@ import tornaco.apps.shortx.services.runClearCallingIdentity
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.watchdog.launchSafety
 
-
 class SystemSettingsService(shortXContext: ShortXContext) :
     SystemService(shortXContext, "SystemSettingsService") {
     private val recorder by lazy {
         SystemSettingsAccessRecorder()
     }
+
+    private val configurationChangeReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (Intent.ACTION_CONFIGURATION_CHANGED != intent.action) {
+                return
+            }
+            systemServiceScope.launchSafety {
+                val newConfig = context.resources.configuration
+                logger.i("configuration change received, new config: $newConfig")
+                _currentConfig.emit(newConfig)
+            }
+        }
+    }
+
+    private val _currentConfig = MutableSharedFlow<Configuration>()
+    val currentConfig = _currentConfig.asSharedFlow()
 
     override fun systemReady() {
         super.systemReady()
@@ -24,6 +47,18 @@ class SystemSettingsService(shortXContext: ShortXContext) :
         setSettingsCatcherEnabled(false)
 
         getMinScreenOffTimeout()
+        registerReceivers()
+    }
+
+    private fun registerReceivers() {
+        val configFilter = IntentFilter()
+        configFilter.addAction(Intent.ACTION_CONFIGURATION_CHANGED)
+        ContextCompat.registerReceiver(
+            context,
+            configurationChangeReceiver,
+            configFilter,
+            ContextCompat.RECEIVER_EXPORTED
+        )
     }
 
     fun setPointerLocationEnabled(enable: Boolean) {

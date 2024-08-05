@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.gesture
 
 import android.content.Context
 import android.content.res.Configuration
+import android.graphics.Point
 import android.os.Handler
 import android.view.GestureDetector
 import android.view.MotionEvent
@@ -25,10 +26,8 @@ class Detector(
 
     private val logger = Logger("Detector")
 
-    private val screenSize by lazy {
-        context.screenSize().apply {
-            logger.w("Init screenSize: $this")
-        }
+    private var screenSize: Point = context.screenSize().apply {
+        logger.w("Init screenSize: $this")
     }
 
     private val gestureDetector: GestureDetector =
@@ -67,6 +66,12 @@ class Detector(
                 return handleEvent(x.toFloat(), y.toFloat(), Gesture.SwipeFromTop)
             }
         }, service.getSwipeDistanceThresholdDp()._dp)
+
+    fun onConfigurationChanged() {
+        screenSize = context.screenSize().apply {
+            logger.w("onConfigurationChanged, screenSize: $this")
+        }
+    }
 
     private fun handleEvent(downX: Float, downY: Float, gestureEvent: Gesture): Boolean {
         val area = detectArea(downX, downY)
