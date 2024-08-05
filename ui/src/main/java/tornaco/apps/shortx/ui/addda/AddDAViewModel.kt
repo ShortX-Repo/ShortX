@@ -25,6 +25,7 @@ import tornaco.apps.shortx.core.rule.parseShareContentDA
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.core.util.maskAll
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
+import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
@@ -71,7 +72,17 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
         context,
         { AddDirectActionState() }) {
 
-    val actionContentStateHandler = ActionContentStateHandler()
+    val actionContentStateHandler = ActionContentStateHandler(onActionsChanged = { actionList ->
+        // Generate default DA title.
+        if (state.value.title.isEmpty()) {
+            val genTitle = actionList.firstOrNull()?.let {
+                labelAndDescriptionForActionSelector(i18N, it::class)
+            }
+            genTitle?.let {
+                setTitle(genTitle.first)
+            }
+        }
+    })
     val pref by lazy { Pref(context) }
 
     private val actionEvaluateListener = object : IActionEvaluateListener.Stub() {

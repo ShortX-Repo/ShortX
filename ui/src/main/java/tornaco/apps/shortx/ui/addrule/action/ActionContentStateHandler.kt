@@ -128,7 +128,8 @@ fun ActionContentStateHandler.asActionHandler(name: String = "unnamed"): ActionH
 }
 
 class ActionContentStateHandler(
-    private val withState: WithStateImpl<ActionContentState> = WithStateImpl { ActionContentState() }
+    private val withState: WithStateImpl<ActionContentState> = WithStateImpl { ActionContentState() },
+    private val onActionsChanged: (List<Action>) -> Unit = {}
 ) : WithState<ActionContentState> by withState {
     private val shortXManager = tornaco.apps.shortx.core.shortXManager
     private val logger = Logger("ActionContentStateHandler")
@@ -151,6 +152,7 @@ class ActionContentStateHandler(
             }, isChanged = true)
         }
         checkUpdateWarnings()
+        onActionsChanged(actions)
     }
 
     fun insertActionAbove(action: Action, anchorId: String) {
@@ -171,6 +173,7 @@ class ActionContentStateHandler(
             }, isChanged = true)
         }
         checkUpdateWarnings()
+        onActionsChanged(actions)
     }
 
     fun insertActionBelow(action: Action, anchorId: String) {
@@ -191,6 +194,7 @@ class ActionContentStateHandler(
             }, isChanged = true)
         }
         checkUpdateWarnings()
+        onActionsChanged(actions)
     }
 
     fun removeAction(action: String) {
@@ -200,12 +204,14 @@ class ActionContentStateHandler(
             }, isChanged = true)
         }
         checkUpdateWarnings()
+        onActionsChanged(actions)
     }
 
     fun sortActions(actions: List<Action>) {
         updateState {
             copy(actions = actions, isChanged = true)
         }
+        onActionsChanged(actions)
     }
 
     fun setNote(action: Action, note: String) {
