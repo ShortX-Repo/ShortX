@@ -8,7 +8,11 @@ import androidx.activity.result.ActivityResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import dagger.hilt.android.AndroidEntryPoint
+import tornaco.apps.shortx.core.proto.getTypeUrl
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
+import tornaco.apps.shortx.ui.addrule.fact.model.toProtoFact
+import tornaco.apps.shortx.ui.analytics.Event
+import tornaco.apps.shortx.ui.analytics.analytics
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.composeLogger
 
@@ -59,6 +63,12 @@ class FactSelectorActivity : BaseActivity() {
             setResult(Activity.RESULT_CANCELED)
             finish()
         }, onSelected = {
+            kotlin.runCatching {
+                // Analytics
+                val typeUrl = it.toProtoFact().getTypeUrl("")
+                analytics.logEvent(Event.AddFact(typeUrl))
+            }
+
             setResult(Activity.RESULT_OK, Intent().putExtra(INTENT_EXTRA_KEY_FACT, it)
                 .apply {
                     arg1?.let { putExtra(INTENT_EXTRA_ARG1_FACT, arg1) }

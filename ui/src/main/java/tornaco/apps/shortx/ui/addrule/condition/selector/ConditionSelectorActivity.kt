@@ -8,7 +8,11 @@ import androidx.activity.result.ActivityResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import dagger.hilt.android.AndroidEntryPoint
+import tornaco.apps.shortx.core.proto.getTypeUrl
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
+import tornaco.apps.shortx.ui.addrule.condition.model.toProtoCondition
+import tornaco.apps.shortx.ui.analytics.Event
+import tornaco.apps.shortx.ui.analytics.analytics
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.composeLogger
 
@@ -59,6 +63,11 @@ class ConditionSelectorActivity : BaseActivity() {
             setResult(Activity.RESULT_CANCELED)
             finish()
         }, onSelected = {
+            kotlin.runCatching {
+                // Analytics
+                val typeUrl = it.toProtoCondition().getTypeUrl("")
+                analytics.logEvent(Event.AddCondition(typeUrl))
+            }
             setResult(Activity.RESULT_OK, Intent().putExtra(INTENT_EXTRA_KEY_CONDITION, it)
                 .apply {
                     arg1?.let { putExtra(INTENT_EXTRA_ARG1_CONDITION, arg1) }

@@ -27,4 +27,18 @@ sealed interface Event {
         override val params: Map<String, String>
             get() = mapOf("Type" to type)
     }
+
+    data class AddFact(val type: String) : Event {
+        override val eventName: String
+            get() = "AddFact"
+        override val params: Map<String, String>
+            get() = mapOf("Type" to type)
+    }
+
+    data class AddCondition(val type: String) : Event {
+        override val eventName: String
+            get() = "AddCondition"
+        override val params: Map<String, String>
+            get() = mapOf("Type" to type)
+    }
 }
