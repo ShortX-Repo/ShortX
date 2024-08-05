@@ -330,6 +330,7 @@ class GestureService(shortXContext: ShortXContext) :
 
     private fun updateShouldInterceptMotionEventRect() {
         val screenSize = shortXContext.wm.screenSize
+        logger.i("updateShouldInterceptMotionEventRect, screenSize: $screenSize")
         val portRects = mutableListOf<RectF>()
         val landRects = mutableListOf<RectF>()
 
