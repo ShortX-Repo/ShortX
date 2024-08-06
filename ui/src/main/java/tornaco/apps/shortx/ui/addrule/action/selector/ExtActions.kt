@@ -1,8 +1,6 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 
-import android.content.Intent
-import android.graphics.BitmapFactory
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -11,11 +9,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
-import tornaco.apps.shortx.core.util.BitmapUtils
-import tornaco.apps.shortx.ui.addrule.ImagePreviewDialog
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
@@ -28,13 +23,11 @@ import tornaco.apps.shortx.ui.addrule.base.ActionCategory
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.base.rememberCategoryState
-import tornaco.apps.shortx.ui.addrule.rememberImagePreviewDialogState
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.newIntent
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
-import tornaco.apps.shortx.ui.base.TextDisplayActivity
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.code.ParcelableCode
 import tornaco.apps.shortx.ui.base.code.ShellCommandEditorActivity
@@ -200,32 +193,15 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         }
     )
 
-    val findImagePositionFromScreenLauncher = rememberLauncherForActivityResult(
+    val findImageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val uri = result.data?.data
-            uri?.let {
-                scope.launch {
-                    runCatching {
-                        val base64 =
-                            context.contentResolver.openInputStream(uri).use { rawStream ->
-                                BitmapUtils.bitmapToBase64(BitmapFactory.decodeStream(rawStream))
-                            }
-                        addAction(Action.FindImagePositionFromScreen(imageBase64 = base64))
-                    }.onFailure {
-                        TextDisplayActivity.start(context, "OOPS! WTF!", it.stackTraceToString())
-                    }
-                }
+            val action = result.popupSelectorResult<Action.FindImagePosition>()
+            action?.let {
+                addAction(it)
             }
         }
     )
-
-    val imagePreviewState = rememberImagePreviewDialogState {
-        findImagePositionFromScreenLauncher.launch(
-            Intent(context, PhotoSelectorActivity::class.java)
-        )
-    }
-    ImagePreviewDialog(state = imagePreviewState)
 
     val brkScopeSelectorState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.action.brk.scope"],
@@ -377,11 +353,13 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
-            Action.FindImagePositionFromScreen::class -> {
-                source.getActionAs<Action.FindImagePositionFromScreen>()?.imageBase64?.let {
-                    imagePreviewState.show(it)
-                } ?: findImagePositionFromScreenLauncher.launch(
-                    Intent(context, PhotoSelectorActivity::class.java)
+            Action.FindImagePosition::class -> {
+                findImageLauncher.launch(
+                    newIntent(
+                        context,
+                        source.getActionAs<Action.FindImagePosition>(),
+                        FindImageSelectorActivity::class.java
+                    )
                 )
                 true
             }
@@ -430,7 +408,7 @@ fun ExtActions(
         Action.WebSocketSend::class,
         Action.ExecuteJS::class,
         if (config.isFeatureCVFindImageEnabled || BuildPropInternal.APP_IS_DEBUG) {
-            Action.FindImagePositionFromScreen::class
+            Action.FindImagePosition::class
         } else {
             null
         },

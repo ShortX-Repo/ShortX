@@ -40,12 +40,12 @@ import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 class BiometricVerifySelectorActivity : BaseSelectorActivity<Action.BiometricVerify>() {
     @Composable
     override fun BaseSelectorActivity<Action.BiometricVerify>.SelectorContent(currentData: Action.BiometricVerify?) {
-        BiometricVerifySelector(currentData)
+        Selector(currentData)
     }
 }
 
 @Composable
-private fun BaseSelectorActivity<Action.BiometricVerify>.BiometricVerifySelector(currentAction: Action.BiometricVerify?) {
+private fun BaseSelectorActivity<Action.BiometricVerify>.Selector(currentAction: Action.BiometricVerify?) {
     val vm = hiltViewModel<BiometricVerifySelectorViewModel>()
     LaunchedEffect(vm) {
         vm.initFrom(currentAction)

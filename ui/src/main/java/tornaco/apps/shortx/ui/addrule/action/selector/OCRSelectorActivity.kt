@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -39,14 +40,14 @@ import tornaco.apps.shortx.ui.base.rememberTextInputState
 class OCRSelectorActivity : BaseSelectorActivity<Action.OcrDetect>() {
     @Composable
     override fun BaseSelectorActivity<Action.OcrDetect>.SelectorContent(currentData: Action.OcrDetect?) {
-        BiometricVerifySelector(currentData)
+        Selector(currentData)
     }
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun BaseSelectorActivity<Action.OcrDetect>.BiometricVerifySelector(currentAction: Action.OcrDetect?) {
+private fun BaseSelectorActivity<Action.OcrDetect>.Selector(currentAction: Action.OcrDetect?) {
     val vm = hiltViewModel<OCRSelectorViewModel>()
     LaunchedEffect(vm) {
         vm.initFrom(currentAction)
@@ -197,7 +198,7 @@ private fun BaseSelectorActivity<Action.OcrDetect>.BiometricVerifySelector(curre
             Button(onClick = {
                 srcMenuState.show()
             }) {
-                RemixIcon(remixName = Remix.Edit.edit)
+                Text(text = i18N["ui.common.edit"])
             }
         }
     }
