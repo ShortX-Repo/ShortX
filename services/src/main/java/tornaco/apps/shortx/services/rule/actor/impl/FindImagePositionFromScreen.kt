@@ -2,9 +2,12 @@ package tornaco.apps.shortx.services.rule.actor.impl
 
 import android.graphics.Bitmap
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.os.ScreenCap
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.BitmapUtils
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.core.util.powerManager
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.actor.Actor
@@ -47,6 +50,24 @@ object FindImagePositionFromScreen : Actor {
         logger.d("cv: $cv")
         val point = cv.findImage(screen, target)
         logger.d("point: $point")
+
+        params.contextData.add(
+            d.customContextDataKey.forKey(ContextDataMapping.FindImagePositionFromScreen.isImageFound.name)
+                .fallbackOnEmpty { ContextDataMapping.FindImagePositionFromScreen.isImageFound.name },
+            point != null
+        )
+        point?.let {
+            params.contextData.add(
+                d.customContextDataKey.forKey(ContextDataMapping.FindImagePositionFromScreen.pointX.name)
+                    .fallbackOnEmpty { ContextDataMapping.FindImagePositionFromScreen.pointX.name },
+                point.x.toString()
+            )
+            params.contextData.add(
+                d.customContextDataKey.forKey(ContextDataMapping.FindImagePositionFromScreen.pointY.name)
+                    .fallbackOnEmpty { ContextDataMapping.FindImagePositionFromScreen.pointY.name },
+                point.y.toString()
+            )
+        }
     }
 }
 
