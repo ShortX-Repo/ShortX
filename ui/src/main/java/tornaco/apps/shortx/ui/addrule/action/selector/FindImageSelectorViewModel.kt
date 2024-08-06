@@ -12,7 +12,7 @@ import javax.inject.Inject
 data class FindImageSelectorState(
     val id: String = defaultNewActionId(),
     val image: Action.FindImagePosition.ImageSource = Action.FindImagePosition.ImageSource.Screenshot,
-    val template: Action.FindImagePosition.ImageSource? = null
+    val template: Action.FindImagePosition.ImageSource = Action.FindImagePosition.ImageSource.NA,
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -51,12 +51,13 @@ class FindImageSelectorViewModel @Inject constructor(@ApplicationContext context
     }
 
     fun toActionOrNull(): Action.FindImagePosition? {
-        return state.value.template?.let {
-            Action.FindImagePosition(
-                image = state.value.image,
-                template = it,
-                id = state.value.id
-            )
-        }
+        return state.value.template.takeIf { it != Action.FindImagePosition.ImageSource.NA }
+            ?.let {
+                Action.FindImagePosition(
+                    image = state.value.image,
+                    template = it,
+                    id = state.value.id
+                )
+            }
     }
 }

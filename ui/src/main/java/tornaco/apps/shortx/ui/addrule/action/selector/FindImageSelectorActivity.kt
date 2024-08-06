@@ -28,6 +28,7 @@ import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.ui.addrule.ImagePreviewDialog
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.rememberImagePreviewDialogState
+import tornaco.apps.shortx.ui.base.Base64ImageIcon
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.ListItem
@@ -88,7 +89,7 @@ private fun BaseSelectorActivity<Action.FindImagePosition>.Selector(currentActio
 
             FieldTitle(text = LocalI18N.current["ui.action.find.image.template"])
             SmallSpacer()
-            ImageSourceSelector(state.image, i18N["ui.action.find.image.template"], false) {
+            ImageSourceSelector(state.template, i18N["ui.action.find.image.template"], false) {
                 vm.setTemplate(it)
             }
         }
@@ -187,19 +188,23 @@ fun ImageSourceSelector(
                 onClick = {
                     imagePreviewState.show(image.base64)
                 })
-            RemixIcon(
-                remixName = image.base64,
+            Base64ImageIcon(
+                image.base64,
                 modifier = Modifier
                     .size(90.dp)
                     .clickable {
                         imagePreviewState.show(image.base64)
-                    }
+                    },
+                false
             )
         }
 
         is Action.FindImagePosition.ImageSource.Path -> {
             ListItem(
-                titleLines = listOf(i18N["ui.action.find.image.src.path"]),
+                titleLines = listOf(
+                    i18N["ui.action.find.image.src.path"],
+                    image.path
+                ),
                 icon = {
                     RemixIcon(remixName = Remix.Document.file_fill)
                 },
@@ -213,7 +218,7 @@ fun ImageSourceSelector(
             ListItem(
                 titleLines = listOf(i18N["ui.action.find.image.src.screenshot"]),
                 icon = {
-                    RemixIcon(remixName = Remix.Device.phone_fill)
+                    RemixIcon(remixName = Remix.Device.smartphone_fill)
                 },
                 onClick = {
                     srcMenuState.show()

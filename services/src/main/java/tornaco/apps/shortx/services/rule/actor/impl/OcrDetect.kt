@@ -24,6 +24,7 @@ import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import java.io.File
+import java.io.IOException
 
 object OcrDetect : Actor {
     override fun actionsCanHandle(): Class<out Message> {
@@ -165,7 +166,17 @@ object OcrDetect : Actor {
             // /data/system/shortx_zMQSbizboGjCfJdF/cache/rule/DA9906629e-530d-4db7-9942-13d9f86f17d5
             // /RectSourcePath_tmp_A-8c84842c-2f1c-437e-90ed-b1a53e514ed5_-677193684.png:
             // open failed: EACCES (Permission denied)
-            CopyFile.copyFile(shortXContext, File(path), tmpFile, false, "1000.1000")
+            kotlin.runCatching {
+                CopyFile.copyFile(
+                    shortXContext = shortXContext,
+                    srcFile = File(path),
+                    destFile = tmpFile,
+                    deleteSrcOnSuccess = false,
+                    owner = "1000.1000"
+                )
+            }.onFailure {
+                throw IOException("Failed to copy $path to $tmpFile, is this file exists?", it)
+            }
             logger.d("getBitmapFromPath new tmpFile: $tmpFile")
         } else {
             logger.d("getBitmapFromPath tmpFile exists: $tmpFile")
