@@ -115,26 +115,7 @@ object OcrDetect : Actor {
             }
         } else if (src is_ RectSourcePath::class.java) {
             val path = (src unpack_ RectSourcePath::class.java).path
-            val tmpFile = File(
-                Dirs.ruleCacheDir(evaluateContext),
-                "ocr_tmp_${path.hashCode()}.png"
-            )
-            if (!tmpFile.exists()) {
-                // Unable to decode stream: java.io.FileNotFoundException:
-                // /data/system/shortx_zMQSbizboGjCfJdF/cache/rule/DA9906629e-530d-4db7-9942-13d9f86f17d5
-                // /RectSourcePath_tmp_A-8c84842c-2f1c-437e-90ed-b1a53e514ed5_-677193684.png:
-                // open failed: EACCES (Permission denied)
-                CopyFile.copyFile(shortXContext, File(path), tmpFile, false, "1000.1000")
-                logger.d("detectOCRText RectSourcePath new tmpFile: $tmpFile")
-            } else {
-                logger.d("detectOCRText RectSourcePath tmpFile exists: $tmpFile")
-            }
-
-            val bitmap = requireNotNull(BitmapFactory.decodeFile(tmpFile.absolutePath)) {
-                "Failed to decode $tmpFile （读取文件失败）"
-            }
-            logger.d("detectOCRText RectSourcePath bitmap: $bitmap")
-            bitmap
+            getBitmapFromPath(evaluateContext, shortXContext, path)
         } else {
             val area = SelectScreenArea.startSelectScreenArea(shortXContext)
             val rect: Rect? = area?.getRect(androidContext)
@@ -168,6 +149,33 @@ object OcrDetect : Actor {
             bitmapToRecycle.forEach { it.recycle() }
             logger.i("Recycling bitmaps.")
         }
+    }
+
+    suspend fun getBitmapFromPath(
+        evaluateContext: EvaluateContext,
+        shortXContext: ShortXContext,
+        path: String
+    ): Bitmap {
+        val tmpFile = File(
+            Dirs.ruleCacheDir(evaluateContext),
+            "tmp_${path.hashCode()}.png"
+        )
+        if (!tmpFile.exists()) {
+            // Unable to decode stream: java.io.FileNotFoundException:
+            // /data/system/shortx_zMQSbizboGjCfJdF/cache/rule/DA9906629e-530d-4db7-9942-13d9f86f17d5
+            // /RectSourcePath_tmp_A-8c84842c-2f1c-437e-90ed-b1a53e514ed5_-677193684.png:
+            // open failed: EACCES (Permission denied)
+            CopyFile.copyFile(shortXContext, File(path), tmpFile, false, "1000.1000")
+            logger.d("getBitmapFromPath new tmpFile: $tmpFile")
+        } else {
+            logger.d("getBitmapFromPath tmpFile exists: $tmpFile")
+        }
+
+        val bitmap = requireNotNull(BitmapFactory.decodeFile(tmpFile.absolutePath)) {
+            "Failed to decode $tmpFile （读取文件失败）"
+        }
+        logger.d("getBitmapFromPath bitmap: $bitmap")
+        return bitmap
     }
 }
 
