@@ -37,10 +37,9 @@ object FindImagePositionFromScreen : Actor {
         logger.d("screen: $screen")
         saveScreenBitmapToFile(screen, Dirs.baseServerCacheDir())
 
-        val target =
-            Bitmap.createScaledBitmap(requireNotNull(BitmapUtils.base64ToBitmap(d.imageBase64)) {
-                "Fail to decode bitmap from base64."
-            }, screen.width, screen.height, false)
+        val target = requireNotNull(BitmapUtils.base64ToBitmap(d.imageBase64)) {
+            "Fail to decode bitmap from base64."
+        }
         logger.d("target: $target")
         saveScreenBitmapToFile(target, Dirs.baseServerCacheDir())
 

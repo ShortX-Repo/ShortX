@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 
 import android.content.Intent
+import android.graphics.BitmapFactory
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -13,6 +14,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
+import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.ui.addrule.ImagePreviewDialog
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
@@ -45,7 +47,6 @@ import tornaco.apps.shortx.ui.config.config
 import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
-import tornaco.apps.shortx.ui.util.Compressor
 
 @Composable
 fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
@@ -204,13 +205,16 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         onResult = { result ->
             val uri = result.data?.data
             uri?.let {
-                runCatching {
-                    scope.launch {
-                        val base64 = Compressor.compressAndToBase64(context, uri)
+                scope.launch {
+                    runCatching {
+                        val base64 =
+                            context.contentResolver.openInputStream(uri).use { rawStream ->
+                                BitmapUtils.bitmapToBase64(BitmapFactory.decodeStream(rawStream))
+                            }
                         addAction(Action.FindImagePositionFromScreen(imageBase64 = base64))
+                    }.onFailure {
+                        TextDisplayActivity.start(context, "OOPS! WTF!", it.stackTraceToString())
                     }
-                }.onFailure {
-                    TextDisplayActivity.start(context, "OOPS! WTF!", it.stackTraceToString())
                 }
             }
         }
