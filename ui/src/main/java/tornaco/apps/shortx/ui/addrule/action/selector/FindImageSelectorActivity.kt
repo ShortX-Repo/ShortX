@@ -64,7 +64,7 @@ private fun BaseSelectorActivity<Action.FindImagePosition>.Selector(currentActio
 
     ShortXAppBarScaffold(
         title = LocalI18N.current["ui.action.find.image"],
-        onBackPressed = {},
+        onBackPressed = { cancelAndFinish() },
         actions = {
             IconButton(onClick = {
                 vm.toActionOrNull()?.let {
@@ -189,13 +189,13 @@ fun ImageSourceSelector(
                     imagePreviewState.show(image.base64)
                 })
             Base64ImageIcon(
-                image.base64,
+                base64Str = image.base64,
                 modifier = Modifier
                     .size(90.dp)
                     .clickable {
                         imagePreviewState.show(image.base64)
                     },
-                false
+                clipToCircleShape = false
             )
         }
 

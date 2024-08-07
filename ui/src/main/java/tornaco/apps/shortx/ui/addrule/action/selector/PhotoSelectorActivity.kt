@@ -1,6 +1,5 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -26,7 +25,6 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
-import tornaco.apps.shortx.ui.base.ShortXCard
 
 @AndroidEntryPoint
 class PhotoSelectorActivity : BaseActivity() {
@@ -115,13 +113,11 @@ fun PhotoSelectorView(selectedImages: MutableState<List<Uri>>, maxSelectionCount
 
 @Composable
 fun ImageLayoutView(selectedImages: List<Uri?>) {
-    ShortXCard {
-        LazyRow {
-            items(selectedImages) { uri ->
-                com.skydoves.landscapist.glide.GlideImage(
-                    imageModel = { uri },
-                )
-            }
+    LazyRow {
+        items(selectedImages) { uri ->
+            com.skydoves.landscapist.glide.GlideImage(
+                imageModel = { uri },
+            )
         }
     }
 }

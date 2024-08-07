@@ -57,7 +57,7 @@ private fun BaseSelectorActivity<Action.OcrDetect>.Selector(currentAction: Actio
 
     ShortXAppBarScaffold(
         title = LocalI18N.current["ui.action.ocr.detect"],
-        onBackPressed = {},
+        onBackPressed = { cancelAndFinish() },
         actions = {
             IconButton(onClick = {
                 setResultAndFinish(vm.getAction())
