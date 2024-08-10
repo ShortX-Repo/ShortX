@@ -34,9 +34,11 @@ class CVImpl(private val context: Context) : ICV.Stub() {
         logger.d("findPointsByColor cvApiIns: $cvApiIns")
         val res =
             Reflections.callMethod(cvApiIns, "findPointsByColor", image, color, threshold, rect)
-        logger.d("findPointsByColor points: $res")
+
         @Suppress("UNCHECKED_CAST")
         val points = (res as List<Point>)
+        // Log too large will cause TransactionTooLarge err.
+        logger.d("findPointsByColor points count: ${res.size}")
         return points.take(1)
     }
 }
