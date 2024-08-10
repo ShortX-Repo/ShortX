@@ -206,52 +206,7 @@ public class FloatWindow {
                                 }
                                 //如果是自动贴边模式
                                 if (moveType == FloatMoveEnum.SLIDE) {
-                                    final int startX = (int) upX;
-                                    int endX;
-                                    boolean isLeft = ScreenUtil.isScreenLeft(getContext(), startX);
-                                    if (isLeft) {
-                                        endX = mWindowOption.getBoundOffset();
-                                    } else {
-                                        endX = ScreenUtil.getScreenWidth(getContext())
-                                                - (getView().getWidth())
-                                                - mWindowOption.getBoundOffset();
-                                    }
-                                    mAnimator = ValueAnimator.ofInt(startX, endX);
-                                    mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                                        int preX = startX;
-
-                                        @Override
-                                        public void onAnimationUpdate(ValueAnimator animation) {
-                                            int x = (int) animation.getAnimatedValue();
-                                            updateX(x);
-                                            if (mWindowOption.getViewStateCallback() != null) {
-                                                mWindowOption.getViewStateCallback().onPositionUpdate(preX, getY(), x, getY());
-                                            }
-                                            preX = x;
-                                        }
-                                    });
-                                    mAnimator.addListener(new AnimatorListenerAdapter() {
-                                        @Override
-                                        public void onAnimationStart(Animator animation) {
-                                            super.onAnimationStart(animation);
-                                            if (mWindowOption.getViewStateCallback() != null) {
-                                                mWindowOption.getViewStateCallback().onMoveAnimStart();
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onAnimationEnd(Animator animation) {
-                                            super.onAnimationEnd(animation);
-                                            isDragging = false;
-                                            if (mWindowOption.getViewStateCallback() != null) {
-                                                mWindowOption.getViewStateCallback().onDragFinish();
-                                            }
-                                            if (mWindowOption.getViewStateCallback() != null) {
-                                                mWindowOption.getViewStateCallback().onMoveAnimEnd();
-                                            }
-                                        }
-                                    });
-                                    startAnimator();
+                                    goToEdge(upX);
                                     //如果是点击，返回false才能让OnClick执行，移动则返回true
                                     return true;
                                 } else {
@@ -272,6 +227,55 @@ public class FloatWindow {
                 });
                 break;
         }
+    }
+
+    private void goToEdge(float upX) {
+        final int startX = (int) upX;
+        int endX;
+        boolean isLeft = ScreenUtil.isScreenLeft(getContext(), startX);
+        if (isLeft) {
+            endX = mWindowOption.getBoundOffset();
+        } else {
+            endX = ScreenUtil.getScreenWidth(getContext())
+                    - (getView().getWidth())
+                    - mWindowOption.getBoundOffset();
+        }
+        mAnimator = ValueAnimator.ofInt(startX, endX);
+        mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            int preX = startX;
+
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                int x = (int) animation.getAnimatedValue();
+                updateX(x);
+                if (mWindowOption.getViewStateCallback() != null) {
+                    mWindowOption.getViewStateCallback().onPositionUpdate(preX, getY(), x, getY());
+                }
+                preX = x;
+            }
+        });
+        mAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                super.onAnimationStart(animation);
+                if (mWindowOption.getViewStateCallback() != null) {
+                    mWindowOption.getViewStateCallback().onMoveAnimStart();
+                }
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                isDragging = false;
+                if (mWindowOption.getViewStateCallback() != null) {
+                    mWindowOption.getViewStateCallback().onDragFinish();
+                }
+                if (mWindowOption.getViewStateCallback() != null) {
+                    mWindowOption.getViewStateCallback().onMoveAnimEnd();
+                }
+            }
+        });
+        startAnimator();
     }
 
     /**

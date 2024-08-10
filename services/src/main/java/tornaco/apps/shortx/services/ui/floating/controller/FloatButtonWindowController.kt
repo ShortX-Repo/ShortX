@@ -8,6 +8,7 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import tornaco.apps.shortx.core.BuildPropInternal
@@ -71,6 +72,7 @@ class FloatButtonWindowController(
 
         initListener()
         attachFloatWindow()
+        mainHandler.postDelayed(idleRunnable, IDLE_DELAY)
     }
 
     private fun initListener() {
@@ -79,14 +81,15 @@ class FloatButtonWindowController(
 
     private fun attachFloatWindow() {
         val iconSize = ScreenUtil.dip2px(context, SIZE)
+        Log.d("attachFloatWindow", "x-y: ${floatServiceUtil.x} ${floatServiceUtil.y}")
         floatWindowManager
             .makeFloatWindow(
                 floatButtonView,
                 TAG_BUTTON,
                 FloatWindowOption.create(
                     FloatWindowOption.Builder()
-                        .setX(200)
-                        .setY(800)
+                        .setX(floatServiceUtil.x)
+                        .setY(floatServiceUtil.y)
                         .setWidth(iconSize)
                         .setHeight(iconSize)
                         .setFloatMoveType(FloatMoveEnum.SLIDE)

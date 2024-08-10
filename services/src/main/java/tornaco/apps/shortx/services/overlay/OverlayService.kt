@@ -11,12 +11,15 @@ import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.rule.toLogString
+import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.ui.floating.FloatApi
+import tornaco.apps.shortx.services.ui.floating.ScreenUtil
+import tornaco.apps.shortx.services.ui.floating.controller.FloatButtonWindowController
 import tornaco.apps.shortx.services.watchdog.postSafety
 import tornaco.apps.shortx.ui.overlay.ComposeOverlay
 
@@ -124,16 +127,34 @@ class OverlayService(shortXContext: ShortXContext) :
         }
 
         val posX = store.read(Settings.IntSettings.FloatWindowPosX(action.tag))
-        val posY = store.read(Settings.IntSettings.FloatWindowPosX(action.tag))
+        val posY = store.read(Settings.IntSettings.FloatWindowPosY(action.tag))
+
+        logger.d("postShowFloatWindow, read settings: $posX-$posY")
+
+        val iconSize = ScreenUtil.dip2px(context, FloatButtonWindowController.SIZE)
+        val screenSize = context.screenSize()
+
+        val fixedPosX = if (posX > 0 && posX <= screenSize.x - iconSize) {
+            posX
+        } else {
+            screenSize.x / 2
+        }
+
+        val fixedPosY = if (posY > 0 && posY <= screenSize.y - iconSize) {
+            posY
+        } else {
+            screenSize.y / 2
+        }
+        logger.d("postShowFloatWindow, fixed settings: $fixedPosX-$fixedPosY")
 
         val float = FloatApi(
             context, action,
-            initialPos = posX to posY,
+            initialPos = fixedPosX to fixedPosY,
             onPosChange = { x, y ->
                 handler.postSafety {
                     logger.d("FloatWindow onPosChange, write settings: $x-$y")
                     store.write(Settings.IntSettings.FloatWindowPosX(action.tag), x)
-                    store.write(Settings.IntSettings.FloatWindowPosX(action.tag), y)
+                    store.write(Settings.IntSettings.FloatWindowPosY(action.tag), y)
                 }
             },
             onButtonClick = { button: OverlayButtonSetting ->

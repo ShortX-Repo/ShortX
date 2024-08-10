@@ -68,10 +68,10 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
             IntSettings(key = "OverlayButtonPosY_$tag", defaultValue = { -1 })
 
         data class FloatWindowPosX(val tag: String) :
-            IntSettings(key = "FloatWindowPosX_$tag", defaultValue = { -1 })
+            IntSettings(key = "FloatWindowPosX_$tag", defaultValue = { 500 })
 
         data class FloatWindowPosY(val tag: String) :
-            IntSettings(key = "FloatWindowPosY_$tag", defaultValue = { -1 })
+            IntSettings(key = "FloatWindowPosY_$tag", defaultValue = { 500 })
 
         data object DanmuBgColor :
             IntSettings(key = "DanmuBgColor", defaultValue = { DANMU_COLOR_AUTO })
