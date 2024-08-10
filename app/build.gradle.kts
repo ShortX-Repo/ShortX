@@ -3,6 +3,7 @@ import tornaco.project.android.shortx.Configs.keyStoreAlias
 import tornaco.project.android.shortx.Configs.keyStorePassword
 import tornaco.project.android.shortx.Flavor
 import tornaco.project.android.shortx.log
+import kotlin.random.Random
 
 plugins {
     alias(libs.plugins.agp.app)
@@ -52,7 +53,8 @@ android {
             isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
+                "proguard-rules-dynamic.pro"
             )
             signingConfig = signingConfigs.getByName("release")
 
@@ -67,7 +69,8 @@ android {
             isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
+                "proguard-rules-dynamic.pro"
             )
             signingConfig = signingConfigs.getByName("release")
 
@@ -163,6 +166,38 @@ dependencies {
     androidTestImplementation(libs.compose.ui.test.junit4)
     androidTestImplementation(libs.uiautomator)
     androidTestImplementation(libs.kotest.assertions.core)
+}
+
+
+val generateProguardRules by tasks.registering {
+    doLast {
+        val ruleFile = file("proguard-rules-dynamic.pro")
+        ruleFile.writeText("")
+
+        ruleFile.apply {
+            appendText("-repackageclasses ${generateRandomPackageName()}")
+            appendText(System.lineSeparator())
+        }
+    }
+}
+
+fun generateRandomPackageName(): String {
+    val packageParts = mutableListOf<String>()
+    val partCount = Random.nextInt(2, 5)
+
+    for (i in 1..partCount) {
+        val partLength = Random.nextInt(3, 8)
+        val part = (1..partLength)
+            .map { ('a'..'z').random() } // 随机生成小写字母
+            .joinToString("")
+        packageParts.add(part)
+    }
+
+    return packageParts.joinToString(".")
+}
+
+tasks.named("preBuild") {
+    dependsOn(generateProguardRules)
 }
 
 
