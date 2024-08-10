@@ -155,6 +155,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Action.StopGestureRecording::class,
     Action.EnableUniversalCopy::class,
     Action.TTS::class,
+    Action.FindAndClickViewByText::class,
     Action.FindAndClickViewById::class,
     Action.FindAndClickMatchedView::class,
     Action.ClickTile::class,
@@ -181,6 +182,9 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Action.InjectCombineKeyCode::class,
     Action.AreaScreenshot::class,
     Action.SelectScreenArea::class,
+    Action.OcrDetect::class,
+    Action.FindImagePosition::class,
+    Action.FindPointsByColor::class,
     Action.LaunchPinedItem::class,
     Action.ShowFloatWindow::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt

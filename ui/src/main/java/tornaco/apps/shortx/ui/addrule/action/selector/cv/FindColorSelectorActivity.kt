@@ -84,9 +84,12 @@ private fun BaseSelectorActivity<Action.FindPointsByColor>.Selector(currentActio
                 modifier = Modifier
                     .fillMaxWidth(0.68f)
                     .height(64.dp),
-                backgroundColor = state.color.toComposeColor()
+                backgroundColor = state.color.toComposeColor(),
+                onClick = {
+                    colorPickerState.show()
+                }
             ) {
-                colorPickerState.show()
+
             }
         }
     }

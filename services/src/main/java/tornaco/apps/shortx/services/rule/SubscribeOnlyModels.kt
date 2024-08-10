@@ -12,9 +12,11 @@ import tornaco.apps.shortx.core.proto.action.DownloadFile
 import tornaco.apps.shortx.core.proto.action.EnableUniversalCopy
 import tornaco.apps.shortx.core.proto.action.FindAndClickMatchedView
 import tornaco.apps.shortx.core.proto.action.FindAndClickViewById
+import tornaco.apps.shortx.core.proto.action.FindAndClickViewByText
+import tornaco.apps.shortx.core.proto.action.FindImagePosition
+import tornaco.apps.shortx.core.proto.action.FindPointsByColor
 import tornaco.apps.shortx.core.proto.action.ForEachPkgSet
 import tornaco.apps.shortx.core.proto.action.GetTextFromScreenNode
-import tornaco.apps.shortx.core.proto.action.HideFloatWindow
 import tornaco.apps.shortx.core.proto.action.HttpRequest
 import tornaco.apps.shortx.core.proto.action.InjectCombineKeyCode
 import tornaco.apps.shortx.core.proto.action.InjectGestureRecording
@@ -26,6 +28,7 @@ import tornaco.apps.shortx.core.proto.action.LaunchAppByPkg
 import tornaco.apps.shortx.core.proto.action.LaunchPinedItem
 import tornaco.apps.shortx.core.proto.action.LockDeviceNow
 import tornaco.apps.shortx.core.proto.action.MatchRegex
+import tornaco.apps.shortx.core.proto.action.OcrDetect
 import tornaco.apps.shortx.core.proto.action.PerformContextMenuAction
 import tornaco.apps.shortx.core.proto.action.RemoveNotificationForPackageByPkg
 import tornaco.apps.shortx.core.proto.action.ReplaceRegex
@@ -165,6 +168,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         EnableUniversalCopy::class,
         TTS::class,
         FindAndClickViewById::class,
+        FindAndClickViewByText::class,
         FindAndClickMatchedView::class,
         ClickTile::class,
         BiometricVerify::class,
@@ -190,6 +194,9 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         InjectCombineKeyCode::class,
         AreaScreenshot::class,
         SelectScreenArea::class,
+        FindImagePosition::class,
+        FindPointsByColor::class,
+        OcrDetect::class,
         LaunchPinedItem::class,
         ShowFloatWindow::class,
     )
