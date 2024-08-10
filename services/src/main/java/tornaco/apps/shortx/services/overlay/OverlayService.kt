@@ -1,8 +1,10 @@
 package tornaco.apps.shortx.services.overlay
 
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Handler
 import android.os.Looper
+import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.ShowFloatWindow
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
@@ -12,14 +14,17 @@ import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.rule.toLogString
 import tornaco.apps.shortx.core.util.screenSize
+import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
+import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.floating.FloatApi
 import tornaco.apps.shortx.services.ui.floating.ScreenUtil
 import tornaco.apps.shortx.services.ui.floating.controller.FloatButtonWindowController
+import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
 import tornaco.apps.shortx.ui.overlay.ComposeOverlay
 
@@ -46,6 +51,17 @@ class OverlayService(shortXContext: ShortXContext) :
 
     override fun start(context: Context) {
         super.start(context)
+    }
+
+    override fun systemReady() {
+        super.systemReady()
+        systemServiceScope.launchSafety {
+            shortXContext.systemSettings.currentConfig.collectLatest {
+                showingFloats.forEach {
+                    it.token.onConfigurationChanged()
+                }
+            }
+        }
     }
 
     fun postShowOverlay(
@@ -126,35 +142,16 @@ class OverlayService(shortXContext: ShortXContext) :
             return@postSafety
         }
 
-        val posX = store.read(Settings.IntSettings.FloatWindowPosX(action.tag))
-        val posY = store.read(Settings.IntSettings.FloatWindowPosY(action.tag))
-
-        logger.d("postShowFloatWindow, read settings: $posX-$posY")
-
-        val iconSize = ScreenUtil.dip2px(context, FloatButtonWindowController.SIZE)
-        val screenSize = context.screenSize()
-
-        val fixedPosX = if (posX > 0 && posX <= screenSize.x - iconSize) {
-            posX
-        } else {
-            screenSize.x / 2
-        }
-
-        val fixedPosY = if (posY > 0 && posY <= screenSize.y - iconSize) {
-            posY
-        } else {
-            screenSize.y / 2
-        }
-        logger.d("postShowFloatWindow, fixed settings: $fixedPosX-$fixedPosY")
+        val (fixedPosXP, fixedPosYP) = getInitialFloatWindowPos(action.tag, true)
+        val (fixedPosXL, fixedPosYL) = getInitialFloatWindowPos(action.tag, false)
 
         val float = FloatApi(
             context, action,
-            initialPos = fixedPosX to fixedPosY,
+            initialPosP = fixedPosXP to fixedPosYP,
+            initialPosL = fixedPosXL to fixedPosYL,
             onPosChange = { x, y ->
                 handler.postSafety {
-                    logger.d("FloatWindow onPosChange, write settings: $x-$y")
-                    store.write(Settings.IntSettings.FloatWindowPosX(action.tag), x)
-                    store.write(Settings.IntSettings.FloatWindowPosY(action.tag), y)
+                    writeFloatWindowPos(action.tag, x, y)
                 }
             },
             onButtonClick = { button: OverlayButtonSetting ->
@@ -219,5 +216,63 @@ class OverlayService(shortXContext: ShortXContext) :
                 it.token.removeFloatWindow()
             }
         }
+    }
+
+    private fun writeFloatWindowPos(tag: String, x: Int, y: Int) {
+        val currentOrientation = context.resources.configuration.orientation
+        logger.d("writeFloatWindowPos currentOrientation: $currentOrientation (ORIENTATION_PORTRAIT = 1, ORIENTATION_LANDSCAPE = 2)")
+        val isPortrait = currentOrientation == Configuration.ORIENTATION_PORTRAIT
+        val storeKey = flowWindowPosStoreKey(tag, isPortrait)
+        logger.d("writeFloatWindowPos, write settings: $x-$y")
+        store.write(Settings.IntSettings.FloatWindowPosX(storeKey), x)
+        store.write(Settings.IntSettings.FloatWindowPosY(storeKey), y)
+    }
+
+    private fun getInitialFloatWindowPos(tag: String, isPortrait: Boolean): Pair<Int, Int> {
+        val storeKey = flowWindowPosStoreKey(tag, isPortrait)
+        val posX = store.read(Settings.IntSettings.FloatWindowPosX(storeKey))
+        val posY = store.read(Settings.IntSettings.FloatWindowPosY(storeKey))
+
+        logger.d("getInitialFloatWindowPos, read settings: $storeKey $posX-$posY")
+
+        val iconSize = ScreenUtil.dip2px(context, FloatButtonWindowController.SIZE)
+        val screenSize = context.screenSize()
+
+        val fixedPosX = if (isPortrait) {
+            if (posX > 0 && posX <= screenSize.x - iconSize) {
+                posX
+            } else {
+                screenSize.x / 2
+            }
+        } else {
+            if (posX > 0 && posX <= screenSize.y - iconSize) {
+                posX
+            } else {
+                screenSize.y / 2
+            }
+        }
+
+        val fixedPosY = if (isPortrait) {
+            if (posY > 0 && posY <= screenSize.y - iconSize) {
+                posY
+            } else {
+                screenSize.y / 2
+            }
+        } else {
+            if (posY > 0 && posY <= screenSize.x - iconSize) {
+                posY
+            } else {
+                screenSize.x / 2
+            }
+        }
+        logger.d("getInitialFloatWindowPos, fixed settings: $$storeKey $fixedPosX-$fixedPosY")
+        return fixedPosX to fixedPosY
+    }
+
+    private fun flowWindowPosStoreKey(tag: String, isPortrait: Boolean): String {
+        return "$tag-" + isPortrait.select(
+            "P",
+            "L"
+        )
     }
 }

@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.ui.floating.controller
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Color
 import android.util.Log
 import android.view.Gravity
@@ -96,7 +97,14 @@ class FloatPanelWindowController(
     }
 
     private fun attachFloatWindow() {
-        Log.d("attachFloatWindow", "px-py: ${floatServiceUtil.x} ${floatServiceUtil.y}")
+        val currentOrientation = context.resources.configuration.orientation
+        Log.d(
+            "TORNACO",
+            "attachFloatWindow currentOrientation: $currentOrientation (ORIENTATION_PORTRAIT = 1, ORIENTATION_LANDSCAPE = 2)"
+        )
+        val isPortrait = currentOrientation == Configuration.ORIENTATION_PORTRAIT
+        val pos = if (isPortrait) floatServiceUtil.p else floatServiceUtil.l
+        Log.d("attachFloatWindow", "px-py: ${pos.px} ${pos.py}")
         floatWindowManager
             .makeFloatWindow(
                 panelContainerLayout,
@@ -104,8 +112,8 @@ class FloatPanelWindowController(
                 FloatWindowOption
                     .create(
                         FloatWindowOption.Builder()
-                            .setX(floatServiceUtil.px)
-                            .setY(floatServiceUtil.py)
+                            .setX(pos.px)
+                            .setY(pos.py)
                             .setShow(false)
                             .setFloatMoveType(FloatMoveEnum.INACTIVE)
                     )
@@ -209,8 +217,14 @@ class FloatPanelWindowController(
         val fixY = result[1]
         panelWindow.updateXY(fixX, fixY)
         // 记录位置
-        floatServiceUtil.px = fixX
-        floatServiceUtil.py = fixY
+        val currentOrientationUpdate =
+            context.resources.configuration.orientation
+        val isPortraitUpdate =
+            currentOrientationUpdate == Configuration.ORIENTATION_PORTRAIT
+        val posUpdate =
+            if (isPortraitUpdate) floatServiceUtil.p else floatServiceUtil.l
+        posUpdate.px = fixX
+        posUpdate.py = fixY
     }
 
     val isCanChangeStatus: Boolean

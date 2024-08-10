@@ -5,6 +5,7 @@ import android.animation.Animator.AnimatorListener
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Handler
 import android.os.Looper
@@ -81,15 +82,25 @@ class FloatButtonWindowController(
 
     private fun attachFloatWindow() {
         val iconSize = ScreenUtil.dip2px(context, SIZE)
-        Log.d("attachFloatWindow", "x-y: ${floatServiceUtil.x} ${floatServiceUtil.y}")
+
+        val currentOrientation = context.resources.configuration.orientation
+        Log.d(
+            "TORNACO",
+            "attachFloatWindow currentOrientation: $currentOrientation (ORIENTATION_PORTRAIT = 1, ORIENTATION_LANDSCAPE = 2)"
+        )
+        val isPortrait = currentOrientation == Configuration.ORIENTATION_PORTRAIT
+        val pos = if (isPortrait) floatServiceUtil.p else floatServiceUtil.l
+
+        Log.d("attachFloatWindow", "l x-y: ${pos.x} ${pos.y}")
+
         floatWindowManager
             .makeFloatWindow(
                 floatButtonView,
                 TAG_BUTTON,
                 FloatWindowOption.create(
                     FloatWindowOption.Builder()
-                        .setX(floatServiceUtil.x)
-                        .setY(floatServiceUtil.y)
+                        .setX(pos.x)
+                        .setY(pos.y)
                         .setWidth(iconSize)
                         .setHeight(iconSize)
                         .setFloatMoveType(FloatMoveEnum.SLIDE)
@@ -105,9 +116,16 @@ class FloatButtonWindowController(
                                 super.onPositionUpdate(oldX, oldY, newX, newY)
                                 mainHandler.removeCallbacksAndMessages(null)
                                 mainHandler.postDelayed({
+                                    val currentOrientationUpdate =
+                                        context.resources.configuration.orientation
+                                    val isPortraitUpdate =
+                                        currentOrientationUpdate == Configuration.ORIENTATION_PORTRAIT
+                                    val posUpdate =
+                                        if (isPortraitUpdate) floatServiceUtil.p else floatServiceUtil.l
+
                                     // Save newX newY
-                                    floatServiceUtil.x = newX
-                                    floatServiceUtil.y = newY
+                                    posUpdate.x = newX
+                                    posUpdate.y = newY
                                     onPosChange(newX, newY)
                                 }, 550)
                                 //让面板跟随按钮
@@ -231,6 +249,13 @@ class FloatButtonWindowController(
         floatWindowManager
             .getFloatWindow(TAG_BUTTON)
             .remove()
+    }
+
+    fun updateXY(newX: Int, newY: Int) {
+        mainHandler.post {
+            floatWindow.updateXY(newX, newY)
+            onFloatButtonPositionUpdateListener?.onFloatButtonPositionUpdate(newX, newY)
+        }
     }
 
     fun open() {

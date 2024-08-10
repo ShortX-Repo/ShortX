@@ -1,6 +1,8 @@
 package tornaco.apps.shortx.services.ui.floating
 
 import android.content.Context
+import android.content.res.Configuration
+import android.util.Log
 import tornaco.apps.shortx.core.proto.action.ShowFloatWindow
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.services.ui.floating.controller.FloatButtonWindowController
@@ -9,7 +11,8 @@ import tornaco.apps.shortx.services.ui.floating.controller.FloatPanelWindowContr
 class FloatApi(
     private val context: Context,
     val action: ShowFloatWindow,
-    private val initialPos: Pair<Int, Int>,
+    private val initialPosP: Pair<Int, Int>,
+    private val initialPosL: Pair<Int, Int>,
     private val onPosChange: (Int, Int) -> Unit,
     private val onButtonClick: (OverlayButtonSetting) -> Unit,
     private val onButtonLongClick: (OverlayButtonSetting) -> Unit,
@@ -34,10 +37,15 @@ class FloatApi(
 
     fun showFloatWindow() {
         if (isFirst) {
-            util.x = initialPos.first
-            util.y = initialPos.second
-            util.px = initialPos.first
-            util.py = initialPos.second
+            util.p.x = initialPosP.first
+            util.p.y = initialPosP.second
+            util.p.px = initialPosP.first
+            util.p.py = initialPosP.second
+
+            util.l.x = initialPosL.first
+            util.l.y = initialPosL.second
+            util.l.px = initialPosL.first
+            util.l.py = initialPosL.second
 
             floatButtonVC.setOnFloatButtonPositionUpdateListener(object :
                 FloatButtonWindowController.OnFloatButtonPositionUpdateListener {
@@ -89,5 +97,20 @@ class FloatApi(
 
     fun removeFloatWindow() {
         floatButtonVC.removeFloatWindow()
+    }
+
+    fun onConfigurationChanged() {
+        val currentOrientation = context.resources.configuration.orientation
+        Log.d(
+            "TORNACO",
+            "FloatApi.onConfigurationChanged currentOrientation: $currentOrientation (ORIENTATION_PORTRAIT = 1, ORIENTATION_LANDSCAPE = 2)"
+        )
+        val isPortrait = currentOrientation == Configuration.ORIENTATION_PORTRAIT
+
+        if (isPortrait) {
+            floatButtonVC.updateXY(util.p.x, util.p.y)
+        } else {
+            floatButtonVC.updateXY(util.l.x, util.l.y)
+        }
     }
 }

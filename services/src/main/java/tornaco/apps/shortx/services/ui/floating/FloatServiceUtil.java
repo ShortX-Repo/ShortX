@@ -8,11 +8,26 @@ package tornaco.apps.shortx.services.ui.floating;
  * <b>Description:</b>  <br>
  */
 public class FloatServiceUtil {
-    public int x = 200;
-    public int y = 500;
+    public static class Pos {
+        public int x = 200;
+        public int y = 500;
 
-    public int px = 200;
-    public int py = 500;
+        public int px = 200;
+        public int py = 500;
+
+        @Override
+        public String toString() {
+            return "Pos{" +
+                    "x=" + x +
+                    ", y=" + y +
+                    ", px=" + px +
+                    ", py=" + py +
+                    '}';
+        }
+    }
+
+    public Pos p = new Pos();
+    public Pos l = new Pos();
 
     public boolean isLeft = false;
 
