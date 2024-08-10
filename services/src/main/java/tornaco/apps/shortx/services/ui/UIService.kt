@@ -11,6 +11,7 @@ import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
 import tornaco.apps.shortx.core.res.PicassoInitializer
 import tornaco.apps.shortx.core.rule.action.emptyByteArrayWrapper
 import tornaco.apps.shortx.core.systemui.IQSTileHost
+import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.RemoteCallbackListExt
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -18,6 +19,7 @@ import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
+import tornaco.apps.shortx.services.ui.danmu.DanmakuService
 import tornaco.apps.shortx.services.watchdog.postSafety
 import java.time.Duration
 
@@ -30,6 +32,7 @@ class UIService(shortXContext: ShortXContext) : SystemService(shortXContext, "UI
     }
 
     private var liveDanmuView: LiveDanmuView? = null
+    private var danmuService: DanmakuService? = null
 
     override fun systemReady() {
         super.systemReady()
@@ -43,15 +46,32 @@ class UIService(shortXContext: ShortXContext) : SystemService(shortXContext, "UI
     fun showDanmu(icon: String?, text: String) {
         if (isSystemReady) {
             uiHandler.postSafety {
-                val viewAlive = liveDanmuView?.isAttached() ?: false
-                if (!viewAlive) {
-                    liveDanmuView =
-                        LiveDanmuView(context, getDanmuUISettings()).apply { attach() }
+                if (OsUtils.isROrAbove() && false) {
+                    showDanmuCRDroidDanmuService(icon, text)
+                } else {
+                    showDanmuFallback(icon, text)
                 }
-                logger.d("showDanmu: $liveDanmuView $icon $text")
-                liveDanmuView?.addDanmu(Danmu(icon, text))
             }
         }
+    }
+
+    private fun showDanmuCRDroidDanmuService(icon: String?, text: String) {
+        if (danmuService == null) {
+            danmuService = DanmakuService(context)
+        }
+        logger.d("showDanmuCRDroidDanmuService: $danmuService $icon $text")
+        danmuService?.showNotificationAsOverlay(text)
+    }
+
+
+    private fun showDanmuFallback(icon: String?, text: String) {
+        val viewAlive = liveDanmuView?.isAttached() ?: false
+        if (!viewAlive) {
+            liveDanmuView =
+                LiveDanmuView(context, getDanmuUISettings()).apply { attach() }
+        }
+        logger.d("showDanmuFallback: $liveDanmuView $icon $text")
+        liveDanmuView?.addDanmu(Danmu(icon, text))
     }
 
     fun getDanmuUISettings(): DanmuUISettings {
