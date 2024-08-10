@@ -1,11 +1,14 @@
 package tornaco.apps.shortx.ui.addrule.action.selector.cv
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -83,7 +86,12 @@ private fun BaseSelectorActivity<Action.FindPointsByColor>.Selector(currentActio
             ShortXCard(
                 modifier = Modifier
                     .fillMaxWidth(0.68f)
-                    .height(64.dp),
+                    .height(64.dp)
+                    .border(
+                        2.dp,
+                        MaterialTheme.colorScheme.primary,
+                        RoundedCornerShape(20.dp)
+                    ),
                 backgroundColor = state.color.toComposeColor(),
                 onClick = {
                     colorPickerState.show()

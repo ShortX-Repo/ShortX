@@ -32,10 +32,11 @@ class CVImpl(private val context: Context) : ICV.Stub() {
         rect: Rect?
     ): List<Point> {
         logger.d("findPointsByColor cvApiIns: $cvApiIns")
-        val points =
+        val res =
             Reflections.callMethod(cvApiIns, "findPointsByColor", image, color, threshold, rect)
-        logger.d("findPointsByColor points: $points")
+        logger.d("findPointsByColor points: $res")
         @Suppress("UNCHECKED_CAST")
-        return points as List<Point>
+        val points = (res as List<Point>)
+        return points.take(1)
     }
 }
