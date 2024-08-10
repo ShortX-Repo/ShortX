@@ -7,16 +7,12 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,18 +33,11 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.godaddy.android.colorpicker.ClassicColorPicker
-import com.godaddy.android.colorpicker.HsvColor
-import com.godaddy.android.colorpicker.toColorInt
 import dagger.hilt.android.AndroidEntryPoint
 import org.orbitmvi.orbit.compose.collectSideEffect
 import tornaco.apps.shortx.core.res.Remix
@@ -57,6 +46,8 @@ import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
 import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
+import tornaco.apps.shortx.ui.base.ColorPickerDialog
+import tornaco.apps.shortx.ui.base.ColorPickerDialogState
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.FieldTitle
@@ -73,7 +64,6 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SplitLines
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberProgressDialogState
-import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.shortcut.ShortcutStubManageViewModel.Companion.genPackageName
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -354,58 +344,3 @@ fun CreateShortcutStubContent(
         }
     }
 }
-
-
-@Composable
-private fun ColorPickerDialog(state: ColorPickerDialogState) {
-    if (state.isShowing) {
-        var colorValue by remember {
-            mutableIntStateOf(state.colorInt)
-        }
-        Dialog(properties = DialogProperties(dismissOnClickOutside = false), onDismissRequest = {
-            state.dismiss()
-        }) {
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp)
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    ClassicColorPicker(modifier = Modifier.height(180.dp),
-                        color = Color(state.colorInt),
-                        showAlphaBar = true,
-                        onColorChanged = { color: HsvColor ->
-                            colorValue = color.toColorInt()
-                            composeLogger.d("onColorChanged: $colorValue")
-                        })
-                    StandardSpacer()
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        TextButton(
-                            modifier = Modifier,
-                            onClick = {
-                                state.dismiss()
-                                state.onColorChanged.invoke(colorValue)
-                            }) {
-                            Text(
-                                text = stringResource(id = android.R.string.ok),
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
-                    }
-                }
-            }
-
-        }
-    }
-}
-
-class ColorPickerDialogState(
-    val colorInt: Int,
-    val onColorChanged: (Int) -> Unit,
-) : CommonDialogState()

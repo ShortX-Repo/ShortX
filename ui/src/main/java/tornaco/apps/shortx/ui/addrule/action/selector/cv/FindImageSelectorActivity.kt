@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.addrule.action.selector
+package tornaco.apps.shortx.ui.addrule.action.selector.cv
 
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -27,6 +27,8 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.ui.addrule.ImagePreviewDialog
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.model.ImageSource
+import tornaco.apps.shortx.ui.addrule.action.selector.PhotoSelectorActivity
 import tornaco.apps.shortx.ui.addrule.rememberImagePreviewDialogState
 import tornaco.apps.shortx.ui.base.Base64ImageIcon
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
@@ -98,10 +100,10 @@ private fun BaseSelectorActivity<Action.FindImagePosition>.Selector(currentActio
 
 @Composable
 fun ImageSourceSelector(
-    image: Action.FindImagePosition.ImageSource?,
+    image: ImageSource?,
     selectorMenuTitle: String,
     canSelectScreenshot: Boolean,
-    onSelectSrc: (Action.FindImagePosition.ImageSource) -> Unit
+    onSelectSrc: (ImageSource) -> Unit
 ) {
     val i18N = LocalI18N.current
     val scope = rememberCoroutineScope()
@@ -118,7 +120,7 @@ fun ImageSourceSelector(
                             context.contentResolver.openInputStream(uri).use { rawStream ->
                                 BitmapUtils.bitmapToBase64(BitmapFactory.decodeStream(rawStream))
                             }
-                        onSelectSrc(Action.FindImagePosition.ImageSource.Base64(base64))
+                        onSelectSrc(ImageSource.Base64(base64))
                     }.onFailure {
                         TextDisplayActivity.start(context, "OOPS! WTF!", it.stackTraceToString())
                     }
@@ -131,7 +133,7 @@ fun ImageSourceSelector(
         title = i18N["ui.action.find.image.src.path"],
         message = null
     ) {
-        onSelectSrc(Action.FindImagePosition.ImageSource.Path(it))
+        onSelectSrc(ImageSource.Path(it))
     }
     TextInputDialog(state = pathInputDialogState)
 
@@ -139,29 +141,29 @@ fun ImageSourceSelector(
         title = i18N[selectorMenuTitle],
         menuItems = listOfNotNull(
             if (canSelectScreenshot) MenuDialogItem(
-                id = Action.FindImagePosition.ImageSource.Screenshot::class.java.name,
+                id = ImageSource.Screenshot::class.java.name,
                 title = i18N["ui.action.find.image.src.screenshot"]
             ) else null,
             MenuDialogItem(
-                id = Action.FindImagePosition.ImageSource.Path::class.java.name,
+                id = ImageSource.Path::class.java.name,
                 title = i18N["ui.action.find.image.src.path"]
             ),
             MenuDialogItem(
-                id = Action.FindImagePosition.ImageSource.Base64::class.java.name,
+                id = ImageSource.Base64::class.java.name,
                 title = i18N["ui.action.find.image.src.select"]
             ),
         ),
         onItemSelected = { _, id ->
             when (id) {
-                Action.FindImagePosition.ImageSource.Screenshot::class.java.name -> {
-                    onSelectSrc(Action.FindImagePosition.ImageSource.Screenshot)
+                ImageSource.Screenshot::class.java.name -> {
+                    onSelectSrc(ImageSource.Screenshot)
                 }
 
-                Action.FindImagePosition.ImageSource.Path::class.java.name -> {
+                ImageSource.Path::class.java.name -> {
                     pathInputDialogState.show()
                 }
 
-                Action.FindImagePosition.ImageSource.Base64::class.java.name -> {
+                ImageSource.Base64::class.java.name -> {
                     selectPhotoLauncher.launch(
                         Intent(context, PhotoSelectorActivity::class.java)
                     )
@@ -179,7 +181,7 @@ fun ImageSourceSelector(
     ImagePreviewDialog(state = imagePreviewState)
 
     when (image) {
-        is Action.FindImagePosition.ImageSource.Base64 -> {
+        is ImageSource.Base64 -> {
             ListItem(
                 titleLines = listOf(i18N["ui.action.find.image.src.select"]),
                 icon = {
@@ -199,7 +201,7 @@ fun ImageSourceSelector(
             )
         }
 
-        is Action.FindImagePosition.ImageSource.Path -> {
+        is ImageSource.Path -> {
             ListItem(
                 titleLines = listOf(
                     i18N["ui.action.find.image.src.path"],
@@ -214,7 +216,7 @@ fun ImageSourceSelector(
             )
         }
 
-        Action.FindImagePosition.ImageSource.Screenshot -> {
+        ImageSource.Screenshot -> {
             ListItem(
                 titleLines = listOf(i18N["ui.action.find.image.src.screenshot"]),
                 icon = {

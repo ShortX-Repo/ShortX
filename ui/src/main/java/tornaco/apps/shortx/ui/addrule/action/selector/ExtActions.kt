@@ -16,6 +16,8 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.selector.cv.FindColorSelectorActivity
+import tornaco.apps.shortx.ui.addrule.action.selector.cv.FindImageSelectorActivity
 import tornaco.apps.shortx.ui.addrule.action.selector.http.HttpRequestSelectorActivity
 import tornaco.apps.shortx.ui.addrule.action.selector.ws.WSConnectSelectorActivity
 import tornaco.apps.shortx.ui.addrule.action.selector.ws.WSSendSelectorActivity
@@ -203,6 +205,16 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         }
     )
 
+    val findColorLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action.FindPointsByColor>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
     val brkScopeSelectorState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.action.brk.scope"],
         menuItems = BreakActionExecuteScope.entries
@@ -364,6 +376,17 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.FindPointsByColor::class -> {
+                findColorLauncher.launch(
+                    newIntent(
+                        context,
+                        source.getActionAs<Action.FindPointsByColor>(),
+                        FindColorSelectorActivity::class.java
+                    )
+                )
+                true
+            }
+
             Action.OcrDetect::class -> {
                 ocrDetectLauncher.launch(
                     newIntent(
@@ -412,6 +435,7 @@ fun ExtActions(
         } else {
             null
         },
+        Action.FindPointsByColor::class,
         Action.OcrDetect::class,
     ).map {
         SelectorItem(

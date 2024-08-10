@@ -291,7 +291,10 @@
             android:name="tornaco.apps.shortx.ui.base.MDIconSelectorActivity"
             android:exported="false" />
         <activity
-            android:name="tornaco.apps.shortx.ui.addrule.action.selector.FindImageSelectorActivity"
+            android:name="tornaco.apps.shortx.ui.addrule.action.selector.cv.FindImageSelectorActivity"
+            android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.addrule.action.selector.cv.FindColorSelectorActivity"
             android:exported="false" />
 
         <service
