@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.overlay
 
+import android.annotation.ColorInt
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Handler
@@ -20,6 +21,7 @@ import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
+import tornaco.apps.shortx.services.overlay.flash.ScreenFlash
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.floating.FloatApi
 import tornaco.apps.shortx.services.ui.floating.ScreenUtil
@@ -49,6 +51,8 @@ class OverlayService(shortXContext: ShortXContext) :
     private var showingOverlays: MutableList<ShowingOverlay> = mutableListOf()
     private var showingFloats: MutableList<ShowingFloats> = mutableListOf()
 
+    private val screenFlash: ScreenFlash by lazy { ScreenFlash(context) }
+
     override fun start(context: Context) {
         super.start(context)
     }
@@ -61,6 +65,12 @@ class OverlayService(shortXContext: ShortXContext) :
                     it.token.onConfigurationChanged()
                 }
             }
+        }
+    }
+
+    fun flashScreen(@ColorInt color: Int) {
+        systemServiceScope.launchSafety {
+            screenFlash.flash(color)
         }
     }
 

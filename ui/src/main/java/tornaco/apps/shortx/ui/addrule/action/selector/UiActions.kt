@@ -114,7 +114,6 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
         }
     )
 
-
     val showFloatWindowLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
@@ -124,7 +123,6 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
             }
         }
     )
-
 
     val getNodeTextSelectorState = rememberTextInputState(
         title = LocalI18N.current["ui.action.get.text.from.node"],
@@ -177,6 +175,16 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
         }
     )
     MenuDialog(state = performContextMenuSelectorState)
+
+    val screenFlashLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action.ScreenFlash>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
 
     return { source ->
         when (source.clazz) {
@@ -255,6 +263,17 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
 
             Action.ShowDanmu::class -> {
                 showDanmuSettingsState.show(source.getActionAs())
+                true
+            }
+
+            Action.ScreenFlash::class -> {
+                screenFlashLauncher.launch(
+                    newIntent(
+                        context = context,
+                        currentData = source.getActionAs<Action.ScreenFlash>(),
+                        clazz = ScreenFlashSelectorActivity::class.java
+                    )
+                )
                 true
             }
 
@@ -403,6 +422,7 @@ fun UiActions(
         Action.PerformContextMenuAction::class,
         Action.ShowDrawBoard::class,
         Action.ShowClipboardView::class,
+        Action.ScreenFlash::class,
     ).map {
         SelectorItem(
             it,

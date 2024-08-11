@@ -244,6 +244,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.ShowDanmu
     },
+    ScreenFlash {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ScreenFlash
+    },
     WhileLoop {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.WhileLoop
