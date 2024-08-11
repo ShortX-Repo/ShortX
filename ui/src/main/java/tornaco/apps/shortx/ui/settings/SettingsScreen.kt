@@ -1022,23 +1022,26 @@ private fun engineSettings(
                 if (state.extApp != null) {
                     PkgUtils.launchPkgSettings(context, state.extApp.pkg.pkgName)
                 } else {
-                    val packageName = BuildPropInternal.SHORTX_EXT_APP_PKG_NAME
-                    val intent = Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse("market://details?id=$packageName")
-                    )
-                    val chooser = Intent.createChooser(intent, i18N["ui.shortx.ext"])
-                    try {
-                        context.startActivity(chooser)
-                    } catch (e: ActivityNotFoundException) {
-                        val intentGoogle = Intent(
+                    fun goToMarket() {
+                        val packageName = BuildPropInternal.SHORTX_EXT_APP_PKG_NAME
+                        val intent = Intent(
                             Intent.ACTION_VIEW,
-                            Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+                            Uri.parse("market://details?id=$packageName")
                         )
-                        val chooserGoogle =
-                            Intent.createChooser(intentGoogle, i18N["ui.shortx.ext"])
-                        context.startActivity(chooserGoogle)
+                        val chooser = Intent.createChooser(intent, i18N["ui.shortx.ext"])
+                        try {
+                            context.startActivity(chooser)
+                        } catch (e: ActivityNotFoundException) {
+                            val intentGoogle = Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+                            )
+                            val chooserGoogle =
+                                Intent.createChooser(intentGoogle, i18N["ui.shortx.ext"])
+                            context.startActivity(chooserGoogle)
+                        }
                     }
+                    BrowserUtils.launch(context, BuildPropInternal.EXT_DOWNLOAD_URL)
                 }
             }
         ),

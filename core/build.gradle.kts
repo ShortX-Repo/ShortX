@@ -53,6 +53,7 @@ buildConfig {
     buildConfigField("String", "SIGNATURES2_MD5", "\"77d65c17c9cda7b74551a5699969cbce\"")
 
     buildConfigField("String", "API_BASE_URL", "\"http://shortx.emui.tech/api/\"")
+    buildConfigField("String", "EXT_DOWNLOAD_URL", "\"https://github.com/ShortX-Repo/ShortX-Extensions/releases\"")
 }
 
 dependencies {
