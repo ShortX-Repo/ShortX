@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.os.Handler
 import android.os.Looper
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.ShowFloatWindow
@@ -71,6 +72,7 @@ class OverlayService(shortXContext: ShortXContext) :
     fun flashScreen(@ColorInt color: Int, times: Int) {
         systemServiceScope.launchSafety {
             repeat(times) {
+                delay(100)
                 screenFlash.flash(color)
             }
         }
