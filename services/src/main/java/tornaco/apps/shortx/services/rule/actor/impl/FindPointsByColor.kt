@@ -19,7 +19,7 @@ object FindPointsByColor : Actor {
     override suspend fun handle(
         params: HandleParams
     ): Unit = with(params) {
-        androidContext.requireExt()
+        androidContext.requireExt(3)
 
         val d =
             action unpack_ tornaco.apps.shortx.core.proto.action.FindPointsByColor::class.java

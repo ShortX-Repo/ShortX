@@ -15,6 +15,6 @@ fun Context.requireExt(minVersion: Int = 2) {
         "Pls install ShortX Ext. (请安装ShortX拓展包)"
     }
     require(extPkgInfo.versionCode >= minVersion) {
-        "Pls update ShortX Ext. (请升级ShortX拓展包)"
+        "Pls update ShortX Ext to version: $minVersion (请升级ShortX拓展包至版本 $minVersion)"
     }
 }
