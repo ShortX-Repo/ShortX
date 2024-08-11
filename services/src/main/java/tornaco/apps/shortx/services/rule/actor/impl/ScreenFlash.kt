@@ -26,10 +26,7 @@ object ScreenFlash : Actor {
 
             val color = d.colorInt.toIntOrNull() ?: d.colorInt.compileContextAndVars(cv).trim()
                 .toIntOrNull() ?: FALLBACK_COLOR
-
-            repeat(max(d.times.toIntOrNull() ?: 2, 1)) {
-                shortXContext.overlay.flashScreen(color)
-            }
+            shortXContext.overlay.flashScreen(color, max(d.times.toIntOrNull() ?: 2, 1))
         }
     }
 }

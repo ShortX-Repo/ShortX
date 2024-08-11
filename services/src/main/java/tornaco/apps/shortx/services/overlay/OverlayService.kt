@@ -68,9 +68,11 @@ class OverlayService(shortXContext: ShortXContext) :
         }
     }
 
-    fun flashScreen(@ColorInt color: Int) {
+    fun flashScreen(@ColorInt color: Int, times: Int) {
         systemServiceScope.launchSafety {
-            screenFlash.flash(color)
+            repeat(times) {
+                screenFlash.flash(color)
+            }
         }
     }
 

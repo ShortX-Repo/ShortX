@@ -26,7 +26,6 @@ class ScreenFlash(private val context: Context) {
         hideScreenNotificationOverlayViewMainThread()
     }
 
-
     private fun showScreenNotificationOverlayViewMainThread(@ColorInt color: Int) {
         val params: WindowManager.LayoutParams = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
