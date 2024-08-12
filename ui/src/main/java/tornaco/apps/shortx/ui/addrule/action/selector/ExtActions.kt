@@ -16,6 +16,7 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.model.FindPointsByColorConfig
 import tornaco.apps.shortx.ui.addrule.action.selector.cv.FindColorSelectorActivity
 import tornaco.apps.shortx.ui.addrule.action.selector.cv.FindImageSelectorActivity
 import tornaco.apps.shortx.ui.addrule.action.selector.http.HttpRequestSelectorActivity
@@ -208,9 +209,9 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     val findColorLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.popupSelectorResult<Action.FindPointsByColor>()
+            val action = result.popupSelectorResult<FindPointsByColorConfig>()
             action?.let {
-                addAction(it)
+                addAction(Action.FindPointsByColor(config = action))
             }
         }
     )
@@ -218,7 +219,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     val findColorAndClickLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.popupSelectorResult<Action.FindPointsByColor>()
+            val action = result.popupSelectorResult<FindPointsByColorConfig>()
             action?.let {
                 addAction(Action.FindPointsByColorAndClick(config = action))
             }
@@ -390,7 +391,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 findColorLauncher.launch(
                     newIntent(
                         context,
-                        source.getActionAs<Action.FindPointsByColor>(),
+                        source.getActionAs<Action.FindPointsByColor>()?.config,
                         FindColorSelectorActivity::class.java
                     )
                 )
@@ -401,7 +402,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 findColorAndClickLauncher.launch(
                     newIntent(
                         context,
-                        source.getActionAs<Action.FindPointsByColor>(),
+                        source.getActionAs<Action.FindPointsByColorAndClick>()?.config,
                         FindColorSelectorActivity::class.java
                     )
                 )

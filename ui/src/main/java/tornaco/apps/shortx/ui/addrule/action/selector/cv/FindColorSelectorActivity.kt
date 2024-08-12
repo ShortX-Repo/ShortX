@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.model.FindPointsByColorConfig
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.ColorPickerDialog
 import tornaco.apps.shortx.ui.base.ColorPickerDialogState
@@ -33,16 +33,16 @@ import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.util.toComposeColor
 
 @AndroidEntryPoint
-class FindColorSelectorActivity : BaseSelectorActivity<Action.FindPointsByColor>() {
+class FindColorSelectorActivity : BaseSelectorActivity<FindPointsByColorConfig>() {
     @Composable
-    override fun BaseSelectorActivity<Action.FindPointsByColor>.SelectorContent(currentData: Action.FindPointsByColor?) {
+    override fun BaseSelectorActivity<FindPointsByColorConfig>.SelectorContent(currentData: FindPointsByColorConfig?) {
         Selector(currentAction = currentData)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun BaseSelectorActivity<Action.FindPointsByColor>.Selector(currentAction: Action.FindPointsByColor?) {
+private fun BaseSelectorActivity<FindPointsByColorConfig>.Selector(currentAction: FindPointsByColorConfig?) {
     val vm = hiltViewModel<FindColorSelectorViewModel>()
     LaunchedEffect(vm) {
         vm.initFrom(currentAction)

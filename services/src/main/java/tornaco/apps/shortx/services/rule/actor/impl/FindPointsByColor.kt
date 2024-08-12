@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
+import android.graphics.Point
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.forKey
@@ -22,16 +23,40 @@ object FindPointsByColor : Actor {
         androidContext.requireExt(3)
         val d =
             action unpack_ tornaco.apps.shortx.core.proto.action.FindPointsByColor::class.java
-        handleAction(d, params)
+        val points = handleAction(d.config, params)
+
+        params.contextData.add(
+            d.customContextDataKey.forKey(ContextDataMapping.FindPointsByColor.isColorFound.name)
+                .fallbackOnEmpty { ContextDataMapping.FindPointsByColor.isColorFound.name },
+            points.isNotEmpty()
+        )
+
+        val firstPoint = points.firstOrNull()
+        firstPoint?.let {
+            params.contextData.add(
+                d.customContextDataKey.forKey(ContextDataMapping.FindPointsByColor.pointX.name)
+                    .fallbackOnEmpty { ContextDataMapping.FindPointsByColor.pointX.name },
+                firstPoint.x.toString()
+            )
+            params.contextData.add(
+                d.customContextDataKey.forKey(ContextDataMapping.FindPointsByColor.pointY.name)
+                    .fallbackOnEmpty { ContextDataMapping.FindPointsByColor.pointY.name },
+                firstPoint.y.toString()
+            )
+        }
     }
 
     suspend fun handleAction(
-        d: tornaco.apps.shortx.core.proto.action.FindPointsByColor,
+        config: tornaco.apps.shortx.core.proto.common.FindPointsByColorConfig,
         params: HandleParams,
-    ) {
+    ): List<Point> {
         with(params) {
             val image =
-                d.image.getBitmapFromImageSrcProto(androidContext, evaluateContext, shortXContext)
+                config.image.getBitmapFromImageSrcProto(
+                    androidContext,
+                    evaluateContext,
+                    shortXContext
+                )
             logger.d("image: $image")
             saveScreenBitmapToFile(image, Dirs.baseServerCacheDir(), "image")
 
@@ -39,31 +64,12 @@ object FindPointsByColor : Actor {
             logger.d("cv: $cv")
             val points = cv.findPointsByColor(
                 image,
-                d.color,
-                d.threshold,
-                d.rect.takeIf { it != Rect.getDefaultInstance() }?.toAndroidRect()
+                config.color,
+                config.threshold,
+                config.rect.takeIf { it != Rect.getDefaultInstance() }?.toAndroidRect()
             )
             logger.d("points: $points")
-
-            params.contextData.add(
-                d.customContextDataKey.forKey(ContextDataMapping.FindPointsByColor.isColorFound.name)
-                    .fallbackOnEmpty { ContextDataMapping.FindPointsByColor.isColorFound.name },
-                points.isNotEmpty()
-            )
-
-            val firstPoint = points.firstOrNull()
-            firstPoint?.let {
-                params.contextData.add(
-                    d.customContextDataKey.forKey(ContextDataMapping.FindPointsByColor.pointX.name)
-                        .fallbackOnEmpty { ContextDataMapping.FindPointsByColor.pointX.name },
-                    firstPoint.x.toString()
-                )
-                params.contextData.add(
-                    d.customContextDataKey.forKey(ContextDataMapping.FindPointsByColor.pointY.name)
-                        .fallbackOnEmpty { ContextDataMapping.FindPointsByColor.pointY.name },
-                    firstPoint.y.toString()
-                )
-            }
+            return points
         }
     }
 }

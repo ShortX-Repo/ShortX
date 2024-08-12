@@ -15,6 +15,15 @@ object FindPointsByColorAndClick : Actor {
     ): Unit = with(params) {
         val d =
             action unpack_ tornaco.apps.shortx.core.proto.action.FindPointsByColorAndClick::class.java
-        FindPointsByColor.handleAction(d.config, params)
+        val points = FindPointsByColor.handleAction(d.config, params)
+
+        val firstPoint = points.firstOrNull()
+        requireNotNull(firstPoint) {
+            "No point found"
+        }
+
+        shortXContext.wm.withUiAutomation("FindPointsByColorAndClick") {
+            it.click(firstPoint.x, firstPoint.y)
+        }
     }
 }
