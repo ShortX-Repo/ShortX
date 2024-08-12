@@ -215,6 +215,16 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         }
     )
 
+    val findColorAndClickLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action.FindPointsByColor>()
+            action?.let {
+                addAction(Action.FindPointsByColorAndClick(config = action))
+            }
+        }
+    )
+
     val brkScopeSelectorState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.action.brk.scope"],
         menuItems = BreakActionExecuteScope.entries
@@ -387,6 +397,17 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.FindPointsByColorAndClick::class -> {
+                findColorAndClickLauncher.launch(
+                    newIntent(
+                        context,
+                        source.getActionAs<Action.FindPointsByColor>(),
+                        FindColorSelectorActivity::class.java
+                    )
+                )
+                true
+            }
+
             Action.OcrDetect::class -> {
                 ocrDetectLauncher.launch(
                     newIntent(
@@ -436,6 +457,7 @@ fun ExtActions(
             null
         },
         Action.FindPointsByColor::class,
+        Action.FindPointsByColorAndClick::class,
         Action.OcrDetect::class,
     ).map {
         SelectorItem(

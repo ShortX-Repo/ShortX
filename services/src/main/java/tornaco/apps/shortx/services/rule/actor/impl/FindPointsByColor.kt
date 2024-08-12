@@ -20,42 +20,50 @@ object FindPointsByColor : Actor {
         params: HandleParams
     ): Unit = with(params) {
         androidContext.requireExt(3)
-
         val d =
             action unpack_ tornaco.apps.shortx.core.proto.action.FindPointsByColor::class.java
-        val image =
-            d.image.getBitmapFromImageSrcProto(androidContext, evaluateContext, shortXContext)
-        logger.d("image: $image")
-        saveScreenBitmapToFile(image, Dirs.baseServerCacheDir(), "image")
+        handleAction(d, params)
+    }
 
-        val cv = shortXContext.cv.requireCV()
-        logger.d("cv: $cv")
-        val points = cv.findPointsByColor(
-            image,
-            d.color,
-            d.threshold,
-            d.rect.takeIf { it != Rect.getDefaultInstance() }?.toAndroidRect()
-        )
-        logger.d("points: $points")
+    suspend fun handleAction(
+        d: tornaco.apps.shortx.core.proto.action.FindPointsByColor,
+        params: HandleParams,
+    ) {
+        with(params) {
+            val image =
+                d.image.getBitmapFromImageSrcProto(androidContext, evaluateContext, shortXContext)
+            logger.d("image: $image")
+            saveScreenBitmapToFile(image, Dirs.baseServerCacheDir(), "image")
 
-        params.contextData.add(
-            d.customContextDataKey.forKey(ContextDataMapping.FindPointsByColor.isColorFound.name)
-                .fallbackOnEmpty { ContextDataMapping.FindPointsByColor.isColorFound.name },
-            points.isNotEmpty()
-        )
-
-        val firstPoint = points.firstOrNull()
-        firstPoint?.let {
-            params.contextData.add(
-                d.customContextDataKey.forKey(ContextDataMapping.FindPointsByColor.pointX.name)
-                    .fallbackOnEmpty { ContextDataMapping.FindPointsByColor.pointX.name },
-                firstPoint.x.toString()
+            val cv = shortXContext.cv.requireCV()
+            logger.d("cv: $cv")
+            val points = cv.findPointsByColor(
+                image,
+                d.color,
+                d.threshold,
+                d.rect.takeIf { it != Rect.getDefaultInstance() }?.toAndroidRect()
             )
+            logger.d("points: $points")
+
             params.contextData.add(
-                d.customContextDataKey.forKey(ContextDataMapping.FindPointsByColor.pointY.name)
-                    .fallbackOnEmpty { ContextDataMapping.FindPointsByColor.pointY.name },
-                firstPoint.y.toString()
+                d.customContextDataKey.forKey(ContextDataMapping.FindPointsByColor.isColorFound.name)
+                    .fallbackOnEmpty { ContextDataMapping.FindPointsByColor.isColorFound.name },
+                points.isNotEmpty()
             )
+
+            val firstPoint = points.firstOrNull()
+            firstPoint?.let {
+                params.contextData.add(
+                    d.customContextDataKey.forKey(ContextDataMapping.FindPointsByColor.pointX.name)
+                        .fallbackOnEmpty { ContextDataMapping.FindPointsByColor.pointX.name },
+                    firstPoint.x.toString()
+                )
+                params.contextData.add(
+                    d.customContextDataKey.forKey(ContextDataMapping.FindPointsByColor.pointY.name)
+                        .fallbackOnEmpty { ContextDataMapping.FindPointsByColor.pointY.name },
+                    firstPoint.y.toString()
+                )
+            }
         }
     }
 }

@@ -623,6 +623,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.FindPointsByColor
     },
+    FindPointsByColorAndClick {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.FindPointsByColorAndClick
+    },
     OcrDetect {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.OcrDetect
