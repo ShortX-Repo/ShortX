@@ -1,5 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.action.selector.cv
 
+import android.graphics.Rect
+import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,21 +17,26 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import tornaco.apps.shortx.core.proto.toAndroidRect
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.FindPointsByColorConfig
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.ColorPickerDialog
 import tornaco.apps.shortx.ui.base.ColorPickerDialogState
 import tornaco.apps.shortx.ui.base.FieldTitle
+import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.TextInputDialog
+import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.util.toComposeColor
 
 @AndroidEntryPoint
@@ -64,6 +71,7 @@ private fun BaseSelectorActivity<FindPointsByColorConfig>.Selector(currentAction
     {
         Column(Modifier.padding(horizontal = 16.dp)) {
             val i18N = LocalI18N.current
+            val context = LocalContext.current
 
             FieldTitle(text = LocalI18N.current["ui.action.find.color.image"])
             SmallSpacer()
@@ -99,6 +107,45 @@ private fun BaseSelectorActivity<FindPointsByColorConfig>.Selector(currentAction
             ) {
 
             }
+
+            val showRectFormatError = {
+                Toast.makeText(
+                    context,
+                    i18N["ui.action.rect.src.rect.format.error"],
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            val rectInputDialogState = rememberTextInputState(
+                title = i18N["ui.action.rect.src.rect"],
+                message = i18N["ui.action.rect.src.rect.format"]
+            ) {
+                val rect = kotlin.runCatching {
+                    Rect.unflattenFromString(it)
+                }.getOrElse {
+                    showRectFormatError()
+                    null
+                }
+                rect?.let {
+
+                }
+            }
+            TextInputDialog(state = rectInputDialogState)
+
+            SectionSpacer()
+            FieldTitle(text = LocalI18N.current["ui.action.find.color.rect"])
+            SmallSpacer()
+            ListItem(
+                titleLines = listOf(
+                    if (state.rect == tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance()) {
+                        i18N["ui.common.all"]
+                    } else {
+                        state.rect.toAndroidRect().flattenToString()
+                    }
+                ),
+                onClick = {
+                    rectInputDialogState.show(state.rect.toAndroidRect().flattenToString())
+                }
+            )
         }
     }
 }
