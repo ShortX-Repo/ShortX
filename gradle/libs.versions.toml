@@ -26,7 +26,7 @@ androidx-test-runner = "1.6.1"
 # DO NOT UPGRADE
 rhino-runtime = "1.7.13"
 uiautomator = "2.3.0"
-espresso-core = "3.5.1"
+espresso-core = "3.6.1"
 androidx-junit = "1.2.1"
 xposed-api = "82"
 appcompat = "1.7.0"
