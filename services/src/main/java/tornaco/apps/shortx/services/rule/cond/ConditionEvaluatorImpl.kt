@@ -59,6 +59,7 @@ class ConditionEvaluatorImpl(
                     Cond.CondParam(
                         context,
                         shortXContext,
+                        evaluateContext,
                         condition,
                         contextData,
                         localVars

@@ -1,13 +1,16 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
+import android.content.Context
 import android.graphics.Point
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.proto.common.Rect
+import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.toAndroidRect
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
+import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
@@ -23,7 +26,13 @@ object FindPointsByColor : Actor {
         androidContext.requireExt(3)
         val d =
             action unpack_ tornaco.apps.shortx.core.proto.action.FindPointsByColor::class.java
-        val points = handleAction(d.config, params)
+        val points = handleAction(
+            "FindPointsByColor",
+            d.config,
+            androidContext,
+            evaluateContext,
+            shortXContext
+        )
 
         params.contextData.add(
             d.customContextDataKey.forKey(ContextDataMapping.FindPointsByColor.isColorFound.name)
@@ -47,29 +56,30 @@ object FindPointsByColor : Actor {
     }
 
     suspend fun handleAction(
+        log: String,
         config: tornaco.apps.shortx.core.proto.common.FindPointsByColorConfig,
-        params: HandleParams,
+        androidContext: Context,
+        evaluateContext: EvaluateContext,
+        shortXContext: ShortXContext
     ): List<Point> {
-        with(params) {
-            val image =
-                config.image.getBitmapFromImageSrcProto(
-                    androidContext,
-                    evaluateContext,
-                    shortXContext
-                )
-            logger.d("image: $image")
-            saveScreenBitmapToFile(image, Dirs.baseServerCacheDir(), "image")
-
-            val cv = shortXContext.cv.requireCV()
-            logger.d("cv: $cv")
-            val points = cv.findPointsByColor(
-                image,
-                config.color,
-                config.threshold,
-                config.rect.takeIf { it != Rect.getDefaultInstance() }?.toAndroidRect()
+        val image =
+            config.image.getBitmapFromImageSrcProto(
+                androidContext,
+                evaluateContext,
+                shortXContext
             )
-            logger.d("points: $points")
-            return points
-        }
+        logger.d("image: $image")
+        saveScreenBitmapToFile(image, Dirs.baseServerCacheDir(), "image")
+
+        val cv = shortXContext.cv.requireCV()
+        logger.d("cv: $cv")
+        val points = cv.findPointsByColor(
+            image,
+            config.color,
+            config.threshold,
+            config.rect.takeIf { it != Rect.getDefaultInstance() }?.toAndroidRect()
+        )
+        logger.d("$log points: $points")
+        return points
     }
 }

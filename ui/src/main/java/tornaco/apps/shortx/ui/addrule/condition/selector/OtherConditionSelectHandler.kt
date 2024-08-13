@@ -5,8 +5,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.model.FindPointsByColorConfig
 import tornaco.apps.shortx.ui.addrule.action.selector.DelaySelectorDialog
 import tornaco.apps.shortx.ui.addrule.action.selector.SetRuleEnabledSelectorDialog
+import tornaco.apps.shortx.ui.addrule.action.selector.cv.FindColorSelectorActivity
 import tornaco.apps.shortx.ui.addrule.action.selector.rememberDelayState
 import tornaco.apps.shortx.ui.addrule.action.selector.rememberSetRuleEnabledDialogState
 import tornaco.apps.shortx.ui.addrule.condition.ConditionSelectSource
@@ -21,6 +23,7 @@ import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateGlobalVarSelecto
 import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateLocalVarSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberTheXXTimeTodaySelectorState
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.newIntent
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.TextInputDialog
@@ -102,6 +105,16 @@ fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSe
     }
     TheXXTimeTodaySelectorDialog(state = doXXAtTimeState)
 
+    val findColorLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<FindPointsByColorConfig>()
+            action?.let {
+                addCondition(Condition.HasFoundPointsByColor(config = it))
+            }
+        }
+    )
+
     val context = LocalContext.current
 
     return { source ->
@@ -163,6 +176,17 @@ fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSe
 
             Condition.TheXXTimeToday::class -> {
                 doXXAtTimeState.show(source.getConditionAs())
+                true
+            }
+
+            Condition.HasFoundPointsByColor::class -> {
+                findColorLauncher.launch(
+                    newIntent(
+                        context,
+                        source.getConditionAs<Condition.HasFoundPointsByColor>()?.config,
+                        FindColorSelectorActivity::class.java
+                    )
+                )
                 true
             }
 

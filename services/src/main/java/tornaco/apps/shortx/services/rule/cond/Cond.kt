@@ -4,6 +4,7 @@ import android.content.Context
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.localvar.LocalVars
+import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.util.Logger
@@ -23,6 +24,7 @@ interface Cond {
     data class CondParam(
         val context: Context,
         val shortXContext: ShortXContext,
+        val evaluateContext: EvaluateContext,
         val condition: ProtoAny,
         val contextData: ContextData,
         val localVars: LocalVars
@@ -238,6 +240,10 @@ enum class PrebuiltCond : CondProvider {
     RequireRingerMode {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.RequireRingerMode
+    },
+    HasFoundPointsByColor {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.HasFoundPointsByColor
     },
     PluginCond {
         override val cond: Cond

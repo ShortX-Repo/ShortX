@@ -30,7 +30,8 @@ fun OtherConditions(
         Condition.EvaluateLocalVar::class,
         Condition.IsRuleEnabled::class,
         Condition.RequireFactTag::class,
-        Condition.TheXXTimeToday::class
+        Condition.TheXXTimeToday::class,
+        Condition.HasFoundPointsByColor::class,
     ).map {
         SelectorItem(
             type = it,

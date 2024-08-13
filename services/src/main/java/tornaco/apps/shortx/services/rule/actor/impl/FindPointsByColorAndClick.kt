@@ -4,6 +4,7 @@ import com.google.protobuf.Message
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
+import tornaco.apps.shortx.services.rule.actor.impl.FindPointsByColor.handleAction
 
 object FindPointsByColorAndClick : Actor {
     override fun actionsCanHandle(): Class<out Message> {
@@ -15,7 +16,13 @@ object FindPointsByColorAndClick : Actor {
     ): Unit = with(params) {
         val d =
             action unpack_ tornaco.apps.shortx.core.proto.action.FindPointsByColorAndClick::class.java
-        val points = FindPointsByColor.handleAction(d.config, params)
+        val points = handleAction(
+            "FindPointsByColorAndClick",
+            d.config,
+            androidContext,
+            evaluateContext,
+            shortXContext
+        )
 
         val firstPoint = points.firstOrNull()
         requireNotNull(firstPoint) {
