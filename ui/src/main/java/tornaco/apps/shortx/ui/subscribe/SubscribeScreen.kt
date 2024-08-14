@@ -25,9 +25,9 @@ import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -47,7 +47,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -80,6 +82,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TipDialog
 import tornaco.apps.shortx.ui.base.UiState
+import tornaco.apps.shortx.ui.base.fontFamilyProductSansBold
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberProgressDialogState
@@ -304,11 +307,35 @@ private fun SubscribeIntroUi(config: SubscriptionConfig2) {
         config.flavors.forEach {
             ShortXCard {
                 ListItem(
-                    modifier = Modifier.heightIn(min = 72.dp),
-                    titleLines = listOf(it.text, it.description),
+                    title = it.text,
+                    text1 = it.description,
                     icon = {
                         RemixIcon(remixName = Remix.Finance.vip_crown_line)
-                    })
+                    },
+                    overflow = {
+                        Row {
+                            Text(
+                                text = "${it.priceCNY.toInt()}",
+                                color = Color.Red,
+                                fontWeight = FontWeight.W600,
+                                fontSize = 24.sp,
+                                fontFamily = fontFamilyProductSansBold(),
+                                modifier = Modifier
+                                    .alignByBaseline()
+                            )
+                            Text(
+                                text = "CNY",
+                                color = Color.Red,
+                                fontWeight = FontWeight.W600,
+                                fontSize = 10.sp,
+                                fontFamily = fontFamilyProductSansBold(),
+                                modifier = Modifier
+                                    .padding(end = 16.dp)
+                                    .alignByBaseline()
+                            )
+                        }
+                    },
+                    onClick = {})
             }
             StandardSpacer()
         }
