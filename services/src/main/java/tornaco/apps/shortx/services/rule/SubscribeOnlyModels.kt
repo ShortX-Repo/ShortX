@@ -58,6 +58,7 @@ import tornaco.apps.shortx.core.proto.condition.AppHasTask
 import tornaco.apps.shortx.core.proto.condition.AppHasTaskByPkg
 import tornaco.apps.shortx.core.proto.condition.AppHasWindowFocus
 import tornaco.apps.shortx.core.proto.condition.ConnectedWifiSignal
+import tornaco.apps.shortx.core.proto.condition.HasFoundPointsByColor
 import tornaco.apps.shortx.core.proto.condition.RequireBTConnected
 import tornaco.apps.shortx.core.proto.condition.RequireBTDeviceFound
 import tornaco.apps.shortx.core.proto.condition.RequireBTDisconnected
@@ -146,6 +147,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         RequireBTDisconnected::class,
         VPNIsConnected::class,
         RequireTileState::class,
+        HasFoundPointsByColor::class,
 
         LaunchAppByPkg::class,
         StopAppByPkg::class,

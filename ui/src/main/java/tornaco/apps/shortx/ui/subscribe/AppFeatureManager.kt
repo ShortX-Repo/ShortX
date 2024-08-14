@@ -131,6 +131,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Condition.RequireBTDisconnected::class,
     Condition.VPNIsConnected::class,
     Condition.RequireTileState::class,
+    Condition.HasFoundPointsByColor::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 
     Action.LaunchAppByPkg::class,
