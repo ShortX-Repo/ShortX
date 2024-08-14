@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -56,18 +57,24 @@ import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ImageDialog
 import tornaco.apps.shortx.ui.base.LargeSpacer
+import tornaco.apps.shortx.ui.base.LargeTitle
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LoadError
 import tornaco.apps.shortx.ui.base.Loading
+import tornaco.apps.shortx.ui.base.LoadingAnimationDot
 import tornaco.apps.shortx.ui.base.LocalAppName
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MarkdownText
+import tornaco.apps.shortx.ui.base.MediumSpacer
+import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.ProgressDialog
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TipDialog
@@ -138,38 +145,18 @@ fun SubscribeScreen(back: () -> Unit) {
 
                     val state by vm.state.collectAsState()
                     if (state.isSubscribed) {
-                        SubscribedUi()
+                        SubscribedUi(vm)
                     } else {
-                        when (val subState = state.subscriptionConfigState) {
-                            is UiState.Loaded -> {
-                                UnsubscribedUi(subState.data)
-                            }
-
-                            is UiState.Error -> {
-                                LoadError(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                )
-                            }
-
-                            UiState.Loading -> {
-                                Loading(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                )
-                            }
-                        }
+                        UnSubscribedUi(vm)
                     }
                 }
-
             }
         }
     }
 }
 
 @Composable
-private fun SubscribedUi() {
-    val vm = hiltViewModel<SubscribeViewModel>()
+private fun SubscribedUi(vm: SubscribeViewModel) {
     val state by vm.state.collectAsState()
 
     Column(
@@ -181,6 +168,30 @@ private fun SubscribedUi() {
         when (state.source) {
             is SubscriptionSource.ActivationCode -> {
                 LottieLoaderSuccessView()
+                SectionSpacer()
+                SectionSpacer()
+                SectionSpacer()
+                when (val remainingState = state.remainingState) {
+                    is UiState.Loaded -> {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            MediumTitle(text = LocalI18N.current["ui.subscription.subscribe.validation.left"])
+                            SmallSpacer()
+                            Text(remainingState.data)
+                        }
+                    }
+
+                    else -> {
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            LoadingAnimationDot()
+                        }
+                    }
+                }
             }
 
             SubscriptionSource.GooglePlay -> {
@@ -194,7 +205,34 @@ private fun SubscribedUi() {
 
 
 @Composable
-private fun UnsubscribedUi(config: SubscriptionConfig2) {
+private fun UnSubscribedUi(vm: SubscribeViewModel) {
+    LaunchedEffect(vm) {
+        vm.loadSubConfig()
+    }
+    val state by vm.state.collectAsState()
+    when (val subState = state.subscriptionConfigState) {
+        is UiState.Loaded -> {
+            SubscribeIntroUi(subState.data)
+        }
+
+        is UiState.Error -> {
+            LoadError(
+                modifier = Modifier
+                    .fillMaxSize()
+            )
+        }
+
+        UiState.Loading -> {
+            Loading(
+                modifier = Modifier
+                    .fillMaxSize()
+            )
+        }
+    }
+}
+
+@Composable
+private fun SubscribeIntroUi(config: SubscriptionConfig2) {
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
@@ -245,9 +283,16 @@ private fun UnsubscribedUi(config: SubscriptionConfig2) {
         }
 
         LargeSpacer()
+        LargeTitle(text = i18N["ui.subscription.subscribe.flav"])
+        MediumSpacer()
         config.flavors.forEach {
             ShortXCard {
-                ListItem(titleLines = listOf(it.text, it.description), icon = {})
+                ListItem(
+                    modifier = Modifier.heightIn(min = 72.dp),
+                    titleLines = listOf(it.text, it.description),
+                    icon = {
+                        RemixIcon(remixName = Remix.Finance.vip_crown_line)
+                    })
             }
             StandardSpacer()
         }

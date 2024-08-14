@@ -8,6 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Query
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.CommonApiResWrapper
 
@@ -17,6 +18,9 @@ interface CodeApi {
 
     @GET("getSubscriptionConfig2")
     suspend fun getSubscriptionConfig2(): CommonApiResWrapper
+
+    @GET("verifyActivationCode")
+    suspend fun verifyActivationCode(@Query("activationCode") code: String): CommonApiResWrapper
 
     companion object {
         private const val BASE_URL = BuildPropInternal.API_BASE_URL

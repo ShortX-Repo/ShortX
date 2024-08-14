@@ -15,3 +15,8 @@ data class Flavor(
     val priceUSD: Float,
     val priceCNY: Float,
 )
+
+data class CodeRemaining(
+    val remainingHours: Long,
+    val remainingMillis: Long,
+)

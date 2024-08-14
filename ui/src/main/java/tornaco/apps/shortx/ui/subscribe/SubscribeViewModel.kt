@@ -31,7 +31,8 @@ sealed interface SubscriptionSource {
 data class SubscriptionState(
     val isSubscribed: Boolean = false,
     val source: SubscriptionSource? = null,
-    val subscriptionConfigState: UiState<SubscriptionConfig2> = UiState.Loading
+    val subscriptionConfigState: UiState<SubscriptionConfig2> = UiState.Loading,
+    val remainingState: UiState<String> = UiState.Loading,
 )
 
 enum class CodeVerifyEvent {
@@ -82,6 +83,10 @@ class SubscribeViewModel @Inject constructor(@ApplicationContext val context: Co
             copy(isSubscribed = isSubscribed, source = source)
         }
 
+        loadRemaining()
+    }
+
+    fun loadSubConfig() {
         // Load config
         if (state.value.subscriptionConfigState !is UiState.Loaded<SubscriptionConfig2>) {
             viewModelScope.launch {
@@ -92,6 +97,28 @@ class SubscribeViewModel @Inject constructor(@ApplicationContext val context: Co
                         updateState { copy(subscriptionConfigState = UiState.Loaded(it.data!!)) }
                     } else if (it.isError()) {
                         updateState { copy(subscriptionConfigState = UiState.Error(it.error)) }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun loadRemaining() {
+        val src = state.value.source
+        if (src is SubscriptionSource.ActivationCode) {
+            val code = src.code
+            if (state.value.remainingState !is UiState.Loaded<String>) {
+                viewModelScope.launch {
+                    updateState { copy(remainingState = UiState.Loading) }
+                    delay(2222)
+                    repo.getCodeRemaining(code).let {
+                        if (it.isSuccessful()) {
+                            val remaining = it.data!!
+                            val remainingText = convertTimeMillis(remaining.remainingMillis)
+                            updateState { copy(remainingState = UiState.Loaded(remainingText)) }
+                        } else if (it.isError()) {
+                            updateState { copy(remainingState = UiState.Error(it.error)) }
+                        }
                     }
                 }
             }
@@ -133,4 +160,18 @@ class SubscribeViewModel @Inject constructor(@ApplicationContext val context: Co
             }
         }
     }
+
+    private fun convertTimeMillis(timeMillis: Long): String {
+        val millisInDay = 1000L * 60 * 60 * 24
+        val millisInYear = millisInDay * 365
+
+        return if (timeMillis >= millisInYear) {
+            val years = timeMillis / millisInYear
+            "$years 年（Year）"
+        } else {
+            val days = timeMillis / millisInDay
+            "$days 天（Days）"
+        }
+    }
+
 }

@@ -65,9 +65,11 @@ private fun SubscriptionIntro(
         MediumTitle(text = LocalI18N.current["ui.subscription.intro.message"])
         SectionSpacer()
 
-        Button(onClick = {
-            SubscribeActivity.start(context)
-        }) {
+        Button(modifier = Modifier
+            .fillMaxWidth(0.68f),
+            onClick = {
+                SubscribeActivity.start(context)
+            }) {
             Text(
                 text = LocalI18N.current["ui.subscription.intro.yes"],
                 style = MaterialTheme.typography.bodySmall
