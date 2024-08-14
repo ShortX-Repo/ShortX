@@ -9,6 +9,7 @@ data class SubscriptionConfig2(
     val qq: String,
 )
 
+@DoNotStrip
 data class Flavor(
     val text: String,
     val description: String,
@@ -16,6 +17,7 @@ data class Flavor(
     val priceCNY: Float,
 )
 
+@DoNotStrip
 data class CodeRemaining(
     val remainingHours: Long,
     val remainingMillis: Long,
