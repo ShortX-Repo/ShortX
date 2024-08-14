@@ -20,7 +20,7 @@ sealed class VerifyResult {
     data object NetworkError : VerifyResult()
 }
 
-private var cachedSubscriptionConfig: SubscriptionConfig? = null
+private var cachedSubscriptionConfig: SubscriptionConfig2? = null
 
 
 class Repo(private val context: Context) {
@@ -51,10 +51,10 @@ class Repo(private val context: Context) {
         }
     }
 
-    suspend fun getSubscriptionConfig(): tornaco.apps.shortx.ui.base.Result<SubscriptionConfig> =
+    suspend fun getSubscriptionConfig2(): tornaco.apps.shortx.ui.base.Result<SubscriptionConfig2> =
         kotlin.runCatching {
             tornaco.apps.shortx.ui.base.Result.Success(
-                cachedSubscriptionConfig ?: CodeApi.create(context).getSubscriptionConfig().apply {
+                cachedSubscriptionConfig ?: CodeApi.create(context).getSubscriptionConfig2().apply {
                     cachedSubscriptionConfig = this
                 }
             )

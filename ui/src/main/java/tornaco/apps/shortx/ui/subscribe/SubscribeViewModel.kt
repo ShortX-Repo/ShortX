@@ -86,7 +86,7 @@ class SubscribeViewModel @Inject constructor(@ApplicationContext val context: Co
         if (state.value.subscriptionConfigState !is UiState.Loaded<SubscriptionConfig>) viewModelScope.launch {
             updateState { copy(subscriptionConfigState = UiState.Loading) }
             delay(2000)
-            repo.getSubscriptionConfig().let {
+            repo.getSubscriptionConfig2().let {
                 if (it.isSuccessful()) {
                     updateState { copy(subscriptionConfigState = UiState.Loaded(it.data!!)) }
                 } else if (it.isError()) {
