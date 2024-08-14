@@ -1300,7 +1300,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun addHookFlags(flag: String) {
             File(Dirs.baseServerFlagsDir(), flag).apply {
-                parentFile.mkdirs()
+                parentFile?.mkdirs()
                 createNewFile()
             }
         }

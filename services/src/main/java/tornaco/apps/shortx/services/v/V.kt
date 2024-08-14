@@ -23,6 +23,7 @@ fun s(context: Context): Array<Signature> {
             PackageManager.GET_SIGNING_CERTIFICATES
         ).signingInfo.apkContentsSigners
     } else {
+        @Suppress("DEPRECATION")
         context.packageManager.getPackageInfo(
             BuildPropInternal.APP_PACKAGE_NAME,
             PackageManager.GET_SIGNATURES

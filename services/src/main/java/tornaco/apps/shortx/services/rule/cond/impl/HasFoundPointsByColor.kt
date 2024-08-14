@@ -12,6 +12,7 @@ object HasFoundPointsByColor : Cond {
     override suspend fun evaluate(param: Cond.CondParam): Cond.Result {
         val data =
             param.condition.unpack_(tornaco.apps.shortx.core.proto.condition.HasFoundPointsByColor::class.java)
+        logger.d("evaluate")
 
         val points = with(param) {
             FindPointsByColor.handleAction(
@@ -22,6 +23,7 @@ object HasFoundPointsByColor : Cond {
                 shortXContext
             )
         }
+        logger.d("evaluate complete: ${points.size}")
 
         val res = points.isNotEmpty()
         return if (data.isInvert) {

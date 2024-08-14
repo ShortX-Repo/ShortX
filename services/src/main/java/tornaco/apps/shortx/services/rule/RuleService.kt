@@ -257,8 +257,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 }
             },
             actionEvaluateResultListener = { result ->
-                logger.p {
-                    "ActionLifecycle actionEvaluateResultListener srcTitle: ${result.action.typeUrl} ${result.evaluateContext.srcTitle}"
+                logger.d {
+                    "ActionLifecycle actionEvaluateResultListener: ${result.actionId} ${result.action.typeUrl} ${result.evaluateContext.srcTitle}"
                 }
                 actionEvaluateRecorder.removeEvaluating(result.actionId)
                 systemServiceScope.launchSafety {
