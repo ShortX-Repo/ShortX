@@ -17,21 +17,21 @@ import tornaco.apps.shortx.ui.base.UiState
 import tornaco.apps.shortx.ui.base.data
 import tornaco.apps.shortx.ui.base.error
 import tornaco.apps.shortx.ui.subscribe.code.Repo
-import tornaco.apps.shortx.ui.subscribe.code.SubscriptionConfig
+import tornaco.apps.shortx.ui.subscribe.code.SubscriptionConfig2
 import tornaco.apps.shortx.ui.subscribe.code.VerifyResult
 import tornaco.apps.shortx.ui.subscribe.util.isGPToken
 import tornaco.apps.shortx.ui.subscribe.util.setLVLToken
 import javax.inject.Inject
 
 sealed interface SubscriptionSource {
-    object GooglePlay : SubscriptionSource
+    data object GooglePlay : SubscriptionSource
     data class ActivationCode(val code: String) : SubscriptionSource
 }
 
 data class SubscriptionState(
     val isSubscribed: Boolean = false,
     val source: SubscriptionSource? = null,
-    val subscriptionConfigState: UiState<SubscriptionConfig> = UiState.Loading
+    val subscriptionConfigState: UiState<SubscriptionConfig2> = UiState.Loading
 )
 
 enum class CodeVerifyEvent {
@@ -83,14 +83,16 @@ class SubscribeViewModel @Inject constructor(@ApplicationContext val context: Co
         }
 
         // Load config
-        if (state.value.subscriptionConfigState !is UiState.Loaded<SubscriptionConfig>) viewModelScope.launch {
-            updateState { copy(subscriptionConfigState = UiState.Loading) }
-            delay(2000)
-            repo.getSubscriptionConfig2().let {
-                if (it.isSuccessful()) {
-                    updateState { copy(subscriptionConfigState = UiState.Loaded(it.data!!)) }
-                } else if (it.isError()) {
-                    updateState { copy(subscriptionConfigState = UiState.Error(it.error)) }
+        if (state.value.subscriptionConfigState !is UiState.Loaded<SubscriptionConfig2>) {
+            viewModelScope.launch {
+                updateState { copy(subscriptionConfigState = UiState.Loading) }
+                delay(2000)
+                repo.getSubscriptionConfig2().let {
+                    if (it.isSuccessful()) {
+                        updateState { copy(subscriptionConfigState = UiState.Loaded(it.data!!)) }
+                    } else if (it.isError()) {
+                        updateState { copy(subscriptionConfigState = UiState.Error(it.error)) }
+                    }
                 }
             }
         }

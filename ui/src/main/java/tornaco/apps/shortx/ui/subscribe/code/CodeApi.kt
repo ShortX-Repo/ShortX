@@ -16,7 +16,7 @@ interface CodeApi {
     suspend fun verify(@Body body: RequestBody): CommonApiResWrapper
 
     @GET("getSubscriptionConfig2")
-    suspend fun getSubscriptionConfig2(): SubscriptionConfig2
+    suspend fun getSubscriptionConfig2(): CommonApiResWrapper
 
     companion object {
         private const val BASE_URL = BuildPropInternal.API_BASE_URL

@@ -11,6 +11,7 @@ data class SubscriptionConfig2(
 
 data class Flavor(
     val text: String,
+    val description: String,
     val priceUSD: Float,
     val priceCNY: Float,
 )

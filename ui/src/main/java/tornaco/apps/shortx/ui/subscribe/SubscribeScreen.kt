@@ -56,6 +56,7 @@ import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ImageDialog
 import tornaco.apps.shortx.ui.base.LargeSpacer
+import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LoadError
 import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalAppName
@@ -65,18 +66,18 @@ import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.ProgressDialog
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TipDialog
-import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.UiState
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberProgressDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.base.rememberTipDialogState
-import tornaco.apps.shortx.ui.subscribe.code.SubscriptionConfig
+import tornaco.apps.shortx.ui.subscribe.code.SubscriptionConfig2
 import tornaco.apps.shortx.ui.theme.GoogleBlue
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.theme.VipColorGold
@@ -193,7 +194,7 @@ private fun SubscribedUi() {
 
 
 @Composable
-private fun UnsubscribedUi(config: SubscriptionConfig) {
+private fun UnsubscribedUi(config: SubscriptionConfig2) {
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
@@ -244,11 +245,13 @@ private fun UnsubscribedUi(config: SubscriptionConfig) {
         }
 
         LargeSpacer()
-
-        if (config.extra1.isNotBlank()) {
-            TipRow(text = config.extra1)
-            LargeSpacer()
+        config.flavors.forEach {
+            ShortXCard {
+                ListItem(titleLines = listOf(it.text, it.description), icon = {})
+            }
+            StandardSpacer()
         }
+        LargeSpacer()
 
         val textColor = LocalContentColor.current.takeOrElse {
             MaterialTheme.colorScheme.onPrimaryContainer
@@ -256,8 +259,6 @@ private fun UnsubscribedUi(config: SubscriptionConfig) {
         val appName = LocalAppName.current
         MarkdownText(
             markdown = i18N["ui.subscription.subscribe.how.to.page", mapOf(
-                "priceCNY" to "${config.priceCNY.toInt()}",
-                "priceUSD" to "${config.priceUSD}",
                 "mail" to config.email,
                 "qq" to config.qq,
                 "app_name" to appName,
@@ -280,10 +281,8 @@ private fun UnsubscribedUi(config: SubscriptionConfig) {
             }
         )
 
-
         LargeSpacer()
         LargeSpacer()
-
 
         Fabs(vm)
     }

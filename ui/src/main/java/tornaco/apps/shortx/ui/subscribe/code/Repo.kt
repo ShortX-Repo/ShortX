@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.subscribe.code
 
 import android.content.Context
 import androidx.core.text.isDigitsOnly
+import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -21,10 +22,11 @@ sealed class VerifyResult {
 }
 
 private var cachedSubscriptionConfig: SubscriptionConfig2? = null
-
+private val gson by lazy { Gson() }
 
 class Repo(private val context: Context) {
     private val logger = Logger("Repo")
+
     suspend fun verify(
         code: String,
     ): VerifyResult = withContext(Dispatchers.IO) {
@@ -54,12 +56,15 @@ class Repo(private val context: Context) {
     suspend fun getSubscriptionConfig2(): tornaco.apps.shortx.ui.base.Result<SubscriptionConfig2> =
         kotlin.runCatching {
             tornaco.apps.shortx.ui.base.Result.Success(
-                cachedSubscriptionConfig ?: CodeApi.create(context).getSubscriptionConfig2().apply {
-                    cachedSubscriptionConfig = this
+                cachedSubscriptionConfig ?: CodeApi.create(context).getSubscriptionConfig2().let {
+                    val config: SubscriptionConfig2 =
+                        gson.fromJson(it.msg, SubscriptionConfig2::class.java)
+                    cachedSubscriptionConfig = config
+                    config
                 }
             )
         }.getOrElse {
-            logger.e(it, "getSubscriptionConfig")
+            logger.e(it, "getSubscriptionConfig2")
             tornaco.apps.shortx.ui.base.Result.Error(it)
         }
 }
