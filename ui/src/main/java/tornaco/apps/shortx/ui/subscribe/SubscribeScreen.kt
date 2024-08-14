@@ -22,6 +22,7 @@ package tornaco.apps.shortx.ui.subscribe
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,7 +37,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -69,6 +69,7 @@ import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
+import tornaco.apps.shortx.ui.base.NiaGradientBackground
 import tornaco.apps.shortx.ui.base.ProgressDialog
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
@@ -110,10 +111,24 @@ class SubscribeActivity : BaseActivity() {
 
 @Composable
 fun SubscribeScreen(back: () -> Unit) {
+    val vm = hiltViewModel<SubscribeViewModel>()
+    LaunchedEffect(vm) {
+        vm.loadState()
+    }
+
+    val state by vm.state.collectAsState()
+
     ShortXTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
-        ) {
+        val appName = LocalAppName.current
+        val googleIntroDialogState = rememberTipDialogState(
+            title = LocalI18N.current["Google play"],
+            tip = LocalI18N.current["ui.subscription.subscribe.verify.play.intro", mapOf(
+                "app_name" to appName
+            )]
+        )
+        TipDialog(state = googleIntroDialogState)
+
+        NiaGradientBackground(modifier = Modifier.fillMaxSize()) {
             Scaffold(modifier = Modifier,
                 topBar = {
                     ShortXTopAppBar(
@@ -129,21 +144,23 @@ fun SubscribeScreen(back: () -> Unit) {
                                 RemixIcon(remixName = Remix.System.close_line)
                             }
                         },
+                        actions = {
+                            AnimatedVisibility(visible = !state.isSubscribed) {
+                                IconButton(onClick = {
+                                    googleIntroDialogState.show()
+                                }) {
+                                    RemixIcon(remixName = Remix.Logos.google_play_fill)
+                                }
+                            }
+                        }
                     )
                 }) { contentPadding ->
-
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = 16.dp)
                         .padding(contentPadding)
                 ) {
-                    val vm = hiltViewModel<SubscribeViewModel>()
-                    LaunchedEffect(vm) {
-                        vm.loadState()
-                    }
-
-                    val state by vm.state.collectAsState()
                     if (state.isSubscribed) {
                         SubscribedUi(vm)
                     } else {
@@ -158,7 +175,6 @@ fun SubscribeScreen(back: () -> Unit) {
 @Composable
 private fun SubscribedUi(vm: SubscribeViewModel) {
     val state by vm.state.collectAsState()
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -326,7 +342,6 @@ private fun SubscribeIntroUi(config: SubscriptionConfig2) {
             }
         )
 
-        LargeSpacer()
         LargeSpacer()
 
         Fabs(vm)

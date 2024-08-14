@@ -701,7 +701,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                 File(Dirs.baseServerLogDir(), "crash"),
                 "$pkgName-$uid-${DateUtils.formatForFileName(System.currentTimeMillis())}.log"
             )
-            logFile.parentFile.mkdirs()
+            logFile.parentFile?.mkdirs()
             logFile.writeText(error)
         }
 
@@ -768,6 +768,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             val res = mutableListOf<SubscriptionInfo>()
             runBlocking {
                 systemServiceScope.launchSafety {
+                    @Suppress("DEPRECATION")
                     SubscriptionManager.from(context).activeSubscriptionInfoList.apply {
                         res.addAll(this)
                     }
