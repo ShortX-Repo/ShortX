@@ -9,7 +9,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
@@ -452,7 +451,7 @@ fun ExtActions(
         Action.WebSocketConnect::class,
         Action.WebSocketSend::class,
         Action.ExecuteJS::class,
-        if (config.isFeatureCVFindImageEnabled || BuildPropInternal.APP_IS_DEBUG) {
+        if (config.isFeatureCVFindImageEnabled) {
             Action.FindImagePosition::class
         } else {
             null

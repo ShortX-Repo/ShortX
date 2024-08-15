@@ -41,7 +41,7 @@ class FirebaseConfig : Config {
     }
 
     override val isFeatureCVFindImageEnabled: Boolean
-        get() = remoteConfig?.getBoolean("feat_toggle_cv_find_image") == true
+        get() = true
     override val forceUpgradeVersion: Long
         get() = remoteConfig?.getLong("force_upgrade_version_code") ?: 0
     override val globalNoticeMessage: String
