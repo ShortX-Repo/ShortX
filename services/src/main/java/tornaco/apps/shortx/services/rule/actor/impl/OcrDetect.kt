@@ -108,7 +108,7 @@ object OcrDetect : Actor {
             val screen: Bitmap = try {
                 screenCap.cap()
             } finally {
-                screenCap.destroy()
+                screenCap.waitUntilDestroyed()
             }
             logger.d("detectOCRText RectSourceRect screen: $screen")
             BitmapUtils.cropBitmap(screen, inputRect.toAndroidRect()).also {
@@ -129,7 +129,7 @@ object OcrDetect : Actor {
             val screen: Bitmap = try {
                 screenCap.cap()
             } finally {
-                screenCap.destroy()
+                screenCap.waitUntilDestroyed()
             }
             logger.d("detectOCRText RectSourceSelectScreenArea screen: $screen")
             val cropped =

@@ -94,7 +94,7 @@ suspend fun ProtoAny.getBitmapFromImageSrcProto(
         val screen: Bitmap = try {
             screenCap.cap()
         } finally {
-            screenCap.destroy()
+            screenCap.waitUntilDestroyed()
         }
         screen
     } else {

@@ -39,7 +39,7 @@ object AreaScreenshot : Actor {
         val screen: Bitmap = try {
             screenCap.cap()
         } finally {
-            screenCap.destroy()
+            screenCap.waitUntilDestroyed()
         }
         logger.d("screen: $screen")
 
