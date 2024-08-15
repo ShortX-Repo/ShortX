@@ -208,6 +208,7 @@
 -dontwarn android.view.InputMonitor
 -dontwarn com.android.internal.util.Preconditions
 -dontwarn com.android.internal.util.ToBooleanFunction
+-dontwarn android.app.ActivityClient
 
 -dontwarn com.android.internal.telephony.ITelephony$Stub
 -dontwarn com.android.internal.telephony.ITelephony

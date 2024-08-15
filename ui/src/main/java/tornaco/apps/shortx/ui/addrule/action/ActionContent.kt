@@ -75,6 +75,7 @@ import tornaco.apps.shortx.ui.base.ErrorCard
 import tornaco.apps.shortx.ui.base.InputValidateResult
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.LocalUiStore
 import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
@@ -234,9 +235,7 @@ private fun Actions(
             }
         )
 
-
         val actionContentCardMenuState = rememberDropdownSelectorState()
-
 
         Box(modifier = Modifier) {
             ShortXCard(
@@ -274,37 +273,47 @@ private fun Actions(
                             .fillMaxWidth()
                             .padding(vertical = 20.dp),
                     ) {
+                        val uiStore = LocalUiStore.current
+
+                        val editAction: (Action) -> Unit = { newAction ->
+                            val currentAction =
+                                requireNotNull(uiStore.ActionContent_CurrentAction.get()) {
+                                    "ActionContent_CurrentAction is null."
+                                }
+                            composeLogger.d("addAction, new: ${newAction.id}, old: ${currentAction.id}")
+                            handler.addAction(
+                                newAction.clone(
+                                    id = currentAction.id,
+                                    note = currentAction.note,
+                                    isEnabled = currentAction.isEnabled,
+                                    actionOnError = currentAction.actionOnError,
+                                    contextData = currentAction.contextData
+                                )
+                            )
+                        }
+
+                        val selectHandlers = listOf(
+                            uiActionSelectHandler(addAction = editAction),
+                            appActionSelectHandler(addAction = editAction),
+                            notificationActionSelectHandler(addAction = editAction),
+                            systemActionSelectHandler(addAction = editAction),
+                            extActionSelectHandler(addAction = editAction),
+                            lifeActionSelectHandler(addAction = editAction),
+                            funcActionSelectHandler(addAction = editAction),
+                            varActionSelectHandler(addAction = editAction),
+                            miscActionSelectHandler(addAction = editAction),
+                            pluginActionSelectHandler(addAction = editAction),
+                        )
+
                         actions.forEachIndexed { _, action ->
                             val currentAction by rememberUpdatedState(newValue = action)
-                            val editAction: (Action) -> Unit = { newAction ->
-                                composeLogger.d("addAction, new: ${newAction.id}, old: ${currentAction.id}")
-                                handler.addAction(
-                                    newAction.clone(
-                                        id = currentAction.id,
-                                        note = currentAction.note,
-                                        isEnabled = currentAction.isEnabled,
-                                        actionOnError = currentAction.actionOnError,
-                                        contextData = currentAction.contextData
-                                    )
-                                )
-                            }
-
-                            val selectHandlers = listOf(
-                                uiActionSelectHandler(addAction = editAction),
-                                appActionSelectHandler(addAction = editAction),
-                                notificationActionSelectHandler(addAction = editAction),
-                                systemActionSelectHandler(addAction = editAction),
-                                extActionSelectHandler(addAction = editAction),
-                                lifeActionSelectHandler(addAction = editAction),
-                                funcActionSelectHandler(addAction = editAction),
-                                varActionSelectHandler(addAction = editAction),
-                                miscActionSelectHandler(addAction = editAction),
-                                pluginActionSelectHandler(addAction = editAction),
-                            )
 
                             val onActionClick = {
                                 composeLogger.d("addAction, onActionClick: ${currentAction.id}")
-                                selectHandlers.any { it(ActionSelectSource.FromAction(currentAction)) }
+                                uiStore.ActionContent_CurrentAction.set(currentAction)
+                                selectHandlers.any {
+                                    it(ActionSelectSource.FromAction(currentAction))
+                                }
                             }
 
                             val noteDialogState =

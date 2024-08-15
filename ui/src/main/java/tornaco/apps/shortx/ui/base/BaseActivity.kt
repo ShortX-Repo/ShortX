@@ -24,7 +24,8 @@ abstract class BaseActivity : AppCompatActivity() {
             CompositionLocalProvider(
                 LocalI18N provides i18NIns,
                 LocalActivity provides this,
-                LocalAppName provides appName
+                LocalAppName provides appName,
+                LocalUiStore provides UiStore()
             ) {
                 ShortXProps {
                     ShortXTheme {
