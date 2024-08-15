@@ -4,6 +4,7 @@ package tornaco.apps.shortx.ui.gesture
 
 import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -78,6 +79,7 @@ class GestureRecordListActivity : BaseActivity() {
 
 @Composable
 fun GestureRecordListScreen(back: () -> Unit) {
+    val context = LocalContext.current
     val vm = hiltViewModel<GestureRecordListViewModel>()
     val state by vm.state.collectAsState()
     DisposableEffectWithLifeCycle(
@@ -86,7 +88,11 @@ fun GestureRecordListScreen(back: () -> Unit) {
         }
     )
 
-    val context = LocalContext.current
+    val gestureDisabledMsg = LocalI18N.current["ui.settings.edge.gesture.disabled.warn"]
+    val showGestureDisabledToast = {
+        Toast.makeText(context, gestureDisabledMsg, Toast.LENGTH_LONG).show()
+    }
+
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -110,7 +116,11 @@ fun GestureRecordListScreen(back: () -> Unit) {
                 },
                 floatingActionButton = {
                     FloatingActionButton(onClick = {
-                        GestureRecorderActivity.start(context)
+                        if (!state.isEdgeGestureDisabled) {
+                            GestureRecorderActivity.start(context)
+                        } else {
+                            showGestureDisabledToast()
+                        }
                     }) {
                         Icon(imageVector = Icons.Filled.Add, contentDescription = "add")
                     }
