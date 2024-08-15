@@ -14,7 +14,8 @@ import tornaco.apps.shortx.ui.DeviceId
 import tornaco.apps.shortx.ui.subscribe.util.setLVLToken
 import java.io.IOException
 
-const val MIN_LENGTH = 12
+// 133 4455 3344
+const val MIN_LENGTH = 6
 
 sealed class VerifyResult {
     data class Success(val data: CommonApiResWrapper) : VerifyResult()
