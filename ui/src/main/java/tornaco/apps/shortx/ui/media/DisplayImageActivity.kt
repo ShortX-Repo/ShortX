@@ -1,53 +1,38 @@
 package tornaco.apps.shortx.ui.media
 
 import android.annotation.SuppressLint
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.widget.ImageView
-import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.core.os.bundleOf
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.skydoves.landscapist.glide.GlideImage
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
-import tornaco.apps.shortx.ui.R
+import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.biometric.BiometricVerifyActivityStarter.EXTRA_REQUEST_CODE
 import tornaco.apps.shortx.ui.media.DisplayImageActivityStarter.EXTRA_IMAGE_URL
-import tornaco.apps.shortx.ui.util.GlideApp
 
-class DisplayImageActivity : AppCompatActivity() {
+class DisplayImageActivity : BaseActivity() {
     private val logger = Logger("DisplayImageActivity")
 
     private var requestCode = 0
     private var imageUrl: String = ""
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun beforeOnCreate() {
+        super.beforeOnCreate()
         resolveIntent()
-        showAlertDialog()
     }
 
-    private fun showAlertDialog() {
-        logger.i("Display: $imageUrl")
-        val root = LayoutInflater.from(this).inflate(
-            R.layout.ui_display_image,
-            null,
-            false
-        ).apply {
-            val imageView = findViewById<ImageView>(R.id.image)
-            GlideApp.with(this@DisplayImageActivity)
-                .load(imageUrl)
-                .into(imageView)
+    @Composable
+    override fun Content() {
+        Surface {
+            GlideImage(
+                imageModel = { imageUrl },
+                modifier = Modifier.fillMaxSize()
+            )
         }
-        MaterialAlertDialogBuilder(this)
-            .setView(root)
-            .setTitle(null)
-            .setOnDismissListener {
-                onBackPressed()
-            }
-            .create().apply {
-                show()
-            }
     }
 
     private fun resolveIntent() {

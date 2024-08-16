@@ -301,12 +301,19 @@
             android:exported="false" />
 
         <activity
-            android:name="tornaco.apps.shortx.ui.media.DisplayImageActivity"
+            android:name="tornaco.apps.shortx.ui.media.DisplayImageDialogActivity"
             android:excludeFromRecents="true"
             android:exported="true"
             android:launchMode="singleTask"
             android:taskAffinity="ui.DisplayImageActivity"
             android:theme="@style/UiTheme.ComposeDialog" />
+
+        <activity
+            android:name="tornaco.apps.shortx.ui.media.DisplayImageActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:taskAffinity="ui.DisplayImageActivity" />
 
         <service
             android:name=".service.tile.Tile1"
