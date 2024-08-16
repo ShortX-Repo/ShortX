@@ -186,6 +186,14 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
         }
     )
 
+    val displayImageDialogState = rememberTextInputState(
+        title = LocalI18N.current["ui.action.display.image"],
+        message = LocalI18N.current["ui.action.display.image.url"],
+    ) {
+        addAction(Action.DisplayImage(imageUrl = it))
+    }
+    TextInputDialog(state = displayImageDialogState)
+
     return { source ->
         when (source.clazz) {
             Action.ShowToast::class -> {
@@ -378,6 +386,11 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                 true
             }
 
+            Action.DisplayImage::class -> {
+                displayImageDialogState.show(source.getActionAs<Action.DisplayImage>()?.imageUrl)
+                true
+            }
+
             else -> false
         }
     }
@@ -423,6 +436,7 @@ fun UiActions(
         Action.ShowDrawBoard::class,
         Action.ShowClipboardView::class,
         Action.ScreenFlash::class,
+        Action.DisplayImage::class,
     ).map {
         SelectorItem(
             it,

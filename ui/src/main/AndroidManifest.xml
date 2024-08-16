@@ -300,6 +300,14 @@
             android:name="tornaco.apps.shortx.ui.addrule.action.selector.ScreenFlashSelectorActivity"
             android:exported="false" />
 
+        <activity
+            android:name="tornaco.apps.shortx.ui.media.DisplayImageActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:taskAffinity="ui.DisplayImageActivity"
+            android:theme="@style/UiTheme.ComposeDialog" />
+
         <service
             android:name=".service.tile.Tile1"
             android:exported="true"
