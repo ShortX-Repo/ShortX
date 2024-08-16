@@ -137,6 +137,7 @@ fun DanmuUISettingsScreen(back: () -> Unit) {
                     val bgColorPickerState = remember(state) {
                         ColorPickerDialogState(
                             colorInt = state.settings.backgroundColor,
+                            withAuto = true,
                             onColorChanged = {
                                 viewModel.updateUISettings(state.settings.copy(backgroundColor = it))
                             })
@@ -177,6 +178,7 @@ fun DanmuUISettingsScreen(back: () -> Unit) {
                     val textColorPickerState = remember(state) {
                         ColorPickerDialogState(
                             colorInt = state.settings.textColor,
+                            withAuto = true,
                             onColorChanged = {
                                 viewModel.updateUISettings(state.settings.copy(textColor = it))
                             })
