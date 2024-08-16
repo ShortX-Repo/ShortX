@@ -1056,6 +1056,7 @@ private fun aboutSettings(
 ): List<Preference> {
     val context = LocalContext.current
     val i18N = LocalI18N.current
+    val qqGroups = listOf(BuildProp.QQ_GROUP_2, BuildProp.QQ_GROUP_1)
     return listOf(
         Preference.Category(i18N["ui.settings.about"]),
 
@@ -1086,9 +1087,13 @@ private fun aboutSettings(
         ),
         Preference.TextPreference(icon = Remix.Logos.qq_fill,
             title = "QQ",
-            summary = BuildProp.QQ_GROUP_1,
+            summary = qqGroups.joinToString(System.lineSeparator()),
             onClick = {
-                ClipboardUtils.copyToClipboard(context, "shortx qq", BuildProp.QQ_GROUP_1)
+                ClipboardUtils.copyToClipboard(
+                    context,
+                    "shortx qq",
+                    qqGroups.joinToString(System.lineSeparator())
+                )
                 Toast.makeText(
                     context,
                     i18N["ui.common.copied.to.clipboard"],
