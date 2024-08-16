@@ -19,10 +19,8 @@ package tornaco.apps.shortx.services.overlay.clipboard;
 import android.annotation.MainThread;
 import android.annotation.NonNull;
 import android.annotation.SuppressLint;
-import android.app.ICompatCameraControlCallback;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewRootImpl;
 import android.view.ViewTreeObserver;
@@ -101,12 +99,6 @@ public class ClipboardOverlayWindow extends PhoneWindow
         if (mContext.getResources().getConfiguration().orientation != mOrientation) {
             mOnOrientationChangeListener.run();
         }
-    }
-
-    // @Override // ViewRootImpl.ActivityConfigCallback
-    public void requestCompatCameraControl(boolean showControl, boolean transformationApplied,
-                                           ICompatCameraControlCallback callback) {
-        Log.w(TAG, "unexpected requestCompatCameraControl call");
     }
 
     void remove() {

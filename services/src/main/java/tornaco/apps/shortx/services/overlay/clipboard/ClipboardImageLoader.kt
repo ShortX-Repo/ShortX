@@ -32,8 +32,7 @@ import java.util.function.Consumer
 
 // Android 29+
 @SuppressLint("NewApi")
-class ClipboardImageLoader
-constructor(
+class ClipboardImageLoader(
     private val context: Context,
     private val bgDispatcher: CoroutineDispatcher,
     private val mainScope: CoroutineScope
