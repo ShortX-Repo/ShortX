@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.base
 
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,12 +15,12 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -28,9 +29,32 @@ import com.godaddy.android.colorpicker.ClassicColorPicker
 import com.godaddy.android.colorpicker.HsvColor
 import com.godaddy.android.colorpicker.toColorInt
 import tornaco.apps.shortx.core.settings.DANMU_COLOR_AUTO
+import tornaco.apps.shortx.ui.composeLogger
 
 @Composable
 fun ColorPickerDialog(state: ColorPickerDialogState) {
+    val context = LocalContext.current
+    val errorMsg =
+        LocalI18N.current["ui.common.manually.input.color.format.error"]
+    val showColorFormatError = {
+        Toast.makeText(context, errorMsg, Toast.LENGTH_SHORT).show()
+    }
+
+    val inputDialogState = rememberTextInputState(
+        title = LocalI18N.current["ui.common.manually.input.color"],
+        message = LocalI18N.current["ui.common.manually.input.color.message"]
+    ) {
+        kotlin.runCatching {
+            val colorInt = android.graphics.Color.parseColor(it)
+            state.onColorChanged(colorInt)
+            state.dismiss()
+            composeLogger.d("$it $colorInt")
+        }.onFailure {
+            showColorFormatError()
+        }
+    }
+    TextInputDialog(state = inputDialogState)
+
     if (state.isShowing) {
         var colorValue by remember {
             mutableIntStateOf(state.colorInt)
@@ -58,15 +82,28 @@ fun ColorPickerDialog(state: ColorPickerDialogState) {
                         horizontalArrangement = Arrangement.End,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        if (state.withAuto) {
+                            TextButton(
+                                modifier = Modifier,
+                                onClick = {
+                                    state.dismiss()
+                                    state.onColorChanged.invoke(DANMU_COLOR_AUTO)
+                                }) {
+                                Text(
+                                    text = "Auto",
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                        }
 
                         TextButton(
                             modifier = Modifier,
                             onClick = {
                                 state.dismiss()
-                                state.onColorChanged.invoke(DANMU_COLOR_AUTO)
+                                inputDialogState.show("#ff4018")
                             }) {
                             Text(
-                                text = "Auto",
+                                text = LocalI18N.current["ui.common.manually.input"],
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
@@ -92,16 +129,6 @@ fun ColorPickerDialog(state: ColorPickerDialogState) {
 
 class ColorPickerDialogState(
     val colorInt: Int,
+    val withAuto: Boolean = false,
     val onColorChanged: (Int) -> Unit,
-) {
-    private var _isShowing: Boolean by mutableStateOf(false)
-    val isShowing get() = _isShowing
-
-    fun show() {
-        _isShowing = true
-    }
-
-    fun dismiss() {
-        _isShowing = false
-    }
-}
+) : CommonDialogState()
