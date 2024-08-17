@@ -550,6 +550,8 @@
     "ui.action.screen.flash": "屏幕闪光",
     "ui.action.screen.flash.color": "颜色",
     "ui.action.screen.flash.times": "次数",
+    "ui.action.display.image": "图片展示",
+    "ui.action.display.image.url": "输入图片地址",
     "ui.condition.has.found.points.by.color": "找到颜色",
     "ui.action.find.color": "查找颜色",
     "ui.action.find.color.click": "查找颜色并点击",
