@@ -117,6 +117,7 @@ class OverlayService(shortXContext: ShortXContext) :
                     actions = button.actionsList,
                     conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
                     localVars = localVars,
+                    parameterInputs = parameters
                 )
             },
             onButtonLongClick = { button: OverlayButtonSetting ->
@@ -125,6 +126,7 @@ class OverlayService(shortXContext: ShortXContext) :
                     actions = button.longClickActionsList,
                     conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
                     localVars = localVars,
+                    parameterInputs = parameters
                 )
             },
         )
@@ -174,6 +176,7 @@ class OverlayService(shortXContext: ShortXContext) :
                     actions = button.actionsList,
                     conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
                     localVars = localVars,
+                    parameterInputs = parameters
                 )
             },
             onButtonLongClick = { button: OverlayButtonSetting ->
@@ -182,6 +185,7 @@ class OverlayService(shortXContext: ShortXContext) :
                     actions = button.longClickActionsList,
                     conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
                     localVars = localVars,
+                    parameterInputs = parameters
                 )
             },
         )
