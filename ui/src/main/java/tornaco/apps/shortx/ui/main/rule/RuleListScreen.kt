@@ -201,7 +201,7 @@ fun RuleContent(
     colorfulCard: Boolean,
     showDescription: Boolean,
     rules: List<RuleUM>,
-    activeJobs: Set<String>,
+    activeJobs: List<String>,
 ) {
     val refreshState = rememberPullRefreshState(isLoading, onRefresh = {
     })
@@ -248,7 +248,7 @@ private fun RuleListContent(
     colorfulCard: Boolean,
     showDescription: Boolean,
     rules: List<RuleUM>,
-    activeJobs: Set<String>,
+    activeJobs: List<String>,
 ) {
     LazyVerticalStaggeredGrid(
         modifier = Modifier.fillMaxSize(),

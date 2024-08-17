@@ -58,7 +58,7 @@ data class RuleListState(
     val showDescription: Boolean = true,
     val onlyShowEnabled: Boolean = true,
     val searchQuery: String = "",
-    val activeJobIds: Set<String> = emptySet(),
+    val activeJobIds: List<String> = emptyList(),
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -138,6 +138,8 @@ abstract class BaseRuleListViewModel(context: Context) :
                 updateState { copy(showDescription = it) }
             }
         }
+
+        loadActiveJobs()
     }
 
     override fun onCleared() {
@@ -156,7 +158,7 @@ abstract class BaseRuleListViewModel(context: Context) :
                     logger.d("activeJobs: $this")
                 }
                 updateState {
-                    copy(activeJobIds = activeJobs.toSet())
+                    copy(activeJobIds = activeJobs)
                 }
             }
         }

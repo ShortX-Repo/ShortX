@@ -3,7 +3,6 @@
 package tornaco.apps.shortx.ui.main.rule
 
 import android.widget.Toast
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -113,7 +112,13 @@ private fun RuleItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            RuleIcon(rule, colorfulCard) {
+            RuleIcon(
+                rule = rule,
+                runningInsCount = runningInsCount,
+                colorfulCard = colorfulCard,
+                stopAllJobs = {
+                    handler.stopAllJobs(rule)
+                }) {
                 popMenuState.open()
             }
             ShortXSwitch(
@@ -153,38 +158,39 @@ private fun RuleItem(
                 )
             }
         }
-
-        AnimatedVisibility(visible = runningInsCount > 0) {
-            RunningIndicator(
-                modifier = Modifier.padding(start = 12.dp),
-                runningInsCount = runningInsCount,
-                stopAllJobs = {
-                    handler.stopAllJobs(rule)
-                }
-            )
-        }
     }
 }
 
 @Composable
-fun RuleIcon(rule: RuleUM, colorfulCard: Boolean, onClick: (() -> Unit)) {
-    ColoredIcon(
-        onClick = onClick,
-        size = Dimens.RuleIconSize,
-        padding = 0.dp,
-        color = colorfulCard.select(
-            t = {
-                Color(rule.iconColor)
-            },
-            f = {
-                Color(rule.iconColor).copy(alpha = if (rule.isEnabled) ActionColorBgAlphaLarge else ActionColorBgAlpha)
-            })
-    ) {
-        RemixIcon(
-            modifier = Modifier.size(16.dp),
-            remixName = rule.icon,
-            tint = colorfulCard.select(Color.White, Color(rule.iconColor))
-        )
+fun RuleIcon(
+    rule: RuleUM,
+    runningInsCount: Int,
+    colorfulCard: Boolean,
+    stopAllJobs: () -> Unit,
+    onClick: (() -> Unit)
+) {
+    val isRunning = runningInsCount > 0
+    if (isRunning) {
+        RunningIndicator(runningInsCount, stopAllJobs)
+    } else {
+        ColoredIcon(
+            onClick = onClick,
+            size = Dimens.RuleIconSize,
+            padding = 0.dp,
+            color = colorfulCard.select(
+                t = {
+                    Color(rule.iconColor)
+                },
+                f = {
+                    Color(rule.iconColor).copy(alpha = if (rule.isEnabled) ActionColorBgAlphaLarge else ActionColorBgAlpha)
+                })
+        ) {
+            RemixIcon(
+                modifier = Modifier.size(16.dp),
+                remixName = rule.icon,
+                tint = colorfulCard.select(Color.White, Color(rule.iconColor))
+            )
+        }
     }
 }
 

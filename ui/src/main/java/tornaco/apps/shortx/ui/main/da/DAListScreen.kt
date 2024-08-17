@@ -245,7 +245,7 @@ fun DirectActionListContent(
     isShowDetailedDAItem: Boolean,
     colorfulCard: Boolean,
     das: List<DirectActionUM>,
-    activeJobs: Set<String>,
+    activeJobs: ActiveJobIds,
     showOverflowMenu: Boolean = false,
 ) {
     val refreshState = rememberPullRefreshState(isLoading, onRefresh = {
@@ -301,7 +301,7 @@ fun DirectActionListContent(
 private fun DAListContent(
     lazyStaggeredGridState: LazyStaggeredGridState,
     das: List<DirectActionUM>,
-    activeJobs: Set<String>,
+    activeJobs: ActiveJobIds,
     isSubscribed: Boolean,
     colorfulCard: Boolean,
     showOverflowMenu: Boolean,
@@ -330,9 +330,11 @@ private fun DAListContent(
                             isSubscribed = isSubscribed
                         )
                     } else {
-                        val runningInsCount = remember(da.id, activeJobs) {
-                            activeJobs.count { it == da.id }
+                        composeLogger.d("RUNNING-INS activeJobs: $activeJobs")
+                        val runningInsCount = remember(activeJobs) {
+                            activeJobs.ids.count { it == da.id }
                         }
+                        composeLogger.d("RUNNING-INS runningInsCount: $activeJobs")
                         DirectActionItem(
                             modifier = Modifier,
                             da = da,

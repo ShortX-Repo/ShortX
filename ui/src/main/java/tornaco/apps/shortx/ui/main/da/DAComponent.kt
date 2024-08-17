@@ -3,7 +3,6 @@
 package tornaco.apps.shortx.ui.main.da
 
 import android.widget.Toast
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +12,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -38,6 +39,7 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.res.isBase64Image
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
+import tornaco.apps.shortx.ui.base.AnimatedTextContainer
 import tornaco.apps.shortx.ui.base.ClickAnimateContainer
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.ConfirmDialog
@@ -212,41 +214,45 @@ private fun DAListItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val isImage = icon.isBase64Image()
-            if (colorfulCard) {
-                ColoredIcon(
-                    modifier = Modifier,
-                    size = Dimens.DAIconSize,
-                    padding = 0.dp,
-                    color = if (isImage) Color.Transparent else iconColor,
-                    onClick = {
-                        onLongClick()
-                    }
-                ) {
-                    RemixIcon(
-                        modifier = Modifier.size(if (isImage) Dimens.DAIconSize else 16.dp),
-                        remixName = icon,
-                        tint = Color.White
-                    )
-                }
+            val isRunning = runningInsCount > 0
+            if (isRunning) {
+                RunningIndicator(runningInsCount, stopAllJobs)
             } else {
-                ColoredIcon(
-                    modifier = Modifier,
-                    size = Dimens.DAIconSize,
-                    padding = 0.dp,
-                    color = if (isImage) Color.Transparent else iconColor.copy(alpha = ActionColorBgAlpha),
-                    onClick = {
-                        onLongClick()
+                val isImage = icon.isBase64Image()
+                if (colorfulCard) {
+                    ColoredIcon(
+                        modifier = Modifier,
+                        size = Dimens.DAIconSize,
+                        padding = 0.dp,
+                        color = if (isImage) Color.Transparent else iconColor,
+                        onClick = {
+                            onLongClick()
+                        }
+                    ) {
+                        RemixIcon(
+                            modifier = Modifier.size(if (isImage) Dimens.DAIconSize else 16.dp),
+                            remixName = icon,
+                            tint = Color.White
+                        )
                     }
-                ) {
-                    RemixIcon(
-                        modifier = Modifier.size(if (isImage) Dimens.DAIconSize else 16.dp),
-                        remixName = icon,
-                        tint = iconColor
-                    )
+                } else {
+                    ColoredIcon(
+                        modifier = Modifier,
+                        size = Dimens.DAIconSize,
+                        padding = 0.dp,
+                        color = if (isImage) Color.Transparent else iconColor.copy(alpha = ActionColorBgAlpha),
+                        onClick = {
+                            onLongClick()
+                        }
+                    ) {
+                        RemixIcon(
+                            modifier = Modifier.size(if (isImage) Dimens.DAIconSize else 16.dp),
+                            remixName = icon,
+                            tint = iconColor
+                        )
+                    }
                 }
             }
-
 
             IconButton(onClick = {
                 run()
@@ -283,48 +289,32 @@ private fun DAListItem(
             MediumSpacer()
             TinySpacer()
         }
-
-        AnimatedVisibility(visible = runningInsCount > 0) {
-            RunningIndicator(
-                modifier = Modifier,
-                runningInsCount = runningInsCount,
-                stopAllJobs = stopAllJobs
-            )
-        }
     }
 }
 
 @Composable
-fun RunningIndicator(modifier: Modifier = Modifier, runningInsCount: Int, stopAllJobs: () -> Unit) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
-        ) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(12.dp),
-                strokeWidth = 1.dp
-            )
-            SmallSpacer()
-            Text(
-                text = LocalI18N.current["ui.title.jobs.count", mapOf("count" to "$runningInsCount")],
-                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                maxLines = 1
-            )
-        }
-
-        IconButton(onClick = {
-            stopAllJobs()
+fun RunningIndicator(runningInsCount: Int, stopAllJobs: () -> Unit) {
+    BadgedBox(modifier = Modifier.size(Dimens.DAIconSize),
+        badge = {
+            Badge {
+                AnimatedTextContainer(text = runningInsCount.toString()) {
+                    Text(text = it)
+                }
+            }
         }) {
-            RemixIcon(
-                remixName = Remix.Media.stop_circle_line,
-                tint = MaterialTheme.colorScheme.error
+        Box(contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(Dimens.DAIconSize),
+                strokeWidth = 3.dp
             )
+            IconButton(onClick = {
+                stopAllJobs()
+            }) {
+                RemixIcon(
+                    remixName = Remix.Media.stop_circle_line,
+                    tint = MaterialTheme.colorScheme.error
+                )
+            }
         }
     }
 }

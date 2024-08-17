@@ -36,6 +36,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.main.CommonSetFilter
+import tornaco.apps.shortx.ui.main.da.ActiveJobIds
 import tornaco.apps.shortx.ui.main.da.DAItemHandler
 import tornaco.apps.shortx.ui.main.da.DAListViewModel
 import tornaco.apps.shortx.ui.main.da.DASetFilterFlowRow
@@ -115,7 +116,7 @@ class CreateShortcutActivity : BaseActivity() {
                                 das = daListState.das,
                                 showOverflowMenu = false,
                                 colorfulCard = false,
-                                activeJobs = emptySet()
+                                activeJobs = ActiveJobIds()
                             )
                         }
                     }

@@ -56,7 +56,11 @@ data class DAListState(
     val colorfulCard: Boolean = false,
     val isLoading: Boolean = true,
     val searchQuery: String = "",
-    val activeJobIds: Set<String> = emptySet(),
+    val activeJobIds: ActiveJobIds = ActiveJobIds(),
+)
+
+data class ActiveJobIds(
+    val ids: List<String> = emptyList(),
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -133,6 +137,8 @@ abstract class BaseDAListViewModel(context: Context) :
                 updateState { copy(colorfulCard = it) }
             }
         }
+
+        loadActiveJobs()
     }
 
     override fun onCleared() {
@@ -154,10 +160,14 @@ abstract class BaseDAListViewModel(context: Context) :
             logger.d("loadActiveJobs")
             withContext(Dispatchers.IO) {
                 val activeJobs = shortXManager.getActiveJobs().apply {
-                    logger.d("activeJobs: $this")
+                    logger.d("RUNNING-INS activeJobs: size: ${this.size} $this")
                 }
                 updateState {
-                    copy(activeJobIds = activeJobs.toSet())
+                    copy(
+                        activeJobIds = ActiveJobIds(
+                            activeJobs
+                        )
+                    )
                 }
             }
         }
