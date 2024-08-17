@@ -314,6 +314,9 @@
             android:exported="true"
             android:launchMode="singleTask"
             android:taskAffinity="ui.DisplayImageActivity" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.addrule.action.selector.DisplayImageSelectorActivity"
+            android:exported="false" />
 
         <service
             android:name=".service.tile.Tile1"

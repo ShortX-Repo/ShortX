@@ -30,7 +30,7 @@ class DisplayImageDialogActivity : AppCompatActivity() {
     private fun showAlertDialog() {
         logger.i("Display: $imageUrl")
         val root = LayoutInflater.from(this).inflate(
-            R.layout.ui_display_image,
+            R.layout.ui_display_image_dialog,
             null,
             false
         ).apply {

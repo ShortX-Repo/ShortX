@@ -51,7 +51,9 @@ object DisplayImage : Actor {
                 DisplayImageActivityStarter.start(
                     context = params.androidContext,
                     requestCode = actionRequestCode,
-                    action = DisplayImage.newBuilder().setImageUrl(url).build()
+                    action = DisplayImage.newBuilder().setImageUrl(url)
+                        .setScaleType(d.scaleType)
+                        .build()
                 )
             }
         }

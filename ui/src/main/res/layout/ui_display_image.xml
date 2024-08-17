@@ -1,16 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <androidx.appcompat.widget.AppCompatImageView
+    <com.ortiz.touchview.TouchImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:minWidth="300dp"
-        android:minHeight="300dp"
-        tools:background="@android:color/holo_red_dark" />
+        android:layout_height="match_parent" />
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="Loading..."
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        tools:text="ERROR" />
+</RelativeLayout>

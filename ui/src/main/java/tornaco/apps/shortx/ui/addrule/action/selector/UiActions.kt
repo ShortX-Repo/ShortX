@@ -186,13 +186,15 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
         }
     )
 
-    val displayImageDialogState = rememberTextInputState(
-        title = LocalI18N.current["ui.action.display.image"],
-        message = LocalI18N.current["ui.action.display.image.url"],
-    ) {
-        addAction(Action.DisplayImage(imageUrl = it))
-    }
-    TextInputDialog(state = displayImageDialogState)
+    val displayImageLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action.DisplayImage>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
 
     return { source ->
         when (source.clazz) {
@@ -387,7 +389,13 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
             }
 
             Action.DisplayImage::class -> {
-                displayImageDialogState.show(source.getActionAs<Action.DisplayImage>()?.imageUrl)
+                displayImageLauncher.launch(
+                    newIntent(
+                        context = context,
+                        currentData = source.getActionAs<Action.DisplayImage>(),
+                        clazz = DisplayImageSelectorActivity::class.java
+                    )
+                )
                 true
             }
 

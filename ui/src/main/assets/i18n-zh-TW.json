@@ -552,6 +552,7 @@
     "ui.action.screen.flash.times": "次数",
     "ui.action.display.image": "图片展示",
     "ui.action.display.image.url": "输入图片地址",
+    "ui.action.display.image.scale.type": "缩放类型",
     "ui.condition.has.found.points.by.color": "找到颜色",
     "ui.action.find.color": "查找颜色",
     "ui.action.find.color.click": "查找颜色并点击",

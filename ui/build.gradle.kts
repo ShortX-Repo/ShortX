@@ -132,6 +132,8 @@ dependencies {
     // For interop APIs with Material 3
     implementation(libs.androidx.glance.material3)
 
+    implementation("com.github.MikeOrtiz:TouchImageView:3.6")
+
     val rowImplementation by configurations
     // This dependency is downloaded from the Google’s Maven repository.
     // So, make sure you also include that repository in your project's build.gradle file.

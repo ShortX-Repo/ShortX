@@ -532,6 +532,7 @@
     "ui.action.screen.flash.times": "Flash times",
     "ui.action.display.image": "Display image",
     "ui.action.display.image.url": "Input image url",
+    "ui.action.display.image.scale.type": "Scale type",
     "ui.condition.has.found.points.by.color": "Has found color",
     "ui.action.find.color": "Find color",
     "ui.action.find.color.click": "Find color click",
