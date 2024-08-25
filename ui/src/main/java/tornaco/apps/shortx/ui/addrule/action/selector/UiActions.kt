@@ -49,11 +49,6 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
     }
     ShowDanmuSettingsDialog(state = showDanmuSettingsState)
 
-    val showMenuDialogState = rememberShowMenuDialogSettingsDialogState {
-        addAction(it)
-    }
-    ShowMenuDialogSettingsDialog(state = showMenuDialogState)
-
     val hideOverlayDialogState = rememberHideOverlayDialogState {
         addAction(it)
     }
@@ -98,6 +93,16 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
             val action = result.popupSelectorResult<Action.ShowAlertDialog>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
+    val showMenuDialogLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action.ShowMenuDialog>()
             action?.let {
                 addAction(it)
             }
@@ -267,7 +272,13 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
             }
 
             Action.ShowMenuDialog::class -> {
-                showMenuDialogState.show(source.getActionAs())
+                showMenuDialogLauncher.launch(
+                    newIntent(
+                        context = context,
+                        currentData = source.getActionAs<Action.ShowMenuDialog>(),
+                        clazz = ShowMenuDialogSelectorActivity::class.java
+                    )
+                )
                 true
             }
 

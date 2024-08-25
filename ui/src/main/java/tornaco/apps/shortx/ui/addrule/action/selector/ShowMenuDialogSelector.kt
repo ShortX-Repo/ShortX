@@ -15,38 +15,32 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.proto.action.DialogMenuItem
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.pack_
-import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
-import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.ActionHandler
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
-import tornaco.apps.shortx.ui.base.CommonDialogState
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
-import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallTitle
@@ -54,198 +48,119 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.SwitchRow
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
-import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 
-data class MenuDialogUiItem(
-    val title: String,
-    val actionHandler: ActionContentStateHandler
-)
+@AndroidEntryPoint
+class ShowMenuDialogSelectorActivity : BaseSelectorActivity<Action.ShowMenuDialog>() {
 
-
-class ShowMenuDialogSettingsDialogState(
-    val onSelected: (Action.ShowMenuDialog) -> Unit
-) : CommonDialogState() {
-
-    var title by mutableStateOf("")
-    var message by mutableStateOf("")
-    var isCancelable by mutableStateOf(true)
-    var items by mutableStateOf<List<MenuDialogUiItem>>(emptyList())
-
-    var evaluatingActions: List<String> = emptyList()
-
-    fun show(currentSettings: Action.ShowMenuDialog? = null) {
-        this.evaluatingActions = shortXManager.getEvaluatingActions()
-        this.title = currentSettings?.title ?: ""
-        this.message = currentSettings?.message ?: ""
-        this.isCancelable = currentSettings?.cancelable ?: true
-        this.items = currentSettings?.items?.map { dialogMenuItem ->
-            MenuDialogUiItem(dialogMenuItem.title, ActionContentStateHandler().apply {
-                updateState {
-                    copy(actions = dialogMenuItem.clickActionsList.mapNotNull {
-                        it.toAction(shortXManager = shortXManager)
-                    })
-                }
-            })
-        } ?: emptyList()
-
-        show()
-    }
-
-    fun updateTitle(title: String) {
-        this.title = title
-    }
-
-    fun updateMessage(message: String) {
-        this.message = message
-    }
-
-    fun updateCancelable(cancelable: Boolean) {
-        this.isCancelable = cancelable
-    }
-
-    fun addItem(item: MenuDialogUiItem) {
-        this.items = this.items.toMutableList().apply {
-            add(item)
-        }
-    }
-
-    fun removeItem(index: Int) {
-        this.items = this.items.toMutableList().apply {
-            removeAt(index)
-        }
-    }
-
-    fun updateItemTitle(title: String, index: Int) {
-        this.items = this.items.toMutableList().apply {
-            val current = get(index)
-            val updated = current.copy(title = title)
-            set(index, updated)
-        }
-    }
-
-    fun addButton() {
-        this.items = this.items.toMutableList().apply {
-            add(MenuDialogUiItem("", ActionContentStateHandler()))
-        }
-    }
-
-
-}
-
-@Composable
-fun rememberShowMenuDialogSettingsDialogState(
-    onSelected: (Action.ShowMenuDialog) -> Unit
-): ShowMenuDialogSettingsDialogState {
-    return remember {
-        ShowMenuDialogSettingsDialogState(onSelected)
+    @Composable
+    override fun BaseSelectorActivity<Action.ShowMenuDialog>.SelectorContent(currentData: Action.ShowMenuDialog?) {
+        ShowMenuDialogSelector(currentData)
     }
 }
 
 @Composable
-fun ShowMenuDialogSettingsDialog(state: ShowMenuDialogSettingsDialogState) {
-    if (state.isShowing) {
-        ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
-            ShowMenuDialogSelector(state)
-        }
+private fun ShowMenuDialogSelectorActivity.ShowMenuDialogSelector(currentData: Action.ShowMenuDialog?) {
+    val vm = hiltViewModel<ShowMenuDialogSelectorViewModel>()
+    LaunchedEffect(vm) {
+        vm.initFrom(currentData)
     }
-}
-
-@Composable
-private fun ShowMenuDialogSelector(dialogState: ShowMenuDialogSettingsDialogState) {
-    ShortXTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
-        ) {
-            Scaffold(modifier = Modifier,
-                topBar = {
-                    ShortXTopAppBar(
-                        modifier = Modifier,
-                        title = { Text(LocalI18N.current["ui.action.show.menu.dialog"]) },
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                dialogState.dismiss()
-                            }) {
-                                RemixIcon(remixName = Remix.System.close_line)
-                            }
-                        },
-                        actions = {
-                            IconButton(onClick = {
-                                dialogState.onSelected(
-                                    Action.ShowMenuDialog(
-                                        title = dialogState.title,
-                                        message = dialogState.message,
-                                        cancelable = dialogState.isCancelable,
-                                        items = dialogState.items.map { uiItem ->
-                                            DialogMenuItem.newBuilder()
-                                                .setTitle(uiItem.title)
-                                                .addAllClickActions(uiItem.actionHandler.actions.map {
-                                                    it.toProtoAction().pack_()
-                                                })
-                                                .build()
-                                        }
-                                    )
-                                )
-                                dialogState.dismiss()
-                            }) {
-                                RemixIcon(remixName = Remix.System.check_line)
-                            }
-
-                        },
-                    )
-                }) { paddingValues ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                        .padding(paddingValues)
-                        .animateContentSize()
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    ShortXTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        label = {
-                            Text(text = LocalI18N.current["ui.action.dialog.title"])
-                        },
-                        value = dialogState.title,
-                        onValueChange = {
-                            dialogState.updateTitle(it)
-                        })
-                    StandardSpacer()
-                    StandardSpacer()
-
-                    Items(dialogState)
-                    StandardSpacer()
-
-                    // Add icon
-                    Button(onClick = {
-                        dialogState.addButton()
+    val dialogState by vm.state.collectAsState()
+    Scaffold(modifier = Modifier,
+        topBar = {
+            ShortXTopAppBar(
+                modifier = Modifier,
+                title = { Text(LocalI18N.current["ui.action.show.menu.dialog"]) },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        cancelAndFinish()
                     }) {
-                        Text(text = LocalI18N.current["ui.action.show.menu.dialog.item.add"])
+                        RemixIcon(remixName = Remix.System.close_line)
+                    }
+                },
+                actions = {
+                    IconButton(onClick = {
+                        setResultAndFinish(
+                            Action.ShowMenuDialog(
+                                title = dialogState.title,
+                                message = dialogState.message,
+                                cancelable = dialogState.cancelable,
+                                items = dialogState.items.map { uiItem ->
+                                    DialogMenuItem.newBuilder()
+                                        .setTitle(uiItem.title)
+                                        .addAllClickActions(uiItem.actionHandler.actions.map {
+                                            it.toProtoAction().pack_()
+                                        })
+                                        .build()
+                                }
+                            )
+                        )
+                    }) {
+                        RemixIcon(remixName = Remix.System.check_line)
                     }
 
-                    SectionSpacer()
+                },
+            )
+        }) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .padding(paddingValues)
+                .animateContentSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+            ShortXTextField(
+                modifier = Modifier.fillMaxWidth(),
+                label = {
+                    Text(text = LocalI18N.current["ui.action.dialog.title"])
+                },
+                value = dialogState.title,
+                onValueChange = {
+                    vm.updateTitle(it)
+                })
+            StandardSpacer()
+            StandardSpacer()
 
-                    SwitchRow(
-                        text = LocalI18N.current["ui.action.dialog.cancelable"],
-                        isChecked = dialogState.isCancelable
-                    ) {
-                        dialogState.updateCancelable(it)
-                    }
-
-                    LargeSpacer()
-
-                    SuggestedNavEntry()
+            Items(state = dialogState,
+                updateItemTitle = { string, int ->
+                    vm.updateItemTitle(string, int)
+                },
+                removeItem = {
+                    vm.removeItem(it)
                 }
+            )
+            StandardSpacer()
+
+            // Add icon
+            Button(onClick = {
+                vm.addButton()
+            }) {
+                Text(text = LocalI18N.current["ui.action.show.menu.dialog.item.add"])
             }
+
+            SectionSpacer()
+
+            SwitchRow(
+                text = LocalI18N.current["ui.action.dialog.cancelable"],
+                isChecked = dialogState.cancelable
+            ) {
+                vm.updateCancelable(it)
+            }
+
+            LargeSpacer()
+
+            SuggestedNavEntry()
         }
     }
-
 }
+
 
 @Composable
 private fun Items(
-    state: ShowMenuDialogSettingsDialogState,
+    state: ShowMenuDialogSelectorState,
+    updateItemTitle: (String, Int) -> Unit,
+    removeItem: (Int) -> Unit,
 ) {
     state.items.forEachIndexed { index, menuDialogUiItem ->
         val actionState by menuDialogUiItem.actionHandler.state.collectAsState()
@@ -253,14 +168,14 @@ private fun Items(
             headerTitle = LocalI18N.current["ui.action.show.menu.dialog.item"] + " ${index + 1}",
             text = menuDialogUiItem.title,
             onTextChange = {
-                state.updateItemTitle(it, index)
+                updateItemTitle(it, index)
             },
             actions = actionState.actions,
             evaluatingActions = state.evaluatingActions,
             warnings = emptyMap(),
             actionHandler = menuDialogUiItem.actionHandler.asActionHandler(),
             removeItem = {
-                state.removeItem(index)
+                removeItem(index)
             }
         )
 
