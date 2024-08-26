@@ -37,4 +37,5 @@ internal fun allTriggers(context: Context, shortXContext: ShortXContext) = mutab
     HotspotTrigger(context, shortXContext),
     LogcatTrigger(context, shortXContext),
     UsbDeviceStateTrigger(context, shortXContext),
+    LightSensorTrigger(context, shortXContext),
 )

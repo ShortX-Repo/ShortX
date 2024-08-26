@@ -75,17 +75,15 @@ class LogcatTrigger(
 
     private suspend fun updateTriggerState() {
         regexMatchers.clear()
-        shortXContext.rule.getAllEnabledRules().forEach { rule ->
-            (rule.factsAndQuitFacts).forEach { factProtoAny ->
-                if (factProtoAny is_ Logcat::class.java) {
-                    val fact = factProtoAny unpack_ Logcat::class.java
-                    if (!fact.isDisabled) {
-                        runCatching { fact.regex.toRegex() }.getOrElse {
-                            logger.e(it, "updateTriggerState, regex error")
-                            null
-                        }?.let {
-                            regexMatchers.add(fact to it)
-                        }
+        shortXContext.rule.forEachEnabledFacts { _, factProtoAny ->
+            if (factProtoAny is_ Logcat::class.java) {
+                val fact = factProtoAny unpack_ Logcat::class.java
+                if (!fact.isDisabled) {
+                    runCatching { fact.regex.toRegex() }.getOrElse {
+                        logger.e(it, "updateTriggerState, regex error")
+                        null
+                    }?.let {
+                        regexMatchers.add(fact to it)
                     }
                 }
             }

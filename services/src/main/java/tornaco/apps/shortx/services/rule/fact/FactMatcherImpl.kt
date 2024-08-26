@@ -52,6 +52,7 @@ import tornaco.apps.shortx.core.proto.fact.HeadsetPlug
 import tornaco.apps.shortx.core.proto.fact.HotSpotStatusChanged
 import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
+import tornaco.apps.shortx.core.proto.fact.LightSensor
 import tornaco.apps.shortx.core.proto.fact.LocationStatusChanged
 import tornaco.apps.shortx.core.proto.fact.Logcat
 import tornaco.apps.shortx.core.proto.fact.MediaStoreInsert
@@ -72,6 +73,7 @@ import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
 import tornaco.apps.shortx.core.proto.fact.ScreenRotate
+import tornaco.apps.shortx.core.proto.fact.SensorValueTrend
 import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.fact.SystemSettingsChanged
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
@@ -92,6 +94,7 @@ import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.appPkgToString
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.cond.impl.EvaluateContextVar
 
 data class FactAttrs(
     val id: String,
@@ -633,6 +636,19 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
         }
         register(BackNavDone::class.java) { actual, rule ->
             true
+        }
+
+        register(LightSensor::class.java) { actual, rule ->
+            val actualN = (actual as LightSensor)
+            val ruleN = (rule as LightSensor)
+            (ruleN.trend == SensorValueTrend.SensorValueTrend_Any || ruleN.trend == actualN.trend) && (
+                    ruleN.constraintsList.isEmpty() || ruleN.constraintsList.all { con ->
+                        EvaluateContextVar.evaluate(
+                            actualN.value.toString(),
+                            con.op,
+                            con.payload.value.orEmpty()
+                        )
+                    })
         }
 
         logger.i("Init complete.")

@@ -3,7 +3,6 @@ package tornaco.apps.shortx.services.policy
 import android.content.Context
 import android.view.KeyEvent
 import tornaco.apps.shortx.core.proto.fact.CombineKeyEvent
-import tornaco.apps.shortx.core.proto.factsAndQuitFacts
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
@@ -37,10 +36,10 @@ class KeyCombinationTrigger(
         keyCombinationManager.clearRules()
 
         val cks = mutableListOf<Pair<Int, Int>>()
-        shortXContext.rule.getAllEnabledRules().forEach { rule ->
-            rule.factsAndQuitFacts.forEach {
-                if (it is_ CombineKeyEvent::class.java) {
-                    val ck = it unpack_ CombineKeyEvent::class.java
+        shortXContext.rule.forEachEnabledFacts { _, it ->
+            if (it is_ CombineKeyEvent::class.java) {
+                val ck = it unpack_ CombineKeyEvent::class.java
+                if (!ck.isDisabled) {
                     cks.add(ck.keyCode1 to ck.keyCode2)
                 }
             }

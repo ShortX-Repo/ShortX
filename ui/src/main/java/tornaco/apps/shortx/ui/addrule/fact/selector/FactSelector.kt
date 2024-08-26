@@ -24,6 +24,7 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 enum class FactCategory(val i18NKey: String, val icon: String) {
     Apps("ui.action.category.app", Remix.System.apps_2_line),
     System("ui.action.system.settings", Remix.System.settings_2_line),
+    Sensor("ui.fact.sensor", Remix.System.settings_2_line),
     Misc("ui.action.misc", Remix.System.settings_2_line),
 }
 
@@ -58,6 +59,9 @@ fun FactSelector(
                 StandardSpacer()
 
                 SystemFacts(searchBarState.keyword, subscribeState, setFact = setFact)
+                StandardSpacer()
+
+                SensorFacts(searchBarState.keyword, subscribeState, setFact = setFact)
                 StandardSpacer()
 
                 MiscFacts(searchBarState.keyword, subscribeState, setFact = setFact)

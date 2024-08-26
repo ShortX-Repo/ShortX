@@ -29,6 +29,7 @@ import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.proto.action.LaunchApp
 import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.proto.action.StartActivityUrlSchema
+import tornaco.apps.shortx.core.proto.action.WaitUtilConditionMatch
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.Author
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
@@ -43,6 +44,7 @@ import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
 import tornaco.apps.shortx.core.proto.fact.SystemReady
+import tornaco.apps.shortx.core.proto.factsAndQuitFacts
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.getTypeUrl
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
@@ -280,7 +282,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         )
     }
 
-    private val publishInterceptor by lazy {
+    val publishInterceptor by lazy {
         FactPublishInterceptor(shortXContext, systemServiceScope)
     }
 
@@ -1430,6 +1432,30 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                     )
                     .build()
             )
+        }
+    }
+
+    // SrcId - Proto
+    fun forEachEnabledFacts(forEachAction: (String, ProtoAny) -> Unit) {
+        // Rules
+        getAllEnabledRules().forEach { rule ->
+            (rule.factsAndQuitFacts).forEach { factProtoAny ->
+                forEachAction(rule.id, factProtoAny)
+            }
+        }
+
+        getAllDirectAction().map { da ->
+            da.actionsList.forEach { action ->
+                if (action is_ WaitUtilConditionMatch::class.java) {
+                    val waitUtilConditionMatch = action unpack_ WaitUtilConditionMatch::class.java
+                    if (!waitUtilConditionMatch.isDisabled) {
+                        val quitFacts = waitUtilConditionMatch.quitFactsList
+                        quitFacts.forEach { fact ->
+                            forEachAction(da.id, fact)
+                        }
+                    }
+                }
+            }
         }
     }
 }
