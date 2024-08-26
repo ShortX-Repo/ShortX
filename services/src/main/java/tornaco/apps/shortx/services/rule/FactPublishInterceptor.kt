@@ -21,8 +21,9 @@ import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.RuleObserver
 import tornaco.apps.shortx.core.rule.ToggleObserver
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.mapToString
 import tornaco.apps.shortx.services.ShortXContext
-import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicReference
 
 class FactPublishInterceptor(
     private val shortXContext: ShortXContext,
@@ -36,7 +37,7 @@ class FactPublishInterceptor(
     private val logger = Logger("FactPublishInterceptor")
     private val changeTime = MutableStateFlow(0L)
 
-    private val enabledProtoUrlCache: MutableSet<String> = mutableSetOf()
+    private val enabledProtoUrlCache: AtomicReference<ProtoUrlCache> = AtomicReference(null)
 
     private val alwaysPublishUrls = listOf(
         AnyFact.getDefaultInstance(),
@@ -51,8 +52,6 @@ class FactPublishInterceptor(
         .map {
             buildCache()
         }
-
-    private val cacheHasBeenBuilt = AtomicBoolean(false)
 
     init {
         shortXContext.rule.registerRuleObs(object : RuleObserver() {
@@ -95,10 +94,7 @@ class FactPublishInterceptor(
             withContext(Dispatchers.IO) {
                 protoUrlCacheFlow.collectLatest {
                     logger.d("protoUrlCacheFlow update: $it")
-                    cacheHasBeenBuilt.set(false)
-                    enabledProtoUrlCache.clear()
-                    enabledProtoUrlCache.addAll(it)
-                    cacheHasBeenBuilt.set(true)
+                    enabledProtoUrlCache.set(it)
                 }
             }
         }
@@ -111,15 +107,16 @@ class FactPublishInterceptor(
     // True: block.
     fun intercept(fact: ProtoMessage): Boolean {
         if (alwaysPublishUrls.contains(fact.getTypeUrl())) return false
-        if (!cacheHasBeenBuilt.get()) {
+        val cacheSnapshot = enabledProtoUrlCache.get()
+        if (cacheSnapshot == null) {
             logger.i("Cache has not built, do not intercept.")
             return false
         }
-        if (enabledProtoUrlCache.contains(fact.getTypeUrl())) return false
+        if (cacheSnapshot.allFlat.contains(fact.getTypeUrl())) return false
 
         if (ENABLE_DUMP_LOG) {
             logger.p { "-------- DUMP START ---------" }
-            logger.p { enabledProtoUrlCache.joinToString(System.lineSeparator()) }
+            logger.p { cacheSnapshot.toString() }
             logger.p { "-------- DUMP END ---------" }
         }
         return true
@@ -130,21 +127,31 @@ class FactPublishInterceptor(
         changeTime.value = System.currentTimeMillis()
     }
 
-    private fun buildCache(): Set<String> {
+    private fun buildCache(): ProtoUrlCache {
         logger.i("buildCache.")
 
-        val enabledRules =
-            shortXContext.rule.getAllEnabledRules().map { it.findTypeUrls() }.flatten()
-        logger.d("rules: ${enabledRules.joinToString(System.lineSeparator())}")
+        val enabledRules: Map<String, Set<String>> =
+            shortXContext.rule.getAllEnabledRules().associate { it.id to it.findTypeUrls().toSet() }
+        logger.d("rules: ${enabledRules.mapToString(System.lineSeparator())}")
 
-        val allDAs = shortXContext.rule.getAllDirectAction().map { it.findTypeUrls() }.flatten()
-        logger.d("das: ${allDAs.joinToString(System.lineSeparator())}")
+        val allDAs: Map<String, Set<String>> =
+            shortXContext.rule.getAllDirectAction().associate { it.id to it.findTypeUrls().toSet() }
+        logger.d("das: ${allDAs.mapToString(System.lineSeparator())}")
 
-        val allToggles = shortXContext.rule.getAllToggles().map { it.findTypeUrls() }.flatten()
-        logger.d("toggles: ${allToggles.joinToString(System.lineSeparator())}")
+        val allToggles: Map<String, Set<String>> =
+            shortXContext.rule.getAllToggles().associate { it.id to it.findTypeUrls().toSet() }
+        logger.d("toggles: ${allToggles.mapToString(System.lineSeparator())}")
 
-        val allFacts = enabledRules + allDAs + allToggles
+        return ProtoUrlCache(enabledRules, allDAs, allToggles)
+    }
+}
 
-        return allFacts.toSet()
+internal data class ProtoUrlCache(
+    val rules: Map<String, Set<String>> = emptyMap(),
+    val das: Map<String, Set<String>> = emptyMap(),
+    val toggles: Map<String, Set<String>> = emptyMap()
+) {
+    val allFlat: Set<String> by lazy {
+        rules.values.flatten().toSet() + das.values.flatten() + toggles.values.flatten()
     }
 }
