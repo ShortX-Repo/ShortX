@@ -323,6 +323,9 @@
         <activity
             android:name="tornaco.apps.shortx.ui.addrule.fact.selector.LightSensorSelectorActivity"
             android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.addrule.fact.selector.ProximitySensorSelectorActivity"
+            android:exported="false" />
 
         <service
             android:name=".service.tile.Tile1"
