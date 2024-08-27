@@ -36,6 +36,7 @@ import tornaco.apps.shortx.core.proto.condition.GlobalVarOpPayload
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.rule.needUserInputValue
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.toDisplayName
 import tornaco.apps.shortx.core.shortXManager
@@ -110,9 +111,7 @@ class EvaluateContextVarSelectorDialogState(
 
     private fun checkShowPayloadInputField() {
         val op = _action.op
-        showPayloadInputField =
-            op != GlobalVarOp.HasBeenSet && op != GlobalVarOp.NotSet && op != GlobalVarOp.IsEmpty && op != GlobalVarOp.IsNotEmpty
-                    && op != GlobalVarOp.IsExists && op != GlobalVarOp.IsNotExists
+        showPayloadInputField = op.needUserInputValue()
     }
 
     fun canSave(): Boolean {
@@ -246,7 +245,7 @@ private fun EvaluateContextVarSelector(dialogState: EvaluateContextVarSelectorDi
                         }
                         DropdownSelector(
                             state = opSelectorState,
-                            items = GlobalVarOp.values().toMutableList().apply {
+                            items = GlobalVarOp.entries.toMutableList().apply {
                                 remove(GlobalVarOp.UNRECOGNIZED)
                             }.map {
                                 DropdownItem(

@@ -178,6 +178,19 @@ private fun FactItem(
                     composeLogger.d("systemFactSelectHandler: $this")
                 })
         },
+        sensorFactSelectHandler { newFact ->
+            composeLogger.d("sensorFactSelectHandler: $newFact")
+            handler.addFact(
+                newFact.clone(
+                    id = currentFact.id,
+                    note = currentFact.note,
+                    tag = currentFact.tag,
+                    isDisabled = currentFact.isDisabled,
+                    customContextDataKey = currentFact.customContextDataKey
+                ).apply {
+                    composeLogger.d("sensorFactSelectHandler: $this")
+                })
+        },
         miscFactSelectHandler { newFact ->
             handler.addFact(
                 newFact.clone(

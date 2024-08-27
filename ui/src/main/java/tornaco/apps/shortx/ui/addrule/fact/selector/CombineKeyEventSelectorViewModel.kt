@@ -9,15 +9,15 @@ import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import javax.inject.Inject
 
 
-data class ShowDialogSelectorState(
+data class CKSelectorState(
     val keys: List<Int> = emptyList()
 )
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class CombineKeyEventSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ShortXContextViewModel<ShowDialogSelectorState>(
-        context, { ShowDialogSelectorState() }
+    ShortXContextViewModel<CKSelectorState>(
+        context, { CKSelectorState() }
     ) {
 
     fun initFrom(currentAction: Action.InjectCombineKeyCode?) {

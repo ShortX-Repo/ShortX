@@ -11,14 +11,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.LoadError
 import tornaco.apps.shortx.ui.base.LoadState
@@ -31,18 +30,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 class ComponentRuleInfoDialogState(
     val ruleLabel: String,
     val ruleUrl: String,
-) {
-    private var _isShow by mutableStateOf(false)
-    val isShow get() = _isShow
-
-    fun show() {
-        _isShow = true
-    }
-
-    fun dismiss() {
-        _isShow = false
-    }
-}
+) : CommonDialogState()
 
 @Composable
 fun rememberComponentRuleInfoDialogState(
@@ -56,7 +44,7 @@ fun rememberComponentRuleInfoDialogState(
 
 @Composable
 fun ComponentRuleInfoDialog(state: ComponentRuleInfoDialogState) {
-    if (state.isShow) {
+    if (state.isShowing) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
             DialogTitle(text = state.ruleLabel)
         }, buttons = {

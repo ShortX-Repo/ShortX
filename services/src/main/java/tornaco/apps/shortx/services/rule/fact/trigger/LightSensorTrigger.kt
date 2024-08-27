@@ -30,6 +30,16 @@ class LightSensorTrigger(
         enableOrDisableSensor()
     }
 
+    override fun onScreenOff() {
+        super.onScreenOff()
+        unRegister()
+    }
+
+    override fun onScreenOn() {
+        super.onScreenOn()
+        enableOrDisableSensor()
+    }
+
     override fun unRegister() {
         logger.d("Unregister light sensor")
         context.sensorManager.unregisterListener(this)
@@ -67,6 +77,7 @@ class LightSensorTrigger(
     override fun onSensorChanged(event: SensorEvent?) {
         event?.let {
             val lightIntensity = it.values[0] // 获取光线强度
+            logger.d("onSensorChanged: $lightIntensity")
             shortXContext.rule.publishFactChecked(
                 LightSensor.getDefaultInstance()
             ) {

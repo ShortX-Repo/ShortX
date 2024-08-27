@@ -40,4 +40,7 @@ interface Trigger {
     }
 
     fun onAnyChanged() {}
+
+    fun onScreenOff() {}
+    fun onScreenOn() {}
 }

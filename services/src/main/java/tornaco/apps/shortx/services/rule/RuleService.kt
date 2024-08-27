@@ -1358,6 +1358,13 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     override fun screenOn() {
         super.screenOn()
         logger.d("onScreenOn")
+
+        handler.postSafety {
+            allTriggers.forEach {
+                it.onScreenOn()
+            }
+        }
+
         shortXContext.rule.publishFact(
             "onScreenOn",
             ScreenOn.newBuilder().build()
@@ -1367,6 +1374,13 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     override fun screenOff() {
         super.screenOff()
         logger.d("screenOff")
+
+        handler.postSafety {
+            allTriggers.forEach {
+                it.onScreenOff()
+            }
+        }
+
         shortXContext.rule.publishFact(
             "onScreenOff",
             ScreenOff.newBuilder().build()
