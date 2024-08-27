@@ -69,6 +69,7 @@ import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
 import tornaco.apps.shortx.core.proto.fact.OnStartOp
 import tornaco.apps.shortx.core.proto.fact.PkgStartRunning
 import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
+import tornaco.apps.shortx.core.proto.fact.ProximitySensor
 import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
@@ -641,6 +642,19 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
         register(LightSensor::class.java) { actual, rule ->
             val actualN = (actual as LightSensor)
             val ruleN = (rule as LightSensor)
+            (ruleN.trend == SensorValueTrend.SensorValueTrend_Any || ruleN.trend == actualN.trend) && (
+                    ruleN.constraintsList.isEmpty() || ruleN.constraintsList.all { con ->
+                        EvaluateContextVar.evaluate(
+                            actualN.value.toString(),
+                            con.op,
+                            con.payload.value.orEmpty()
+                        )
+                    })
+        }
+
+        register(ProximitySensor::class.java) { actual, rule ->
+            val actualN = (actual as ProximitySensor)
+            val ruleN = (rule as ProximitySensor)
             (ruleN.trend == SensorValueTrend.SensorValueTrend_Any || ruleN.trend == actualN.trend) && (
                     ruleN.constraintsList.isEmpty() || ruleN.constraintsList.all { con ->
                         EvaluateContextVar.evaluate(

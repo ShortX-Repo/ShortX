@@ -18,7 +18,8 @@ import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 fun SensorFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: (Fact) -> Unit) {
     val i18N = LocalI18N.current
     val items = mutableListOf(
-        Fact.LightSensor::class
+        Fact.LightSensor::class,
+        Fact.ProximitySensor::class,
     ).map {
         SelectorItem(
             type = it,
