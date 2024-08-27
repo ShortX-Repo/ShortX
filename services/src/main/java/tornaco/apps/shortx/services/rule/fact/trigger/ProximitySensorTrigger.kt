@@ -89,7 +89,8 @@ class ProximitySensorTrigger(
                     fact = ProximitySensor.newBuilder().setValue(distance).build(),
                     initialContextDataLazy = {
                         mapOf(
-                            ContextDataMapping.ProximitySensor.distance.name to distance.toString()
+                            ContextDataMapping.ProximitySensor.distance.name to distance.toString(),
+                            ContextDataMapping.ProximitySensor.maximumRange.name to (proximitySensor?.maximumRange ?: 0).toString(),
                         )
                     }
                 )
