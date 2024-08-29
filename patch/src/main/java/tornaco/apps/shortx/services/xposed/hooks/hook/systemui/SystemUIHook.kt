@@ -149,6 +149,7 @@ object SystemUIHook {
         val notificationPoster by lazy {
             NotificationPoster(
                 context,
+                "SystemUI",
                 "ShortX silence",
                 "ShortX alert",
                 "ShortX",

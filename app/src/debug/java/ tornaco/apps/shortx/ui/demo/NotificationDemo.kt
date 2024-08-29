@@ -131,6 +131,7 @@ fun NotificationDemo() {
     FilledTonalButton(onClick = {
         NotificationPoster(
             context,
+            "Demo",
             "silence",
             "important",
             "Demo",

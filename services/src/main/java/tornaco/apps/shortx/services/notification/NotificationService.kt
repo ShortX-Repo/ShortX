@@ -60,6 +60,7 @@ class NotificationService(shortXContext: ShortXContext) :
     private val fallbackNotificationPoster by lazy {
         NotificationPoster(
             context,
+            "Fallback",
             "ShortX silence",
             "ShortX alert",
             "ShortX",

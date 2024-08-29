@@ -22,6 +22,7 @@ class AppNotificationService : Service() {
     val notificationPoster by lazy {
         NotificationPoster(
             applicationContext,
+            "AppNotificationService",
             "ShortX silence",
             "ShortX alert",
             "ShortX",
