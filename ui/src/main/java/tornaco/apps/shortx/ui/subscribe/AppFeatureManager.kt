@@ -110,6 +110,10 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Fact.UsbDeviceDetached::class,
     Fact.UsbDeviceAttached::class,
     Fact.CombineKeyEvent::class,
+    Fact.LightSensor::class,
+    Fact.ProximitySensor::class,
+    Fact.ProximitySensorStateChanged::class,
+    Fact.ShakeDevice::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 
     Condition.AppHasAudioFocus::class,
@@ -132,6 +136,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Condition.VPNIsConnected::class,
     Condition.RequireTileState::class,
     Condition.HasFoundPointsByColor::class,
+    Condition.TextFromScreenNodeMatches::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 
     Action.LaunchAppByPkg::class,

@@ -71,6 +71,7 @@ import tornaco.apps.shortx.core.proto.condition.RequireTileState
 import tornaco.apps.shortx.core.proto.condition.RequireWifiConnected
 import tornaco.apps.shortx.core.proto.condition.RequireWifiDisconnected
 import tornaco.apps.shortx.core.proto.condition.RequireWindowRotation
+import tornaco.apps.shortx.core.proto.condition.TextFromScreenNodeMatches
 import tornaco.apps.shortx.core.proto.condition.TheXXTimeToday
 import tornaco.apps.shortx.core.proto.condition.VPNIsConnected
 import tornaco.apps.shortx.core.proto.fact.ActivityDestroyed
@@ -87,10 +88,15 @@ import tornaco.apps.shortx.core.proto.fact.ConnectedWifiSignalLevelChanged
 import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen
 import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
+import tornaco.apps.shortx.core.proto.fact.LightSensor
 import tornaco.apps.shortx.core.proto.fact.MethodHook
 import tornaco.apps.shortx.core.proto.fact.NFCTagDiscover
 import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
 import tornaco.apps.shortx.core.proto.fact.PkgStartRunning
+import tornaco.apps.shortx.core.proto.fact.ProximitySensor
+import tornaco.apps.shortx.core.proto.fact.ProximitySensorState
+import tornaco.apps.shortx.core.proto.fact.ProximitySensorStateChanged
+import tornaco.apps.shortx.core.proto.fact.ShakeDevice
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
 import tornaco.apps.shortx.core.proto.fact.UsbDeviceAttached
 import tornaco.apps.shortx.core.proto.fact.UsbDeviceDetached
@@ -127,6 +133,10 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         UsbDeviceDetached::class,
         UsbDeviceAttached::class,
         CombineKeyEvent::class,
+        LightSensor::class,
+        ProximitySensor::class,
+        ProximitySensorStateChanged::class,
+        ShakeDevice::class,
 
         AppHasAudioFocus::class,
         RequireMobileDataEnabled::class,
@@ -148,6 +158,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         VPNIsConnected::class,
         RequireTileState::class,
         HasFoundPointsByColor::class,
+        TextFromScreenNodeMatches::class,
 
         LaunchAppByPkg::class,
         StopAppByPkg::class,
