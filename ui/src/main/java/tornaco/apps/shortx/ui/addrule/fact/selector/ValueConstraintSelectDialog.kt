@@ -126,7 +126,7 @@ fun ValueConstraintSelector(state: ValueConstraintSelectorState) {
                     Column {
                         SmallTitle(
                             modifier = Modifier.padding(vertical = 12.dp),
-                            text = LocalI18N.current["ui.fact.sensor.light.value"]
+                            text = LocalI18N.current["ui.fact.sensor.value"]
                         )
                         TinySpacer()
                         ShortXTextField(value = state._payload.value, onValueChange = {

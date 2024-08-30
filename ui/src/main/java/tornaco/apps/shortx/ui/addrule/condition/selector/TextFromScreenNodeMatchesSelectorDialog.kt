@@ -28,6 +28,7 @@ import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RegexTextInputDialog
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.TinySpacer
@@ -63,78 +64,80 @@ fun rememberTextFromScreenNodeMatchesState(
 @Composable
 fun TextFromScreenNodeMatchesSelector(dialogState: TextFromScreenNodeMatchesState) {
     if (dialogState.isShowing) {
-        ShortXTheme {
-            Surface {
-                Scaffold(modifier = Modifier,
-                    topBar = {
-                        ShortXTopAppBar(
-                            modifier = Modifier,
-                            title = { Text(text = LocalI18N.current["ui.condition.text.from.screen.node.matches"]) },
-                            navigationIcon = {
-                                IconButton(onClick = {
-                                    dialogState.dismiss()
-                                }) {
-                                    RemixIcon(remixName = Remix.System.close_line)
-                                }
-                            },
-                            actions = {
-                                IconButton(onClick = {
-                                    dialogState.dismiss()
-                                    dialogState.selected(
-                                        Condition.TextFromScreenNodeMatches(
-                                            nodeId = dialogState.nodeId,
-                                            regex = dialogState.regex,
-                                            regexMatchOptions = dialogState.options
+        ShortFullScreenXDialog(onDismissRequest = { dialogState.dismiss() }) {
+            ShortXTheme {
+                Surface {
+                    Scaffold(modifier = Modifier,
+                        topBar = {
+                            ShortXTopAppBar(
+                                modifier = Modifier,
+                                title = { Text(text = LocalI18N.current["ui.condition.text.from.screen.node.matches"]) },
+                                navigationIcon = {
+                                    IconButton(onClick = {
+                                        dialogState.dismiss()
+                                    }) {
+                                        RemixIcon(remixName = Remix.System.close_line)
+                                    }
+                                },
+                                actions = {
+                                    IconButton(onClick = {
+                                        dialogState.dismiss()
+                                        dialogState.selected(
+                                            Condition.TextFromScreenNodeMatches(
+                                                nodeId = dialogState.nodeId,
+                                                regex = dialogState.regex,
+                                                regexMatchOptions = dialogState.options
+                                            )
                                         )
-                                    )
-                                }) {
-                                    RemixIcon(remixName = Remix.System.check_line)
+                                    }) {
+                                        RemixIcon(remixName = Remix.System.check_line)
+                                    }
                                 }
-                            }
-                        )
-                    }) { paddingValues ->
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues)
-                            .padding(16.dp)
-                    ) {
-                        FieldTitle(text = LocalI18N.current["ui.fact.has.found.node.on.screen.view.id"])
-                        TinySpacer()
-                        ShortXTextField(
-                            value = dialogState.nodeId,
-                            onValueChange = { dialogState.nodeId = it }
-                        )
-                        LargeSpacer()
+                            )
+                        }) { paddingValues ->
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(paddingValues)
+                                .padding(16.dp)
+                        ) {
+                            FieldTitle(text = LocalI18N.current["ui.fact.has.found.node.on.screen.view.id"])
+                            TinySpacer()
+                            ShortXTextField(
+                                value = dialogState.nodeId,
+                                onValueChange = { dialogState.nodeId = it }
+                            )
+                            LargeSpacer()
 
 
-                        val textInputRegexState = rememberRegexTextInputState(
-                            title = LocalI18N.current["ui.fact.has.found.node.on.screen.view.text.regex"],
-                            message = null,
-                            inputValidator = {
-                                InputValidateResult.OK
-                            },
-                            onSelected = { text, options ->
-                                dialogState.regex = text
-                                dialogState.options = options
-                            }
-                        )
-                        RegexTextInputDialog(state = textInputRegexState)
-                        LargeSpacer()
+                            val textInputRegexState = rememberRegexTextInputState(
+                                title = LocalI18N.current["ui.fact.has.found.node.on.screen.view.text.regex"],
+                                message = null,
+                                inputValidator = {
+                                    InputValidateResult.OK
+                                },
+                                onSelected = { text, options ->
+                                    dialogState.regex = text
+                                    dialogState.options = options
+                                }
+                            )
+                            RegexTextInputDialog(state = textInputRegexState)
+                            LargeSpacer()
 
-                        ListItem(
-                            titleLines = listOf(
-                                LocalI18N.current["ui.fact.has.found.node.on.screen.view.text"],
-                                dialogState.regex,
-                                LocalI18N.current[dialogState.options.labelKey()]
-                            ),
-                            onClick = {
-                                textInputRegexState.show(
-                                    initialValue = dialogState.regex,
-                                    options = dialogState.options
-                                )
-                            }
-                        )
+                            ListItem(
+                                titleLines = listOf(
+                                    LocalI18N.current["ui.fact.has.found.node.on.screen.view.text"],
+                                    dialogState.regex,
+                                    LocalI18N.current[dialogState.options.labelKey()]
+                                ),
+                                onClick = {
+                                    textInputRegexState.show(
+                                        initialValue = dialogState.regex,
+                                        options = dialogState.options
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
             }
