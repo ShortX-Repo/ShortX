@@ -22,6 +22,7 @@ fun UIConditions(
     val i18N = LocalI18N.current
     val items = listOf(
         Condition.HasNodeOnScreen::class,
+        Condition.TextFromScreenNodeMatches::class,
     ).map {
         SelectorItem(
             type = it,

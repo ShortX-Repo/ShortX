@@ -245,6 +245,10 @@ enum class PrebuiltCond : CondProvider {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.HasFoundPointsByColor
     },
+    TextFromScreenNodeMatches {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.TextFromScreenNodeMatches
+    },
     PluginCond {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.PluginCond

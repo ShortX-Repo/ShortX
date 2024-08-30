@@ -28,6 +28,11 @@ fun uiConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelec
         })
     HasFoundNodeOnScreenDialog(state = hasNodeOnScreenState)
 
+    val textFromScreenNodeMatchesState = rememberTextFromScreenNodeMatchesState {
+        addCondition(it)
+    }
+    TextFromScreenNodeMatchesSelector(dialogState = textFromScreenNodeMatchesState)
+
     return { source ->
         when (source.clazz) {
             Condition.HasNodeOnScreen::class -> {
@@ -39,6 +44,11 @@ fun uiConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelec
                         matchers = it.matchers
                     )
                 })
+                true
+            }
+
+            Condition.TextFromScreenNodeMatches::class -> {
+                textFromScreenNodeMatchesState.show(source.getConditionAs())
                 true
             }
 
