@@ -4,12 +4,17 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import tornaco.apps.shortx.core.proto.fact.ProximitySensorState
+import tornaco.apps.shortx.ui.addrule.fact.mapper.displayNameKey
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.selector.LightSensorSelectorActivity
 import tornaco.apps.shortx.ui.addrule.fact.selector.ProximitySensorSelectorActivity
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MenuDialog
+import tornaco.apps.shortx.ui.base.MenuDialogItem
+import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 
 @Composable
 fun sensorFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolean {
@@ -32,6 +37,22 @@ fun sensorFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
         }
     )
 
+    val proximitySensorStateMenu = rememberMenuDialogState<String>(
+        title = i18N["ui.fact.proximity.sensor.state"],
+        menuItems = ProximitySensorState.entries.filterNot { it == ProximitySensorState.UNRECOGNIZED }
+            .map {
+                MenuDialogItem(
+                    id = it.name,
+                    title = i18N[it.displayNameKey()]
+                )
+            },
+        onItemSelected = { _, id ->
+            val state = ProximitySensorState.valueOf(id)
+            addFact(Fact.ProximitySensorStateChanged(state = state))
+        }
+    )
+    MenuDialog(state = proximitySensorStateMenu)
+
     return { source ->
         when (source.clazz) {
             Fact.LightSensor::class -> {
@@ -53,6 +74,11 @@ fun sensorFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
                         ProximitySensorSelectorActivity::class.java
                     )
                 )
+                true
+            }
+
+            Fact.ProximitySensorStateChanged::class -> {
+                proximitySensorStateMenu.show(currentSelection = listOfNotNull(source.getFactAs<Fact.ProximitySensorStateChanged>()?.state?.name))
                 true
             }
 

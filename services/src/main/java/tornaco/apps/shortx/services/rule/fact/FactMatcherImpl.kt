@@ -70,6 +70,8 @@ import tornaco.apps.shortx.core.proto.fact.OnStartOp
 import tornaco.apps.shortx.core.proto.fact.PkgStartRunning
 import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
 import tornaco.apps.shortx.core.proto.fact.ProximitySensor
+import tornaco.apps.shortx.core.proto.fact.ProximitySensorState
+import tornaco.apps.shortx.core.proto.fact.ProximitySensorStateChanged
 import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
@@ -663,6 +665,11 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
                             con.payload.value.orEmpty()
                         )
                     })
+        }
+        register(ProximitySensorStateChanged::class.java) { actual, rule ->
+            val actualN = (actual as ProximitySensorStateChanged)
+            val ruleN = (rule as ProximitySensorStateChanged)
+            ruleN.state == ProximitySensorState.ProximitySensorState_Any || actualN.state == ruleN.state
         }
 
         logger.i("Init complete.")

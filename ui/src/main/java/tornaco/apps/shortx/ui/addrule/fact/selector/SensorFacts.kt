@@ -20,6 +20,7 @@ fun SensorFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: 
     val items = mutableListOf(
         Fact.LightSensor::class,
         Fact.ProximitySensor::class,
+        Fact.ProximitySensorStateChanged::class,
     ).map {
         SelectorItem(
             type = it,

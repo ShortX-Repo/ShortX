@@ -7,6 +7,8 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.fact.ProximitySensor
+import tornaco.apps.shortx.core.proto.fact.ProximitySensorState
+import tornaco.apps.shortx.core.proto.fact.ProximitySensorStateChanged
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
@@ -81,6 +83,26 @@ class ProximitySensorTrigger(
         event?.let {
             val distance = it.values[0]
             logger.d("onSensorChanged: $distance, maximumRange: ${proximitySensor?.maximumRange}")
+
+            // 检查设备是否接近
+            val proximitySensorState = if (distance < (proximitySensor?.maximumRange ?: 0f)) {
+                // 设备接近
+                ProximitySensorState.ProximitySensorState_Approaching
+            } else {
+                // 设备远离
+                ProximitySensorState.ProximitySensorState_Departing
+            }
+
+            shortXContext.rule.publishFactChecked(
+                ProximitySensorStateChanged.getDefaultInstance()
+            ) {
+                FactPublishData(
+                    reason = "Proximity onSensorChanged",
+                    fact = ProximitySensorStateChanged.newBuilder().setState(proximitySensorState)
+                        .build()
+                )
+            }
+
             shortXContext.rule.publishFactChecked(
                 ProximitySensor.getDefaultInstance()
             ) {
@@ -90,7 +112,8 @@ class ProximitySensorTrigger(
                     initialContextDataLazy = {
                         mapOf(
                             ContextDataMapping.ProximitySensor.distance.name to distance.toString(),
-                            ContextDataMapping.ProximitySensor.maximumRange.name to (proximitySensor?.maximumRange ?: 0).toString(),
+                            ContextDataMapping.ProximitySensor.maximumRange.name to (proximitySensor?.maximumRange
+                                ?: 0).toString(),
                         )
                     }
                 )
