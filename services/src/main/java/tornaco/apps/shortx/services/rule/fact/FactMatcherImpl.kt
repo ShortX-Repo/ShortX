@@ -77,6 +77,7 @@ import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
 import tornaco.apps.shortx.core.proto.fact.ScreenRotate
 import tornaco.apps.shortx.core.proto.fact.SensorValueTrend
+import tornaco.apps.shortx.core.proto.fact.ShakeDevice
 import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.fact.SystemSettingsChanged
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
@@ -670,6 +671,9 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
             val actualN = (actual as ProximitySensorStateChanged)
             val ruleN = (rule as ProximitySensorStateChanged)
             ruleN.state == ProximitySensorState.ProximitySensorState_Any || actualN.state == ruleN.state
+        }
+        register(ShakeDevice::class.java) { actual, rule ->
+            true
         }
 
         logger.i("Init complete.")

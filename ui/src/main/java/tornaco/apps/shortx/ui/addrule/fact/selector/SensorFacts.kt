@@ -21,6 +21,7 @@ fun SensorFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: 
         Fact.LightSensor::class,
         Fact.ProximitySensor::class,
         Fact.ProximitySensorStateChanged::class,
+        Fact.ShakeDevice::class,
     ).map {
         SelectorItem(
             type = it,

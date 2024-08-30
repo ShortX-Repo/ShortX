@@ -82,6 +82,11 @@ fun sensorFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
                 true
             }
 
+            Fact.ShakeDevice::class -> {
+                addFact(Fact.ShakeDevice())
+                true
+            }
+
             else -> false
         }
     }

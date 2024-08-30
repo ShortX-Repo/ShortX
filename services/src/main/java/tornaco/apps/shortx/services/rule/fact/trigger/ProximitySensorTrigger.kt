@@ -47,7 +47,7 @@ class ProximitySensorTrigger(
     override fun unRegister() {
         logger.d("Unregister light sensor")
         context.sensorManager.unregisterListener(this)
-        shortXContext.watchDog.removeSensorUsage(Sensor.TYPE_LIGHT)
+        shortXContext.watchDog.removeSensorUsage(Sensor.TYPE_PROXIMITY)
     }
 
     private fun enableOrDisableSensor() {
@@ -55,6 +55,11 @@ class ProximitySensorTrigger(
         shortXContext.rule.forEachEnabledFacts { src, factProtoAny ->
             if (factProtoAny is_ ProximitySensor::class.java) {
                 val fact = factProtoAny unpack_ ProximitySensor::class.java
+                if (!fact.isDisabled) {
+                    sensorSrc.add(src)
+                }
+            } else if (factProtoAny is_ ProximitySensorStateChanged::class.java) {
+                val fact = factProtoAny unpack_ ProximitySensorStateChanged::class.java
                 if (!fact.isDisabled) {
                     sensorSrc.add(src)
                 }
