@@ -38,7 +38,7 @@ fun sensorFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     )
 
     val proximitySensorStateMenu = rememberMenuDialogState<String>(
-        title = i18N["ui.fact.proximity.sensor.state"],
+        title = i18N["ui.fact.sensor.proximity.state"],
         menuItems = ProximitySensorState.entries.filterNot { it == ProximitySensorState.UNRECOGNIZED }
             .map {
                 MenuDialogItem(
