@@ -7,6 +7,7 @@ import androidx.compose.ui.platform.LocalContext
 import tornaco.apps.shortx.core.proto.fact.ProximitySensorState
 import tornaco.apps.shortx.ui.addrule.fact.mapper.displayNameKey
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
+import tornaco.apps.shortx.ui.addrule.fact.selector.AccelerometerSensorSelectorActivity
 import tornaco.apps.shortx.ui.addrule.fact.selector.LightSensorSelectorActivity
 import tornaco.apps.shortx.ui.addrule.fact.selector.ProximitySensorSelectorActivity
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
@@ -33,6 +34,14 @@ fun sensorFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
             val fact = result.popupSelectorResult<Fact.ProximitySensor>()
+            fact?.let { addFact(it) }
+        }
+    )
+
+    val accSensorSensorLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val fact = result.popupSelectorResult<Fact.AccelerometerSensor>()
             fact?.let { addFact(it) }
         }
     )
@@ -72,6 +81,17 @@ fun sensorFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
                         context,
                         source.getFactAs<Fact.ProximitySensor>(),
                         ProximitySensorSelectorActivity::class.java
+                    )
+                )
+                true
+            }
+
+            Fact.AccelerometerSensor::class -> {
+                accSensorSensorLauncher.launch(
+                    BaseSelectorActivity.newIntent(
+                        context,
+                        source.getFactAs<Fact.AccelerometerSensor>(),
+                        AccelerometerSensorSelectorActivity::class.java
                     )
                 )
                 true

@@ -48,11 +48,11 @@ class ProximitySensorSelectorActivity : BaseSelectorActivity<Fact.ProximitySenso
 
     @Composable
     override fun BaseSelectorActivity<Fact.ProximitySensor>.SelectorContent(currentData: Fact.ProximitySensor?) {
-        CombineKeyEventSelector(currentData)
+        Selector(currentData)
     }
 
     @Composable
-    private fun CombineKeyEventSelector(current: Fact.ProximitySensor?) {
+    private fun Selector(current: Fact.ProximitySensor?) {
         val vm = hiltViewModel<ProximitySensorSelectorViewModel>()
         LaunchedEffect(vm) {
             vm.initFrom(current)

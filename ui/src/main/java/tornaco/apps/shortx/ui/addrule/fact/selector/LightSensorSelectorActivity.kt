@@ -48,11 +48,11 @@ class LightSensorSelectorActivity : BaseSelectorActivity<Fact.LightSensor>() {
 
     @Composable
     override fun BaseSelectorActivity<Fact.LightSensor>.SelectorContent(currentData: Fact.LightSensor?) {
-        CombineKeyEventSelector(currentData)
+        Selector(currentData)
     }
 
     @Composable
-    private fun CombineKeyEventSelector(current: Fact.LightSensor?) {
+    private fun Selector(current: Fact.LightSensor?) {
         val vm = hiltViewModel<LightSensorSelectorViewModel>()
         LaunchedEffect(vm) {
             vm.initFrom(current)

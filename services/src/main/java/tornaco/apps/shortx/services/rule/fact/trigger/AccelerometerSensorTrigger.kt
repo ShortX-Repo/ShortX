@@ -5,6 +5,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import tornaco.apps.shortx.core.proto.fact.AccelerometerSensor
 import tornaco.apps.shortx.core.proto.fact.ShakeDevice
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
@@ -59,6 +60,11 @@ class AccelerometerSensorTrigger(
                 if (!fact.isDisabled) {
                     sensorSrc.add(src)
                 }
+            } else if (factProtoAny is_ AccelerometerSensor::class.java) {
+                val fact = factProtoAny unpack_ AccelerometerSensor::class.java
+                if (!fact.isDisabled) {
+                    sensorSrc.add(src)
+                }
             }
         }
         logger.d("sensorSrc: $sensorSrc")
@@ -86,6 +92,19 @@ class AccelerometerSensorTrigger(
         val x = event.values[0]
         val y = event.values[1]
         val z = event.values[2]
+
+        shortXContext.rule.publishFactChecked(
+            AccelerometerSensor.getDefaultInstance()
+        ) {
+            FactPublishData(
+                reason = "Acc onSensorChanged",
+                fact = AccelerometerSensor.newBuilder()
+                    .setValueX(x)
+                    .setValueY(y)
+                    .setValueZ(z)
+                    .build()
+            )
+        }
 
         // 计算当前加速度的模长
         val acceleration = sqrt((x * x + y * y + z * z).toDouble()).toFloat()

@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.RegexMatchOptions
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.fact.APMStatusChanged
+import tornaco.apps.shortx.core.proto.fact.AccelerometerSensor
 import tornaco.apps.shortx.core.proto.fact.ActivityDestroyed
 import tornaco.apps.shortx.core.proto.fact.ActivityStarted
 import tornaco.apps.shortx.core.proto.fact.ActivityStopped
@@ -87,6 +88,7 @@ import tornaco.apps.shortx.core.proto.fact.UserPresent
 import tornaco.apps.shortx.core.proto.fact.UserPresentAtTheFirstTime
 import tornaco.apps.shortx.core.proto.fact.VPNConnected
 import tornaco.apps.shortx.core.proto.fact.VPNDisconnected
+import tornaco.apps.shortx.core.proto.fact.ValueConstraints
 import tornaco.apps.shortx.core.proto.fact.WifiConnectedTo
 import tornaco.apps.shortx.core.proto.fact.WifiDisconnectedFrom
 import tornaco.apps.shortx.core.proto.fact.WifiStatusChanged
@@ -645,27 +647,43 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
         register(LightSensor::class.java) { actual, rule ->
             val actualN = (actual as LightSensor)
             val ruleN = (rule as LightSensor)
-            (ruleN.trend == SensorValueTrend.SensorValueTrend_Any || ruleN.trend == actualN.trend) && (
-                    ruleN.constraintsList.isEmpty() || ruleN.constraintsList.all { con ->
-                        EvaluateContextVar.evaluate(
-                            actualN.value.toString(),
-                            con.op,
-                            con.payload.value.orEmpty()
-                        )
-                    })
+            matchSensorTrendAndValue(
+                ruleTrend = ruleN.trend,
+                actualTrend = actualN.trend,
+                constraints = ruleN.constraintsList,
+                actualValue = actualN.value
+            )
         }
 
         register(ProximitySensor::class.java) { actual, rule ->
             val actualN = (actual as ProximitySensor)
             val ruleN = (rule as ProximitySensor)
-            (ruleN.trend == SensorValueTrend.SensorValueTrend_Any || ruleN.trend == actualN.trend) && (
-                    ruleN.constraintsList.isEmpty() || ruleN.constraintsList.all { con ->
-                        EvaluateContextVar.evaluate(
-                            actualN.value.toString(),
-                            con.op,
-                            con.payload.value.orEmpty()
-                        )
-                    })
+            matchSensorTrendAndValue(
+                ruleTrend = ruleN.trend,
+                actualTrend = actualN.trend,
+                constraints = ruleN.constraintsList,
+                actualValue = actualN.value
+            )
+        }
+        register(AccelerometerSensor::class.java) { actual, rule ->
+            val actualN = (actual as AccelerometerSensor)
+            val ruleN = (rule as AccelerometerSensor)
+            matchSensorTrendAndValue(
+                ruleTrend = ruleN.trendX,
+                actualTrend = actualN.trendX,
+                constraints = ruleN.constraintsXList,
+                actualValue = actualN.valueX
+            ) && matchSensorTrendAndValue(
+                ruleTrend = ruleN.trendY,
+                actualTrend = actualN.trendY,
+                constraints = ruleN.constraintsYList,
+                actualValue = actualN.valueY
+            ) && matchSensorTrendAndValue(
+                ruleTrend = ruleN.trendZ,
+                actualTrend = actualN.trendZ,
+                constraints = ruleN.constraintsZList,
+                actualValue = actualN.valueZ
+            )
         }
         register(ProximitySensorStateChanged::class.java) { actual, rule ->
             val actualN = (actual as ProximitySensorStateChanged)
@@ -857,6 +875,25 @@ fun emptyOrRegexMatchAndResults(
     }.apply {
         logger.d("emptyOrRegexMatch, regex: $ruleField, options: $options, result: $this")
     }
+}
+
+private fun matchSensorTrendAndValue(
+    ruleTrend: SensorValueTrend,
+    actualTrend: SensorValueTrend,
+    constraints: List<ValueConstraints>,
+    actualValue: Float
+): Boolean {
+    return (ruleTrend == SensorValueTrend.SensorValueTrend_Any
+            || ruleTrend == SensorValueTrend.UNRECOGNIZED
+            || ruleTrend == actualTrend
+            ) && (
+            constraints.isEmpty() || constraints.all { con ->
+                EvaluateContextVar.evaluate(
+                    actualValue.toString(),
+                    con.op,
+                    con.payload.value.orEmpty()
+                )
+            })
 }
 
 interface WithAppOrPkgSetListFact {
