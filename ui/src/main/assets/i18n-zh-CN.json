@@ -221,6 +221,7 @@
     "ui.fact.sensor.proximity.state.departing": "远离",
     "ui.fact.sensor.proximity.state.any": "任意",
     "ui.fact.sensor.shake.device": "摇晃",
+    "ui.fact.sensor.accelerometer": "加速度",
     "ui.fact.back.nav.start": "返回导航开始",
     "ui.fact.back.nav.done": "返回导航结束",
     "ui.fact.process.started": "进程启动",

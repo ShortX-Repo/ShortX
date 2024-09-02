@@ -221,6 +221,7 @@
     "ui.fact.sensor.proximity.state.departing": "Departing",
     "ui.fact.sensor.proximity.state.any": "Any",
     "ui.fact.sensor.shake.device": "Shake device",
+    "ui.fact.sensor.accelerometer": "Accelerometer",
     "ui.fact.back.nav.start": "Back nav start",
     "ui.fact.back.nav.done": "Back nav done",
     "ui.fact.process.started": "Process started",
