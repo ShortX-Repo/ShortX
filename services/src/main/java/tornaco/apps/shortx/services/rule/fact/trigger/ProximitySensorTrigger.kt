@@ -44,12 +44,15 @@ class ProximitySensorTrigger(
         enableOrDisableSensor()
     }
 
+    @Synchronized
     override fun unRegister() {
         logger.d("Unregister light sensor")
         context.sensorManager.unregisterListener(this)
         shortXContext.watchDog.removeSensorUsage(Sensor.TYPE_PROXIMITY)
+        proximitySensor = null
     }
 
+    @Synchronized
     private fun enableOrDisableSensor() {
         val sensorSrc = mutableListOf<String>()
         shortXContext.rule.forEachEnabledFacts { src, factProtoAny ->
@@ -68,6 +71,10 @@ class ProximitySensorTrigger(
         logger.d("sensorSrc: $sensorSrc")
 
         if (sensorSrc.isNotEmpty()) {
+            if (this.proximitySensor != null) {
+                logger.w("Already registered. won't register again.")
+                return
+            }
             logger.d("Register Proximity sensor")
             val prox = context.sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY)
             prox?.also { sensor ->

@@ -20,6 +20,7 @@ class LightSensorTrigger(
 ) :
     Trigger, SensorEventListener {
     private val logger = Logger("LightSensorTrigger")
+    private var lightSensor: Sensor? = null
 
     override fun onAnyChanged() {
         super.onAnyChanged()
@@ -40,12 +41,15 @@ class LightSensorTrigger(
         enableOrDisableSensor()
     }
 
+    @Synchronized
     override fun unRegister() {
         logger.d("Unregister light sensor")
         context.sensorManager.unregisterListener(this)
         shortXContext.watchDog.removeSensorUsage(Sensor.TYPE_LIGHT)
+        lightSensor = null
     }
 
+    @Synchronized
     private fun enableOrDisableSensor() {
         val sensorSrc = mutableListOf<String>()
         shortXContext.rule.forEachEnabledFacts { src, factProtoAny ->
@@ -59,6 +63,10 @@ class LightSensorTrigger(
         logger.d("sensorSrc: $sensorSrc")
 
         if (sensorSrc.isNotEmpty()) {
+            if (this.lightSensor != null) {
+                logger.w("Already registered. won't register again.")
+                return
+            }
             logger.d("Register light sensor")
             val lightSensor = context.sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
             lightSensor?.also { sensor ->
@@ -69,6 +77,7 @@ class LightSensorTrigger(
                 )
                 shortXContext.watchDog.onSensorUsage(Sensor.TYPE_LIGHT, sensorSrc)
             }
+            this.lightSensor = lightSensor
         } else {
             unRegister()
         }

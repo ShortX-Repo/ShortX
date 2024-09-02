@@ -47,12 +47,15 @@ class AccelerometerSensorTrigger(
         enableOrDisableSensor()
     }
 
+    @Synchronized
     override fun unRegister() {
         logger.d("Unregister accelerometer sensor")
         context.sensorManager.unregisterListener(this)
+        accelerometerSensor = null
         shortXContext.watchDog.removeSensorUsage(Sensor.TYPE_ACCELEROMETER)
     }
 
+    @Synchronized
     private fun enableOrDisableSensor() {
         val sensorSrc = mutableListOf<String>()
         shortXContext.rule.forEachEnabledFacts { src, factProtoAny ->
@@ -71,6 +74,11 @@ class AccelerometerSensorTrigger(
         logger.d("sensorSrc: $sensorSrc")
 
         if (sensorSrc.isNotEmpty()) {
+            if (this.accelerometerSensor != null) {
+                logger.w("Already registered. won't register again.")
+                return
+            }
+
             logger.d("Register Accelerometer sensor")
             val acc = context.sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
             acc?.also { sensor ->
