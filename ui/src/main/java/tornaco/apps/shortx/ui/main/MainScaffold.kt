@@ -29,6 +29,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -91,6 +92,7 @@ import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.SubscribeActivity
+import tornaco.apps.shortx.ui.theme.WarningYellow
 import tornaco.apps.shortx.ui.util.AssetUtils
 
 @Composable
@@ -251,7 +253,7 @@ fun MainScaffold(
                                     }
                                 },
                                 navigationIcon = {
-                                    SettingsAppBarActions()
+                                    SettingsAppBarActions(state.hasSensorUsage)
                                 },
                                 actions = {
                                     appBarActions()
@@ -442,13 +444,16 @@ fun MainScaffold(
 }
 
 @Composable
-private fun SettingsAppBarActions() {
+private fun SettingsAppBarActions(hasSensorUsage: Boolean) {
     val localDrawerState = LocalDrawerState.current
     val scope = rememberCoroutineScope()
     IconButton(onClick = {
         scope.launch { localDrawerState.open() }
     }) {
-        Icon(imageVector = Icons.Outlined.Menu)
+        Icon(
+            imageVector = Icons.Outlined.Menu,
+            tint = if (hasSensorUsage) WarningYellow else LocalContentColor.current
+        )
     }
 }
 

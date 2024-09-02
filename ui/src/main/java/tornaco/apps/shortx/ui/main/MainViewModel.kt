@@ -5,10 +5,13 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IAudioRecordingListener
+import tornaco.apps.shortx.core.ISensorUsageListener
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.config.config
 import tornaco.apps.shortx.ui.main.model.MainState
@@ -33,6 +36,21 @@ open class MainViewModel @Inject constructor(@ApplicationContext context: Contex
         }
     }
 
+    private val sensorListener = object : ISensorUsageListener.Stub() {
+        override fun onUpdate() {
+            viewModelScope.launch {
+                withContext(Dispatchers.IO) {
+                    val usage = shortXManager.querySensorUsage()
+                    updateState {
+                        copy(
+                            hasSensorUsage = usage.isNotEmpty()
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     init {
         viewModelScope.launch {
             updateState {
@@ -40,12 +58,14 @@ open class MainViewModel @Inject constructor(@ApplicationContext context: Contex
                     isActivated = shortXManager.isInstalled,
                     isFrameworkUpdated = shortXManager.isFrameworkUpdated(BuildPropInternal.BUILD_FINGERPRINT),
                     isAudioRecording = shortXManager.isAudioRecording(),
+                    hasSensorUsage = shortXManager.querySensorUsage().isNotEmpty(),
                     globalNotice = config.globalNoticeId to config.globalNoticeMessage
                 )
             }
         }
 
         shortXManager.registerAudioRecordingObs(audioRecordingObs)
+        shortXManager.registerSensorUsageListener(sensorListener)
 
         viewModelScope.launch {
             pref.privacyStatementAcceptedFlow.collectLatest {
@@ -71,6 +91,7 @@ open class MainViewModel @Inject constructor(@ApplicationContext context: Contex
     override fun onCleared() {
         super.onCleared()
         shortXManager.unregisterAudioRecordingObs(audioRecordingObs)
+        shortXManager.unregisterSensorUsageListener(sensorListener)
     }
 
 
