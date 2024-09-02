@@ -23,6 +23,7 @@ fun RuleDetailsBottomSheet(dialogState: ShortXBottomSheetState) {
         )
         val daHandler = getLocalRuleItemHandler(vm = vm)
         val state by vm.state.collectAsState()
+        val activeJobIds by vm.activeJobIds.collectAsState()
 
         LaunchedEffect(vm) {
             vm.loadRuleList()
@@ -34,7 +35,7 @@ fun RuleDetailsBottomSheet(dialogState: ShortXBottomSheetState) {
                 rules = state.rules,
                 colorfulCard = state.colorfulCard,
                 showDescription = true,
-                activeJobs = state.activeJobIds
+                activeJobs = activeJobIds
             )
         }
     }

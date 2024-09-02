@@ -199,13 +199,15 @@ fun DirectActionListScreen() {
             LocalDAItemHandler provides daHandler,
             LocalDASetItemHandler provides setHandler
         ) {
+            val activeJobIds by daListViewModel.activeJobIds.collectAsState()
+
             DirectActionListContent(
                 lazyStaggeredGridState = lazyStaggeredGridState,
                 isLoading = daListState.isLoading,
                 isShowDetailedDAItem = daListState.isShowDetailedDAItem,
                 colorfulCard = daListState.colorfulCard,
                 das = daListState.das,
-                activeJobs = daListState.activeJobIds,
+                activeJobs = activeJobIds,
                 showOverflowMenu = true
             )
         }

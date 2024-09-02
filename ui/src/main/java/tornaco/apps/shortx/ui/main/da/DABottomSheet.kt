@@ -29,13 +29,14 @@ fun DADetailsBottomSheet(dialogState: ShortXBottomSheetState) {
         }
         CompositionLocalProvider(LocalDAItemHandler provides daHandler,
             LocalDASetItemHandler provides object : DASetItemHandler {}) {
+            val activeJobIds by vm.activeJobIds.collectAsState()
             DirectActionListContent(
                 isLoading = state.isLoading,
                 isShowDetailedDAItem = true,
                 das = state.das,
                 showOverflowMenu = true,
                 colorfulCard = state.colorfulCard,
-                activeJobs = state.activeJobIds
+                activeJobs = activeJobIds
             )
         }
     }

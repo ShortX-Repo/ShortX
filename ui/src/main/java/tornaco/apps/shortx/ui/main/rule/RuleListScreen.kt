@@ -157,12 +157,13 @@ fun RuleScreen() {
             LocalRuleItemHandler provides ruleHandler,
             LocalRuleSetItemHandler provides setHandler,
         ) {
+            val activeJobIds by ruleListViewModel.activeJobIds.collectAsState()
             RuleContent(
                 isLoading = ruleListState.isLoading,
                 colorfulCard = ruleListState.colorfulCard,
                 rules = ruleListState.rules,
                 showDescription = ruleListState.showDescription,
-                activeJobs = ruleListState.activeJobIds
+                activeJobs = activeJobIds
             )
         }
     }

@@ -6,14 +6,18 @@ import android.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.viewModelScope
 import com.github.promeg.pinyinhelper.Pinyin
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.proto.common.StringPair
@@ -56,7 +60,7 @@ data class DAListState(
     val colorfulCard: Boolean = false,
     val isLoading: Boolean = true,
     val searchQuery: String = "",
-    val activeJobIds: ActiveJobIds = ActiveJobIds(),
+    val loadActiveJobRequest: Long = System.currentTimeMillis()
 )
 
 data class ActiveJobIds(
@@ -71,6 +75,17 @@ abstract class BaseDAListViewModel(context: Context) :
 
     private val _shortcutApkInstalled = MutableSharedFlow<ApkInstallState>()
     val shortcutApkInstalled = _shortcutApkInstalled.asSharedFlow()
+
+    @OptIn(FlowPreview::class)
+    val activeJobIds: StateFlow<ActiveJobIds> by lazy {
+        state.map {
+            it.loadActiveJobRequest
+        }.debounce(300).map {
+            ActiveJobIds(shortXManager.getActiveJobs().apply {
+                logger.d("activeJobs: $this")
+            })
+        }.stateIn(viewModelScope, SharingStarted.Lazily, initialValue = ActiveJobIds())
+    }
 
     private val jobStatusListener = object : IJobStatusListener.Stub() {
         override fun onJobStarted(id: String?) {
@@ -156,21 +171,7 @@ abstract class BaseDAListViewModel(context: Context) :
     abstract fun loadDAList(delay: Boolean = false)
 
     fun loadActiveJobs() {
-        viewModelScope.launch {
-            logger.d("loadActiveJobs")
-            withContext(Dispatchers.IO) {
-                val activeJobs = shortXManager.getActiveJobs().apply {
-                    logger.d("RUNNING-INS activeJobs: size: ${this.size} $this")
-                }
-                updateState {
-                    copy(
-                        activeJobIds = ActiveJobIds(
-                            activeJobs
-                        )
-                    )
-                }
-            }
-        }
+        updateState { copy(loadActiveJobRequest = System.currentTimeMillis()) }
     }
 
     private fun delayLoadDAList(delay: Long = 200L) {

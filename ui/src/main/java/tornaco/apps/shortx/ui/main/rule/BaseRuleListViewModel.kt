@@ -5,9 +5,15 @@ import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildPropInternal
@@ -58,13 +64,24 @@ data class RuleListState(
     val showDescription: Boolean = true,
     val onlyShowEnabled: Boolean = true,
     val searchQuery: String = "",
-    val activeJobIds: List<String> = emptyList(),
+    val loadActiveJobRequest: Long = System.currentTimeMillis()
 )
 
 @SuppressLint("StaticFieldLeak")
 abstract class BaseRuleListViewModel(context: Context) :
     ShortXContextViewModel<RuleListState>(context, { RuleListState() }) {
     val pref by lazy { Pref(context) }
+
+    @OptIn(FlowPreview::class)
+    val activeJobIds: StateFlow<List<String>> by lazy {
+        state.map {
+            it.loadActiveJobRequest
+        }.debounce(300).map {
+            shortXManager.getActiveJobs().apply {
+                logger.d("activeJobs: $this")
+            }
+        }.stateIn(viewModelScope, SharingStarted.Lazily, initialValue = emptyList())
+    }
 
     private var loadRuleJob: Job? = null
 
@@ -151,17 +168,7 @@ abstract class BaseRuleListViewModel(context: Context) :
     abstract fun loadRuleList(delay: Boolean = false)
 
     fun loadActiveJobs() {
-        viewModelScope.launch {
-            logger.d("loadActiveJobs")
-            withContext(Dispatchers.IO) {
-                val activeJobs = shortXManager.getActiveJobs().apply {
-                    logger.d("activeJobs: $this")
-                }
-                updateState {
-                    copy(activeJobIds = activeJobs)
-                }
-            }
-        }
+        updateState { copy(loadActiveJobRequest = System.currentTimeMillis()) }
     }
 
     fun setRuleSortBy(ruleSortBy: RuleSortBy) {
