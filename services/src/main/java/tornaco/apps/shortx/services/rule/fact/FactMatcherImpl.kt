@@ -79,6 +79,7 @@ import tornaco.apps.shortx.core.proto.fact.ScreenOn
 import tornaco.apps.shortx.core.proto.fact.ScreenRotate
 import tornaco.apps.shortx.core.proto.fact.SensorValueTrend
 import tornaco.apps.shortx.core.proto.fact.ShakeDevice
+import tornaco.apps.shortx.core.proto.fact.Sound
 import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.fact.SystemSettingsChanged
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
@@ -647,6 +648,17 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
         register(LightSensor::class.java) { actual, rule ->
             val actualN = (actual as LightSensor)
             val ruleN = (rule as LightSensor)
+            matchSensorTrendAndValue(
+                ruleTrend = ruleN.trend,
+                actualTrend = actualN.trend,
+                constraints = ruleN.constraintsList,
+                actualValue = actualN.value
+            )
+        }
+
+        register(Sound::class.java) { actual, rule ->
+            val actualN = (actual as Sound)
+            val ruleN = (rule as Sound)
             matchSensorTrendAndValue(
                 ruleTrend = ruleN.trend,
                 actualTrend = actualN.trend,

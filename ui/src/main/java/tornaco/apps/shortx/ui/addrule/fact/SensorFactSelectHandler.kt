@@ -10,6 +10,7 @@ import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.selector.AccelerometerSensorSelectorActivity
 import tornaco.apps.shortx.ui.addrule.fact.selector.LightSensorSelectorActivity
 import tornaco.apps.shortx.ui.addrule.fact.selector.ProximitySensorSelectorActivity
+import tornaco.apps.shortx.ui.addrule.fact.selector.SoundSelectorActivity
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -26,6 +27,14 @@ fun sensorFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
             val fact = result.popupSelectorResult<Fact.LightSensor>()
+            fact?.let { addFact(it) }
+        }
+    )
+
+    val soundLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val fact = result.popupSelectorResult<Fact.Sound>()
             fact?.let { addFact(it) }
         }
     )
@@ -70,6 +79,17 @@ fun sensorFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
                         context,
                         source.getFactAs<Fact.LightSensor>(),
                         LightSensorSelectorActivity::class.java
+                    )
+                )
+                true
+            }
+
+            Fact.Sound::class -> {
+                soundLauncher.launch(
+                    BaseSelectorActivity.newIntent(
+                        context,
+                        source.getFactAs<Fact.Sound>(),
+                        SoundSelectorActivity::class.java
                     )
                 )
                 true

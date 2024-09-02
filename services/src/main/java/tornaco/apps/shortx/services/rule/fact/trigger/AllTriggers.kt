@@ -38,6 +38,7 @@ internal fun allTriggers(context: Context, shortXContext: ShortXContext) = mutab
     LogcatTrigger(context, shortXContext),
     UsbDeviceStateTrigger(context, shortXContext),
     LightSensorTrigger(context, shortXContext),
+    SoundTrigger(context, shortXContext),
     ProximitySensorTrigger(context, shortXContext),
     AccelerometerSensorTrigger(context, shortXContext),
 )

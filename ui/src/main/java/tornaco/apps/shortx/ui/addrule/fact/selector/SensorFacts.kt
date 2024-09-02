@@ -23,6 +23,7 @@ fun SensorFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: 
         Fact.ProximitySensorStateChanged::class,
         Fact.AccelerometerSensor::class,
         Fact.ShakeDevice::class,
+        Fact.Sound::class,
     ).map {
         SelectorItem(
             type = it,
