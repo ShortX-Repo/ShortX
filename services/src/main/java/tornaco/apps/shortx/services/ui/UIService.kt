@@ -43,7 +43,7 @@ class UIService(shortXContext: ShortXContext) : SystemService(shortXContext, "UI
         )
     }
 
-    fun showDanmu(id: String = "ShortX-Internal", icon: String?, text: String) {
+    fun showDanmu(icon: String?, text: String, id: String = "ShortX-Internal") {
         if (isSystemReady) {
             uiHandler.postSafety {
                 if (OsUtils.isROrAbove() && false) {

@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 
 sealed interface LoadState<out T> {
     data class Success<T>(val data: T) : LoadState<T>
-    object Loading : LoadState<Nothing>
+    data object Loading : LoadState<Nothing>
     data class Error(val err: Throwable? = null) : LoadState<Nothing>
 
     fun isLoading() = this is Loading

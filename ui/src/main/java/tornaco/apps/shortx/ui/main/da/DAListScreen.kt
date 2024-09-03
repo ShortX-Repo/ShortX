@@ -25,12 +25,8 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -38,7 +34,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -52,6 +47,10 @@ import tornaco.apps.shortx.ui.addda.AddDirectActionActivity
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.EmptyList
+import tornaco.apps.shortx.ui.base.LoadError
+import tornaco.apps.shortx.ui.base.LoadState
+import tornaco.apps.shortx.ui.base.LoadState.Loading.data
+import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.ProgressDialog
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -92,10 +91,6 @@ fun DirectActionListScreen() {
     val progressDialogState =
         rememberProgressDialogState(title = i18n["ui.common.install"], message = "...")
     ProgressDialog(state = progressDialogState)
-
-    LaunchedEffect(daListViewModel) {
-        daListViewModel.loadDAList(delay = false)
-    }
 
     LaunchedEffect(daListViewModel) {
         daListViewModel.shortcutApkInstalled.collectLatest {
@@ -179,8 +174,13 @@ fun DirectActionListScreen() {
             mainViewModel.acceptPrivacyStatement()
         },
         appBarContent = {
+            val daList by daListViewModel.daList.collectAsState()
             DASetFilterFlowRow(
-                daSetFilters = daListState.daSetFilters,
+                daSetFilters = if (daList.isSuccess()) {
+                    daList.data?.daSetFilters ?: emptyList()
+                } else {
+                    emptyList()
+                },
                 selectedDASetFilter = daListState.selectedDASetFilter,
                 selectDASetFilter = { daListViewModel.selectDASetFilter(it) },
             )
@@ -200,16 +200,28 @@ fun DirectActionListScreen() {
             LocalDASetItemHandler provides setHandler
         ) {
             val activeJobIds by daListViewModel.activeJobIds.collectAsState()
+            val daList by daListViewModel.daList.collectAsState()
+            when (daList) {
+                is LoadState.Error -> {
+                    LoadError(modifier = Modifier.fillMaxSize()) {
+                    }
+                }
 
-            DirectActionListContent(
-                lazyStaggeredGridState = lazyStaggeredGridState,
-                isLoading = daListState.isLoading,
-                isShowDetailedDAItem = daListState.isShowDetailedDAItem,
-                colorfulCard = daListState.colorfulCard,
-                das = daListState.das,
-                activeJobs = activeJobIds,
-                showOverflowMenu = true
-            )
+                LoadState.Loading -> {
+                    Loading(modifier = Modifier.fillMaxSize())
+                }
+
+                is LoadState.Success -> {
+                    DirectActionListContent(
+                        lazyStaggeredGridState = lazyStaggeredGridState,
+                        isShowDetailedDAItem = daListState.isShowDetailedDAItem,
+                        colorfulCard = daListState.colorfulCard,
+                        das = (daList as LoadState.Success<DAList>).data.das,
+                        activeJobs = activeJobIds,
+                        showOverflowMenu = true
+                    )
+                }
+            }
         }
     }
 }
@@ -243,59 +255,41 @@ fun DASetFilterFlowRow(
 @Composable
 fun DirectActionListContent(
     lazyStaggeredGridState: LazyStaggeredGridState = rememberLazyStaggeredGridState(),
-    isLoading: Boolean,
     isShowDetailedDAItem: Boolean,
     colorfulCard: Boolean,
     das: List<DirectActionUM>,
     activeJobs: ActiveJobIds,
     showOverflowMenu: Boolean = false,
 ) {
-    val refreshState = rememberPullRefreshState(isLoading, onRefresh = {
-    })
-    Box(
-        Modifier
-            .fillMaxSize()
-            .pullRefresh(refreshState)
-    ) {
-        Column {
-            if (!isLoading && das.isEmpty()) {
-                EmptyList(modifier = Modifier.fillMaxSize())
+
+    Column {
+        if (das.isEmpty()) {
+            EmptyList(modifier = Modifier.fillMaxSize())
+        } else {
+            UserTip(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                tipId = TipIds.commonRuleItem,
+                message = LocalI18N.current["ui.common.rule.item.tip"]
+            )
+            val subscribeState by LVLStateHolder.collectAsState()
+            if (isShowDetailedDAItem) {
+                DAListContent(
+                    lazyStaggeredGridState = lazyStaggeredGridState,
+                    das = das,
+                    activeJobs = activeJobs,
+                    isSubscribed = subscribeState.isSubscribed,
+                    colorfulCard = colorfulCard,
+                    showOverflowMenu = showOverflowMenu,
+                )
             } else {
-                if (!isLoading) {
-                    UserTip(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        tipId = TipIds.commonRuleItem,
-                        message = LocalI18N.current["ui.common.rule.item.tip"]
-                    )
-                }
-
-                val subscribeState by LVLStateHolder.collectAsState()
-                if (isShowDetailedDAItem) {
-                    DAListContent(
-                        lazyStaggeredGridState = lazyStaggeredGridState,
-                        das = das,
-                        activeJobs = activeJobs,
-                        isSubscribed = subscribeState.isSubscribed,
-                        colorfulCard = colorfulCard,
-                        showOverflowMenu = showOverflowMenu,
-                    )
-                } else {
-                    DAListContentCompat(
-                        das = das,
-                        isSubscribed = subscribeState.isSubscribed,
-                        showOverflowMenu = showOverflowMenu,
-                    )
-                }
-
+                DAListContentCompat(
+                    das = das,
+                    isSubscribed = subscribeState.isSubscribed,
+                    showOverflowMenu = showOverflowMenu,
+                )
             }
-        }
 
-        PullRefreshIndicator(
-            isLoading,
-            refreshState,
-            Modifier.align(Alignment.TopCenter),
-            contentColor = MaterialTheme.colorScheme.primary
-        )
+        }
     }
 }
 

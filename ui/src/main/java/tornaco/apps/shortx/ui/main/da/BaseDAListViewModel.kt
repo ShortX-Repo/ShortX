@@ -7,8 +7,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.viewModelScope
 import com.github.promeg.pinyinhelper.Pinyin
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -34,6 +32,8 @@ import tornaco.apps.shortx.ui.addda.defaultNewDAId
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
+import tornaco.apps.shortx.ui.base.LoadState
+import tornaco.apps.shortx.ui.base.LoadState.Loading.data
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.main.CommonSetFilter
 import tornaco.apps.shortx.ui.main.DASortBy
@@ -52,15 +52,18 @@ import java.util.UUID
 fun defaultNewDASetId() = "DS-${UUID.randomUUID()}"
 
 data class DAListState(
-    val das: List<DirectActionUM> = emptyList(),
-    val daSetFilters: List<CommonSetFilter> = emptyList(),
     val selectedDASetFilter: CommonSetFilter = CommonSetFilter.PinnedAll,
     val daSortBy: DASortBy = DASortBy.CreateTime,
     val isShowDetailedDAItem: Boolean = true,
     val colorfulCard: Boolean = false,
-    val isLoading: Boolean = true,
     val searchQuery: String = "",
-    val loadActiveJobRequest: Long = System.currentTimeMillis()
+    val loadDARequest: Long = System.currentTimeMillis(),
+    val loadActiveJobRequest: Long = System.currentTimeMillis(),
+)
+
+data class DAList(
+    val das: List<DirectActionUM> = emptyList(),
+    val daSetFilters: List<CommonSetFilter> = emptyList(),
 )
 
 data class ActiveJobIds(
@@ -71,10 +74,11 @@ data class ActiveJobIds(
 abstract class BaseDAListViewModel(context: Context) :
     ShortXContextViewModel<DAListState>(context, { DAListState() }) {
     protected val pref by lazy { Pref(context) }
-    private var loadDAJob: Job? = null
 
     private val _shortcutApkInstalled = MutableSharedFlow<ApkInstallState>()
     val shortcutApkInstalled = _shortcutApkInstalled.asSharedFlow()
+
+    abstract val daList: StateFlow<LoadState<DAList>>
 
     @OptIn(FlowPreview::class)
     val activeJobIds: StateFlow<ActiveJobIds> by lazy {
@@ -90,17 +94,17 @@ abstract class BaseDAListViewModel(context: Context) :
     private val jobStatusListener = object : IJobStatusListener.Stub() {
         override fun onJobStarted(id: String?) {
             logger.d("onJobStarted: $id")
-            loadActiveJobs()
+            requestLoadActiveJobs()
         }
 
         override fun onJobCompleted(id: String?) {
             logger.d("onJobCompleted: $id")
-            loadActiveJobs()
+            requestLoadActiveJobs()
         }
 
         override fun onJobCancelled(id: String?) {
             logger.d("onJobCancelled: $id")
-            loadActiveJobs()
+            requestLoadActiveJobs()
         }
     }
 
@@ -108,7 +112,7 @@ abstract class BaseDAListViewModel(context: Context) :
         override fun onDAChanged(id: String) {
             super.onDAChanged(id)
             logger.d("daObs, onDAChanged: $id")
-            loadDAList()
+            requestLoadDAList()
 
             if (id.isEmpty()) {
                 LVLStateHolder.fab()
@@ -118,7 +122,7 @@ abstract class BaseDAListViewModel(context: Context) :
         override fun onDASetChanged(id: String) {
             super.onDASetChanged(id)
             logger.d("daObs, onDASetChanged: $id")
-            loadDAList()
+            requestLoadDAList()
         }
     }
 
@@ -136,14 +140,14 @@ abstract class BaseDAListViewModel(context: Context) :
         viewModelScope.launch {
             ResetEventRegistry.dataResetComplete.collect {
                 logger.d("reload data since data has been reset")
-                loadDAList()
+                requestLoadDAList()
             }
         }
 
         viewModelScope.launch {
             RestoreEventRegistry.dataRestoreComplete.collect {
                 logger.d("reload data since data restored")
-                loadDAList()
+                requestLoadDAList()
             }
         }
 
@@ -153,7 +157,7 @@ abstract class BaseDAListViewModel(context: Context) :
             }
         }
 
-        loadActiveJobs()
+        requestLoadActiveJobs()
     }
 
     override fun onCleared() {
@@ -168,18 +172,12 @@ abstract class BaseDAListViewModel(context: Context) :
         }
     }
 
-    abstract fun loadDAList(delay: Boolean = false)
-
-    fun loadActiveJobs() {
-        updateState { copy(loadActiveJobRequest = System.currentTimeMillis()) }
+    fun requestLoadDAList() {
+        updateState { copy(loadDARequest = System.currentTimeMillis()) }
     }
 
-    private fun delayLoadDAList(delay: Long = 200L) {
-        loadDAJob?.cancel()
-        loadDAJob = viewModelScope.launch {
-            delay(delay)
-            loadDAList()
-        }
+    fun requestLoadActiveJobs() {
+        updateState { copy(loadActiveJobRequest = System.currentTimeMillis()) }
     }
 
     fun deleteDA(daId: String) {
@@ -250,7 +248,7 @@ abstract class BaseDAListViewModel(context: Context) :
 
     fun importDA(da: DirectAction, shouldChangeId: Boolean, token: String?) {
         val daWithSameNameExists =
-            state.value.das.firstOrNull { it.title == da.title } != null
+            daList.value.data?.das?.firstOrNull { it.title == da.title } != null
         val copyInd = " (Copy)"
 
         viewModelScope.launch {
@@ -319,10 +317,8 @@ abstract class BaseDAListViewModel(context: Context) :
     }
 
     fun updateSearchQuery(query: String) {
-        val changed = query != state.value.searchQuery
         viewModelScope.launch {
             updateState { copy(searchQuery = query) }
-            if (changed) delayLoadDAList()
         }
     }
 }

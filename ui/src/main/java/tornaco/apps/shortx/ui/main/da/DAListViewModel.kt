@@ -7,14 +7,19 @@ import androidx.lifecycle.viewModelScope
 import com.github.promeg.pinyinhelper.Pinyin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
-import tornaco.apps.shortx.ui.base.afterNavLongDelay
+import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.main.CommonSetFilter
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.main.model.daToDirectActionUM
@@ -27,133 +32,135 @@ import javax.inject.Inject
 class DAListViewModel @Inject constructor(@ApplicationContext context: Context) :
     BaseDAListViewModel(context) {
 
-    override fun loadDAList(delay: Boolean) {
-        logger.d("loadDAList - ${Throwable().stackTraceToString()}")
-        viewModelScope.launch {
-            updateState { copy(isLoading = true) }
-            if (delay) afterNavLongDelay()
-            withContext(Dispatchers.IO) {
-                val gvs = shortXManager.getAllGlobalVars()
-                val allDASets = shortXManager.getAllDASets()
+    @OptIn(FlowPreview::class)
+    override val daList: StateFlow<LoadState<DAList>> by lazy {
+        state.map {
+            it.loadDARequest
+        }.combine(state.map { it.searchQuery }) { _, query ->
+            runCatching {
+                LoadState.Success(getDAList(query))
+            }.getOrElse {
+                logger.e(it, "load da list")
+                LoadState.Error(it)
+            }
+        }.debounce(300)
+            .stateIn(viewModelScope, SharingStarted.Lazily, initialValue = LoadState.Loading)
+    }
 
-                val selectedFilterId = pref.selectedDAFilter.firstOrNull()
-                val selectedSetOrNull =
-                    selectedFilterId?.let { allDASets.firstOrNull { it.id == selectedFilterId } }
-                if (selectedSetOrNull == null) {
-                    // This set is not exists anymore. or it is prebuilt all/flat
-                    val prebuiltSet = CommonSetFilter.prebuiltOfId(selectedFilterId)
-                    pref.setSelectedDAFilter(prebuiltSet.filterId)
-                    updateState { copy(selectedDASetFilter = prebuiltSet) }
-                } else {
-                    updateState {
-                        copy(
-                            selectedDASetFilter = CommonSetFilter.UserSet(
-                                id = selectedFilterId,
-                                title = selectedSetOrNull.title
-                            )
-                        )
-                    }
-                }
+    private suspend fun getDAList(searchQuery: String): DAList {
+        logger.d("getDAList: $searchQuery")
+        val gvs = shortXManager.getAllGlobalVars()
+        val allDASets = shortXManager.getAllDASets()
 
-                val selectedDASetFilter = state.value.selectedDASetFilter
-                val allDAs = shortXManager.getAllDirectAction().apply {
-                    logger.i("all da: ${this.joinToString { it.title }}")
-                }
+        val selectedFilterId = pref.selectedDAFilter.firstOrNull()
+        val selectedSetOrNull =
+            selectedFilterId?.let { allDASets.firstOrNull { it.id == selectedFilterId } }
+        if (selectedSetOrNull == null) {
+            // This set is not exists anymore. or it is prebuilt all/flat
+            val prebuiltSet = CommonSetFilter.prebuiltOfId(selectedFilterId)
+            pref.setSelectedDAFilter(prebuiltSet.filterId)
+            updateState { copy(selectedDASetFilter = prebuiltSet) }
+        } else {
+            updateState {
+                copy(
+                    selectedDASetFilter = CommonSetFilter.UserSet(
+                        id = selectedFilterId,
+                        title = selectedSetOrNull.title
+                    )
+                )
+            }
+        }
 
-                cleanUpInvalidDynamicShortcuts(allDAs)
+        val selectedDASetFilter = state.value.selectedDASetFilter
+        val allDAs = shortXManager.getAllDirectAction().apply {
+            logger.i("all da: ${this.joinToString { it.title }}")
+        }
 
-                val das = allDAs
-                    .filter { directAction ->
-                        when (selectedDASetFilter) {
-                            CommonSetFilter.PinnedAll -> {
-                                allDASets.none { set -> set.id == directAction.directActionSetId }
-                            }
+        cleanUpInvalidDynamicShortcuts(allDAs)
 
-                            CommonSetFilter.PinnedAllFlat -> {
-                                true
-                            }
-
-                            is CommonSetFilter.UserSet -> {
-                                directAction.directActionSetId == selectedDASetFilter.id
-                            }
-                        }
-                    }
-                    .sortedByDescending { it.createTime }
-                    .mapNotNull { directAction ->
-                        runCatching {
-                            daToDirectActionUM(directAction, gvs)
-                        }.getOrElse {
-                            logger.e(it, "daToDirectActionUM")
-                            null
-                        }
-                    }
-
-                val sets = allDASets
-                    .sortedWith { o1, o2 ->
-                        Collator.getInstance(Locale.CHINESE).compare(o1.title, o2.title)
-                    }
-                    .map { directActionSet ->
-                        val subDAs = allDAs.filter { it.directActionSetId == directActionSet.id }
-                        DirectActionUM(
-                            id = directActionSet.id,
-                            title = directActionSet.title,
-                            titlePinyin = Pinyin.toPinyin(directActionSet.title, "").lowercase(),
-                            description = directActionSet.description,
-                            updateTime = FuzzyDateTimeFormatter.getTimeAgo(
-                                context,
-                                Date(directActionSet.lastUpdateTime)
-                            ),
-                            createTime = FuzzyDateTimeFormatter.getTimeAgo(
-                                context,
-                                Date(directActionSet.createTime)
-                            ),
-                            icon = directActionSet.icon,
-                            iconColor = Color.Red.value,
-                            directAction = DirectAction.getDefaultInstance(),
-                            versionCode = 0,
-                            isDirectActionSet = true,
-                            itemsCount = subDAs.size,
-                            hasAnyParameter = false
-                        )
-                    }
-
-                val daSetFilters = listOf(
-                    CommonSetFilter.PinnedAll,
-                    CommonSetFilter.PinnedAllFlat
-                ) + sets.map { CommonSetFilter.UserSet(it.id, it.title) }
-
-                val finalDAS = when (selectedDASetFilter) {
+        val das = allDAs
+            .filter { directAction ->
+                when (selectedDASetFilter) {
                     CommonSetFilter.PinnedAll -> {
-                        // No filter, show set and das.
-                        sets + das
+                        allDASets.none { set -> set.id == directAction.directActionSetId }
                     }
 
                     CommonSetFilter.PinnedAllFlat -> {
-                        das
+                        true
                     }
 
-                    else -> {
-                        das
+                    is CommonSetFilter.UserSet -> {
+                        directAction.directActionSetId == selectedDASetFilter.id
                     }
-                }.filter {
-                    state.value.searchQuery.isBlank() || it.title.contains(
-                        state.value.searchQuery,
-                        true
-                    ) || it.titlePinyin.contains(
-                        state.value.searchQuery.lowercase(),
-                        true
-                    )
-                }
-
-                updateState {
-                    copy(
-                        das = finalDAS,
-                        daSetFilters = daSetFilters,
-                        isLoading = false
-                    )
                 }
             }
+            .sortedByDescending { it.createTime }
+            .mapNotNull { directAction ->
+                runCatching {
+                    daToDirectActionUM(directAction, gvs)
+                }.getOrElse {
+                    logger.e(it, "daToDirectActionUM")
+                    null
+                }
+            }
+
+        val sets = allDASets
+            .sortedWith { o1, o2 ->
+                Collator.getInstance(Locale.CHINESE).compare(o1.title, o2.title)
+            }
+            .map { directActionSet ->
+                val subDAs = allDAs.filter { it.directActionSetId == directActionSet.id }
+                DirectActionUM(
+                    id = directActionSet.id,
+                    title = directActionSet.title,
+                    titlePinyin = Pinyin.toPinyin(directActionSet.title, "").lowercase(),
+                    description = directActionSet.description,
+                    updateTime = FuzzyDateTimeFormatter.getTimeAgo(
+                        context,
+                        Date(directActionSet.lastUpdateTime)
+                    ),
+                    createTime = FuzzyDateTimeFormatter.getTimeAgo(
+                        context,
+                        Date(directActionSet.createTime)
+                    ),
+                    icon = directActionSet.icon,
+                    iconColor = Color.Red.value,
+                    directAction = DirectAction.getDefaultInstance(),
+                    versionCode = 0,
+                    isDirectActionSet = true,
+                    itemsCount = subDAs.size,
+                    hasAnyParameter = false
+                )
+            }
+
+        val daSetFilters = listOf(
+            CommonSetFilter.PinnedAll,
+            CommonSetFilter.PinnedAllFlat
+        ) + sets.map { CommonSetFilter.UserSet(it.id, it.title) }
+
+        val finalDAS = when (selectedDASetFilter) {
+            CommonSetFilter.PinnedAll -> {
+                // No filter, show set and das.
+                sets + das
+            }
+
+            CommonSetFilter.PinnedAllFlat -> {
+                das
+            }
+
+            else -> {
+                das
+            }
+        }.filter {
+            searchQuery.isBlank() || it.title.contains(
+                searchQuery, true
+            ) || it.titlePinyin.contains(searchQuery.lowercase(), true)
         }
+
+        return DAList(
+            das = finalDAS,
+            daSetFilters = daSetFilters,
+        )
     }
 
     private fun cleanUpInvalidDynamicShortcuts(allDAs: List<DirectAction>) {
@@ -201,7 +208,7 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
         updateState { copy(selectedDASetFilter = daSetFilter) }
         viewModelScope.launch {
             pref.setSelectedDAFilter(daSetFilter.filterId)
-            loadDAList()
+            requestLoadDAList()
         }
     }
 }

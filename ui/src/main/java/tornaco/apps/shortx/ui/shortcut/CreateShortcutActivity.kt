@@ -30,6 +30,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.base.BaseActivity
+import tornaco.apps.shortx.ui.base.LoadError
+import tornaco.apps.shortx.ui.base.LoadState
+import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalSnackbarHostState
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -38,6 +41,7 @@ import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.main.CommonSetFilter
 import tornaco.apps.shortx.ui.main.da.ActiveJobIds
 import tornaco.apps.shortx.ui.main.da.DAItemHandler
+import tornaco.apps.shortx.ui.main.da.DAList
 import tornaco.apps.shortx.ui.main.da.DAListViewModel
 import tornaco.apps.shortx.ui.main.da.DASetFilterFlowRow
 import tornaco.apps.shortx.ui.main.da.DASetItemHandler
@@ -77,7 +81,6 @@ class CreateShortcutActivity : BaseActivity() {
 
                     LaunchedEffect(daListViewModel) {
                         daListViewModel.selectDASetFilter(CommonSetFilter.PinnedAllFlat)
-                        daListViewModel.loadDAList()
                     }
 
                     val context = LocalContext.current
@@ -105,19 +108,33 @@ class CreateShortcutActivity : BaseActivity() {
                             LocalDAItemHandler provides daItemHandler,
                             LocalDASetItemHandler provides setItemHandler
                         ) {
-                            DASetFilterFlowRow(
-                                daSetFilters = daListState.daSetFilters,
-                                selectedDASetFilter = daListState.selectedDASetFilter,
-                                selectDASetFilter = { daListViewModel.selectDASetFilter(it) },
-                            )
-                            DirectActionListContent(
-                                isLoading = daListState.isLoading,
-                                isShowDetailedDAItem = daListState.isShowDetailedDAItem,
-                                das = daListState.das,
-                                showOverflowMenu = false,
-                                colorfulCard = false,
-                                activeJobs = ActiveJobIds()
-                            )
+                            val daList by daListViewModel.daList.collectAsState()
+                            when (daList) {
+                                is LoadState.Error -> {
+                                    LoadError(modifier = Modifier.fillMaxSize()) {
+                                    }
+                                }
+
+                                LoadState.Loading -> {
+                                    Loading(modifier = Modifier.fillMaxSize())
+                                }
+
+                                is LoadState.Success -> {
+                                    DASetFilterFlowRow(
+                                        daSetFilters = (daList as LoadState.Success<DAList>).data.daSetFilters,
+                                        selectedDASetFilter = daListState.selectedDASetFilter,
+                                        selectDASetFilter = { daListViewModel.selectDASetFilter(it) },
+                                    )
+                                    DirectActionListContent(
+                                        isShowDetailedDAItem = daListState.isShowDetailedDAItem,
+                                        das = (daList as LoadState.Success<DAList>).data.das,
+                                        showOverflowMenu = false,
+                                        colorfulCard = false,
+                                        activeJobs = ActiveJobIds()
+                                    )
+                                }
+                            }
+
                         }
                     }
 
