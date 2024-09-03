@@ -101,6 +101,7 @@ class AccelerometerSensorSelectorActivity : BaseSelectorActivity<Fact.Accelerome
                     .animateContentSize()
                     .verticalScroll(rememberScrollState())
             ) {
+                FieldTitle(text = "X")
                 ValueSelector(
                     constraints = state.constraintsX,
                     addConstraint = {
@@ -117,6 +118,7 @@ class AccelerometerSensorSelectorActivity : BaseSelectorActivity<Fact.Accelerome
 
                 SectionSpacer()
 
+                FieldTitle(text = "Y")
                 ValueSelector(
                     constraints = state.constraintsY,
                     addConstraint = {
@@ -133,6 +135,7 @@ class AccelerometerSensorSelectorActivity : BaseSelectorActivity<Fact.Accelerome
 
                 SectionSpacer()
 
+                FieldTitle(text = "Z")
                 ValueSelector(
                     constraints = state.constraintsZ,
                     addConstraint = {
