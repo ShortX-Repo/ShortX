@@ -67,11 +67,6 @@ class LaneView @JvmOverloads constructor(
     var onEmpty: (() -> Unit)? = null
 
     /**
-     * hold data for looping
-     */
-    private var datas = emptyList<Any>()
-
-    /**
      * define how to create live comment view
      */
     lateinit var createView: () -> View
@@ -117,7 +112,6 @@ class LaneView @JvmOverloads constructor(
     }
 
     fun show(datas: List<Any>) {
-        this.datas = datas
         datas.forEach { show(it) }
     }
 
@@ -131,6 +125,10 @@ class LaneView @JvmOverloads constructor(
         laneMap.values.forEach { lane ->
             lane.resume()
         }
+    }
+
+    fun cancel(id: String) {
+        // TODO.
     }
 
     fun show(data: Any) {

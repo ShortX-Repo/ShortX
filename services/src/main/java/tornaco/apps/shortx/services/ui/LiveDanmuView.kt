@@ -160,6 +160,12 @@ class LiveDanmuView(
         }
     }
 
+    fun cancelDanmuFor(id: String) {
+        if (isAttached) {
+            laneView.cancel(id)
+        }
+    }
+
     fun attach() {
         logger.i("LiveDanmu attach")
 
@@ -220,6 +226,7 @@ class LiveDanmuView(
 
 
 data class Danmu(
+    val id: String,
     val icon: String?,
     val text: String,
 )

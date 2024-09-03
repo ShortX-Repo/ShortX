@@ -43,14 +43,23 @@ class UIService(shortXContext: ShortXContext) : SystemService(shortXContext, "UI
         )
     }
 
-    fun showDanmu(icon: String?, text: String) {
+    fun showDanmu(id: String = "ShortX-Internal", icon: String?, text: String) {
         if (isSystemReady) {
             uiHandler.postSafety {
                 if (OsUtils.isROrAbove() && false) {
                     showDanmuCRDroidDanmuService(icon, text)
                 } else {
-                    showDanmuFallback(icon, text)
+                    showDanmuFallback(id = id, icon = icon, text = text)
                 }
+            }
+        }
+    }
+
+    fun cancelDanmuForId(id: String) {
+        if (isSystemReady) {
+            uiHandler.postSafety {
+                val viewAlive = liveDanmuView?.isAttached() ?: false
+                if (viewAlive) liveDanmuView?.cancelDanmuFor(id)
             }
         }
     }
@@ -64,14 +73,14 @@ class UIService(shortXContext: ShortXContext) : SystemService(shortXContext, "UI
     }
 
 
-    private fun showDanmuFallback(icon: String?, text: String) {
+    private fun showDanmuFallback(id: String, icon: String?, text: String) {
         val viewAlive = liveDanmuView?.isAttached() ?: false
         if (!viewAlive) {
             liveDanmuView =
                 LiveDanmuView(context, getDanmuUISettings()).apply { attach() }
         }
         logger.d("showDanmuFallback: $liveDanmuView $icon $text")
-        liveDanmuView?.addDanmu(Danmu(icon, text))
+        liveDanmuView?.addDanmu(Danmu(id = id, icon = icon, text = text))
     }
 
     fun getDanmuUISettings(): DanmuUISettings {

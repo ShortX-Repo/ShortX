@@ -26,8 +26,9 @@ object ShowDanmu : Actor {
             val d = action unpack_ ShowDanmu::class.java
             val cv = RuleContextAndVars(params)
             shortXContext.ui.showDanmu(
-                d.icon.compileContextAndVars(cv),
-                d.text.compileContextAndVars(cv)
+                id = evaluateContext.srcId,
+                icon = d.icon.compileContextAndVars(cv),
+                text = d.text.compileContextAndVars(cv)
             )
         }
     }
