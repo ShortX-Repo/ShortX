@@ -136,10 +136,15 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         }
     )
 
-    val whileLoopSelectorState = rememberWhileLoopDialogState {
-        addAction(it)
-    }
-    WhileLoopDialog(state = whileLoopSelectorState)
+    val whileLoopLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action.WhileLoop>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
 
     val vm = hiltViewModel<PkgSetListViewModel>()
     val addPkgSetDialogState =
@@ -333,7 +338,13 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             }
 
             Action.WhileLoop::class -> {
-                whileLoopSelectorState.show(source.getActionAs())
+                whileLoopLauncher.launch(
+                    newIntent(
+                        context,
+                        source.getActionAs<Action.WhileLoop>(),
+                        WhileLoopSelectorActivity::class.java
+                    )
+                )
                 true
             }
 
