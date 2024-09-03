@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.sample
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -85,7 +86,7 @@ abstract class BaseRuleListViewModel(context: Context) :
     @OptIn(FlowPreview::class)
     val activeJobIds: StateFlow<List<String>> by lazy {
         loadActiveJobRequest
-            .debounce(300).map {
+            .sample(300).map {
                 shortXManager.getActiveJobs().apply {
                     logger.d("activeJobs: $this")
                 }

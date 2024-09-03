@@ -7,11 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.github.promeg.pinyinhelper.Pinyin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -34,10 +32,9 @@ import javax.inject.Inject
 class DAListViewModel @Inject constructor(@ApplicationContext context: Context) :
     BaseDAListViewModel(context) {
 
-    @OptIn(FlowPreview::class)
     override val daList: StateFlow<LoadState<DAList>> by lazy {
         combine(
-            loadDARequest.debounce(300),
+            loadDARequest,
             state.map { it.searchQuery }) { _, query ->
             runCatching {
                 LoadState.Success(getDAList(query))
@@ -49,8 +46,7 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
             if (it is LoadState.Success) {
                 pref.setSelectedDAFilter(it.data.selectedDASetFilter.filterId)
             }
-        }.debounce(300)
-            .stateIn(viewModelScope, SharingStarted.Lazily, initialValue = LoadState.Loading)
+        }.stateIn(viewModelScope, SharingStarted.Lazily, initialValue = LoadState.Loading)
     }
 
     private suspend fun getDAList(

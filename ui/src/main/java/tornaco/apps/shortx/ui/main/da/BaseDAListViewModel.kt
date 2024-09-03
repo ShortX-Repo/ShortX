@@ -13,8 +13,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.sample
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -87,7 +87,7 @@ abstract class BaseDAListViewModel(context: Context) :
 
     @OptIn(FlowPreview::class)
     val activeJobIds: StateFlow<ActiveJobIds> by lazy {
-        loadActiveJobRequest.debounce(300).map {
+        loadActiveJobRequest.sample(300).map {
             ActiveJobIds(shortXManager.getActiveJobs().apply {
                 logger.d("activeJobs: $this")
             })

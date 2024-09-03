@@ -2,11 +2,9 @@ package tornaco.apps.shortx.ui.main.rule
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
@@ -20,10 +18,9 @@ class RuleSetDetailsViewModel(
 ) :
     BaseRuleListViewModel(context) {
 
-    @OptIn(FlowPreview::class)
     override val ruleList: StateFlow<LoadState<RuleList>> by lazy {
         combine(
-            loadRuleRequest.debounce(300),
+            loadRuleRequest,
             state.map { it.onlyShowEnabled },
             state.map { it.ruleSortBy },
             state.map { it.searchQuery }) { _, _, _, _ ->
@@ -37,8 +34,7 @@ class RuleSetDetailsViewModel(
             if (it is LoadState.Success) {
                 pref.setSelectedRuleFilter(it.data.selectedRuleSetFilter.filterId)
             }
-        }.debounce(300)
-            .stateIn(viewModelScope, SharingStarted.Lazily, initialValue = LoadState.Loading)
+        }.stateIn(viewModelScope, SharingStarted.Lazily, initialValue = LoadState.Loading)
     }
 
     private suspend fun getRuleList(): RuleList {

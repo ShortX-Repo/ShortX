@@ -7,6 +7,7 @@ import android.media.AudioRecord
 import android.media.MediaRecorder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import tornaco.apps.shortx.core.ShortXManager.Companion.Sensors.SENSOR_TYPE_SOUND
 import tornaco.apps.shortx.core.context.ContextDataMapping
@@ -19,6 +20,8 @@ import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import kotlin.math.log10
 import kotlin.math.sqrt
+
+private const val SAMPLE_RATE = 1000L
 
 class SoundTrigger(
     override val context: Context,
@@ -115,6 +118,8 @@ class SoundTrigger(
                             }
                         )
                     }
+
+                    delay(SAMPLE_RATE)
                 }
             }
         }

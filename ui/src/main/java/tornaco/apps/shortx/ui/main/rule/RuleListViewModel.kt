@@ -6,11 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.github.promeg.pinyinhelper.Pinyin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -31,10 +29,9 @@ import javax.inject.Inject
 class RuleListViewModel @Inject constructor(@ApplicationContext context: Context) :
     BaseRuleListViewModel(context) {
 
-    @OptIn(FlowPreview::class)
     override val ruleList: StateFlow<LoadState<RuleList>> by lazy {
         combine(
-            loadRuleRequest.debounce(300),
+            loadRuleRequest,
             state.map { it.onlyShowEnabled },
             state.map { it.ruleSortBy },
             state.map { it.searchQuery }) { loadRuleRequest, onlyShowEnabled, ruleSortBy, query ->

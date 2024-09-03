@@ -2,10 +2,8 @@ package tornaco.apps.shortx.ui.main.da
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import tornaco.apps.shortx.ui.base.LoadState
@@ -18,9 +16,8 @@ class DASetDetailsViewModel(
 ) :
     BaseDAListViewModel(context) {
 
-    @OptIn(FlowPreview::class)
     override val daList: StateFlow<LoadState<DAList>> by lazy {
-        loadDARequest.debounce(300).map {
+        loadDARequest.map {
             runCatching {
                 LoadState.Success(getDAList())
             }.getOrElse {
