@@ -122,7 +122,7 @@ class CreateShortcutActivity : BaseActivity() {
                                 is LoadState.Success -> {
                                     DASetFilterFlowRow(
                                         daSetFilters = (daList as LoadState.Success<DAList>).data.daSetFilters,
-                                        selectedDASetFilter = daListState.selectedDASetFilter,
+                                        selectedDASetFilter = (daList as LoadState.Success<DAList>).data.selectedDASetFilter,
                                         selectDASetFilter = { daListViewModel.selectDASetFilter(it) },
                                     )
                                     DirectActionListContent(

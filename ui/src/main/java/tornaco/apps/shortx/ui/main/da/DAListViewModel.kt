@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
@@ -21,6 +22,7 @@ import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.main.CommonSetFilter
+import tornaco.apps.shortx.ui.main.DASortBy
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.main.model.daToDirectActionUM
 import java.text.Collator
@@ -34,44 +36,45 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
 
     @OptIn(FlowPreview::class)
     override val daList: StateFlow<LoadState<DAList>> by lazy {
-        state.map {
-            it.loadDARequest
-        }.combine(state.map { it.searchQuery }) { _, query ->
+        combine(
+            state.map { it.loadDARequest },
+            state.map { it.searchQuery }) { _, query ->
             runCatching {
                 LoadState.Success(getDAList(query))
             }.getOrElse {
                 logger.e(it, "load da list")
                 LoadState.Error(it)
             }
+        }.onEach {
+            if (it is LoadState.Success) {
+                pref.setSelectedDAFilter(it.data.selectedDASetFilter.filterId)
+            }
         }.debounce(300)
             .stateIn(viewModelScope, SharingStarted.Lazily, initialValue = LoadState.Loading)
     }
 
-    private suspend fun getDAList(searchQuery: String): DAList {
+    private suspend fun getDAList(
+        searchQuery: String,
+        daSortBy: DASortBy = DASortBy.CreateTime
+    ): DAList {
         logger.d("getDAList: $searchQuery")
         val gvs = shortXManager.getAllGlobalVars()
         val allDASets = shortXManager.getAllDASets()
 
+        // Fix Filter.
         val selectedFilterId = pref.selectedDAFilter.firstOrNull()
         val selectedSetOrNull =
             selectedFilterId?.let { allDASets.firstOrNull { it.id == selectedFilterId } }
-        if (selectedSetOrNull == null) {
+        val selectedFilter = if (selectedSetOrNull == null) {
             // This set is not exists anymore. or it is prebuilt all/flat
-            val prebuiltSet = CommonSetFilter.prebuiltOfId(selectedFilterId)
-            pref.setSelectedDAFilter(prebuiltSet.filterId)
-            updateState { copy(selectedDASetFilter = prebuiltSet) }
+            CommonSetFilter.prebuiltOfId(selectedFilterId)
         } else {
-            updateState {
-                copy(
-                    selectedDASetFilter = CommonSetFilter.UserSet(
-                        id = selectedFilterId,
-                        title = selectedSetOrNull.title
-                    )
-                )
-            }
+            CommonSetFilter.UserSet(
+                id = selectedFilterId,
+                title = selectedSetOrNull.title
+            )
         }
 
-        val selectedDASetFilter = state.value.selectedDASetFilter
         val allDAs = shortXManager.getAllDirectAction().apply {
             logger.i("all da: ${this.joinToString { it.title }}")
         }
@@ -80,7 +83,7 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
 
         val das = allDAs
             .filter { directAction ->
-                when (selectedDASetFilter) {
+                when (selectedFilter) {
                     CommonSetFilter.PinnedAll -> {
                         allDASets.none { set -> set.id == directAction.directActionSetId }
                     }
@@ -90,7 +93,7 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                     }
 
                     is CommonSetFilter.UserSet -> {
-                        directAction.directActionSetId == selectedDASetFilter.id
+                        directAction.directActionSetId == selectedFilter.id
                     }
                 }
             }
@@ -138,7 +141,7 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
             CommonSetFilter.PinnedAllFlat
         ) + sets.map { CommonSetFilter.UserSet(it.id, it.title) }
 
-        val finalDAS = when (selectedDASetFilter) {
+        val finalDAS = when (selectedFilter) {
             CommonSetFilter.PinnedAll -> {
                 // No filter, show set and das.
                 sets + das
@@ -160,6 +163,7 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
         return DAList(
             das = finalDAS,
             daSetFilters = daSetFilters,
+            selectedDASetFilter = selectedFilter
         )
     }
 
@@ -205,7 +209,6 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
     }
 
     fun selectDASetFilter(daSetFilter: CommonSetFilter) {
-        updateState { copy(selectedDASetFilter = daSetFilter) }
         viewModelScope.launch {
             pref.setSelectedDAFilter(daSetFilter.filterId)
             requestLoadDAList()

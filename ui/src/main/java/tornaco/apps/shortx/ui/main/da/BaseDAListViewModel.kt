@@ -52,7 +52,6 @@ import java.util.UUID
 fun defaultNewDASetId() = "DS-${UUID.randomUUID()}"
 
 data class DAListState(
-    val selectedDASetFilter: CommonSetFilter = CommonSetFilter.PinnedAll,
     val daSortBy: DASortBy = DASortBy.CreateTime,
     val isShowDetailedDAItem: Boolean = true,
     val colorfulCard: Boolean = false,
@@ -64,6 +63,7 @@ data class DAListState(
 data class DAList(
     val das: List<DirectActionUM> = emptyList(),
     val daSetFilters: List<CommonSetFilter> = emptyList(),
+    val selectedDASetFilter: CommonSetFilter = CommonSetFilter.PinnedAll
 )
 
 data class ActiveJobIds(

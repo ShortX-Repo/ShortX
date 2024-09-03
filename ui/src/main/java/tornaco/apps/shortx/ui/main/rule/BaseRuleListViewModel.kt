@@ -6,8 +6,6 @@ import android.widget.Toast
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -39,6 +37,8 @@ import tornaco.apps.shortx.ui.addrule.defaultNewRuleId
 import tornaco.apps.shortx.ui.addrule.fact.model.defaultNewFactId
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.addrule.fact.model.toProtoFact
+import tornaco.apps.shortx.ui.base.LoadState
+import tornaco.apps.shortx.ui.base.LoadState.Loading.data
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.main.CommonSetFilter
 import tornaco.apps.shortx.ui.main.RuleSortBy
@@ -55,22 +55,27 @@ fun defaultNewRuleSetId() = "RS-${UUID.randomUUID()}"
 
 data class RuleListState(
     val isShowRuleDescription: Boolean = true,
-    val rules: List<RuleUM> = emptyList(),
-    val ruleSetFilters: List<CommonSetFilter> = emptyList(),
-    val selectedRuleSetFilter: CommonSetFilter = CommonSetFilter.PinnedAll,
     val ruleSortBy: RuleSortBy = RuleSortBy.CreateTime,
-    val isLoading: Boolean = true,
     val colorfulCard: Boolean = false,
     val showDescription: Boolean = true,
     val onlyShowEnabled: Boolean = true,
     val searchQuery: String = "",
-    val loadActiveJobRequest: Long = System.currentTimeMillis()
+    val loadActiveJobRequest: Long = System.currentTimeMillis(),
+    val loadRuleRequest: Long = System.currentTimeMillis(),
+)
+
+data class RuleList(
+    val rules: List<RuleUM> = emptyList(),
+    val ruleSetFilters: List<CommonSetFilter> = emptyList(),
+    val selectedRuleSetFilter: CommonSetFilter = CommonSetFilter.PinnedAll,
 )
 
 @SuppressLint("StaticFieldLeak")
 abstract class BaseRuleListViewModel(context: Context) :
     ShortXContextViewModel<RuleListState>(context, { RuleListState() }) {
     val pref by lazy { Pref(context) }
+
+    abstract val ruleList: StateFlow<LoadState<RuleList>>
 
     @OptIn(FlowPreview::class)
     val activeJobIds: StateFlow<List<String>> by lazy {
@@ -83,22 +88,20 @@ abstract class BaseRuleListViewModel(context: Context) :
         }.stateIn(viewModelScope, SharingStarted.Lazily, initialValue = emptyList())
     }
 
-    private var loadRuleJob: Job? = null
-
     private val jobStatusListener = object : IJobStatusListener.Stub() {
         override fun onJobStarted(id: String?) {
             logger.d("onJobStarted: $id")
-            loadActiveJobs()
+            requestLoadActiveJobs()
         }
 
         override fun onJobCompleted(id: String?) {
             logger.d("onJobCompleted: $id")
-            loadActiveJobs()
+            requestLoadActiveJobs()
         }
 
         override fun onJobCancelled(id: String?) {
             logger.d("onJobCancelled: $id")
-            loadActiveJobs()
+            requestLoadActiveJobs()
         }
     }
 
@@ -106,7 +109,7 @@ abstract class BaseRuleListViewModel(context: Context) :
         override fun onRuleChanged(id: String) {
             super.onRuleChanged(id)
             logger.d("ruleObs, onRuleChanged: $id")
-            loadRuleList()
+            requestLoadRuleList("onRuleChanged")
 
             if (id.isEmpty()) {
                 LVLStateHolder.fab()
@@ -116,7 +119,7 @@ abstract class BaseRuleListViewModel(context: Context) :
         override fun onRuleSetChanged(id: String) {
             super.onRuleSetChanged(id)
             logger.d("ruleObs, onRuleSetChanged: $id")
-            loadRuleList()
+            requestLoadRuleList("onRuleSetChanged")
         }
     }
 
@@ -127,14 +130,14 @@ abstract class BaseRuleListViewModel(context: Context) :
         viewModelScope.launch {
             ResetEventRegistry.dataResetComplete.collect {
                 logger.d("reload data since data has been reset")
-                loadRuleList()
+                requestLoadRuleList("dataResetComplete")
             }
         }
 
         viewModelScope.launch {
             RestoreEventRegistry.dataRestoreComplete.collect {
                 logger.d("reload data since data restored")
-                loadRuleList()
+                requestLoadRuleList("dataRestoreComplete")
             }
         }
 
@@ -156,7 +159,7 @@ abstract class BaseRuleListViewModel(context: Context) :
             }
         }
 
-        loadActiveJobs()
+        requestLoadActiveJobs()
     }
 
     override fun onCleared() {
@@ -165,23 +168,16 @@ abstract class BaseRuleListViewModel(context: Context) :
         shortXManager.unregisterRuleObs(ruleObs)
     }
 
-    abstract fun loadRuleList(delay: Boolean = false)
+    fun requestLoadRuleList(reason: String) {
+        updateState { copy(loadRuleRequest = System.currentTimeMillis()) }
+    }
 
-    fun loadActiveJobs() {
+    fun requestLoadActiveJobs() {
         updateState { copy(loadActiveJobRequest = System.currentTimeMillis()) }
     }
 
     fun setRuleSortBy(ruleSortBy: RuleSortBy) {
         updateState { copy(ruleSortBy = ruleSortBy) }
-        loadRuleList(false)
-    }
-
-    private fun delayLoadRule(delay: Long = 200L) {
-        loadRuleJob?.cancel()
-        loadRuleJob = viewModelScope.launch {
-            delay(delay)
-            loadRuleList()
-        }
     }
 
     fun setRuleEnabled(ruleId: String, enable: Boolean) {
@@ -243,7 +239,7 @@ abstract class BaseRuleListViewModel(context: Context) :
     fun importRule(rule: Rule, shouldChangeId: Boolean, token: String?) {
         logger.d("importRule: $rule")
         val ruleWithSameNameExists =
-            state.value.rules.firstOrNull { it.title == rule.title } != null
+            ruleList.value.data?.rules?.firstOrNull { it.title == rule.title } != null
         val copyInd = " (Copy)"
 
         viewModelScope.launch {
@@ -326,10 +322,8 @@ abstract class BaseRuleListViewModel(context: Context) :
     }
 
     fun updateSearchQuery(query: String) {
-        val changed = query != state.value.searchQuery
         viewModelScope.launch {
             updateState { copy(searchQuery = query) }
-            if (changed) delayLoadRule()
         }
     }
 
@@ -351,8 +345,6 @@ abstract class BaseRuleListViewModel(context: Context) :
                         .show()
                 }
             }
-
-            loadRuleList()
         }
     }
 }

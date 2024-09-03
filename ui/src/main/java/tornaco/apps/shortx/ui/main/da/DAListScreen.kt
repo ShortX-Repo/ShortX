@@ -1,6 +1,5 @@
 @file:OptIn(
-    ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class,
-    ExperimentalMaterialApi::class
+    ExperimentalLayoutApi::class
 )
 
 package tornaco.apps.shortx.ui.main.da
@@ -24,8 +23,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -84,6 +81,7 @@ fun DirectActionListScreen() {
 
     val daListViewModel = hiltViewModel<DAListViewModel>()
     val daListState by daListViewModel.state.collectAsState()
+    val daList by daListViewModel.daList.collectAsState()
 
     val context = LocalContext.current
     val i18n = LocalI18N.current
@@ -161,7 +159,7 @@ fun DirectActionListScreen() {
         onAddClick = {
             AddDirectActionActivity.create(
                 context = context,
-                daSetId = daListState.selectedDASetFilter.userSetIdOrNull
+                daSetId = daList.data?.selectedDASetFilter?.userSetIdOrNull
             )
         },
         onUrlClick = {
@@ -174,14 +172,13 @@ fun DirectActionListScreen() {
             mainViewModel.acceptPrivacyStatement()
         },
         appBarContent = {
-            val daList by daListViewModel.daList.collectAsState()
             DASetFilterFlowRow(
                 daSetFilters = if (daList.isSuccess()) {
                     daList.data?.daSetFilters ?: emptyList()
                 } else {
                     emptyList()
                 },
-                selectedDASetFilter = daListState.selectedDASetFilter,
+                selectedDASetFilter = daList.data?.selectedDASetFilter ?: CommonSetFilter.PinnedAll,
                 selectDASetFilter = { daListViewModel.selectDASetFilter(it) },
             )
         }
@@ -200,7 +197,6 @@ fun DirectActionListScreen() {
             LocalDASetItemHandler provides setHandler
         ) {
             val activeJobIds by daListViewModel.activeJobIds.collectAsState()
-            val daList by daListViewModel.daList.collectAsState()
             when (daList) {
                 is LoadState.Error -> {
                     LoadError(modifier = Modifier.fillMaxSize()) {

@@ -6,7 +6,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -17,19 +16,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -42,6 +36,10 @@ import tornaco.apps.shortx.ui.addrule.AddRuleActivity
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.EmptyList
+import tornaco.apps.shortx.ui.base.LoadError
+import tornaco.apps.shortx.ui.base.LoadState
+import tornaco.apps.shortx.ui.base.LoadState.Loading.data
+import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
@@ -70,10 +68,8 @@ fun RuleScreen() {
 
     val ruleListViewModel = hiltViewModel<RuleListViewModel>()
     val ruleListState by ruleListViewModel.state.collectAsState()
+    val ruleList by ruleListViewModel.ruleList.collectAsState()
 
-    LaunchedEffect(ruleListViewModel) {
-        ruleListViewModel.loadRuleList(delay = false)
-    }
     val context = LocalContext.current
 
     val pickFileLauncher = rememberLauncherForActivityResult(
@@ -125,7 +121,7 @@ fun RuleScreen() {
         onAddClick = {
             AddRuleActivity.create(
                 context = context,
-                ruleSetId = ruleListState.selectedRuleSetFilter.userSetIdOrNull
+                ruleSetId = ruleList.data?.selectedRuleSetFilter?.userSetIdOrNull
             )
         },
         onUrlClick = {
@@ -139,8 +135,9 @@ fun RuleScreen() {
         },
         appBarContent = {
             RuleSetFlowRow(
-                ruleSetFilters = ruleListState.ruleSetFilters,
-                selectedRuleSetFilter = ruleListState.selectedRuleSetFilter,
+                ruleSetFilters = ruleList.data?.ruleSetFilters ?: emptyList(),
+                selectedRuleSetFilter = ruleList.data?.selectedRuleSetFilter
+                    ?: CommonSetFilter.PinnedAll,
                 selectRuleSetFilter = {
                     ruleListViewModel.selectRuleSetFilter(it)
                 }
@@ -157,14 +154,26 @@ fun RuleScreen() {
             LocalRuleItemHandler provides ruleHandler,
             LocalRuleSetItemHandler provides setHandler,
         ) {
-            val activeJobIds by ruleListViewModel.activeJobIds.collectAsState()
-            RuleContent(
-                isLoading = ruleListState.isLoading,
-                colorfulCard = ruleListState.colorfulCard,
-                rules = ruleListState.rules,
-                showDescription = ruleListState.showDescription,
-                activeJobs = activeJobIds
-            )
+            when (ruleList) {
+                is LoadState.Error -> {
+                    LoadError(modifier = Modifier.fillMaxSize()) {
+                    }
+                }
+
+                LoadState.Loading -> {
+                    Loading(modifier = Modifier.fillMaxSize())
+                }
+
+                is LoadState.Success -> {
+                    val activeJobIds by ruleListViewModel.activeJobIds.collectAsState()
+                    RuleContent(
+                        colorfulCard = ruleListState.colorfulCard,
+                        rules = (ruleList as LoadState.Success).data.rules,
+                        showDescription = ruleListState.showDescription,
+                        activeJobs = activeJobIds
+                    )
+                }
+            }
         }
     }
 
@@ -198,48 +207,31 @@ fun RuleSetFlowRow(
 
 @Composable
 fun RuleContent(
-    isLoading: Boolean,
     colorfulCard: Boolean,
     showDescription: Boolean,
     rules: List<RuleUM>,
     activeJobs: List<String>,
 ) {
-    val refreshState = rememberPullRefreshState(isLoading, onRefresh = {
-    })
-    Box(
-        Modifier
-            .fillMaxSize()
-            .pullRefresh(refreshState)
-    ) {
-        Column {
-            if (!isLoading && rules.isEmpty()) {
-                EmptyList(modifier = Modifier.fillMaxSize())
-            } else {
-                if (!isLoading) {
-                    UserTip(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        tipId = TipIds.commonRuleItem,
-                        message = LocalI18N.current["ui.common.rule.item.tip"]
-                    )
-                }
+    Column {
+        if (rules.isEmpty()) {
+            EmptyList(modifier = Modifier.fillMaxSize())
+        } else {
 
-                val subscribeState by LVLStateHolder.collectAsState()
-                RuleListContent(
-                    isSubscribed = subscribeState.isSubscribed,
-                    rules = rules,
-                    colorfulCard = colorfulCard,
-                    showDescription = showDescription,
-                    activeJobs = activeJobs
-                )
-            }
+            UserTip(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                tipId = TipIds.commonRuleItem,
+                message = LocalI18N.current["ui.common.rule.item.tip"]
+            )
+
+            val subscribeState by LVLStateHolder.collectAsState()
+            RuleListContent(
+                isSubscribed = subscribeState.isSubscribed,
+                rules = rules,
+                colorfulCard = colorfulCard,
+                showDescription = showDescription,
+                activeJobs = activeJobs
+            )
         }
-
-        PullRefreshIndicator(
-            isLoading,
-            refreshState,
-            Modifier.align(Alignment.TopCenter),
-            contentColor = MaterialTheme.colorScheme.primary
-        )
     }
 }
 

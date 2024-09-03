@@ -24,6 +24,7 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.LoadError
 import tornaco.apps.shortx.ui.base.LoadState
+import tornaco.apps.shortx.ui.base.LoadState.Loading.data
 import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalSnackbarHostState
@@ -125,7 +126,7 @@ private fun DASelector(dialogState: DADialogState) {
                             is LoadState.Success -> {
                                 DASetFilterFlowRow(
                                     daSetFilters = (daList as LoadState.Success<DAList>).data.daSetFilters,
-                                    selectedDASetFilter = daListState.selectedDASetFilter,
+                                    selectedDASetFilter = (daList as LoadState.Success<DAList>).data.selectedDASetFilter,
                                     selectDASetFilter = { daListViewModel.selectDASetFilter(it) },
                                 )
                                 DirectActionListContent(
