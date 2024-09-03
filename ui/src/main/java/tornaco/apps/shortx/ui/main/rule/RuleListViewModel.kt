@@ -34,10 +34,11 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
     @OptIn(FlowPreview::class)
     override val ruleList: StateFlow<LoadState<RuleList>> by lazy {
         combine(
-            state.map { it.loadRuleRequest },
+            loadRuleRequest.debounce(300),
             state.map { it.onlyShowEnabled },
             state.map { it.ruleSortBy },
-            state.map { it.searchQuery }) { _, onlyShowEnabled, ruleSortBy, query ->
+            state.map { it.searchQuery }) { loadRuleRequest, onlyShowEnabled, ruleSortBy, query ->
+            logger.d("loadRuleRequest- $loadRuleRequest")
             runCatching {
                 LoadState.Success(getRuleList(onlyShowEnabled, query, ruleSortBy))
             }.getOrElse {
@@ -48,8 +49,7 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
             if (it is LoadState.Success) {
                 pref.setSelectedRuleFilter(it.data.selectedRuleSetFilter.filterId)
             }
-        }.debounce(300)
-            .stateIn(viewModelScope, SharingStarted.Lazily, initialValue = LoadState.Loading)
+        }.stateIn(viewModelScope, SharingStarted.Lazily, initialValue = LoadState.Loading)
     }
 
     private suspend fun getRuleList(

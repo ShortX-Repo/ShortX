@@ -6,12 +6,14 @@ import android.widget.Toast
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildPropInternal
@@ -60,8 +62,6 @@ data class RuleListState(
     val showDescription: Boolean = true,
     val onlyShowEnabled: Boolean = true,
     val searchQuery: String = "",
-    val loadActiveJobRequest: Long = System.currentTimeMillis(),
-    val loadRuleRequest: Long = System.currentTimeMillis(),
 )
 
 data class RuleList(
@@ -75,17 +75,21 @@ abstract class BaseRuleListViewModel(context: Context) :
     ShortXContextViewModel<RuleListState>(context, { RuleListState() }) {
     val pref by lazy { Pref(context) }
 
+    private val loadActiveJobRequest: MutableStateFlow<Long> =
+        MutableStateFlow(System.currentTimeMillis())
+    protected val loadRuleRequest: MutableStateFlow<Long> =
+        MutableStateFlow(System.currentTimeMillis())
+
     abstract val ruleList: StateFlow<LoadState<RuleList>>
 
     @OptIn(FlowPreview::class)
     val activeJobIds: StateFlow<List<String>> by lazy {
-        state.map {
-            it.loadActiveJobRequest
-        }.debounce(300).map {
-            shortXManager.getActiveJobs().apply {
-                logger.d("activeJobs: $this")
-            }
-        }.stateIn(viewModelScope, SharingStarted.Lazily, initialValue = emptyList())
+        loadActiveJobRequest
+            .debounce(300).map {
+                shortXManager.getActiveJobs().apply {
+                    logger.d("activeJobs: $this")
+                }
+            }.stateIn(viewModelScope, SharingStarted.Lazily, initialValue = emptyList())
     }
 
     private val jobStatusListener = object : IJobStatusListener.Stub() {
@@ -169,11 +173,12 @@ abstract class BaseRuleListViewModel(context: Context) :
     }
 
     fun requestLoadRuleList(reason: String) {
-        updateState { copy(loadRuleRequest = System.currentTimeMillis()) }
+        logger.d("requestLoadRuleList- $reason")
+        loadRuleRequest.update { System.currentTimeMillis() }
     }
 
     fun requestLoadActiveJobs() {
-        updateState { copy(loadActiveJobRequest = System.currentTimeMillis()) }
+        loadActiveJobRequest.update { System.currentTimeMillis() }
     }
 
     fun setRuleSortBy(ruleSortBy: RuleSortBy) {

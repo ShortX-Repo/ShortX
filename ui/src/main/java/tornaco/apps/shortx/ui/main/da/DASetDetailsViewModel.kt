@@ -20,17 +20,14 @@ class DASetDetailsViewModel(
 
     @OptIn(FlowPreview::class)
     override val daList: StateFlow<LoadState<DAList>> by lazy {
-        state.map {
-            it.loadDARequest
-        }.map {
+        loadDARequest.debounce(300).map {
             runCatching {
                 LoadState.Success(getDAList())
             }.getOrElse {
                 logger.e(it, "load da list")
                 LoadState.Error(it)
             }
-        }.debounce(300)
-            .stateIn(viewModelScope, SharingStarted.Lazily, initialValue = LoadState.Loading)
+        }.stateIn(viewModelScope, SharingStarted.Lazily, initialValue = LoadState.Loading)
     }
 
     private suspend fun getDAList(): DAList {

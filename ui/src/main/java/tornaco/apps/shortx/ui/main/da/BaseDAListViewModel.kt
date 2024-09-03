@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.promeg.pinyinhelper.Pinyin
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IJobStatusListener
@@ -55,9 +57,7 @@ data class DAListState(
     val daSortBy: DASortBy = DASortBy.CreateTime,
     val isShowDetailedDAItem: Boolean = true,
     val colorfulCard: Boolean = false,
-    val searchQuery: String = "",
-    val loadDARequest: Long = System.currentTimeMillis(),
-    val loadActiveJobRequest: Long = System.currentTimeMillis(),
+    val searchQuery: String = ""
 )
 
 data class DAList(
@@ -78,13 +78,16 @@ abstract class BaseDAListViewModel(context: Context) :
     private val _shortcutApkInstalled = MutableSharedFlow<ApkInstallState>()
     val shortcutApkInstalled = _shortcutApkInstalled.asSharedFlow()
 
+    private val loadActiveJobRequest: MutableStateFlow<Long> =
+        MutableStateFlow(System.currentTimeMillis())
+    protected val loadDARequest: MutableStateFlow<Long> =
+        MutableStateFlow(System.currentTimeMillis())
+
     abstract val daList: StateFlow<LoadState<DAList>>
 
     @OptIn(FlowPreview::class)
     val activeJobIds: StateFlow<ActiveJobIds> by lazy {
-        state.map {
-            it.loadActiveJobRequest
-        }.debounce(300).map {
+        loadActiveJobRequest.debounce(300).map {
             ActiveJobIds(shortXManager.getActiveJobs().apply {
                 logger.d("activeJobs: $this")
             })
@@ -173,11 +176,11 @@ abstract class BaseDAListViewModel(context: Context) :
     }
 
     fun requestLoadDAList() {
-        updateState { copy(loadDARequest = System.currentTimeMillis()) }
+        loadDARequest.update { System.currentTimeMillis() }
     }
 
     fun requestLoadActiveJobs() {
-        updateState { copy(loadActiveJobRequest = System.currentTimeMillis()) }
+        loadActiveJobRequest.update { System.currentTimeMillis() }
     }
 
     fun deleteDA(daId: String) {

@@ -23,7 +23,7 @@ class RuleSetDetailsViewModel(
     @OptIn(FlowPreview::class)
     override val ruleList: StateFlow<LoadState<RuleList>> by lazy {
         combine(
-            state.map { it.loadRuleRequest },
+            loadRuleRequest.debounce(300),
             state.map { it.onlyShowEnabled },
             state.map { it.ruleSortBy },
             state.map { it.searchQuery }) { _, _, _, _ ->

@@ -37,7 +37,7 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
     @OptIn(FlowPreview::class)
     override val daList: StateFlow<LoadState<DAList>> by lazy {
         combine(
-            state.map { it.loadDARequest },
+            loadDARequest.debounce(300),
             state.map { it.searchQuery }) { _, query ->
             runCatching {
                 LoadState.Success(getDAList(query))
