@@ -4,6 +4,8 @@ package tornaco.apps.shortx.ui.main
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -25,11 +27,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -450,10 +453,21 @@ private fun SettingsAppBarActions(hasSensorUsage: Boolean) {
     IconButton(onClick = {
         scope.launch { localDrawerState.open() }
     }) {
-        Icon(
-            imageVector = Icons.Outlined.Menu,
-            tint = if (hasSensorUsage) WarningYellow else LocalContentColor.current
-        )
+        BadgedBox(badge = {
+            if (hasSensorUsage) {
+                Badge(containerColor = WarningYellow)
+            }
+        }) {
+            // 使用 animateDpAsState 为大小变化添加动画
+            val iconSize by animateDpAsState(
+                targetValue = if (hasSensorUsage) 18.dp else 24.dp,
+                animationSpec = tween(durationMillis = 300), label = "Icon size"
+            )
+            Icon(
+                imageVector = Icons.Outlined.Menu,
+                modifier = Modifier.size(iconSize)
+            )
+        }
     }
 }
 
