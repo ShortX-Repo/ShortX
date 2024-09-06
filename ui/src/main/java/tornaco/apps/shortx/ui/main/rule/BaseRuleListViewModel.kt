@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.sample
 import kotlinx.coroutines.flow.stateIn
@@ -25,6 +24,7 @@ import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.proto.rule.RuleSet
 import tornaco.apps.shortx.core.proto.toJson
 import tornaco.apps.shortx.core.proto.toStringPair
 import tornaco.apps.shortx.core.rule.RuleObserver
@@ -235,11 +235,19 @@ abstract class BaseRuleListViewModel(context: Context) :
     }
 
     fun ruleToShareString(rule: RuleUM): String? =
-        shortXManager.getRuleById(rule.id)?.toJson()
+        shortXManager.getRuleById(rule.id)?.let {
+            Rule.newBuilder(it)
+                .setId("SHARE-" + defaultNewRuleId())
+                .build()
+        }?.toJson()
             ?.addShareContentHeader(mapOf("type" to SharedData.TYPE_RULE))
 
     fun ruleSetToShareString(rule: RuleUM): String? =
-        shortXManager.getRuleSetById(id = rule.id, withRules = true)?.toJson()
+        shortXManager.getRuleSetById(id = rule.id, withRules = true)?.let {
+            RuleSet.newBuilder(it)
+                .setId("SHARE-" + defaultNewRuleSetId())
+                .build()
+        }?.toJson()
             ?.addShareContentHeader(mapOf("type" to SharedData.TYPE_RULE_SET))
 
     fun importRule(rule: Rule, shouldChangeId: Boolean, token: String?) {

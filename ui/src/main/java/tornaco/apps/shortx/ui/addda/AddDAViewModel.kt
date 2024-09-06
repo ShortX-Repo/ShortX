@@ -37,7 +37,7 @@ import java.util.Date
 import java.util.UUID
 import javax.inject.Inject
 
-fun defaultNewDAId() = "DA" + UUID.randomUUID().toString()
+fun defaultNewDAId() = "DA-" + UUID.randomUUID().toString()
 
 data class AddDirectActionState(
     val id: String = defaultNewDAId(),

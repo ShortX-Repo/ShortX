@@ -78,7 +78,6 @@ import tornaco.apps.shortx.ui.base.RebootConfirmDialog
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
 import tornaco.apps.shortx.ui.base.SearchBarState
-import tornaco.apps.shortx.ui.base.ShareDialog
 import tornaco.apps.shortx.ui.base.ShortXAlertDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
@@ -87,7 +86,6 @@ import tornaco.apps.shortx.ui.base.UserTip
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberFabState
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
-import tornaco.apps.shortx.ui.base.rememberShareDialogState
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.main.model.MainState
@@ -280,9 +278,6 @@ fun MainScaffold(
         },
         floatingActionButton = floatingActionButton
     ) { paddingValues ->
-        val shareDialogState = rememberShareDialogState("share.shortx")
-        ShareDialog(state = shareDialogState)
-
         val rebootDialogState = rememberCommonDialogState()
         RebootConfirmDialog(state = rebootDialogState)
 

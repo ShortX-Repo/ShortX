@@ -192,7 +192,7 @@ abstract class BaseDAListViewModel(context: Context) :
     fun dupDA(daId: String, token: String?) {
         viewModelScope.launch {
             shortXManager.getDirectActionById(daId)?.let {
-                importDA(it, true, token)
+                importDA(da = it, shouldChangeId = true, token = token)
             }
         }
     }
@@ -242,11 +242,19 @@ abstract class BaseDAListViewModel(context: Context) :
 
 
     fun daToShareString(da: DirectActionUM): String? =
-        shortXManager.getDirectActionById(da.id)?.toJson()
+        shortXManager.getDirectActionById(da.id)?.let {
+            DirectAction.newBuilder(it)
+                .setId("SHARED-" + defaultNewDAId())
+                .build()
+        }?.toJson()
             ?.addShareContentHeader(mapOf("type" to SharedData.TYPE_DA))
 
     fun daSetToShareString(da: DirectActionUM): String? =
-        shortXManager.getDASetById(da.id, true)?.toJson()
+        shortXManager.getDASetById(da.id, true)?.let {
+            DirectActionSet.newBuilder(it)
+                .setId("SHARE-" + defaultNewDASetId())
+                .build()
+        }?.toJson()
             ?.addShareContentHeader(mapOf("type" to SharedData.TYPE_DA_SET))
 
     fun importDA(da: DirectAction, shouldChangeId: Boolean, token: String?) {

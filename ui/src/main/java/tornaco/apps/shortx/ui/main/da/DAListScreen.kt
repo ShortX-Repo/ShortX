@@ -304,7 +304,7 @@ private fun DAListContent(
         columns = dynamicStaggeredGridCells(),
         contentPadding = PaddingValues(top = 8.dp, bottom = 72.dp)
     ) {
-        items(items = das, key = { it.id }) { da ->
+        items(items = das, key = { it.id + "-" + it.updateTime }) { da ->
             ShortXCard(
                 modifier = Modifier
                     .padding(horizontal = 16.dp, vertical = 8.dp),
@@ -354,7 +354,7 @@ private fun DAListContentCompat(
         columns = GridCells.Adaptive(adaptiveLauncherIconSizeMin),
         contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
     ) {
-        items(items = das, key = { it.id }) { da ->
+        items(items = das, key = { it.id + "-" + it.updateTime }) { da ->
             if (da.isDirectActionSet) {
                 DASetListItemCompat(
                     modifier = Modifier,
