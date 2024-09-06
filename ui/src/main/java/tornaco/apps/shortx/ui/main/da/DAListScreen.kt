@@ -66,6 +66,7 @@ import tornaco.apps.shortx.ui.main.CommonSetFilter
 import tornaco.apps.shortx.ui.main.MainScaffold
 import tornaco.apps.shortx.ui.main.MainViewModel
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
+import tornaco.apps.shortx.ui.main.uniqueUIKey
 import tornaco.apps.shortx.ui.main.userSetIdOrNull
 import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.ViewerActivity
@@ -304,7 +305,7 @@ private fun DAListContent(
         columns = dynamicStaggeredGridCells(),
         contentPadding = PaddingValues(top = 8.dp, bottom = 72.dp)
     ) {
-        items(items = das, key = { it.id + "-" + it.updateTime }) { da ->
+        items(items = das, key = { it.uniqueUIKey }) { da ->
             ShortXCard(
                 modifier = Modifier
                     .padding(horizontal = 16.dp, vertical = 8.dp),
@@ -354,7 +355,7 @@ private fun DAListContentCompat(
         columns = GridCells.Adaptive(adaptiveLauncherIconSizeMin),
         contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
     ) {
-        items(items = das, key = { it.id + "-" + it.updateTime }) { da ->
+        items(items = das, key = { it.uniqueUIKey }) { da ->
             if (da.isDirectActionSet) {
                 DASetListItemCompat(
                     modifier = Modifier,

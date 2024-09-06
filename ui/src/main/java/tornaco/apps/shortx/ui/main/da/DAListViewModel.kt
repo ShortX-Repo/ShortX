@@ -157,7 +157,7 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
         }
 
         return DAList(
-            das = finalDAS,
+            das = finalDAS.distinct(),
             daSetFilters = daSetFilters,
             selectedDASetFilter = selectedFilter
         )

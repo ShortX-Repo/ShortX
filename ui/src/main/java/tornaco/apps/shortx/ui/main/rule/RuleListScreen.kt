@@ -53,6 +53,7 @@ import tornaco.apps.shortx.ui.main.CommonSetFilter
 import tornaco.apps.shortx.ui.main.MainScaffold
 import tornaco.apps.shortx.ui.main.MainViewModel
 import tornaco.apps.shortx.ui.main.model.RuleUM
+import tornaco.apps.shortx.ui.main.uniqueUIKey
 import tornaco.apps.shortx.ui.main.userSetIdOrNull
 import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.ViewerActivity
@@ -250,7 +251,7 @@ private fun RuleListContent(
     ) {
         items(
             items = rules,
-            key = { listItem: RuleUM -> listItem.id + listItem.updateTime }) { rule ->
+            key = { listItem: RuleUM -> listItem.uniqueUIKey }) { rule ->
             ShortXCard(
                 modifier = Modifier
                     .padding(horizontal = 16.dp, vertical = 8.dp),

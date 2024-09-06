@@ -27,6 +27,7 @@ import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.main.MainScaffold
 import tornaco.apps.shortx.ui.main.MainViewModel
 import tornaco.apps.shortx.ui.main.model.ToggleUM
+import tornaco.apps.shortx.ui.main.uniqueUIKey
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 
 
@@ -100,7 +101,7 @@ fun ToggleListScreen() {
                 ) {
                     items(
                         items = toggleListState.toggles,
-                        key = { listItem: ToggleUM -> listItem.id + listItem.updateTime }) { toggle ->
+                        key = { listItem: ToggleUM -> listItem.uniqueUIKey }) { toggle ->
                         ShortXCard(
                             modifier = Modifier
                                 .padding(horizontal = 16.dp, vertical = 8.dp),

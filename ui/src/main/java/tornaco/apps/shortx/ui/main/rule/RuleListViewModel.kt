@@ -156,7 +156,7 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
         logger.i("final rules: ${finalRules.joinToString { it.title }}")
 
         return RuleList(
-            rules = finalRules,
+            rules = finalRules.distinct(),
             ruleSetFilters = ruleSetFilters,
             selectedRuleSetFilter = selectedSetFilter
         )
