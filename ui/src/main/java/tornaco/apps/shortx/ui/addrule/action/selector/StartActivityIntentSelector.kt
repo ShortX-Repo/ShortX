@@ -40,10 +40,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.I18N
+import tornaco.apps.shortx.core.proto.common.AndroidIntentComponentType
 import tornaco.apps.shortx.core.proto.common.AndroidIntentExtra
 import tornaco.apps.shortx.core.proto.common.AndroidIntentExtraType
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.base.SingleAppSelectorDialog
 import tornaco.apps.shortx.ui.addrule.base.rememberSingleAppPkgSelectorState
@@ -108,7 +110,8 @@ private fun BaseSelectorActivity<Action.StartActivityIntent>.StartActivityIntent
                                         pkgName = vmState.pkgName,
                                         className = vmState.className,
                                         data = vmState.data,
-                                        extras = vmState.extras
+                                        extras = vmState.extras,
+                                        componentType = vmState.componentType
                                     )
                                 )
                             }) {
@@ -136,6 +139,38 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
             .animateContentSize()
             .verticalScroll(rememberScrollState())
     ) {
+        SmallTitle(
+            modifier = Modifier.padding(vertical = 12.dp),
+            text = LocalI18N.current["ui.common.component.type"]
+        )
+        Box {
+            val typeDropdownState = rememberDropdownSelectorState()
+
+            DropdownSelector(
+                state = typeDropdownState,
+                items = AndroidIntentComponentType.entries
+                    .filter { it != AndroidIntentComponentType.UNRECOGNIZED }.map {
+                        DropdownItem(
+                            labelLines = listOf(LocalI18N.current[it.labelKey()]),
+                            data = it
+                        )
+                    }
+            ) {
+                vm.updateComponentType(it.data)
+            }
+
+            FilledTonalButton(onClick = {
+                typeDropdownState.open()
+            }) {
+                Row(verticalAlignment = CenterVertically) {
+                    Text(text = LocalI18N.current[state.componentType.labelKey()])
+                    StandardSpacer()
+                    RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
+                }
+            }
+        }
+        StandardSpacer()
+
         SmallTitle(
             modifier = Modifier.padding(vertical = 12.dp),
             text = LocalI18N.current["ui.common.action"]
@@ -173,7 +208,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
         StandardSpacer()
 
         val componentSelectorState = rememberAppComponentSelectorState(
-            types = listOf(ComponentType.Activity),
+            types = listOf(ComponentType.Activity, ComponentType.Service, ComponentType.Receiver),
             maxItemCount = 1,
             onAppComponentSelected = { infoList ->
                 if (infoList.isNotEmpty()) {

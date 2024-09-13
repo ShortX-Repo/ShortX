@@ -14,7 +14,7 @@ class DemoService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Logger("DemoService").d("onStartCommand: $intent")
+        Logger("DemoService").d("onStartCommand: ${intent?.action} ${intent?.dataString} ${intent.toString()}")
         Handler(Looper.getMainLooper()).post {
             Toast.makeText(applicationContext, "DemoService start: $intent", Toast.LENGTH_LONG)
                 .show()

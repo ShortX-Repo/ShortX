@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import tornaco.apps.shortx.core.os.isMainUser
 import tornaco.apps.shortx.core.os.myUserId
+import tornaco.apps.shortx.core.proto.common.AndroidIntentComponentType
 import tornaco.apps.shortx.core.proto.common.AndroidIntentExtra
 import tornaco.apps.shortx.core.proto.common.AndroidIntentExtraType
 import tornaco.apps.shortx.core.proto.common.App
@@ -14,7 +15,6 @@ import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
-import java.util.*
 import javax.inject.Inject
 
 
@@ -27,7 +27,8 @@ data class StartActivityIntentSelectorState(
     val userId: Int = myUserId,
     val userLabel: String = "N/A",
     val extras: List<AndroidIntentExtra> = emptyList(),
-    val app: App? = null
+    val app: App? = null,
+    val componentType: AndroidIntentComponentType = AndroidIntentComponentType.AndroidIntentComponentTypeActivity
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -38,22 +39,6 @@ class StartActivityIntentSelectorViewModel @Inject constructor(@ApplicationConte
             StartActivityIntentSelectorState()
         }
     ) {
-
-    override fun resetState() {
-        super.resetState()
-        logger.d("resetState")
-        initFrom(
-            Action.StartActivityIntent(
-                userId = myUserId,
-                action = Intent.ACTION_VIEW,
-                pkgName = null,
-                className = null,
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK,
-                data = null,
-                extras = emptyList()
-            )
-        )
-    }
 
     fun initFrom(settings: Action.StartActivityIntent) {
         logger.d("initFrom: $settings")
@@ -66,6 +51,7 @@ class StartActivityIntentSelectorViewModel @Inject constructor(@ApplicationConte
                 data = settings.data ?: "",
                 userId = settings.userId,
                 extras = settings.extras,
+                componentType = settings.componentType,
 
                 app = settings.pkgName?.let {
                     shortXManager.pkgToApp(
@@ -194,5 +180,13 @@ class StartActivityIntentSelectorViewModel @Inject constructor(@ApplicationConte
 
     fun newExtra() {
         addExtra(AndroidIntentExtra.newBuilder().setType(AndroidIntentExtraType.String).build())
+    }
+
+    fun updateComponentType(componentType: AndroidIntentComponentType) {
+        updateState {
+            copy(
+                componentType = componentType
+            )
+        }
     }
 }

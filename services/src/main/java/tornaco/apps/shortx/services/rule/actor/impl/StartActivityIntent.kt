@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.rule.actor.impl
 
 import android.annotation.SuppressLint
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.proto.common.AndroidIntentComponentType
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.toIntent
 import tornaco.apps.shortx.core.util.UserHandleUtils
@@ -28,7 +29,33 @@ object StartActivityIntent : Actor {
                 parameterInputs = parameterInputs,
             ) { shortXContext.rule.getAllGlobalVars() }
         val userId = startActivity.userId
-        logger.d("startActivityAsUser: $intent $userId")
-        androidContext.startActivityAsUser(intent, UserHandleUtils.userIdToUserHandle(userId))
+        val componentType: AndroidIntentComponentType = startActivity.componentType
+        logger.d("startActivityAsUser: $intent $userId $componentType")
+        val userHandle = UserHandleUtils.userIdToUserHandle(userId)
+
+        when (componentType) {
+            AndroidIntentComponentType.UNRECOGNIZED, AndroidIntentComponentType.AndroidIntentComponentTypeActivity -> {
+                androidContext.startActivityAsUser(
+                    intent,
+                    userHandle
+                )
+            }
+
+            AndroidIntentComponentType.AndroidIntentComponentTypeBroadcast -> {
+                androidContext.sendBroadcastAsUser(
+                    intent,
+                    userHandle
+                )
+            }
+
+            AndroidIntentComponentType.AndroidIntentComponentTypeService -> {
+                androidContext.startServiceAsUser(
+                    intent,
+                    userHandle
+                )
+            }
+        }
+
+        Unit
     }
 }
