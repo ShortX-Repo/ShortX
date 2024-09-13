@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import tornaco.apps.shortx.core.compat.ContextCompat
+import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.fact.Broadcast
 import tornaco.apps.shortx.core.proto.factsAndQuitFacts
 import tornaco.apps.shortx.core.proto.rule.Rule
@@ -12,6 +13,7 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.util.SafeBroadcastReceiver
 
 class BroadcastTrigger(
@@ -46,13 +48,24 @@ class BroadcastTrigger(
                     val receiver = object : SafeBroadcastReceiver(shortXContext) {
                         override fun handleReceive(context: Context, intent: Intent) {
                             logger.d("handleReceive- $intent")
-                            shortXContext.rule.publishFact(
-                                reason = "Received broadcast",
-                                fact = Broadcast
-                                    .newBuilder()
-                                    .setId(broadcast.id)
-                                    .build()
-                            )
+                            shortXContext.rule.publishFactChecked(
+                                Broadcast.getDefaultInstance()
+                            ) {
+                                FactPublishData(
+                                    reason = "Received broadcast",
+                                    fact = Broadcast
+                                        .newBuilder()
+                                        .setId(broadcast.id)
+                                        .build(),
+                                    initialContextDataLazy = {
+                                        mapOf(
+                                            ContextDataMapping.Broadcast.intent.name to Intent(
+                                                intent
+                                            )
+                                        )
+                                    }
+                                )
+                            }
                         }
                     }
 

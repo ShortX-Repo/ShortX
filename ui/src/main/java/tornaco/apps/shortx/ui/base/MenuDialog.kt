@@ -115,8 +115,10 @@ private fun ItemContent(
                         TinySpacer()
                         MarkdownText(
                             markdown = summary,
-                            fontSize = 12.sp,
-                            color = textColor ?: NoteTextColor,
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                fontSize = 12.sp,
+                                color = textColor ?: NoteTextColor,
+                            ),
                             onLinkClicked = {
                                 BrowserUtils.launch(context, it)
                             },

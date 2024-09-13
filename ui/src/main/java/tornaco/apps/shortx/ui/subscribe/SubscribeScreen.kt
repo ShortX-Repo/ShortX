@@ -351,7 +351,9 @@ private fun SubscribeIntroUi(config: SubscriptionConfig2) {
                 "qq" to config.qq,
                 "app_name" to appName,
             )],
-            color = textColor,
+            style = MaterialTheme.typography.bodySmall.copy(
+                color = textColor
+            ),
             onLinkClicked = {
                 kotlin.runCatching {
                     context.startActivity(Intent(Intent.ACTION_VIEW).apply {
