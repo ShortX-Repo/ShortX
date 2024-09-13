@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.fact.Broadcast
+import tornaco.apps.shortx.core.proto.factsAndQuitFacts
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
@@ -32,7 +33,8 @@ class BroadcastTrigger(
     private fun checkAndRegisterForRule(rule: Rule, reason: String) {
         if (rule.isEnabled) {
             val broadcasts =
-                rule.factsList.filter { it.isBroadcast() }.map { it unpack_ Broadcast::class.java }
+                rule.factsAndQuitFacts.filter { it.isBroadcast() }
+                    .map { it unpack_ Broadcast::class.java }
             if (broadcasts.isNotEmpty()) {
                 broadcasts.forEach { broadcast ->
                     val actions = broadcast.actionsList
@@ -43,6 +45,7 @@ class BroadcastTrigger(
                     actions.forEach { filter.addAction(it) }
                     val receiver = object : SafeBroadcastReceiver(shortXContext) {
                         override fun handleReceive(context: Context, intent: Intent) {
+                            logger.d("handleReceive- $intent")
                             shortXContext.rule.publishFact(
                                 reason = "Received broadcast",
                                 fact = Broadcast
@@ -74,7 +77,7 @@ class BroadcastTrigger(
     }
 
     private fun unRegisterReceiverForRule(rule: Rule, reason: () -> String) {
-        rule.factsList.filter { it.isBroadcast() }.map { it unpack_ Broadcast::class.java }
+        rule.factsAndQuitFacts.filter { it.isBroadcast() }.map { it unpack_ Broadcast::class.java }
             .forEach {
                 unRegisterReceiverForBroadcast(it, reason)
             }
@@ -91,12 +94,12 @@ class BroadcastTrigger(
 
     override fun onUpdateRule(oldRule: Rule, newRule: Rule) {
         super.onUpdateRule(oldRule, newRule)
-        if (oldRule.factsList == newRule.factsList) {
+        if (oldRule.factsAndQuitFacts == newRule.factsAndQuitFacts) {
             logger.d("Facts not change for this rule(new label): ${newRule.title}")
             return
         }
 
-        if (oldRule.factsList.filter { it.isBroadcast() } == newRule.factsList.filter { it.isBroadcast() }) {
+        if (oldRule.factsAndQuitFacts.filter { it.isBroadcast() } == newRule.factsAndQuitFacts.filter { it.isBroadcast() }) {
             logger.d("Broadcasts not change for this rule(new label): ${newRule.title}")
             return
         }
