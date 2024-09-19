@@ -11,8 +11,10 @@ import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.proto.common.WebSocketEvent
 import tornaco.apps.shortx.core.rule.ProtoAny
+import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
+import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.ActionEvaluator
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
@@ -37,6 +39,7 @@ object WebSocketConnect : Actor {
         with(params) {
             val data =
                 params.action unpack_ tornaco.apps.shortx.core.proto.action.WebSocketConnect::class.java
+            val cv = RuleContextAndVars(params)
 
             withContext(Dispatchers.IO) {
                 var quitError: Throwable? = null
@@ -96,7 +99,7 @@ object WebSocketConnect : Actor {
                         quitError = Error(WebSocketEvent.WS_FAILURE.name, t)
                     }
                 }
-                val client = WebSocketClient(url = data.url, callback = callback, scope = scope)
+                val client = WebSocketClient(url = data.url.compileContextAndVars(cv), callback = callback, scope = scope)
                 var socket: WebSocket? = null
                 runCatching {
                     socket = client.start()

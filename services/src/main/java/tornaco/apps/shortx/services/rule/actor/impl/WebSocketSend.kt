@@ -22,7 +22,7 @@ object WebSocketSend : Actor {
                 action unpack_ tornaco.apps.shortx.core.proto.action.WebSocketSend::class.java
             val cv = RuleContextAndVars(params)
             withContext(Dispatchers.IO) {
-                val url = data.url
+                val url = data.url.compileContextAndVars(cv)
                 val ws = requireNotNull(WebSocketConnect.getLivingWSByUrl(url)) {
                     "WebSocket connection not found: $url, please connect first."
                 }
