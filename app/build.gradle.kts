@@ -1,3 +1,4 @@
+import com.github.megatronking.stringfog.plugin.StringFogExtension
 import tornaco.project.android.shortx.Configs
 import tornaco.project.android.shortx.Configs.keyStoreAlias
 import tornaco.project.android.shortx.Configs.keyStorePassword
@@ -13,6 +14,7 @@ plugins {
     alias(libs.plugins.dagger.hilt.android)
     alias(libs.plugins.kover)
     alias(libs.plugins.compose.compiler)
+    id("stringfog")
 }
 
 log("sxFlavor: ${Configs.sxFlavor}")
@@ -23,6 +25,20 @@ if (Configs.sxFlavor == Flavor.ROW) {
     // The google-services Gradle plugin needs to be applied on a project with com.android.application or com.android.dynamic-feature.
     plugins.apply("com.google.gms.google-services")
     plugins.apply("com.google.firebase.crashlytics")
+}
+
+apply(plugin = "stringfog")
+
+configure<StringFogExtension> {
+    // 必要：加解密库的实现类路径，需和上面配置的加解密算法库一致。
+    implementation = "com.github.megatronking.stringfog.xor.StringFogImpl"
+    // 可选：加密开关，默认开启。
+    enable = true
+    // 可选：指定需加密的代码包路径，可配置多个，未指定将默认全部加密。
+    // fogPackages = arrayOf("com.xxx.xxx")
+    kg = com.github.megatronking.stringfog.plugin.kg.RandomKeyGenerator()
+    // base64或者bytes
+    mode = com.github.megatronking.stringfog.plugin.StringFogMode.bytes
 }
 
 android {
@@ -130,6 +146,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.stringfog.xor)
     implementation(libs.dagger.hilt.android)
     implementation(libs.dagger.hilt.navigation.compose)
     implementation(libs.material)

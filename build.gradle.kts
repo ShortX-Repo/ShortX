@@ -10,6 +10,10 @@ buildscript {
         mavenCentral()
         mavenLocal()
     }
+    dependencies {
+        classpath(libs.stringfog.plugin)
+        classpath(libs.stringfog.xor)
+    }
 }
 
 plugins {
