@@ -116,7 +116,7 @@ subprojects {
         val hasAndroidPlugin = project.plugins.hasPlugin(AndroidBasePlugin::class)
         log("Check publishing subproject: ${project.name}, hasAndroidPlugin: $hasAndroidPlugin")
         val fogModules = listOf(
-            "app", "ui"
+            "patch"
         )
         if (fogModules.contains(project.name)) {
             log("Fogging: ${project.name}")
@@ -132,6 +132,9 @@ subprojects {
                 kg = com.github.megatronking.stringfog.plugin.kg.RandomKeyGenerator()
                 // base64或者bytes
                 mode = com.github.megatronking.stringfog.plugin.StringFogMode.bytes
+            }
+            project.dependencies {
+                add("implementation", libs.stringfog.xor)
             }
         }
 

@@ -13,7 +13,6 @@ plugins {
     alias(libs.plugins.dagger.hilt.android)
     alias(libs.plugins.kover)
     alias(libs.plugins.compose.compiler)
-    id("stringfog")
 }
 
 log("sxFlavor: ${Configs.sxFlavor}")
@@ -131,7 +130,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.stringfog.xor)
     implementation(libs.dagger.hilt.android)
     implementation(libs.dagger.hilt.navigation.compose)
     implementation(libs.material)
