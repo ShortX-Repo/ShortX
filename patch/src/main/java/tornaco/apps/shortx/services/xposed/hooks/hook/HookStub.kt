@@ -20,6 +20,7 @@ object HookStub {
             SystemUIHook.hookApp(lpparam)
             SystemUIHook.hookTile(lpparam)
             SystemUIHook.hookQS(lpparam)
+            SystemUIHook.hookView(lpparam)
             MediaProviderHook.hook(lpparam)
             NFCServiceHook.hook(lpparam)
 
