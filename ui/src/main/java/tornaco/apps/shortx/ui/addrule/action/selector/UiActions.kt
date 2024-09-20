@@ -49,6 +49,11 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
     }
     ShowDanmuSettingsDialog(state = showDanmuSettingsState)
 
+    val showStatusBarClipState = rememberShowStatusBarClipSettingsDialogState {
+        addAction(it)
+    }
+    ShowStatusBarClipSettingsDialog(state = showStatusBarClipState)
+
     val hideOverlayDialogState = rememberHideOverlayDialogState {
         addAction(it)
     }
@@ -287,6 +292,16 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                 true
             }
 
+            Action.ShowStatusBarClip::class -> {
+                showStatusBarClipState.show(source.getActionAs())
+                true
+            }
+
+            Action.HideStatusBarClip::class -> {
+                addAction(Action.HideStatusBarClip())
+                true
+            }
+
             Action.ScreenFlash::class -> {
                 screenFlashLauncher.launch(
                     newIntent(
@@ -430,6 +445,8 @@ fun UiActions(
         Action.SelectScreenArea::class,
         Action.ShowToast::class,
         Action.ShowDanmu::class,
+        Action.ShowStatusBarClip::class,
+        Action.HideStatusBarClip::class,
         Action.ShowOverlay::class,
         Action.HideOverlay::class,
         Action.HideAllOverlay::class,

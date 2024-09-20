@@ -21,15 +21,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
@@ -43,17 +42,12 @@ import tornaco.apps.shortx.ui.util.BrowserUtils
 
 class ShowDanmuSettingsDialogState(
     val onSelected: (Action.ShowDanmu) -> Unit
-) {
-    var isShowing by mutableStateOf(false)
+) : CommonDialogState() {
     var currentSettings: Action.ShowDanmu? = null
 
     fun show(currentSettings: Action.ShowDanmu? = null) {
         this.currentSettings = currentSettings
-        isShowing = true
-    }
-
-    fun dismiss() {
-        isShowing = false
+        show()
     }
 }
 

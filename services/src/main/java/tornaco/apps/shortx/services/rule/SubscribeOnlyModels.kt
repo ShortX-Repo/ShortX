@@ -44,6 +44,7 @@ import tornaco.apps.shortx.core.proto.action.ShowClipboardView
 import tornaco.apps.shortx.core.proto.action.ShowDrawBoard
 import tornaco.apps.shortx.core.proto.action.ShowFloatWindow
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
+import tornaco.apps.shortx.core.proto.action.ShowStatusBarClip
 import tornaco.apps.shortx.core.proto.action.StartGestureRecording
 import tornaco.apps.shortx.core.proto.action.StopAppByPkg
 import tornaco.apps.shortx.core.proto.action.StopGestureRecording
@@ -212,4 +213,5 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         OcrDetect::class,
         LaunchPinedItem::class,
         ShowFloatWindow::class,
+        ShowStatusBarClip::class,
     )

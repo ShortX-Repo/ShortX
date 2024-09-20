@@ -17,10 +17,7 @@ object HookStub {
             androidHooks(lpparam)
             CustomHook.hookAndroidSystem(lpparam)
         } else {
-            SystemUIHook.hookApp(lpparam)
-            SystemUIHook.hookTile(lpparam)
-            SystemUIHook.hookQS(lpparam)
-            SystemUIHook.hookView(lpparam)
+            SystemUIHook.hook(lpparam)
             MediaProviderHook.hook(lpparam)
             NFCServiceHook.hook(lpparam)
 
