@@ -1,43 +1,33 @@
 package tornaco.apps.shortx.services.os.cpu
 
+import android.util.SparseArray
 import tornaco.apps.shortx.core.BuildPropExt
-import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
-import tornaco.apps.shortx.services.os.cpu.CpuAvailabilityMonitoringConfig.CPUSET_ALL
-import tornaco.apps.shortx.services.os.cpu.CpuMonitorInternal.CpuAvailabilityCallback
-import java.util.concurrent.Executors
+import tornaco.apps.shortx.services.os.cpu.CpuInfoReader.CpuInfo
 
 
 class CpuService(shortXContext: ShortXContext) : SystemService(shortXContext, "CpuService") {
-    private val cpuMonitorService by lazy {
-        CpuMonitorService(context)
-    }
+    private val cpuInfoReader by lazy { CpuInfoReader() }
 
     override fun systemReady() {
         super.systemReady()
+        // Initialize CPU info reader and perform the first read to make sure the CPU stats are
+        // readable without any issues.
+        if (!cpuInfoReader.init() || cpuInfoReader.readCpuInfos() == null) {
+            logger.e(
+                "Failed to initialize CPU info reader. This happens when the CPU "
+                        + "frequency stats are not available or the sysfs interface has changed in "
+                        + "the Kernel. Cannot monitor CPU without these stats. Terminating CPU monitor "
+                        + "service"
+            )
+        }
 
         BuildPropExt.onDebugBuild {
-            if (OsUtils.isQOrAbove()) {
-                cpuMonitorService.start(context)
-                cpuMonitorService.localService.addCpuAvailabilityCallback(
-                    Executors.newSingleThreadExecutor(),
-                    CpuAvailabilityMonitoringConfig.Builder(CPUSET_ALL)
-                        .addThreshold(20)
-                        .addThreshold(80)
-                        .build(),
-                    object : CpuAvailabilityCallback {
-                        override fun onAvailabilityChanged(info: CpuAvailabilityInfo) {
-                            logger.d("onAvailabilityChanged: $info")
-                        }
-
-                        override fun onMonitoringIntervalChanged(intervalMilliseconds: Long) {
-                            logger.d("onMonitoringIntervalChanged: $intervalMilliseconds")
-                        }
-                    }
-                )
-            }
+            logger.d(readCpuInfos())
         }
     }
 
+
+    fun readCpuInfos(): SparseArray<CpuInfo>? = cpuInfoReader.readCpuInfos()
 }
