@@ -20,7 +20,7 @@ import tornaco.apps.shortx.services.overlay.OverlayService
 import tornaco.apps.shortx.services.phone.PhoneService
 import tornaco.apps.shortx.services.plugin.PluginService
 import tornaco.apps.shortx.services.rule.RuleService
-import tornaco.apps.shortx.services.tile.StatusBarTileService
+import tornaco.apps.shortx.services.statusbar.StatusBarService
 import tornaco.apps.shortx.services.ui.UIService
 import tornaco.apps.shortx.services.watchdog.WatchDogService
 import tornaco.apps.shortx.services.wm.WindowManagerService
@@ -44,7 +44,7 @@ interface ShortXContext {
     val phone: PhoneService
     val shell: ShellService
     val cpu: CpuService
-    val tile: StatusBarTileService
+    val statusbar: StatusBarService
     val plugin: PluginService
     val cv: CVService
     val ocr: OCRService
@@ -72,7 +72,7 @@ interface ShortXContext {
             phone,
             shell,
             cpu,
-            tile,
+            statusbar,
             plugin,
             cv,
             ocr,
@@ -100,7 +100,7 @@ class ShortXContextImpl : ShortXContext {
     override val phone = PhoneService(this)
     override val shell = ShellService(this)
     override val cpu = CpuService(this)
-    override val tile = StatusBarTileService(this)
+    override val statusbar = StatusBarService(this)
     override val plugin = PluginService(this)
     override val cv = CVService(this)
     override val ocr = OCRService(this)

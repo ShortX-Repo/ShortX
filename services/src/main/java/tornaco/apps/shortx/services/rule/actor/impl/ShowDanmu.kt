@@ -4,6 +4,7 @@ import com.google.protobuf.Message
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.action.ShowDanmu
+import tornaco.apps.shortx.core.proto.common.StatusBarClipState
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.RuleContextAndVars
@@ -29,6 +30,10 @@ object ShowDanmu : Actor {
                 id = evaluateContext.srcId,
                 icon = d.icon.compileContextAndVars(cv),
                 text = d.text.compileContextAndVars(cv)
+            )
+            shortXContext.statusbar.updateStatusBarClip(
+                StatusBarClipState.newBuilder()
+                    .setText(d.text).build()
             )
         }
     }

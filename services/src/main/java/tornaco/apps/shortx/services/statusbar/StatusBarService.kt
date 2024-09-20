@@ -1,15 +1,21 @@
-package tornaco.apps.shortx.services.tile
+package tornaco.apps.shortx.services.statusbar
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.RemoteCallbackList
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener
+import tornaco.apps.shortx.core.proto.common.StatusBarClipState
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
 import tornaco.apps.shortx.core.rule.ToggleObserver
+import tornaco.apps.shortx.core.rule.action.wrap
 import tornaco.apps.shortx.core.settings.defaultStatusBarTileSetting
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.statusBarManager
@@ -23,13 +29,16 @@ import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.watchdog.launchSafety
 
 
-class StatusBarTileService(shortXContext: ShortXContext) :
-    SystemService(shortXContext, "StatusBarTileService") {
+class StatusBarService(shortXContext: ShortXContext) :
+    SystemService(shortXContext, "StatusBarService") {
 
     private val tileSettingsStore by lazy {
         StatusBarTileSettingsStore(systemServiceScope)
     }
     private val settingsChangeListeners = RemoteCallbackList<IStatusBarTileSettingsChangeListener>()
+
+    private val statusBarClipStateListeners = RemoteCallbackList<ICallback>()
+    private val statusBarClipState = MutableStateFlow(StatusBarClipState.getDefaultInstance())
 
     override fun start(context: Context) {
         super.start(context)
@@ -68,6 +77,12 @@ class StatusBarTileService(shortXContext: ShortXContext) :
             if (setting == null) {
                 logger.i("Init default settings for tile: $it")
                 updateStatusBarTileSetting(defaultStatusBarTileSetting(it))
+            }
+        }
+
+        systemServiceScope.launchSafety {
+            statusBarClipState.collectLatest {
+                notifyStatusBarClipStateChanged(it)
             }
         }
     }
@@ -154,6 +169,39 @@ class StatusBarTileService(shortXContext: ShortXContext) :
                         .setIsActive(isEnabled).build()
                     logger.d("updateSetting: $updateSetting")
                     updateStatusBarTileSetting(updateSetting)
+                }
+            }
+        }
+    }
+
+    fun registerStatusbarClipStateListener(callback: ICallback) {
+        statusBarClipStateListeners.register(callback)
+    }
+
+    fun unregisterStatusbarClipStateListener(callback: ICallback) {
+        statusBarClipStateListeners.unregister(callback)
+    }
+
+    fun updateStatusBarClip(clipState: StatusBarClipState) {
+        logger.p("updateStatusBarClip: $clipState")
+        statusBarClipState.update {
+            clipState
+        }
+    }
+
+    fun hideStatusBarClip() {
+        logger.p("hideStatusBarClip")
+        statusBarClipState.update {
+            StatusBarClipState.getDefaultInstance()
+        }
+    }
+
+    private fun notifyStatusBarClipStateChanged(clipState: StatusBarClipState) {
+        logger.p("notifyStatusBarClipStateChanged: $clipState")
+        synchronized(statusBarClipStateListeners) {
+            statusBarClipStateListeners.broadcast {
+                runCatching { it.receive(clipState.toByteArray().wrap()) }.onFailure {
+                    logger.e(it, "notifyStatusBarClipStateChanged")
                 }
             }
         }

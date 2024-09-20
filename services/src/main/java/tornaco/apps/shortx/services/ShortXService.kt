@@ -568,6 +568,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             return shortXContext.user.requestPinAppWidgets
         }
 
+        override fun registerStatusbarClipStateListener(callback: ICallback) {
+            shortXContext.statusbar.registerStatusbarClipStateListener(callback)
+        }
+
+        override fun unregisterStatusbarClipStateListener(callback: ICallback) {
+            shortXContext.statusbar.unregisterStatusbarClipStateListener(callback)
+        }
+
         override fun attachSUImpl(from: String?, su: ISu?) {
             shortXContext.shell.attachSUImpl(from, su)
 
@@ -825,39 +833,39 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         }
 
         override fun getAllStatusBarTileSettings(): List<ByteArrayWrapper> {
-            return shortXContext.tile.getAllStatusBarTileSettings().map {
+            return shortXContext.statusbar.getAllStatusBarTileSettings().map {
                 ByteArrayWrapper(it.toByteArray())
             }
         }
 
         override fun getStatusBarTileSettingsByNumber(tileNumber: Int): ByteArrayWrapper? {
-            return shortXContext.tile.getStatusBarTileSettingsByNumber(tileNumber)?.let {
+            return shortXContext.statusbar.getStatusBarTileSettingsByNumber(tileNumber)?.let {
                 ByteArrayWrapper(it.toByteArray())
             }
         }
 
         override fun updateStatusBarTileSetting(tileSetting: ByteArrayWrapper) {
-            shortXContext.tile.updateStatusBarTileSetting(StatusBarTileSetting.parseFrom(tileSetting.byteData))
+            shortXContext.statusbar.updateStatusBarTileSetting(StatusBarTileSetting.parseFrom(tileSetting.byteData))
         }
 
         override fun registerStatusBarTileSettingsChangeListener(listener: IStatusBarTileSettingsChangeListener) {
-            shortXContext.tile.registerStatusBarTileSettingsChangeListener(listener)
+            shortXContext.statusbar.registerStatusBarTileSettingsChangeListener(listener)
         }
 
         override fun unregisterStatusBarTileSettingsChangeListener(listener: IStatusBarTileSettingsChangeListener) {
-            shortXContext.tile.unregisterStatusBarTileSettingsChangeListener(listener)
+            shortXContext.statusbar.unregisterStatusBarTileSettingsChangeListener(listener)
         }
 
         override fun onTileClick(tileNumber: Int) {
-            shortXContext.tile.onTileClick(tileNumber)
+            shortXContext.statusbar.onTileClick(tileNumber)
         }
 
         override fun isQSTileOptEnabled(): Boolean {
-            return shortXContext.tile.isQSTileOptEnabled()
+            return shortXContext.statusbar.isQSTileOptEnabled()
         }
 
         override fun setQSTileOptEnabled(enable: Boolean) {
-            shortXContext.tile.setQSTileOptEnabled(enable)
+            shortXContext.statusbar.setQSTileOptEnabled(enable)
         }
 
         override fun isSettingsCatcherEnabled(): Boolean {
@@ -1312,7 +1320,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         }
 
         override fun updateQSTileActiveState(number: Int) {
-            shortXContext.tile.updateQSTileActiveState(number)
+            shortXContext.statusbar.updateQSTileActiveState(number)
         }
 
         override fun getActivities(
