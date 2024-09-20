@@ -201,16 +201,17 @@ class StatusBarClipView(
                     .widthIn(max = 100.dp)
                     .clip(ShortXCardRoundedCornerShapeXL)
                     .clickable {
-
                     }
                     .thenIf(
                         Modifier.background(MaterialTheme.colorScheme.primaryContainer),
                         true
-                    )
-                    .padding(4.dp),
+                    ),
                 contentAlignment = Alignment.Center
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     if (clipState.icon.isNotEmpty()) {
                         val iconModifier = Modifier.size(
                             clipState.settings.iconSize.dp
