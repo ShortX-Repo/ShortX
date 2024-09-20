@@ -199,7 +199,7 @@ fun DanmuUISettingsScreen(back: () -> Unit) {
 }
 
 @Composable
-private fun ItemCard(itemLabel: String, content: @Composable () -> Unit) {
+fun ItemCard(itemLabel: String, content: @Composable () -> Unit) {
     ShortXCard(
         modifier = Modifier,
     ) {

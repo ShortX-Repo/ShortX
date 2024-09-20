@@ -96,6 +96,7 @@ fun SettingsScreen(
     goToPkgSetList: () -> Unit,
     goToGV: () -> Unit,
     goToDanmuUISettings: () -> Unit,
+    goToStatusBarClipUISettings: () -> Unit,
     goToEvaRecord: () -> Unit,
     goToAudioRecord: () -> Unit,
     goToGestureRecord: () -> Unit,
@@ -354,6 +355,7 @@ fun SettingsScreen(
                                 goToPkgSetList = goToPkgSetList,
                                 goToGV = goToGV,
                                 goToDanmuUISettings = goToDanmuUISettings,
+                                goToStatusBarClipUISettings = goToStatusBarClipUISettings,
                             )
                         )
                         addAll(
@@ -449,6 +451,7 @@ private fun generalSettings(
     goToPkgSetList: () -> Unit,
     goToGV: () -> Unit,
     goToDanmuUISettings: () -> Unit,
+    goToStatusBarClipUISettings: () -> Unit,
 ): List<Preference> {
     val context = LocalContext.current
 
@@ -484,6 +487,16 @@ private fun generalSettings(
             badge = badge,
             onClick = {
                 mainState.isSubscribed.select({ goToDanmuUISettings() },
+                    { subscribeDialogState.show() })
+            }
+        ),
+
+        Preference.TextPreference(icon = Remix.Communication.message_fill,
+            title = LocalI18N.current["ui.settings.statusbar.clip"],
+            summary = LocalI18N.current["ui.settings.statusbar.clip.summary"],
+            badge = badge,
+            onClick = {
+                mainState.isSubscribed.select({ goToStatusBarClipUISettings() },
                     { subscribeDialogState.show() })
             }
         ),

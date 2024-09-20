@@ -51,6 +51,7 @@ import tornaco.apps.shortx.ui.base.AppImageIcon
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShapeXL
+import tornaco.apps.shortx.ui.base.thenIf
 import tornaco.apps.shortx.ui.overlay.addToLifecycle
 import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
 
@@ -94,7 +95,7 @@ class StatusBarClipView(
                     clipProto.set(clipData)
                     uiState.update { clipData.toUiState() }
 
-                    val shouldBeVisible = clipData != StatusBarClipState.getDefaultInstance()
+                    val shouldBeVisible = clipData.text.isNotEmpty() || clipData.icon.isNotEmpty()
                     val isVisible = isVisible
                     if (shouldBeVisible != isVisible) {
                         if (shouldBeVisible) {
@@ -201,8 +202,11 @@ class StatusBarClipView(
                     .clickable {
 
                     }
-                    .background(MaterialTheme.colorScheme.primaryContainer)
-                    .padding(2.dp),
+                    .thenIf(
+                        Modifier.background(MaterialTheme.colorScheme.primaryContainer),
+                        true
+                    )
+                    .padding(4.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {

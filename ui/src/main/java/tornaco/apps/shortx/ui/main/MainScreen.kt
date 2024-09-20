@@ -52,6 +52,7 @@ import tornaco.apps.shortx.ui.record.SettingsAccessRecordActivity
 import tornaco.apps.shortx.ui.settings.SettingsScreen
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsActivity
 import tornaco.apps.shortx.ui.settings.pref.Pref
+import tornaco.apps.shortx.ui.settings.statusbar.StatusBarClipUISettingsActivity
 import tornaco.apps.shortx.ui.shortcut.ShortcutStubManageActivity
 import tornaco.apps.shortx.ui.theme.ExperimentalYellow
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -123,6 +124,9 @@ fun HomeScreen() {
                         },
                         goToDanmuUISettings = {
                             DanmuUISettingsActivity.start(context)
+                        },
+                        goToStatusBarClipUISettings = {
+                            StatusBarClipUISettingsActivity.start(context)
                         },
                         goToEvaRecord = {
                             EvaRecordActivity.start(context)
