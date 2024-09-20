@@ -140,7 +140,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowStatusBarClipSelectorV
         StandardSpacer()
 
         val context = LocalContext.current
-        TipRow(text = "e.g. \nhttps://xxxx/123.png\napp://com.app.pkg\nremix://icon name at https://remixicon.com/")
+        TipRow(text = "e.g. \napp://com.app.pkg\nremix://icon name at https://remixicon.com/")
         SmallSpacer()
         ShortXTextField(modifier = Modifier.fillMaxWidth(),
             label = {

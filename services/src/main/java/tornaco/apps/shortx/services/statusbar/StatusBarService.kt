@@ -11,6 +11,8 @@ import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener
 import tornaco.apps.shortx.core.proto.common.StatusBarClipState
+import tornaco.apps.shortx.core.proto.common.StatusBarClipUiPlacement
+import tornaco.apps.shortx.core.proto.common.StatusBarClipUiSettings
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
@@ -38,7 +40,11 @@ class StatusBarService(shortXContext: ShortXContext) :
     private val settingsChangeListeners = RemoteCallbackList<IStatusBarTileSettingsChangeListener>()
 
     private val statusBarClipStateListeners = RemoteCallbackList<ICallback>()
+    private val statusBarClipSettingsListeners = RemoteCallbackList<ICallback>()
+
     private val statusBarClipState = MutableStateFlow(StatusBarClipState.getDefaultInstance())
+    private val statusBarClipSettings =
+        MutableStateFlow(StatusBarClipUiSettings.getDefaultInstance())
 
     override fun start(context: Context) {
         super.start(context)
@@ -85,6 +91,23 @@ class StatusBarService(shortXContext: ShortXContext) :
                 notifyStatusBarClipStateChanged(it)
             }
         }
+        systemServiceScope.launchSafety {
+            statusBarClipSettings.collectLatest {
+                notifyStatusBarClipSettingsChanged(it)
+            }
+        }
+
+        setStatusbarClipSettings(
+            StatusBarClipUiSettings.newBuilder()
+                .setPaddingStart(store.read(Settings.IntSettings.StatusBarClipPaddingStart))
+                .setPaddingEnd(store.read(Settings.IntSettings.StatusBarClipPaddingEnd))
+                .setPaddingTop(store.read(Settings.IntSettings.StatusBarClipPaddingTop))
+                .setPaddingBottom(store.read(Settings.IntSettings.StatusBarClipPaddingBottom))
+                .setFontSize(store.read(Settings.IntSettings.StatusBarClipFontSize))
+                .setIconSize(store.read(Settings.IntSettings.StatusBarClipIconSize))
+                .setPlacement(StatusBarClipUiPlacement.forNumber(store.read(Settings.IntSettings.StatusBarClipUiPlacement)))
+                .build()
+        )
     }
 
     fun getAllStatusBarTileSettings(): List<StatusBarTileSetting> {
@@ -182,6 +205,38 @@ class StatusBarService(shortXContext: ShortXContext) :
         statusBarClipStateListeners.unregister(callback)
     }
 
+    fun registerStatusbarClipSettingsListener(callback: ICallback) {
+        statusBarClipSettingsListeners.register(callback)
+    }
+
+    fun unregisterStatusbarClipSettingsListener(callback: ICallback) {
+        statusBarClipSettingsListeners.unregister(callback)
+    }
+
+    fun getCurrentStatusbarClipState(): StatusBarClipState {
+        return statusBarClipState.value
+    }
+
+    fun getStatusbarClipSettings(): StatusBarClipUiSettings {
+        return statusBarClipSettings.value
+    }
+
+    fun setStatusbarClipSettings(data: StatusBarClipUiSettings) {
+        logger.d("setStatusbarClipSettings- $data")
+        statusBarClipSettings.update { data }
+        store.write(Settings.IntSettings.StatusBarClipPaddingStart, data.paddingStart)
+        store.write(Settings.IntSettings.StatusBarClipPaddingEnd, data.paddingEnd)
+        store.write(Settings.IntSettings.StatusBarClipPaddingTop, data.paddingTop)
+        store.write(Settings.IntSettings.StatusBarClipPaddingBottom, data.paddingBottom)
+        store.write(Settings.IntSettings.StatusBarClipFontSize, data.fontSize)
+        store.write(Settings.IntSettings.StatusBarClipIconSize, data.iconSize)
+        store.write(Settings.IntSettings.StatusBarClipUiPlacement, data.placement.number)
+    }
+
+    fun onStatusBarClipClick(id: String) {
+
+    }
+
     fun updateStatusBarClip(clipState: StatusBarClipState) {
         logger.p("updateStatusBarClip: $clipState")
         statusBarClipState.update {
@@ -202,6 +257,17 @@ class StatusBarService(shortXContext: ShortXContext) :
             statusBarClipStateListeners.broadcast {
                 runCatching { it.receive(clipState.toByteArray().wrap()) }.onFailure {
                     logger.e(it, "notifyStatusBarClipStateChanged")
+                }
+            }
+        }
+    }
+
+    private fun notifyStatusBarClipSettingsChanged(settings: StatusBarClipUiSettings) {
+        logger.p("notifyStatusBarClipSettingsChanged: $settings")
+        synchronized(statusBarClipSettingsListeners) {
+            statusBarClipSettingsListeners.broadcast {
+                runCatching { it.receive(settings.toByteArray().wrap()) }.onFailure {
+                    logger.e(it, "notifyStatusBarClipSettingsChanged")
                 }
             }
         }

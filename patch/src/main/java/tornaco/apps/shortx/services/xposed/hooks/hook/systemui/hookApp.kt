@@ -16,6 +16,7 @@ import tornaco.apps.shortx.core.proto.fact.MethodHookLifecycle
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.res.AppResources
+import tornaco.apps.shortx.core.res.PicassoInitializer
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.su.LibShKtShellImpl
@@ -135,6 +136,13 @@ fun SystemUIHook.hookApp(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runC
 
             val app: Context = param.thisObject as Context
             logger.d("After onCreate: $app")
+
+            PicassoInitializer.install(
+                app,
+                app.cacheDir,
+                BuildPropInternal.APP_PACKAGE_NAME
+            )
+
             installShellImpl(shortx)
             installNotificationPoster(shortx, app)
             installCV(shortx, app)

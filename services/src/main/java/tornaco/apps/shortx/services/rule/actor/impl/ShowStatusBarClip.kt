@@ -29,6 +29,8 @@ object ShowStatusBarClip : Actor {
                     .setId(evaluateContext.srcId)
                     .setIcon(d.icon.compileContextAndVars(cv))
                     .setText(d.text.compileContextAndVars(cv))
+                    .addAllLocalVar(localVars.all)
+                    .addAllFuncParameterInputs(parameterInputs)
                     .build()
             )
         }

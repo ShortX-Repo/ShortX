@@ -45,6 +45,7 @@ import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AudioRecordFile
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.common.GestureRecord
+import tornaco.apps.shortx.core.proto.common.StatusBarClipUiSettings
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.common.UserInfo
@@ -72,6 +73,7 @@ import tornaco.apps.shortx.core.rule.RuleContextAndVars
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.action.emptyByteArrayWrapper
 import tornaco.apps.shortx.core.rule.action.su.ISu
+import tornaco.apps.shortx.core.rule.action.wrap
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.replaceLocalVarValues
 import tornaco.apps.shortx.core.rule.toLogString
@@ -576,6 +578,30 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.statusbar.unregisterStatusbarClipStateListener(callback)
         }
 
+        override fun registerStatusbarClipSettingsListener(callback: ICallback) {
+            shortXContext.statusbar.registerStatusbarClipSettingsListener(callback)
+        }
+
+        override fun unregisterStatusbarClipSettingsListener(callback: ICallback) {
+            shortXContext.statusbar.unregisterStatusbarClipSettingsListener(callback)
+        }
+
+        override fun getCurrentStatusbarClipState(): ByteArrayWrapper {
+            return shortXContext.statusbar.getCurrentStatusbarClipState().toByteArray().wrap()
+        }
+
+        override fun getStatusbarClipSettings(): ByteArrayWrapper {
+            return shortXContext.statusbar.getStatusbarClipSettings().toByteArray().wrap()
+        }
+
+        override fun setStatusbarClipSettings(data: ByteArrayWrapper) {
+            shortXContext.statusbar.setStatusbarClipSettings(StatusBarClipUiSettings.parseFrom(data.byteData))
+        }
+
+        override fun onStatusBarClipClick(id: String) {
+            shortXContext.statusbar.onStatusBarClipClick(id)
+        }
+
         override fun attachSUImpl(from: String?, su: ISu?) {
             shortXContext.shell.attachSUImpl(from, su)
 
@@ -845,7 +871,11 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         }
 
         override fun updateStatusBarTileSetting(tileSetting: ByteArrayWrapper) {
-            shortXContext.statusbar.updateStatusBarTileSetting(StatusBarTileSetting.parseFrom(tileSetting.byteData))
+            shortXContext.statusbar.updateStatusBarTileSetting(
+                StatusBarTileSetting.parseFrom(
+                    tileSetting.byteData
+                )
+            )
         }
 
         override fun registerStatusBarTileSettingsChangeListener(listener: IStatusBarTileSettingsChangeListener) {

@@ -65,7 +65,7 @@ fun SystemUIHook.hookView(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.run
                     logger.d("status_bar_contents: $child")
                     kotlin.runCatching {
                         val linearRoot = child as LinearLayout
-                        linearRoot.addView(StatusBarClipView(child.context))
+                        linearRoot.addView(StatusBarClipView(child.context), 0)
                         logger.d("Clip added.")
                     }.onFailure {
                         logger.e(it, "Fail to add clip")

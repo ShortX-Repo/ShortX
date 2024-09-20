@@ -98,6 +98,29 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
 
         data class DidSomethingAtDay(val day: String, val what: String) :
             IntSettings(key = "DidSomethingAtDay_${day}_${what}", defaultValue = { 0 })
+
+        data object StatusBarClipPaddingStart :
+            IntSettings(key = "StatusBarClipPaddingStart", defaultValue = { 0 })
+
+        data object StatusBarClipPaddingEnd :
+            IntSettings(key = "StatusBarClipPaddingEnd", defaultValue = { 0 })
+
+        data object StatusBarClipPaddingTop :
+            IntSettings(key = "StatusBarClipPaddingTop", defaultValue = { 0 })
+
+        data object StatusBarClipFontSize :
+            IntSettings(key = "StatusBarClipFontSize", defaultValue = { 10 })
+
+        data object StatusBarClipIconSize :
+            IntSettings(key = "StatusBarClipIconSize", defaultValue = { 12 })
+
+        data object StatusBarClipPaddingBottom :
+            IntSettings(key = "StatusBarClipPaddingBottom", defaultValue = { 0 })
+
+        data object StatusBarClipUiPlacement :
+            IntSettings(
+                key = "StatusBarClipUiPlacement",
+                defaultValue = { tornaco.apps.shortx.core.proto.common.StatusBarClipUiPlacement.StatusBarClipUiPlacement_Start.number })
     }
 
     sealed class FloatSettings(key: String, defaultValue: (Context) -> Float) :

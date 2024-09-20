@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,43 +26,106 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.isVisible
+import androidx.lifecycle.AtomicReference
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.ShortXManagerNative
+import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.common.StatusBarClipState
+import tornaco.apps.shortx.core.proto.common.StatusBarClipUiSettings
 import tornaco.apps.shortx.core.res.AppResources
+import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
+import tornaco.apps.shortx.core.rule.replaceFuncParameterInputs
+import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
+import tornaco.apps.shortx.core.rule.replaceLocalVarValues
+import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.ViewAnimationUtil
+import tornaco.apps.shortx.ui.base.AnimatedTextContainer
+import tornaco.apps.shortx.ui.base.AppImageIcon
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShapeXL
 import tornaco.apps.shortx.ui.overlay.addToLifecycle
 import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
 
+data class StatusBarClipUiState(
+    val text: String = "",
+    val icon: String = "",
+    val settings: StatusBarClipUiSettings = StatusBarClipUiSettings.getDefaultInstance()
+)
+
+fun StatusBarClipState.toUiState() = StatusBarClipUiState(
+    text = text.replaceFuncParameterInputs(funcParameterInputsList)
+        .replaceGlobalVarValues { shortXManager.getAllGlobalVars() }
+        .replaceLocalVarValues(LocalVars.obtain().apply { localVarList.forEach { add(it) } }),
+    icon = icon,
+    settings = shortXManager.getStatusbarClipSettings()
+)
+
 @SuppressLint("ViewConstructor")
 class StatusBarClipView(
     context: Context,
 ) : FrameLayout(context) {
-    private val statusBarClipState = MutableStateFlow(StatusBarClipState.getDefaultInstance())
+    private val logger = Logger("StatusBarClipView")
+    private val uiState = MutableStateFlow(StatusBarClipUiState())
+
+    private val clipProto = AtomicReference<StatusBarClipState?>(null)
+
+    private val clipSettingsListener = object : ICallback.Stub() {
+        override fun receive(data: ByteArrayWrapper) {
+            val settings = StatusBarClipUiSettings.parseFrom(data.byteData)
+            uiState.update {
+                it.copy(settings = settings)
+            }
+        }
+    }
 
     private val clipListener = object : ICallback.Stub() {
         override fun receive(data: ByteArrayWrapper) {
             post {
                 runCatching {
                     val clipData = StatusBarClipState.parseFrom(data.byteData)
-                    statusBarClipState.update { clipData }
-                    val isVisible = clipData != StatusBarClipState.getDefaultInstance()
-                    if (isVisible) {
-                        ViewAnimationUtil.showWithScaleAnimation(this@StatusBarClipView)
-                    } else {
-                        ViewAnimationUtil.hideWithScaleAnimation(this@StatusBarClipView)
+                    clipProto.set(clipData)
+                    uiState.update { clipData.toUiState() }
+
+                    val shouldBeVisible = clipData != StatusBarClipState.getDefaultInstance()
+                    val isVisible = isVisible
+                    if (shouldBeVisible != isVisible) {
+                        if (shouldBeVisible) {
+                            ViewAnimationUtil.showWithScaleAnimation(this@StatusBarClipView)
+                        } else {
+                            ViewAnimationUtil.hideWithScaleAnimation(this@StatusBarClipView)
+                        }
                     }
                 }.onFailure {
                     ShortXManagerNative.shortX?.log("StatusBarClipView", it.stackTraceToString())
                 }
+            }
+        }
+    }
+
+    private val globalVarObs = object : IGlobalVarObserver.Stub() {
+        override fun onAddOrUpdate(id: String?) {
+            logger.d("globalVarObs onAddOrUpdate: $id")
+            formatValues()
+        }
+
+        override fun onDelete(id: String?) {
+            logger.d("globalVarObs onDelete: $id")
+            formatValues()
+        }
+    }
+
+    private fun formatValues() {
+        clipProto.get()?.let { proto ->
+            uiState.update {
+                proto.toUiState()
             }
         }
     }
@@ -106,20 +170,32 @@ class StatusBarClipView(
         }
 
         addView(composeView)
+        isVisible = false
 
         ShortXManagerNative.shortX?.registerStatusbarClipStateListener(clipListener)
+        ShortXManagerNative.shortX?.registerStatusbarClipSettingsListener(clipSettingsListener)
+        ShortXManagerNative.shortX?.registerGlobalVarObs(globalVarObs)
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         ShortXManagerNative.shortX?.unregisterStatusbarClipStateListener(clipListener)
+        ShortXManagerNative.shortX?.unregisterStatusbarClipSettingsListener(clipListener)
+        ShortXManagerNative.shortX?.unregisterGlobalVarObs(globalVarObs)
     }
 
     @Composable
     private fun ComposeContent() {
         ShortXServiceUITheme {
+            val clipState by uiState.collectAsState()
             Box(
                 modifier = Modifier
+                    .padding(
+                        start = clipState.settings.paddingStart.dp,
+                        end = clipState.settings.paddingEnd.dp,
+                        top = clipState.settings.paddingTop.dp,
+                        bottom = clipState.settings.paddingBottom.dp
+                    )
                     .widthIn(max = 100.dp)
                     .clip(ShortXCardRoundedCornerShapeXL)
                     .clickable {
@@ -130,17 +206,26 @@ class StatusBarClipView(
                 contentAlignment = Alignment.Center
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    val clipState by statusBarClipState.collectAsState()
                     if (clipState.icon.isNotEmpty()) {
-                        RemixIcon(remixName = clipState.icon)
+                        val iconModifier = Modifier.size(
+                            clipState.settings.iconSize.dp
+                        )
+                        val isAppIcon = clipState.icon.startsWith("app://")
+                        if (isAppIcon) {
+                            AppImageIcon(app = clipState.icon, modifier = iconModifier)
+                        } else {
+                            RemixIcon(remixName = clipState.icon, modifier = iconModifier)
+                        }
                     }
                     if (clipState.text.isNotEmpty()) {
-                        Text(
-                            text = clipState.text,
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                fontSize = 10.sp
+                        AnimatedTextContainer(text = clipState.text) {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontSize = clipState.settings.fontSize.sp
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }
