@@ -602,6 +602,10 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.statusbar.onStatusBarClipClick(id)
         }
 
+        override fun onStatusBarClipLongClick(id: String) {
+            shortXContext.statusbar.onStatusBarClipLongClick(id)
+        }
+
         override fun attachSUImpl(from: String?, su: ISu?) {
             shortXContext.shell.attachSUImpl(from, su)
 

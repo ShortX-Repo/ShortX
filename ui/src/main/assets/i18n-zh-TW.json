@@ -997,6 +997,8 @@
     "ui.settings.sb.tile.opt.summary": "嘗試對快速設定磁貼輕觸的響應速度進行最佳化，需要你勾選System UI作用域，如果你發現最佳化無效，請將該問題以及日誌文件報告給開發者",
     "ui.settings.danmu": "彈幕設定",
     "ui.settings.danmu.summary": "調整彈幕顏色，字體大小，速度等",
+    "ui.settings.statusbar.chip": "状态栏Chip设置",
+    "ui.settings.statusbar.chip.summary": "调整状态栏Chip设置颜色，字体大小，等",
     "ui.settings.key.and.gesture": "按键和手势",
     "ui.settings.key.and.gesture.summary": "调整按键和手势相关阈值",
     "ui.settings.key": "按键",

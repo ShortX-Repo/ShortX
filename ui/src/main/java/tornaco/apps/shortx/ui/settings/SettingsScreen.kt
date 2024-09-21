@@ -492,8 +492,8 @@ private fun generalSettings(
         ),
 
         Preference.TextPreference(icon = Remix.Communication.message_fill,
-            title = LocalI18N.current["ui.settings.statusbar.clip"],
-            summary = LocalI18N.current["ui.settings.statusbar.clip.summary"],
+            title = LocalI18N.current["ui.settings.statusbar.chip"],
+            summary = LocalI18N.current["ui.settings.statusbar.chip.summary"],
             badge = badge,
             onClick = {
                 mainState.isSubscribed.select({ goToStatusBarClipUISettings() },

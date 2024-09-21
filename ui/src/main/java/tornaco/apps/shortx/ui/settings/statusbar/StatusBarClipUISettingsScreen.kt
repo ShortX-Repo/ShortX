@@ -87,7 +87,7 @@ private fun StatusBarClipUISettingsScreen(back: () -> Unit) {
                 ShortXMediumTopAppBar(
                     title = {
                         Text(
-                            text = LocalI18N.current["ui.settings.statusbar.clip"]
+                            text = LocalI18N.current["ui.settings.statusbar.chip"]
                         )
                     },
                     navigationIcon = {

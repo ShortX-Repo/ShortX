@@ -49,10 +49,15 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
     }
     ShowDanmuSettingsDialog(state = showDanmuSettingsState)
 
-    val showStatusBarClipState = rememberShowStatusBarClipSettingsDialogState {
-        addAction(it)
-    }
-    ShowStatusBarClipSettingsDialog(state = showStatusBarClipState)
+    val showStatusBarChipLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action.ShowStatusBarChip>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
 
     val hideOverlayDialogState = rememberHideOverlayDialogState {
         addAction(it)
@@ -292,8 +297,14 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                 true
             }
 
-            Action.ShowStatusBarClip::class -> {
-                showStatusBarClipState.show(source.getActionAs())
+            Action.ShowStatusBarChip::class -> {
+                showStatusBarChipLauncher.launch(
+                    newIntent(
+                        context = context,
+                        currentData = source.getActionAs<Action.ShowStatusBarChip>(),
+                        clazz = ShowStatusBarChipSelectorActivity::class.java
+                    )
+                )
                 true
             }
 
@@ -445,7 +456,7 @@ fun UiActions(
         Action.SelectScreenArea::class,
         Action.ShowToast::class,
         Action.ShowDanmu::class,
-        Action.ShowStatusBarClip::class,
+        Action.ShowStatusBarChip::class,
         Action.HideStatusBarClip::class,
         Action.ShowOverlay::class,
         Action.HideOverlay::class,

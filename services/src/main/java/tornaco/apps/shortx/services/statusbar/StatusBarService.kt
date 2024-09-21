@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.RemoteCallbackList
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
@@ -30,6 +32,12 @@ import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.watchdog.launchSafety
 
+sealed interface StatusBarChipEvent {
+    val id: String
+
+    data class Click(override val id: String) : StatusBarChipEvent
+    data class LongClick(override val id: String) : StatusBarChipEvent
+}
 
 class StatusBarService(shortXContext: ShortXContext) :
     SystemService(shortXContext, "StatusBarService") {
@@ -45,6 +53,9 @@ class StatusBarService(shortXContext: ShortXContext) :
     private val statusBarClipState = MutableStateFlow(StatusBarClipState.getDefaultInstance())
     private val statusBarClipSettings =
         MutableStateFlow(StatusBarClipUiSettings.getDefaultInstance())
+
+    private val _statusBarChipEvent = MutableSharedFlow<StatusBarChipEvent>()
+    val statusBarChipEvent = _statusBarChipEvent.asSharedFlow()
 
     override fun start(context: Context) {
         super.start(context)
@@ -238,7 +249,17 @@ class StatusBarService(shortXContext: ShortXContext) :
     }
 
     fun onStatusBarClipClick(id: String) {
+        logger.d("onStatusBarClipClick: $id")
+        systemServiceScope.launchSafety {
+            _statusBarChipEvent.emit(StatusBarChipEvent.Click(id))
+        }
+    }
 
+    fun onStatusBarClipLongClick(id: String) {
+        logger.d("onStatusBarClipLongClick: $id")
+        systemServiceScope.launchSafety {
+            _statusBarChipEvent.emit(StatusBarChipEvent.LongClick(id))
+        }
     }
 
     fun updateStatusBarClip(clipState: StatusBarClipState) {

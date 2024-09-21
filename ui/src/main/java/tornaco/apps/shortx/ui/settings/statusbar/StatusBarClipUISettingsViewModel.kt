@@ -24,7 +24,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import tornaco.apps.shortx.core.proto.action.ShowStatusBarClip
+import tornaco.apps.shortx.core.proto.action.ShowStatusBarChip
 import tornaco.apps.shortx.core.proto.common.StatusBarClipUiSettings
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
@@ -68,7 +68,7 @@ class StatusBarClipUISettingsViewModel @Inject constructor(@ApplicationContext c
         previewJob = viewModelScope.launch {
             shortXManager.executeAction(
                 evaluateContext,
-                ShowStatusBarClip.newBuilder()
+                ShowStatusBarChip.newBuilder()
                     .setId("test")
                     .setText(previewText)
                     .setIcon(previewIcon)
@@ -81,7 +81,7 @@ class StatusBarClipUISettingsViewModel @Inject constructor(@ApplicationContext c
         super.onCleared()
         shortXManager.executeAction(
             evaluateContext,
-            ShowStatusBarClip.newBuilder()
+            ShowStatusBarChip.newBuilder()
                 .build().pack_()
         )
     }

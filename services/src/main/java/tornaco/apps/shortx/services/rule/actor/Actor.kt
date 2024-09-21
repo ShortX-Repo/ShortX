@@ -244,9 +244,9 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.ShowDanmu
     },
-    ShowStatusBarClip {
+    ShowStatusBarChip {
         override val actor: Actor
-            get() = tornaco.apps.shortx.services.rule.actor.impl.ShowStatusBarClip
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ShowStatusBarChip
     },
     HideStatusBarClip {
         override val actor: Actor

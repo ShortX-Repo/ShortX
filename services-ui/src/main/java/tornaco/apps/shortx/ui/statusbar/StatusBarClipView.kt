@@ -5,8 +5,9 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.res.Resources
 import android.widget.FrameLayout
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -59,12 +60,14 @@ import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
 import tornaco.apps.shortx.ui.util.toComposeColor
 
 data class StatusBarChipUiState(
+    val id: String = "",
     val text: String = "",
     val icon: String = "",
     val settings: StatusBarClipUiSettings = StatusBarClipUiSettings.getDefaultInstance()
 )
 
 fun StatusBarClipState.toUiState() = StatusBarChipUiState(
+    id = id,
     text = text.replaceFuncParameterInputs(funcParameterInputsList)
         .replaceGlobalVarValues { shortXManager.getAllGlobalVars() }
         .replaceLocalVarValues(LocalVars.obtain().apply { localVarList.forEach { add(it) } }),
@@ -72,6 +75,7 @@ fun StatusBarClipState.toUiState() = StatusBarChipUiState(
     settings = shortXManager.getStatusbarClipSettings()
 )
 
+@OptIn(ExperimentalFoundationApi::class)
 @SuppressLint("ViewConstructor")
 class StatusBarClipView(
     context: Context,
@@ -207,8 +211,14 @@ class StatusBarClipView(
                     )
                     .widthIn(max = 100.dp)
                     .clip(ShortXCardRoundedCornerShapeXL)
-                    .clickable {
-                    }
+                    .combinedClickable(
+                        onLongClick = {
+                            ShortXManagerNative.shortX?.onStatusBarClipLongClick(clipState.id)
+                        },
+                        onClick = {
+                            ShortXManagerNative.shortX?.onStatusBarClipClick(clipState.id)
+                        }
+                    )
                     .background(backgroundColor),
                 contentAlignment = Alignment.Center
             ) {
