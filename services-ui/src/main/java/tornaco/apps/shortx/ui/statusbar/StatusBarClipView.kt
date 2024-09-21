@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -44,6 +45,7 @@ import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.replaceFuncParameterInputs
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.replaceLocalVarValues
+import tornaco.apps.shortx.core.settings.DANMU_COLOR_AUTO
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.ViewAnimationUtil
@@ -52,17 +54,17 @@ import tornaco.apps.shortx.ui.base.AppImageIcon
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShapeXL
-import tornaco.apps.shortx.ui.base.thenIf
 import tornaco.apps.shortx.ui.overlay.addToLifecycle
 import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
+import tornaco.apps.shortx.ui.util.toComposeColor
 
-data class StatusBarClipUiState(
+data class StatusBarChipUiState(
     val text: String = "",
     val icon: String = "",
     val settings: StatusBarClipUiSettings = StatusBarClipUiSettings.getDefaultInstance()
 )
 
-fun StatusBarClipState.toUiState() = StatusBarClipUiState(
+fun StatusBarClipState.toUiState() = StatusBarChipUiState(
     text = text.replaceFuncParameterInputs(funcParameterInputsList)
         .replaceGlobalVarValues { shortXManager.getAllGlobalVars() }
         .replaceLocalVarValues(LocalVars.obtain().apply { localVarList.forEach { add(it) } }),
@@ -74,8 +76,8 @@ fun StatusBarClipState.toUiState() = StatusBarClipUiState(
 class StatusBarClipView(
     context: Context,
 ) : FrameLayout(context) {
-    private val logger = Logger("StatusBarClipView")
-    private val uiState = MutableStateFlow(StatusBarClipUiState())
+    private val logger = Logger("StatusBarChipView")
+    private val uiState = MutableStateFlow(StatusBarChipUiState())
 
     private val clipProto = AtomicReference<StatusBarClipState?>(null)
 
@@ -190,6 +192,11 @@ class StatusBarClipView(
     private fun ComposeContent() {
         ShortXServiceUITheme {
             val clipState by uiState.collectAsState()
+            val backgroundColor = if (clipState.settings.backgroundColor == DANMU_COLOR_AUTO) {
+                MaterialTheme.colorScheme.primaryContainer
+            } else {
+                clipState.settings.backgroundColor.toComposeColor()
+            }
             Box(
                 modifier = Modifier
                     .padding(
@@ -202,10 +209,7 @@ class StatusBarClipView(
                     .clip(ShortXCardRoundedCornerShapeXL)
                     .clickable {
                     }
-                    .thenIf(
-                        Modifier.background(MaterialTheme.colorScheme.primaryContainer),
-                        true
-                    ),
+                    .background(backgroundColor),
                 contentAlignment = Alignment.Center
             ) {
                 Row(
@@ -224,13 +228,19 @@ class StatusBarClipView(
                         }
                     }
                     if (clipState.text.isNotEmpty()) {
+                        val textColor = if (clipState.settings.textColor == DANMU_COLOR_AUTO) {
+                            Color.Unspecified
+                        } else {
+                            clipState.settings.textColor.toComposeColor()
+                        }
                         AnimatedTextContainer(text = clipState.text) {
                             Text(
                                 text = it,
                                 style = MaterialTheme.typography.bodySmall.copy(
                                     fontSize = clipState.settings.fontSize.sp
                                 ),
-                                textAlign = TextAlign.Center
+                                textAlign = TextAlign.Center,
+                                color = textColor
                             )
                         }
                     }

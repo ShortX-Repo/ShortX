@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
@@ -32,6 +33,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
@@ -42,6 +44,8 @@ import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.common.StatusBarClipUiSettings
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.BaseActivity
+import tornaco.apps.shortx.ui.base.ColorPickerDialog
+import tornaco.apps.shortx.ui.base.ColorPickerDialogState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
@@ -184,6 +188,44 @@ private fun StatusBarClipUISettingsScreen(back: () -> Unit) {
                                 previewIcon = "app://${BuildPropInternal.APP_PACKAGE_NAME}"
                             )
                         })
+                }
+                StandardSpacer()
+
+                val bgColorPickerState = remember(state) {
+                    ColorPickerDialogState(
+                        colorInt = state.settings.backgroundColor,
+                        withAuto = true,
+                        onColorChanged = {
+                            viewModel.updateSettings(
+                                settings = StatusBarClipUiSettings.newBuilder(state.settings)
+                                    .setBackgroundColor(it)
+                                    .build(),
+                                previewText = "Text"
+                            )
+                        })
+                }
+                ColorPickerDialog(state = bgColorPickerState)
+                ItemCard(itemLabel = "Background color") {
+                    FilledTonalButton(onClick = { bgColorPickerState.show() }) {}
+                }
+                StandardSpacer()
+
+                val textColorPickerState = remember(state) {
+                    ColorPickerDialogState(
+                        colorInt = state.settings.textColor,
+                        withAuto = true,
+                        onColorChanged = {
+                            viewModel.updateSettings(
+                                settings = StatusBarClipUiSettings.newBuilder(state.settings)
+                                    .setTextColor(it)
+                                    .build(),
+                                previewText = "Text"
+                            )
+                        })
+                }
+                ColorPickerDialog(state = textColorPickerState)
+                ItemCard(itemLabel = "Text color") {
+                    FilledTonalButton(onClick = { textColorPickerState.show() }) {}
                 }
                 StandardSpacer()
             }

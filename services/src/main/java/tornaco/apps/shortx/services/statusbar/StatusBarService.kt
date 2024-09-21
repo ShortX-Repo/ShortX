@@ -99,13 +99,15 @@ class StatusBarService(shortXContext: ShortXContext) :
 
         setStatusbarClipSettings(
             StatusBarClipUiSettings.newBuilder()
-                .setPaddingStart(store.read(Settings.IntSettings.StatusBarClipPaddingStart))
-                .setPaddingEnd(store.read(Settings.IntSettings.StatusBarClipPaddingEnd))
-                .setPaddingTop(store.read(Settings.IntSettings.StatusBarClipPaddingTop))
-                .setPaddingBottom(store.read(Settings.IntSettings.StatusBarClipPaddingBottom))
-                .setFontSize(store.read(Settings.IntSettings.StatusBarClipFontSize))
-                .setIconSize(store.read(Settings.IntSettings.StatusBarClipIconSize))
-                .setPlacement(StatusBarClipUiPlacement.forNumber(store.read(Settings.IntSettings.StatusBarClipUiPlacement)))
+                .setPaddingStart(store.read(Settings.IntSettings.StatusBarChipPaddingStart))
+                .setPaddingEnd(store.read(Settings.IntSettings.StatusBarChipPaddingEnd))
+                .setPaddingTop(store.read(Settings.IntSettings.StatusBarChipPaddingTop))
+                .setPaddingBottom(store.read(Settings.IntSettings.StatusBarChipPaddingBottom))
+                .setFontSize(store.read(Settings.IntSettings.StatusBarChipFontSize))
+                .setIconSize(store.read(Settings.IntSettings.StatusBarChipIconSize))
+                .setPlacement(StatusBarClipUiPlacement.forNumber(store.read(Settings.IntSettings.StatusBarChipUiPlacement)))
+                .setBackgroundColor(store.read(Settings.IntSettings.StatusBarChipBgColor))
+                .setTextColor(store.read(Settings.IntSettings.StatusBarChipTextColor))
                 .build()
         )
     }
@@ -224,13 +226,15 @@ class StatusBarService(shortXContext: ShortXContext) :
     fun setStatusbarClipSettings(data: StatusBarClipUiSettings) {
         logger.d("setStatusbarClipSettings- $data")
         statusBarClipSettings.update { data }
-        store.write(Settings.IntSettings.StatusBarClipPaddingStart, data.paddingStart)
-        store.write(Settings.IntSettings.StatusBarClipPaddingEnd, data.paddingEnd)
-        store.write(Settings.IntSettings.StatusBarClipPaddingTop, data.paddingTop)
-        store.write(Settings.IntSettings.StatusBarClipPaddingBottom, data.paddingBottom)
-        store.write(Settings.IntSettings.StatusBarClipFontSize, data.fontSize)
-        store.write(Settings.IntSettings.StatusBarClipIconSize, data.iconSize)
-        store.write(Settings.IntSettings.StatusBarClipUiPlacement, data.placement.number)
+        store.write(Settings.IntSettings.StatusBarChipPaddingStart, data.paddingStart)
+        store.write(Settings.IntSettings.StatusBarChipPaddingEnd, data.paddingEnd)
+        store.write(Settings.IntSettings.StatusBarChipPaddingTop, data.paddingTop)
+        store.write(Settings.IntSettings.StatusBarChipPaddingBottom, data.paddingBottom)
+        store.write(Settings.IntSettings.StatusBarChipFontSize, data.fontSize)
+        store.write(Settings.IntSettings.StatusBarChipIconSize, data.iconSize)
+        store.write(Settings.IntSettings.StatusBarChipUiPlacement, data.placement.number)
+        store.write(Settings.IntSettings.StatusBarChipBgColor, data.backgroundColor)
+        store.write(Settings.IntSettings.StatusBarChipTextColor, data.textColor)
     }
 
     fun onStatusBarClipClick(id: String) {

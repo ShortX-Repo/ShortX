@@ -99,28 +99,34 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
         data class DidSomethingAtDay(val day: String, val what: String) :
             IntSettings(key = "DidSomethingAtDay_${day}_${what}", defaultValue = { 0 })
 
-        data object StatusBarClipPaddingStart :
-            IntSettings(key = "StatusBarClipPaddingStart", defaultValue = { 0 })
+        data object StatusBarChipPaddingStart :
+            IntSettings(key = "StatusBarChipPaddingStart", defaultValue = { 0 })
 
-        data object StatusBarClipPaddingEnd :
-            IntSettings(key = "StatusBarClipPaddingEnd", defaultValue = { 0 })
+        data object StatusBarChipPaddingEnd :
+            IntSettings(key = "StatusBarChipPaddingEnd", defaultValue = { 0 })
 
-        data object StatusBarClipPaddingTop :
-            IntSettings(key = "StatusBarClipPaddingTop", defaultValue = { 0 })
+        data object StatusBarChipPaddingTop :
+            IntSettings(key = "StatusBarChipPaddingTop", defaultValue = { 0 })
 
-        data object StatusBarClipFontSize :
-            IntSettings(key = "StatusBarClipFontSize", defaultValue = { 10 })
+        data object StatusBarChipFontSize :
+            IntSettings(key = "StatusBarChipFontSize", defaultValue = { 10 })
 
-        data object StatusBarClipIconSize :
-            IntSettings(key = "StatusBarClipIconSize", defaultValue = { 12 })
+        data object StatusBarChipIconSize :
+            IntSettings(key = "StatusBarChipIconSize", defaultValue = { 12 })
 
-        data object StatusBarClipPaddingBottom :
-            IntSettings(key = "StatusBarClipPaddingBottom", defaultValue = { 0 })
+        data object StatusBarChipPaddingBottom :
+            IntSettings(key = "StatusBarChipPaddingBottom", defaultValue = { 0 })
 
-        data object StatusBarClipUiPlacement :
+        data object StatusBarChipUiPlacement :
             IntSettings(
-                key = "StatusBarClipUiPlacement",
+                key = "StatusBarChipUiPlacement",
                 defaultValue = { tornaco.apps.shortx.core.proto.common.StatusBarClipUiPlacement.StatusBarClipUiPlacement_Start.number })
+
+        data object StatusBarChipBgColor :
+            IntSettings(key = "StatusBarChipBgColor", defaultValue = { DANMU_COLOR_AUTO })
+
+        data object StatusBarChipTextColor :
+            IntSettings(key = "StatusBarChipTextColor", defaultValue = { DANMU_COLOR_AUTO })
     }
 
     sealed class FloatSettings(key: String, defaultValue: (Context) -> Float) :
