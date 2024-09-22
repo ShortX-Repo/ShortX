@@ -457,6 +457,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SwitchMobileDataSlot
     },
+    SetSimPowerState {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.SetSimPowerState
+    },
     CreateLocalVar {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.CreateLocalVar
