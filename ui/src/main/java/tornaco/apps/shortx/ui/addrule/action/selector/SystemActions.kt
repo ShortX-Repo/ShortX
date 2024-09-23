@@ -29,8 +29,10 @@ import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.base.rememberCategoryState
 import tornaco.apps.shortx.ui.addrule.condition.SIMSlotSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.Toggle5GSelectorDialog
+import tornaco.apps.shortx.ui.addrule.condition.ToggleSlotSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.rememberSIMSlotSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberToggle5GSelectorState
+import tornaco.apps.shortx.ui.addrule.condition.rememberToggleSlotSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.BrightnessValueSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.CombineKeyEventSelectorActivity
 import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
@@ -159,6 +161,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
         addAction(it)
     }
     Toggle5GSelectorDialog(dialogState = toggle5GSelectorState)
+
+    val toggleSlotState = rememberToggleSlotSelectorState {
+        addAction(it)
+    }
+    ToggleSlotSelectorDialog(dialogState = toggleSlotState)
 
     val wallpaperFileSelectorState = rememberSetWallpaperState(
         onSelected = {
@@ -461,6 +468,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.ToggleSlot::class -> {
+                toggleSlotState.show(source.getActionAs())
+                true
+            }
+
             Action.SendSMS::class -> {
                 sendSMSSelectorState.show(source.getActionAs())
                 true
@@ -507,6 +519,7 @@ fun SystemActions(
         Action.DisableData::class,
         Action.SwitchMobileDataSlot::class,
         Action.Toggle5G::class,
+        Action.ToggleSlot::class,
         Action.SetAPMModeEnabled::class,
         Action.EnableHotSpot::class,
         Action.DisableHotSpot::class,

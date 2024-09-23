@@ -23,7 +23,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.common.OnOffToggle
-import tornaco.apps.shortx.core.proto.common.SimCardPowerState
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.select
@@ -43,32 +42,32 @@ import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
-class SetSimPowerStateSelectorDialogState(
-    val onSelected: (Action.SetSimPowerState) -> Unit
+class ToggleSlotSelectorDialogState(
+    val onSelected: (Action.ToggleSlot) -> Unit
 ) : CommonDialogState() {
 
-    fun show(current: Action.SetSimPowerState? = null) {
-        this.state = current?.state ?: SimCardPowerState.SimCardPowerState_Up
+    fun show(current: Action.ToggleSlot? = null) {
+        this.state = current?.state ?: OnOffToggle.OnOffToggle_On
         this.slotId = current?.slotId ?: 0
 
         show()
     }
 
-    var state: SimCardPowerState by mutableStateOf(SimCardPowerState.SimCardPowerState_Up)
+    var state: OnOffToggle by mutableStateOf(OnOffToggle.OnOffToggle_On)
     var slotId by mutableIntStateOf(0)
 }
 
 @Composable
-fun rememberSetSimPowerStateSelectorState(
-    onSelected: (Action.SetSimPowerState) -> Unit
-): SetSimPowerStateSelectorDialogState {
+fun rememberToggleSlotSelectorState(
+    onSelected: (Action.ToggleSlot) -> Unit
+): ToggleSlotSelectorDialogState {
     return remember {
-        SetSimPowerStateSelectorDialogState(onSelected)
+        ToggleSlotSelectorDialogState(onSelected)
     }
 }
 
 @Composable
-fun SetSimPowerStateSelectorDialog(dialogState: SetSimPowerStateSelectorDialogState) {
+fun ToggleSlotSelectorDialog(dialogState: ToggleSlotSelectorDialogState) {
     if (dialogState.isShowing) {
         ShortFullScreenXDialog(onDismissRequest = { dialogState.dismiss() }) {
             ShortXTheme {
@@ -79,7 +78,7 @@ fun SetSimPowerStateSelectorDialog(dialogState: SetSimPowerStateSelectorDialogSt
                         topBar = {
                             ShortXTopAppBar(
                                 modifier = Modifier,
-                                title = { Text(text = LocalI18N.current["ui.action.set.sim.power.state"]) },
+                                title = { Text(text = LocalI18N.current["ui.action.toggle.slot"]) },
                                 navigationIcon = {
                                     IconButton(onClick = {
                                         dialogState.dismiss()
@@ -91,7 +90,7 @@ fun SetSimPowerStateSelectorDialog(dialogState: SetSimPowerStateSelectorDialogSt
                                     IconButton(onClick = {
                                         dialogState.dismiss()
                                         dialogState.onSelected(
-                                            Action.SetSimPowerState(
+                                            Action.ToggleSlot(
                                                 state = dialogState.state,
                                                 slotId = dialogState.slotId
                                             )
@@ -121,7 +120,7 @@ fun SetSimPowerStateSelectorDialog(dialogState: SetSimPowerStateSelectorDialogSt
                                     ), onClick = {
                                         onOffState.open()
                                     }) {
-                                    Text(LocalI18N.current[dialogState.onOff.labelKey()])
+                                    Text(LocalI18N.current[dialogState.state.labelKey()])
                                 }
                                 DropdownSelector(
                                     state = onOffState,
@@ -134,7 +133,7 @@ fun SetSimPowerStateSelectorDialog(dialogState: SetSimPowerStateSelectorDialogSt
                                         )
                                     }
                                 ) {
-                                    dialogState.onOff = it.data
+                                    dialogState.state = it.data
                                 }
                             }
                             StandardSpacer()
