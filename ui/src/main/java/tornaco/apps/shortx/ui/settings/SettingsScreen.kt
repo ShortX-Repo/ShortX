@@ -193,7 +193,6 @@ fun SettingsScreen(
                 }) { paddingValues ->
                 Column(
                     modifier = Modifier
-                        .padding(top = 12.dp)
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.background)
                         .verticalScroll(rememberScrollState())
@@ -206,7 +205,7 @@ fun SettingsScreen(
                     AnimatedVisibility(visible = state.hasFatalError) {
                         ErrorCard(
                             modifier = Modifier
-                                .padding(16.dp),
+                                .padding(vertical = 16.dp, horizontal = 8.dp),
                             title = LocalI18N.current["ui.settings.fatal.error.title"],
                             warnings = listOf(
                                 LocalI18N.current["ui.settings.fatal.error.message", mapOf("dir" to state.logDir)]
@@ -219,10 +218,12 @@ fun SettingsScreen(
                     }
 
                     AnimatedVisibility(visible = state.sensorUsages.isNotEmpty()) {
-                        SensorUsage(state.sensorUsages)
+                        Column {
+                            SensorUsage(state.sensorUsages)
+                            StandardSpacer()
+                        }
                     }
 
-                    StandardSpacer()
                     SwitchBar(
                         modifier = Modifier.padding(horizontal = 8.dp),
                         isChecked = state.ruleFeatureEnabled,

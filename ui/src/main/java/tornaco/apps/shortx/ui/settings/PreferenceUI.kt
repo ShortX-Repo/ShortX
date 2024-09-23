@@ -41,14 +41,35 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 
 @Composable
 fun PreferenceUi(preferences: List<Preference>) {
-    Column(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        preferences.forEach {
-            PreferenceUi(preference = it)
-            MediumSpacer()
+    splitListByCategory(preferences).forEach { group ->
+        Column {
+            group.forEach {
+                PreferenceUi(preference = it)
+                MediumSpacer()
+            }
         }
     }
+}
+
+private fun splitListByCategory(list: List<Preference>): List<List<Preference>> {
+    val result = mutableListOf<MutableList<Preference>>()
+    var currentList = mutableListOf<Preference>()
+
+    list.forEach { item ->
+        if (item is Preference.Category) {
+            if (currentList.isNotEmpty()) {
+                result.add(currentList)
+            }
+            currentList = mutableListOf()  // 每次遇到A开始一个新的子List
+        }
+        currentList.add(item)
+    }
+
+    // 添加最后一组
+    if (currentList.isNotEmpty()) {
+        result.add(currentList)
+    }
+    return result
 }
 
 

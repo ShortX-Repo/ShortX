@@ -1,5 +1,7 @@
 package tornaco.apps.shortx.ui.settings
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -35,9 +37,7 @@ val prefColorPalette = arrayOf(
 private val prefIndexCache = mutableMapOf<String, Int>()
 private val prefIndex = AtomicInteger(0)
 
+@Composable
 fun prefColorForPreference(preference: Preference): Color {
-    val index = prefIndexCache.computeIfAbsent(preference.title) {
-        prefIndex.getAndIncrement()
-    }
-    return prefColorPalette[index % (prefColorPalette.size - 1)]
+    return MaterialTheme.colorScheme.primary
 }
