@@ -15,8 +15,10 @@ import tornaco.apps.shortx.core.IActionEvaluateListener
 import tornaco.apps.shortx.core.proto.action.SendSMS
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.common.StringPair
+import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.containsAnyTypeUrl
 import tornaco.apps.shortx.core.proto.da.DirectAction
+import tornaco.apps.shortx.core.proto.da.DirectActionQuit
 import tornaco.apps.shortx.core.proto.func.FuncParameter
 import tornaco.apps.shortx.core.proto.toStringPair
 import tornaco.apps.shortx.core.rule.Security
@@ -29,6 +31,12 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForAction
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
+import tornaco.apps.shortx.ui.addrule.condition.ConditionContentStateHandler
+import tornaco.apps.shortx.ui.addrule.condition.model.toProtoCondition
+import tornaco.apps.shortx.ui.addrule.condition.op.Op
+import tornaco.apps.shortx.ui.addrule.condition.op.toConditionOperator
+import tornaco.apps.shortx.ui.addrule.fact.FactContentStateHandler
+import tornaco.apps.shortx.ui.addrule.fact.model.toProtoFact
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.ShortXContextViewModelWithEffect
 import tornaco.apps.shortx.ui.settings.pref.Pref
@@ -52,6 +60,7 @@ data class AddDirectActionState(
     val conflictStrategy: ConflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
     val evaluatingActions: List<String> = emptyList(),
     val daSetId: String = "",
+    val isQuitEnabled: Boolean = false,
     // For online.
     val onlineDALoadState: LoadState<Unit> = LoadState.Success(Unit),
     val securityCheckRes: Boolean = true,
@@ -83,6 +92,11 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
             }
         }
     })
+
+    val quitFactContentStateHandler = FactContentStateHandler()
+    val quitConditionContentStateHandler = ConditionContentStateHandler()
+    val quitActionStateHandler = ActionContentStateHandler()
+
     val pref by lazy { Pref(context) }
 
     private val actionEvaluateListener = object : IActionEvaluateListener.Stub() {
@@ -160,6 +174,11 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
         logger.p("save with token: ${token?.maskAll()}")
         viewModelScope.launch {
             val actions = actionContentStateHandler.state.value.actions
+            // Quits
+            val quitFacts = quitFactContentStateHandler.facts
+            val quitConditions = quitConditionContentStateHandler.conditions
+            val quitCondOp = quitConditionContentStateHandler.conditionOp
+            val quitActions = quitActionStateHandler.actions
 
             val protoActions = actions.map {
                 it.toProtoAction().pack_()
@@ -181,6 +200,26 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                 .setVersionCode(state.value.versionCode)
                 .setConflictPolicy(state.value.conflictStrategy)
                 .setDirectActionSetId(state.value.daSetId)
+                .setQuit(
+                    DirectActionQuit.newBuilder()
+                        .addAllFacts(quitFacts.map { it.toProtoFact().pack_() })
+                        .addAllConditions(quitConditions.map {
+                            it.toProtoCondition().pack_()
+                        })
+                        .setCondOp(quitCondOp.toConditionOperator())
+                        .apply {
+                            if (quitCondOp is Op.MVEL) {
+                                condOpPayload =
+                                    ConditionOperatorPayload
+                                        .newBuilder()
+                                        .setExpression(quitCondOp.expression)
+                                        .build()
+                            }
+                        }
+                        .addAllActions(quitActions.map { it.toProtoAction().pack_() })
+                        .setIsEnabled(state.value.isQuitEnabled)
+                        .build()
+                )
                 .addAllExtras(mutableListOf<StringPair>().apply {
                     if (!token.isNullOrEmpty()) {
                         add((BuildPropInternal.APP_PACKAGE_NAME to token).toStringPair())
@@ -238,6 +277,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                         conflictStrategy = da.conflictPolicy,
                         evaluatingActions = shortXManager.getEvaluatingActions(),
                         daSetId = da.directActionSetId,
+                        isQuitEnabled = da.quit.isEnabled,
                         securityCheckRes = Security.checkSecurity(da),
                         hasSMSAction = hasAnySMSAction,
                         parameters = da.parametersList,
@@ -274,5 +314,9 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                 }
             }
         }
+    }
+
+    fun toggleQuitEnable() {
+        updateState { copy(isQuitEnabled = !isQuitEnabled, daChanged = true) }
     }
 }

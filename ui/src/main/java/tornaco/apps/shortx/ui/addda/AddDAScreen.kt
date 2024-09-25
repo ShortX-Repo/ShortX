@@ -7,7 +7,9 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
@@ -39,22 +42,35 @@ import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.ActionContentState
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
+import tornaco.apps.shortx.ui.addrule.condition.ConditionContent
+import tornaco.apps.shortx.ui.addrule.condition.ConditionContentState
+import tornaco.apps.shortx.ui.addrule.condition.ConditionContentStateHandler
+import tornaco.apps.shortx.ui.addrule.condition.asConditionHandler
+import tornaco.apps.shortx.ui.addrule.fact.FactContentState
+import tornaco.apps.shortx.ui.addrule.fact.FactContentStateHandler
+import tornaco.apps.shortx.ui.addrule.fact.FactSelectors
+import tornaco.apps.shortx.ui.addrule.fact.asFactHandler
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
 import tornaco.apps.shortx.ui.base.ConfirmDialog
 import tornaco.apps.shortx.ui.base.ErrorCard
 import tornaco.apps.shortx.ui.base.ExpandableSectionBar
+import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LoadError
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalShortXProps
+import tornaco.apps.shortx.ui.base.MediumTitleWithTip
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
+import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.ShortXTextField
+import tornaco.apps.shortx.ui.base.SplitLines
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.WarningCard
 import tornaco.apps.shortx.ui.base.handleSideEffect
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
@@ -148,6 +164,14 @@ fun AddDirectActionScreen(
         vm.actionContentStateHandler
     }
     val actionContentState by actionContentStateHandler.state.collectAsState()
+
+    val quitFactHandler = remember(vm) { vm.quitFactContentStateHandler }
+    val quitFactContentState by quitFactHandler.state.collectAsState()
+    val quitConditionHandler = remember(vm) { vm.quitConditionContentStateHandler }
+    val quitConditionContentState by quitConditionHandler.state.collectAsState()
+    val quitActionHandler = remember(vm) { vm.quitActionStateHandler }
+    val quitActionState by quitActionHandler.state.collectAsState()
+
     val shortXProps = LocalShortXProps.current
 
     val backConfirmDialogState = rememberConfirmDialogState()
@@ -164,8 +188,18 @@ fun AddDirectActionScreen(
             back(false)
         })
 
-    val hasAnyChanges = remember(addDirectActionState, actionContentState) {
-        addDirectActionState.daChanged || actionContentState.isChanged
+    val hasAnyChanges = remember(
+        addDirectActionState,
+        actionContentState,
+        quitFactContentState,
+        quitConditionContentState,
+        quitActionState
+    ) {
+        addDirectActionState.daChanged
+                || actionContentState.isChanged
+                || quitFactContentState.isChanged
+                || quitConditionContentState.isChanged
+                || quitActionState.isChanged
     }
 
     BackHandler {
@@ -220,11 +254,17 @@ fun AddDirectActionScreen(
 
                     is LoadState.Success -> {
                         DAContent(
-                            addDirectActionState,
-                            vm,
-                            readOnly,
-                            actionContentState,
-                            actionContentStateHandler
+                            addDirectActionState = addDirectActionState,
+                            vm = vm,
+                            readOnly = readOnly,
+                            actionContentState = actionContentState,
+                            actionContentStateHandler = actionContentStateHandler,
+                            quitFactContentState = quitFactContentState,
+                            quitFactHandler = quitFactHandler,
+                            quitConditionContentState = quitConditionContentState,
+                            quitConditionHandler = quitConditionHandler,
+                            quitActionState = quitActionState,
+                            quitActionHandler = quitActionHandler,
                         )
                     }
                 }
@@ -239,7 +279,13 @@ private fun DAContent(
     vm: AddDirectActionViewModel,
     readOnly: Boolean,
     actionContentState: ActionContentState,
-    actionContentStateHandler: ActionContentStateHandler
+    actionContentStateHandler: ActionContentStateHandler,
+    quitFactContentState: FactContentState,
+    quitFactHandler: FactContentStateHandler,
+    quitConditionContentState: ConditionContentState,
+    quitConditionHandler: ConditionContentStateHandler,
+    quitActionState: ActionContentState,
+    quitActionHandler: ActionContentStateHandler,
 ) {
     AnimatedVisibility(visible = !addDirectActionState.securityCheckRes) {
         Column {
@@ -316,6 +362,70 @@ private fun DAContent(
                     vm.addParameter(param, override)
                 },
                 remove = { vm.removeParameter(it) })
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                MediumTitleWithTip(
+                    LocalI18N.current["ui.rule.quit.title"],
+                    LocalI18N.current["ui.rule.quit.description"]
+                )
+                ShortXSwitch(checked = addDirectActionState.isQuitEnabled, onCheckedChange = {
+                    vm.toggleQuitEnable()
+                })
+            }
+            AnimatedVisibility(visible = addDirectActionState.isQuitEnabled) {
+                Column {
+                    StandardSpacer()
+                    FactSelectors(
+                        header = {
+                            FieldTitle(
+                                modifier = Modifier.padding(bottom = 12.dp),
+                                text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.fact.title"]}"
+                            )
+                        },
+                        state = quitFactContentState,
+                        handler = quitFactHandler.asFactHandler(),
+                        readOnly = readOnly
+                    )
+                    SectionSpacer()
+
+                    ConditionContent(
+                        header = {
+                            FieldTitle(
+                                modifier = Modifier.padding(bottom = 12.dp),
+                                text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.conditions.title"]}"
+                            )
+                        },
+                        state = quitConditionContentState,
+                        readOnly = readOnly,
+                        handler = quitConditionHandler.asConditionHandler()
+                    )
+
+                    SectionSpacer()
+
+                    ActionContent(
+                        header = {
+                            FieldTitle(
+                                modifier = Modifier.padding(bottom = 6.dp),
+                                text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.actions.title"]}"
+                            )
+                            TipBody(text = LocalI18N.current["ui.rule.quit.action.description"])
+                        },
+                        srcId = addDirectActionState.id,
+                        actions = quitActionState.actions,
+                        evaluatingActions = addDirectActionState.evaluatingActions,
+                        warnings = emptyMap(),
+                        handler = quitActionHandler.asActionHandler()
+                    )
+
+                    SectionSpacer()
+                }
+            }
+
+            SplitLines(modifier = Modifier.padding(vertical = 30.dp))
         }
     }
 
