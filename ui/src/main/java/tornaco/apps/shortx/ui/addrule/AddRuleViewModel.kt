@@ -360,7 +360,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                             shortXManager
                         )
                     },
-                    conditionOp = r.quit.condOp.toOp(r.condOpPayload)
+                    conditionOp = r.quit.condOp.toOp(r.quit.condOpPayload)
                 )
                 quitActionStateHandler.init(
                     actions = r.quit.actionsList.mapNotNull {

@@ -32,10 +32,13 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.addrule.condition.ConditionContentStateHandler
+import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
 import tornaco.apps.shortx.ui.addrule.condition.model.toProtoCondition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.condition.op.toConditionOperator
+import tornaco.apps.shortx.ui.addrule.condition.op.toOp
 import tornaco.apps.shortx.ui.addrule.fact.FactContentStateHandler
+import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.addrule.fact.model.toProtoFact
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.ShortXContextViewModelWithEffect
@@ -261,6 +264,25 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                         shortXManager
                     )
                 })
+                quitFactContentStateHandler.init(
+                    facts = da.quit.factsList.mapNotNull {
+                        it.toFact(shortXManager)
+                    }
+                )
+                quitConditionContentStateHandler.init(
+                    conditions = da.quit.conditionsList.mapNotNull {
+                        it.toCondition(
+                            shortXManager
+                        )
+                    },
+                    conditionOp = da.quit.condOp.toOp(da.quit.condOpPayload)
+                )
+                quitActionStateHandler.init(
+                    actions = da.quit.actionsList.mapNotNull {
+                        it.toAction(
+                            shortXManager
+                        )
+                    })
                 val smsTyprUrls = listOf(
                     SendSMS.getDefaultInstance().pack_().typeUrl,
                 )

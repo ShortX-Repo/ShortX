@@ -100,7 +100,8 @@ class RuleProtoTest {
                 isSystemReadyPublished = { true }
             ).fire(
                 KeyEvent.newBuilder().setKeyCode(20).build(),
-                listOf(rule)
+                listOf(rule),
+                emptyList(),
             ) { emptyMap() }
         }
     }

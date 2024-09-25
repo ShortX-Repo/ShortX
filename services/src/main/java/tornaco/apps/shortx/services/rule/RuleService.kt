@@ -425,7 +425,13 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
             // Check Normal Rules.
             val fact = KeyEvent.newBuilder().setKeyCode(it.keyCode).build()
-            if (shouldFire(getAllEnabledRules(), fact, false)) {
+            if (shouldFire(
+                    rules = getAllEnabledRules(),
+                    das = getAllDirectAction(),
+                    fact = fact,
+                    checkCondition = false
+                )
+            ) {
                 if (it.action == android.view.KeyEvent.ACTION_UP) {
                     logger.d("hasAnyRuleMatchFact for keyCode: ${it.keyCode}")
                     publishFact("KeyEvent", fact) { emptyMap() }
@@ -439,7 +445,13 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         shortXContext.gesture.onGestureEvent {
             logger.d("onGestureEvent: $it")
             val fact = EdgeGesture.newBuilder().setEdge(it.first).setGesture(it.second).build()
-            if (shouldFire(getAllEnabledRules(), fact, false)) {
+            if (shouldFire(
+                    rules = getAllEnabledRules(),
+                    das = getAllDirectAction(),
+                    fact = fact,
+                    checkCondition = false
+                )
+            ) {
                 logger.d("hasAnyRuleMatchFact for onGestureEvent: $it")
                 publishFact("Gesture", fact) { emptyMap() }
                 return@onGestureEvent true
@@ -462,8 +474,18 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     }
 
     // Quick check.
-    fun shouldFire(rules: List<Rule>, fact: ProtoMessage, checkCondition: Boolean): Boolean {
-        return engine.shouldFire(rules = rules, fact = fact, checkCondition = checkCondition)
+    fun shouldFire(
+        rules: List<Rule>,
+        das: List<DirectAction>,
+        fact: ProtoMessage,
+        checkCondition: Boolean
+    ): Boolean {
+        return engine.shouldFire(
+            rules = rules,
+            das = das,
+            fact = fact,
+            checkCondition = checkCondition
+        )
     }
 
     @Deprecated(
@@ -503,6 +525,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             val anyMatch = engine.fire(
                 fact = fact,
                 rules = getAllEnabledRules(),
+                das = getAllDirectAction(),
                 initialContextDataLazy = initialContextDataLazy
             )
 

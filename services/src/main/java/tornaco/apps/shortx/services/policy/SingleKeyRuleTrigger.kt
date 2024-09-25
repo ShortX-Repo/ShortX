@@ -13,10 +13,10 @@ import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.ctrl.Device
 import tornaco.apps.shortx.services.input.IMSFunc
+import tornaco.apps.shortx.services.policy.SingleKeyGestureDetector.SingleKeyRule
 import tornaco.apps.shortx.services.rule.RuleService
 import tornaco.apps.shortx.services.rule.actor.impl.device
 import tornaco.apps.shortx.services.rule.fact.trigger.Trigger
-import tornaco.apps.shortx.services.policy.SingleKeyGestureDetector.SingleKeyRule
 
 
 class SingleKeyRuleTrigger(
@@ -165,7 +165,8 @@ private class SingleKeyRuleImpl(
             .setGesture(KeyGesture.KeyPress)
             .build()
         val enabledRules = ruleService.getAllEnabledRules()
-        val shouldFire = ruleService.shouldFire(enabledRules, fact, false)
+        val das = ruleService.getAllDirectAction()
+        val shouldFire = ruleService.shouldFire(enabledRules, das, fact, false)
         logger.d("shouldFire: $shouldFire")
         if (shouldFire) {
             ruleService.publishFact(

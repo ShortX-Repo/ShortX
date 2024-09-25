@@ -16,6 +16,7 @@ import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.condition.TheXXTimeToday
+import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.rule.AsyncMode
@@ -60,6 +61,7 @@ interface Engine {
 
     fun shouldFire(
         rules: List<Rule>,
+        das: List<DirectAction>,
         fact: ProtoMessage,
         // For normal fact, no need to check condition
         // For KeyEvent, pls check condition before intercept system
@@ -69,6 +71,7 @@ interface Engine {
     fun fire(
         fact: ProtoMessage,
         rules: List<Rule>,
+        das: List<DirectAction>,
         initialContextDataLazy: () -> Map<String, Any>
     ): Boolean
 
@@ -118,8 +121,13 @@ class DefaultRuleEngine(
         logger.w("shouldFire, check condition timeout, return false. rule is: ${it.title}")
         false
     }
+    private val defaultDACondRes: (DirectAction) -> Boolean = {
+        logger.w("shouldFire, check condition timeout, return false. da is: ${it.title}")
+        false
+    }
 
     private val Rule.muteX get() = muteXMap.computeIfAbsent(this.id) { Mutex() }
+    private val DirectAction.muteX get() = muteXMap.computeIfAbsent(this.id) { Mutex() }
 
     private val preCheckContext = EvaluateContext.newBuilder()
         .setSrcId("PreCheck")
@@ -130,6 +138,7 @@ class DefaultRuleEngine(
 
     override fun shouldFire(
         rules: List<Rule>,
+        das: List<DirectAction>,
         fact: ProtoMessage,
         checkCondition: Boolean
     ): Boolean {
@@ -142,6 +151,13 @@ class DefaultRuleEngine(
                 rule = it,
                 checkCondition = checkCondition
             ) || shouldFireRuleZQuitForFact(
+                context = preCheckContext,
+                fact = fact,
+                rule = it,
+                checkCondition = checkCondition
+            )
+        } || das.any {
+            shouldFireDAZQuitForFact(
                 context = preCheckContext,
                 fact = fact,
                 rule = it,
@@ -194,10 +210,32 @@ class DefaultRuleEngine(
                     } ?: defaultCondRes(rule))
             )
 
+    private fun shouldFireDAZQuitForFact(
+        context: EvaluateContext,
+        fact: ProtoMessage,
+        rule: DirectAction,
+        checkCondition: Boolean
+    ) = rule.quit.isEnabled && factMatcher.match(fact, rule.quit.factsList).isMatch && (
+            !checkCondition || (
+                    runBlocking {
+                        withTimeoutOrNull(CONDITION_WAIT_TIMEOUT) {
+                            conditionEvaluator.evaluate(
+                                evaluateContext = context,
+                                condOp = rule.quit.condOp,
+                                condOpPayload = rule.quit.condOpPayload,
+                                conditions = rule.quit.conditionsList,
+                                contextData = ContextData.obtain(),
+                                localVars = LocalVars.obtain()
+                            )
+                        }
+                    } ?: defaultDACondRes(rule))
+            )
+
     // Should call in Handler to make it Thread safe.
     override fun fire(
         fact: ProtoMessage,
         rules: List<Rule>,
+        das: List<DirectAction>,
         initialContextDataLazy: () -> Map<String, Any>
     ): Boolean {
         if (!isRuleFeatureEnabled()) {
@@ -449,6 +487,94 @@ class DefaultRuleEngine(
 
             }
         }
+
+        das.filterHasQuit().forEach { da ->
+            logger.d("fire, check da quit: ${fact.javaClass} ${da.title}")
+
+            val quit = da.quit
+
+            if (quit.isEnabled) {
+                val quitFactMatcherResult = factMatcher.match(fact, quit.factsList)
+                logger.d("quitFactMatcherResult: $quitFactMatcherResult")
+                if (quitFactMatcherResult.isMatch) {
+                    logger.d("$LOG_TAG_RULE_QUIT fire, da-quit matched: ${fact.javaClass} ${da.title}")
+                    anyMatch = true
+
+                    val contextData = ContextData.obtain(initialContextDataLazy())
+                    if (quitFactMatcherResult is FactMatcher.MatcherResult.Match) {
+                        contextData.add(
+                            GenericContextData.CONTEXT_FACT_TAG,
+                            quitFactMatcherResult.factTag
+                        )
+                    }
+                    val evaluateContext = EvaluateContext.newBuilder()
+                        .setSrcId(da.id)
+                        .setSrcEvent(ContextSrcEvent.ContextSrc_DirectActionQuit)
+                        .setSrcTitle(da.title)
+                        .setSerialNumber(nextEvaluateContextSerialNumber())
+                        .build()
+                    val localVars = LocalVars.obtain()
+
+                    // Rule Instance ID
+                    val ruleInsIdGen: ProtoAny =
+                        RuleInstanceIdGenerator_Static.newBuilder().setInsId(da.id)
+                            .build()
+                            .pack_()
+                    logger.d("quit, ruleInsIdGen: $ruleInsIdGen")
+                    val ruleInstanceId = with(RuleInstanceIdGenerator) {
+                        ruleInsIdGen.generate(androidContext, shortXContext, contextData)
+                    } ?: "FALLBACK_${da.id}"
+                    logger.d("quit, ruleInstanceId: $ruleInstanceId")
+
+                    coroutineScope.launchSafety {
+                        // Launch start
+                        withContext(Dispatchers.IO) {
+                            val conditionRes = if (quit.conditionsList.isEmpty()) {
+                                logger.d("$LOG_TAG_RULE_QUIT quit for da: ${da.title} has no condition, assume match!")
+                                true
+                            } else {
+                                conditionEvaluator.evaluate(
+                                    evaluateContext = evaluateContext,
+                                    condOp = quit.condOp,
+                                    condOpPayload = quit.condOpPayload,
+                                    conditions = quit.conditionsList,
+                                    contextData = contextData,
+                                    // No local var for a Rule condition.
+                                    localVars = LocalVars.obtain()
+                                )
+                            }
+                            logger.d("$LOG_TAG_RULE_QUIT conditionRes for  ${fact.javaClass} ${da.title} is: $conditionRes")
+                            if (conditionRes) {
+                                logger.d("$LOG_TAG_RULE_QUIT about to quit ${da.title}")
+
+                                // DO NOT cancel ourself...
+                                cancelJobs("Rule quit(退出指令)") {
+                                    it.srcId == da.id && it.instanceId == ruleInstanceId
+                                }
+
+                                updateTheXXTimeToday(shortXContext, quit.conditionsList)
+
+                                val parameterInputs =
+                                    da.parametersList.map { it.asDefaultInput() }
+                                runActionsJob(
+                                    ruleTitleForLog = "$LOG_TAG_RULE_QUIT-${da.title}",
+                                    asyncMode = da.asyncMode,
+                                    muteX = da.muteX,
+                                    actionsToRun = quit.actionsList,
+                                    evaluateContext = evaluateContext,
+                                    contextData = contextData,
+                                    localVars = localVars,
+                                    parameterInputs = parameterInputs
+                                )
+                            }
+                            // Launch End
+                        }
+                    }
+                }
+            }
+
+        }
+
         return anyMatch
     }
 
@@ -643,7 +769,10 @@ class DefaultRuleEngine(
 }
 
 private fun List<Rule>.filterInvalid() =
-    filter { it.actionsList.isNotEmpty() || it.quit.actionsList.isNotEmpty() }
+    filter { it.actionsList.isNotEmpty() || (it.quit.isEnabled && it.quit.actionsList.isNotEmpty()) }
+
+private fun List<DirectAction>.filterHasQuit() =
+    filter { it.quit.isEnabled && it.quit.actionsList.isNotEmpty() }
 
 fun updateTheXXTimeToday(shortXContext: ShortXContext, conditions: List<ProtoAny>) {
     val allTheXXTimeTodayConditions =
