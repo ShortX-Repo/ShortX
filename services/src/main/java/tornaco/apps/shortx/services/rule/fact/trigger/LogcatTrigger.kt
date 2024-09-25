@@ -8,8 +8,10 @@ import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.common.RegexMatchOptions
+import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.Logcat
 import tornaco.apps.shortx.core.proto.factsAndQuitFacts
+import tornaco.apps.shortx.core.proto.quitFacts
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
@@ -112,6 +114,41 @@ class LogcatTrigger(
         super.onRuleDisabled(ruleId)
         val rule = shortXContext.rule.getRuleById(ruleId)
         if (rule != null && rule.factsAndQuitFacts.any { it is_ Logcat::class.java }) {
+            logScope.launchSafety { updateTriggerState() }
+        }
+    }
+
+    override fun onAddRule(rule: Rule) {
+        super.onAddRule(rule)
+        if (rule.factsAndQuitFacts.any { it is_ Logcat::class.java }) {
+            logScope.launchSafety { updateTriggerState() }
+        }
+    }
+
+    override fun onDeleteRule(rule: Rule) {
+        super.onDeleteRule(rule)
+        if (rule.factsAndQuitFacts.any { it is_ Logcat::class.java }) {
+            logScope.launchSafety { updateTriggerState() }
+        }
+    }
+
+    override fun onAddDA(da: DirectAction) {
+        super.onAddDA(da)
+        if (da.quitFacts.any { it is_ Logcat::class.java }) {
+            logScope.launchSafety { updateTriggerState() }
+        }
+    }
+
+    override fun onUpdateDA(oldDA: DirectAction, newDA: DirectAction) {
+        super.onUpdateDA(oldDA, newDA)
+        if (oldDA.quitFacts.any { it is_ Logcat::class.java } || newDA.quitFacts.any { it is_ Logcat::class.java }) {
+            logScope.launchSafety { updateTriggerState() }
+        }
+    }
+
+    override fun onDeleteDA(da: DirectAction) {
+        super.onDeleteDA(da)
+        if (da.quitFacts.any { it is_ Logcat::class.java }) {
             logScope.launchSafety { updateTriggerState() }
         }
     }

@@ -48,6 +48,7 @@ import tornaco.apps.shortx.core.proto.factsAndQuitFacts
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.getTypeUrl
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
+import tornaco.apps.shortx.core.proto.quitFacts
 import tornaco.apps.shortx.core.proto.rule.ActionEvaluateRecord
 import tornaco.apps.shortx.core.proto.rule.ConditionEvaluateRecord
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
@@ -760,29 +761,48 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         // Must clear rule extras!
         val da = DirectAction.newBuilder(unMaskedDA).clearExtras().build()
 
-        logger.d("addDirectAction: $da")
-        dasSettingsStore.addDirectAction(da)
-        daObs.broadcast {
-            kotlin.runCatching { it.onAddOrUpdate(da.id) }
-                .onFailure { logger.e("Call onAddOrUpdate") }
-        }
-        handler.postSafety {
-            allTriggers.forEach { it.onAddOrUpdateDA(da.id) }
+        val existing = getDirectActionById(da.id)
+
+        if (existing == null) {
+            logger.d("addDirectAction: $da")
+            dasSettingsStore.addDirectAction(da)
+            daObs.broadcast {
+                kotlin.runCatching { it.onAddOrUpdate(da.id) }
+                    .onFailure { logger.e("Call onAddOrUpdate") }
+            }
+            handler.postSafety {
+                allTriggers.forEach { it.onAddDA(da) }
+            }
+        } else {
+            logger.d("updateDirectAction: $da")
+            dasSettingsStore.addDirectAction(da)
+            daObs.broadcast {
+                kotlin.runCatching { it.onAddOrUpdate(da.id) }
+                    .onFailure { logger.e("Call onAddOrUpdate") }
+            }
+            handler.postSafety {
+                allTriggers.forEach { it.onUpdateDA(existing, da) }
+            }
         }
     }
 
     fun deleteDirectAction(id: String) {
-        dasSettingsStore.deleteDirectAction(id)
-        daObs.broadcast {
-            kotlin.runCatching { it.onDelete(id) }
-                .onFailure { logger.e("Call onDelete") }
-        }
-        handler.postSafety {
-            allTriggers.forEach { it.onDeleteDA(id) }
-        }
+        val existing = dasSettingsStore.getDirectActionById(id)
+        if (existing != null) {
+            dasSettingsStore.deleteDirectAction(id)
+            daObs.broadcast {
+                kotlin.runCatching { it.onDelete(id) }
+                    .onFailure { logger.e("Call onDelete") }
+            }
+            handler.postSafety {
+                allTriggers.forEach { it.onDeleteDA(existing) }
+            }
 
-        // Stop tasks
-        cancelJobs(getActiveJobs().filter { it == id }, "Rule deleted")
+            // Stop tasks
+            cancelJobs(getActiveJobs().filter { it == id }, "Rule deleted")
+        } else {
+            logger.e("deleteDirectAction, da not found: $id")
+        }
     }
 
     fun getDirectActionById(id: String): DirectAction? {
@@ -1482,6 +1502,10 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         }
 
         getAllDirectAction().map { da ->
+            da.quitFacts.forEach { factProtoAny ->
+                forEachAction(da.id, factProtoAny)
+            }
+
             da.actionsList.forEach { action ->
                 if (action is_ WaitUtilConditionMatch::class.java) {
                     val waitUtilConditionMatch = action unpack_ WaitUtilConditionMatch::class.java

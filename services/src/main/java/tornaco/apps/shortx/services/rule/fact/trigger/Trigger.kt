@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule.fact.trigger
 
 import android.content.Context
+import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.services.ShortXContext
 
@@ -31,11 +32,15 @@ interface Trigger {
         onAnyChanged()
     }
 
-    fun onAddOrUpdateDA(daId: String) {
+    fun onAddDA(da: DirectAction) {
         onAnyChanged()
     }
 
-    fun onDeleteDA(daId: String) {
+    fun onUpdateDA(oldDA: DirectAction, newDA: DirectAction) {
+        onAnyChanged()
+    }
+
+    fun onDeleteDA(da: DirectAction) {
         onAnyChanged()
     }
 

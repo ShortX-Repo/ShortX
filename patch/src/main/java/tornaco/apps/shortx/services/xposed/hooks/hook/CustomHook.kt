@@ -9,12 +9,14 @@ import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.proto.common.StringPair
+import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.MethodHook
 import tornaco.apps.shortx.core.proto.fact.MethodHookConstraintParamsCount
 import tornaco.apps.shortx.core.proto.fact.MethodHookConstraintParamsType
 import tornaco.apps.shortx.core.proto.fact.MethodHookConstraintReturnType
 import tornaco.apps.shortx.core.proto.fact.MethodHookLifecycle
 import tornaco.apps.shortx.core.proto.factsAndQuitFacts
+import tornaco.apps.shortx.core.proto.quitFacts
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
@@ -39,6 +41,7 @@ object CustomHook {
             log("System ready.")
             installHookForRules(
                 rules = ShortXService.shortXContext.rule.getAllEnabledRules(),
+                das = ShortXService.shortXContext.rule.getAllDirectAction(),
                 classLoader = lpparam.classLoader,
                 currentProcessPkgName = "android",
                 onMethodCall = { param, hook ->
@@ -73,6 +76,7 @@ object CustomHook {
         }
         installHookForRules(
             rules = shortXManager.getAllRules(),
+            das = shortXManager.getAllDirectAction(),
             classLoader = classLoader,
             currentProcessPkgName = currentProcessPkgName,
             lifecycle = lifecycle,
@@ -92,6 +96,7 @@ object CustomHook {
 
     private fun installHookForRules(
         rules: List<Rule>,
+        das: List<DirectAction>,
         classLoader: ClassLoader?,
         currentProcessPkgName: String?,
         lifecycle: MethodHookLifecycle,
@@ -99,8 +104,9 @@ object CustomHook {
         log: (String) -> Unit
     ) {
         log("Checking rules for app: $currentProcessPkgName - $lifecycle")
-        rules.filter { it.isEnabled }.forEach { rule ->
-            rule.factsAndQuitFacts.forEach { proto ->
+        rules.filter { it.isEnabled }.map { it.factsAndQuitFacts } + das.map { it.quitFacts }
+            .flatten()
+            .forEach { proto ->
                 if (proto is_ MethodHook::class.java) {
                     val mh = proto unpack_ MethodHook::class.java
                     if ((currentProcessPkgName == null || mh.packageName == currentProcessPkgName)
@@ -111,7 +117,6 @@ object CustomHook {
                     }
                 }
             }
-        }
     }
 
 

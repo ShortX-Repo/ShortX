@@ -4,7 +4,10 @@ import android.content.Context
 import android.view.KeyEvent
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.common.KeyGesture
+import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.AdvancedKeyEvent
+import tornaco.apps.shortx.core.proto.factsAndQuitFacts
+import tornaco.apps.shortx.core.proto.quitFacts
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
@@ -35,14 +38,24 @@ class SingleKeyRuleTrigger(
     private fun installKeyRules() {
         val keyEventRules =
             shortXContext.rule.getAllEnabledRules().filter { rule ->
-                rule.factsList.any {
+                rule.factsAndQuitFacts.any {
                     it is_ AdvancedKeyEvent::class.java
                 }
             }
         logger.d("keyEventRules: ${keyEventRules.map { it.title }}")
 
+        val keyEventDAs =
+            shortXContext.rule.getAllDirectAction().filter { da ->
+                da.quitFacts.any {
+                    it is_ AdvancedKeyEvent::class.java
+                }
+            }
+        logger.d("keyEventDAs: ${keyEventDAs.map { it.title }}")
+
         val enabledKeycodes = keyEventRules.map { rule ->
             rule.keyCodeList
+        }.flatten().distinct() + keyEventDAs.map { da ->
+            da.keyCodeList
         }.flatten().distinct()
         this.keycodes.clear()
         this.keycodes.addAll(enabledKeycodes)
@@ -89,6 +102,10 @@ class SingleKeyRuleTrigger(
 
     private val Rule.keyCodeList
         get() = this.factsList.filter { it is_ AdvancedKeyEvent::class.java }
+            .map { (it unpack_ AdvancedKeyEvent::class.java).keyCode }.distinct()
+
+    private val DirectAction.keyCodeList
+        get() = this.quitFacts.filter { it is_ AdvancedKeyEvent::class.java }
             .map { (it unpack_ AdvancedKeyEvent::class.java).keyCode }.distinct()
 
     private val Rule.interceptModeKeyCodeList
@@ -159,7 +176,6 @@ private class SingleKeyRuleImpl(
 
     override fun onPress(downTime: Long) {
         logger.d("singleKeyHandler onPress")
-
         val fact = AdvancedKeyEvent.newBuilder()
             .setKeyCode(keycode)
             .setGesture(KeyGesture.KeyPress)

@@ -58,23 +58,8 @@ class SensorScreenRotateTrigger(
         listener.disable()
     }
 
-    override fun onRuleEnabled(ruleId: String) {
-        super.onRuleEnabled(ruleId)
-        updateEnableState()
-    }
-
-    override fun onRuleDisabled(ruleId: String) {
-        super.onRuleDisabled(ruleId)
-        updateEnableState()
-    }
-
-    override fun onAddOrUpdateDA(daId: String) {
-        super.onAddOrUpdateDA(daId)
-        updateEnableState()
-    }
-
-    override fun onDeleteDA(daId: String) {
-        super.onDeleteDA(daId)
+    override fun onAnyChanged() {
+        super.onAnyChanged()
         updateEnableState()
     }
 
