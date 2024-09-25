@@ -129,6 +129,12 @@ class OverlayService(shortXContext: ShortXContext) :
                     parameterInputs = parameters
                 )
             },
+            onTouchOutside = {
+                logger.d("onTouchOutside: ${action.tag}")
+                if (action.closeOnTouchOutside) {
+                    postHideOverlay(listOf(action.tag))
+                }
+            }
         )
 
         showingOverlays.add(

@@ -238,6 +238,18 @@ private fun Content(
         Column(verticalArrangement = Arrangement.Center) {
             FieldTitle(
                 modifier = Modifier.padding(vertical = 12.dp),
+                text = LocalI18N.current["ui.action.close.touch.outside"]
+            )
+            SmallSpacer()
+            ShortXSwitch(checked = state.closeOnTouchOutside, onCheckedChange = {
+                vm.setCloseOnTouchOutside(it)
+            })
+        }
+
+        StandardSpacer()
+        Column(verticalArrangement = Arrangement.Center) {
+            FieldTitle(
+                modifier = Modifier.padding(vertical = 12.dp),
                 text = LocalI18N.current["ui.common.button.enable.global.drag"]
             )
             SmallSpacer()

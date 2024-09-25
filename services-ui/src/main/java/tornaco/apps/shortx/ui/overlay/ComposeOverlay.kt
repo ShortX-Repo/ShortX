@@ -43,6 +43,7 @@ class ComposeOverlay(
     private val onPosChange: (Int, Int) -> Unit,
     private val onButtonClick: (OverlayButtonSetting) -> Unit,
     private val onButtonLongClick: (OverlayButtonSetting) -> Unit,
+    private val onTouchOutside: () -> Unit,
 ) : FrameLayout(context) {
     private val logger: Logger = Logger("ComposeOverlay")
     private val overlayLP = createLayoutParams()
@@ -75,6 +76,12 @@ class ComposeOverlay(
         @SuppressLint("ClickableViewAccessibility")
         override fun onTouch(v: View, event: MotionEvent): Boolean {
             when (event.action) {
+                MotionEvent.ACTION_OUTSIDE -> {
+                    logger.d("ACTION_OUTSIDE")
+                    onTouchOutside()
+                    return false
+                }
+
                 MotionEvent.ACTION_DOWN -> {
                     touchX = event.x + left
                     touchY = event.y + top
@@ -216,12 +223,12 @@ class ComposeOverlay(
         lp.height = ViewGroup.LayoutParams.WRAP_CONTENT
         lp.format = PixelFormat.RGBA_8888
         lp.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-        lp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+        lp.flags =
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
         lp.packageName = context.packageName
         lp.windowAnimations = android.R.style.Animation_Dialog
         return lp
     }
-
 
     private fun initPos() {
         logger.d("initPos: $width $height")

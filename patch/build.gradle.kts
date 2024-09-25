@@ -25,7 +25,7 @@ android {
 }
 dependencies {
     compileOnly(files("${rootProject.rootDir.path}/android-sdk/31/android-31.jar"))
-    compileOnly(files("../services-ui/jar/service-ui-stubs.jar"))
+    compileOnly(files("${rootProject.rootDir.path}/services-ui/jar/service-ui-stubs.jar"))
     compileOnly(libs.xposed.api)
 
     implementation(project(":services"))

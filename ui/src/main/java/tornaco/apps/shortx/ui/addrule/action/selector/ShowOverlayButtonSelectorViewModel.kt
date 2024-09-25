@@ -16,7 +16,7 @@ import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 
 private fun newButtonId() = "BTN-${UUID.randomUUID()}"
@@ -35,6 +35,7 @@ data class OverlayButtonSelectorState(
     val overlayPaddingH: Int = 0,
     val enableGlobalDrag: Boolean = true,
     val enableAutoEdge: Boolean = false,
+    val closeOnTouchOutside: Boolean = false,
     val id: String = defaultNewActionId(),
     val evaluatingActions: List<String> = emptyList(),
 
@@ -97,7 +98,8 @@ fun OverlayButtonSelectorState.toAction(): Action.ShowOverlay {
         enableGlobalDrag = this.enableGlobalDrag,
         overlayPaddingV = this.overlayPaddingV,
         overlayPaddingH = this.overlayPaddingH,
-        disableAutoEdge = !this.enableAutoEdge
+        disableAutoEdge = !this.enableAutoEdge,
+        closeOnTouchOutside = this.closeOnTouchOutside
     )
 }
 
@@ -146,6 +148,7 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
                 overlayPaddingH = settings.overlayPaddingH,
                 overlayPaddingV = settings.overlayPaddingV,
                 enableAutoEdge = !settings.disableAutoEdge,
+                closeOnTouchOutside = settings.closeOnTouchOutside,
                 evaluatingActions = shortXManager.getEvaluatingActions()
             )
         }
@@ -215,6 +218,10 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
 
     fun setEnableAutoEdge(enable: Boolean) {
         updateState { copy(enableAutoEdge = enable) }
+    }
+
+    fun setCloseOnTouchOutside(closeOnTouchOutside: Boolean) {
+        updateState { copy(closeOnTouchOutside = closeOnTouchOutside) }
     }
 
     fun addButton() {
