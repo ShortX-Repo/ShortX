@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package tornaco.apps.shortx.ui.overlay
 
 import android.view.MotionEvent
@@ -8,7 +10,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -69,7 +73,6 @@ import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
-import tornaco.apps.shortx.ui.base.clickableWithRipple
 import tornaco.apps.shortx.ui.base.thenIf
 
 private val logger = Logger("ShortXOverlay")
@@ -235,7 +238,7 @@ private fun LazyGridScope.overlayButtons(
             modifier = Modifier
                 .thenIf(Modifier.padding(bottom = 8.dp), index != state.buttons.size - 1)
                 .clip(ShortXCardRoundedCornerShape)
-                .clickableWithRipple(
+                .combinedClickable(
                     onLongClick = {
                         onButtonLongClick(updateButton.setting)
                     },

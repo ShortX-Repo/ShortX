@@ -25,7 +25,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -33,7 +32,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -291,10 +289,6 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
                 // Key
                 TextField(
                     modifier = Modifier.weight(1f),
-
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color.Transparent
-                    ),
                     placeholder = { Text(text = LocalI18N.current["ui.common.extras.k"]) },
                     value = extra.key,
                     onValueChange = {
@@ -305,10 +299,6 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
                 // Value
                 TextField(
                     modifier = Modifier.weight(1f),
-
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color.Transparent
-                    ),
                     placeholder = { Text(text = LocalI18N.current["ui.common.extras.v"]) },
                     value = extra.value,
                     onValueChange = {

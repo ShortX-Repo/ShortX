@@ -219,6 +219,19 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
         })
     OnOffAnyStateSelectorDialog(state = apmModeSelectorState)
 
+    val showRecentAppsState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.action.recent.apps"],
+        menuItems = OnOffToggle.entries.filterNot { it == OnOffToggle.OnOffToggle_Toggle || it == OnOffToggle.UNRECOGNIZED }
+            .map {
+                MenuDialogItem(id = it.name, title = LocalI18N.current[it.labelKey()])
+            },
+        onItemSelected = { _, id ->
+            val state = OnOffToggle.valueOf(id)
+            addAction(Action.ShowRecentApps(state = state))
+        }
+    )
+    MenuDialog(state = showRecentAppsState)
+
     val screenTimeoutInputDialogState = rememberTextInputState(
         title = LocalI18N.current["ui.action.set.screen.timeout"],
         message = LocalI18N.current["ui.action.set.screen.timeout.message"],
@@ -483,6 +496,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.ShowRecentApps::class -> {
+                showRecentAppsState.show()
+                true
+            }
+
             else -> false
         }
     }
@@ -503,7 +521,7 @@ fun SystemActions(
         Action.StayAwake::class,
         Action.InjectKeyCode::class,
         Action.InjectCombineKeyCode::class,
-        Action.ShowRece::class,
+        Action.ShowRecentApps::class,
         Action.MediaPlayback::class,
         Action.SetRingerMode::class,
         Action.AdjustVolume::class,

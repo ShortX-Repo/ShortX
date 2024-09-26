@@ -17,13 +17,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -210,10 +208,6 @@ private fun ItemSettings(
     }
     ShortXTextField(
         modifier = Modifier.fillMaxWidth(),
-
-        colors = TextFieldDefaults.textFieldColors(
-            containerColor = Color.Transparent
-        ),
         label = {
             Text(text = LocalI18N.current["ui.action.show.menu.dialog.item.text"])
         },

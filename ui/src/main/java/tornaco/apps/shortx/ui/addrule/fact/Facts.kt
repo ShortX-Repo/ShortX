@@ -5,6 +5,7 @@ package tornaco.apps.shortx.ui.addrule.fact
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -66,7 +67,6 @@ import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.TipDialog
 import tornaco.apps.shortx.ui.base.VerticalDivider
-import tornaco.apps.shortx.ui.base.clickableWithRipple
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.base.rememberTipDialogState
@@ -277,7 +277,7 @@ private fun FactItem(
                 MD3Badge(modifier = Modifier
                     .padding(start = 68.dp, end = 16.dp)
                     .clip(ShortXCardRoundedCornerShape)
-                    .clickableWithRipple {
+                    .clickable {
                         factTagContextDataDialogState.show()
                     },
                     text = {
