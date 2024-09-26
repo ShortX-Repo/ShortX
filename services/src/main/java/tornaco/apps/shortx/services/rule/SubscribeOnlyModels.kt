@@ -31,6 +31,7 @@ import tornaco.apps.shortx.core.proto.action.MatchRegex
 import tornaco.apps.shortx.core.proto.action.OcrDetect
 import tornaco.apps.shortx.core.proto.action.PerformContextMenuAction
 import tornaco.apps.shortx.core.proto.action.RemoveNotificationForPackageByPkg
+import tornaco.apps.shortx.core.proto.action.RemoveStatusBarIcon
 import tornaco.apps.shortx.core.proto.action.ReplaceRegex
 import tornaco.apps.shortx.core.proto.action.ScrollViewTo
 import tornaco.apps.shortx.core.proto.action.SelectScreenArea
@@ -40,6 +41,7 @@ import tornaco.apps.shortx.core.proto.action.SetAppEnabledByPkg
 import tornaco.apps.shortx.core.proto.action.SetAppSuspend
 import tornaco.apps.shortx.core.proto.action.SetAppSuspendByPkg
 import tornaco.apps.shortx.core.proto.action.SetScreenTimeout
+import tornaco.apps.shortx.core.proto.action.SetStatusBarIcon
 import tornaco.apps.shortx.core.proto.action.ShowClipboardView
 import tornaco.apps.shortx.core.proto.action.ShowDrawBoard
 import tornaco.apps.shortx.core.proto.action.ShowFloatWindow
@@ -53,6 +55,7 @@ import tornaco.apps.shortx.core.proto.action.SwitchMobileDataSlot
 import tornaco.apps.shortx.core.proto.action.TTS
 import tornaco.apps.shortx.core.proto.action.Toggle5G
 import tornaco.apps.shortx.core.proto.action.ToggleGestureRecording
+import tornaco.apps.shortx.core.proto.action.ToggleSlot
 import tornaco.apps.shortx.core.proto.action.WaitUtilConditionMatch
 import tornaco.apps.shortx.core.proto.condition.AppHasAudioFocus
 import tornaco.apps.shortx.core.proto.condition.AppHasTask
@@ -214,4 +217,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         LaunchPinedItem::class,
         ShowFloatWindow::class,
         ShowStatusBarChip::class,
+        SetStatusBarIcon::class,
+        RemoveStatusBarIcon::class,
+        ToggleSlot::class,
     )

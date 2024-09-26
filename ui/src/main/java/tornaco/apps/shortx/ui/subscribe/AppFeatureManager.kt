@@ -196,6 +196,9 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Action.LaunchPinedItem::class,
     Action.ShowFloatWindow::class,
     Action.ShowStatusBarChip::class,
+    Action.SetStatusBarIcon::class,
+    Action.RemoveStatusBarIcon::class,
+    Action.ToggleSlot::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 )
 
