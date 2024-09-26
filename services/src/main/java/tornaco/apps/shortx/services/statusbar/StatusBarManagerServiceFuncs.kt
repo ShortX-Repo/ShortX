@@ -39,4 +39,36 @@ object StatusBarManagerServiceFuncs {
             slot
         )
     }
+
+    fun showRecentApps() {
+        // void showRecentApps(boolean triggeredFromAltTab)
+        val internal = getInternalService()
+        Reflections.callMethod(
+            internal,
+            "showRecentApps",
+            false
+        )
+    }
+
+    fun hideRecentApps() {
+        // void hideRecentApps(boolean triggeredFromAltTab, boolean triggeredFromHomeKey)
+        val internal = getInternalService()
+        Reflections.callMethod(
+            internal,
+            "hideRecentApps",
+            false,
+            false
+        )
+    }
+
+    private fun getInternalService(): Any {
+        val sbms = requireNotNull(ServiceHolder.statusBarManagerService) {
+            "statusBarManagerService is missing."
+        }
+        // StatusBarManagerInternal mInternalService:
+        val internal = requireNotNull(Reflections.getObjectField(sbms, "mInternalService")) {
+            "Can not get mInternalService"
+        }
+        return internal
+    }
 }

@@ -503,6 +503,7 @@ fun SystemActions(
         Action.StayAwake::class,
         Action.InjectKeyCode::class,
         Action.InjectCombineKeyCode::class,
+        Action.ShowRece::class,
         Action.MediaPlayback::class,
         Action.SetRingerMode::class,
         Action.AdjustVolume::class,

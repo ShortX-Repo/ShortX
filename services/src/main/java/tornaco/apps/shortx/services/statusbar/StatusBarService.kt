@@ -27,6 +27,7 @@ import tornaco.apps.shortx.core.rule.ToggleObserver
 import tornaco.apps.shortx.core.rule.action.wrap
 import tornaco.apps.shortx.core.settings.defaultStatusBarTileSetting
 import tornaco.apps.shortx.core.util.OsUtils
+import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.core.util.statusBarManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -298,6 +299,14 @@ class StatusBarService(shortXContext: ShortXContext) :
     fun removeStatusBarIcon(slot: String) {
         logger.p("removeStatusBarIcon: $slot")
         StatusBarManagerServiceFuncs.removeIcon(slot)
+    }
+
+    fun showRecentApps(show: Boolean) {
+        logger.d("showRecentApps: $show")
+        show.select(
+            { StatusBarManagerServiceFuncs.showRecentApps() },
+            { StatusBarManagerServiceFuncs.hideRecentApps() }
+        )
     }
 
     private fun notifyStatusBarClipStateChanged(clipState: StatusBarClipState) {
