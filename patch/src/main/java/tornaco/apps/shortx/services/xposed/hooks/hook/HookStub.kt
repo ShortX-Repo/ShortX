@@ -68,5 +68,6 @@ object HookStub {
         ShortcutServiceHook.hook(lpparam)
         TaskOrganizerControllerHooks.hookHandleInterceptBackPressedOnTaskRoot(lpparam)
         ActivityClientControllerHooks.hookOnBackPressed(lpparam)
+        StatusBarManagerServiceHook.hook(lpparam)
     }
 }

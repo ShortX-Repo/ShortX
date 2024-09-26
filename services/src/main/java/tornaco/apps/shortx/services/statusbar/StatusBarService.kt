@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.BuildPropExt
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener
 import tornaco.apps.shortx.core.proto.common.StatusBarClipState
@@ -18,6 +20,9 @@ import tornaco.apps.shortx.core.proto.common.StatusBarClipUiSettings
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
+import tornaco.apps.shortx.core.res.AppResources
+import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.res.remixResId
 import tornaco.apps.shortx.core.rule.ToggleObserver
 import tornaco.apps.shortx.core.rule.action.wrap
 import tornaco.apps.shortx.core.settings.defaultStatusBarTileSetting
@@ -56,6 +61,8 @@ class StatusBarService(shortXContext: ShortXContext) :
 
     private val _statusBarChipEvent = MutableSharedFlow<StatusBarChipEvent>()
     val statusBarChipEvent = _statusBarChipEvent.asSharedFlow()
+
+    private val appRes by lazy { AppResources(context, BuildPropInternal.APP_PACKAGE_NAME) }
 
     override fun start(context: Context) {
         super.start(context)
@@ -121,6 +128,12 @@ class StatusBarService(shortXContext: ShortXContext) :
                 .setTextColor(store.read(Settings.IntSettings.StatusBarChipTextColor))
                 .build()
         )
+
+        BuildPropExt.onDebugBuild {
+            systemServiceScope.launchSafety {
+                setStatusBarIcon("ShortX", Remix.Animals.deer)
+            }
+        }
     }
 
     fun getAllStatusBarTileSettings(): List<StatusBarTileSetting> {
@@ -274,6 +287,17 @@ class StatusBarService(shortXContext: ShortXContext) :
         statusBarClipState.update {
             StatusBarClipState.getDefaultInstance()
         }
+    }
+
+    fun setStatusBarIcon(slot: String, icon: String) {
+        val iconId = appRes.appContext.remixResId(icon)
+        logger.p("setStatusBarIcon: $slot $icon $iconId")
+        StatusBarManagerServiceFuncs.setIcon(slot, iconId)
+    }
+
+    fun removeStatusBarIcon(slot: String) {
+        logger.p("removeStatusBarIcon: $slot")
+        StatusBarManagerServiceFuncs.removeIcon(slot)
     }
 
     private fun notifyStatusBarClipStateChanged(clipState: StatusBarClipState) {

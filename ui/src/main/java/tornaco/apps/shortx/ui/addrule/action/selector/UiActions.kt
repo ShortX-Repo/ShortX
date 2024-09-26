@@ -64,6 +64,24 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
     }
     HideOverlayDialog(state = hideOverlayDialogState)
 
+    val setStatusBarIconLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action.SetStatusBarIcon>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
+    val removeStatusBarIconState = rememberTextInputState(
+        title = LocalI18N.current["ui.action.set.statusbar.icon.slot"],
+        message = LocalI18N.current["ui.action.set.statusbar.icon.slot.summary"]
+    ) {
+        addAction(Action.RemoveStatusBarIcon(slot = it))
+    }
+    TextInputDialog(state = removeStatusBarIconState)
+
     val findTextAndClickState = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
@@ -313,6 +331,22 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                 true
             }
 
+            Action.SetStatusBarIcon::class -> {
+                setStatusBarIconLauncher.launch(
+                    newIntent(
+                        context = context,
+                        currentData = source.getActionAs<Action.SetStatusBarIcon>(),
+                        clazz = SetStatusBarIconSelectorActivity::class.java
+                    )
+                )
+                true
+            }
+
+            Action.RemoveStatusBarIcon::class -> {
+                removeStatusBarIconState.show(source.getActionAs<Action.RemoveStatusBarIcon>()?.slot)
+                true
+            }
+
             Action.ScreenFlash::class -> {
                 screenFlashLauncher.launch(
                     newIntent(
@@ -458,6 +492,8 @@ fun UiActions(
         Action.ShowDanmu::class,
         Action.ShowStatusBarChip::class,
         Action.HideStatusBarClip::class,
+        Action.SetStatusBarIcon::class,
+        Action.RemoveStatusBarIcon::class,
         Action.ShowOverlay::class,
         Action.HideOverlay::class,
         Action.HideAllOverlay::class,

@@ -252,6 +252,14 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.HideStatusBarClip
     },
+    SetStatusBarIcon {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.SetStatusBarIcon
+    },
+    RemoveStatusBarIcon {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.RemoveStatusBarIcon
+    },
     ScreenFlash {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.ScreenFlash

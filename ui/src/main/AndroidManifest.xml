@@ -341,6 +341,9 @@
         <activity
             android:name="tornaco.apps.shortx.ui.addrule.action.selector.ShowStatusBarChipSelectorActivity"
             android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.addrule.action.selector.SetStatusBarIconSelectorActivity"
+            android:exported="false" />
 
         <service
             android:name=".service.tile.Tile1"

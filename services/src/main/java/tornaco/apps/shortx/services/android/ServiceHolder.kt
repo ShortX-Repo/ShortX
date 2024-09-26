@@ -16,4 +16,10 @@ object ServiceHolder {
             field = value
             logger.w("Set windowManagerService: $value")
         }
+
+    var statusBarManagerService: Any? = null
+        set(value) {
+            field = value
+            logger.w("Set statusBarManagerService: $value")
+        }
 }
