@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.I18NCache
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
+import tornaco.apps.shortx.ui.subscribe.initContextVM
 import tornaco.apps.shortx.ui.subscribe.util.getLVLToken
 import tornaco.apps.shortx.ui.subscribe.util.isGPToken
 import tornaco.apps.shortx.ui.subscribe.util.setLVLToken
@@ -31,6 +32,7 @@ object EntryPoint {
         LVLStateHolder.init(context)
         checkCB(context)
         LCRulesAdapter.initRules(context)
+        initContextVM()
 
         PicassoInitializer.install(
             context,
