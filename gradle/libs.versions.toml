@@ -1,7 +1,7 @@
 [versions]
 accompanist = "0.34.0"
 activity-compose = "1.9.1"
-agp = "8.5.2"
+agp = "8.6.1"
 ksp = "2.0.20-1.0.24"
 apksig = "8.6.0"
 app-update = "2.1.0"
