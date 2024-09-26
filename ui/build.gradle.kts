@@ -5,7 +5,7 @@ import tornaco.project.android.shortx.addI18NTask
 plugins {
     alias(libs.plugins.agp.lib)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.dagger.hilt.android)
     alias(libs.plugins.compose.compiler)
@@ -49,11 +49,11 @@ dependencies {
 
     implementation(libs.dagger.hilt.android)
     implementation(libs.dagger.hilt.navigation.compose)
-    kapt(libs.dagger.hilt.android.compiler)
+    ksp(libs.dagger.hilt.android.compiler)
 
     implementation(libs.glide.landscapist)
     implementation(libs.glide)
-    kapt(libs.glide.compiler)
+    ksp(libs.glide.compiler)
 
     implementation(libs.kotlinx.serialization.json.jvm)
     implementation(libs.kotlin.reflect)

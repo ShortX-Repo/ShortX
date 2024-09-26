@@ -8,7 +8,7 @@ import kotlin.random.Random
 plugins {
     alias(libs.plugins.agp.app)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.dagger.hilt.android)
     alias(libs.plugins.kover)
@@ -133,7 +133,7 @@ dependencies {
     implementation(libs.dagger.hilt.android)
     implementation(libs.dagger.hilt.navigation.compose)
     implementation(libs.material)
-    kapt(libs.dagger.hilt.android.compiler)
+    ksp(libs.dagger.hilt.android.compiler)
 
     implementation(libs.appcompat)
 

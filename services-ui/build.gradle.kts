@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.agp.lib)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.dagger.hilt.android)
     alias(libs.plugins.compose.compiler)
@@ -28,7 +28,7 @@ android {
 dependencies {
     implementation(libs.dagger.hilt.android)
     implementation(libs.dagger.hilt.navigation.compose)
-    kapt(libs.dagger.hilt.android.compiler)
+    ksp(libs.dagger.hilt.android.compiler)
 
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.tooling.preview)

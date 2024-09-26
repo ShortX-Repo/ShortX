@@ -2,6 +2,7 @@
 accompanist = "0.34.0"
 activity-compose = "1.9.1"
 agp = "8.5.2"
+ksp = "2.0.20-1.0.24"
 apksig = "8.6.0"
 app-update = "2.1.0"
 biometric = "1.4.0-alpha02"
@@ -68,7 +69,7 @@ agp-lib = { id = "com.android.library", version.ref = "agp" }
 agp-app = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-scripting = { id = "org.jetbrains.kotlin.plugin.scripting", version.ref = "kotlin" }
