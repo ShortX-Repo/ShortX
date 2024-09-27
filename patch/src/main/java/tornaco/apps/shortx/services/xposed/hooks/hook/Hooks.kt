@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 import java.lang.reflect.Method
 
 private val logger = Logger("ShortXHookUtil")

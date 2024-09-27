@@ -9,6 +9,7 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okio.ByteString
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 
 interface WSCallback {
     companion object {

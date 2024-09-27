@@ -1,7 +1,7 @@
 package tornaco.apps.shortx.services.os.cpu
 
 import android.util.SparseArray
-import tornaco.apps.shortx.core.BuildPropExt
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.os.cpu.CpuInfoReader.CpuInfo
@@ -23,8 +23,8 @@ class CpuService(shortXContext: ShortXContext) : SystemService(shortXContext, "C
             )
         }
 
-        BuildPropExt.onDebugBuild {
-            logger.d(readCpuInfos())
+        logger.logOnDebug {
+            readCpuInfos()
         }
     }
 

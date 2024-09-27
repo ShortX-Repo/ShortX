@@ -6,6 +6,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigException
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 
 class FirebaseConfig : Config {
     private val logger = Logger("FirebaseConfig")

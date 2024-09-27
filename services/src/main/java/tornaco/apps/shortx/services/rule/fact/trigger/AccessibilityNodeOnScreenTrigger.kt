@@ -8,8 +8,8 @@ import android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
 import android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
-import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.is_
@@ -99,7 +99,7 @@ class AccessibilityNodeOnScreenTrigger(
             }
         }
 
-        logger.p("nodeMatchers: $nodeMatchers")
+        logger.logOnDebug("nodeMatchers: $nodeMatchers")
 
         if (nodeMatchers.isEmpty()) {
             shortXContext.wm.setOnAccessibilityEvent(null)
@@ -114,7 +114,7 @@ class AccessibilityNodeOnScreenTrigger(
                             val activityInfo = tryGetActivity(context, componentName)
                             val isActivity = activityInfo != null
                             if (isActivity) {
-                                onDebugBuild { logger.d("isActivity, componentName: $componentName") }
+                                logger.logOnDebug("isActivity, componentName: $componentName")
                                 if (currentClassName != componentName.className) {
                                     currentClassName = componentName.className
                                     currentClassTimeMillis = System.currentTimeMillis()
@@ -125,7 +125,7 @@ class AccessibilityNodeOnScreenTrigger(
                         val timePassed = System.currentTimeMillis() - currentClassTimeMillis
 
                         val rootPkgName = event.packageName
-                        onDebugBuild { logger.d("TYPE_WINDOW_CONTENT_CHANGED currentClassName: $currentClassName timePassed: $timePassed") }
+                        logger.logOnDebug("TYPE_WINDOW_CONTENT_CHANGED currentClassName: $currentClassName timePassed: $timePassed")
 
                         // Ignore some packages.
                         if (rootPkgName != "android") {
@@ -199,7 +199,7 @@ class AccessibilityNodeOnScreenTrigger(
                                     }
                                 }
                             } else {
-                                logger.p("No need to check, shouldCheckEvent is false.")
+                                logger.logOnDebug("No need to check, shouldCheckEvent is false.")
                             }
                         }
                     }

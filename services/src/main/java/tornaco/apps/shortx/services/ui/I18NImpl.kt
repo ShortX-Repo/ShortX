@@ -5,6 +5,7 @@ import android.icu.text.MessageFormat
 import kotlinx.serialization.json.Json
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 
 val i18NIns by lazy { I18NImpl() }
 

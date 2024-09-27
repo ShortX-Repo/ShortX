@@ -13,7 +13,6 @@ import com.elvishew.xlog.printer.file.FilePrinter
 import com.elvishew.xlog.printer.file.clean.FileLastModifiedCleanStrategy
 import com.elvishew.xlog.printer.file.naming.DateFileNameGenerator
 import tornaco.apps.shortx.core.BuildProp
-import tornaco.apps.shortx.core.BuildPropExt
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.Logger
@@ -45,7 +44,6 @@ object LogInit {
                 Log.ERROR -> XLog.e("$tag $msg")
             }
         }
-        BuildPropExt.isDebug = BuildPropInternal.APP_IS_DEBUG
     }
 
     fun setLogDebug(enable: Boolean) {

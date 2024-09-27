@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildPropInternal
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
@@ -108,7 +109,7 @@ class AddToggleViewModel @Inject constructor(@ApplicationContext context: Contex
 
     // Save with token to check subscribe state.
     fun save(token: String?) {
-        logger.p("save with token: ${token?.maskAll()}")
+        logger.logOnDebug("save with token: ${token?.maskAll()}")
         viewModelScope.launch {
             val authorPref = pref.shareAuthorInfo.first()
 

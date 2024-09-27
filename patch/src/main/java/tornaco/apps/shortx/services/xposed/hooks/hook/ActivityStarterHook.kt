@@ -5,7 +5,7 @@ import android.content.pm.ActivityInfo
 import android.content.pm.ApplicationInfo
 import android.os.IBinder
 import de.robv.android.xposed.callbacks.XC_LoadPackage
-import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.platform.Classes.activityStarterClass
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
@@ -17,7 +17,7 @@ object ActivityStarterHook {
 
     fun hookEnqueueRequest(lpparam: XC_LoadPackage.LoadPackageParam) {
         if (OsUtils.isROrAbove()) {
-            onDebugBuild {
+            if (BuildPropInternal.APP_IS_DEBUG) {
                 hookEnqueueRequest_30OrAbove(lpparam)
             }
         }

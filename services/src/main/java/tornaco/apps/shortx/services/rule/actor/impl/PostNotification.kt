@@ -5,6 +5,7 @@ import com.google.protobuf.Message
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.proto.common.AndroidIntentExtra
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
@@ -70,7 +71,7 @@ object PostNotification : Actor {
                     AndroidIntentExtra.newBuilder().setKey(it).setValue("ShortX").build()
                 }
             }
-            logger.p("extras: $globalVarExtras")
+            logger.logOnDebug("extras: $globalVarExtras")
 
             if (globalVarExtras.isNotEmpty()) visibleParams[paramsId] = params
 

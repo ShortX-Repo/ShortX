@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.media
 
 import android.net.Uri
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.fact.MediaStoreInsert
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -15,7 +16,7 @@ class MediaService(shortXContext: ShortXContext) : SystemService(shortXContext, 
 
     fun onMediaStoreInsert(uri: Uri, path: String) {
         kotlin.runCatching {
-            logger.p("onMediaStoreInsert: $uri -- $path")
+            logger.logOnDebug("onMediaStoreInsert: $uri -- $path")
             handler.postSafety {
                 shortXContext.rule.publishFact(
                     "onMediaStoreInsert",
@@ -38,7 +39,7 @@ class MediaService(shortXContext: ShortXContext) : SystemService(shortXContext, 
 
     fun onMediaStoreDelete(uri: Uri, path: String) {
         kotlin.runCatching {
-            logger.p("onMediaStoreDelete: $uri -- $path")
+            logger.logOnDebug("onMediaStoreDelete: $uri -- $path")
         }.onFailure {
             logger.e(it)
         }

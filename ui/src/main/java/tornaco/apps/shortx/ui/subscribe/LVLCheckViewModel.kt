@@ -13,8 +13,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.BuildPropInternal
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.DeviceId
 import tornaco.apps.shortx.ui.subscribe.util.hasAChanceToSkipLicenseCheck
@@ -45,13 +45,13 @@ class LVLCheckViewModel : ViewModel() {
 
         val checkerCallback = object : LicenseCheckerCallback {
             override fun allow(reason: Int) {
-                logger.p("LicenseCheckerCallback.allow: $reason")
+                logger.logOnDebug("LicenseCheckerCallback.allow: $reason")
                 setLVLToken(DeviceId.requireGPToken())
                 _uiState.value = _uiState.value.copy(checkState = CheckState.SUCCESS)
             }
 
             override fun dontAllow(policyReason: Int) {
-                logger.p("LicenseCheckerCallback do not allow: $policyReason")
+                logger.logOnDebug("LicenseCheckerCallback do not allow: $policyReason")
                 when (policyReason) {
                     Policy.RETRY -> {
                         _uiState.value = _uiState.value.copy(checkState = CheckState.FAIL_NETWORK)

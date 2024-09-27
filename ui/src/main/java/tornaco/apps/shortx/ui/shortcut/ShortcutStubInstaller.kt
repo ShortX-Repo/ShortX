@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.ui.util.StubApkGen
 import java.io.File
 

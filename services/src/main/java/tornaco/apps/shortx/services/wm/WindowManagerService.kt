@@ -6,8 +6,6 @@ import android.graphics.Rect
 import android.os.Binder
 import android.os.Handler
 import android.os.Looper
-import android.view.Choreographer
-import android.view.InputEvent
 import android.view.KeyEvent
 import android.view.Surface
 import android.view.accessibility.AccessibilityEvent
@@ -19,6 +17,7 @@ import androidx.test.uiautomator.imp.adapter.InstrumentationAdapter
 import github.tornaco.android.thanos.core.app.ThanosManagerNative
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.fact.AppGainWindowFocus
@@ -32,7 +31,6 @@ import tornaco.apps.shortx.core.ui.XRectF
 import tornaco.apps.shortx.core.unKnownPkg
 import tornaco.apps.shortx.core.util.appPkgToString
 import tornaco.apps.shortx.core.util.clipboardManager
-import tornaco.apps.shortx.core.util.displayIdCompat
 import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.core.util.windowManager
 import tornaco.apps.shortx.services.ShortXContext
@@ -40,7 +38,6 @@ import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
-import tornaco.apps.shortx.services.input.InputMonitorCompat
 import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.rule.fact.trigger.rotationToDegree
 import tornaco.apps.shortx.services.systemServiceScope
@@ -360,7 +357,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
-        logger.p("OnAccessibilityEvent: $event")
+        logger.logOnDebug("OnAccessibilityEvent: $event")
         runCatching {
             onAccessibilityEvent?.invoke(event)
         }.onFailure {
@@ -436,8 +433,8 @@ class WindowManagerService(shortXContext: ShortXContext) :
             if (root != null) {
                 discoverTextFromAccessibilityNode(screenTexts, root)
             }
-            logger.p("enableUniversalCopy, time taken: ${System.currentTimeMillis() - discoverStartTimeMillis}ms")
-            logger.p("enableUniversalCopy, screenTexts: $screenTexts")
+            logger.logOnDebug("enableUniversalCopy, time taken: ${System.currentTimeMillis() - discoverStartTimeMillis}ms")
+            logger.logOnDebug("enableUniversalCopy, screenTexts: $screenTexts")
 
             root?.recycle()
 
@@ -512,7 +509,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
     }
 
     fun showClipboard() {
-        logger.p("showClipboard: ${shortXContext.input.getAllClipboardText()}")
+        logger.logOnDebug("showClipboard: ${shortXContext.input.getAllClipboardText()}")
         disableAllOverlayViews {
             val guideLineView =
                 ClipboardView(
@@ -582,8 +579,8 @@ class WindowManagerService(shortXContext: ShortXContext) :
             if (root != null) {
                 discoverViewIdFromAccessibilityNode(idNodes, root)
             }
-            logger.p("enableIdViewer, time taken: ${System.currentTimeMillis() - discoverStartTimeMillis}ms")
-            logger.p("enableIdViewer, screenTexts: $idNodes")
+            logger.logOnDebug("enableIdViewer, time taken: ${System.currentTimeMillis() - discoverStartTimeMillis}ms")
+            logger.logOnDebug("enableIdViewer, screenTexts: $idNodes")
 
             root?.recycle()
 
@@ -602,7 +599,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
         val matchText = screenTexts.firstOrNull {
             it.position.contains(x, y)
         }
-        logger.p("matchText [$x $y]: $matchText")
+        logger.logOnDebug("matchText [$x $y]: $matchText")
 
         systemServiceScope.launchSafety {
             if (matchText == null) {
@@ -634,7 +631,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
             }
         }
 
-        logger.p("matchNode [$x $y]: $matchNodes")
+        logger.logOnDebug("matchNode [$x $y]: $matchNodes")
 
         systemServiceScope.launchSafety {
             if (matchNodes.isEmpty()) {

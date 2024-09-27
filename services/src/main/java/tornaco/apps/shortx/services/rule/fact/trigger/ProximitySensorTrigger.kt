@@ -12,6 +12,7 @@ import tornaco.apps.shortx.core.proto.fact.ProximitySensorStateChanged
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.sensorManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.FactPublishData

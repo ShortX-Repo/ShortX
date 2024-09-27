@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule.fact.trigger
 
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 
 
 abstract class KeyPressTimesInIntervalListener(

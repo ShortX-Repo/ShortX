@@ -2,7 +2,7 @@ package tornaco.apps.shortx.services.rule.actor.impl
 
 import com.google.protobuf.Message
 import kotlinx.coroutines.delay
-import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.InternalFactListener
@@ -77,7 +77,7 @@ object WaitUtilConditionMatch : Actor {
             if (timeout <= 0) Int.MAX_VALUE else maxOf(1, timeout / CHECK_DELAY).toInt()
         while (!matchCond()) {
             checkedCount++
-            onDebugBuild { logger.d("check cond at $checkedCount") }
+            logger.logOnDebug("check cond at $checkedCount")
             require(checkedCount <= maxCheckCount) {
                 shortXContext.rule.unregisterInternalFactListener(factListener)
                 "Condition not match within time: $timeout(ms)"

@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.compat.AppOpsManagerCompat
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.ops.opsLabelKey
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
@@ -63,7 +64,7 @@ class AppOpSelectorState(
     var isValid by mutableStateOf(false)
 
     fun show(initialValue: AppOpSelectorData? = null) {
-        logger.p("initialValue: $initialValue")
+        logger.logOnDebug("initialValue: $initialValue")
         this.currentValue = initialValue ?: defaultData
         this.isValid = true
 

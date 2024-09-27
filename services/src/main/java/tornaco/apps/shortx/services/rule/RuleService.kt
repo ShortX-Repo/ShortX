@@ -14,7 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildProp
-import tornaco.apps.shortx.core.BuildPropExt
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IActionEvaluateListener
 import tornaco.apps.shortx.core.ICallback
@@ -23,6 +22,7 @@ import tornaco.apps.shortx.core.RuleEngineNames
 import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.localvar.LocalVars
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.os.CancellationSignal
 import tornaco.apps.shortx.core.os.ICancellationSignal
 import tornaco.apps.shortx.core.os.myUserId
@@ -394,18 +394,14 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
             if ((it.flags and android.view.KeyEvent.FLAG_FALLBACK) == 0) {
                 val interceptKeyRes = keyCombinationTrigger.interceptKey(it)
-                BuildPropExt.onDebugBuild {
-                    logger.d("interceptKeyRes: $interceptKeyRes")
-                }
+                logger.logOnDebug("interceptKeyRes: $interceptKeyRes")
                 if (interceptKeyRes) {
                     singleKeyGestureDetector.reset()
                     return@onKeyEvent false
                 }
 
                 val isKeyConsumed = keyCombinationTrigger.isKeyConsumed(it)
-                BuildPropExt.onDebugBuild {
-                    logger.d("isKeyConsumed: $isKeyConsumed")
-                }
+                logger.logOnDebug("isKeyConsumed: $isKeyConsumed")
                 if (isKeyConsumed) {
                     singleKeyGestureDetector.reset()
                     return@onKeyEvent false
@@ -522,7 +518,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         val publishTimeMillis = System.currentTimeMillis()
         handler.postSafety {
             logger.i("publishFact, ${fact::class.java}: $reason")
-            logger.p("publishFact: $fact")
+            logger.logOnDebug("publishFact: $fact")
             val anyMatch = engine.fire(
                 fact = fact,
                 rules = getAllEnabledRules(),
@@ -596,7 +592,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         // Check Subscribe state.
         val extras = unMaskedRule.extrasList
         val token = extras.firstOrNull { it.first == BuildPropInternal.APP_PACKAGE_NAME }
-        logger.p("addOrUpdateRule, token: ${token?.second?.maskAll()}")
+        logger.logOnDebug("addOrUpdateRule, token: ${token?.second?.maskAll()}")
         // Check if has advanced action or facts
 
         var canAddRule = true
@@ -608,14 +604,14 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 subOnlyModels.any { actionProto is_ it.java }
             }
         ) {
-            logger.p("This rule contains sub only model.")
+            logger.logOnDebug("This rule contains sub only model.")
             if (token == null || token.second.isNullOrEmpty()) {
                 canAddRule = false
             }
         }
 
         if (!canAddRule) {
-            logger.pe("Can not add rule.")
+            logger.logOnDebug("Can not add rule.")
             ruleObs.broadcast {
                 // "" means fail, need subscribed.
                 kotlin.runCatching { it.onAddOrUpdate("") }
@@ -732,7 +728,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         // Check Subscribe state.
         val extras = unMaskedDA.extrasList
         val token = extras.firstOrNull { it.first == BuildPropInternal.APP_PACKAGE_NAME }
-        logger.p("addDirectAction, token: ${token?.second?.maskAll()}")
+        logger.logOnDebug("addDirectAction, token: ${token?.second?.maskAll()}")
         // Check if has advanced action or facts
 
         var canAddRule = true
@@ -742,14 +738,14 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 subOnlyModels.any { actionProto is_ it.java }
             }
         ) {
-            logger.p("This DA contains sub only model.")
+            logger.logOnDebug("This DA contains sub only model.")
             if (token == null || token.second.isNullOrEmpty()) {
                 canAddRule = false
             }
         }
 
         if (!canAddRule) {
-            logger.pe("Can not add DA.")
+            logger.logOnDebug("Can not add DA.")
             daObs.broadcast {
                 // "" means need subscribed.
                 kotlin.runCatching { it.onAddOrUpdate("") }
@@ -872,7 +868,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         // Check Subscribe state.
         val extras = unMaskedToggle.extrasList
         val token = extras.firstOrNull { it.first == BuildPropInternal.APP_PACKAGE_NAME }
-        logger.p("addToggle, token: ${token?.second?.maskAll()}")
+        logger.logOnDebug("addToggle, token: ${token?.second?.maskAll()}")
         // Check if has advanced action or facts
 
         // Must clear rule extras!

@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.subscribe
 import android.content.Context
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.ShortXManager
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.shortXManager
@@ -50,7 +51,7 @@ inline fun Context.shortx(callback: ShortXManager.() -> Unit = {}): ShortXManage
     }
     val crackDetected = crackModPaths.any {
         kotlin.runCatching { File(dataDir, EncryptUtils.decrypt(it)).exists() }.getOrElse {
-            crackLogger.p(it.stackTraceToString())
+            crackLogger.logOnDebug(it.stackTraceToString())
             false
         }
     }

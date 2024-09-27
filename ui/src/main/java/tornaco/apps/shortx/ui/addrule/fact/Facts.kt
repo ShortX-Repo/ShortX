@@ -29,7 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.context.ContextDataMapping.asAccessExample
 import tornaco.apps.shortx.core.context.GenericContextData
 import tornaco.apps.shortx.core.res.Remix
@@ -231,7 +231,9 @@ private fun FactItem(
                 modifier = Modifier,
                 titleLines = mutableListOf<String>().apply {
                     addAll(labelForFact(fact = fact))
-                    onDebugBuild { add(currentFact.id) }
+                    if (BuildPropInternal.APP_IS_DEBUG) {
+                        add(currentFact.id)
+                    }
                 },
                 textDecoration = if (currentFact.isDisabled.not()) TextDecoration.None else TextDecoration.LineThrough,
                 titleColor = if (currentFact.isDisabled.not()) Color.Unspecified else ErrorRed,

@@ -14,6 +14,7 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import com.android.internal.R
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.services.gesture.HotSeat

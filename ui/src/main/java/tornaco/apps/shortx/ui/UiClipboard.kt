@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionIcon
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelLinesForAction
@@ -285,7 +285,10 @@ fun ClipboardDialog(
                                     ),
                                     titleLines = mutableListOf<String>().apply {
                                         addAll(labelLinesForAction(action = action))
-                                        onDebugBuild { add(action.id) }
+                                        // Debug.
+                                        if (BuildPropInternal.APP_IS_DEBUG) {
+                                            add(action.id)
+                                        }
                                     },
                                     textDecoration = if (action.isEnabled) TextDecoration.None else TextDecoration.LineThrough,
                                     titleColor = if (action.isEnabled) Color.Unspecified else ErrorRed,

@@ -17,6 +17,7 @@ import com.wind.meditor.utils.NodeValue
 import tornaco.apps.shortx.core.res.remixResId
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.shortcut.ShortcutStubInfo
 import tornaco.apps.shortx.ui.util.ApkSignatureHelper.provideSigningExtension

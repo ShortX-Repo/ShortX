@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.data
 import android.os.Environment
 import lang3.RandomStringUtils
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 

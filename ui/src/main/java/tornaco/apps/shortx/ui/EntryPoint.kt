@@ -8,6 +8,7 @@ import kotlinx.coroutines.withContext
 import tornaco.android.sec.net.S
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.isSuccess
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.res.PicassoInitializer
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
@@ -50,35 +51,35 @@ object EntryPoint {
     }
 
     private fun checkCB(context: Context) {
-        logger.p("check CB")
+        logger.logOnDebug("check CB")
         if (shortXManager.isInstalled) {
             getLVLToken { token ->
                 if (!token.isNullOrEmpty() && !token.isGPToken()) {
                     val deviceId = DeviceId.requireDeviceId()
-                    logger.p("check CB, $token $deviceId")
+                    logger.logOnDebug("check CB, $token $deviceId")
                     shortXManager.loadOnlineRules(token, deviceId) {
-                        logger.p("check CB res: $it")
+                        logger.logOnDebug("check CB res: $it")
                         if (it.isSuccess) {
                             S.c(token, it.k)
-                            logger.p("check CB success")
+                            logger.logOnDebug("check CB success")
                             verifyOtp(token, it.i,
                                 onRes = {
-                                    logger.p("check OTP success")
+                                    logger.logOnDebug("check OTP success")
                                 },
                                 onError = {
-                                    logger.p("check OTP fail")
+                                    logger.logOnDebug("check OTP fail")
                                     // Usually make mistake?
                                     // setLVLToken(null)
                                 })
                         } else {
-                            logger.p("check CB fail, uncheck")
+                            logger.logOnDebug("check CB fail, uncheck")
                             setLVLToken(null)
                         }
                     }
                 }
             }
         } else {
-            logger.p("check CB skip")
+            logger.logOnDebug("check CB skip")
         }
     }
 

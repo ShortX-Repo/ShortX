@@ -6,7 +6,6 @@ import android.view.InputDevice
 import android.view.MotionEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import kotlinx.coroutines.delay
-import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ctrl.PointersState
 import tornaco.apps.shortx.services.input.IMSFunc
@@ -194,9 +193,7 @@ class ViewScroller(private val windowManagerService: WindowManagerService) {
                 it.className.contains("ViewPager") // 将 "ViewPager" 视为最大值
             })
 
-        onDebugBuild {
-            logger.d("performScrollAction, scrollableView: ${scrollableView.joinToString(System.lineSeparator())}")
-        }
+        logger.d("performScrollAction, scrollableView: ${scrollableView.joinToString(System.lineSeparator())}")
 
         if (scrollableView.isEmpty()) return false
 

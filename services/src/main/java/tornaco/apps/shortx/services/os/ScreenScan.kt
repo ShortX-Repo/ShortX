@@ -10,7 +10,7 @@ import com.google.zxing.RGBLuminanceSource
 import com.google.zxing.Reader
 import com.google.zxing.common.HybridBinarizer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.os.ScreenCap
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.data.Dirs
@@ -23,7 +23,10 @@ class ScreenScan(private val context: Context) {
 
     suspend fun capAndScanQR(): String {
         val bitmap = ScreenCap(context).cap()
-        onDebugBuild { saveBitmapToFile(bitmap) }
+        logger.logOnDebug {
+            saveBitmapToFile(bitmap)
+            "DEBUG - saveBitmapToFile"
+        }
         logger.i("About to scan: $bitmap")
         val width: Int = bitmap.width
         val height: Int = bitmap.height

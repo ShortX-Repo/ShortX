@@ -6,6 +6,7 @@ import android.os.Handler
 import com.google.protobuf.Descriptors
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.localvar.LocalVars
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.common.ActionOnError
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
@@ -60,7 +61,7 @@ class ActionEvaluatorImpl(
             "Can not find Actor for: ${action.typeUrl}"
         }
         logger.d("evaluate: ${evaluateContext.srcTitle} - ${action.typeUrl}, actor: $actor")
-        logger.p("parameters: ${parameterInputs.joinToString { it.toLogString() }}")
+        logger.logOnDebug("parameters: ${parameterInputs.joinToString { it.toLogString() }}")
 
         // Do not worry about unpack cost, protobuf has cache.
         val unPacked = action unpack_ actor.actionsCanHandle()

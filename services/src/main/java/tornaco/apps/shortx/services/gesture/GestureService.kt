@@ -14,7 +14,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.fact.Edge
@@ -166,13 +166,9 @@ class GestureService(shortXContext: ShortXContext) :
         // onDebugBuild { logger.d("filterMotionEvent, checkRects: $checkRects") }
         val anyIntercept = checkRects.any { it.contains(input.x, input.y) }
         val timeTaken = SystemClock.elapsedRealtimeNanos() - startTimeMillis
-        onDebugBuild {
-            // logger.d("filterMotionEvent, check take time: $timeTaken(nano)")
-        }
+        // logger.d("filterMotionEvent, check take time: $timeTaken(nano)")
         if (anyIntercept) {
-            onDebugBuild {
-                logger.d("filterMotionEvent, intercept MotionEvent: $input")
-            }
+            logger.logOnDebug("filterMotionEvent, intercept MotionEvent: $input")
             return false
         }
 

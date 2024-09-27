@@ -14,6 +14,7 @@ import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.store.BaseSettingsStore
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 import java.io.File
 
 @Keep

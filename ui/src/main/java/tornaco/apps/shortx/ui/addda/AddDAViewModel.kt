@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IActionEvaluateListener
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.action.SendSMS
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.common.StringPair
@@ -174,7 +175,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
 
     // Save with token to check subscribe state.
     fun save(token: String?) {
-        logger.p("save with token: ${token?.maskAll()}")
+        logger.logOnDebug("save with token: ${token?.maskAll()}")
         viewModelScope.launch {
             val actions = actionContentStateHandler.state.value.actions
             // Quits

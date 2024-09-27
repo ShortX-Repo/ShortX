@@ -8,6 +8,7 @@ import android.os.Looper
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.localvar.LocalVars
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.action.ShowFloatWindow
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
@@ -85,8 +86,8 @@ class OverlayService(shortXContext: ShortXContext) :
         action: ShowOverlayButton
     ) = mainHandler.postSafety {
         logger.d("showOverlay: ${action.tag}, current showing: ${showingOverlays.map { it.tag }}")
-        logger.p("local vars: ${localVars.all.joinToString { it.name }}")
-        logger.p("parameters: ${parameters.joinToString { it.toLogString() }}")
+        logger.logOnDebug("local vars: ${localVars.all.joinToString { it.name }}")
+        logger.logOnDebug("parameters: ${parameters.joinToString { it.toLogString() }}")
 
         if (showingOverlays.any {
                 it.tag == action.tag
@@ -154,8 +155,8 @@ class OverlayService(shortXContext: ShortXContext) :
         action: ShowFloatWindow
     ) = mainHandler.postSafety {
         logger.d("postShowFloatWindow: ${action.tag}, current showing: ${showingFloats.map { it.tag }}")
-        logger.p("local vars: ${localVars.all.joinToString { it.name }}")
-        logger.p("parameters: ${parameters.joinToString { it.toLogString() }}")
+        logger.logOnDebug("local vars: ${localVars.all.joinToString { it.name }}")
+        logger.logOnDebug("parameters: ${parameters.joinToString { it.toLogString() }}")
 
         if (showingFloats.any {
                 it.tag == action.tag

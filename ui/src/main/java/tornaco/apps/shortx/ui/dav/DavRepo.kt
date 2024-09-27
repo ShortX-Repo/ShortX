@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.dav
 
 import com.thegrizzlylabs.sardineandroid.Sardine
 import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.Logger
 
 
@@ -14,7 +15,7 @@ class DavRepo {
         sardine.setCredentials(pref.getUserName(), pref.getPassword())
         val resources = sardine.list(pref.getServerUrl())
         resources.forEach {
-            logger.p(it.displayName)
+            logger.logOnDebug(it.displayName)
         }
     }
 }

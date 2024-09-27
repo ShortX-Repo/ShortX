@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui
 
 import lang3.RandomStringUtils
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.Logger
 import java.util.UUID
 
@@ -22,22 +23,22 @@ object DeviceId {
     fun initDeviceId() {
         if (getDeviceId().isNullOrEmpty()) {
             val id: String = generateDeviceId()
-            logger.p("generateDeviceId: $id")
+            logger.logOnDebug { "generateDeviceId: $id" }
             MMKVExt.defaultMMKV().encode(KEY_DEVICE_ID, id)
             // Token key
             val tokenKeyKey = generateTokenKeyKey()
-            logger.p("tokenKey: $tokenKeyKey")
+            logger.logOnDebug { "tokenKey: $tokenKeyKey" }
             MMKVExt.defaultMMKV().encode(tokenKeyKey, generateKeyValue())
             // Token for server key
             val tokenForServerKeyKey = generateTokenForServerKeyKey()
-            logger.p("tokenForServerKey: $tokenForServerKeyKey")
+            logger.logOnDebug { "tokenForServerKey: $tokenForServerKeyKey" }
             MMKVExt.defaultMMKV().encode(tokenForServerKeyKey, generateKeyValue())
             // GP token
             val gpTokenKeyKey = generateGPTokenKey()
-            logger.p("gpTokenKeyKey: $gpTokenKeyKey")
+            logger.logOnDebug { "gpTokenKeyKey: $gpTokenKeyKey" }
             MMKVExt.defaultMMKV().encode(gpTokenKeyKey, generateKeyValue())
         } else {
-            logger.p("deviceId exists: ${getDeviceId()}")
+            logger.logOnDebug { "deviceId exists: ${getDeviceId()}" }
         }
 
         // Added 2024-09-27
@@ -46,14 +47,14 @@ object DeviceId {
             requireCrackFlagKey()
         }.onFailure {
             val crackFlagKey = generateCrackFlagKey()
-            logger.p("Generated crackFlagKey: $crackFlagKey")
+            logger.logOnDebug { "Generated crackFlagKey: $crackFlagKey" }
             MMKVExt.defaultMMKV().encode(crackFlagKey, generateKeyValue())
         }
 
-        requireTokenKey().apply { logger.p("Double check requireTokenKey: $this") }
-        requireTokenForServerKey().apply { logger.p("Double check requireTokenForServerKey: $this") }
-        requireGPToken().apply { logger.p("Double check requireGPToken: $this") }
-        requireCrackFlagKey().apply { logger.p("Double check requireCrackFlagKey: $this") }
+        requireTokenKey().apply { logger.logOnDebug { "Double check requireTokenKey: $this" } }
+        requireTokenForServerKey().apply { logger.logOnDebug { "Double check requireTokenForServerKey: $this" } }
+        requireGPToken().apply { logger.logOnDebug { "Double check requireGPToken: $this" } }
+        requireCrackFlagKey().apply { logger.logOnDebug { "Double check requireCrackFlagKey: $this" } }
     }
 
     private fun generateTokenKeyKey() = requireDeviceId().reversed()

@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.MapUtils
@@ -21,7 +22,7 @@ object MapQueryBus : Actor {
         require(app == MapApp.Gaode) {
             "Only support gaode"
         }
-        logger.p("Query: $app ${d.city} ${d.bus}")
+        logger.logOnDebug("Query: $app ${d.city} ${d.bus}")
         MapUtils.openGaodeBusMap(
             context = androidContext,
             appName = "ShortX",

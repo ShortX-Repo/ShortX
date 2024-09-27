@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.action.FromDA
 import tornaco.apps.shortx.core.rule.asDefaultInput
 import tornaco.apps.shortx.core.rule.toLogString
@@ -37,12 +38,12 @@ object FromDA : Actor {
                     }
                     .map { it.asDefaultInput() }
 
-                logger.p("inflatingParameters: ${inflatingParameters.map { it.toLogString() }}")
+                logger.logOnDebug("inflatingParameters: ${inflatingParameters.map { it.toLogString() }}")
 
                 addAll(inflatingParameters)
             }
         } + parameterInputs
-        logger.p("allParameters: ${allParameters.map { it.toLogString() }}")
+        logger.logOnDebug("allParameters: ${allParameters.map { it.toLogString() }}")
 
         run loop@{
             if (da.actionsList.isNullOrEmpty().not()) {

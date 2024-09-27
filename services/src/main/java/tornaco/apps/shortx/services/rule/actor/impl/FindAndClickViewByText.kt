@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.action.FindAndClickViewByText
 import tornaco.apps.shortx.core.proto.common.FindTextMethod
 import tornaco.apps.shortx.core.proto.common.OcrResult
@@ -98,7 +99,7 @@ object FindAndClickViewByText : Actor {
                 )
             }
         }
-        logger.p("clickTextByOCR, resultContainsText: $resultContainsText")
+        logger.logOnDebug("clickTextByOCR, resultContainsText: $resultContainsText")
 
         val centerXY = resultContainsText?.bounds?.toAndroidRect()?.let {
             it.centerX() to it.centerY()

@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tornaco.android.sec.net.S
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.StateViewModel
 import tornaco.apps.shortx.ui.base.UiState
@@ -57,19 +58,19 @@ class SubscribeViewModel @Inject constructor(@ApplicationContext val context: Co
     init {
         viewModelScope.launch {
             LVLStateHolder.container.stateFlow.collectLatest {
-                logger.p("LVLStateHolder.container.stateFlow changed")
+                logger.logOnDebug("LVLStateHolder.container.stateFlow changed")
                 loadState()
             }
         }
     }
 
     fun loadState() {
-        logger.p("loadState")
+        logger.logOnDebug("loadState")
         val subscribeState = LVLStateHolder.container.stateFlow.value
         val isSubscribed = subscribeState.isSubscribed
         val token = subscribeState.token
 
-        logger.p("loadState, isSubscribed: $isSubscribed")
+        logger.logOnDebug("loadState, isSubscribed: $isSubscribed")
 
         var source: SubscriptionSource? = null
         if (isSubscribed && token != null) {

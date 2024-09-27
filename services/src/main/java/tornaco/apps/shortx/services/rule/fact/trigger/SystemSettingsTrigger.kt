@@ -16,6 +16,7 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.rule.valueList
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.newHandlerOfNewThread
 import tornaco.apps.shortx.services.ShortXContext
 import util.Reflections
@@ -92,7 +93,7 @@ class SystemSettingsTrigger(
                                 GLOBAL_VAR_REF_PREFIX, ""
                             )
                         )
-                        logger.p("registerForRules, globalVar: $globalVar")
+                        logger.logOnDebug("registerForRules, globalVar: $globalVar")
                         if (globalVar != null) {
                             if (globalVar.isList()) {
                                 urls.addAll(globalVar.valueList(noValueReturn = { emptyList() }))

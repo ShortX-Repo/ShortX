@@ -21,6 +21,7 @@ import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.RuleObserver
 import tornaco.apps.shortx.core.rule.ToggleObserver
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.services.ShortXContext
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -118,9 +119,9 @@ class FactPublishInterceptor(
         if (enabledProtoUrlCache.contains(fact.getTypeUrl())) return false
 
         if (ENABLE_DUMP_LOG) {
-            logger.p { "-------- DUMP START ---------" }
-            logger.p { enabledProtoUrlCache.joinToString(System.lineSeparator()) }
-            logger.p { "-------- DUMP END ---------" }
+            logger.logOnDebug { "-------- DUMP START ---------" }
+            logger.logOnDebug { enabledProtoUrlCache.joinToString(System.lineSeparator()) }
+            logger.logOnDebug { "-------- DUMP END ---------" }
         }
         return true
     }

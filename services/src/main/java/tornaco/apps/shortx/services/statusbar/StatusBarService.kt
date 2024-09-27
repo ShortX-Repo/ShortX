@@ -10,10 +10,10 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
-import tornaco.apps.shortx.core.BuildPropExt
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.common.StatusBarClipState
 import tornaco.apps.shortx.core.proto.common.StatusBarClipUiPlacement
 import tornaco.apps.shortx.core.proto.common.StatusBarClipUiSettings
@@ -130,7 +130,7 @@ class StatusBarService(shortXContext: ShortXContext) :
                 .build()
         )
 
-        BuildPropExt.onDebugBuild {
+        if (BuildPropInternal.APP_IS_DEBUG) {
             systemServiceScope.launchSafety {
                 setStatusBarIcon("ShortX", Remix.Animals.deer)
             }
@@ -277,14 +277,14 @@ class StatusBarService(shortXContext: ShortXContext) :
     }
 
     fun updateStatusBarClip(clipState: StatusBarClipState) {
-        logger.p("updateStatusBarClip: $clipState")
+        logger.logOnDebug("updateStatusBarClip: $clipState")
         statusBarClipState.update {
             clipState
         }
     }
 
     fun hideStatusBarClip() {
-        logger.p("hideStatusBarClip")
+        logger.logOnDebug("hideStatusBarClip")
         statusBarClipState.update {
             StatusBarClipState.getDefaultInstance()
         }
@@ -292,12 +292,12 @@ class StatusBarService(shortXContext: ShortXContext) :
 
     fun setStatusBarIcon(slot: String, icon: String) {
         val iconId = appRes.appContext.remixResId(icon)
-        logger.p("setStatusBarIcon: $slot $icon $iconId")
+        logger.logOnDebug("setStatusBarIcon: $slot $icon $iconId")
         StatusBarManagerServiceFuncs.setIcon(slot, iconId)
     }
 
     fun removeStatusBarIcon(slot: String) {
-        logger.p("removeStatusBarIcon: $slot")
+        logger.logOnDebug("removeStatusBarIcon: $slot")
         StatusBarManagerServiceFuncs.removeIcon(slot)
     }
 
@@ -310,7 +310,7 @@ class StatusBarService(shortXContext: ShortXContext) :
     }
 
     private fun notifyStatusBarClipStateChanged(clipState: StatusBarClipState) {
-        logger.p("notifyStatusBarClipStateChanged: $clipState")
+        logger.logOnDebug("notifyStatusBarClipStateChanged: $clipState")
         synchronized(statusBarClipStateListeners) {
             statusBarClipStateListeners.broadcast {
                 runCatching { it.receive(clipState.toByteArray().wrap()) }.onFailure {
@@ -321,7 +321,7 @@ class StatusBarService(shortXContext: ShortXContext) :
     }
 
     private fun notifyStatusBarClipSettingsChanged(settings: StatusBarClipUiSettings) {
-        logger.p("notifyStatusBarClipSettingsChanged: $settings")
+        logger.logOnDebug("notifyStatusBarClipSettingsChanged: $settings")
         synchronized(statusBarClipSettingsListeners) {
             statusBarClipSettingsListeners.broadcast {
                 runCatching { it.receive(settings.toByteArray().wrap()) }.onFailure {

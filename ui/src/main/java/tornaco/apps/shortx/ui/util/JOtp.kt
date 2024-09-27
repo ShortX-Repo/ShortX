@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.util
 import com.amdelamar.jotp.OTP
 import com.amdelamar.jotp.type.Type
 import org.apache.commons.codec.binary.Base32
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.composeLogger
 
@@ -16,10 +17,10 @@ inline fun verifyOtp(
     val hexTime = OTP.timeInHex(System.currentTimeMillis(), 60)
     OTP.verify(base32(code.reversed()), hexTime, otp, 6, Type.TOTP)
         .select(t = {
-            composeLogger.p("verifyOtp success: $code $otp")
+            composeLogger.logOnDebug("verifyOtp success: $code $otp")
             onRes()
         }, f = {
-            composeLogger.p("verifyOtp fail: $code $otp")
+            composeLogger.logOnDebug("verifyOtp fail: $code $otp")
             onError()
         })
 }

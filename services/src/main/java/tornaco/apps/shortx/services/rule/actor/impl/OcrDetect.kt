@@ -8,6 +8,7 @@ import com.google.protobuf.Message
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.forKey
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.os.ScreenCap
 import tornaco.apps.shortx.core.proto.common.OcrResult
 import tornaco.apps.shortx.core.proto.common.RectSourcePath
@@ -68,7 +69,7 @@ object OcrDetect : Actor {
                     false
                 )
             }
-            logger.p("recognizeText, ocrResult: $ocrResult")
+            logger.logOnDebug("recognizeText, ocrResult: $ocrResult")
             ocrResult
         }
     }
@@ -88,7 +89,7 @@ object OcrDetect : Actor {
                     false
                 )
             }.mapNotNull { OcrResult.parseFrom(it.byteData) }
-            logger.p("detect, ocrResult: $ocrResult")
+            logger.logOnDebug("detect, ocrResult: $ocrResult")
             ocrResult
         }
     }

@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DialogMessage
 import tornaco.apps.shortx.ui.base.ErrorTipRow
@@ -54,7 +55,7 @@ class WifiSSIDSelectorState(
     var isValid by mutableStateOf(false)
 
     fun show(initialValue: String? = null) {
-        logger.p("initialValue: $initialValue")
+        logger.logOnDebug("initialValue: $initialValue")
         this.currentValue = initialValue ?: ""
         this.errorMsg = ""
         this.isValid = true

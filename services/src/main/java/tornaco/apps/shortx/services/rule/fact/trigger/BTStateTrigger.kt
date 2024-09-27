@@ -24,6 +24,7 @@ import tornaco.apps.shortx.core.proto.fact.BTConnectedTo
 import tornaco.apps.shortx.core.proto.fact.BTDisconnectedFrom
 import tornaco.apps.shortx.core.proto.fact.BTStatusChanged
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper.btDeviceToProtoDevice

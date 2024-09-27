@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Toast
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 
 class DeepLinkTriggerActivity : Activity() {
 

@@ -5,6 +5,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.platform.Classes.accManager
 import tornaco.apps.shortx.core.platform.Classes.accProxyManager
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 import util.Reflections
 
 object AccManagerHook {

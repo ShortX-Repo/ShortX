@@ -12,6 +12,7 @@ import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppCategory
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.services.app.pm.PmSetAppEnabledApplicationPackageEnabler
 import tornaco.apps.shortx.services.app.pm.PmSuspendApplicationPackageEnabler
@@ -126,7 +127,7 @@ class PkgPool(
         val apps =
             PkgUtils.getInstalledApplicationsAsUser(context, userId)
                 .mapNotNull { applicationInfo ->
-                    logger.p(
+                    logger.logOnDebug(
                         "loadLocked, applicationInfo: ${applicationInfo.packageName} ${
                             UserHandle.getUserId(
                                 applicationInfo.uid

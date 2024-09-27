@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.rule.cond.impl
 
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.fact.Notification
 import tornaco.apps.shortx.core.rule.unpack_
@@ -31,7 +32,7 @@ object AppHasNotification : Cond {
                 false
             } else {
                 val allN = shortXContext.notification.getActiveNotifications()
-                logger.p("allN: ${allN.joinToString(System.lineSeparator())}")
+                logger.logOnDebug("allN: ${allN.joinToString(System.lineSeparator())}")
 
                 if (data.op == ConditionOperator.ANY) {
                     requiredPkgList.any { requiredPkg ->

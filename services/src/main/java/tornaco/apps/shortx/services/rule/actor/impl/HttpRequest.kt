@@ -23,6 +23,7 @@ import tornaco.apps.shortx.core.http.compileHttpRequestBody
 import tornaco.apps.shortx.core.http.persistentcookiejar.persistence.SettingsStoreCookiePersistor
 import tornaco.apps.shortx.core.http.toHttpRequestBody
 import tornaco.apps.shortx.core.http.toHttpResponseData
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.action.HttpRequestHeaderBodyJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
@@ -54,7 +55,7 @@ object HttpRequest : Actor {
         if (!TestUtils.isUnitTestEnv && HttpRequestLogging.isLogEnabled) {
             HttpRequestLogging.log(it)
         } else {
-            logger.p(it)
+            logger.logOnDebug(it)
         }
     }
 
@@ -170,14 +171,14 @@ object HttpRequest : Actor {
     ): List<String> {
         val responseBody = response.body ?: "NO-BODY"
         val responseHeaders = response.headersMap
-        logger.p("responseBody: $responseBody")
-        logger.p("responseHeaders: $responseHeaders")
+        logger.logOnDebug("responseBody: $responseBody")
+        logger.logOnDebug("responseHeaders: $responseHeaders")
 
         return if (adapter is_ HttpRequestJsonMapAdapter::class.java) {
             val jsonAdapter = adapter unpack_ HttpRequestJsonMapAdapter::class.java
             val jsonElement = Json.parseToJsonElement(responseBody)
             val map: Map<String, JsonElement> = jsonElement.jsonObject.toMap()
-            logger.p("map: $map")
+            logger.logOnDebug("map: $map")
             jsonAdapter.expressionsList.map { expression ->
                 logger.d("expression: $expression")
                 val res = runCatching {
@@ -205,7 +206,7 @@ object HttpRequest : Actor {
                 it.key.fixSpecialLetters()
             }
             val dataMap = mapOf("headers" to headerMap, "body" to bodyMap)
-            logger.p("dataMap: $dataMap")
+            logger.logOnDebug("dataMap: $dataMap")
             jsonAdapter.expressionsList.map { expression ->
                 logger.d("expression: $expression")
                 val fixedExpression = expression

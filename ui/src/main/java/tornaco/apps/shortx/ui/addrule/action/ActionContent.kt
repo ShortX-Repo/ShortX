@@ -34,7 +34,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.common.ActionOnError
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.res.Remix
@@ -381,7 +381,10 @@ private fun Actions(
                                         ),
                                         titleLines = mutableListOf<String>().apply {
                                             addAll(labelLinesForAction(action = action))
-                                            onDebugBuild { add(action.id) }
+                                            // Debug
+                                            if (BuildPropInternal.APP_IS_DEBUG) {
+                                                add(action.id)
+                                            }
                                         },
                                         textDecoration = if (action.isEnabled) TextDecoration.None else TextDecoration.LineThrough,
                                         titleColor = if (action.isEnabled) Color.Unspecified else ErrorRed,

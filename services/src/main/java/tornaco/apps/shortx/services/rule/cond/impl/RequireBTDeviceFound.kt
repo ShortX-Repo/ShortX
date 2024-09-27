@@ -6,6 +6,7 @@ import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import com.google.protobuf.Message
 import kotlinx.coroutines.delay
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.common.BTBondedDevice
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.cond.Cond
@@ -16,7 +17,7 @@ object RequireBTDeviceFound : Cond {
     private val scanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult?) {
             super.onScanResult(callbackType, result)
-            logger.p("onScanResult: $result")
+            logger.logOnDebug("onScanResult: $result")
             result?.device?.let {
                 val dev = BTHelper.btDeviceToProtoDevice(it)
                 scanResults.add(dev)
@@ -25,7 +26,7 @@ object RequireBTDeviceFound : Cond {
 
         override fun onBatchScanResults(results: MutableList<ScanResult>?) {
             super.onBatchScanResults(results)
-            logger.p("onBatchScanResults: $results")
+            logger.logOnDebug("onBatchScanResults: $results")
             results?.mapNotNull { it.device }?.forEach {
                 val dev = BTHelper.btDeviceToProtoDevice(it)
                 scanResults.add(dev)
@@ -53,7 +54,7 @@ object RequireBTDeviceFound : Cond {
 
             delay(data.timeout.toLongOrNull() ?: 5000)
 
-            logger.p("scanResults: $scanResults")
+            logger.logOnDebug("scanResults: $scanResults")
 
             val hasFound = scanResults.any {
                 it.alias == data.device && (data.address.isNullOrEmpty() || data.address == it.address)

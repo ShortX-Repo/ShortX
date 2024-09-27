@@ -14,6 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.notification.INotificationPoster
 import tornaco.apps.shortx.core.notification.NotificationPoster
 import tornaco.apps.shortx.core.notification.androidSBNToNotification
@@ -118,7 +119,7 @@ class NotificationService(shortXContext: ShortXContext) :
     }
 
     fun getActiveNotifications(): List<Notification> = NMSFuncs.getActiveNotifications(nms).also {
-        logger.p(
+        logger.logOnDebug(
             "getActiveNotifications, return: ${
                 it.joinToString(System.lineSeparator())
             }"
@@ -178,7 +179,7 @@ class NotificationService(shortXContext: ShortXContext) :
     }
 
     fun registerPostedByApp(n: Notification) {
-        logger.p("registerPostedByApp: $n")
+        logger.logOnDebug("registerPostedByApp: $n")
         systemServiceScope.launchSafety {
             shortXContext.rule.publishFact(
                 "registerPostedByApp",
@@ -190,7 +191,7 @@ class NotificationService(shortXContext: ShortXContext) :
     }
 
     fun registerUpdatedByApp(n: Notification) {
-        logger.p("registerUpdatedByApp: $n")
+        logger.logOnDebug("registerUpdatedByApp: $n")
         systemServiceScope.launchSafety {
             shortXContext.rule.publishFact(
                 "registerUpdatedByApp",
@@ -201,7 +202,7 @@ class NotificationService(shortXContext: ShortXContext) :
     }
 
     fun registerDismissedByUser(n: Notification) {
-        logger.p("registerDismissedByUser: $n")
+        logger.logOnDebug("registerDismissedByUser: $n")
         systemServiceScope.launchSafety {
             shortXContext.rule.publishFact(
                 "registerDismissedByUser",
@@ -213,7 +214,7 @@ class NotificationService(shortXContext: ShortXContext) :
     }
 
     fun registerRemovedByApp(n: Notification) {
-        logger.p("registerRemovedByApp: $n")
+        logger.logOnDebug("registerRemovedByApp: $n")
         systemServiceScope.launchSafety {
             shortXContext.rule.publishFact(
                 "registerDismissedByUser",
@@ -229,13 +230,13 @@ class NotificationService(shortXContext: ShortXContext) :
     }
 
     fun removeNotificationForPackage(appPkgs: List<AppPkg>) {
-        logger.p("Remove n for pkg: ${appPkgs.map { it.appPkgToString() }}")
+        logger.logOnDebug("Remove n for pkg: ${appPkgs.map { it.appPkgToString() }}")
         val nms =
             INotificationManager.Stub.asInterface(ServiceManager.getService(Context.NOTIFICATION_SERVICE))
         requireNotNull(nms) { "Can not get nms" }
         appPkgs.forEach {
             nms.cancelAllNotifications(it.pkgName, it.userId)
-            logger.p("Notification has been removed: ${it.appPkgToString()}")
+            logger.logOnDebug("Notification has been removed: ${it.appPkgToString()}")
         }
     }
 

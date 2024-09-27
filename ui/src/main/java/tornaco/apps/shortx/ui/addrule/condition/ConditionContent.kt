@@ -28,7 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.select
@@ -221,7 +221,9 @@ fun ConditionList(
                                 ListItem(
                                     titleLines = mutableListOf<String>().apply {
                                         addAll(labelForCondition(condition = conditionItem))
-                                        onDebugBuild { add(conditionItem.id) }
+                                        if (BuildPropInternal.APP_IS_DEBUG) {
+                                            add(conditionItem.id)
+                                        }
                                     },
                                     icon = {
                                         ConditionIcon(conditionItem) {

@@ -2,7 +2,7 @@ package tornaco.apps.shortx.services.rule.actor.impl
 
 import com.android.internal.annotations.VisibleForTesting
 import com.google.protobuf.Message
-import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.action.WriteGlobalVar
 import tornaco.apps.shortx.core.proto.action.WriteGlobalVarOp
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
@@ -220,10 +220,8 @@ object WriteGlobalVar : Actor {
             }
         }
 
-        onDebugBuild {
-            logger.d("Write global var, before: ${globalVar.valueList()}")
-            logger.d("Write global var, after: ${newGlobalVar.valueList()}")
-        }
+        logger.logOnDebug("Write global var, before: ${globalVar.valueList()}")
+        logger.logOnDebug("Write global var, after: ${newGlobalVar.valueList()}")
 
         return newGlobalVar
     }

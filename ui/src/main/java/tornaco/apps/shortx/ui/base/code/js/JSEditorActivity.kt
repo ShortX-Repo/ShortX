@@ -36,6 +36,7 @@ import io.github.rosemoe.sora.app.CEComposeBinding
 import io.github.rosemoe.sora.app.databinding.CodeEditorComposeBinding
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.Loading
@@ -144,7 +145,7 @@ fun JSEditorActivity.ExecuteJSEditor(
                                         showToolbar = subscribeState.isSubscribed,
                                         initialText = currentAction?.expression ?: ""
                                     ) {
-                                        composeLogger.p("Content change: $it")
+                                        composeLogger.logOnDebug("Content change: $it")
                                         vm.updateExpression(it)
                                     }.onCreate()
                                 }

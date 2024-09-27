@@ -3,7 +3,7 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 import android.app.ActivityClient
 import android.os.Bundle
 import com.topjohnwu.superuser.internal.Utils
-import tornaco.apps.shortx.core.BuildPropExt
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.bundleToString
 import java.io.File
@@ -12,8 +12,8 @@ import java.io.File
 object ActivityClientHooks {
     private val logger = Logger("ShortXHook.ActivityClientHooks")
 
-    fun hook() =
-        BuildPropExt.onDebugBuild {
+    fun hook() {
+        if (BuildPropInternal.APP_IS_DEBUG) {
             kotlin.runCatching {
                 logger.d("start hook")
                 // void activityStopped(IBinder token, Bundle state, PersistableBundle persistentState, CharSequence description)
@@ -33,6 +33,7 @@ object ActivityClientHooks {
                 logger.e(it, "hook")
             }
         }
+    }
 
     private fun splitStringIntoChunks(input: String, chunkSize: Int = 100): List<String> {
         val result = mutableListOf<String>()

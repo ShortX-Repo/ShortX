@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.RuleContextAndVars
@@ -58,14 +59,14 @@ fun getTextFromViewId(targetViewId: String, shortXContext: ShortXContext): Strin
             (viewNode.viewId == viewIdAndIndex.first || viewNode.shortViewId == viewIdAndIndex.first)
         }
     }
-    logger.p("matchedNodes: $matchedNodes")
+    logger.logOnDebug("matchedNodes: $matchedNodes")
 
     // Index
     val matchedNodes2 = matchedNodes.filterIndexed { index, _ ->
         viewIdAndIndex.second == null || index == viewIdAndIndex.second
     }
 
-    logger.p("matchedNodes2: $matchedNodes2")
+    logger.logOnDebug("matchedNodes2: $matchedNodes2")
 
     return matchedNodes2.mapNotNull { it.text }.filter { it.isNotBlank() }
         .joinToString(System.lineSeparator())

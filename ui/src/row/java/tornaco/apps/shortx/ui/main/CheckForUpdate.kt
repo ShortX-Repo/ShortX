@@ -9,6 +9,7 @@ import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.ui.config.config
 
 class CheckForUpdate(

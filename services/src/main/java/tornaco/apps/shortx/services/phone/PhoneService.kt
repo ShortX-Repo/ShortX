@@ -9,6 +9,7 @@ import com.google.protobuf.ByteString
 import tornaco.apps.shortx.core.INFCTagEndpointListener
 import tornaco.apps.shortx.core.proto.fact.NFCTagDiscover
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.telephonyManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -27,7 +28,7 @@ class PhoneService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         logger.d("getCellInfos")
         runClearCallingIdentity {
             context.telephonyManager.allCellInfo?.forEach {
-                logger.p("cell: ${it.cellIdToString()}")
+                logger.logOnDebug("cell: ${it.cellIdToString()}")
             }
         }
     }
@@ -67,13 +68,13 @@ class PhoneService(shortXContext: ShortXContext) : SystemService(shortXContext, 
 
         override fun onCellLocationChanged(location: CellLocation?) {
             location?.let {
-                logger.p("onCellLocationChanged: $location")
+                logger.logOnDebug("onCellLocationChanged: $location")
             }
         }
 
         override fun onCellInfoChanged(cellInfo: List<CellInfo>?) {
             cellInfo?.let {
-                logger.p("onCellInfoChanged: ${cellInfo.map { it }}")
+                logger.logOnDebug("onCellInfoChanged: ${cellInfo.map { it }}")
             }
         }
 

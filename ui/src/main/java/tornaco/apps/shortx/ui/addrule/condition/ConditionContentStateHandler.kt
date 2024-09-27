@@ -4,6 +4,7 @@ import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.ui.UiClipboard
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.model.defaultNewConditionId

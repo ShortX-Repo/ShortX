@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.xposed.hooks.hook.systemui
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 
 object SystemUIHook {
     internal val logger = Logger("ShortXHook.SystemUIHook")

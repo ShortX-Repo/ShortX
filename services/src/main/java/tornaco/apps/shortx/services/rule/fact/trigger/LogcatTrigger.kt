@@ -5,8 +5,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.withContext
-import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.common.RegexMatchOptions
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.Logcat
@@ -44,7 +44,7 @@ class LogcatTrigger(
                     if (logLine == null) return@collect
                     if (logLine.original.contains(LOG_TAG)) return@collect
 
-                    onDebugBuild { logger.d("---- catching log: ${logLine.original}") }
+                    logger.logOnDebug("---- catching log: ${logLine.original}")
 
                     val content = logLine.original
                     regexMatchers.forEach {

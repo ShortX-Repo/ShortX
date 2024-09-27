@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.rule.actor.impl
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.forKey
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.action.ShellCommand
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
@@ -40,14 +41,14 @@ object ShellCommand : Actor {
             sc.customContextDataKey.forKey(ContextDataMapping.ShellCommand.shellErr.name)
                 .fallbackOnEmpty { ContextDataMapping.ShellCommand.shellErr.name },
             res.errList?.joinToString(System.lineSeparator()).also {
-                logger.p("shellErr: [$it]")
+                logger.logOnDebug("shellErr: [$it]")
             }
         )
         contextData.add(
             sc.customContextDataKey.forKey(ContextDataMapping.ShellCommand.shellOut.name)
                 .fallbackOnEmpty { ContextDataMapping.ShellCommand.shellOut.name },
             res.outList?.joinToString(System.lineSeparator()).also {
-                logger.p("shellOut: [$it]")
+                logger.logOnDebug("shellOut: [$it]")
             }
         )
     }

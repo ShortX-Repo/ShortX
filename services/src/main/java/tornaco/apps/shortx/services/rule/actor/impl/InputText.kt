@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.action.InputText
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
@@ -23,7 +24,7 @@ object InputText : Actor {
         }
         params.shortXContext.input.submitText(
             ac.text.compileContextAndVars(RuleContextAndVars(params)).apply {
-                logger.p("Input text: $this")
+                logger.logOnDebug("Input text: $this")
             })
     }
 }

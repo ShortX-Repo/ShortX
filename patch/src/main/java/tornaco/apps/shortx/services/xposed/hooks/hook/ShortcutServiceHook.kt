@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 import android.appwidget.AppWidgetProviderInfo
 import android.content.pm.ShortcutInfo
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.platform.Classes.shortcutServiceClass
 import tornaco.apps.shortx.core.platform.Methods.requestPinItem
 import tornaco.apps.shortx.core.util.Logger
@@ -25,7 +26,7 @@ object ShortcutServiceHook {
                 //            AppWidgetProviderInfo appWidget, Bundle extras, IntentSender resultIntent,
                 //            int callingPid, int callingUid)
                 afterMethod(method) { param ->
-                    logger.p("requestPinItem: ${param.args.map { it }}")
+                    logger.logOnDebug("requestPinItem: ${param.args.map { it }}")
 
                     val shortcut = param.args[2] as ShortcutInfo?
                     val appWidget = param.args[3] as AppWidgetProviderInfo?

@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.IAudioRecordingListener
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AudioRecordFile
@@ -115,7 +116,7 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext, 
             outputFile
         }
         checkedFile.parentFile.mkdirs()
-        logger.p("startRecordingMic, checkedFile: $checkedFile")
+        logger.logOnDebug("startRecordingMic, checkedFile: $checkedFile")
 
         val recorder = OmRecorder.wav(
             PullTransport.Default(ps),

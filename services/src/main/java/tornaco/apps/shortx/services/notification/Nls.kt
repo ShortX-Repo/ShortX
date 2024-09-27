@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.notification
 import android.annotation.WorkerThread
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.notification.androidSBNToNotification
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
@@ -42,11 +43,11 @@ class Nls(val shortXContext: ShortXContext) : NotificationListenerService() {
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         super.onNotificationPosted(sbn)
-        logger.p("onNotificationPosted: ${sbn?.androidSBNToNotification()}")
+        logger.logOnDebug("onNotificationPosted: ${sbn?.androidSBNToNotification()}")
     }
 
     override fun onNotificationRemoved(sbn: StatusBarNotification?) {
         super.onNotificationRemoved(sbn)
-        logger.p("onNotificationRemoved: ${sbn?.androidSBNToNotification()}")
+        logger.logOnDebug("onNotificationRemoved: ${sbn?.androidSBNToNotification()}")
     }
 }

@@ -4,7 +4,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.service.notification.StatusBarNotification
-import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.notification.getNormalizedUserId
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
@@ -31,9 +31,7 @@ object VendorFunc {
 
         fun colorOsPipReply(context: Context, sbn: StatusBarNotification) {
             runCatching {
-                onDebugBuild {
-                    logger.d("isColorOS?: ${OsUtils.isColorOS()}")
-                }
+                logger.logOnDebug("isColorOS?: ${OsUtils.isColorOS()}")
 
                 if (OsUtils.isROrAbove() && OsUtils.isColorOS()) {
                     logger.d("colorOsPipReply, ${sbn.packageName}")

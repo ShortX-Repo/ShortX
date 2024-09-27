@@ -8,6 +8,7 @@ import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.fact.UsbDeviceAttached
 import tornaco.apps.shortx.core.proto.fact.UsbDeviceDetached
 import tornaco.apps.shortx.core.util.Logger
@@ -45,7 +46,7 @@ class UsbDeviceStateTrigger(
     }
 
     private fun handleDeviceAttached(device: UsbDevice) {
-        logger.p("handleDeviceAttached: $device")
+        logger.logOnDebug("handleDeviceAttached: $device")
         // UsbDevice[mName=/dev/bus/usb/001/003,mVendorId=2316,mProductId=4096,mClass=0,mSubclass=0,
         // mProtocol=0,mManufacturerName=Samsung,mProductName=Flash Drive FIT,mVersion=11.00,
         // mSerialNumberReader=com.android.server.usb.UsbSerialReader@f5e450d, mHasAudioPlayback=false,
@@ -76,7 +77,7 @@ class UsbDeviceStateTrigger(
     }
 
     private fun handleDeviceDetached(device: UsbDevice) {
-        logger.p("handleDeviceDetached: $device")
+        logger.logOnDebug("handleDeviceDetached: $device")
         val productName = device.productName
         val manufacturerName = device.manufacturerName
         shortXContext.rule.publishFactChecked(UsbDeviceAttached.getDefaultInstance()) {

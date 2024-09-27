@@ -22,6 +22,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.BatteryState
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.IBattery
 

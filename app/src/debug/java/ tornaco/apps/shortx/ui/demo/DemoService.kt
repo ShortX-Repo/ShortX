@@ -7,6 +7,7 @@ import android.os.IBinder
 import android.os.Looper
 import android.widget.Toast
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 
 class DemoService : Service() {
     override fun onBind(intent: Intent?): IBinder? {

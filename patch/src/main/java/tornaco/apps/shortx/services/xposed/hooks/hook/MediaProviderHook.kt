@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.platform.Methods.onMediaStoreInsert
 import tornaco.apps.shortx.core.platform.PackageNames.mediaProvider
 import tornaco.apps.shortx.core.util.FileHelper
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 
 // Happen on Media provider process
 object MediaProviderHook {
@@ -26,7 +27,7 @@ object MediaProviderHook {
             ) { param ->
                 val mediaUri = getUriFromParams(param)
                 val path = FileHelper.getRealPathFromURI(param.args[0] as Context, mediaUri)
-                logger.p("onMediaStoreInsert: $mediaUri --- $path")
+                logger.logOnDebug("onMediaStoreInsert: $mediaUri --- $path")
                 mediaUri?.let {
                     logger.d("onMediaStoreInsert, shortx: ${ShortXManagerNative.shortX}")
                     ShortXManagerNative.shortX?.onMediaStoreInsert(mediaUri, path)
@@ -38,7 +39,7 @@ object MediaProviderHook {
             ) { param ->
                 val mediaUri = getUriFromParams(param)
                 val path = FileHelper.getRealPathFromURI(param.args[0] as Context, mediaUri)
-                logger.p("onMediaStoreDelete: $mediaUri --- $path")
+                logger.logOnDebug("onMediaStoreDelete: $mediaUri --- $path")
                 mediaUri?.let {
                     ShortXManagerNative.shortX?.onMediaStoreDelete(mediaUri, path)
                 }

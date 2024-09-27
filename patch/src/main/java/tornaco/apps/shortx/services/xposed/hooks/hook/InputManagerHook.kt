@@ -3,7 +3,7 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 import android.util.Log
 import android.view.InputEvent
 import de.robv.android.xposed.callbacks.XC_LoadPackage
-import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.platform.Classes.inputManagerService
 import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.core.util.Logger
@@ -31,7 +31,7 @@ object InputManagerHook {
             }
         }
 
-        onDebugBuild {
+        if (BuildPropInternal.APP_IS_DEBUG) {
             if (OsUtils.isTOrAbove()) {
                 // debugHooks(lpparam)
             }

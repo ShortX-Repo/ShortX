@@ -5,6 +5,7 @@ import com.google.protobuf.Message
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import tornaco.apps.shortx.core.annotations.DoNotStrip
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.maskAll
 import tornaco.apps.shortx.core.util.wifiManager
@@ -57,7 +58,7 @@ object ConnectWifi : Actor {
         val config = shortXContext.network.getPrivilegedConfiguredNetworks().firstOrNull {
             it.ssid == d.ssid
         }
-        logger.p("config: $config")
+        logger.logOnDebug("config: $config")
         requireNotNull(config) {
             "Wifi config not found: ${d.ssid}"
         }

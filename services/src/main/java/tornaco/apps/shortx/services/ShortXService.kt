@@ -18,7 +18,6 @@ import android.telephony.SubscriptionManager
 import android.util.Log
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import tornaco.apps.shortx.core.BuildPropExt
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IActionEvaluateListener
 import tornaco.apps.shortx.core.IAudioRecordingListener
@@ -36,6 +35,7 @@ import tornaco.apps.shortx.core.cv.ICV
 import tornaco.apps.shortx.core.http.toHttpRequestBody
 import tornaco.apps.shortx.core.http.toHttpResponseData
 import tornaco.apps.shortx.core.localvar.LocalVars
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.notification.INotificationPoster
 import tornaco.apps.shortx.core.ocr.IOCR
 import tornaco.apps.shortx.core.os.ICancellationSignal
@@ -646,14 +646,10 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                 logger.i("EXTERNAL: $message")
             } else if ("http" == redirectTo) {
                 message?.let { HttpRequestLogging.log(it) }
-                BuildPropExt.onDebugBuild {
-                    logger.i("http: $message")
-                }
+                logger.logOnDebug("http: $message")
             } else if ("method_hook" == redirectTo) {
                 message?.let { MethodHookLogging.log(it) }
-                BuildPropExt.onDebugBuild {
-                    logger.i("method_hook: $message")
-                }
+                logger.logOnDebug("method_hook: $message")
             }
         }
 

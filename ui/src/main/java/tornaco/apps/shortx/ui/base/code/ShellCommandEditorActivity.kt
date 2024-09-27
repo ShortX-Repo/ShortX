@@ -35,6 +35,7 @@ import io.github.rosemoe.sora.app.CEComposeBinding
 import io.github.rosemoe.sora.app.databinding.CodeEditorComposeBinding
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
@@ -165,7 +166,7 @@ fun ShellCommandEditorActivity.ShellCommandEditor(
                                         showToolbar = subscribeState.isSubscribed,
                                         initialText = currentAction?.command ?: ""
                                     ) {
-                                        composeLogger.p("Content change: $it")
+                                        composeLogger.logOnDebug("Content change: $it")
                                         vm.updateCommand(it)
                                     }.onCreate()
                                 }

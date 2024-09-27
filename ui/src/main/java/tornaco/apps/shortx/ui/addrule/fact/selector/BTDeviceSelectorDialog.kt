@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
@@ -54,7 +55,7 @@ class BTDeviceSelectorState(
         initialAddressValue: String? = null,
         timeout: String? = "5000"
     ) {
-        logger.p("initialValue: $initialNameValue")
+        logger.logOnDebug("initialValue: $initialNameValue")
         this.deviceName = initialNameValue ?: ""
         this.deviceAddress = initialAddressValue ?: ""
         this.timeout = timeout ?: "5000"

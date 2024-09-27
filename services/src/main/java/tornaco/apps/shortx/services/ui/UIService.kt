@@ -3,7 +3,6 @@ package tornaco.apps.shortx.services.ui
 import android.os.Handler
 import android.os.Looper
 import kotlinx.coroutines.runBlocking
-import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.QSTileList
@@ -115,7 +114,7 @@ class UIService(shortXContext: ShortXContext) : SystemService(shortXContext, "UI
         qsTileHost.clear()
         qsTileHost.register(host)
 
-        onDebugBuild {
+        if (BuildPropInternal.APP_IS_DEBUG) {
             val receiver = SynchronousResultReceiver.get()
             host.getTiles(receiver)
             val result = runBlocking { receiver.awaitResultNoInterrupt(Duration.ofSeconds(10)) }

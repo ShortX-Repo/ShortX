@@ -1,7 +1,6 @@
 package tornaco.apps.shortx.ui.util
 
 import android.content.Context
-import tornaco.apps.shortx.core.BuildPropExt
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.shortcut.ShortcutStubInfo

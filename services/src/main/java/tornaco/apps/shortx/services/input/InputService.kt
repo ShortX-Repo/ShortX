@@ -5,6 +5,7 @@ import com.android.internal.view.IInputContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.clipboard.ClipboardItem
 import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
 import tornaco.apps.shortx.core.util.OsUtils
@@ -102,7 +103,7 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     }
 
     fun addClipboardText(string: String) {
-        logger.p("addClipboardText: $string")
+        logger.logOnDebug("addClipboardText: $string")
         string.takeIf { it.isNotBlank() }?.let {
             clipboardStore.addText(
                 ClipboardItem.newBuilder()
@@ -115,12 +116,12 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     }
 
     fun addClipboardText(text: ClipboardItem) {
-        logger.p("addClipboardText: $text")
+        logger.logOnDebug("addClipboardText: $text")
         clipboardStore.addText(text)
     }
 
     fun removeClipboardText(id: String) {
-        logger.p("removeClipboardText: $id")
+        logger.logOnDebug("removeClipboardText: $id")
         clipboardStore.deleteText(id)
     }
 

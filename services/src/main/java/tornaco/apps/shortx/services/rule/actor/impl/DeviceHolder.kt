@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.services.ctrl.Controller
 import tornaco.apps.shortx.services.ctrl.Device
 import tornaco.apps.shortx.services.ctrl.Options

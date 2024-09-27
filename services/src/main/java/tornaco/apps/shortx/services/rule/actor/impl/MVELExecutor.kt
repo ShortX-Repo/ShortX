@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.rule.actor.impl
 import android.content.Context
 import org.mvel2.MVEL
 import tornaco.apps.shortx.core.localvar.LocalVars
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.rule.GLOBAL_VAR_REF_PREFIX
 import tornaco.apps.shortx.core.rule.LOCAL_VAR_REF_PREFIX
 import tornaco.apps.shortx.core.rule.isList
@@ -48,7 +49,7 @@ class MVELExecutor(
                 )
             }
         }
-        logger.p("varsMap: $varsMap")
+        logger.logOnDebug("varsMap: $varsMap")
         logger.w("Execute: $expression")
         return MVEL.executeExpression(MVEL.compileExpression(expression), varsMap)
     }

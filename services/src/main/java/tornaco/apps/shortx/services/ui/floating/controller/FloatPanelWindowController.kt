@@ -21,6 +21,7 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.res.isBase64Image
 import tornaco.apps.shortx.core.res.remixResName
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.services.ui.floating.FloatMoveEnum
 import tornaco.apps.shortx.services.ui.floating.FloatServiceUtil
 import tornaco.apps.shortx.services.ui.floating.FloatWindowManager

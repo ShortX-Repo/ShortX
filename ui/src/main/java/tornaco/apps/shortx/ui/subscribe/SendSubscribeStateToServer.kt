@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.orbitmvi.orbit.compose.collectSideEffect
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalShortXProps
@@ -24,10 +25,10 @@ inline fun ShortXProps(crossinline content: @Composable () -> Unit) {
         val i18N = LocalI18N.current
 
         LVLStateHolder.collectSideEffect { effect ->
-            propLogger.p("subscribeState side effect: $effect")
+            propLogger.logOnDebug("subscribeState side effect: $effect")
             if (effect is LVLStateHolder.Effect.StateChanged) {
                 getLVLTokenForServer { t ->
-                    propLogger.p("collectSideEffect getLVLTokenForServer: $t")
+                    propLogger.logOnDebug("collectSideEffect getLVLTokenForServer: $t")
                     t?.let { props.add(it) }
                 }
             } else if (effect is LVLStateHolder.Effect.FAB) {
@@ -42,9 +43,9 @@ inline fun ShortXProps(crossinline content: @Composable () -> Unit) {
         }
 
         LaunchedEffect(Unit) {
-            propLogger.p("subscribeState collect: ${context.requireActivity()}")
+            propLogger.logOnDebug("subscribeState collect: ${context.requireActivity()}")
             getLVLTokenForServer { t ->
-                propLogger.p("LaunchedEffect getLVLTokenForServer: $t")
+                propLogger.logOnDebug("LaunchedEffect getLVLTokenForServer: $t")
                 t?.let { props.add(it) }
             }
         }
