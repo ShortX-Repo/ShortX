@@ -15,6 +15,7 @@ import tornaco.apps.shortx.services31.app.UidObserverV31
 import tornaco.apps.shortx.services32.app.UidObserverV32
 import tornaco.apps.shortx.services33.app.UidObserverV33
 import tornaco.apps.shortx.services34.app.UidObserverV34
+import tornaco.apps.shortx.services35.app.UidObserverV35
 
 
 object UidObserverRegisterCompat {
@@ -51,6 +52,10 @@ object UidObserverRegisterCompat {
 
             34 -> {
                 UidObserverV34(obs)
+            }
+
+            35 -> {
+                UidObserverV35(obs)
             }
 
             else -> {

@@ -16,6 +16,7 @@ dependencies {
     implementation(project(":services-32"))
     implementation(project(":services-33"))
     implementation(project(":services-34"))
+    implementation(project(":services-35"))
 
     implementation(libs.tinypinyin)
 
