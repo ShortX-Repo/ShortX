@@ -116,7 +116,8 @@ subprojects {
         val hasAndroidPlugin = project.plugins.hasPlugin(AndroidBasePlugin::class)
         log("Check publishing subproject: ${project.name}, hasAndroidPlugin: $hasAndroidPlugin")
         val fogModules = listOf(
-            "patch"
+            "patch",
+            "ui"
         )
         if (fogModules.contains(project.name)) {
             log("Fogging: ${project.name}")
