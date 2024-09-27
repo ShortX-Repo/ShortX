@@ -11,7 +11,7 @@ import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import java.text.Collator
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 
 fun List<AppWithState>.filterSearchKeyword(keyword: String?): List<AppWithState> {

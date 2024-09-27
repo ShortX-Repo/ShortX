@@ -30,7 +30,6 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.SmallTitle
-import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.theme.NoteTextColor
 

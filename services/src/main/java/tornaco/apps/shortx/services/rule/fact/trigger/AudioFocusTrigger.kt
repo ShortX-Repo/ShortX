@@ -6,11 +6,10 @@ import tornaco.apps.shortx.core.proto.fact.AudioFocusChanged
 import tornaco.apps.shortx.core.proto.fact.AudioFocusGain
 import tornaco.apps.shortx.core.proto.fact.AudioFocusLost
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.audio.FocusEvent
-import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.systemServiceScope
+import tornaco.apps.shortx.services.watchdog.launchSafety
 
 class AudioFocusTrigger(override val context: Context, override val shortXContext: ShortXContext) :
     Trigger {

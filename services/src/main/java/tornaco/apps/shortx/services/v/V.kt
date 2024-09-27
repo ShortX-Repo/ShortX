@@ -9,7 +9,6 @@ import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.common.CommonApiRes
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.util.StringMD5
 import java.security.MessageDigest

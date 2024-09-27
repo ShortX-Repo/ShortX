@@ -1,7 +1,6 @@
 package tornaco.apps.shortx.services.data
 
 import kotlinx.coroutines.CoroutineScope
-import tornaco.apps.shortx.core.store.BasePkgSetsStore
 import tornaco.apps.shortx.core.store.BaseRuleSetsStore
 
 class RuleSetsStore(val scope: CoroutineScope) :

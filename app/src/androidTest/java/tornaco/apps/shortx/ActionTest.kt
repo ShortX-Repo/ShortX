@@ -5,7 +5,6 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import tornaco.apps.shortx.core.proto.action.ShellCommand

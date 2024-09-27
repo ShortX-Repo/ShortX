@@ -6,7 +6,6 @@ import tornaco.apps.shortx.core.platform.ActivityRecordUtils
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.toAppComponent
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import util.Reflections
 
 object ATMSFuncs {

@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlphaLarge

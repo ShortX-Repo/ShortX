@@ -30,7 +30,6 @@ import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.alarmManager
 import tornaco.apps.shortx.services.rule.fact.alarm.alarmClockViewerIntent
 import tornaco.apps.shortx.services.util.AlarmManagerCompat

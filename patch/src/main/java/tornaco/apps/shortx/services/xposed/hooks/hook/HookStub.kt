@@ -1,10 +1,10 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.proto.fact.MethodHookLifecycle
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.services.ShortXService
 import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.SystemUIHook
 

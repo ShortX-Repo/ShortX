@@ -8,7 +8,6 @@ import tornaco.apps.shortx.core.proto.common.QSTileList
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.systemui.IQSTileHost
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import util.Reflections
 
 class QSTileHostImpl(private val hostObj: Any, private val shortx: IShortX) : IQSTileHost.Stub() {

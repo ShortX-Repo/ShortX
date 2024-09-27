@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.fact.AnyFact
 import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.findTypeUrls
@@ -21,7 +22,6 @@ import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.RuleObserver
 import tornaco.apps.shortx.core.rule.ToggleObserver
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.services.ShortXContext
 import java.util.concurrent.atomic.AtomicBoolean
 

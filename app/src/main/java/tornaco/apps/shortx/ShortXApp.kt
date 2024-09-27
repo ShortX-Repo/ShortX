@@ -8,7 +8,6 @@ import kotlinx.coroutines.runBlocking
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.ui.EntryPoint
 import tornaco.apps.shortx.ui.FlavorEntryPoint
 import tornaco.apps.shortx.ui.analytics.Event

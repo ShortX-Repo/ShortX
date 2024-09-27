@@ -5,7 +5,6 @@ import android.content.Context
 import android.os.ServiceManager
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.appPkgToString
 import util.Reflections

@@ -8,7 +8,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.proto.common.UserInfo
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
-import java.util.*
 import javax.inject.Inject
 
 data class UserState(

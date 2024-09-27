@@ -8,7 +8,6 @@ import android.os.Build
 import android.os.ServiceManager
 import tornaco.apps.shortx.core.os.UidObserverCompat
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.services28.app.UidObserverV28
 import tornaco.apps.shortx.services29.app.UidObserverV29
 import tornaco.apps.shortx.services30.app.UidObserverV30

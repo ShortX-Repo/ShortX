@@ -13,7 +13,6 @@ import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.MediumTitleWithTip
 import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
-import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 
 @Composable

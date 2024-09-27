@@ -2,7 +2,6 @@ package tornaco.apps.shortx.ui.addrule.fact
 
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.ui.UiClipboard
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.defaultNewFactId

@@ -2,9 +2,9 @@ package tornaco.apps.shortx.services.rule.fact.trigger
 
 import android.content.Context
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.fact.ClipboardContentChanged
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.FactPublishData
 import java.util.concurrent.atomic.AtomicReference

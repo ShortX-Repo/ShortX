@@ -16,7 +16,6 @@ import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.util.ComponentRule
 import tornaco.apps.shortx.ui.util.LCRulesAdapter
-import java.util.*
 import javax.inject.Inject
 
 data class AppComponentInfoWithRule(

@@ -69,7 +69,6 @@ import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.res.isBase64Image
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.RemixIcon

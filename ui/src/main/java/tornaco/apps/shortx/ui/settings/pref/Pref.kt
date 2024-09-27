@@ -18,7 +18,6 @@ import tornaco.apps.shortx.core.proto.toJson
 import tornaco.apps.shortx.core.proto.toProto
 import tornaco.apps.shortx.core.rule.defaultAuthor
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "prefs")
 

@@ -5,7 +5,6 @@ import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.platform.Classes.nfcServiceHandlerClass
 import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import util.Reflections
 
 object NFCServiceHook {

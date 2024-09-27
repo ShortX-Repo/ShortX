@@ -6,7 +6,6 @@ import android.net.Network
 import android.net.NetworkRequest
 import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.connectivityManager
 import tornaco.apps.shortx.core.util.vpn

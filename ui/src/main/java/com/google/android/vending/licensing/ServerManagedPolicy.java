@@ -16,16 +16,16 @@
 
 package com.google.android.vending.licensing;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.elvishew.xlog.XLog;
 import com.google.android.vending.licensing.util.URIQueryDecoder;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Default policy. All policy decisions are based off of response data received

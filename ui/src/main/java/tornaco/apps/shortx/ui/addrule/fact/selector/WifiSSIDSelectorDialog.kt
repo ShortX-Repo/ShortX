@@ -21,9 +21,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DialogMessage
 import tornaco.apps.shortx.ui.base.ErrorTipRow

@@ -2,15 +2,25 @@
 
 package tornaco.apps.shortx.ui.addrule.action.selector
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.proto.common.UserInfo
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.DialogTitle
+import tornaco.apps.shortx.ui.base.ListItem
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortXDialog
 
 
 class UserDialogState(

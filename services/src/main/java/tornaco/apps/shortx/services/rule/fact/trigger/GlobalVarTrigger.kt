@@ -4,7 +4,6 @@ import android.content.Context
 import tornaco.apps.shortx.core.proto.fact.GlobalVarChanged
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.services.ShortXContext
 
 class GlobalVarTrigger(

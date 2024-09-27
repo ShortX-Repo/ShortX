@@ -7,7 +7,6 @@ import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 
 private val logger = Logger("ConditionCallable")
 

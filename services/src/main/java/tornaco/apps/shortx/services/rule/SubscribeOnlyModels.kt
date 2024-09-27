@@ -98,7 +98,6 @@ import tornaco.apps.shortx.core.proto.fact.NFCTagDiscover
 import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
 import tornaco.apps.shortx.core.proto.fact.PkgStartRunning
 import tornaco.apps.shortx.core.proto.fact.ProximitySensor
-import tornaco.apps.shortx.core.proto.fact.ProximitySensorState
 import tornaco.apps.shortx.core.proto.fact.ProximitySensorStateChanged
 import tornaco.apps.shortx.core.proto.fact.ShakeDevice
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved

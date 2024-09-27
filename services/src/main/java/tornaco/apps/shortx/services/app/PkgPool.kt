@@ -9,10 +9,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.Pkg
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppCategory
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.services.app.pm.PmSetAppEnabledApplicationPackageEnabler
 import tornaco.apps.shortx.services.app.pm.PmSuspendApplicationPackageEnabler

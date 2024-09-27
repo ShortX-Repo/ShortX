@@ -19,7 +19,6 @@ import tornaco.apps.shortx.core.proto.rule.FactPublishRecord
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.toAction

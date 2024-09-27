@@ -12,7 +12,6 @@ import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.replaceLocalVarValues
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.ui.base.StateViewModel
 
 data class ButtonState(val formattedLabel: String, val setting: OverlayButtonSetting)

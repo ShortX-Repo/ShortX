@@ -26,7 +26,6 @@ import android.content.IntentFilter
 import android.os.SystemClock
 import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.alarmManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.util.AlarmManagerCompat

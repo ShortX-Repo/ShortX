@@ -9,7 +9,6 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.ParcelableUtil
 import tornaco.apps.shortx.services.input.IMSFunc
 import tornaco.apps.shortx.services.util.copyUse

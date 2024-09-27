@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import tornaco.apps.shortx.core.ocr.IOCR
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.services.util.ExtAppClassHelper
 import util.Reflections
 

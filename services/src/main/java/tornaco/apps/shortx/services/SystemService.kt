@@ -8,8 +8,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
-import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.logOnDebug
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.newHandlerOfNewThread
 import tornaco.apps.shortx.services.data.SettingsStore

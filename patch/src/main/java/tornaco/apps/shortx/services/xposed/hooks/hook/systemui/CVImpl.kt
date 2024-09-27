@@ -6,7 +6,6 @@ import android.graphics.Point
 import android.graphics.Rect
 import tornaco.apps.shortx.core.cv.ICV
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.services.util.ExtAppClassHelper
 import util.Reflections
 

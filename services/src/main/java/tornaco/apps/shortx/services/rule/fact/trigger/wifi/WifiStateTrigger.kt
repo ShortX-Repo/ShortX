@@ -9,7 +9,6 @@ import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.fact.WifiStatusChanged
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.core.util.wifiManager
 import tornaco.apps.shortx.services.ShortXContext

@@ -14,7 +14,6 @@ import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.notificationManager
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext

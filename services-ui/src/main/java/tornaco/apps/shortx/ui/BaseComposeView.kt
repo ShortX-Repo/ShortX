@@ -18,7 +18,6 @@ import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.overlay.addToLifecycle

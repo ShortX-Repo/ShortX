@@ -8,7 +8,6 @@ import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.SettingsImpl

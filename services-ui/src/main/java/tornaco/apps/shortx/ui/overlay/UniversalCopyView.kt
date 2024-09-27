@@ -37,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.OsUtils
 
 @SuppressLint("ViewConstructor", "ClickableViewAccessibility")

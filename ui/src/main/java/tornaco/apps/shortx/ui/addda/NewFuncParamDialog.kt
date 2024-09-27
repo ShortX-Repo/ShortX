@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.func.FuncParameter
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.FUNC_PARAM_REF_PREFIX
-import tornaco.apps.shortx.core.rule.GLOBAL_VAR_REF_PREFIX
 import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.FieldTitle

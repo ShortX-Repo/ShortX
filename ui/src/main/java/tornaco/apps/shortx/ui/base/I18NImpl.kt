@@ -8,7 +8,6 @@ import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.proto.common.AppLanguage
 import tornaco.apps.shortx.core.res.appLanguageToAssetsFileName
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.ui.R
 
 val i18NIns by lazy { I18NImpl() }

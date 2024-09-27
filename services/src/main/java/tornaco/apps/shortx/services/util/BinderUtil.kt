@@ -2,7 +2,6 @@ package tornaco.apps.shortx.services.util
 
 import android.os.IInterface
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 
 private val logger = Logger("BinderUtil")
 

@@ -7,7 +7,6 @@ import android.os.Parcelable
 import androidx.activity.result.ActivityResult
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import java.util.concurrent.atomic.AtomicInteger
 
 

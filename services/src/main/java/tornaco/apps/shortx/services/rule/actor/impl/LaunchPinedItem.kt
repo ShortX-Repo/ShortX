@@ -2,7 +2,6 @@ package tornaco.apps.shortx.services.rule.actor.impl
 
 import android.annotation.SuppressLint
 import com.google.protobuf.Message
-import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.IntentConverter
 import tornaco.apps.shortx.core.util.UserHandleUtils

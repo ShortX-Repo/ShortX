@@ -12,7 +12,6 @@ import tornaco.apps.shortx.core.rule.setValue
 import tornaco.apps.shortx.core.rule.valueList
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.ui.base.StateViewModel
 import tornaco.apps.shortx.ui.base.afterNavDelay
 

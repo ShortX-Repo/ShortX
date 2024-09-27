@@ -19,7 +19,6 @@ package com.topjohnwu.superuser.internal;
 
 import android.annotation.NonNull;
 import android.annotation.Nullable;
-import android.security.identity.Util;
 
 import com.topjohnwu.superuser.NoShellException;
 import com.topjohnwu.superuser.Shell;

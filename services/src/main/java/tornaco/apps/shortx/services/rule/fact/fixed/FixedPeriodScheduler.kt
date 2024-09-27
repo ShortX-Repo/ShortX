@@ -23,7 +23,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Handler
-import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.alarm.formatDuration
 import tornaco.apps.shortx.core.alarm.getTriggerTimeOffset
 import tornaco.apps.shortx.core.compat.AlarmManagerCompat
@@ -31,7 +30,6 @@ import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.alarmManager
 import tornaco.apps.shortx.services.rule.fact.alarm.alarmClockViewerIntent
 import tornaco.apps.shortx.services.watchdog.postSafety

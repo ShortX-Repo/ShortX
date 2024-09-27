@@ -4,10 +4,10 @@ import com.google.protobuf.Message
 import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.forKey
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.RuleContextAndVars

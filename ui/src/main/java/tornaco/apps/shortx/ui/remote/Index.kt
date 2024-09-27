@@ -10,7 +10,6 @@ import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import tornaco.apps.shortx.core.rule.repo.Index
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import java.util.concurrent.TimeUnit
 
 

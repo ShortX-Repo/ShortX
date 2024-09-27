@@ -30,7 +30,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.addrule.condition.ConditionContent
