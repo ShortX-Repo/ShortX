@@ -53,6 +53,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.longPressZoom
 import tornaco.apps.shortx.ui.base.rememberClickAnimateState
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
@@ -203,7 +204,7 @@ private fun DAListItem(
     Column(modifier = modifier
         .fillMaxWidth()
         .clip(ShortXCardRoundedCornerShape)
-        .combinedClickable(onLongClick = onLongClick) {
+        .longPressZoom(onLongClick = onLongClick) {
             onClick()
         }
         .padding(horizontal = 12.dp)
