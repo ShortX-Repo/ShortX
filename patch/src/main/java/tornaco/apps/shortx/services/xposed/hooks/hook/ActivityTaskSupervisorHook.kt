@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 import android.content.Intent
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.platform.Classes.activityStackSupervisorClass
 import tornaco.apps.shortx.core.platform.Classes.amsClass
 import tornaco.apps.shortx.core.platform.Methods
@@ -18,7 +19,30 @@ import util.ReflectionsExt
 object ActivityTaskSupervisorHook {
     private val logger = Logger("ShortXHook.ActivityTaskSupervisorHook")
 
-    fun hookActivityTaskSupervisor(lpparam: XC_LoadPackage.LoadPackageParam) =
+    fun hookActivityTaskSupervisor(lpparam: XC_LoadPackage.LoadPackageParam) {
+        hookCleanUpTask(lpparam)
+        // Debug.
+        if (BuildPropInternal.APP_IS_DEBUG) {
+            hookRealStartActivity(lpparam)
+        }
+    }
+
+    // Observed: happens on the first time starting an Activity.
+    private fun hookRealStartActivity(lpparam: XC_LoadPackage.LoadPackageParam) {
+        kotlin.runCatching {
+            val methodName = "realStartActivityLocked"
+            afterMethod(
+                lpparam.classLoader.activityStackSupervisorClass(methodName),
+                methodName
+            ) { param ->
+                logger.d("realStartActivityLocked: ${param.args.map { it }}")
+            }
+        }.onFailure {
+            logger.e(it, "hookRealStartActivity")
+        }
+    }
+
+    private fun hookCleanUpTask(lpparam: XC_LoadPackage.LoadPackageParam) {
         kotlin.runCatching {
             if (OsUtils.isUOrAbove()) {
                 afterMethod(
@@ -42,6 +66,7 @@ object ActivityTaskSupervisorHook {
         }.onFailure {
             logger.e(it, "hookActivityTaskSupervisor")
         }
+    }
 
     private fun handleTaskRemoved(param: XC_MethodHook.MethodHookParam) {
         // void cleanUpRemovedTaskLocked(TaskRecord tr, boolean killProcess, boolean removeFromRecents)
