@@ -63,7 +63,12 @@ class StatusBarService(shortXContext: ShortXContext) :
     private val _statusBarChipEvent = MutableSharedFlow<StatusBarChipEvent>()
     val statusBarChipEvent = _statusBarChipEvent.asSharedFlow()
 
-    private val appRes by lazy { AppResources(context, BuildPropInternal.APP_PACKAGE_NAME) }
+    private val appContext by lazy {
+        AppResources(
+            context,
+            BuildPropInternal.APP_PACKAGE_NAME
+        ).appContext
+    }
 
     override fun start(context: Context) {
         super.start(context)
@@ -132,7 +137,7 @@ class StatusBarService(shortXContext: ShortXContext) :
 
         if (BuildPropInternal.APP_IS_DEBUG) {
             systemServiceScope.launchSafety {
-                setStatusBarIcon("ShortX", Remix.Animals.deer)
+                setStatusBarIcon("ShortX", Remix.Animals.cat)
             }
         }
     }
@@ -291,7 +296,8 @@ class StatusBarService(shortXContext: ShortXContext) :
     }
 
     fun setStatusBarIcon(slot: String, icon: String) {
-        val iconId = appRes.appContext.remixResId(icon)
+        // try 16dp.
+        val iconId = appContext.remixResId(icon, 16)
         logger.logOnDebug("setStatusBarIcon: $slot $icon $iconId")
         StatusBarManagerServiceFuncs.setIcon(slot, iconId)
     }
