@@ -75,5 +75,5 @@ fun SystemUIHook.hookView(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.run
         }
     }
 }.onFailure {
-    logger.e(it, "hookTile")
+    logger.e(it, "hookView")
 }

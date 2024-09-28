@@ -1,6 +1,6 @@
 package tornaco.apps.shortx.services
 
-import tornaco.apps.shortx.core.BuildPropExt.onDebugBuild
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.services.app.AppStateService
 import tornaco.apps.shortx.services.app.PkgSetService
 import tornaco.apps.shortx.services.audio.AudioService
@@ -77,7 +77,9 @@ interface ShortXContext {
             cv,
             ocr,
         ).apply {
-            onDebugBuild { add(dev) }
+            if (BuildPropInternal.APP_IS_DEBUG) {
+                add(dev)
+            }
         }
 }
 
