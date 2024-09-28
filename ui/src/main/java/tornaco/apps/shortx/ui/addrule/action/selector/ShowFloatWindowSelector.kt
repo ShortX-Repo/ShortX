@@ -113,10 +113,6 @@ private fun ColumnScope.Content(
             }) {
                 RemixIcon(remixName = Remix.Arrows.expand_up_down_fill)
             }
-            IconButton(onClick = {
-            }) {
-                RemixIcon(remixName = Remix.Editor.sort_desc)
-            }
         }
     }
     SmallSpacer()
