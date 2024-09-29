@@ -24,7 +24,7 @@ fun initLogger(context: Context) {
                 .build()
         XLog.init(
             com.elvishew.xlog.LogConfiguration.Builder()
-                .logLevel(if (BuildPropInternal.APP_IS_DEBUG) LogLevel.ALL else LogLevel.INFO)
+                .logLevel(if (BuildPropInternal.APP_IS_DEBUG) LogLevel.ALL else LogLevel.WARN)
                 .tag("${BuildProp.LOG_PREFIX}App")
                 .build(),
             filePrinter,
