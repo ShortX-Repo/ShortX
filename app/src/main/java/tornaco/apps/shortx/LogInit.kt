@@ -2,12 +2,14 @@ package tornaco.apps.shortx
 
 import android.content.Context
 import android.util.Log
+import com.elvishew.xlog.LogLevel
 import com.elvishew.xlog.XLog
 import com.elvishew.xlog.flattener.ClassicFlattener
 import com.elvishew.xlog.printer.AndroidPrinter
 import com.elvishew.xlog.printer.file.clean.FileLastModifiedCleanStrategy
 import com.elvishew.xlog.printer.file.naming.DateFileNameGenerator
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.util.logAdapter
 import tornaco.apps.shortx.ui.settings.logFolderPath
 
@@ -22,7 +24,7 @@ fun initLogger(context: Context) {
                 .build()
         XLog.init(
             com.elvishew.xlog.LogConfiguration.Builder()
-                .logLevel(com.elvishew.xlog.LogLevel.ALL)
+                .logLevel(if (BuildPropInternal.APP_IS_DEBUG) LogLevel.ALL else LogLevel.INFO)
                 .tag("${BuildProp.LOG_PREFIX}App")
                 .build(),
             filePrinter,

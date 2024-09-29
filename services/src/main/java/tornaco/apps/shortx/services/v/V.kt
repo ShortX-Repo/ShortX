@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.pm.Signature
+import android.os.Binder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildPropInternal
@@ -32,6 +33,7 @@ fun s(context: Context): Array<Signature> {
 }
 
 inline fun <T> v(context: Context, run: () -> T): T? {
+    val id = Binder.clearCallingIdentity()
     var match = true
     try {
         //note sample just checks the first signature
@@ -66,7 +68,7 @@ inline fun <T> v(context: Context, run: () -> T): T? {
                 hexChars[j * 2 + 1] = hexArray[v and 0x0F]
             }
             val md5 = StringMD5.md5(String(hexChars))
-            logger.d("s_index_$index: $md5")
+            logger.v("s_index_$index: $md5")
             if (BuildPropInternal.SIGNATURES_MD5.split("|")[index] != md5
                 && BuildPropInternal.SIGNATURES2_MD5.split("|")[index] != md5
             ) {
@@ -78,11 +80,13 @@ inline fun <T> v(context: Context, run: () -> T): T? {
         match = false
     }
 
+    Binder.restoreCallingIdentity(id)
+
     return if (match) {
-        logger.d("Match")
+        logger.v("Match")
         run()
     } else {
-        logger.d("Not match")
+        logger.v("Not match")
         null
     }
 }

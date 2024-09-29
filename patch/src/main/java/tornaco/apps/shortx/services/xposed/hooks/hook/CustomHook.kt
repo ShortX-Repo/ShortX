@@ -104,7 +104,7 @@ object CustomHook {
         log: (String) -> Unit
     ) {
         log("Checking rules for app: $currentProcessPkgName - $lifecycle")
-        rules.filter { it.isEnabled }.map { it.factsAndQuitFacts } + das.map { it.quitFacts }
+        (rules.filter { it.isEnabled }.map { it.factsAndQuitFacts } + das.map { it.quitFacts })
             .flatten()
             .forEach { proto ->
                 if (proto is_ MethodHook::class.java) {

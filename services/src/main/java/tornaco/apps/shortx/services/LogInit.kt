@@ -80,7 +80,7 @@ object LogInit {
             .build()
         XLog.init(
             LogConfiguration.Builder()
-                .logLevel(LogLevel.ALL)
+                .logLevel(if (BuildPropInternal.APP_IS_DEBUG) LogLevel.ALL else LogLevel.INFO)
                 .tag(LOG_PREFIX)
                 .build(),
             filePrinter,

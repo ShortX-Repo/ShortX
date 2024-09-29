@@ -649,7 +649,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                 logger.logOnDebug("http: $message")
             } else if ("method_hook" == redirectTo) {
                 message?.let { MethodHookLogging.log(it) }
-                logger.logOnDebug("method_hook: $message")
+                logger.d("method_hook: $message")
             }
         }
 
