@@ -127,6 +127,9 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
 
         data object StatusBarChipTextColor :
             IntSettings(key = "StatusBarChipTextColor", defaultValue = { DANMU_COLOR_AUTO })
+
+        data object StatusBarChipMaxLength :
+            IntSettings(key = "StatusBarChipMaxLength", defaultValue = { 100 })
     }
 
     sealed class FloatSettings(key: String, defaultValue: (Context) -> Float) :

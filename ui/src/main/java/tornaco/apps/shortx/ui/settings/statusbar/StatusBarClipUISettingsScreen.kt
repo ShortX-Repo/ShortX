@@ -54,6 +54,9 @@ import tornaco.apps.shortx.ui.settings.danmu.ItemCard
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
+private const val LONG_TEXT =
+    "Lorem Ipsum is simply dummy text of the printing and typesetting industry"
+
 @AndroidEntryPoint
 class StatusBarClipUISettingsActivity : BaseActivity() {
     companion object {
@@ -106,6 +109,20 @@ private fun StatusBarClipUISettingsScreen(back: () -> Unit) {
                     .padding(horizontal = 16.dp)
                     .verticalScroll(rememberScrollState())
             ) {
+
+                ItemCard("Max length") {
+                    Slider(value = state.settings.maxLength.toFloat(),
+                        valueRange = 10f..300f,
+                        onValueChange = {
+                            viewModel.updateSettings(
+                                settings = StatusBarClipUiSettings.newBuilder(state.settings)
+                                    .setMaxLength(it.toInt())
+                                    .build(),
+                                previewText = LONG_TEXT
+                            )
+                        })
+                }
+                StandardSpacer()
 
                 ItemCard("Padding Start") {
                     Slider(value = state.settings.paddingStart.toFloat(),

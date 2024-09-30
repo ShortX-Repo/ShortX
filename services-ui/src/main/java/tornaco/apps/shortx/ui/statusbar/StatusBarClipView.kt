@@ -209,7 +209,7 @@ class StatusBarClipView(
                         top = clipState.settings.paddingTop.dp,
                         bottom = clipState.settings.paddingBottom.dp
                     )
-                    .widthIn(max = 100.dp)
+                    .widthIn(max = (clipState.settings.maxLength.takeIf { it > 0 } ?: 100).dp)
                     .clip(ShortXCardRoundedCornerShapeXL)
                     .combinedClickable(
                         onLongClick = {

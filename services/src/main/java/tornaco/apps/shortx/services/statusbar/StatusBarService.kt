@@ -132,6 +132,7 @@ class StatusBarService(shortXContext: ShortXContext) :
                 .setPlacement(StatusBarClipUiPlacement.forNumber(store.read(Settings.IntSettings.StatusBarChipUiPlacement)))
                 .setBackgroundColor(store.read(Settings.IntSettings.StatusBarChipBgColor))
                 .setTextColor(store.read(Settings.IntSettings.StatusBarChipTextColor))
+                .setMaxLength(store.read(Settings.IntSettings.StatusBarChipMaxLength))
                 .build()
         )
 
@@ -265,6 +266,10 @@ class StatusBarService(shortXContext: ShortXContext) :
         store.write(Settings.IntSettings.StatusBarChipUiPlacement, data.placement.number)
         store.write(Settings.IntSettings.StatusBarChipBgColor, data.backgroundColor)
         store.write(Settings.IntSettings.StatusBarChipTextColor, data.textColor)
+        store.write(
+            Settings.IntSettings.StatusBarChipMaxLength,
+            data.maxLength.takeIf { it > 0 } ?: 100
+        )
     }
 
     fun onStatusBarClipClick(id: String) {
