@@ -160,7 +160,7 @@ class DefaultRuleEngine(
             shouldFireDAZQuitForFact(
                 context = preCheckContext,
                 fact = fact,
-                rule = it,
+                da = it,
                 checkCondition = checkCondition
             )
         }.also {
@@ -213,22 +213,22 @@ class DefaultRuleEngine(
     private fun shouldFireDAZQuitForFact(
         context: EvaluateContext,
         fact: ProtoMessage,
-        rule: DirectAction,
+        da: DirectAction,
         checkCondition: Boolean
-    ) = rule.quit.isEnabled && factMatcher.match(fact, rule.quit.factsList).isMatch && (
+    ) = da.quit.isEnabled && factMatcher.match(fact, da.quit.factsList).isMatch && (
             !checkCondition || (
                     runBlocking {
                         withTimeoutOrNull(CONDITION_WAIT_TIMEOUT) {
                             conditionEvaluator.evaluate(
                                 evaluateContext = context,
-                                condOp = rule.quit.condOp,
-                                condOpPayload = rule.quit.condOpPayload,
-                                conditions = rule.quit.conditionsList,
+                                condOp = da.quit.condOp,
+                                condOpPayload = da.quit.condOpPayload,
+                                conditions = da.quit.conditionsList,
                                 contextData = ContextData.obtain(),
                                 localVars = LocalVars.obtain()
                             )
                         }
-                    } ?: defaultDACondRes(rule))
+                    } ?: defaultDACondRes(da))
             )
 
     // Should call in Handler to make it Thread safe.
@@ -488,7 +488,9 @@ class DefaultRuleEngine(
             }
         }
 
-        das.filterHasQuit().forEach { da ->
+        das.filterHasQuit()
+            .filterIsActive()
+            .forEach { da ->
             logger.d("fire, check da quit: ${fact.javaClass} ${da.title}")
 
             val quit = da.quit
@@ -764,6 +766,13 @@ class DefaultRuleEngine(
     override fun activeJobs(): List<JobRecord> {
         return synchronized(jobs) {
             jobs.filter { it.job.isActive }
+        }
+    }
+
+    private fun List<DirectAction>.filterIsActive(): List<DirectAction> {
+        val jobs = activeJobs().map { it.srcId }
+        return filter { da ->
+            jobs.contains(da.id)
         }
     }
 }
