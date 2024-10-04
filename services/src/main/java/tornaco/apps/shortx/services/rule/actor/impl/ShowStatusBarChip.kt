@@ -6,7 +6,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.common.StatusBarClipState
 import tornaco.apps.shortx.core.rule.compileContextAndVars
@@ -17,6 +16,7 @@ import tornaco.apps.shortx.services.rule.actor.ActionEvaluator
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.services.statusbar.StatusBarChipEvent
+import tornaco.apps.shortx.services.watchdog.launchSafety
 import java.util.concurrent.atomic.AtomicReference
 
 object ShowStatusBarChip : Actor {
@@ -29,38 +29,72 @@ object ShowStatusBarChip : Actor {
 
     override fun init(androidContext: Context, shortXContext: ShortXContext) {
         super.init(androidContext, shortXContext)
-        scope.launch {
+        scope.launchSafety {
             shortXContext.statusbar.statusBarChipEvent.collectLatest {
-                logger.d("statusBarChipEvent: $it")
-                val hp = actionRef.get() ?: return@collectLatest
-                val d =
-                    hp.action unpack_ tornaco.apps.shortx.core.proto.action.ShowStatusBarChip::class.java
+                runCatching {
+                    logger.d("statusBarChipEvent: $it")
+                    val hp = actionRef.get() ?: return@collectLatest
+                    val d =
+                        hp.action unpack_ tornaco.apps.shortx.core.proto.action.ShowStatusBarChip::class.java
 
-                when (it) {
-                    is StatusBarChipEvent.Click -> {
-                        run loop@{
-                            if (d.clickActionList.isNullOrEmpty().not()) {
-                                d.clickActionList.forEach {
-                                    with(hp) {
-                                        val evaRes = recursiveExecute(
-                                            evaluateContext,
-                                            it,
-                                            contextData,
-                                            localVars,
-                                            parameterInputs
-                                        )
-                                        if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
-                                            logger.e(evaRes.error, "evaluate fail")
-                                            if (evaRes.shouldContinue) {
-                                                logger.d("Action on error is continue execute.")
-                                            } else {
-                                                return@loop
+                    when (it) {
+                        is StatusBarChipEvent.Click -> {
+                            run loop@{
+                                if (d.clickActionList.isNullOrEmpty().not()) {
+                                    d.clickActionList.forEach {
+                                        with(hp) {
+                                            val evaRes = recursiveExecute(
+                                                evaluateContext,
+                                                it,
+                                                contextData,
+                                                localVars,
+                                                parameterInputs
+                                            )
+                                            if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
+                                                logger.e(evaRes.error, "evaluate fail")
+                                                if (evaRes.shouldContinue) {
+                                                    logger.d("Action on error is continue execute.")
+                                                } else {
+                                                    return@loop
+                                                }
+                                            } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
+                                                val scope = evaRes.scope
+                                                logger.w("evaluate break! $scope")
+                                                scope.rethrowOrReturnLoop {
+                                                    return@loop
+                                                }
                                             }
-                                        } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
-                                            val scope = evaRes.scope
-                                            logger.w("evaluate break! $scope")
-                                            scope.rethrowOrReturnLoop {
-                                                return@loop
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        is StatusBarChipEvent.LongClick -> {
+                            run loop@{
+                                if (d.longClickActionList.isNullOrEmpty().not()) {
+                                    d.longClickActionList.forEach {
+                                        with(hp) {
+                                            val evaRes = recursiveExecute(
+                                                evaluateContext,
+                                                it,
+                                                contextData,
+                                                localVars,
+                                                parameterInputs
+                                            )
+                                            if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
+                                                logger.e(evaRes.error, "evaluate fail")
+                                                if (evaRes.shouldContinue) {
+                                                    logger.d("Action on error is continue execute.")
+                                                } else {
+                                                    return@loop
+                                                }
+                                            } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
+                                                val scope = evaRes.scope
+                                                logger.w("evaluate break! $scope")
+                                                scope.rethrowOrReturnLoop {
+                                                    return@loop
+                                                }
                                             }
                                         }
                                     }
@@ -68,38 +102,8 @@ object ShowStatusBarChip : Actor {
                             }
                         }
                     }
-
-                    is StatusBarChipEvent.LongClick -> {
-                        run loop@{
-                            if (d.longClickActionList.isNullOrEmpty().not()) {
-                                d.longClickActionList.forEach {
-                                    with(hp) {
-                                        val evaRes = recursiveExecute(
-                                            evaluateContext,
-                                            it,
-                                            contextData,
-                                            localVars,
-                                            parameterInputs
-                                        )
-                                        if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
-                                            logger.e(evaRes.error, "evaluate fail")
-                                            if (evaRes.shouldContinue) {
-                                                logger.d("Action on error is continue execute.")
-                                            } else {
-                                                return@loop
-                                            }
-                                        } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
-                                            val scope = evaRes.scope
-                                            logger.w("evaluate break! $scope")
-                                            scope.rethrowOrReturnLoop {
-                                                return@loop
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                }.onFailure {
+                    logger.e(it, "Handle chip event")
                 }
             }
         }
