@@ -289,6 +289,10 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                 )
                 val hasAnySMSAction = da.containsAnyTypeUrl(smsTyprUrls)
                 val hasAnyParam = da.parametersList.isNotEmpty()
+                val hasAnyHookActions: Boolean =
+                    quitFactContentStateHandler.facts.isNotEmpty()
+                            || quitConditionContentStateHandler.conditions.isNotEmpty()
+                logger.d("hasAnyHookActions: $hasAnyHookActions")
                 updateState {
                     copy(
                         id = da.id,
@@ -304,7 +308,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                         securityCheckRes = Security.checkSecurity(da),
                         hasSMSAction = hasAnySMSAction,
                         parameters = da.parametersList,
-                        showAdvancedOptions = hasAnyParam
+                        showAdvancedOptions = hasAnyParam || hasAnyHookActions
                     )
                 }
             }
