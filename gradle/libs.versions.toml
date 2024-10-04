@@ -9,10 +9,10 @@ biometric = "1.4.0-alpha02"
 compressor = "3.0.1"
 firebase-bom = "33.3.0"
 glance-appwidget = "1.1.0"
-shortx-core = "1.1.0-SNAPSHOT"
+shortx-core = "1.1.2-SNAPSHOT"
 rang-vikalp = "1.0.0-alpha02"
 sardine-android = "v0.9"
-shortx-plugin-sdk = "v1.1.1"
+shortx-plugin-sdk = "1.1.2"
 tinypinyin = "3.0.0"
 ui-graphics = "1.7.2"
 stringfog-xor = "5.0.0"
@@ -113,7 +113,7 @@ shortx-ext-reorderable = { module = "shortx:external-reorderable", version.ref =
 
 rang-vikalp = { module = "io.ak1:rang-vikalp", version.ref = "rang-vikalp" }
 sardine-android = { module = "com.github.thegrizzlylabs:sardine-android", version.ref = "sardine-android" }
-shortx-plugin-sdk = { module = "com.github.ShortX-Repo:ShortX-Plugin-SDK", version.ref = "shortx-plugin-sdk" }
+shortx-plugin-sdk = { module = "shortx:plugin.sdk", version.ref = "shortx-plugin-sdk" }
 tinypinyin = { module = "com.github.promeg:tinypinyin", version.ref = "tinypinyin" }
 stringfog-xor = { module = "com.github.megatronking.stringfog:xor", version.ref = "stringfog-xor" }
 stringfog-plugin = { module = "com.github.megatronking.stringfog:gradle-plugin", version.ref = "stringfog-plugin" }
