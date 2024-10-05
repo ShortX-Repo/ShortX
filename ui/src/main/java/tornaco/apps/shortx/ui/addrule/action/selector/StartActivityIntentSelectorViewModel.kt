@@ -9,7 +9,6 @@ import tornaco.apps.shortx.core.os.isMainUser
 import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.proto.common.AndroidIntentComponentType
 import tornaco.apps.shortx.core.proto.common.AndroidIntentExtra
-import tornaco.apps.shortx.core.proto.common.AndroidIntentExtraType
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.ui.addrule.action.model.Action
@@ -135,34 +134,11 @@ class StartActivityIntentSelectorViewModel @Inject constructor(@ApplicationConte
         }
     }
 
-    fun updateExtraKey(index: Int, key: String) {
+    fun updateExtra(index: Int, extra: AndroidIntentExtra) {
         updateState {
             copy(
                 extras = state.value.extras.toMutableList().apply {
-                    val updated = AndroidIntentExtra.newBuilder(get(index)).setKey(key).build()
-                    set(index, updated)
-                }
-            )
-        }
-    }
-
-    fun updateExtraValue(index: Int, value: String) {
-        updateState {
-            copy(
-                extras = state.value.extras.toMutableList().apply {
-                    val updated = AndroidIntentExtra.newBuilder(get(index)).setValue(value).build()
-                    set(index, updated)
-                }
-            )
-        }
-    }
-
-    fun updateExtraType(index: Int, type: AndroidIntentExtraType) {
-        updateState {
-            copy(
-                extras = state.value.extras.toMutableList().apply {
-                    val updated = AndroidIntentExtra.newBuilder(get(index)).setType(type).build()
-                    set(index, updated)
+                    set(index, extra)
                 }
             )
         }
@@ -176,10 +152,6 @@ class StartActivityIntentSelectorViewModel @Inject constructor(@ApplicationConte
                 }
             )
         }
-    }
-
-    fun newExtra() {
-        addExtra(AndroidIntentExtra.newBuilder().setType(AndroidIntentExtraType.String).build())
     }
 
     fun updateComponentType(componentType: AndroidIntentComponentType) {

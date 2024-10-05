@@ -6,7 +6,6 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.layout.Arrangement.SpaceBetween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,7 +23,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -53,6 +51,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAppComponentSelector
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
+import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTextField
@@ -285,61 +284,31 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
             text = LocalI18N.current["ui.common.extras"]
         )
         state.extras.forEachIndexed { index, extra ->
-            Row(verticalAlignment = CenterVertically, horizontalArrangement = SpaceBetween) {
-                // Key
-                TextField(
-                    modifier = Modifier.weight(1f),
-                    placeholder = { Text(text = LocalI18N.current["ui.common.extras.k"]) },
-                    value = extra.key,
-                    onValueChange = {
-                        vm.updateExtraKey(index, it)
-                    })
-                StandardSpacer()
-
-                // Value
-                TextField(
-                    modifier = Modifier.weight(1f),
-                    placeholder = { Text(text = LocalI18N.current["ui.common.extras.v"]) },
-                    value = extra.value,
-                    onValueChange = {
-                        vm.updateExtraValue(index, it)
-                    })
-                StandardSpacer()
-
-                // Type.
-                Box(modifier = Modifier.weight(1f)) {
-                    val typeDropdownState = rememberDropdownSelectorState()
-
-                    DropdownSelector(
-                        state = typeDropdownState,
-                        items = AndroidIntentExtraType.values()
-                            .filter { it != AndroidIntentExtraType.UNRECOGNIZED }.map {
-                                DropdownItem(
-                                    labelLines = listOf(it.name),
-                                    data = it
-                                )
-                            }
-                    ) {
-                        vm.updateExtraType(index, it.data)
-                    }
-
-                    FilledTonalButton(onClick = {
-                        typeDropdownState.open()
-                    }) {
-                        Row(verticalAlignment = CenterVertically) {
-                            Text(text = extra.type.name)
-                            StandardSpacer()
-                            RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
-                        }
-                    }
-                }
+            val editExtraState = rememberIntentExtraEditDialogState(extra.key) {
+                vm.updateExtra(index, it)
             }
+            IntentExtraEditDialog(editExtraState)
+            ListItem(titleLines = listOf(extra.key, extra.value, extra.type.name), action1 = {
+                IconButton(onClick = {
+                    vm.removeExtra(extra)
+                }) {
+                    RemixIcon(Remix.System.close_fill)
+                }
+            }, onClick = {
+                editExtraState.show(extra)
+            })
         }
         StandardSpacer()
 
+        val addExtraState = rememberIntentExtraEditDialogState(LocalI18N.current["ui.common.add"]) {
+            vm.addExtra(it)
+        }
+        IntentExtraEditDialog(addExtraState)
         // Add extra
         Button(onClick = {
-            vm.newExtra()
+            addExtraState.show(
+                AndroidIntentExtra.newBuilder().setType(AndroidIntentExtraType.String).build()
+            )
         }) {
             Text(text = LocalI18N.current["ui.common.add"])
         }
