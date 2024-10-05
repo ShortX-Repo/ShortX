@@ -234,7 +234,10 @@ class StatusBarClipView(
                         if (isAppIcon) {
                             AppImageIcon(app = clipState.icon, modifier = iconModifier)
                         } else {
-                            RemixIcon(remixName = clipState.icon, modifier = iconModifier)
+                            RemixIcon(
+                                remixName = clipState.icon.removePrefix("remix://"),
+                                modifier = iconModifier
+                            )
                         }
                     }
                     if (clipState.text.isNotEmpty()) {
