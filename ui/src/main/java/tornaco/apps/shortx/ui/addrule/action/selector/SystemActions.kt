@@ -41,7 +41,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.QSTileSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.VibratePatternSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.WifiSSIDSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberBrightnessValueSelectorState
-import tornaco.apps.shortx.ui.addrule.fact.selector.rememberKeyEventAndLongPressSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberKeyEventWithOptionsSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberOnOffAnyStateSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberQSTileSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberVibratePatternSelectorState
@@ -100,8 +100,14 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     TextInputDialog(state = writeClipboardSelectorDialogState)
 
     val injectKeyCodeSelectorState =
-        rememberKeyEventAndLongPressSelectorState(selected = { code, isLongPress ->
-            addAction(Action.InjectKeyCode(code = code, longpress = isLongPress))
+        rememberKeyEventWithOptionsSelectorState(selected = { code, options ->
+            addAction(
+                Action.InjectKeyCode(
+                    code = code,
+                    longpress = options.isLongPress,
+                    doublepress = options.isDoublePress
+                )
+            )
         })
     KeyEventSelector(injectKeyCodeSelectorState)
 

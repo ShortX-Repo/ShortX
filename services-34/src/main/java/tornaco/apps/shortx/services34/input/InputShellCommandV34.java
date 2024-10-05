@@ -53,6 +53,7 @@ import android.os.ShellCommand;
 import android.os.SystemClock;
 import android.util.ArrayMap;
 import android.util.IntArray;
+import android.util.Log;
 import android.util.Pair;
 import android.view.InputDevice;
 import android.view.InputEvent;
@@ -438,6 +439,7 @@ public class InputShellCommandV34 extends ShellCommand {
                     "keyevent args should only contain either durationMs or longPress");
         }
         if (longPress) {
+            Log.d("TORNACO", "longPress");
             durationMs = ViewConfiguration.getLongPressTimeout();
         }
 
@@ -451,6 +453,7 @@ public class InputShellCommandV34 extends ShellCommand {
             final int keyCode = KeyEvent.keyCodeFromString(arg);
             sendKeyEvent(inputSource, keyCode, durationMs, displayId, async);
             if (doubleTap) {
+                Log.d("TORNACO", "doubleTap");
                 sleep(ViewConfiguration.getDoubleTapMinTime());
                 sendKeyEvent(inputSource, keyCode, durationMs, displayId, async);
             }

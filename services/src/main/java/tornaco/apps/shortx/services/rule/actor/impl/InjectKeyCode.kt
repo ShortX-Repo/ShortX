@@ -19,13 +19,15 @@ object InjectKeyCode : Actor {
         val data =
             action unpack_ tornaco.apps.shortx.core.proto.action.InjectKeyCode::class.java
         val keyCode = data.keyCode
-        injectKey(keyCode, data.longpress)
+        injectKey(keyCode, data.longpress, data.doublepress)
     }
 
-    fun injectKey(keyCode: Int, longpress: Boolean = false) {
+    fun injectKey(keyCode: Int, longpress: Boolean = false, doublepress: Boolean = false) {
         runCatching {
             val command = if (longpress) {
                 "keyevent --longpress $keyCode"
+            } else if (doublepress) {
+                "keyevent --doubletap $keyCode"
             } else {
                 "keyevent $keyCode"
             }

@@ -27,24 +27,33 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 
-class KeyEventSelectorState(val canSelectLongPress: Boolean, val selected: (Int, Boolean) -> Unit) :
+data class KeyEventOptions(
+    val isLongPress: Boolean,
+    val isDoublePress: Boolean
+)
+
+class KeyEventSelectorState(
+    val showOptions: Boolean,
+    val selected: (Int, KeyEventOptions) -> Unit
+) :
     CommonDialogState() {
     var isLongPress by mutableStateOf(false)
+    var isDoublePress by mutableStateOf(false)
 }
 
 @Composable
 fun rememberKeyEventSelectorState(selected: (Int) -> Unit): KeyEventSelectorState {
     return remember {
-        KeyEventSelectorState(false) { code, _ ->
+        KeyEventSelectorState(showOptions = false) { code, _ ->
             selected(code)
         }
     }
 }
 
 @Composable
-fun rememberKeyEventAndLongPressSelectorState(selected: (Int, Boolean) -> Unit): KeyEventSelectorState {
+fun rememberKeyEventWithOptionsSelectorState(selected: (Int, KeyEventOptions) -> Unit): KeyEventSelectorState {
     return remember {
-        KeyEventSelectorState(true, selected)
+        KeyEventSelectorState(showOptions = true, selected = selected)
     }
 }
 
@@ -63,7 +72,10 @@ fun KeyEventSelector(state: KeyEventSelectorState) {
                 onSelected = {
                     val code = it.toIntOrNull()
                     if (code != null) {
-                        state.selected(code, state.isLongPress)
+                        state.selected(
+                            code,
+                            KeyEventOptions(state.isLongPress, state.isDoublePress)
+                        )
                         state.dismiss()
                     }
                 }
@@ -98,12 +110,15 @@ fun KeyEventSelector(state: KeyEventSelectorState) {
                             if (key.keyCode == KeyEvent.KEYCODE_UNKNOWN) {
                                 customKeyCodeDialogState.show()
                             } else {
-                                state.selected(key.keyCode, state.isLongPress)
+                                state.selected(
+                                    key.keyCode,
+                                    KeyEventOptions(state.isLongPress, state.isDoublePress)
+                                )
                                 state.dismiss()
                             }
                         })
                 }
-                if (state.canSelectLongPress) {
+                if (state.showOptions) {
                     StandardSpacer()
                     Row(
                         modifier = Modifier
@@ -117,6 +132,25 @@ fun KeyEventSelector(state: KeyEventSelectorState) {
                             checked = state.isLongPress,
                             onCheckedChange = {
                                 state.isLongPress = it
+                                state.isDoublePress = false
+                            }
+                        )
+                    }
+
+                    StandardSpacer()
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = LocalI18N.current["ui.fact.edge.gesture.doubletap"])
+                        LargeSpacer()
+                        Checkbox(
+                            checked = state.isDoublePress,
+                            onCheckedChange = {
+                                state.isDoublePress = it
+                                state.isLongPress = false
                             }
                         )
                     }
