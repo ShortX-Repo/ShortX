@@ -61,6 +61,15 @@ object StatusBarManagerServiceFuncs {
         )
     }
 
+    fun showGlobalActionsMenu() {
+        // void showGlobalActionsMenu()
+        val internal = getInternalService()
+        Reflections.callMethod(
+            internal,
+            "showGlobalActionsMenu"
+        )
+    }
+
     private fun getInternalService(): Any {
         val sbms = requireNotNull(ServiceHolder.statusBarManagerService) {
             "statusBarManagerService is missing."

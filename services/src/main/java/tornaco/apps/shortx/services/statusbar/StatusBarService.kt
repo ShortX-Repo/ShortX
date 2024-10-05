@@ -320,6 +320,11 @@ class StatusBarService(shortXContext: ShortXContext) :
         )
     }
 
+    fun showGlobalActionsMenu() {
+        logger.d("showGlobalActionsMenu")
+        StatusBarManagerServiceFuncs.showGlobalActionsMenu()
+    }
+
     private fun notifyStatusBarClipStateChanged(clipState: StatusBarClipState) {
         logger.logOnDebug("notifyStatusBarClipStateChanged: $clipState")
         synchronized(statusBarClipStateListeners) {

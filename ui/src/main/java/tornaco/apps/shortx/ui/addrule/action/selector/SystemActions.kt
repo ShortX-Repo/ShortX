@@ -508,6 +508,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.ShowGlobalActionsMenu::class -> {
+                addAction(Action.ShowGlobalActionsMenu())
+                true
+            }
+
             else -> false
         }
     }
@@ -529,6 +534,7 @@ fun SystemActions(
         Action.InjectKeyCode::class,
         Action.InjectCombineKeyCode::class,
         Action.ShowRecentApps::class,
+        Action.ShowGlobalActionsMenu::class,
         Action.MediaPlayback::class,
         Action.SetRingerMode::class,
         Action.AdjustVolume::class,

@@ -45,7 +45,9 @@ import tornaco.apps.shortx.core.proto.action.SetStatusBarIcon
 import tornaco.apps.shortx.core.proto.action.ShowClipboardView
 import tornaco.apps.shortx.core.proto.action.ShowDrawBoard
 import tornaco.apps.shortx.core.proto.action.ShowFloatWindow
+import tornaco.apps.shortx.core.proto.action.ShowGlobalActionsMenu
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
+import tornaco.apps.shortx.core.proto.action.ShowRecentApps
 import tornaco.apps.shortx.core.proto.action.ShowStatusBarChip
 import tornaco.apps.shortx.core.proto.action.StartGestureRecording
 import tornaco.apps.shortx.core.proto.action.StopAppByPkg
@@ -219,4 +221,6 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         SetStatusBarIcon::class,
         RemoveStatusBarIcon::class,
         ToggleSlot::class,
+        ShowRecentApps::class,
+        ShowGlobalActionsMenu::class,
     )
