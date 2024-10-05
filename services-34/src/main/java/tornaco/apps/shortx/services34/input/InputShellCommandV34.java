@@ -19,6 +19,7 @@ package tornaco.apps.shortx.services34.input;
 import static android.view.Display.DEFAULT_DISPLAY;
 import static android.view.Display.INVALID_DISPLAY;
 import static android.view.InputDevice.SOURCE_CLASS_POINTER;
+import static android.view.KeyEvent.FLAG_IS_ACCESSIBILITY_EVENT;
 import static android.view.KeyEvent.KEYCODE_ALT_LEFT;
 import static android.view.KeyEvent.KEYCODE_ALT_RIGHT;
 import static android.view.KeyEvent.KEYCODE_CTRL_LEFT;
@@ -68,11 +69,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
+import tornaco.apps.shortx.core.annotations.DoNotStrip;
+
 /**
  * Command that sends input events to the device.
  * https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/services/core/java/com/android/server/input/InputShellCommand.java
  */
-
+@DoNotStrip
 public class InputShellCommandV34 extends ShellCommand {
     private static final String INVALID_ARGUMENTS = "Error: Invalid arguments for command: ";
     private static final String INVALID_DISPLAY_ARGUMENTS =
@@ -87,6 +90,8 @@ public class InputShellCommandV34 extends ShellCommand {
     private static final int DEFAULT_EDGE_FLAGS = 0;
     private static final int DEFAULT_BUTTON_STATE = 0;
     private static final int DEFAULT_FLAGS = 0;
+    // Flag for RuleService to check if this event is injected.
+    private static final int DEFAULT_KEY_EVENT_FLAGS = FLAG_IS_ACCESSIBILITY_EVENT;
     private static final boolean INJECT_ASYNC = true;
     private static final boolean INJECT_SYNC = false;
 
@@ -150,6 +155,8 @@ public class InputShellCommandV34 extends ShellCommand {
         int injectMode = async
                 ? InputManager.INJECT_INPUT_EVENT_MODE_ASYNC
                 : InputManager.INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH;
+        int flags = event.getFlags() | DEFAULT_KEY_EVENT_FLAGS;
+        event.setFlags(flags);
         mInputEventInjector.accept(event, injectMode);
     }
 

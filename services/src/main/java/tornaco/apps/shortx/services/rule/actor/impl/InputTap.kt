@@ -4,6 +4,7 @@ import com.google.protobuf.Message
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.powerManager
+import tornaco.apps.shortx.services.input.InputShellCommand
 import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
@@ -25,8 +26,13 @@ object InputTap : Actor {
         val x = data.xs.ifBlank { data.x.toString() }.compileContextAndVars(cv).trim().toInt()
         val y = data.ys.ifBlank { data.y.toString() }.compileContextAndVars(cv).trim().toInt()
 
-        shortXContext.wm.withUiAutomation("InputTap") {
-            it.click(x, y)
+        runCatching {
+            InputShellCommand.onCommandOrThrow("tap $x $y")
+        }.onFailure { err ->
+            logger.d("onCommandOrThrow error: ${err.stackTraceToString()}")
+            shortXContext.wm.withUiAutomation("InputTap") {
+                it.click(x, y)
+            }
         }
     }
 }

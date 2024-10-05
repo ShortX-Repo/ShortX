@@ -376,6 +376,9 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
             // Check if it accessibility service.
             if ((it.flags and android.view.KeyEvent.FLAG_IS_ACCESSIBILITY_EVENT) != 0) {
+                if (BuildPropInternal.APP_IS_DEBUG) {
+                    logger.d("FLAG_IS_ACCESSIBILITY_EVENT event: $it")
+                }
                 return@onKeyEvent null
             }
 

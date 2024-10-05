@@ -4,6 +4,7 @@ import com.google.protobuf.Message
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.powerManager
+import tornaco.apps.shortx.services.input.InputShellCommand
 import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
@@ -36,9 +37,14 @@ object InputSwipe : Actor {
             data.swipeTimeS.ifBlank { data.swipeTime.toString() }.compileContextAndVars(cv).trim()
                 .toLongOrNull() ?: 500
 
-
-        shortXContext.wm.withUiAutomation("InputSwipe") {
-            it.swipe(startX, startY, endX, endY, swipeTime)
+        runCatching {
+            // swipe <x1> <y1> <x2> <y2> [duration(ms)]
+            InputShellCommand.onCommandOrThrow("swipe $startX $startY $endX $endY $swipeTime")
+        }.onFailure { err ->
+            logger.d("onCommandOrThrow error: ${err.stackTraceToString()}")
+            shortXContext.wm.withUiAutomation("InputSwipe") {
+                it.swipe(startX, startY, endX, endY, swipeTime)
+            }
         }
     }
 }

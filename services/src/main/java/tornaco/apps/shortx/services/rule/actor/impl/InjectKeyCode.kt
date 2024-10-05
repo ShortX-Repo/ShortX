@@ -20,6 +20,10 @@ object InjectKeyCode : Actor {
             action unpack_ tornaco.apps.shortx.core.proto.action.InjectKeyCode::class.java
         val keyCode = data.keyCode
 
+        injectKey(keyCode)
+    }
+
+    fun injectKey(keyCode: Int) {
         runCatching {
             InputShellCommand.onCommandOrThrow("keyevent $keyCode")
         }.onFailure {

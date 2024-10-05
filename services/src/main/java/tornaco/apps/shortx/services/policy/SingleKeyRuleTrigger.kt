@@ -14,11 +14,10 @@ import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext
-import tornaco.apps.shortx.services.ctrl.Device
 import tornaco.apps.shortx.services.input.IMSFunc
 import tornaco.apps.shortx.services.policy.SingleKeyGestureDetector.SingleKeyRule
 import tornaco.apps.shortx.services.rule.RuleService
-import tornaco.apps.shortx.services.rule.actor.impl.device
+import tornaco.apps.shortx.services.rule.actor.impl.InjectKeyCode
 import tornaco.apps.shortx.services.rule.fact.trigger.Trigger
 
 
@@ -194,10 +193,7 @@ private class SingleKeyRuleImpl(
                 )
             )
         } else if (interceptMode) {
-            device.pressReleaseKeycode(
-                keycode,
-                Device.INJECT_MODE_ASYNC
-            )
+            InjectKeyCode.injectKey(keycode)
         }
     }
 
