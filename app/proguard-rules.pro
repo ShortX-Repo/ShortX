@@ -191,6 +191,7 @@
 -dontwarn android.app.ITaskStackListener
 -dontwarn android.app.TaskStackListener
 -dontwarn android.hardware.input.InputManagerGlobal
+-dontwarn com.android.internal.os.BaseCommand
 
 # Inroduced by a lib update, not sure if it 55d1baecdbfe02c40a147d696d8a805f43906890
 -dontwarn java.beans.BeanDescriptor
