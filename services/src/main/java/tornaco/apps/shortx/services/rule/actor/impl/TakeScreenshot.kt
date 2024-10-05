@@ -2,7 +2,6 @@ package tornaco.apps.shortx.services.rule.actor.impl
 
 import android.view.KeyEvent
 import com.google.protobuf.Message
-import kotlinx.coroutines.delay
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 
@@ -13,19 +12,7 @@ object TakeScreenshot : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
-        ctrl.injectKeycode(
-            KeyEvent.ACTION_DOWN,
-            KeyEvent.KEYCODE_SYSRQ,
-            0,
-            0,
-        )
-        delay(100)
-        ctrl.injectKeycode(
-            KeyEvent.ACTION_UP,
-            KeyEvent.KEYCODE_SYSRQ,
-            0,
-            0,
-        )
+    ) {
+        InjectKeyCode.injectKey(KeyEvent.KEYCODE_SYSRQ)
     }
 }

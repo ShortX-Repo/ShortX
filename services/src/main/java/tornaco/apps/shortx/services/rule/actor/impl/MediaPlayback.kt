@@ -58,10 +58,6 @@ object MediaPlayback : Actor {
         }
 
         logger.d("MediaPlaybackAction -> keyCode: $keyCode")
-
-        device.pressReleaseKeycode(
-            keyCode,
-            Device.INJECT_MODE_ASYNC
-        )
+        InjectKeyCode.injectKey(keyCode)
     }
 }

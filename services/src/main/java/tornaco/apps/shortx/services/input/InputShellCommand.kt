@@ -24,6 +24,7 @@ object InputShellCommand {
 
     fun onCommandOrThrow(cmd: String) {
         val args = cmd.split(" ").toTypedArray()
+        logger.d("Args: ${args.joinToString()}")
         when (Build.VERSION.SDK_INT) {
             28 -> {
                 logger.d("Input with InputShellCommandV28")

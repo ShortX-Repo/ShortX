@@ -19,13 +19,17 @@ object InjectKeyCode : Actor {
         val data =
             action unpack_ tornaco.apps.shortx.core.proto.action.InjectKeyCode::class.java
         val keyCode = data.keyCode
-
-        injectKey(keyCode)
+        injectKey(keyCode, data.longpress)
     }
 
-    fun injectKey(keyCode: Int) {
+    fun injectKey(keyCode: Int, longpress: Boolean = false) {
         runCatching {
-            InputShellCommand.onCommandOrThrow("keyevent $keyCode")
+            val command = if (longpress) {
+                "keyevent --longpress $keyCode"
+            } else {
+                "keyevent $keyCode"
+            }
+            InputShellCommand.onCommandOrThrow(command)
         }.onFailure {
             logger.d("onCommandOrThrow error: ${it.stackTraceToString()}")
             // Not work on LineageOS 21.0. why?
