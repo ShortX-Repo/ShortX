@@ -90,12 +90,28 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
 
     val pref by lazy { Pref(context) }
 
-    val actionContentStateHandler = ActionContentStateHandler()
+    val actionContentStateHandler = ActionContentStateHandler(
+        parameterInputsProvider = {
+            state.value.parameters
+        }
+    )
 
     // Hooks
-    val actionOnEnabledStateHandler = ActionContentStateHandler()
-    val actionOnDisabledStateHandler = ActionContentStateHandler()
-    val actionOnDeletedStateHandler = ActionContentStateHandler()
+    val actionOnEnabledStateHandler = ActionContentStateHandler(
+        parameterInputsProvider = {
+            state.value.parameters
+        }
+    )
+    val actionOnDisabledStateHandler = ActionContentStateHandler(
+        parameterInputsProvider = {
+            state.value.parameters
+        }
+    )
+    val actionOnDeletedStateHandler = ActionContentStateHandler(
+        parameterInputsProvider = {
+            state.value.parameters
+        }
+    )
 
     val conditionContentStateHandler = ConditionContentStateHandler()
 
@@ -103,7 +119,11 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
 
     val quitFactContentStateHandler = FactContentStateHandler()
     val quitConditionContentStateHandler = ConditionContentStateHandler()
-    val quitActionStateHandler = ActionContentStateHandler()
+    val quitActionStateHandler = ActionContentStateHandler(
+        parameterInputsProvider = {
+            state.value.parameters
+        }
+    )
 
     private val actionEvaluateListener = object : IActionEvaluateListener.Stub() {
         override fun onStart(id: String) {

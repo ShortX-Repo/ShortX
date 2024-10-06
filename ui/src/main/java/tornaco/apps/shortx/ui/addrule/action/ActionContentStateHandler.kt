@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addrule.action
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.da.DirectAction
+import tornaco.apps.shortx.core.proto.func.FuncParameter
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.pack_
@@ -129,7 +130,8 @@ fun ActionContentStateHandler.asActionHandler(name: String = "unnamed"): ActionH
 
 class ActionContentStateHandler(
     private val withState: WithStateImpl<ActionContentState> = WithStateImpl { ActionContentState() },
-    private val onActionsChanged: (List<Action>) -> Unit = {}
+    private val onActionsChanged: (List<Action>) -> Unit = {},
+    private val parameterInputsProvider: () -> List<FuncParameter> = { emptyList() }
 ) : WithState<ActionContentState> by withState {
     private val shortXManager = tornaco.apps.shortx.core.shortXManager
     private val logger = Logger("ActionContentStateHandler")
@@ -251,10 +253,16 @@ class ActionContentStateHandler(
                 .setSrcEvent(ContextSrcEvent.ContextSrc_ExecuteOnDAEditor)
                 .setSrcTitle("Testing")
                 .build()
-            shortXManager.executeAction(
-                context = evaluateContext,
-                action = action.toProtoAction().pack_()
-            )
+
+            val da = DirectAction.newBuilder()
+                .setId("Tmp-${Date()}")
+                .setLastUpdateTime(System.currentTimeMillis())
+                .setTitle("Testing")
+                .addAllActions(listOf(action.toProtoAction().pack_()))
+                .addAllParameters(parameterInputsProvider.invoke())
+                .build()
+
+            shortXManager.executeDirectionAction(context = evaluateContext, da = da)
         }
     }
 
@@ -269,6 +277,7 @@ class ActionContentStateHandler(
                 .setLastUpdateTime(System.currentTimeMillis())
                 .setTitle("Testing")
                 .addAllActions(protoActions)
+                .addAllParameters(parameterInputsProvider.invoke())
                 .build()
 
             val evaluateContext = EvaluateContext.newBuilder()

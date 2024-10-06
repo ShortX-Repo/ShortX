@@ -85,21 +85,30 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
         context,
         { AddDirectActionState() }) {
 
-    val actionContentStateHandler = ActionContentStateHandler(onActionsChanged = { actionList ->
-        // Generate default DA title.
-        if (state.value.title.isEmpty()) {
-            val genTitle = actionList.firstOrNull()?.let {
-                labelAndDescriptionForActionSelector(i18N, it::class)
+    val actionContentStateHandler = ActionContentStateHandler(
+        onActionsChanged = { actionList ->
+            // Generate default DA title.
+            if (state.value.title.isEmpty()) {
+                val genTitle = actionList.firstOrNull()?.let {
+                    labelAndDescriptionForActionSelector(i18N, it::class)
+                }
+                genTitle?.let {
+                    setTitle(genTitle.first)
+                }
             }
-            genTitle?.let {
-                setTitle(genTitle.first)
-            }
+        },
+        parameterInputsProvider = {
+            state.value.parameters
         }
-    })
+    )
 
     val quitFactContentStateHandler = FactContentStateHandler()
     val quitConditionContentStateHandler = ConditionContentStateHandler()
-    val quitActionStateHandler = ActionContentStateHandler()
+    val quitActionStateHandler = ActionContentStateHandler(
+        parameterInputsProvider = {
+            state.value.parameters
+        }
+    )
 
     val pref by lazy { Pref(context) }
 
