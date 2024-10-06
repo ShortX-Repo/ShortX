@@ -63,7 +63,8 @@ object SwitchCase : Actor {
                         condOpPayload = case.caseCondOpPayload,
                         conditions = case.caseList,
                         contextData = contextData,
-                        localVars = localVars
+                        localVars = localVars,
+                        parameterInputs = parameterInputs
                     )
 
                 logger.d("SwitchCase, case, matchCond: $matchCond")

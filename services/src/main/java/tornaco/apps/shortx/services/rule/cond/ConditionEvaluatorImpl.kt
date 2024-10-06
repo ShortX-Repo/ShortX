@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
+import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
@@ -36,7 +37,8 @@ class ConditionEvaluatorImpl(
         evaluateContext: EvaluateContext,
         condition: ProtoAny,
         contextData: ContextData,
-        localVars: LocalVars
+        localVars: LocalVars,
+        parameterInputs: List<FuncParameterInput>
     ): ConditionEvaluator.EvaluateResult {
         val cond = prebuiltCondFor(condition)
         logger.d("evaluate, cond for ${condition.typeUrl}: $cond")
@@ -57,12 +59,13 @@ class ConditionEvaluatorImpl(
             val matchRes =
                 cond.evaluate(
                     Cond.CondParam(
-                        context,
-                        shortXContext,
-                        evaluateContext,
-                        condition,
-                        contextData,
-                        localVars
+                        context = context,
+                        shortXContext = shortXContext,
+                        evaluateContext = evaluateContext,
+                        condition = condition,
+                        contextData = contextData,
+                        localVars = localVars,
+                        parameterInputs = parameterInputs
                     )
                 )
             ConditionEvaluator.EvaluateResult.Success(
@@ -85,7 +88,8 @@ class ConditionEvaluatorImpl(
         condOpPayload: ConditionOperatorPayload,
         conditions: List<ProtoAny>,
         contextData: ContextData,
-        localVars: LocalVars
+        localVars: LocalVars,
+        parameterInputs: List<FuncParameterInput>
     ): Boolean {
         logger.d("evaluate, conditions: ${conditions.size}")
         val ecs = conditions.filter { condition ->
@@ -106,15 +110,39 @@ class ConditionEvaluatorImpl(
         logger.d("evaluate condition: ${evaluateContext.srcTitle} $condOp enabled condition size: ${ecs.size}, context: $contextData")
         return when (condOp) {
             ConditionOperator.ALL -> {
-                ecs.all { evaluate(evaluateContext, it, contextData, localVars).isMatch() }
+                ecs.all {
+                    evaluate(
+                        evaluateContext,
+                        it,
+                        contextData,
+                        localVars,
+                        parameterInputs
+                    ).isMatch()
+                }
             }
 
             ConditionOperator.ANY -> {
-                ecs.any { evaluate(evaluateContext, it, contextData, localVars).isMatch() }
+                ecs.any {
+                    evaluate(
+                        evaluateContext,
+                        it,
+                        contextData,
+                        localVars,
+                        parameterInputs
+                    ).isMatch()
+                }
             }
 
             ConditionOperator.NONE -> {
-                ecs.none { evaluate(evaluateContext, it, contextData, localVars).isMatch() }
+                ecs.none {
+                    evaluate(
+                        evaluateContext,
+                        it,
+                        contextData,
+                        localVars,
+                        parameterInputs
+                    ).isMatch()
+                }
             }
 
             ConditionOperator.MVEL -> {
@@ -130,7 +158,8 @@ class ConditionEvaluatorImpl(
                         eva = this,
                         condition = ecs[index],
                         contextData = contextData,
-                        localVars = localVars
+                        localVars = localVars,
+                        parameterInputs = parameterInputs
                     )
                     expressionTranslation =
                         expressionTranslation.replace(codeName, "$codeName.call()")
@@ -140,8 +169,9 @@ class ConditionEvaluatorImpl(
                 runCatching {
                     val res =
                         MVELExecutor(context, shortXContext, expressionTranslation).invoke(
-                            varMap,
-                            null
+                            vars = varMap,
+                            localVars = localVars,
+                            parameterInputs = parameterInputs
                         )
                     logger.d("evaluate rule condition MVEL: $expressionTranslation, result: $res")
                     val matchRes = res.toString().toBooleanStrictOrNull() ?: false
@@ -172,7 +202,15 @@ class ConditionEvaluatorImpl(
             }
 
             else -> {
-                ecs.all { evaluate(evaluateContext, it, contextData, localVars).isMatch() }
+                ecs.all {
+                    evaluate(
+                        evaluateContext,
+                        it,
+                        contextData,
+                        localVars,
+                        parameterInputs
+                    ).isMatch()
+                }
             }
         }
     }

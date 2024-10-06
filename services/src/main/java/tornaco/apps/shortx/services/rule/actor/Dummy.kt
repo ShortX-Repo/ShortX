@@ -5,6 +5,7 @@ import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
+import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
@@ -33,7 +34,8 @@ fun dummyHandlerParamsForAction(
                 evaluateContext: EvaluateContext,
                 condition: ProtoAny,
                 contextData: ContextData,
-                localVars: LocalVars
+                localVars: LocalVars,
+                parameterInputs: List<FuncParameterInput>
             ): ConditionEvaluator.EvaluateResult {
                 TODO("Dummy")
             }
@@ -44,7 +46,8 @@ fun dummyHandlerParamsForAction(
                 condOpPayload: ConditionOperatorPayload,
                 conditions: List<ProtoAny>,
                 contextData: ContextData,
-                localVars: LocalVars
+                localVars: LocalVars,
+                parameterInputs: List<FuncParameterInput>
             ): Boolean {
                 TODO("Dummy")
             }

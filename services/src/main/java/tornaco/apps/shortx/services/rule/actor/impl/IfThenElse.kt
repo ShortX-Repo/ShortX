@@ -26,7 +26,8 @@ object IfThenElse : Actor {
                 condOpPayload = d.ifCondOpPayload,
                 conditions = d.ifList,
                 contextData = contextData,
-                localVars = localVars
+                localVars = localVars,
+                parameterInputs = parameterInputs
             )
         logger.d("IfThenElse, matchCond: $matchCond")
         if (matchCond) {

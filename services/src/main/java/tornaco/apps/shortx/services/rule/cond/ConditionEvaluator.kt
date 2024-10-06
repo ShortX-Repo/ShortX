@@ -4,6 +4,7 @@ import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
+import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.ProtoAny
 
@@ -12,7 +13,8 @@ interface ConditionEvaluator {
         evaluateContext: EvaluateContext,
         condition: ProtoAny,
         contextData: ContextData,
-        localVars: LocalVars
+        localVars: LocalVars,
+        parameterInputs: List<FuncParameterInput>
     ): EvaluateResult
 
     suspend fun evaluate(
@@ -21,7 +23,8 @@ interface ConditionEvaluator {
         condOpPayload: ConditionOperatorPayload,
         conditions: List<ProtoAny>,
         contextData: ContextData,
-        localVars: LocalVars
+        localVars: LocalVars,
+        parameterInputs: List<FuncParameterInput>
     ): Boolean
 
     sealed interface EvaluateResult {

@@ -4,6 +4,8 @@ import android.content.Context
 import org.mvel2.MVEL
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.logOnDebug
+import tornaco.apps.shortx.core.proto.func.FuncParameterInput
+import tornaco.apps.shortx.core.rule.FUNC_PARAM_REF_PREFIX
 import tornaco.apps.shortx.core.rule.GLOBAL_VAR_REF_PREFIX
 import tornaco.apps.shortx.core.rule.LOCAL_VAR_REF_PREFIX
 import tornaco.apps.shortx.core.rule.isList
@@ -20,7 +22,11 @@ class MVELExecutor(
 ) {
     private val logger = Logger("MVELExecutor")
 
-    operator fun invoke(vars: Map<String, Any?> = emptyMap(), localVars: LocalVars?): Any? {
+    operator fun invoke(
+        vars: Map<String, Any?> = emptyMap(),
+        localVars: LocalVars?,
+        parameterInputs: List<FuncParameterInput>
+    ): Any? {
         val varsMap: Map<String, Any?> = mutableMapOf<String, Any?>().apply {
             put("context", context)
             putAll(vars)
@@ -38,7 +44,7 @@ class MVELExecutor(
             }
 
             localVars?.all?.forEach {
-                logger.d("localVar: $it")
+                logger.logOnDebug("localVar: $it")
                 put(
                     LOCAL_VAR_REF_PREFIX + it.name,
                     if (it.isList()) {
@@ -46,6 +52,14 @@ class MVELExecutor(
                     } else {
                         it.valueString()
                     }
+                )
+            }
+
+            parameterInputs.forEach {
+                logger.logOnDebug("parameterInput: $it")
+                put(
+                    FUNC_PARAM_REF_PREFIX + it.name,
+                    it.value
                 )
             }
         }

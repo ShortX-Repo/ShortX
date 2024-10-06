@@ -59,7 +59,11 @@ object RuleInstanceIdGenerator {
                     }
                 }).apply {
                     logger.d("RuleInstanceIdGenerator_MVEL, inflated expression: $this")
-                }).invoke(vars = contextData.map, localVars = LocalVars.obtain())
+                }).invoke(
+                vars = contextData.map,
+                localVars = LocalVars.obtain(),
+                parameterInputs = emptyList()
+            )
             return res.toString()
         }
 
@@ -67,11 +71,12 @@ object RuleInstanceIdGenerator {
             val d = this unpack_ RuleInstanceIdGenerator_JS::class.java
             val resString =
                 ExecuteJS.executeJS(
-                    context,
-                    shortXContext,
-                    contextData,
-                    LocalVars.obtain(),
-                    d.expression
+                    androidContext = context,
+                    shortXContext = shortXContext,
+                    contextData = contextData,
+                    localVars = LocalVars.obtain(),
+                    parameterInputs = emptyList(),
+                    rawExpression = d.expression
                 )
             MatchJS.logger.d("RuleInstanceIdGenerator_JS, resString: $resString")
             return resString

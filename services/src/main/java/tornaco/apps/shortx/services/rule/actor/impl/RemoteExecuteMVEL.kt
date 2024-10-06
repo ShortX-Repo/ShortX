@@ -25,12 +25,17 @@ object RemoteExecuteMVEL : Actor {
             params.androidContext,
             params.shortXContext,
             d.expression
-        ).invoke(params.contextData.map, params.localVars).apply {
-            params.contextData.add(
-                d.customContextDataKey.forKey(ContextDataMapping.ExecuteMVEL.mvelRet.name)
-                    .fallbackOnEmpty { ContextDataMapping.ExecuteMVEL.mvelRet.name },
-                this
-            )
-        }
+        ).invoke(
+            vars = params.contextData.map,
+            localVars = params.localVars,
+            parameterInputs = params.parameterInputs
+        )
+            .apply {
+                params.contextData.add(
+                    d.customContextDataKey.forKey(ContextDataMapping.ExecuteMVEL.mvelRet.name)
+                        .fallbackOnEmpty { ContextDataMapping.ExecuteMVEL.mvelRet.name },
+                    this
+                )
+            }
     }
 }

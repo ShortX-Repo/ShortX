@@ -10,6 +10,8 @@ import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.localvar.LocalVars
+import tornaco.apps.shortx.core.proto.func.FuncParameterInput
+import tornaco.apps.shortx.core.rule.FUNC_PARAM_REF_PREFIX
 import tornaco.apps.shortx.core.rule.GLOBAL_VAR_REF_PREFIX
 import tornaco.apps.shortx.core.rule.LOCAL_VAR_REF_PREFIX
 import tornaco.apps.shortx.core.rule.isList
@@ -38,11 +40,12 @@ object ExecuteJS : Actor {
         val d = params.action unpack_ tornaco.apps.shortx.core.proto.action.ExecuteJS::class.java
 
         val res = executeJS(
-            params.androidContext,
-            params.shortXContext,
-            params.contextData,
-            params.localVars,
-            d.expression
+            androidContext = params.androidContext,
+            shortXContext = params.shortXContext,
+            contextData = params.contextData,
+            localVars = params.localVars,
+            parameterInputs = params.parameterInputs,
+            rawExpression = d.expression
         )
 
         params.contextData.add(
@@ -57,6 +60,7 @@ object ExecuteJS : Actor {
         shortXContext: ShortXContext,
         contextData: ContextData,
         localVars: LocalVars,
+        parameterInputs: List<FuncParameterInput>,
         rawExpression: String,
     ): String {
         val rhinoContext = rhinoAndroidHelper.enterContext()
@@ -90,6 +94,13 @@ object ExecuteJS : Actor {
                 } else {
                     it.valueString()
                 }
+            )
+        }
+        parameterInputs.forEach {
+            ScriptableObject.putConstProperty(
+                scope,
+                FUNC_PARAM_REF_PREFIX + it.name,
+                it.value
             )
         }
 

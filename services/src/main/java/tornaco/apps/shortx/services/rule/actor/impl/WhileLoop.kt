@@ -36,7 +36,8 @@ object WhileLoop : Actor {
                         condOpPayload = d.condOpPayload,
                         conditions = d.conditionsList,
                         contextData = contextData,
-                        localVars = localVars
+                        localVars = localVars,
+                        parameterInputs = parameterInputs
                     ))
                 ) {
                     logger.d("WhileLoop inside: $index")

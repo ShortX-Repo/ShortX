@@ -17,7 +17,14 @@ object MatchJS : Cond {
             val js = condition unpack_ MatchJS::class.java
 
             val resString =
-                ExecuteJS.executeJS(context, shortXContext, contextData, localVars, js.expression)
+                ExecuteJS.executeJS(
+                    androidContext = context,
+                    shortXContext = shortXContext,
+                    contextData = contextData,
+                    localVars = localVars,
+                    parameterInputs = parameterInputs,
+                    rawExpression = js.expression
+                )
             val retValue = resString.trim().toBoolean()
             logger.d("resString: $resString retValue: $retValue")
 

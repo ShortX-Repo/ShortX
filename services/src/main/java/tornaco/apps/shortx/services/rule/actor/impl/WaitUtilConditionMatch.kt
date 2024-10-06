@@ -39,7 +39,8 @@ object WaitUtilConditionMatch : Actor {
                 condOpPayload = d.condOpPayload,
                 conditions = d.conditionList,
                 contextData = contextData,
-                localVars = localVars
+                localVars = localVars,
+                parameterInputs = parameterInputs
             )
         }
 
@@ -53,12 +54,13 @@ object WaitUtilConditionMatch : Actor {
                 logger.d("WaitUtilConditionMatch, fact: $fact match: $factMatch")
                 if (factMatch.isMatch) {
                     val condRes = d.quitConditionList.isNotEmpty() || conditionEvaluator.evaluate(
-                        evaluateContext,
-                        d.quitConditionOp,
-                        d.quitCondOpPayload,
-                        d.quitConditionList,
-                        contextData,
-                        localVars
+                        evaluateContext = evaluateContext,
+                        condOp = d.quitConditionOp,
+                        condOpPayload = d.quitCondOpPayload,
+                        conditions = d.quitConditionList,
+                        contextData = contextData,
+                        localVars = localVars,
+                        parameterInputs = parameterInputs
                     )
                     logger.d("WaitUtilConditionMatch, condition match: $condRes")
                     if (condRes) {

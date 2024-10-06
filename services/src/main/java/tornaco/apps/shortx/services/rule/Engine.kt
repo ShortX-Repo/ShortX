@@ -183,7 +183,8 @@ class DefaultRuleEngine(
                                 condOpPayload = rule.condOpPayload,
                                 conditions = rule.conditionsList,
                                 contextData = ContextData.obtain(),
-                                localVars = LocalVars.obtain()
+                                localVars = LocalVars.obtain(),
+                                parameterInputs = emptyList()
                             )
                         }
                     } ?: defaultCondRes(rule))
@@ -204,7 +205,8 @@ class DefaultRuleEngine(
                                 condOpPayload = rule.quit.condOpPayload,
                                 conditions = rule.quit.conditionsList,
                                 contextData = ContextData.obtain(),
-                                localVars = LocalVars.obtain()
+                                localVars = LocalVars.obtain(),
+                                parameterInputs = emptyList()
                             )
                         }
                     } ?: defaultCondRes(rule))
@@ -225,7 +227,8 @@ class DefaultRuleEngine(
                                 condOpPayload = da.quit.condOpPayload,
                                 conditions = da.quit.conditionsList,
                                 contextData = ContextData.obtain(),
-                                localVars = LocalVars.obtain()
+                                localVars = LocalVars.obtain(),
+                                parameterInputs = emptyList()
                             )
                         }
                     } ?: defaultDACondRes(da))
@@ -324,6 +327,8 @@ class DefaultRuleEngine(
                         .build()
 
                     val job = coroutineScope.launchSafety {
+                        val parameterInputs =
+                            rule.parametersList.map { it.asDefaultInput() }
                         // Launch Start
                         withContext(Dispatchers.IO) {
                             // Match condition
@@ -338,7 +343,8 @@ class DefaultRuleEngine(
                                     conditions = rule.conditionsList,
                                     contextData = contextData,
                                     // No local var for a Rule condition.
-                                    localVars = LocalVars.obtain()
+                                    localVars = LocalVars.obtain(),
+                                    parameterInputs = parameterInputs
                                 )
                             }
 
@@ -349,8 +355,6 @@ class DefaultRuleEngine(
                                 updateTheXXTimeToday(shortXContext, rule.conditionsList)
 
                                 val localVars = LocalVars.obtain()
-                                val parameterInputs =
-                                    rule.parametersList.map { it.asDefaultInput() }
                                 runActionsJob(
                                     ruleTitleForLog = rule.title,
                                     asyncMode = rule.asyncMode,
@@ -441,6 +445,8 @@ class DefaultRuleEngine(
                         coroutineScope.launchSafety {
                             // Launch start
                             withContext(Dispatchers.IO) {
+                                val parameterInputs =
+                                    rule.parametersList.map { it.asDefaultInput() }
                                 val conditionRes = if (quit.conditionsList.isEmpty()) {
                                     logger.d("$LOG_TAG_RULE_QUIT quit for rule: ${rule.title} has no condition, assume match!")
                                     true
@@ -452,7 +458,8 @@ class DefaultRuleEngine(
                                         conditions = quit.conditionsList,
                                         contextData = contextData,
                                         // No local var for a Rule condition.
-                                        localVars = LocalVars.obtain()
+                                        localVars = LocalVars.obtain(),
+                                        parameterInputs = parameterInputs
                                     )
                                 }
                                 logger.d("$LOG_TAG_RULE_QUIT conditionRes for  ${fact.javaClass} ${rule.title} is: $conditionRes")
@@ -466,8 +473,6 @@ class DefaultRuleEngine(
 
                                     updateTheXXTimeToday(shortXContext, quit.conditionsList)
 
-                                    val parameterInputs =
-                                        rule.parametersList.map { it.asDefaultInput() }
                                     runActionsJob(
                                         ruleTitleForLog = "$LOG_TAG_RULE_QUIT-${rule.title}",
                                         asyncMode = rule.asyncMode,
@@ -491,91 +496,92 @@ class DefaultRuleEngine(
         das.filterHasQuit()
             .filterIsActive()
             .forEach { da ->
-            logger.d("fire, check da quit: ${fact.javaClass} ${da.title}")
+                logger.d("fire, check da quit: ${fact.javaClass} ${da.title}")
 
-            val quit = da.quit
+                val quit = da.quit
 
-            if (quit.isEnabled) {
-                val quitFactMatcherResult = factMatcher.match(fact, quit.factsList)
-                logger.d("quitFactMatcherResult: $quitFactMatcherResult")
-                if (quitFactMatcherResult.isMatch) {
-                    logger.d("$LOG_TAG_RULE_QUIT fire, da-quit matched: ${fact.javaClass} ${da.title}")
-                    anyMatch = true
+                if (quit.isEnabled) {
+                    val quitFactMatcherResult = factMatcher.match(fact, quit.factsList)
+                    logger.d("quitFactMatcherResult: $quitFactMatcherResult")
+                    if (quitFactMatcherResult.isMatch) {
+                        logger.d("$LOG_TAG_RULE_QUIT fire, da-quit matched: ${fact.javaClass} ${da.title}")
+                        anyMatch = true
 
-                    val contextData = ContextData.obtain(initialContextDataLazy())
-                    if (quitFactMatcherResult is FactMatcher.MatcherResult.Match) {
-                        contextData.add(
-                            GenericContextData.CONTEXT_FACT_TAG,
-                            quitFactMatcherResult.factTag
-                        )
-                    }
-                    val evaluateContext = EvaluateContext.newBuilder()
-                        .setSrcId(da.id)
-                        .setSrcEvent(ContextSrcEvent.ContextSrc_DirectActionQuit)
-                        .setSrcTitle(da.title)
-                        .setSerialNumber(nextEvaluateContextSerialNumber())
-                        .build()
-                    val localVars = LocalVars.obtain()
-
-                    // Rule Instance ID
-                    val ruleInsIdGen: ProtoAny =
-                        RuleInstanceIdGenerator_Static.newBuilder().setInsId(da.id)
+                        val contextData = ContextData.obtain(initialContextDataLazy())
+                        if (quitFactMatcherResult is FactMatcher.MatcherResult.Match) {
+                            contextData.add(
+                                GenericContextData.CONTEXT_FACT_TAG,
+                                quitFactMatcherResult.factTag
+                            )
+                        }
+                        val evaluateContext = EvaluateContext.newBuilder()
+                            .setSrcId(da.id)
+                            .setSrcEvent(ContextSrcEvent.ContextSrc_DirectActionQuit)
+                            .setSrcTitle(da.title)
+                            .setSerialNumber(nextEvaluateContextSerialNumber())
                             .build()
-                            .pack_()
-                    logger.d("quit, ruleInsIdGen: $ruleInsIdGen")
-                    val ruleInstanceId = with(RuleInstanceIdGenerator) {
-                        ruleInsIdGen.generate(androidContext, shortXContext, contextData)
-                    } ?: "FALLBACK_${da.id}"
-                    logger.d("quit, ruleInstanceId: $ruleInstanceId")
+                        val localVars = LocalVars.obtain()
 
-                    coroutineScope.launchSafety {
-                        // Launch start
-                        withContext(Dispatchers.IO) {
-                            val conditionRes = if (quit.conditionsList.isEmpty()) {
-                                logger.d("$LOG_TAG_RULE_QUIT quit for da: ${da.title} has no condition, assume match!")
-                                true
-                            } else {
-                                conditionEvaluator.evaluate(
-                                    evaluateContext = evaluateContext,
-                                    condOp = quit.condOp,
-                                    condOpPayload = quit.condOpPayload,
-                                    conditions = quit.conditionsList,
-                                    contextData = contextData,
-                                    // No local var for a Rule condition.
-                                    localVars = LocalVars.obtain()
-                                )
-                            }
-                            logger.d("$LOG_TAG_RULE_QUIT conditionRes for  ${fact.javaClass} ${da.title} is: $conditionRes")
-                            if (conditionRes) {
-                                logger.d("$LOG_TAG_RULE_QUIT about to quit ${da.title}")
+                        // Rule Instance ID
+                        val ruleInsIdGen: ProtoAny =
+                            RuleInstanceIdGenerator_Static.newBuilder().setInsId(da.id)
+                                .build()
+                                .pack_()
+                        logger.d("quit, ruleInsIdGen: $ruleInsIdGen")
+                        val ruleInstanceId = with(RuleInstanceIdGenerator) {
+                            ruleInsIdGen.generate(androidContext, shortXContext, contextData)
+                        } ?: "FALLBACK_${da.id}"
+                        logger.d("quit, ruleInstanceId: $ruleInstanceId")
 
-                                // DO NOT cancel ourself...
-                                cancelJobs("Rule quit(退出指令)") {
-                                    it.srcId == da.id && it.instanceId == ruleInstanceId
-                                }
-
-                                updateTheXXTimeToday(shortXContext, quit.conditionsList)
-
+                        coroutineScope.launchSafety {
+                            // Launch start
+                            withContext(Dispatchers.IO) {
                                 val parameterInputs =
                                     da.parametersList.map { it.asDefaultInput() }
-                                runActionsJob(
-                                    ruleTitleForLog = "$LOG_TAG_RULE_QUIT-${da.title}",
-                                    asyncMode = da.asyncMode,
-                                    muteX = da.muteX,
-                                    actionsToRun = quit.actionsList,
-                                    evaluateContext = evaluateContext,
-                                    contextData = contextData,
-                                    localVars = localVars,
-                                    parameterInputs = parameterInputs
-                                )
+                                val conditionRes = if (quit.conditionsList.isEmpty()) {
+                                    logger.d("$LOG_TAG_RULE_QUIT quit for da: ${da.title} has no condition, assume match!")
+                                    true
+                                } else {
+                                    conditionEvaluator.evaluate(
+                                        evaluateContext = evaluateContext,
+                                        condOp = quit.condOp,
+                                        condOpPayload = quit.condOpPayload,
+                                        conditions = quit.conditionsList,
+                                        contextData = contextData,
+                                        // No local var for a DA quit condition.
+                                        localVars = LocalVars.obtain(),
+                                        parameterInputs = parameterInputs
+                                    )
+                                }
+                                logger.d("$LOG_TAG_RULE_QUIT conditionRes for  ${fact.javaClass} ${da.title} is: $conditionRes")
+                                if (conditionRes) {
+                                    logger.d("$LOG_TAG_RULE_QUIT about to quit ${da.title}")
+
+                                    // DO NOT cancel ourself...
+                                    cancelJobs("Rule quit(退出指令)") {
+                                        it.srcId == da.id && it.instanceId == ruleInstanceId
+                                    }
+
+                                    updateTheXXTimeToday(shortXContext, quit.conditionsList)
+
+                                    runActionsJob(
+                                        ruleTitleForLog = "$LOG_TAG_RULE_QUIT-${da.title}",
+                                        asyncMode = da.asyncMode,
+                                        muteX = da.muteX,
+                                        actionsToRun = quit.actionsList,
+                                        evaluateContext = evaluateContext,
+                                        contextData = contextData,
+                                        localVars = localVars,
+                                        parameterInputs = parameterInputs
+                                    )
+                                }
+                                // Launch End
                             }
-                            // Launch End
                         }
                     }
                 }
-            }
 
-        }
+            }
 
         return anyMatch
     }
@@ -741,12 +747,13 @@ class DefaultRuleEngine(
     ): Boolean {
         return runBlocking {
             conditionEvaluator.evaluate(
-                context,
-                condOp,
-                condOpPayload,
-                conditions,
-                ContextData.obtain(initialContextData),
-                localVars = LocalVars.obtain()
+                evaluateContext = context,
+                condOp = condOp,
+                condOpPayload = condOpPayload,
+                conditions = conditions,
+                contextData = ContextData.obtain(initialContextData),
+                localVars = LocalVars.obtain(),
+                parameterInputs = emptyList()
             )
         }
     }
