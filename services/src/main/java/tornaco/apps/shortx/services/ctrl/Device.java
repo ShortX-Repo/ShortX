@@ -14,6 +14,7 @@ import android.view.KeyEvent;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import tornaco.apps.shortx.core.annotations.DoNotStrip;
+import tornaco.apps.shortx.core.input.InternalInputFlags;
 import tornaco.apps.shortx.services.ctrl.wrappers.ClipboardManager;
 import tornaco.apps.shortx.services.ctrl.wrappers.InputManager;
 import tornaco.apps.shortx.services.ctrl.wrappers.ServiceManager;
@@ -175,7 +176,7 @@ public final class Device {
                 action, keyCode, repeat, metaState,
                 KeyCharacterMap.ALPHA,
                 0,
-                KeyEvent.FLAG_IS_ACCESSIBILITY_EVENT,
+                InternalInputFlags.FLAG_SHORTX_INJECTION,
                 InputDevice.SOURCE_KEYBOARD);
         return injectEvent(event, displayId, injectMode);
     }

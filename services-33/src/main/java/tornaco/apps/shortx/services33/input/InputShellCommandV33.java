@@ -18,7 +18,6 @@ package tornaco.apps.shortx.services33.input;
 
 import static android.view.Display.DEFAULT_DISPLAY;
 import static android.view.Display.INVALID_DISPLAY;
-import static android.view.KeyEvent.FLAG_IS_ACCESSIBILITY_EVENT;
 import static android.view.KeyEvent.KEYCODE_ALT_LEFT;
 import static android.view.KeyEvent.KEYCODE_ALT_RIGHT;
 import static android.view.KeyEvent.KEYCODE_CTRL_LEFT;
@@ -57,6 +56,7 @@ import java.io.PrintWriter;
 import java.util.Map;
 
 import tornaco.apps.shortx.core.annotations.DoNotStrip;
+import tornaco.apps.shortx.core.input.InternalInputFlags;
 
 /**
  * Command that sends input events to the device.
@@ -79,7 +79,7 @@ public class InputShellCommandV33 extends ShellCommand {
     private static final int DEFAULT_BUTTON_STATE = 0;
     private static final int DEFAULT_FLAGS = 0;
     // Flag for RuleService to check if this event is injected.
-    private static final int DEFAULT_KEY_EVENT_FLAGS = FLAG_IS_ACCESSIBILITY_EVENT;
+    private static final int DEFAULT_KEY_EVENT_FLAGS = InternalInputFlags.FLAG_SHORTX_INJECTION;
 
     /**
      * Modifier key to meta state

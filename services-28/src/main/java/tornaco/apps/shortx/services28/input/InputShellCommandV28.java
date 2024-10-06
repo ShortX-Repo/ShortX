@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import tornaco.apps.shortx.core.annotations.DoNotStrip;
+import tornaco.apps.shortx.core.input.InternalInputFlags;
 
 /**
  * Command that sends key events to the device, either by their keycode, or by
@@ -39,9 +40,7 @@ public class InputShellCommandV28 {
     private static final String INVALID_ARGUMENTS = "Error: Invalid arguments for command: ";
     private static final int INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH = 2;
 
-    // Flag for RuleService to check if this event is injected.
-    private static final int FLAG_IS_ACCESSIBILITY_EVENT = 2048;
-    private static final int DEFAULT_KEY_EVENT_FLAGS = FLAG_IS_ACCESSIBILITY_EVENT;
+    private static final int DEFAULT_KEY_EVENT_FLAGS = InternalInputFlags.FLAG_SHORTX_INJECTION;
 
     private static final Map<String, Integer> SOURCES = new HashMap<String, Integer>() {{
         put("keyboard", InputDevice.SOURCE_KEYBOARD);

@@ -5,6 +5,7 @@ import android.view.Display
 import android.view.InputChannel
 import android.view.InputEvent
 import android.view.KeyEvent
+import tornaco.apps.shortx.core.input.InternalInputFlags.FLAG_SHORTX_INJECTION
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.android.ServiceHolder
@@ -142,7 +143,7 @@ object IMSFunc {
             if (event is KeyEvent) {
                 KeyEvent.changeFlags(
                     event,
-                    event.flags or KeyEvent.FLAG_IS_ACCESSIBILITY_EVENT
+                    event.flags or FLAG_SHORTX_INJECTION
                 )
             } else {
                 event

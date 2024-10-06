@@ -21,6 +21,7 @@ import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.RuleEngineNames
 import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.input.InternalInputFlags.FLAG_SHORTX_INJECTION
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.os.CancellationSignal
@@ -375,9 +376,9 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             }
 
             // Check if it accessibility service.
-            if ((it.flags and android.view.KeyEvent.FLAG_IS_ACCESSIBILITY_EVENT) != 0) {
+            if ((it.flags and FLAG_SHORTX_INJECTION) != 0) {
                 if (BuildPropInternal.APP_IS_DEBUG) {
-                    logger.d("FLAG_IS_ACCESSIBILITY_EVENT event: $it")
+                    logger.d("InternalInputFlags.FLAG_SHORTX_INJECTION event: $it")
                 }
                 return@onKeyEvent null
             }
