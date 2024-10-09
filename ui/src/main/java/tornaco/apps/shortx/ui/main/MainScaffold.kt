@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.Badge
@@ -81,6 +82,7 @@ import tornaco.apps.shortx.ui.base.SearchBarState
 import tornaco.apps.shortx.ui.base.ShortXAlertDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.TextFieldStyle
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.UserTip
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
@@ -228,15 +230,23 @@ fun MainScaffold(
                 AnimateExpand(
                     expanded = showSearch,
                     expandedContent = {
-                        SearchBar(
-                            searchBarState = searchBarState,
-                            autoFocus = true,
-                            modifier = Modifier
-                                .systemBarsPadding()
-                                .padding(horizontal = 16.dp)
-                                .padding(top = 16.dp)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(top = 16.dp)
                         ) {
-                            showSearch = false
+                            IconButton(onClick = { showSearch = false }) {
+                                Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowBack)
+                            }
+                            SearchBar(
+                                searchBarState = searchBarState,
+                                autoFocus = true,
+                                textFieldStyle = TextFieldStyle.Filled,
+                                modifier = Modifier
+                                    .systemBarsPadding()
+                                    .padding(horizontal = 16.dp)
+                            ) {
+                                showSearch = false
+                            }
                         }
                     },
                     unExpandedContent = {
