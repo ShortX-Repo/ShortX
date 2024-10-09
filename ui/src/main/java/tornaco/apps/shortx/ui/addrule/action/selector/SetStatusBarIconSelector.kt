@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
@@ -73,7 +74,7 @@ private fun SetStatusBarIconSelectorActivity.SetStatusBarIconSelector(currentAct
                         IconButton(onClick = {
                             setResultAndFinish(
                                 Action.SetStatusBarIcon(
-                                    slot = state.slot,
+                                    slot = state.slot.fallbackOnEmpty { "ShortX" },
                                     icon = state.icon
                                 )
                             )

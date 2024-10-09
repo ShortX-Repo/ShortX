@@ -10,7 +10,7 @@ import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import javax.inject.Inject
 
 data class SetStatusBarIconSelectorState(
-    val slot: String = "",
+    val slot: String = "ShortX",
     val icon: String = Remix.Animals.dog,
 )
 
