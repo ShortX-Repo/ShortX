@@ -37,6 +37,7 @@ import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
 class ComposeOverlay(
     context: Context,
     private val action: ShowOverlayButton,
+    private val contextData: Map<String, String>,
     private val localVars: LocalVars,
     private val parameters: List<FuncParameterInput>,
     private val initialPos: Pair<Int, Int>,
@@ -155,6 +156,7 @@ class ComposeOverlay(
                         OverlayContent(
                             action = action,
                             localVars = localVars,
+                            contextData = contextData,
                             parameters = parameters,
                             dragHandleMotionEvent = {
                                 touchListener.onTouch(

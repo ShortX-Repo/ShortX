@@ -82,6 +82,7 @@ class OverlayService(shortXContext: ShortXContext) :
     fun postShowOverlay(
         evaluateContext: EvaluateContext,
         localVars: LocalVars,
+        contextData: Map<String, String>,
         parameters: List<FuncParameterInput>,
         action: ShowOverlayButton
     ) = mainHandler.postSafety {
@@ -103,6 +104,7 @@ class OverlayService(shortXContext: ShortXContext) :
             context = context,
             action = action,
             localVars = localVars,
+            contextData = contextData,
             parameters = parameters,
             initialPos = posX to posY,
             onPosChange = { x, y ->

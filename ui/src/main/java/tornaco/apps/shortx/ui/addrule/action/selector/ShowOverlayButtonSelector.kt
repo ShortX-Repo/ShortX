@@ -326,6 +326,7 @@ private fun Content(
         OverlayContent(
             action = action.value as ShowOverlayButton,
             localVars = LocalVars.obtain(),
+            contextData = emptyMap(),
             parameters = emptyList(),
             onButtonClick = {},
             onButtonLongClick = {},

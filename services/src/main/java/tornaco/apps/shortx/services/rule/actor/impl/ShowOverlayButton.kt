@@ -22,6 +22,7 @@ object ShowOverlayButton : Actor {
             shortXContext.overlay.postShowOverlay(
                 evaluateContext,
                 localVars,
+                contextData.map.mapValues { it.value.toString() },
                 parameterInputs,
                 ShowOverlayButton.newBuilder(d).apply {
                     if (d.tag.isBlank()) {

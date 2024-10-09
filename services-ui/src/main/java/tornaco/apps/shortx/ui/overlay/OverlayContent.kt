@@ -115,6 +115,7 @@ private class ExpandState(
 fun OverlayContent(
     action: ShowOverlayButton,
     localVars: LocalVars,
+    contextData: Map<String, String>,
     parameters: List<FuncParameterInput>,
     onButtonClick: (OverlayButtonSetting) -> Unit,
     onButtonLongClick: (OverlayButtonSetting) -> Unit,
@@ -123,8 +124,8 @@ fun OverlayContent(
     dragHandleMotionEvent: (MotionEvent) -> Unit
 ) {
     val vm = viewModel<OverlayViewModel>()
-    LaunchedEffect(action, localVars, parameters) {
-        vm.init(action, localVars, parameters)
+    LaunchedEffect(action, localVars, contextData, parameters) {
+        vm.init(action, localVars, contextData, parameters)
     }
     val state by vm.state.collectAsState()
 
