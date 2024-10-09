@@ -821,35 +821,33 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         parameterInputs: List<FuncParameterInput>
     ) {
         getDirectActionById(id)?.let { directAction ->
-            executeActions(
-                context = context,
-                actions = directAction.actionsList,
-                parameterInputs = parameterInputs.toMutableList().apply {
-                    val addParams = directAction.parametersList
-                        .filterNot { param ->
-                            any { input -> param.name == input.name }
-                        }
-                        .map {
-                            it.asDefaultInput()
-                        }
-                    logger.d("addParams: ${addParams.map { it.toLogString() }}")
-                    addAll(addParams)
-                },
-                conflictStrategy = directAction.conflictPolicy
-            )
+            executeDirectAction(context, directAction, parameterInputs)
         }
     }
 
-    fun executeDirectionAction(
+    fun executeDirectAction(
         context: EvaluateContext,
-        directAction: DirectAction
+        directAction: DirectAction,
+        parameterInputs: List<FuncParameterInput> = emptyList(),
+        initialContextData: Map<String, Any> = emptyMap(),
+        localVars: LocalVars = LocalVars.obtain(),
     ) {
         executeActions(
             context = context,
             actions = directAction.actionsList,
-            parameterInputs = directAction.parametersList.map {
-                it.asDefaultInput()
+            parameterInputs = parameterInputs.toMutableList().apply {
+                val addParams = directAction.parametersList
+                    .filterNot { param ->
+                        any { input -> param.name == input.name }
+                    }
+                    .map {
+                        it.asDefaultInput()
+                    }
+                logger.d("addParams: ${addParams.map { it.toLogString() }}")
+                addAll(addParams)
             },
+            initialContextData = initialContextData,
+            localVars = localVars,
             conflictStrategy = directAction.conflictPolicy
         )
     }

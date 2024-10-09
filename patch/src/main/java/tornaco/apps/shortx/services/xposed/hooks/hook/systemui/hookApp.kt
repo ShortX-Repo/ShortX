@@ -5,16 +5,17 @@ import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IShortX
+import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.notification.INotificationPoster
 import tornaco.apps.shortx.core.notification.NotificationPoster
+import tornaco.apps.shortx.core.notification.handleButtonClick
+import tornaco.apps.shortx.core.notification.handleNotificationClick
 import tornaco.apps.shortx.core.platform.ClassNames.SYSTEM_UI_APP
 import tornaco.apps.shortx.core.platform.Methods.onCreate
 import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.proto.fact.MethodHookLifecycle
-import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
-import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.res.PicassoInitializer
 import tornaco.apps.shortx.core.res.Remix
@@ -69,31 +70,11 @@ fun SystemUIHook.hookApp(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runC
                 getBitmap = {
                     appRes.getBitmap(it)
                 },
-                onButtonClick = { button ->
-                    button.actionList.forEach {
-                        val evaluateContext = EvaluateContext.newBuilder()
-                            .setSrcId("Notification button")
-                            .setSrcEvent(ContextSrcEvent.ContextSrc_Rule)
-                            .setSrcTitle(button.label)
-                            .build()
-                        shortx.executeAction(
-                            ByteArrayWrapper(evaluateContext.toByteArray()),
-                            ByteArrayWrapper(it.toByteArray())
-                        )
-                    }
+                onButtonClick = { postN, buttonId ->
+                    handleButtonClick(postN, buttonId, ShortXManager(shortx))
                 },
                 onPostNotificationClick = { post ->
-                    post.clickActionList.forEach {
-                        val evaluateContext = EvaluateContext.newBuilder()
-                            .setSrcId("Notification")
-                            .setSrcEvent(ContextSrcEvent.ContextSrc_Rule)
-                            .setSrcTitle(post.title)
-                            .build()
-                        shortx.executeAction(
-                            ByteArrayWrapper(evaluateContext.toByteArray()),
-                            ByteArrayWrapper(it.toByteArray())
-                        )
-                    }
+                    handleNotificationClick(post, ShortXManager(shortx))
                 }
             )
         }

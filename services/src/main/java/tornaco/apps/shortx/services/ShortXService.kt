@@ -45,6 +45,7 @@ import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AudioRecordFile
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.common.GestureRecord
+import tornaco.apps.shortx.core.proto.common.RemoteRuleContextAndVars
 import tornaco.apps.shortx.core.proto.common.StatusBarClipUiSettings
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.common.StringPair
@@ -245,6 +246,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         }
 
         override fun addRule(rule: ByteArrayWrapper) {
+            enforceCallingPermissions()
             v(context) {
                 shortXContext.rule.addOrUpdateRule(Rule.parseFrom(rule.byteData))
             }
@@ -384,17 +386,6 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                 context = EvaluateContext.parseFrom(evaluateContext.byteData),
                 id = id,
                 parameterInputs = emptyList()
-            )
-        }
-
-        override fun executeDirectionAction(
-            evaluateContext: ByteArrayWrapper,
-            da: ByteArrayWrapper
-        ) {
-            enforceCallingPermissions()
-            shortXContext.rule.executeDirectionAction(
-                context = EvaluateContext.parseFrom(evaluateContext.byteData),
-                directAction = DirectAction.parseFrom(da.byteData)
             )
         }
 
@@ -949,12 +940,37 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             )
         }
 
-        override fun executeAction(evaluateContext: ByteArrayWrapper, action: ByteArrayWrapper) {
+        override fun executeAction(
+            evaluateContext: ByteArrayWrapper,
+            action: ByteArrayWrapper,
+            contextAndVars: ByteArrayWrapper,
+        ) {
             enforceCallingPermissions()
+            val cv = RemoteRuleContextAndVars.parseFrom(contextAndVars.byteData)
             shortXContext.rule.executeActions(
                 context = EvaluateContext.parseFrom(evaluateContext.byteData),
                 actions = listOf(ProtoAny.parseFrom(action.byteData)),
+                localVars = LocalVars.obtain().apply { addAll(cv.localVarList) },
+                parameterInputs = cv.funcParameterList,
+                initialContextData = cv.contextDataList.associate { it.first to it.second },
                 conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth
+            )
+        }
+
+        override fun executeDirectionAction(
+            evaluateContext: ByteArrayWrapper,
+            da: ByteArrayWrapper,
+            contextAndVars: ByteArrayWrapper,
+        ) {
+            enforceCallingPermissions()
+            val cv = RemoteRuleContextAndVars.parseFrom(contextAndVars.byteData)
+            val directAction = DirectAction.parseFrom(da.byteData)
+            shortXContext.rule.executeDirectAction(
+                context = EvaluateContext.parseFrom(evaluateContext.byteData),
+                directAction = directAction,
+                localVars = LocalVars.obtain().apply { addAll(cv.localVarList) },
+                parameterInputs = cv.funcParameterList,
+                initialContextData = cv.contextDataList.associate { it.first to it.second },
             )
         }
 

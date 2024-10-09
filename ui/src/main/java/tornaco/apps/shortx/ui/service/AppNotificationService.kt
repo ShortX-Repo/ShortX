@@ -7,9 +7,9 @@ import android.os.IBinder
 import androidx.annotation.Keep
 import tornaco.apps.shortx.core.notification.INotificationPoster
 import tornaco.apps.shortx.core.notification.NotificationPoster
+import tornaco.apps.shortx.core.notification.handleButtonClick
+import tornaco.apps.shortx.core.notification.handleNotificationClick
 import tornaco.apps.shortx.core.proto.action.PostNotification
-import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
-import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.res.remixResId
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.shortXManager
@@ -17,7 +17,7 @@ import tornaco.apps.shortx.core.util.BitmapUtils
 
 @Keep
 class AppNotificationService : Service() {
-    private val shortx by lazy { shortXManager.service }
+    private val shortx by lazy { shortXManager }
 
     val notificationPoster by lazy {
         NotificationPoster(
@@ -32,31 +32,11 @@ class AppNotificationService : Service() {
             getBitmap = {
                 BitmapUtils.getBitmap(applicationContext, applicationContext.remixResId(it))
             },
-            onButtonClick = { button ->
-                button.actionList.forEach {
-                    val evaluateContext = EvaluateContext.newBuilder()
-                        .setSrcId("Notification button")
-                        .setSrcEvent(ContextSrcEvent.ContextSrc_Rule)
-                        .setSrcTitle(button.label)
-                        .build()
-                    shortx.executeAction(
-                        ByteArrayWrapper(evaluateContext.toByteArray()),
-                        ByteArrayWrapper(it.toByteArray())
-                    )
-                }
+            onButtonClick = { postN, buttonId ->
+                handleButtonClick(postN, buttonId, shortx)
             },
             onPostNotificationClick = { post ->
-                post.clickActionList.forEach {
-                    val evaluateContext = EvaluateContext.newBuilder()
-                        .setSrcId("Notification")
-                        .setSrcEvent(ContextSrcEvent.ContextSrc_Rule)
-                        .setSrcTitle(post.title)
-                        .build()
-                    shortx.executeAction(
-                        ByteArrayWrapper(evaluateContext.toByteArray()),
-                        ByteArrayWrapper(it.toByteArray())
-                    )
-                }
+                handleNotificationClick(post, shortx)
             }
         )
     }

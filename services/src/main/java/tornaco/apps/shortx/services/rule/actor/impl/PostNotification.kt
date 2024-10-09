@@ -8,6 +8,8 @@ import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.proto.common.AndroidIntentExtra
+import tornaco.apps.shortx.core.proto.common.RemoteRuleContextAndVars
+import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.rule.GLOBAL_VAR_REF_PREFIX
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
@@ -83,6 +85,16 @@ object PostNotification : Actor {
                     .addAllExtras(globalVarExtras)
                     .addExtras(
                         AndroidIntentExtra.newBuilder().setKey(PARAMS_ID).setValue(paramsId).build()
+                    )
+                    .setContextAndVars(
+                        RemoteRuleContextAndVars.newBuilder()
+                            .addAllLocalVar(localVars.all)
+                            .addAllContextData(contextData.map.map {
+                                StringPair.newBuilder().setFirst(it.key)
+                                    .setSecond(it.value.toString()).build()
+                            })
+                            .addAllFuncParameter(parameterInputs)
+                            .build()
                     )
                     .build()
             shortXContext.notification.post(inflatedN)
