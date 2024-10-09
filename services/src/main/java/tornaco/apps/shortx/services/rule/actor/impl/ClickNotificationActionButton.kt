@@ -3,7 +3,11 @@ package tornaco.apps.shortx.services.rule.actor.impl
 import com.google.protobuf.Message
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.proto.action.NotificationButton
+import tornaco.apps.shortx.core.proto.fact.Notification
+import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 
@@ -19,7 +23,16 @@ object ClickNotificationActionButton : Actor {
         withContext(Dispatchers.Main) {
             val d =
                 action unpack_ tornaco.apps.shortx.core.proto.action.ClickNotificationActionButton::class.java
-            shortXContext.notification.clickNotificationButton(d.notification, d.button)
+            val cv = RuleContextAndVars(params)
+            val n = Notification.newBuilder(d.notification)
+                .setTitle(d.notification.title.compileContextAndVars(cv))
+                .setContentText(d.notification.contentText.compileContextAndVars(cv))
+                .setTag(d.notification.tag.compileContextAndVars(cv))
+                .build()
+            val btn = NotificationButton.newBuilder(d.button)
+                .setLabel(d.button.label.compileContextAndVars(cv))
+                .build()
+            shortXContext.notification.clickNotificationButton(n, btn)
         }
     }
 }
