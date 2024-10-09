@@ -2,6 +2,7 @@
 
 package tornaco.apps.shortx.ui.addrule.action.selector
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,21 +22,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import tornaco.apps.shortx.core.proto.action.DialogMenuItem
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.ActionHandler
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
+import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
+import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
@@ -83,14 +85,7 @@ private fun ShowMenuDialogSelectorActivity.ShowMenuDialogSelector(currentData: A
                                 title = dialogState.title,
                                 message = dialogState.message,
                                 cancelable = dialogState.cancelable,
-                                items = dialogState.items.map { uiItem ->
-                                    DialogMenuItem.newBuilder()
-                                        .setTitle(uiItem.title)
-                                        .addAllClickActions(uiItem.actionHandler.actions.map {
-                                            it.toProtoAction().pack_()
-                                        })
-                                        .build()
-                                }
+                                items = dialogState.items.toProtoItems()
                             )
                         )
                     }) {
@@ -100,55 +95,78 @@ private fun ShowMenuDialogSelectorActivity.ShowMenuDialogSelector(currentData: A
                 },
             )
         }) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-                .padding(paddingValues)
-                .animateContentSize()
-                .verticalScroll(rememberScrollState())
-        ) {
-            ShortXTextField(
-                modifier = Modifier.fillMaxWidth(),
-                label = {
-                    Text(text = LocalI18N.current["ui.action.dialog.title"])
-                },
-                value = dialogState.title,
-                onValueChange = {
-                    vm.updateTitle(it)
-                })
-            StandardSpacer()
-            StandardSpacer()
-
-            Items(state = dialogState,
-                updateItemTitle = { string, int ->
-                    vm.updateItemTitle(string, int)
-                },
-                removeItem = {
-                    vm.removeItem(it)
-                }
-            )
-            StandardSpacer()
-
-            // Add icon
-            Button(onClick = {
-                vm.addButton()
-            }) {
-                Text(text = LocalI18N.current["ui.action.show.menu.dialog.item.add"])
-            }
-
-            SectionSpacer()
-
-            SwitchRow(
-                text = LocalI18N.current["ui.action.dialog.cancelable"],
-                isChecked = dialogState.cancelable
+        ClickOutsideClearFocusBox {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+                    .padding(paddingValues)
+                    .animateContentSize()
+                    .verticalScroll(rememberScrollState())
             ) {
-                vm.updateCancelable(it)
+                FieldTitle(text = LocalI18N.current["ui.action.dialog.title"])
+                MediumSpacer()
+                ShortXTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = dialogState.title,
+                    onValueChange = {
+                        vm.updateTitle(it)
+                    })
+                StandardSpacer()
+                StandardSpacer()
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val sortDialogState = rememberDialogMenuSortState(
+                        apply = {
+                            vm.applySort(it)
+                        })
+                    DialogMenuSortDialog(state = sortDialogState, menus = dialogState.items)
+
+                    FieldTitle(text = LocalI18N.current["ui.action.show.menu.dialog.item"])
+                    // Sort
+                    AnimatedVisibility(visible = dialogState.items.size > 1) {
+                        IconButton(onClick = {
+                            sortDialogState.show()
+                        }) {
+                            RemixIcon(Remix.Editor.sort_asc)
+                        }
+                    }
+                }
+                MediumSpacer()
+                Items(state = dialogState,
+                    updateItemTitle = { string, int ->
+                        vm.updateItemTitle(string, int)
+                    },
+                    removeItem = {
+                        vm.removeItem(it)
+                    }
+                )
+                StandardSpacer()
+
+                // Add icon
+                Button(onClick = {
+                    vm.addButton()
+                }) {
+                    Text(text = LocalI18N.current["ui.action.show.menu.dialog.item.add"])
+                }
+
+                SectionSpacer()
+
+                SwitchRow(
+                    text = LocalI18N.current["ui.action.dialog.cancelable"],
+                    isChecked = dialogState.cancelable
+                ) {
+                    vm.updateCancelable(it)
+                }
+
+                LargeSpacer()
+
+                SuggestedNavEntry()
             }
-
-            LargeSpacer()
-
-            SuggestedNavEntry()
         }
     }
 }

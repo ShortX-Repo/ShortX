@@ -5,10 +5,14 @@ import android.content.Context
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import tornaco.apps.shortx.core.IActionEvaluateListener
+import tornaco.apps.shortx.core.ShortXManager
+import tornaco.apps.shortx.core.proto.action.DialogMenuItem
+import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
+import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import javax.inject.Inject
 
@@ -25,6 +29,27 @@ data class ShowMenuDialogSelectorState(
     val items: List<MenuDialogUiItem> = emptyList(),
     val evaluatingActions: List<String> = emptyList()
 )
+
+fun List<MenuDialogUiItem>.toProtoItems(): List<DialogMenuItem> {
+    return map { uiItem ->
+        DialogMenuItem.newBuilder()
+            .setTitle(uiItem.title)
+            .addAllClickActions(uiItem.actionHandler.actions.map {
+                it.toProtoAction().pack_()
+            })
+            .build()
+    }
+}
+
+fun List<DialogMenuItem>.toUiItems(shortXManager: ShortXManager): List<MenuDialogUiItem> {
+    return map { dialogMenuItem ->
+        MenuDialogUiItem(dialogMenuItem.title, ActionContentStateHandler().apply {
+            init(dialogMenuItem.clickActionsList.mapNotNull {
+                it.toAction(shortXManager)
+            })
+        })
+    }
+}
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
@@ -62,13 +87,7 @@ class ShowMenuDialogSelectorViewModel @Inject constructor(@ApplicationContext co
                     title = settings.title,
                     message = settings.message,
                     cancelable = settings.cancelable,
-                    items = settings.items.map { dialogMenuItem ->
-                        MenuDialogUiItem(dialogMenuItem.title, ActionContentStateHandler().apply {
-                            init(dialogMenuItem.clickActionsList.mapNotNull {
-                                it.toAction(shortXManager = tornaco.apps.shortx.core.shortXManager)
-                            })
-                        })
-                    },
+                    items = settings.items.toUiItems(shortXManager)
                 )
             }
         }
@@ -134,6 +153,14 @@ class ShowMenuDialogSelectorViewModel @Inject constructor(@ApplicationContext co
                 items = this.items.toMutableList().apply {
                     add(MenuDialogUiItem("", ActionContentStateHandler()))
                 }
+            )
+        }
+    }
+
+    fun applySort(dialogMenuItems: List<DialogMenuItem>) {
+        updateState {
+            copy(
+                items = dialogMenuItems.toUiItems(shortXManager)
             )
         }
     }

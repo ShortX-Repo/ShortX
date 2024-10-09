@@ -14,10 +14,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -30,6 +28,7 @@ import org.burnoutcrew.reorderable.reorderable
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelLinesForAction
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -38,19 +37,8 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.theme.ErrorRed
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
-
-class ActionSortState(val actions: List<Action>, val applySorted: (List<Action>) -> Unit) {
-    private var _isShow by mutableStateOf(false)
-    val isShow get() = _isShow
-
-    fun show() {
-        _isShow = true
-    }
-
-    fun dismiss() {
-        _isShow = false
-    }
-}
+class ActionSortState(val actions: List<Action>, val applySorted: (List<Action>) -> Unit) :
+    CommonDialogState()
 
 @Composable
 fun rememberActionSortState(
@@ -64,7 +52,7 @@ fun rememberActionSortState(
 
 @Composable
 fun ActionSortDialog(state: ActionSortState) {
-    if (state.isShow) {
+    if (state.isShowing) {
         ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
             ActionSortDialogContent(state)
         }
