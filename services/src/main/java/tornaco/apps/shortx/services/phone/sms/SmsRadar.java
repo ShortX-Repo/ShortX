@@ -24,7 +24,7 @@ import tornaco.apps.shortx.core.util.Logger;
  * @author Manuel Peinado <mpeinado@tuenti.com>
  */
 public class SmsRadar {
-    static SmsListener smsListener = new SmsListener() {
+    public static SmsListener smsListener = new SmsListener() {
         @Override
         public void onSmsSent(Sms sms) {
             Logger.Companion.getNameless().w("onSmsSent: " + sms);
