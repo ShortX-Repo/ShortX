@@ -22,8 +22,6 @@ object ContextImplHook {
                 || param.args[0] == ManifestCompat.permission.CAPTURE_VOICE_COMMUNICATION_OUTPUT
                 || param.args[0] == ManifestCompat.permission.WRITE_SECURE_SETTINGS
                 || param.args[0] == Manifest.permission.READ_CLIPBOARD_IN_BACKGROUND
-                || param.args[0] == Manifest.permission.RECEIVE_SMS
-                || param.args[0] == Manifest.permission.READ_SMS
             ) {
                 if (result != PackageManager.PERMISSION_GRANTED && Binder.getCallingUid() == 1000) {
                     logger.i("${param.args[0]} denied, let's fix it.")
