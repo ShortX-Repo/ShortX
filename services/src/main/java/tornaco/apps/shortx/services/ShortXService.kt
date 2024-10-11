@@ -40,6 +40,7 @@ import tornaco.apps.shortx.core.notification.INotificationPoster
 import tornaco.apps.shortx.core.ocr.IOCR
 import tornaco.apps.shortx.core.os.ICancellationSignal
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
+import tornaco.apps.shortx.core.phone.ISMSProvider
 import tornaco.apps.shortx.core.proto.action.HttpRequest
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AudioRecordFile
@@ -595,6 +596,10 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun onStatusBarClipLongClick(id: String) {
             shortXContext.statusbar.onStatusBarClipLongClick(id)
+        }
+
+        override fun attachSMSProvider(provider: ISMSProvider) {
+            shortXContext.phone.attachSMSProvider(provider)
         }
 
         override fun attachSUImpl(from: String?, su: ISu?) {

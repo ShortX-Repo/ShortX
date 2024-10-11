@@ -43,6 +43,7 @@ class SmsCursorParser {
     private static final String BODY_COLUMN_NAME = "body";
     private static final String TYPE_COLUMN_NAME = "type";
     private static final String ID_COLUMN_NAME = "_id";
+    private static final String SUBID_COLUMN_NAME = "sub_id";
     private static final int SMS_MAX_AGE_MILLIS = 5000;
 
     private SmsStorage smsStorage;
@@ -105,9 +106,10 @@ class SmsCursorParser {
         String address = cursor.getString(cursor.getColumnIndex(ADDRESS_COLUMN_NAME));
         long id = cursor.getLong(cursor.getColumnIndex(ID_COLUMN_NAME));
         String date = cursor.getString(cursor.getColumnIndex(DATE_COLUMN_NAME));
+        String subId = cursor.getString(cursor.getColumnIndex(SUBID_COLUMN_NAME));
         String msg = cursor.getString(cursor.getColumnIndex(BODY_COLUMN_NAME));
         String type = cursor.getString(cursor.getColumnIndex(TYPE_COLUMN_NAME));
-        return new Sms(id, address, date, msg, SmsType.fromValue(Integer.parseInt(type)));
+        return new Sms(id, subId, address, date, msg, SmsType.fromValue(Integer.parseInt(type)));
     }
 
     private boolean canHandleCursor(Cursor cursor) {

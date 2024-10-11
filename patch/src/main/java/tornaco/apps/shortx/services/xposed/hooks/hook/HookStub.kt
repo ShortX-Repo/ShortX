@@ -21,6 +21,7 @@ object HookStub {
             SystemUIHook.hook(lpparam)
             MediaProviderHook.hook(lpparam)
             NFCServiceHook.hook(lpparam)
+            MMSHook.hook(lpparam)
 
             if (lpparam.packageName != PackageNames.systemUI) {
                 CustomHook.hookApp(

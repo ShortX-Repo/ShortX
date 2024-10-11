@@ -30,13 +30,15 @@ import java.util.Objects;
 public class Sms {
 
     private final long id;
+    private final String subId;
     private final String address;
     private final String date;
     private final String msg;
     private final SmsType type;
 
-    public Sms(long id, String address, String date, String msg, SmsType type) {
+    public Sms(long id, String subId, String address, String date, String msg, SmsType type) {
         this.id = id;
+        this.subId = subId;
         this.address = address;
         this.date = date;
         this.msg = msg;
@@ -45,6 +47,10 @@ public class Sms {
 
     public long getId() {
         return id;
+    }
+
+    public String getSubId() {
+        return subId;
     }
 
     public String getAddress() {
@@ -68,19 +74,19 @@ public class Sms {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Sms sms = (Sms) o;
-        return Objects.equals(id, sms.id) && Objects.equals(address, sms.address)
-                && Objects.equals(date, sms.date) && Objects.equals(msg, sms.msg) && type == sms.type;
+        return id == sms.id && Objects.equals(subId, sms.subId) && Objects.equals(address, sms.address) && Objects.equals(date, sms.date) && Objects.equals(msg, sms.msg) && type == sms.type;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, address, date, msg, type);
+        return Objects.hash(id, subId, address, date, msg, type);
     }
 
     @Override
     public String toString() {
         return "Sms{" +
                 "id=" + id +
+                ", subId='" + subId + '\'' +
                 ", address='" + address + '\'' +
                 ", date='" + date + '\'' +
                 ", msg='" + msg + '\'' +

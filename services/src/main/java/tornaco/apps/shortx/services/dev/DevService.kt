@@ -5,7 +5,6 @@ import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
-import tornaco.apps.shortx.services.phone.sms.MarkAsRead
 import tornaco.apps.shortx.services.phone.sms.Sms
 import tornaco.apps.shortx.services.phone.sms.SmsListener
 import tornaco.apps.shortx.services.phone.sms.SmsRadar
@@ -49,8 +48,11 @@ class DevService(shortXContext: ShortXContext) : SystemService(shortXContext, "D
                     }
                     systemServiceScope.launchSafety {
                         delay(3000)
-                        val markRes = MarkAsRead.markSmsAsRead(context, sms.id)
-                        logger.d("markRes: $markRes")
+                        kotlin.runCatching {
+                            shortXContext.phone.markSMSAsReadOrThrow(sms.id)
+                        }.onFailure {
+                            logger.e(it)
+                        }
                     }
                 }
             }

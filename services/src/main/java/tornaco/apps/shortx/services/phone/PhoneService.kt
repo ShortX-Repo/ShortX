@@ -6,18 +6,26 @@ import android.telephony.CellInfo
 import android.telephony.CellLocation
 import android.telephony.TelephonyCallback
 import com.google.protobuf.ByteString
+import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.INFCTagEndpointListener
 import tornaco.apps.shortx.core.logOnDebug
+import tornaco.apps.shortx.core.os.SynchronousResultReceiver
+import tornaco.apps.shortx.core.phone.ISMSProvider
+import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.fact.NFCTagDiscover
+import tornaco.apps.shortx.core.rule.action.emptyByteArrayWrapper
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.RemoteCallbackListExt
 import tornaco.apps.shortx.core.util.telephonyManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.runClearCallingIdentity
+import java.time.Duration
 
 
 class PhoneService(shortXContext: ShortXContext) : SystemService(shortXContext, "PhoneService") {
     private val nfcListeners = RemoteCallbackList<INFCTagEndpointListener>()
+    private val smsProviders = RemoteCallbackListExt<ISMSProvider>()
 
     override fun systemReady() {
         super.systemReady()
@@ -58,6 +66,25 @@ class PhoneService(shortXContext: ShortXContext) : SystemService(shortXContext, 
 
     fun unregisterNFCTagEndpointListener(listener: INFCTagEndpointListener) {
         nfcListeners.unregister(listener)
+    }
+
+    fun attachSMSProvider(provider: ISMSProvider) {
+        logger.w("attachSMSProvider: $provider")
+        smsProviders.register(provider)
+    }
+
+    fun markSMSAsReadOrThrow(smsId: Long) {
+        val itemCount = smsProviders.registeredCallbackCount
+        if (itemCount == 0) {
+            error("no registered smsProviders")
+        }
+        val first = smsProviders.getRegisteredCallbackItem(0)
+        val receiver = SynchronousResultReceiver.get()
+        first.markAsRead(smsId, receiver)
+        val result = runBlocking { receiver.awaitResultNoInterrupt(Duration.ofSeconds(5)) }
+        val pair = StringPair.parseFrom(result.getValue(emptyByteArrayWrapper)?.byteData)
+        val success = pair.second.toBoolean()
+        require(success) { "Not able to mark msg as read: ${pair.second}" }
     }
 
     @SuppressLint("NewApi")
