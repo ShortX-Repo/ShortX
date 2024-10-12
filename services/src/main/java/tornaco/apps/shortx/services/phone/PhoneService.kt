@@ -22,6 +22,8 @@ import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.runClearCallingIdentity
 import java.time.Duration
 
+private const val MISSING_SMS_PROVIDER_ERROR_MSG =
+    "No registered SMS providers. Please ensure 'PhoneProvider' scope is selected in Xposed."
 
 class PhoneService(shortXContext: ShortXContext) : SystemService(shortXContext, "PhoneService") {
     private val nfcListeners = RemoteCallbackList<INFCTagEndpointListener>()
@@ -74,17 +76,32 @@ class PhoneService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     }
 
     fun markSMSAsReadOrThrow(smsId: Long) {
-        val itemCount = smsProviders.registeredCallbackCount
-        if (itemCount == 0) {
-            error("no registered smsProviders")
-        }
-        val first = smsProviders.getRegisteredCallbackItem(0)
+        val first = acquireSMSProvider()
         val receiver = SynchronousResultReceiver.get()
         first.markAsRead(smsId, receiver)
         val result = runBlocking { receiver.awaitResultNoInterrupt(Duration.ofSeconds(5)) }
         val pair = StringPair.parseFrom(result.getValue(emptyByteArrayWrapper)?.byteData)
         val success = pair.second.toBoolean()
-        require(success) { "Not able to mark msg as read: ${pair.second}" }
+        require(success) { "Unable to mark msg as read: ${pair.second}" }
+    }
+
+    fun deleteSMSOrThrow(smsId: Long) {
+        val first = acquireSMSProvider()
+        val receiver = SynchronousResultReceiver.get()
+        first.delete(smsId, receiver)
+        val result = runBlocking { receiver.awaitResultNoInterrupt(Duration.ofSeconds(5)) }
+        val pair = StringPair.parseFrom(result.getValue(emptyByteArrayWrapper)?.byteData)
+        val success = pair.second.toBoolean()
+        require(success) { "Unable to delete: ${pair.second}" }
+    }
+
+    private fun acquireSMSProvider(): ISMSProvider {
+        val itemCount = smsProviders.registeredCallbackCount
+        if (itemCount == 0) {
+            error(MISSING_SMS_PROVIDER_ERROR_MSG)
+        }
+        val first = smsProviders.getRegisteredCallbackItem(0)
+        return first
     }
 
     @SuppressLint("NewApi")
