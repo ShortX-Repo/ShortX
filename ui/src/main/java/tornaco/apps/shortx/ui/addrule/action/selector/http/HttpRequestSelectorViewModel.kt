@@ -282,4 +282,10 @@ class HttpRequestSelectorViewModel @Inject constructor(@ApplicationContext conte
     fun setResponseAdapter(responseAdapter: AdapterType) {
         updateState { copy(responseAdapter = responseAdapter) }
     }
+
+    fun applySort(it: List<String>) {
+        updateState {
+            copy(expressions = it)
+        }
+    }
 }

@@ -50,7 +50,9 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.addrule.action.selector.KeyValueEditDialog
+import tornaco.apps.shortx.ui.addrule.action.selector.StringSortDialog
 import tornaco.apps.shortx.ui.addrule.action.selector.rememberKeyValueEditDialogState
+import tornaco.apps.shortx.ui.addrule.action.selector.rememberStringSortState
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
 import tornaco.apps.shortx.ui.base.DropdownItem
@@ -317,9 +319,14 @@ private fun BaseSelectorActivity<Action.HttpRequest>.HttpRequestSelector(current
                     expressions = selectorState.expressions,
                     addExpression = {
                         vm.addExpression(it)
-                    }, removeExpression = {
+                    },
+                    removeExpression = {
                         vm.removeExpression(it)
-                    })
+                    },
+                    applySort = {
+                        vm.applySort(it)
+                    }
+                )
                 SectionSpacer()
 
                 FieldTitle(text = LocalI18N.current["ui.action.misc"])
@@ -427,13 +434,34 @@ private fun ColumnScope.ResponseAdapter(
     expressions: List<String>,
     addExpression: (String) -> Unit,
     removeExpression: (Int) -> Unit,
+    applySort: (List<String>) -> Unit,
 ) {
     val i18N = LocalI18N.current
     val context = LocalContext.current
     Column(modifier = Modifier) {
-        FieldTitle(
-            text = LocalI18N.current["ui.action.http.request.adapter"]
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            val sortDialogState = rememberStringSortState(
+                apply = {
+                    applySort(it)
+                })
+            StringSortDialog(state = sortDialogState, strings = expressions)
+
+            FieldTitle(
+                text = LocalI18N.current["ui.action.http.request.adapter"]
+            )
+            // Sort
+            AnimatedVisibility(visible = expressions.size > 1) {
+                IconButton(onClick = {
+                    sortDialogState.show()
+                }) {
+                    RemixIcon(Remix.Editor.sort_asc)
+                }
+            }
+        }
         MediumSpacer()
         val adapterSelectorState: MenuDialogState<String> =
             rememberMenuDialogState(title = LocalI18N.current["ui.action.http.request.adapter"],
