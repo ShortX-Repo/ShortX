@@ -47,6 +47,7 @@ object HookStub {
     private fun androidHooks(lpparam: XC_LoadPackage.LoadPackageParam) {
         ShortXService.main()
         AMSHook.hookAMS(lpparam)
+        AMSHook.hookAMSLifecycleStart(lpparam)
         AMSHook.hookAMSShellCommand(lpparam)
         BackNavHooks.hookStartNav(lpparam)
         BackNavHooks.hookOnNavDone(lpparam)

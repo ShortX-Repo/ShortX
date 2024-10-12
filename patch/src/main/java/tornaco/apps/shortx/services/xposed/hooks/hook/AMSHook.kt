@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.ShellCommand
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.platform.Classes.amsClass
+import tornaco.apps.shortx.core.platform.Classes.amsLifecycleClass
 import tornaco.apps.shortx.core.platform.Classes.amsShellCommandClass
 import tornaco.apps.shortx.core.platform.Fields
 import tornaco.apps.shortx.core.platform.Methods
@@ -18,12 +19,28 @@ object AMSHook {
         afterMethod(lpparam.classLoader.amsClass(), Methods.start) { param ->
             val context = param.thisObject.field<Context>(Fields.mContext)
             logger.w("AMS start")
-            ShortXService.start(context)
+            if (!ShortXService.isStarted) {
+                logger.w("Invoke ShortXService start")
+                ShortXService.start(context)
+            }
         }
 
         afterMethod(lpparam.classLoader.amsClass(), Methods.systemReady) {
             logger.w("AMS systemReady")
             ShortXService.systemReady()
+        }
+    }.onFailure {
+        logger.e(it, "hookAMS")
+    }
+
+    fun hookAMSLifecycleStart(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
+        afterMethod(lpparam.classLoader.amsLifecycleClass(), "onStart") { param ->
+            val context = param.thisObject.field<Context>(Fields.mContext)
+            logger.w("AMS Lifecycle start")
+            if (!ShortXService.isStarted) {
+                logger.w("Invoke ShortXService start")
+                ShortXService.start(context)
+            }
         }
     }.onFailure {
         logger.e(it, "hookAMS")
