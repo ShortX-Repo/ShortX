@@ -3,6 +3,7 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -34,6 +36,7 @@ import tornaco.apps.shortx.core.proto.common.TextFieldProp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.CommonDialogState
+import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumSpacer
@@ -97,6 +100,10 @@ class ShowTextFieldDialogSettingsDialogState(
             val updated = TextFieldProp.newBuilder(current).setPlaceholder(holder).build()
             set(index, updated)
         }
+    }
+
+    fun applySort(sorted: List<TextFieldProp>) {
+        this.items = sorted
     }
 }
 
@@ -174,6 +181,31 @@ private fun ShowTextFieldDialogSelector(dialogState: ShowTextFieldDialogSettings
                     StandardSpacer()
                     StandardSpacer()
 
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        val sortDialogState = rememberTextFieldDialogSortState(
+                            apply = {
+                                dialogState.applySort(it)
+                            })
+                        TextFieldDialogSortDialog(
+                            state = sortDialogState,
+                            menus = dialogState.items
+                        )
+
+                        FieldTitle(text = LocalI18N.current["ui.action.show.menu.dialog.item"])
+                        // Sort
+                        AnimatedVisibility(visible = dialogState.items.size > 1) {
+                            IconButton(onClick = {
+                                sortDialogState.show()
+                            }) {
+                                RemixIcon(Remix.Editor.sort_asc)
+                            }
+                        }
+                    }
+                    MediumSpacer()
                     Items(dialogState)
                     StandardSpacer()
 

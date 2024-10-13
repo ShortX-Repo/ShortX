@@ -116,15 +116,19 @@ private fun DialogMenuSortDialogContent(
                     }) { index, item ->
                         ReorderableItem(sortState, key = item) { isDragging ->
                             val scale = animateFloatAsState(
-                                if (isDragging) 1.06f else 1f,
+                                if (isDragging) 1.1f else 1f,
                                 label = "SacleAnim"
                             )
                             ListItem(
                                 modifier = Modifier.scale(scale.value),
                                 titleLines = listOfNotNull(
                                     item.title,
+                                    "$index",
                                     if (BuildPropInternal.APP_IS_DEBUG) "${item.clickActionsCount}" else null
-                                )
+                                ),
+                                icon = {
+                                    RemixIcon(Remix.System.menu_4_line)
+                                }
                             )
                         }
                     }
