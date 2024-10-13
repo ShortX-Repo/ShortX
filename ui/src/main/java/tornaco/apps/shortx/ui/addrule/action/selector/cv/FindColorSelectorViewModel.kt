@@ -52,6 +52,12 @@ class FindColorSelectorViewModel @Inject constructor(@ApplicationContext context
         }
     }
 
+    fun setRect(rect: Rect) {
+        updateState {
+            copy(rect = rect)
+        }
+    }
+
     fun toActionOrNull(): FindPointsByColorConfig {
         return FindPointsByColorConfig(
             image = state.value.image,

@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.proto.toAndroidRect
+import tornaco.apps.shortx.core.proto.toProtoRect
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.FindPointsByColorConfig
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
@@ -126,7 +127,7 @@ private fun BaseSelectorActivity<FindPointsByColorConfig>.Selector(currentAction
                     null
                 }
                 rect?.let {
-
+                    vm.setRect(it.toProtoRect())
                 }
             }
             TextInputDialog(state = rectInputDialogState)
