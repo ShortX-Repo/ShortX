@@ -6,7 +6,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -111,7 +111,9 @@ private fun DialogMenuSortDialogContent(
                         .reorderable(sortState)
                         .detectReorderAfterLongPress(sortState)
                 ) {
-                    items(data.value, { it }) { item ->
+                    itemsIndexed(items = data.value, key = { index, item ->
+                        "$item-$index"
+                    }) { index, item ->
                         ReorderableItem(sortState, key = item) { isDragging ->
                             val scale = animateFloatAsState(
                                 if (isDragging) 1.06f else 1f,
