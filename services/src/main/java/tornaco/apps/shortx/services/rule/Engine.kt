@@ -785,10 +785,10 @@ class DefaultRuleEngine(
 }
 
 private fun List<Rule>.filterInvalid() =
-    filter { it.actionsList.isNotEmpty() || (it.quit.isEnabled && it.quit.actionsList.isNotEmpty()) }
+    filter { it.actionsList.isNotEmpty() || it.quit.isEnabled }
 
 private fun List<DirectAction>.filterHasQuit() =
-    filter { it.quit.isEnabled && it.quit.actionsList.isNotEmpty() }
+    filter { it.quit.isEnabled }
 
 fun updateTheXXTimeToday(shortXContext: ShortXContext, conditions: List<ProtoAny>) {
     val allTheXXTimeTodayConditions =
