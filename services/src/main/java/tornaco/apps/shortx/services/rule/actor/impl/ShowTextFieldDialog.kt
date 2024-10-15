@@ -9,7 +9,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.google.protobuf.Message
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.context.ContextData
@@ -103,8 +102,7 @@ object ShowTextFieldDialog : Actor {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private class ShowDialog(val context: Context) {
+    class ShowDialog(val context: Context) {
 
         suspend inline fun invoke(
             crossinline builder: (Context) -> AlertDialog.Builder
