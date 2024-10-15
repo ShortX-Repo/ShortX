@@ -14,6 +14,8 @@ import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
+import tornaco.apps.shortx.ui.base.SortItem
+import tornaco.apps.shortx.ui.util.sortByIndex
 import javax.inject.Inject
 
 data class MenuDialogUiItem(
@@ -157,10 +159,11 @@ class ShowMenuDialogSelectorViewModel @Inject constructor(@ApplicationContext co
         }
     }
 
-    fun applySort(dialogMenuItems: List<DialogMenuItem>) {
+    fun applySort(dialogMenuItems: List<SortItem>) {
+        val sortedItems = sortByIndex(state.value.items, dialogMenuItems.map { it.index })
         updateState {
             copy(
-                items = dialogMenuItems.toUiItems(shortXManager)
+                items = sortedItems
             )
         }
     }

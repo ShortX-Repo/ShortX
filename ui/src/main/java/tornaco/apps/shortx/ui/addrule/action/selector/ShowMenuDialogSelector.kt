@@ -34,6 +34,7 @@ import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
+import tornaco.apps.shortx.ui.base.CommonSortDialog
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -44,9 +45,11 @@ import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallTitle
+import tornaco.apps.shortx.ui.base.SortItem
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.SwitchRow
 import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.rememberCommonSortState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 
 
@@ -120,11 +123,15 @@ private fun ShowMenuDialogSelectorActivity.ShowMenuDialogSelector(currentData: A
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val sortDialogState = rememberDialogMenuSortState(
+                    val sortDialogState = rememberCommonSortState(
                         apply = {
                             vm.applySort(it)
                         })
-                    DialogMenuSortDialog(state = sortDialogState, menus = dialogState.items)
+                    CommonSortDialog(
+                        state = sortDialogState,
+                        items = dialogState.items.mapIndexed { index, menuDialogUiItem ->
+                            SortItem(index, menuDialogUiItem.title)
+                        })
 
                     FieldTitle(text = LocalI18N.current["ui.action.show.menu.dialog.item"])
                     // Sort

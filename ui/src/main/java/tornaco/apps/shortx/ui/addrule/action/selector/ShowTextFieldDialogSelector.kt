@@ -36,6 +36,7 @@ import tornaco.apps.shortx.core.proto.common.TextFieldProp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.CommonDialogState
+import tornaco.apps.shortx.ui.base.CommonSortDialog
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -46,11 +47,14 @@ import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.SortItem
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.SwitchRow
+import tornaco.apps.shortx.ui.base.rememberCommonSortState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.ClipboardUtils
+import tornaco.apps.shortx.ui.util.sortByIndex
 
 class ShowTextFieldDialogSettingsDialogState(
     val onSelected: (Action.ShowTextFieldDialog) -> Unit
@@ -102,7 +106,8 @@ class ShowTextFieldDialogSettingsDialogState(
         }
     }
 
-    fun applySort(sorted: List<TextFieldProp>) {
+    fun applySort(items: List<SortItem>) {
+        val sorted = sortByIndex(this.items, items.map { it.index })
         this.items = sorted
     }
 }
@@ -186,14 +191,15 @@ private fun ShowTextFieldDialogSelector(dialogState: ShowTextFieldDialogSettings
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        val sortDialogState = rememberTextFieldDialogSortState(
+                        val sortDialogState = rememberCommonSortState(
                             apply = {
                                 dialogState.applySort(it)
                             })
-                        TextFieldDialogSortDialog(
+                        CommonSortDialog(
                             state = sortDialogState,
-                            menus = dialogState.items
-                        )
+                            items = dialogState.items.mapIndexed { index, menuDialogUiItem ->
+                                SortItem(index, menuDialogUiItem.label)
+                            })
 
                         FieldTitle(text = LocalI18N.current["ui.action.show.menu.dialog.item"])
                         // Sort
