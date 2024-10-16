@@ -175,6 +175,15 @@ private fun ShowChoiceDialogSelectorActivity.ShowChoiceDialogSelector(currentDat
 
                 LargeSpacer()
 
+                SwitchRow(
+                    text = LocalI18N.current["ui.action.show.choice.dialog.is.multiple"],
+                    isChecked = dialogState.isMultipleChoice
+                ) {
+                    vm.updateIsMultipleChoice(it)
+                }
+
+                LargeSpacer()
+
                 SuggestedNavEntry()
             }
         }
@@ -193,7 +202,8 @@ private fun Items(
     state.choices.forEachIndexed { index, menuDialogUiItem ->
         ItemSettings(
             headerTitle = LocalI18N.current["ui.action.show.choice.dialog.item"] + " ${index + 1}",
-            text = menuDialogUiItem.label,
+            label = menuDialogUiItem.label,
+            value = menuDialogUiItem.value,
             isSelected = menuDialogUiItem.isSelectedByDefault,
             onLabelChanged = {
                 updateItemLabel(it, index)
@@ -216,7 +226,8 @@ private fun Items(
 @Composable
 private fun ItemSettings(
     headerTitle: String,
-    text: String,
+    label: String,
+    value: String,
     isSelected: Boolean,
     onLabelChanged: (String) -> Unit,
     onValueChanged: (String) -> Unit,
@@ -244,7 +255,7 @@ private fun ItemSettings(
             label = {
                 Text(text = LocalI18N.current["ui.action.show.choice.dialog.item.label"])
             },
-            value = text,
+            value = label,
             onValueChange = {
                 onLabelChanged(it)
             }
@@ -255,7 +266,7 @@ private fun ItemSettings(
             label = {
                 Text(text = LocalI18N.current["ui.action.show.choice.dialog.item.value"])
             },
-            value = text,
+            value = value,
             onValueChange = {
                 onValueChanged(it)
             }

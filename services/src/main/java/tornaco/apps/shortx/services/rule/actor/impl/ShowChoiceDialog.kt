@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.DialogAction
+import tornaco.apps.shortx.core.proto.common.ChoiceProp
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
@@ -46,7 +47,7 @@ object ShowChoiceDialog : Actor {
         logger.d("ShowChoiceDialog, showing: ${d.choicesList}")
         require(d.choicesList.isNotEmpty()) { "No choices!" }
         val cv = RuleContextAndVars(localVars, contextData, shortXContext)
-        val checkedIndexState = mutableListOf<Int>()
+        val checkedState = mutableListOf<ChoiceProp>()
         val result = ShowTextFieldDialog.ShowDialog(context).invoke { dialogContext ->
             AlertDialog.Builder(dialogContext)
                 .setTitle(
@@ -58,18 +59,16 @@ object ShowChoiceDialog : Actor {
                             d.choicesList.map {
                                 it.label.orEmpty().compileContextAndVars(cv)
                             }.toTypedArray(),
-                            d.choicesList.mapIndexed { index, it ->
+                            d.choicesList.map { it ->
                                 it.isSelectedByDefault.apply {
-                                    if (this) checkedIndexState.add(index)
+                                    if (this) checkedState.add(it)
                                 }
                             }.toBooleanArray(),
                         ) { _, which, isChecked ->
                             if (isChecked) {
-                                checkedIndexState.add(which)
+                                checkedState.add(d.choicesList[which])
                             } else {
-                                checkedIndexState.remove(
-                                    which
-                                )
+                                checkedState.removeAt(which)
                             }
                         }
                     } else {
@@ -80,32 +79,31 @@ object ShowChoiceDialog : Actor {
                             (d.choicesList.indexOfFirst { it.isSelectedByDefault }
                                 .takeIf { it >= 0 }
                                 ?: 0).apply {
-                                checkedIndexState.add(this)
+                                checkedState.add(d.choicesList[this])
                             }
                         ) { _, which ->
-                            checkedIndexState.clear()
-                            checkedIndexState.add(which)
+                            checkedState.clear()
+                            checkedState.add(d.choicesList[which])
                         }
                     }
                 }
                 .setCancelable(d.cancelable)
         }
 
-        logger.d("ShowChoiceDialog, result is: $result")
+        logger.d("ShowChoiceDialog, result is: $result $checkedState")
 
         withContext(Dispatchers.Default) {
-            logger.d("handle result: $result $checkedIndexState")
+            logger.d("ShowChoiceDialog, checkedState is: $checkedState")
+            val values = checkedState.map {
+                it.value.compileContextAndVars(cv)
+            }
+            logger.d("handle values: $values")
             when (result) {
                 DialogAction.Positive -> {
-                    val selectedValues = d.choicesList.filterIndexed { index, _ ->
-                        checkedIndexState.contains(index)
-                    }.map { it.value }
-                    logger.d("selectedValues: $selectedValues")
-
                     contextData.add(
                         d.customContextDataKey.forKey(ContextDataMapping.ShowChoiceDialog.choices.name)
                             .fallbackOnEmpty { ContextDataMapping.ShowChoiceDialog.choices.name },
-                        selectedValues
+                        values
                     )
                 }
 

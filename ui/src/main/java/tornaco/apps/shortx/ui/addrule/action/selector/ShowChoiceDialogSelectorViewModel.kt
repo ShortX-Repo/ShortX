@@ -134,4 +134,10 @@ class ShowChoiceDialogSelectorViewModel @Inject constructor(@ApplicationContext 
             )
         }
     }
+
+    fun updateIsMultipleChoice(isMultipleChoice: Boolean) {
+        updateState {
+            copy(isMultipleChoice = isMultipleChoice)
+        }
+    }
 }
