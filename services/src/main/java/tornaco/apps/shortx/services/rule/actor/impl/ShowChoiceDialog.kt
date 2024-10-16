@@ -68,7 +68,7 @@ object ShowChoiceDialog : Actor {
                             if (isChecked) {
                                 checkedState.add(d.choicesList[which])
                             } else {
-                                checkedState.removeAt(which)
+                                checkedState.remove(d.choicesList[which])
                             }
                         }
                     } else {

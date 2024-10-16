@@ -276,7 +276,7 @@ private fun ItemSettings(
             Text(LocalI18N.current["ui.action.show.choice.dialog.item.default.selected"])
             StandardSpacer()
             Checkbox(checked = isSelected, onCheckedChange = {
-                defaultSelectItem(!it)
+                defaultSelectItem(!isSelected)
             })
         }
     }
