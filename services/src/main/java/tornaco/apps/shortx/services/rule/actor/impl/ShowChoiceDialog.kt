@@ -52,7 +52,6 @@ object ShowChoiceDialog : Actor {
                 .setTitle(
                     d.title.orEmpty().compileContextAndVars(cv)
                 )
-                .setMessage(d.message.orEmpty().compileContextAndVars(cv))
                 .apply {
                     if (d.isMultipleChoice) {
                         setMultiChoiceItems(
