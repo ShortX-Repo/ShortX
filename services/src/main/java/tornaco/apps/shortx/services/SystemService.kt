@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services
 
 import android.annotation.CallSuper
+import android.app.ActivityThread
 import android.content.Context
 import android.os.Binder
 import android.os.Process
@@ -13,6 +14,7 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.newHandlerOfNewThread
 import tornaco.apps.shortx.services.data.SettingsStore
+import util.Reflections
 
 abstract class SystemService(val shortXContext: ShortXContext, val serviceName: String) {
     private val logTag: String = serviceName
@@ -35,6 +37,9 @@ abstract class SystemService(val shortXContext: ShortXContext, val serviceName: 
     lateinit var context: Context
         private set
 
+    lateinit var uiContext: Context
+        private set
+
     val store: SettingsStore by lazy {
         require(isStarted) {
             "Access to Store before isStarted!"
@@ -45,8 +50,10 @@ abstract class SystemService(val shortXContext: ShortXContext, val serviceName: 
     @CallSuper
     open fun start(context: Context) {
         this.context = context
+        this.uiContext = getSystemUiContextOrNull() ?: context
+
         isStarted = true
-        logger.i("start: $serviceName with context: $context")
+        logger.i("start: $serviceName with context: $context, uiContext: $uiContext")
     }
 
     @CallSuper
@@ -85,6 +92,17 @@ abstract class SystemService(val shortXContext: ShortXContext, val serviceName: 
             }
         }
         return value
+    }
+
+    private fun getSystemUiContextOrNull(): Context? {
+        return kotlin.runCatching {
+            val systemThread = ActivityThread.currentActivityThread()
+            // systemThread.getSystemUiContext()
+            Reflections.callMethod(systemThread, "getSystemUiContext") as Context?
+        }.getOrElse {
+            logger.e(it, "getSystemUiContextOrNull")
+            null
+        }
     }
 }
 

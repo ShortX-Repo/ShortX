@@ -28,7 +28,7 @@ object ShowChoiceDialog : Actor {
     ) = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.ShowChoiceDialog::class.java
         evaluateShowDialogAction(
-            context = androidContext,
+            context = androidUiContext,
             shortXContext = shortXContext,
             d = d,
             contextData = contextData,
@@ -43,9 +43,10 @@ object ShowChoiceDialog : Actor {
         contextData: ContextData,
         localVars: LocalVars
     ) = withContext(Dispatchers.Main) {
-        logger.d("ShowChoiceDialog, showing")
+        logger.d("ShowChoiceDialog, showing: ${d.choicesList}")
+        require(d.choicesList.isNotEmpty()) { "No choices!" }
         val cv = RuleContextAndVars(localVars, contextData, shortXContext)
-        val checkedIndexState = d.defaultChoiceIndexList.toMutableList()
+        val checkedIndexState = mutableListOf<Int>()
         val result = ShowTextFieldDialog.ShowDialog(context).invoke { dialogContext ->
             AlertDialog.Builder(dialogContext)
                 .setTitle(
@@ -58,9 +59,11 @@ object ShowChoiceDialog : Actor {
                             d.choicesList.map {
                                 it.label.orEmpty().compileContextAndVars(cv)
                             }.toTypedArray(),
-                            List(d.choicesList.size) { index ->
-                                d.defaultChoiceIndexList.contains(index)
-                            }.toBooleanArray()
+                            d.choicesList.mapIndexed { index, it ->
+                                it.isSelectedByDefault.apply {
+                                    if (this) checkedIndexState.add(index)
+                                }
+                            }.toBooleanArray(),
                         ) { _, which, isChecked ->
                             if (isChecked) {
                                 checkedIndexState.add(which)
@@ -75,7 +78,11 @@ object ShowChoiceDialog : Actor {
                             d.choicesList.map {
                                 it.label.orEmpty().compileContextAndVars(cv)
                             }.toTypedArray(),
-                            d.defaultChoiceIndexList.first()
+                            (d.choicesList.indexOfFirst { it.isSelectedByDefault }
+                                .takeIf { it >= 0 }
+                                ?: 0).apply {
+                                checkedIndexState.add(this)
+                            }
                         ) { _, which ->
                             checkedIndexState.clear()
                             checkedIndexState.add(which)

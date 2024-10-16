@@ -21,6 +21,7 @@ fun dummyHandlerParamsForAction(
 ) =
     HandleParams(
         androidContext = androidContext,
+        androidUiContext = androidContext,
         shortXContext = shortXContext,
         evaluateContext = evaluateContext,
         action = action,

@@ -22,6 +22,7 @@ object RuleEngineFactory {
 
     private fun newActionEvaluator(
         context: Context,
+        uiContext: Context,
         shortXContext: ShortXContext,
         handler: Handler,
         conditionEvaluator: ConditionEvaluator,
@@ -29,13 +30,14 @@ object RuleEngineFactory {
         actionEvaluateStartListener: (actionId: String) -> Unit,
         actionEvaluateResultListener: (ActionEvaluator.EvaluateResult) -> Unit,
     ) = ActionEvaluatorImpl(
-        context,
-        shortXContext,
-        handler,
-        actionEvaluateStartListener,
-        actionEvaluateResultListener,
-        conditionEvaluator,
-        factMatcher
+        context = context,
+        uiContext = uiContext,
+        shortXContext = shortXContext,
+        handler = handler,
+        evaluateStartListener = actionEvaluateStartListener,
+        evaluateResultListener = actionEvaluateResultListener,
+        conditionEvaluator = conditionEvaluator,
+        factMatcher = factMatcher
     )
 
     private fun newFactMatcher(shortXContext: ShortXContext) = FactMatcherImpl { shortXContext }
@@ -43,6 +45,7 @@ object RuleEngineFactory {
     fun newRuleEngine(
         shortXContext: ShortXContext,
         androidContext: Context,
+        androidUiContext: Context,
         handler: Handler,
         actionEvaluateStartListener: (actionId: String) -> Unit,
         actionEvaluateResultListener: (ActionEvaluator.EvaluateResult) -> Unit,
@@ -55,6 +58,7 @@ object RuleEngineFactory {
         ),
         actionEvaluator: ActionEvaluator = newActionEvaluator(
             context = androidContext,
+            uiContext = androidUiContext,
             shortXContext = shortXContext,
             handler = handler,
             conditionEvaluator = conditionEvaluator,

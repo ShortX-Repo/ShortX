@@ -15,6 +15,7 @@ import tornaco.apps.shortx.services.rule.fact.FactMatcher
 
 data class HandleParams(
     val androidContext: Context,
+    val androidUiContext: Context,
     val shortXContext: ShortXContext,
     val evaluateContext: EvaluateContext,
     val action: ProtoAny,

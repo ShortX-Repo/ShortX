@@ -90,6 +90,7 @@ class RuleProtoTest {
             RuleEngineFactory.newRuleEngine(
                 shortXContext = mockShortXContext,
                 androidContext = mockk(),
+                androidUiContext = mockk(),
                 handler = mockk(),
                 onJobCancelled = {},
                 onJobCompleted = {},

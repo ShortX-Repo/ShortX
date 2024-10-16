@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -85,7 +86,6 @@ private fun ShowChoiceDialogSelectorActivity.ShowChoiceDialogSelector(currentDat
                                 cancelable = dialogState.cancelable,
                                 choices = dialogState.choices,
                                 isMultipleChoice = dialogState.isMultipleChoice,
-                                defaultChoiceIndexes = dialogState.defaultChoiceIndex
                             )
                         )
                     }) {
@@ -140,12 +140,19 @@ private fun ShowChoiceDialogSelectorActivity.ShowChoiceDialogSelector(currentDat
                     }
                 }
                 MediumSpacer()
-                Items(state = dialogState,
-                    updateItemTitle = { string, int ->
-                        vm.updateItemTitle(string, int)
+                Items(
+                    state = dialogState,
+                    updateItemLabel = { string, int ->
+                        vm.updateItemLabel(string, int)
+                    },
+                    updateItemValue = { string, int ->
+                        vm.updateItemValue(string, int)
                     },
                     removeItem = {
                         vm.removeItem(it)
+                    },
+                    defaultSelectItem = { index, bool ->
+                        vm.updateItemDefSelection(bool, index)
                     }
                 )
                 StandardSpacer()
@@ -178,22 +185,31 @@ private fun ShowChoiceDialogSelectorActivity.ShowChoiceDialogSelector(currentDat
 @Composable
 private fun Items(
     state: ShowChoiceDialogSelectorState,
-    updateItemTitle: (String, Int) -> Unit,
+    updateItemLabel: (String, Int) -> Unit,
+    updateItemValue: (String, Int) -> Unit,
     removeItem: (Int) -> Unit,
+    defaultSelectItem: (Int, Boolean) -> Unit,
 ) {
     state.choices.forEachIndexed { index, menuDialogUiItem ->
         ItemSettings(
             headerTitle = LocalI18N.current["ui.action.show.choice.dialog.item"] + " ${index + 1}",
             text = menuDialogUiItem.label,
-            onTextChange = {
-                updateItemTitle(it, index)
+            isSelected = menuDialogUiItem.isSelectedByDefault,
+            onLabelChanged = {
+                updateItemLabel(it, index)
+            },
+            onValueChanged = {
+                updateItemValue(it, index)
             },
             removeItem = {
                 removeItem(index)
+            },
+            defaultSelectItem = {
+                defaultSelectItem(index, it)
             }
         )
 
-        StandardSpacer()
+        LargeSpacer()
     }
 }
 
@@ -201,30 +217,56 @@ private fun Items(
 private fun ItemSettings(
     headerTitle: String,
     text: String,
-    onTextChange: (String) -> Unit,
-    removeItem: () -> Unit
+    isSelected: Boolean,
+    onLabelChanged: (String) -> Unit,
+    onValueChanged: (String) -> Unit,
+    removeItem: () -> Unit,
+    defaultSelectItem: (Boolean) -> Unit
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Box(modifier = Modifier.weight(1f)) {
-            MediumTitle(headerTitle)
-        }
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Box(modifier = Modifier.weight(1f)) {
+                MediumTitle(headerTitle)
+            }
 
-        IconButton(onClick = {
-            removeItem()
-        }) {
-            RemixIcon(remixName = Remix.System.close_line)
+            IconButton(onClick = {
+                removeItem()
+            }) {
+                RemixIcon(remixName = Remix.System.close_line)
+            }
+        }
+        StandardSpacer()
+        ShortXTextField(
+            modifier = Modifier.fillMaxWidth(),
+            label = {
+                Text(text = LocalI18N.current["ui.action.show.choice.dialog.item.label"])
+            },
+            value = text,
+            onValueChange = {
+                onLabelChanged(it)
+            }
+        )
+        StandardSpacer()
+        ShortXTextField(
+            modifier = Modifier.fillMaxWidth(),
+            label = {
+                Text(text = LocalI18N.current["ui.action.show.choice.dialog.item.value"])
+            },
+            value = text,
+            onValueChange = {
+                onValueChanged(it)
+            }
+        )
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(LocalI18N.current["ui.action.show.choice.dialog.item.default.selected"])
+            StandardSpacer()
+            Checkbox(checked = isSelected, onCheckedChange = {
+                defaultSelectItem(!it)
+            })
         }
     }
-    ShortXTextField(
-        modifier = Modifier.fillMaxWidth(),
-        label = {
-            Text(text = LocalI18N.current["ui.action.show.choice.dialog.item.text"])
-        },
-        value = text,
-        onValueChange = {
-            onTextChange(it)
-        })
 }

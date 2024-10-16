@@ -5,7 +5,6 @@ import android.content.Context
 import android.view.WindowManager
 import com.google.protobuf.Message
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.context.ContextData
@@ -32,7 +31,7 @@ object ShowMenuDialog : Actor {
     ) = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.ShowMenuDialog::class.java
         evaluateShowDialogAction(
-            context = androidContext,
+            context = androidUiContext,
             shortXContext = shortXContext,
             evaluateContext = evaluateContext,
             d = d,
@@ -101,8 +100,6 @@ object ShowMenuDialog : Actor {
     }
 }
 
-
-@OptIn(ExperimentalCoroutinesApi::class)
 private class ShowDialog(
     val context: Context,
     val shortXContext: ShortXContext,

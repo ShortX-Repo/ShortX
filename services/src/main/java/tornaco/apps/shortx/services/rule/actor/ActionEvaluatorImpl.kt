@@ -30,6 +30,7 @@ data class ActionAttrs(
 
 class ActionEvaluatorImpl(
     private val context: Context,
+    private val uiContext: Context,
     private val shortXContext: ShortXContext,
     private val handler: Handler,
     private val evaluateStartListener: (actionId: String) -> Unit,
@@ -83,6 +84,7 @@ class ActionEvaluatorImpl(
             actor.handle(
                 HandleParams(
                     androidContext = context,
+                    androidUiContext = uiContext,
                     shortXContext = shortXContext,
                     evaluateContext = evaluateContext,
                     action = action,

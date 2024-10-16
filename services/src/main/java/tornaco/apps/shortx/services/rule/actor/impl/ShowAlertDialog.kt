@@ -5,7 +5,6 @@ import android.content.Context
 import android.view.WindowManager
 import com.google.protobuf.Message
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.context.ContextData
@@ -35,7 +34,7 @@ object ShowAlertDialog : Actor {
         val d = action unpack_ ShowAlertDialog::class.java
         val cv = RuleContextAndVars(params)
         evaluateShowDialogAction(
-            context = androidContext,
+            context = androidUiContext,
             evaluateContext = evaluateContext,
             d = d,
             parameterInputs = parameterInputs,
@@ -161,7 +160,6 @@ object ShowAlertDialog : Actor {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private class ShowDialog(val context: Context) {
 
         suspend inline fun invoke(

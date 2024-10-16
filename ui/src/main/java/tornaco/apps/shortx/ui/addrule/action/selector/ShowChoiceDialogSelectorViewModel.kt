@@ -18,8 +18,7 @@ data class ShowChoiceDialogSelectorState(
     val message: String = "",
     val cancelable: Boolean = true,
     val choices: List<ChoiceProp> = emptyList(),
-    val isMultipleChoice: Boolean = false,
-    val defaultChoiceIndex: List<Int> = emptyList()
+    val isMultipleChoice: Boolean = false
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -39,7 +38,6 @@ class ShowChoiceDialogSelectorViewModel @Inject constructor(@ApplicationContext 
                     cancelable = settings.cancelable,
                     choices = settings.choices,
                     isMultipleChoice = settings.isMultipleChoice,
-                    defaultChoiceIndex = settings.defaultChoiceIndexes
                 )
             }
         }
@@ -81,12 +79,37 @@ class ShowChoiceDialogSelectorViewModel @Inject constructor(@ApplicationContext 
         }
     }
 
-    fun updateItemTitle(title: String, index: Int) {
+    fun updateItemLabel(label: String, index: Int) {
         updateState {
             copy(
                 choices = this.choices.toMutableList().apply {
                     val current = get(index)
-                    val updated = ChoiceProp.newBuilder(current).setLabel(title).build()
+                    val updated = ChoiceProp.newBuilder(current).setLabel(label).build()
+                    set(index, updated)
+                }
+            )
+        }
+    }
+
+    fun updateItemValue(value: String, index: Int) {
+        updateState {
+            copy(
+                choices = this.choices.toMutableList().apply {
+                    val current = get(index)
+                    val updated = ChoiceProp.newBuilder(current).setValue(value).build()
+                    set(index, updated)
+                }
+            )
+        }
+    }
+
+    fun updateItemDefSelection(bool: Boolean, index: Int) {
+        updateState {
+            copy(
+                choices = this.choices.toMutableList().apply {
+                    val current = get(index)
+                    val updated =
+                        ChoiceProp.newBuilder(current).setIsSelectedByDefault(bool).build()
                     set(index, updated)
                 }
             )
