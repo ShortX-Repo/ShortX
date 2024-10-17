@@ -612,6 +612,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.ShowGlobalActionsMenu
     },
+    ShowHideInsets {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ShowHideInsets
+    },
     DownloadFile {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.DownloadFile

@@ -218,6 +218,16 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
         }
     )
 
+    val insetsLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action.ShowHideInsets>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
     val apmModeSelectorState = rememberOnOffAnyStateSelectorState(
         title = LocalI18N.current["ui.action.set.apm.mode"],
         options = listOf(OnOffAny.On, OnOffAny.Off),
@@ -421,6 +431,17 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.ShowHideInsets::class -> {
+                insetsLauncher.launch(
+                    BaseSelectorActivity.newIntent(
+                        context,
+                        source.getActionAs<Action.ShowHideInsets>(),
+                        ShowHideInsetsSelectorActivity::class.java
+                    )
+                )
+                true
+            }
+
             Action.DisableBT::class,
             Action.DisableLocation::class,
             Action.DisableDND::class,
@@ -535,6 +556,7 @@ fun SystemActions(
         Action.InjectCombineKeyCode::class,
         Action.ShowRecentApps::class,
         Action.ShowGlobalActionsMenu::class,
+        Action.ShowHideInsets::class,
         Action.MediaPlayback::class,
         Action.SetRingerMode::class,
         Action.AdjustVolume::class,
