@@ -1,10 +1,16 @@
 package tornaco.apps.shortx.services.statusbar
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.view.WindowInsets
 import tornaco.apps.shortx.core.BuildPropInternal
+import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.android.ServiceHolder
 import util.Reflections
 
 object StatusBarManagerServiceFuncs {
+    private val logger = Logger("StatusBarManagerServiceFuncs")
 
     fun setIcon(
         slot: String,
@@ -69,6 +75,56 @@ object StatusBarManagerServiceFuncs {
             bar,
             "showGlobalActionsMenu"
         )
+    }
+
+    // Since Android 11
+    @SuppressLint("NewApi")
+    fun showTransient(context: Context) {
+        //    /** @see com.android.internal.statusbar.IStatusBar#showTransient */
+        //    void showTransient(int displayId, @InsetsType int types, boolean isGestureOnSystemBar);
+        //
+        //    /** @see com.android.internal.statusbar.IStatusBar#abortTransient */
+        //    void abortTransient(int displayId, @InsetsType int types);
+        val internal = getInternalService()
+        Reflections.callMethod(
+            internal,
+            "showTransient",
+            context.displayId,
+            WindowInsets.Type.statusBars(),
+            false
+        )
+    }
+
+    // Since Android 11
+    @SuppressLint("NewApi")
+    fun hideOrShowInsets(@WindowInsets.Type.InsetsType types: Int, isHide: Boolean) {
+        val displayPolicy = ServiceHolder.displayPolicy
+        logger.d("displayPolicy: $displayPolicy")
+        val focusedWindow = Reflections.getObjectField(displayPolicy, "mFocusedWindow")
+        logger.d("focusedWindow: $focusedWindow")
+        if (focusedWindow != null) {
+            // Android 14+
+            //   @Override
+            //    public void hideInsets(@InsetsType int types, boolean fromIme,
+            //            @Nullable ImeTracker.Token statsToken)
+            val methodName = if (isHide) "hideInsets" else "showInsets"
+            if (OsUtils.isUOrAbove()) {
+                Reflections.callMethod(
+                    focusedWindow,
+                    methodName,
+                    types,
+                    false,
+                    null
+                )
+            } else {
+                Reflections.callMethod(
+                    focusedWindow,
+                    methodName,
+                    types,
+                    false,
+                )
+            }
+        }
     }
 
     private fun getInternalService(): Any {

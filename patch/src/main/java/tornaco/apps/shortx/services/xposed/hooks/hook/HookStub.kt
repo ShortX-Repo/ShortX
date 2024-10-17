@@ -66,6 +66,7 @@ object HookStub {
         DisplayRotationHook.hookOnProposedRotationChanged(lpparam)
         IMEServiceHook.hook(lpparam)
         WMServiceHook.hook(lpparam)
+        DisplayPolicyHook.hook(lpparam)
         AccManagerHook.hook(lpparam)
         ActivityMetricsLoggerHook.hook(lpparam)
         ShortcutServiceHook.hook(lpparam)

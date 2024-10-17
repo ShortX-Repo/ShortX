@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.statusbar
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.RemoteCallbackList
+import android.view.WindowInsets
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -323,6 +324,11 @@ class StatusBarService(shortXContext: ShortXContext) :
     fun showGlobalActionsMenu() {
         logger.d("showGlobalActionsMenu")
         StatusBarManagerServiceFuncs.showGlobalActionsMenu()
+    }
+
+    fun hideOrShowInsets(@WindowInsets.Type.InsetsType types: Int, isHide: Boolean) {
+        logger.d("hideOrShowInsets: $types $isHide")
+        StatusBarManagerServiceFuncs.hideOrShowInsets(types, isHide)
     }
 
     private fun notifyStatusBarClipStateChanged(clipState: StatusBarClipState) {

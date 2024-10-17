@@ -22,4 +22,10 @@ object ServiceHolder {
             field = value
             logger.w("Set statusBarManagerService: $value")
         }
+
+    var displayPolicy: Any? = null
+        set(value) {
+            field = value
+            logger.w("Set displayPolicy: $value")
+        }
 }
