@@ -1,0 +1,73 @@
+package tornaco.apps.shortx.ui.addrule.action.selector
+
+import android.annotation.SuppressLint
+import android.content.Context
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
+import tornaco.apps.shortx.ui.base.ShortXContextViewModel
+import javax.inject.Inject
+
+data class ShowListDialogSelectorState(
+    val id: String = defaultNewActionId(),
+    val title: String = "",
+    val message: String = "",
+    val cancelable: Boolean = true,
+    val data: String = "A,B,C",
+    val isMultipleChoice: Boolean = false
+)
+
+@SuppressLint("StaticFieldLeak")
+@HiltViewModel
+class ShowListDialogSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
+    ShortXContextViewModel<ShowListDialogSelectorState>(
+        context, { ShowListDialogSelectorState() }
+    ) {
+
+    fun initFrom(settings: Action.ShowListDialog?) {
+        settings?.let {
+            updateState {
+                copy(
+                    id = settings.id,
+                    title = settings.title,
+                    message = settings.message,
+                    cancelable = settings.cancelable,
+                    data = settings.data,
+                    isMultipleChoice = settings.isMultipleChoice,
+                )
+            }
+        }
+    }
+
+    fun updateTitle(title: String) {
+        updateState {
+            copy(title = title)
+        }
+    }
+
+    fun updateMessage(message: String) {
+        updateState {
+            copy(message = message)
+        }
+    }
+
+    fun updateCancelable(cancelable: Boolean) {
+        updateState {
+            copy(cancelable = cancelable)
+        }
+    }
+
+    fun updateData(data: String) {
+        updateState {
+            copy(data = data)
+        }
+    }
+
+
+    fun updateIsMultipleChoice(isMultipleChoice: Boolean) {
+        updateState {
+            copy(isMultipleChoice = isMultipleChoice)
+        }
+    }
+}

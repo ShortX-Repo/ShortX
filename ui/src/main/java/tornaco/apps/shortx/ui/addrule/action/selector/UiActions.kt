@@ -148,6 +148,16 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
         }
     )
 
+    val showListDialogLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action.ShowListDialog>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
     val showOverlayLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
@@ -328,6 +338,17 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                         context = context,
                         currentData = source.getActionAs<Action.ShowChoiceDialog>(),
                         clazz = ShowChoiceDialogSelectorActivity::class.java
+                    )
+                )
+                true
+            }
+
+            Action.ShowListDialog::class -> {
+                showListDialogLauncher.launch(
+                    newIntent(
+                        context = context,
+                        currentData = source.getActionAs<Action.ShowListDialog>(),
+                        clazz = ShowListDialogSelectorActivity::class.java
                     )
                 )
                 true
@@ -526,6 +547,7 @@ fun UiActions(
         Action.ShowMenuDialog::class,
         Action.ShowTextFieldDialog::class,
         Action.ShowChoiceDialog::class,
+        Action.ShowListDialog::class,
         Action.FindAndClickViewByText::class,
         Action.FindAndClickViewById::class,
         Action.FindAndClickMatchedView::class,
