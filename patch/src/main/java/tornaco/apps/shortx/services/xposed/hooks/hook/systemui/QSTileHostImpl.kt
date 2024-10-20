@@ -86,6 +86,18 @@ class QSTileHostImpl(private val shortx: IShortX) : IQSTileHost.Stub() {
 
     private fun clickCustomTile(tile: Any) {
         altFuncs(
+            Func("handleClick(@Nullable Expandable)", { OsUtils.isVOrAbove() }) {
+                val expandableClazz = Reflections.findClass(
+                    "com.android.systemui.animation.Expandable",
+                    tile.javaClass.classLoader
+                )
+                Reflections.callMethod(
+                    tile,
+                    "handleClick",
+                    arrayOf(expandableClazz),
+                    null
+                )
+            },
             Func("handleClick(@Nullable View view)", { true }) {
                 Reflections.callMethod(
                     tile,
