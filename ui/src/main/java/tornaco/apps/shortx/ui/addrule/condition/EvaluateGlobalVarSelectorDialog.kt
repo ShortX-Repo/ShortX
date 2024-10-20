@@ -47,6 +47,7 @@ import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
@@ -56,6 +57,7 @@ import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.gvar.GlobalVarSelectorDialog
 import tornaco.apps.shortx.ui.gvar.rememberGlobalVarSelectorState
+import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import java.util.UUID
 
@@ -246,7 +248,7 @@ private fun EvaluateGlobalVarSelector(dialogState: EvaluateGlobalVarSelectorDial
                         }
                         DropdownSelector(
                             state = opSelectorState,
-                            items = GlobalVarOp.values().toMutableList().apply {
+                            items = GlobalVarOp.entries.toMutableList().apply {
                                 remove(GlobalVarOp.UNRECOGNIZED)
                             }.map {
                                 DropdownItem(
@@ -289,6 +291,10 @@ private fun EvaluateGlobalVarSelector(dialogState: EvaluateGlobalVarSelectorDial
                         }
                         StandardSpacer()
                     }
+
+                    SectionSpacer()
+                    SectionSpacer()
+                    SuggestedNavEntry()
                 }
             }
         }
