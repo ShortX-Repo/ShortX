@@ -8,6 +8,9 @@ import tornaco.apps.shortx.core.proto.common.QSTileList
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.systemui.IQSTileHost
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.OsUtils
+import tornaco.apps.shortx.services.xposed.hooks.hook.Func
+import tornaco.apps.shortx.services.xposed.hooks.hook.altFuncs
 import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.QSHostAdapter.getTiles
 import util.Reflections
 
@@ -26,65 +29,9 @@ class QSTileHostImpl(private val shortx: IShortX) : IQSTileHost.Stub() {
                     val isCustomTile = tile.javaClass.name.endsWith("CustomTile")
                     logger.d("Tile class: ${tile.javaClass.name}")
                     if (isCustomTile) {
-                        runCatching {
-                            // void handleClick(@Nullable View view)
-                            Reflections.callMethod(
-                                tile,
-                                "handleClick",
-                                arrayOf(View::class.java),
-                                null
-                            )
-                        }.onFailure {
-                            runCatching {
-                                // Some MIUI systemui
-                                // com.android.systemui.qs.external.CustomTile.handleClick():void
-                                Reflections.callMethod(tile, "handleClick")
-                            }.onFailure {
-                                logger.e(it, "CustomTile handleClick")
-                            }
-                        }
-
-
+                        clickCustomTile(tile)
                     } else {
-                        // Normal android
-                        // click(View v);
-
-                        // Flyme:
-                        //   @Override // com.android.systemui.plugins.qs.QSTile
-                        //    public void click() {
-                        //        this.mMetricsLogger.write(populate(new LogMaker(925).setType(4).addTaggedData(1592, Integer.valueOf(this.mStatusBarStateController.getState()))));
-                        //        this.mUiEventLogger.logWithInstanceId(QSEvent.QS_ACTION_CLICK, 0, getMetricsSpec(), getInstanceId());
-                        //        this.mQSLogger.logTileClick(this.mTileSpec, this.mStatusBarStateController.getState(), this.mState.state);
-                        //        this.mHandler.sendEmptyMessage(2);
-                        //        SystemUIMobEventUtils.collectClickNumberOfShortCut(this.mContext, this.mTileSpec);
-                        //    }
-                        runCatching {
-                            Reflections.callMethod(tile, "click", arrayOf(View::class.java), null)
-                        }.onFailure {
-                            runCatching {
-                                logger.w("Call click(view) fail, try click()")
-                                Reflections.callMethod(tile, "click")
-                            }.onFailure {
-                                // MIUI some rom
-                                // protected void handleClick()
-                                logger.w("Call click() fail, try handleClick()")
-                                runCatching {
-                                    Reflections.callMethod(tile, "handleClick")
-                                }.onFailure { err ->
-                                    logger.e(err, "handleClick() fail, try handleClick(view)")
-                                    runCatching {
-                                        Reflections.callMethod(
-                                            tile,
-                                            "handleClick",
-                                            arrayOf(View::class.java),
-                                            null
-                                        )
-                                    }.onFailure {
-                                        logger.e(it, "handleClick(view) fail....")
-                                    }
-                                }
-                            }
-                        }
+                        clickStockTile(tile)
                     }
                 }
             }
@@ -93,17 +40,86 @@ class QSTileHostImpl(private val shortx: IShortX) : IQSTileHost.Stub() {
         }
     }
 
+    private fun clickStockTile(tile: Any) {
+        altFuncs(
+            // Android 15.
+            Func("Android15 - handleClick(Expandable)",
+                { OsUtils.isVOrAbove() }) {
+                val expandableClazz = Reflections.findClass(
+                    "com.android.systemui.animation.Expandable",
+                    tile.javaClass.classLoader
+                )
+                Reflections.callMethod(
+                    tile,
+                    "handleClick",
+                    arrayOf(expandableClazz),
+                    null
+                )
+            },
+
+            // Normal android
+            // click(View v);
+            Func("Android - click(View v)", { true }) {
+                Reflections.callMethod(tile, "click", arrayOf(View::class.java), null)
+            },
+
+            // Flyme
+            //   @Override // com.android.systemui.plugins.qs.QSTile
+            //    public void click() {
+            //        this.mMetricsLogger.write(populate(new LogMaker(925).setType(4).addTaggedData(1592, Integer.valueOf(this.mStatusBarStateController.getState()))));
+            //        this.mUiEventLogger.logWithInstanceId(QSEvent.QS_ACTION_CLICK, 0, getMetricsSpec(), getInstanceId());
+            //        this.mQSLogger.logTileClick(this.mTileSpec, this.mStatusBarStateController.getState(), this.mState.state);
+            //        this.mHandler.sendEmptyMessage(2);
+            //        SystemUIMobEventUtils.collectClickNumberOfShortCut(this.mContext, this.mTileSpec);
+            //    }
+            Func("Flyme - click()", { true }) {
+                Reflections.callMethod(tile, "click")
+            },
+
+            // Some MIUI
+            // // com.android.systemui.qs.external.CustomTile.handleClick():void
+            Func("MIUI - handleClick", { true }) {
+                Reflections.callMethod(tile, "handleClick")
+            }
+        )
+    }
+
+    private fun clickCustomTile(tile: Any) {
+        altFuncs(
+            Func("handleClick(@Nullable View view)", { true }) {
+                Reflections.callMethod(
+                    tile,
+                    "handleClick",
+                    arrayOf(View::class.java),
+                    null
+                )
+            },
+            Func("handleClick()", { true }) {
+                // Some MIUI systemui
+                // com.android.systemui.qs.external.CustomTile.handleClick():void
+                Reflections.callMethod(tile, "handleClick")
+            },
+        )
+    }
+
     override fun longClick(tileSpec: String) {
         runCatching {
             onEachTiles { spec, tile ->
                 if (spec == tileSpec) {
                     logger.d("long click: $spec")
-                    runCatching {
-                        Reflections.callMethod(tile, "longClick", arrayOf(View::class.java), null)
-                    }.onFailure {
-                        logger.w("Call longClick(view) fail, try longClick()")
-                        Reflections.callMethod(tile, "longClick")
-                    }
+                    altFuncs(
+                        Func("longClick(view)", { true }) {
+                            Reflections.callMethod(
+                                tile,
+                                "longClick",
+                                arrayOf(View::class.java),
+                                null
+                            )
+                        },
+                        Func("longClick()", { true }) {
+                            Reflections.callMethod(tile, "longClick")
+                        },
+                    )
                 }
             }
         }.onFailure {
