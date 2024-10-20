@@ -216,3 +216,4 @@
 -dontwarn com.android.internal.telephony.ITelephony
 -dontwarn com.google.auto.value.AutoValue$Builder
 -dontwarn com.google.auto.value.AutoValue
+-dontwarn com.android.internal.statusbar.IStatusBar

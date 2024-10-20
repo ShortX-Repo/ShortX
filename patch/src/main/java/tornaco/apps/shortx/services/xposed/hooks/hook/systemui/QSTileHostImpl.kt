@@ -8,9 +8,10 @@ import tornaco.apps.shortx.core.proto.common.QSTileList
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.systemui.IQSTileHost
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.QSHostAdapter.getTiles
 import util.Reflections
 
-class QSTileHostImpl(private val hostObj: Any, private val shortx: IShortX) : IQSTileHost.Stub() {
+class QSTileHostImpl(private val shortx: IShortX) : IQSTileHost.Stub() {
     private val logger = Logger("ShortXHook.SystemUIHook.QSTileHostImpl")
 
     override fun getTiles(receiver: SynchronousResultReceiver) {
@@ -34,11 +35,13 @@ class QSTileHostImpl(private val hostObj: Any, private val shortx: IShortX) : IQ
                                 null
                             )
                         }.onFailure {
-                            // Some MIUI systemui
-                            // com.android.systemui.qs.external.CustomTile.handleClick():void
-                            Reflections.callMethod(tile, "handleClick")
-                        }.onFailure {
-                            logger.e(it, "click CustomTile")
+                            runCatching {
+                                // Some MIUI systemui
+                                // com.android.systemui.qs.external.CustomTile.handleClick():void
+                                Reflections.callMethod(tile, "handleClick")
+                            }.onFailure {
+                                logger.e(it, "CustomTile handleClick")
+                            }
                         }
 
 
@@ -67,8 +70,18 @@ class QSTileHostImpl(private val hostObj: Any, private val shortx: IShortX) : IQ
                                 logger.w("Call click() fail, try handleClick()")
                                 runCatching {
                                     Reflections.callMethod(tile, "handleClick")
-                                }.onFailure {
-                                    logger.e(it, "click")
+                                }.onFailure { err ->
+                                    logger.e(err, "handleClick() fail, try handleClick(view)")
+                                    runCatching {
+                                        Reflections.callMethod(
+                                            tile,
+                                            "handleClick",
+                                            arrayOf(View::class.java),
+                                            null
+                                        )
+                                    }.onFailure {
+                                        logger.e(it, "handleClick(view) fail....")
+                                    }
                                 }
                             }
                         }
@@ -121,7 +134,7 @@ class QSTileHostImpl(private val hostObj: Any, private val shortx: IShortX) : IQ
     }
 
     private fun onEachTiles(action: (spec: String, Any) -> Unit) {
-        val tiles = invokeGetTiles()
+        val tiles = getTiles().filterNotNull()
         logger.d("onEachTiles, tiles: ${tiles.map { it }}")
         tiles.forEach {
             val spec = Reflections.callMethod(it, "getTileSpec") ?: it.toString()
@@ -130,7 +143,7 @@ class QSTileHostImpl(private val hostObj: Any, private val shortx: IShortX) : IQ
     }
 
     private fun getTilesInternal(): QSTileList = runCatching {
-        val tiles = invokeGetTiles()
+        val tiles = getTiles()
         logger.d("getTilesInternal, tiles: ${tiles.map { it }}")
         val qsTiles = tiles.mapNotNull {
             runCatching {
@@ -148,20 +161,6 @@ class QSTileHostImpl(private val hostObj: Any, private val shortx: IShortX) : IQ
         logger.e(it, "getTilesInternal")
         QSTileList.getDefaultInstance()
     }
-
-    private fun invokeGetTiles() = runCatching {
-        Reflections.callMethod(hostObj, "getTiles") as Collection<*>
-    }.getOrElse {
-        if (it is NoSuchMethodError) {
-            logger.w("NoSuchMethodError when call getTiles(), try to get field: mTiles")
-            // LinkedHashMap<String, QSTile> mTiles = new LinkedHashMap<>()
-            val map = Reflections.getObjectField(hostObj, "mTiles") as Map<*, *>
-            map.values
-        } else {
-            throw Error(it)
-        }
-    }.filterNotNull()
-
 }
 
 
