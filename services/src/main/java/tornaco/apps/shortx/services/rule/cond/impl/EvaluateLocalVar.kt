@@ -36,7 +36,7 @@ object EvaluateLocalVar : Cond {
             }
 
             val emptyValue = emptyList<String>()
-            val currentValue = localVar.valueList(noValueReturn = { emptyValue })
+            val currentValue: List<String> = localVar.valueList(noValueReturn = { emptyValue })
             val currentValueHasBeenSet = currentValue.isNotEmpty()
             logger.d("var: ${localVar.name}, currentValueHasBeenSet: $currentValueHasBeenSet, currentValue: $currentValue")
 
@@ -189,32 +189,26 @@ object EvaluateLocalVar : Cond {
 
                 GlobalVarOp.IsEmpty -> {
                     if (!currentValueHasBeenSet) {
-                        false
-                    } else if (type == GlobalVarType.String) {
-                        kotlin.runCatching {
-                            currentValue.first().isEmpty()
-                        }.getOrElse {
-                            logger.e(it, "IsEmpty-String err")
-                            false
+                        true
+                    } else {
+                        if (localVar.isList()) {
+                            currentValue.isEmpty()
+                        } else {
+                            currentValue.firstOrNull().isNullOrEmpty()
                         }
-                    } else if (localVar.isList()) {
-                        currentValue.isEmpty()
-                    } else false
+                    }
                 }
 
                 GlobalVarOp.IsNotEmpty -> {
                     if (!currentValueHasBeenSet) {
                         false
-                    } else if (type == GlobalVarType.String) {
-                        kotlin.runCatching {
-                            currentValue.first().isNotEmpty()
-                        }.getOrElse {
-                            logger.e(it, "IsNotEmpty-String err")
-                            false
+                    } else {
+                        if (localVar.isList()) {
+                            currentValue.isNotEmpty()
+                        } else {
+                            !currentValue.firstOrNull().isNullOrEmpty()
                         }
-                    } else if (localVar.isList()) {
-                        currentValue.isNotEmpty()
-                    } else false
+                    }
                 }
 
                 GlobalVarOp.IsExists -> {

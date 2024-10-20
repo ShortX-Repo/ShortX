@@ -184,32 +184,26 @@ object EvaluateGlobalVar : Cond {
 
                 GlobalVarOp.IsEmpty -> {
                     if (!currentValueHasBeenSet) {
-                        false
-                    } else if (type == GlobalVarType.String) {
-                        kotlin.runCatching {
-                            currentValue.first().isEmpty()
-                        }.getOrElse {
-                            logger.e(it, "IsEmpty-String err")
-                            false
+                        true
+                    } else {
+                        if (globalVar.isList()) {
+                            currentValue.isEmpty()
+                        } else {
+                            currentValue.firstOrNull().isNullOrEmpty()
                         }
-                    } else if (globalVar.isList()) {
-                        currentValue.isEmpty()
-                    } else false
+                    }
                 }
 
                 GlobalVarOp.IsNotEmpty -> {
                     if (!currentValueHasBeenSet) {
                         false
-                    } else if (type == GlobalVarType.String) {
-                        kotlin.runCatching {
-                            currentValue.first().isNotEmpty()
-                        }.getOrElse {
-                            logger.e(it, "IsNotEmpty-String err")
-                            false
+                    } else {
+                        if (globalVar.isList()) {
+                            currentValue.isNotEmpty()
+                        } else {
+                            !currentValue.firstOrNull().isNullOrEmpty()
                         }
-                    } else if (globalVar.isList()) {
-                        currentValue.isNotEmpty()
-                    } else false
+                    }
                 }
 
                 GlobalVarOp.IsExists -> {
