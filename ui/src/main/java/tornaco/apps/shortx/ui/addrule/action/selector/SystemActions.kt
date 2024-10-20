@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import okhttp3.internal.toLongOrDefault
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.action.MediaPlaybackAction
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.OnOffToggle
@@ -556,7 +557,7 @@ fun SystemActions(
         Action.InjectCombineKeyCode::class,
         Action.ShowRecentApps::class,
         Action.ShowGlobalActionsMenu::class,
-        Action.ShowHideInsets::class,
+        BuildPropInternal.APP_IS_DEBUG.select(Action.ShowHideInsets::class, null),
         Action.MediaPlayback::class,
         Action.SetRingerMode::class,
         Action.AdjustVolume::class,
