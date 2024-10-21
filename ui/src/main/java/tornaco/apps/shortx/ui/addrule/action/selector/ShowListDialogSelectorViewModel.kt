@@ -15,7 +15,8 @@ data class ShowListDialogSelectorState(
     val message: String = "",
     val cancelable: Boolean = true,
     val data: String = "A,B,C",
-    val isMultipleChoice: Boolean = false
+    val isMultipleChoice: Boolean = false,
+    val delimiters: List<String> = listOf(",")
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -35,6 +36,7 @@ class ShowListDialogSelectorViewModel @Inject constructor(@ApplicationContext co
                     cancelable = settings.cancelable,
                     data = settings.data,
                     isMultipleChoice = settings.isMultipleChoice,
+                    delimiters = settings.delimiters
                 )
             }
         }
@@ -68,6 +70,26 @@ class ShowListDialogSelectorViewModel @Inject constructor(@ApplicationContext co
     fun updateIsMultipleChoice(isMultipleChoice: Boolean) {
         updateState {
             copy(isMultipleChoice = isMultipleChoice)
+        }
+    }
+
+    fun addDelimiters(str: String) {
+        updateState {
+            copy(
+                delimiters = delimiters.toMutableList().apply {
+                    add(str)
+                }
+            )
+        }
+    }
+
+    fun removeDelimiters(str: String) {
+        updateState {
+            copy(
+                delimiters = delimiters.toMutableList().apply {
+                    remove(str)
+                }
+            )
         }
     }
 }

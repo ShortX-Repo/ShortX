@@ -954,6 +954,8 @@
     "ui.action.show.list.dialog": "显示列表对话框",
     "ui.action.show.list.dialog.data": "列表数据",
     "ui.action.show.list.dialog.data.summary": "一个用英文逗号隔开不同列表项的字符串 \ne.g. 小明,小龙,大吉大利,今晚吃鸡",
+    "ui.action.show.list.dialog.delimiters": "分隔符",
+    "ui.action.show.list.dialog.delimiters.summary": "输入一个或多个分隔符用于切分字符串为列表",
     "ui.action.show.choice.dialog.item": "选择",
     "ui.action.show.choice.dialog.item.label": "选项标题，用于展示",
     "ui.action.show.choice.dialog.item.value": "选项值，会被设入变量",
