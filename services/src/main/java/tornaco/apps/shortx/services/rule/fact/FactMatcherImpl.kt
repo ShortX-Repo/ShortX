@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.rule.fact
 
 import com.google.protobuf.Descriptors
 import tornaco.apps.shortx.core.PrebuiltStablePkgSetLabel
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.RegexMatchData
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.OnOffAny
@@ -76,6 +77,8 @@ import tornaco.apps.shortx.core.proto.fact.ProximitySensorStateChanged
 import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
+import tornaco.apps.shortx.core.proto.fact.ScreenOnTime
+import tornaco.apps.shortx.core.proto.fact.ScreenOnTimeStartFrom
 import tornaco.apps.shortx.core.proto.fact.ScreenRotate
 import tornaco.apps.shortx.core.proto.fact.SensorValueTrend
 import tornaco.apps.shortx.core.proto.fact.ShakeDevice
@@ -99,7 +102,6 @@ import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.appPkgToString
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.cond.impl.EvaluateContextVar
@@ -644,6 +646,16 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
         }
         register(BackNavDone::class.java) { actual, rule ->
             true
+        }
+
+        register(ScreenOnTime::class.java) { actual, rule ->
+            val actualN = (actual as ScreenOnTime)
+            val ruleN = (rule as ScreenOnTime)
+            if (ruleN.from == ScreenOnTimeStartFrom.ScreenOnTimeStartFrom_LastScreenOff) {
+                actualN.publishDataFromScreenOffTime.toString() == ruleN.timeInSeconds
+            } else {
+                actualN.publishDataFromSystemReadyTime.toString() == ruleN.timeInSeconds
+            }
         }
 
         register(LightSensor::class.java) { actual, rule ->

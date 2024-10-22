@@ -10,11 +10,16 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.pm.ShortcutInfo
 import android.os.UserHandle
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.common.IntOp
 import tornaco.apps.shortx.core.proto.condition.TheXXTimeTodayScope
+import tornaco.apps.shortx.core.proto.fact.ScreenOnTime
 import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.userManager
@@ -23,10 +28,12 @@ import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
+import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.rule.cond.impl.matchIntOp
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicLong
 
 sealed interface UserEvent {
     data class Added(val userId: Int) : UserEvent
@@ -42,6 +49,10 @@ class UserService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     val requestPinShortcuts = mutableListOf<ShortcutInfo>()
     val requestPinAppWidgets = mutableListOf<AppWidgetProviderInfo>()
+
+    val screenOnTimeFromSystemReadyInSeconds = AtomicLong(0L)
+    val screenOnTimeFromLastScreenOffInSeconds = AtomicLong(0L)
+    private var screenTimeCalculatorJob: Job? = null
 
     private val userBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -100,6 +111,40 @@ class UserService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     override fun shutdown() {
         super.shutdown()
         context.unregisterReceiver(userBroadcastReceiver)
+    }
+
+    override fun screenOn() {
+        super.screenOn()
+        screenTimeCalculatorJob?.cancel()
+        screenOnTimeFromLastScreenOffInSeconds.set(0)
+        screenTimeCalculatorJob = systemServiceScope.launch {
+            while (isActive) {
+                delay(1000)
+                screenOnTimeFromLastScreenOffInSeconds.incrementAndGet()
+                screenOnTimeFromSystemReadyInSeconds.incrementAndGet()
+                logger.v { "Screen on time +1" }
+
+                // Publish
+                shortXContext.rule.publishFactChecked(
+                    factDefaultInstance = ScreenOnTime.getDefaultInstance()
+                ) {
+                    FactPublishData(
+                        reason = "Screen on time",
+                        fact = ScreenOnTime.newBuilder()
+                            .setPublishDataFromScreenOffTime(screenOnTimeFromLastScreenOffInSeconds.get())
+                            .setPublishDataFromSystemReadyTime(screenOnTimeFromSystemReadyInSeconds.get())
+                            .build()
+                    )
+                }
+            }
+        }
+    }
+
+    override fun screenOff() {
+        super.screenOff()
+        screenTimeCalculatorJob?.cancel()
+        screenOnTimeFromLastScreenOffInSeconds.set(0)
+        logger.v { "Screen on time reset." }
     }
 
     private fun registerReceivers() {

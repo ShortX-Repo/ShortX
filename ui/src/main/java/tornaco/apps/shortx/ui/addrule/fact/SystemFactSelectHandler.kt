@@ -29,6 +29,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.NFCTagSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.OnOffAnyStateSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.PeriodSelector
+import tornaco.apps.shortx.ui.addrule.fact.selector.ScreenOnTimeSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.SystemSettingsUrlSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.WifiSSIDSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAdvancedKeyEventSelectorState
@@ -41,6 +42,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.rememberKeyEventSelectorStat
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberNFCTagSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberOnOffAnyStateSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberRandomInPeriodSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberScreenOnTimeSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberSystemSettingsUrlSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberWifiSSIDSelectorState
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
@@ -382,6 +384,11 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     )
     MenuDialog(state = screenRotateSelectorState)
 
+    val screenOnTimeState = rememberScreenOnTimeSelectorState {
+        addFact(it)
+    }
+    ScreenOnTimeSelectorDialog(screenOnTimeState)
+
     val windowRotateSelectorState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.fact.window.rotate"],
         menuItems = ScreenRotateDegree.entries.filterNot { it == ScreenRotateDegree.UNRECOGNIZED }
@@ -482,6 +489,11 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
             Fact.ScreenOn::class -> {
                 addFact(Fact.ScreenOn())
+                true
+            }
+
+            Fact.ScreenOnTime::class -> {
+                screenOnTimeState.show(source.getFactAs())
                 true
             }
 

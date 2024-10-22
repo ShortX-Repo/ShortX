@@ -28,7 +28,11 @@
     "ui.conditions.eva.context.var": "Check context var",
     "ui.conditions.eva.local.var": "Check local var",
     "ui.conditions.screen.on": "Screen is ON",
-    "ui.conditions.screen.locked": "Screen is l",
+    "ui.fact.screen.on.time": "Screen on time",
+    "ui.fact.screen.on.time.seconds": "Seconds",
+    "ui.fact.screen.on.time.ScreenOnTimeStartFrom_LastScreenOff": "From last screen off - on",
+    "ui.fact.screen.on.time.ScreenOnTimeStartFrom_SystemReady": "From device booted",
+    "ui.conditions.screen.locked": "Screen is locked",
     "ui.conditions.screen.orientation.p": "Screen is portrait",
     "ui.conditions.vpn.is.connected": "VPN is connected",
     "ui.conditions.time.in.range": "Time in range",
@@ -962,7 +966,7 @@
     "ui.action.dialog.button.text": "Button text",
     "ui.action.show.list.dialog": "Show list dialog",
     "ui.action.show.list.dialog.data": "List data",
-    "ui.action.show.list.dialog.data.summary": "List items string, joined with ','  \ne.g. A,B,C",
+    "ui.action.show.list.dialog.data.summary": "List items string, can be spilt with delimiters  \ne.g. A,B,C",
     "ui.action.show.list.dialog.delimiters": "Delimiters",
     "ui.action.show.list.dialog.delimiters.summary": "One or more strings to be used as delimiters.",
     "ui.action.show.list.dialog.is.multiple": "Multiple choices",
@@ -1268,5 +1272,9 @@
     "ui.rule.ins.id.gen.default.description": "By default, same rule use the same unique id",
     "ui.rule.ins.id.gen.string.description": "Dynamic string, support global var and context data",
     "ui.rule.action.secure.warning.title": "Suggest checking the action",
-    "ui.rule.action.secure.warning.message": ""
+    "ui.rule.action.secure.warning.message": "",
+    "ui.rule.action.lego": "Custom UI",
+    "ui.rule.action.lego.component": "Component",
+    "ui.rule.action.lego.container": "Container",
+    "ui.rule.action.lego.preview": "Preview"
 }

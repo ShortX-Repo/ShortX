@@ -28,6 +28,7 @@ fun SystemFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: 
         Fact.ScreenRotate::class,
         Fact.WindowRotationChange::class,
         Fact.ScreenOn::class,
+        Fact.ScreenOnTime::class,
         Fact.ScreenOff::class,
         Fact.UserPresent::class,
         Fact.UserPresentAtTheFirstTime::class,

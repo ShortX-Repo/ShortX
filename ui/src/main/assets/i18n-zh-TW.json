@@ -33,6 +33,10 @@
     "ui.conditions.service.running": "服務正在執行",
     "ui.conditions.has.audio.focus": "程式正在播放音訊",
     "ui.conditions.screen.on": "螢幕亮着",
+    "ui.fact.screen.on.time": "亮屏时间",
+    "ui.fact.screen.on.time.seconds": "秒",
+    "ui.fact.screen.on.time.ScreenOnTimeStartFrom_LastScreenOff": "自上次灭屏后亮屏时间",
+    "ui.fact.screen.on.time.ScreenOnTimeStartFrom_SystemReady": "自开机以来亮屏时间",
     "ui.conditions.screen.locked": "螢幕已鎖",
     "ui.conditions.screen.orientation.p": "螢幕為豎向",
     "ui.conditions.vpn.is.connected": "VPN已連線",
@@ -953,7 +957,7 @@
     "ui.action.dialog.button.text": "按鈕文字",
     "ui.action.show.list.dialog": "显示列表对话框",
     "ui.action.show.list.dialog.data": "列表数据",
-    "ui.action.show.list.dialog.data.summary": "一个用英文逗号隔开不同列表项的字符串 \ne.g. 小明,小龙,大吉大利,今晚吃鸡",
+    "ui.action.show.list.dialog.data.summary": "输入要用分隔符隔开为列表项的字符串 \ne.g. 小明,小龙,大吉大利,今晚吃鸡",
     "ui.action.show.list.dialog.delimiters": "分隔符",
     "ui.action.show.list.dialog.delimiters.summary": "输入一个或多个分隔符用于切分字符串为列表",
     "ui.action.show.choice.dialog.item": "选择",
@@ -1265,5 +1269,9 @@
     "ui.rule.ins.id.gen.default.description": "自動為每個指令分配固定的獨一無二的ID",
     "ui.rule.ins.id.gen.string.description": "動態ID，支持引用變數",
     "ui.rule.action.secure.warning.title": "建議檢查動作",
-    "ui.rule.action.secure.warning.message": "請仔細檢查每個動作是否包含惡意操作，尤其是MVEL，Shell，JS動作"
+    "ui.rule.action.secure.warning.message": "請仔細檢查每個動作是否包含惡意操作，尤其是MVEL，Shell，JS動作",
+    "ui.rule.action.lego": "自定义UI",
+    "ui.rule.action.lego.component": "组件",
+    "ui.rule.action.lego.container": "容器",
+    "ui.rule.action.lego.preview": "预览"
 }
