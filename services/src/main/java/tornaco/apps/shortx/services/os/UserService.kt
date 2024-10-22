@@ -115,14 +115,18 @@ class UserService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     override fun screenOn() {
         super.screenOn()
-        screenTimeCalculatorJob?.cancel()
-        screenOnTimeFromLastScreenOffInSeconds.set(0)
+        startScreenTimeJob()
+    }
+
+    private fun startScreenTimeJob() {
+        logger.d("startScreenTimeJob")
+        resetScreenOnTimeJob()
         screenTimeCalculatorJob = systemServiceScope.launch {
             while (isActive) {
                 delay(1000)
                 screenOnTimeFromLastScreenOffInSeconds.incrementAndGet()
                 screenOnTimeFromSystemReadyInSeconds.incrementAndGet()
-                logger.v { "Screen on time +1" }
+                logger.v { "Screen on time +1 total: SystemReady-${screenOnTimeFromSystemReadyInSeconds.get()} ScreenOn-${screenOnTimeFromLastScreenOffInSeconds.get()}" }
 
                 // Publish
                 shortXContext.rule.publishFactChecked(
@@ -140,9 +144,25 @@ class UserService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         }
     }
 
+    override fun userPresent(isFirstTime: Boolean) {
+        super.userPresent(isFirstTime)
+        if (isFirstTime) {
+            val job = screenTimeCalculatorJob
+            if (job == null || !job.isActive) {
+                logger.w("userPresent, screenTimeCalculatorJob is not running, will start.")
+                startScreenTimeJob()
+            }
+        }
+    }
+
     override fun screenOff() {
         super.screenOff()
+        resetScreenOnTimeJob()
+    }
+
+    private fun resetScreenOnTimeJob() {
         screenTimeCalculatorJob?.cancel()
+        screenTimeCalculatorJob = null
         screenOnTimeFromLastScreenOffInSeconds.set(0)
         logger.v { "Screen on time reset." }
     }
