@@ -333,6 +333,8 @@
     "ui.common.flat": "Flat",
     "ui.common.saved": "Saved",
     "ui.common.done": "Done",
+    "ui.common.get": "Get",
+    "ui.common.set": "Set",
     "ui.common.got.it": "Got it",
     "ui.common.unnamed": "Unnamed",
     "ui.common.import.from.file": "Import from file",

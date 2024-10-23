@@ -333,6 +333,8 @@
     "ui.common.flat": "展平",
     "ui.common.saved": "已儲存",
     "ui.common.done": "完成",
+    "ui.common.get": "获取",
+    "ui.common.set": "设定",
     "ui.common.got.it": "知道了",
     "ui.common.unnamed": "未命名",
     "ui.common.import.from.file": "從文件匯入",

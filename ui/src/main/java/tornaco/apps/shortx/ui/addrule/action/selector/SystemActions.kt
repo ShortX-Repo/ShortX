@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.proto.action.MediaPlaybackAction
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.OnOffToggle
 import tornaco.apps.shortx.core.proto.common.RingerMode
+import tornaco.apps.shortx.core.proto.common.ScreenOnTimeStartFrom
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.common.VolumeDirection
 import tornaco.apps.shortx.core.shortXManager
@@ -34,6 +35,7 @@ import tornaco.apps.shortx.ui.addrule.condition.ToggleSlotSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.rememberSIMSlotSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberToggle5GSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberToggleSlotSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.mapper.factLabelKey
 import tornaco.apps.shortx.ui.addrule.fact.selector.BrightnessValueSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.CombineKeyEventSelectorActivity
 import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
@@ -141,6 +143,23 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
         }
     )
     MenuDialog(state = adjustVolumeSelectorState)
+
+    val screenTimeDialogState = rememberMenuDialogState<String>(
+        title = i18N["ui.common.get"] + i18N["ui.fact.screen.on.time"],
+        menuItems = listOf(
+            ScreenOnTimeStartFrom.ScreenOnTimeStartFrom_LastScreenOff,
+            ScreenOnTimeStartFrom.ScreenOnTimeStartFrom_SystemReady,
+        ).map {
+            MenuDialogItem(id = it.name, title = i18N[it.factLabelKey()])
+        },
+        onItemSelected = { _, id ->
+            val from = ScreenOnTimeStartFrom.valueOf(id)
+            addAction(
+                Action.GetScreenOnTime(from = from)
+            )
+        }
+    )
+    MenuDialog(state = screenTimeDialogState)
 
     val vibratePatternDialogState = rememberVibratePatternSelectorState(selected = {
         addAction(it)
@@ -535,6 +554,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.GetScreenOnTime::class -> {
+                screenTimeDialogState.show()
+                true
+            }
+
             else -> false
         }
     }
@@ -604,6 +628,7 @@ fun SystemActions(
         Action.DisconnectCurrentWifi::class,
         Action.SetMasterSync::class,
         Action.SendSMS::class,
+        Action.GetScreenOnTime::class,
     ).map {
         SelectorItem(
             type = it,

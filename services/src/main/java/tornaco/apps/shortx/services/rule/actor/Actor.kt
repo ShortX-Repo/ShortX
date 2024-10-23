@@ -365,6 +365,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.GetTextFromScreenNode
     },
+    GetScreenOnTime {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.GetScreenOnTime
+    },
     WriteClipboard {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.WriteClipboard
