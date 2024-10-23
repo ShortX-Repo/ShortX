@@ -111,8 +111,11 @@ fun ScreenOnTimeSelectorDialog(state: ScreenOnTimeSelectorState) {
                         ) {
                             FieldTitle(text = LocalI18N.current["ui.fact.screen.on.time"])
                             MediumSpacer()
-                            ShortXTextField(state.timeInSeconds, onValueChange = {})
-
+                            ShortXTextField(state.timeInSeconds, onValueChange = {
+                                state.timeInSeconds = it
+                            }, label = {
+                                Text(LocalI18N.current["ui.fact.screen.on.time.seconds"])
+                            })
 
                             LargeSpacer()
                             val fromState = rememberDropdownSelectorState()
