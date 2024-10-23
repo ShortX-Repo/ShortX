@@ -14,6 +14,7 @@ import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.condition.ConditionSelectSource
 import tornaco.apps.shortx.ui.addrule.condition.EvaluateGlobalVarSelectorDialog
+import tornaco.apps.shortx.ui.addrule.condition.EvaluateScreenOnTimeSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.IntOpSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.IntOpSelectorRes
 import tornaco.apps.shortx.ui.addrule.condition.SIMSlotSelectorDialog
@@ -22,6 +23,7 @@ import tornaco.apps.shortx.ui.addrule.condition.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.model.toProtoCondition
 import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateGlobalVarSelectorState
+import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateScreenOnTimeSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberIntOpSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberSIMSlotSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.mapper.factLabelKey
@@ -315,6 +317,11 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     )
     SelectionDialog(state = ringerModeSelectDialogState)
 
+    val screenOnTimeState = rememberEvaluateScreenOnTimeSelectorState {
+        addCondition(it)
+    }
+    EvaluateScreenOnTimeSelectorDialog(screenOnTimeState)
+
     return { source ->
         when (source.clazz) {
             Condition.IsHeadsetPlug::class -> {
@@ -450,6 +457,11 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
 
             Condition.RequireRingerMode::class -> {
                 ringerModeSelectDialogState.show()
+                true
+            }
+
+            Condition.EvaluateScreenOnTime::class -> {
+                screenOnTimeState.show()
                 true
             }
 

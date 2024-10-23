@@ -42,6 +42,7 @@ fun SystemConditions(
         Condition.IsRinging::class,
         Condition.IsHeadsetPlug::class,
         Condition.RequireSensorOff::class,
+        Condition.EvaluateScreenOnTime::class,
         Condition.RequireTileState::class,
         Condition.RequireAPMMode::class,
         Condition.RequireIMEVisibility::class,

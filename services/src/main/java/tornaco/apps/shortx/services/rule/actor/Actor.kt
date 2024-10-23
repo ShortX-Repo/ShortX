@@ -8,10 +8,10 @@ import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
-import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.cond.ConditionEvaluator
 import tornaco.apps.shortx.services.rule.fact.FactMatcher
+import tornaco.apps.shortx.services.util.LoggerCache
 
 data class HandleParams(
     val androidContext: Context,
@@ -44,7 +44,7 @@ interface Actor {
         logger.i("Actor $this init")
     }
 
-    val logger get() = Logger("Actor-${actionsCanHandle().simpleName}")
+    val logger get() = LoggerCache.getLogger("Actor-${actionsCanHandle().simpleName}")
 }
 
 interface ActorProvider {

@@ -8,11 +8,11 @@ import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
-import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.util.LoggerCache
 
 interface Cond {
-    val logger get() = Logger("Cond-${condClass().simpleName}")
+    val logger get() = LoggerCache.getLogger("Cond-${condClass().simpleName}")
 
     fun condClass(): Class<out Message>
 
@@ -84,6 +84,10 @@ enum class PrebuiltCond : CondProvider {
     EvaluateLocalVar {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.EvaluateLocalVar
+    },
+    EvaluateScreenOnTime {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.EvaluateScreenOnTime
     },
     BatteryPercent {
         override val cond: Cond

@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.proto.RegexMatchData
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.RegexMatchOptions
+import tornaco.apps.shortx.core.proto.common.ScreenOnTimeStartFrom
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.fact.APMStatusChanged
 import tornaco.apps.shortx.core.proto.fact.AccelerometerSensor
@@ -78,7 +79,6 @@ import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
 import tornaco.apps.shortx.core.proto.fact.ScreenOnTime
-import tornaco.apps.shortx.core.proto.fact.ScreenOnTimeStartFrom
 import tornaco.apps.shortx.core.proto.fact.ScreenRotate
 import tornaco.apps.shortx.core.proto.fact.SensorValueTrend
 import tornaco.apps.shortx.core.proto.fact.ShakeDevice

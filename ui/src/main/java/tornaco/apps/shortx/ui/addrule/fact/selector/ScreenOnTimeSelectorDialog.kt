@@ -21,7 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import tornaco.apps.shortx.core.proto.fact.ScreenOnTimeStartFrom
+import tornaco.apps.shortx.core.proto.common.ScreenOnTimeStartFrom
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.fact.mapper.factLabelKey
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
@@ -118,28 +118,7 @@ fun ScreenOnTimeSelectorDialog(state: ScreenOnTimeSelectorState) {
                             })
 
                             LargeSpacer()
-                            val fromState = rememberDropdownSelectorState()
-                            Box {
-                                FilledTonalButton(
-                                    onClick = {
-                                        fromState.open()
-                                    }) {
-                                    Text(LocalI18N.current[state.from.factLabelKey()])
-                                }
-                                DropdownSelector(
-                                    state = fromState,
-                                    items = ScreenOnTimeStartFrom.entries.toMutableList().apply {
-                                        remove(ScreenOnTimeStartFrom.UNRECOGNIZED)
-                                    }.map {
-                                        DropdownItem(
-                                            labelLines = listOf(LocalI18N.current[it.factLabelKey()]),
-                                            data = it,
-                                        )
-                                    }
-                                ) {
-                                    state.from = it.data
-                                }
-                            }
+                            ScreenOnFromButton(state.from) { state.from = it }
 
                             SectionSpacer()
                             SectionSpacer()
@@ -148,6 +127,32 @@ fun ScreenOnTimeSelectorDialog(state: ScreenOnTimeSelectorState) {
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun ScreenOnFromButton(from: ScreenOnTimeStartFrom, update: (ScreenOnTimeStartFrom) -> Unit) {
+    val fromState = rememberDropdownSelectorState()
+    Box {
+        FilledTonalButton(
+            onClick = {
+                fromState.open()
+            }) {
+            Text(LocalI18N.current[from.factLabelKey()])
+        }
+        DropdownSelector(
+            state = fromState,
+            items = ScreenOnTimeStartFrom.entries.toMutableList().apply {
+                remove(ScreenOnTimeStartFrom.UNRECOGNIZED)
+            }.map {
+                DropdownItem(
+                    labelLines = listOf(LocalI18N.current[it.factLabelKey()]),
+                    data = it,
+                )
+            }
+        ) {
+            update(it.data)
         }
     }
 }
