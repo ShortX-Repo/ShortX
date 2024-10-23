@@ -7,8 +7,14 @@ object LoggerCache {
 
     @Synchronized
     fun getLogger(tag: String): Logger {
-        return requireNotNull(
-            cachedLoggers.putIfAbsent(tag, Logger(tag))
-        ) { "getLogger returns null." }
+        val existing = if (cachedLoggers.contains(tag)) cachedLoggers[tag] else null
+        if (existing != null) {
+            return existing
+        } else {
+            val logger = Logger(tag).also {
+                cachedLoggers[tag] = it
+            }
+            return logger
+        }
     }
 }
