@@ -8,9 +8,13 @@ import com.google.protobuf.Message
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.os.ScreenCap
+import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.DateUtils
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
@@ -26,6 +30,7 @@ object AreaScreenshot : Actor {
     override suspend fun handle(
         params: HandleParams
     ): Unit = with(params) {
+        val d = action unpack_ tornaco.apps.shortx.core.proto.action.AreaScreenshot::class.java
         val area = startSelectScreenArea(shortXContext)
         val rect: Rect? = area?.getRect(androidContext)
 
@@ -72,7 +77,19 @@ object AreaScreenshot : Actor {
         )
         logger.i("Screenshot saved: $destFile")
 
-        MediaScannerUtil.scanFile(androidContext, destFile.absolutePath)
+        val fileAndUri = MediaScannerUtil.scanFile(androidContext, destFile.absolutePath)
+        logger.i("fileAndUri: $fileAndUri")
+
+        params.contextData.add(
+            d.customContextDataKey.forKey(ContextDataMapping.AreaScreenshot.screenshotFilePath.name)
+                .fallbackOnEmpty { ContextDataMapping.AreaScreenshot.screenshotFilePath.name },
+            fileAndUri.first
+        )
+        params.contextData.add(
+            d.customContextDataKey.forKey(ContextDataMapping.AreaScreenshot.screenshotFileUri.name)
+                .fallbackOnEmpty { ContextDataMapping.AreaScreenshot.screenshotFileUri.name },
+            fileAndUri.second
+        )
 
         withContext(Dispatchers.Main) {
             Toast.makeText(
