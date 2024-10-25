@@ -34,6 +34,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -163,6 +164,7 @@ fun AudioRecordScreen(back: () -> Unit) {
                         }
 
                         items(state.records) { recordFile ->
+                            val updatedFile by rememberUpdatedState(recordFile)
                             val dateString = remember(recordFile.date) {
                                 FuzzyDateTimeFormatter.getTimeAgo(context, Date(recordFile.date))
                             }
@@ -170,18 +172,18 @@ fun AudioRecordScreen(back: () -> Unit) {
                             Box {
                                 val popMenuState =
                                     listItemOverflowMenu(
-                                        record = recordFile,
+                                        record = updatedFile,
                                         onDelete = {
-                                            vm.delete(it)
+                                            vm.delete(updatedFile)
                                         },
-                                        onRename = { record, name ->
-                                            vm.rename(record, name)
+                                        onRename = { name ->
+                                            vm.rename(updatedFile, name)
                                         },
                                         onExport = {
-                                            vm.export(recordFile)
+                                            vm.export(updatedFile)
                                         },
                                         onView = {
-                                            playRecordingWithExternalApp(context, recordFile)
+                                            playRecordingWithExternalApp(context, updatedFile)
                                         }
                                     )
 
@@ -228,10 +230,10 @@ fun AudioRecordScreen(back: () -> Unit) {
 @Composable
 private fun listItemOverflowMenu(
     record: AudioRecordFile,
-    onDelete: (AudioRecordFile) -> Unit,
-    onRename: (AudioRecordFile, String) -> Unit,
-    onExport: (AudioRecordFile) -> Unit,
-    onView: (AudioRecordFile) -> Unit,
+    onDelete: () -> Unit,
+    onRename: (String) -> Unit,
+    onExport: () -> Unit,
+    onView: () -> Unit,
 ): DropdownSelectorState {
     val menuState = rememberDropdownSelectorState()
 
@@ -240,7 +242,7 @@ private fun listItemOverflowMenu(
         message = null,
         showSymbolButton = false,
         onSelected = {
-            onRename(record, it)
+            onRename(it)
         })
     TextInputDialog(textInputState)
 
@@ -268,7 +270,7 @@ private fun listItemOverflowMenu(
     ), onSelect = {
         when (it.data) {
             "delete" -> {
-                onDelete(record)
+                onDelete()
             }
 
             "rename" -> {
@@ -276,11 +278,11 @@ private fun listItemOverflowMenu(
             }
 
             "export" -> {
-                onExport(record)
+                onExport()
             }
 
             "view" -> {
-                onView(record)
+                onView()
             }
 
             else -> {}

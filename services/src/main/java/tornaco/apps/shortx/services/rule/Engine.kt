@@ -242,7 +242,7 @@ class DefaultRuleEngine(
         initialContextDataLazy: () -> Map<String, Any>
     ): Boolean {
         if (!isRuleFeatureEnabled()) {
-            logger.w("Drop fact since Rule feature is disabled: $fact")
+            logger.w("Drop fact since Rule feature is disabled: ${fact.javaClass}")
             return false
         }
         if (fact is SystemReady) {
@@ -250,7 +250,7 @@ class DefaultRuleEngine(
         }
 
         if (fact !is SystemReady && !isSystemReadyPublished()) {
-            logger.w("Drop fact since System NOT ready: $fact")
+            logger.w("Drop fact since System NOT ready: ${fact.javaClass}")
             return false
         }
 

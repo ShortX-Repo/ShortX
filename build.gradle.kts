@@ -1,7 +1,6 @@
 import com.android.build.gradle.api.AndroidBasePlugin
 import com.github.megatronking.stringfog.plugin.StringFogExtension
 import tornaco.project.android.shortx.Configs.outDir
-import tornaco.project.android.shortx.Configs.sxIsDebugBuild
 import tornaco.project.android.shortx.Configs.sxVersionCode
 import tornaco.project.android.shortx.Configs.sxVersionName
 import tornaco.project.android.shortx.log
@@ -85,9 +84,8 @@ subprojects {
                 minSdk = tornaco.project.android.shortx.Configs.minSdkVersion
                 if (this is com.android.build.api.dsl.ApplicationDefaultConfig) {
                     targetSdk = tornaco.project.android.shortx.Configs.targetSdkVersion
-                    versionCode =
-                        if (sxIsDebugBuild) 999999 else tornaco.project.android.shortx.Configs.sxVersionCode
-                    versionName = tornaco.project.android.shortx.Configs.sxVersionName
+                    versionCode = sxVersionCode
+                    versionName = sxVersionName
                     testInstrumentationRunner =
                         tornaco.project.android.shortx.Configs.testInstrumentationRunner
                 }

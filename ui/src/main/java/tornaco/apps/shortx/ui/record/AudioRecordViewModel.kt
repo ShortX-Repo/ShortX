@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.common.AudioRecordFile
+import tornaco.apps.shortx.core.proto.nameAndExt
 import tornaco.apps.shortx.core.util.FileHelper
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
@@ -54,7 +55,8 @@ class AudioRecordViewModel @Inject constructor(@ApplicationContext context: Cont
                     .filter { it.isFile }
                     .map {
                         AudioRecordFile.newBuilder()
-                            .setName(it.name)
+                            .setName(it.nameWithoutExtension)
+                            .setExt(it.extension)
                             .setDuration(getAudioDuration(it))
                             .setPath(it.absolutePath)
                             .setDate(it.lastModified())
@@ -70,29 +72,26 @@ class AudioRecordViewModel @Inject constructor(@ApplicationContext context: Cont
     }
 
     fun delete(file: AudioRecordFile) {
-        shortXManager.deleteAudioRecordFile(file)
-        File(appRecordFileDir, file.name).delete()
+        val fileToDel = File(appRecordFileDir, file.nameAndExt)
+        if (!fileToDel.delete()) {
+            logger.e("Fail to delete file: $fileToDel")
+        }
         loadState()
     }
 
     fun rename(file: AudioRecordFile, newName: String) {
-        shortXManager.renameAudioRecordFile(file, newName)
-        File(appRecordFileDir, file.name).renameTo(File(appRecordFileDir, newName))
+        val oldFile = File(appRecordFileDir, file.nameAndExt)
+        val newFile = File(appRecordFileDir, newName + "." + file.ext)
+        if (!oldFile.renameTo(newFile)) {
+            logger.e("Fail rename: $oldFile ---> $newFile")
+        }
         loadState()
     }
 
     fun export(file: AudioRecordFile) {
         viewModelScope.launch {
             runCatching {
-                val tmpFile = File(
-                    context.cacheDir,
-                    "ShortX-Audio-Record-${System.currentTimeMillis()}"
-                ).apply { createNewFile() }
-                val pfd =
-                    ParcelFileDescriptor.open(tmpFile, ParcelFileDescriptor.MODE_READ_WRITE)
-
-                shortXManager.exportAudioRecordFile(file, pfd)
-
+                val tmpFile = File(file.path)
                 val resolver = context.contentResolver
                 // Find all audio files on the primary external storage device.
                 // On API <= 28, use VOLUME_EXTERNAL instead.
@@ -134,7 +133,6 @@ class AudioRecordViewModel @Inject constructor(@ApplicationContext context: Cont
                 audioDetails.put(MediaStore.Audio.Media.IS_PENDING, 0)
                 resolver.update(contentUri, audioDetails, null, null)
 
-                tmpFile.delete()
                 val path = FileHelper.getRealPathFromURI(context, contentUri)
                 _exportPerformed.emit(ExportResult.Success(path))
             }.getOrElse {
@@ -148,7 +146,7 @@ class AudioRecordViewModel @Inject constructor(@ApplicationContext context: Cont
         runCatching {
             val appRecordFile = File(
                 appRecordFileDir,
-                file.name
+                file.nameAndExt
             )
             if (appRecordFile.exists()) {
                 return@runCatching
@@ -159,7 +157,7 @@ class AudioRecordViewModel @Inject constructor(@ApplicationContext context: Cont
             val pfd =
                 ParcelFileDescriptor.open(appRecordFile, ParcelFileDescriptor.MODE_READ_WRITE)
             shortXManager.exportAudioRecordFile(file, pfd)
-            pfd.close()
+            shortXManager.deleteAudioRecordFile(file)
         }.getOrElse {
             logger.e(it, "exportToShortXApp")
         }

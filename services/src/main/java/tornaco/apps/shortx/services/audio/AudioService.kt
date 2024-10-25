@@ -19,6 +19,7 @@ import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AudioRecordFile
 import tornaco.apps.shortx.core.proto.common.AudioSource
 import tornaco.apps.shortx.core.proto.common.Ringtone
+import tornaco.apps.shortx.core.proto.nameAndExt
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.audioManager
@@ -207,9 +208,11 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext, 
             .walk(FileWalkDirection.TOP_DOWN)
             .filter { it.isFile }
             .map { file ->
-                AudioRecordFile.newBuilder().setName(file.nameWithoutExtension)
+                AudioRecordFile.newBuilder()
+                    .setName(file.nameWithoutExtension)
                     .setExt(file.extension)
-                    .setPath(file.absolutePath).setDate(file.lastModified())
+                    .setPath(file.absolutePath)
+                    .setDate(file.lastModified())
                     .setFileSize(Files.size(file.toPath()))
                     .build()
             }.toList()
@@ -218,7 +221,7 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     fun deleteAudioRecordFile(file: AudioRecordFile) {
         enforceCallingPermissions()
         logger.i("deleteAudioRecordFile: $file")
-        val fileToDel = File(baseServerRecordingDir(), file.name + "." + file.ext)
+        val fileToDel = File(baseServerRecordingDir(), file.nameAndExt)
         if (!fileToDel.delete()) {
             logger.w("Unable to delete file: $fileToDel")
         }
@@ -227,7 +230,7 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     fun renameAudioRecordFile(file: AudioRecordFile, name: String) {
         enforceCallingPermissions()
         logger.i("renameAudioRecordFile: $file $name")
-        val fileToRen = File(baseServerRecordingDir(), file.name + "." + file.ext)
+        val fileToRen = File(baseServerRecordingDir(), file.nameAndExt)
         val fileNew = File(baseServerRecordingDir(), name + "." + file.ext)
         if (!fileToRen.renameTo(fileNew)) {
             logger.w("Unable to rename file: $fileToRen $fileNew")
