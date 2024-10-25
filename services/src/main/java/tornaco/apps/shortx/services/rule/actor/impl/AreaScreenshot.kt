@@ -19,7 +19,7 @@ import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.services.rule.actor.impl.SelectScreenArea.startSelectScreenArea
-import tornaco.apps.shortx.services.util.MediaScannerUtil
+import tornaco.apps.shortx.services.util.MediaUtil
 import java.io.File
 
 object AreaScreenshot : Actor {
@@ -77,7 +77,7 @@ object AreaScreenshot : Actor {
         )
         logger.i("Screenshot saved: $destFile")
 
-        val fileAndUri = MediaScannerUtil.scanFile(androidContext, destFile.absolutePath)
+        val fileAndUri = MediaUtil.scanFile(androidContext, destFile.absolutePath)
         logger.i("fileAndUri: $fileAndUri")
 
         params.contextData.add(

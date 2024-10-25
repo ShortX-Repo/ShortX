@@ -6,7 +6,7 @@ import android.net.Uri
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeout
 
-object MediaScannerUtil {
+object MediaUtil {
     suspend fun scanFile(context: Context, filePath: String): Pair<String, Uri> {
         return withTimeout(3000) {
             suspendCancellableCoroutine<Pair<String, Uri>> { continuation ->

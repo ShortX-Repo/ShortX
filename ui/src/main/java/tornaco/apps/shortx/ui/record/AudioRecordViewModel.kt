@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.record
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
+import android.media.MediaMetadataRetriever
 import android.os.ParcelFileDescriptor
 import android.provider.MediaStore
 import androidx.lifecycle.viewModelScope
@@ -19,6 +20,7 @@ import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import java.io.File
 import java.io.FileOutputStream
+import java.nio.file.Files
 import javax.inject.Inject
 
 data class AudioRecordState(
@@ -38,11 +40,30 @@ class AudioRecordViewModel @Inject constructor(@ApplicationContext context: Cont
     private val _exportPerformed = MutableSharedFlow<ExportResult>()
     val exportPerformed = _exportPerformed.asSharedFlow()
 
+    private val appRecordFileDir = File(context.filesDir, "records").apply {
+        mkdirs()
+    }
+
     fun loadState() {
         viewModelScope.launch {
             updateState { copy(isLoading = true) }
             val records = withContext(Dispatchers.IO) {
-                shortXManager.getAllAudioRecordFiles().sortedByDescending { it.date }
+                shortXManager.getAllAudioRecordFiles().forEach { exportToShortXApp(it) }
+                val files = appRecordFileDir
+                    .walk(FileWalkDirection.TOP_DOWN)
+                    .filter { it.isFile }
+                    .map {
+                        AudioRecordFile.newBuilder()
+                            .setName(it.name)
+                            .setDuration(getAudioDuration(it))
+                            .setPath(it.absolutePath)
+                            .setDate(it.lastModified())
+                            .setFileSize(Files.size(it.toPath()))
+                            .build()
+                    }.filterNotNull()
+                    .sortedByDescending { it.date }
+                    .toList()
+                files
             }
             updateState { copy(isLoading = false, records = records) }
         }
@@ -50,6 +71,13 @@ class AudioRecordViewModel @Inject constructor(@ApplicationContext context: Cont
 
     fun delete(file: AudioRecordFile) {
         shortXManager.deleteAudioRecordFile(file)
+        File(appRecordFileDir, file.name).delete()
+        loadState()
+    }
+
+    fun rename(file: AudioRecordFile, newName: String) {
+        shortXManager.renameAudioRecordFile(file, newName)
+        File(appRecordFileDir, file.name).renameTo(File(appRecordFileDir, newName))
         loadState()
     }
 
@@ -114,5 +142,33 @@ class AudioRecordViewModel @Inject constructor(@ApplicationContext context: Cont
                 _exportPerformed.emit(ExportResult.Failed(it.message ?: "UNKNOWN ERR"))
             }
         }
+    }
+
+    private fun exportToShortXApp(file: AudioRecordFile) {
+        runCatching {
+            val appRecordFile = File(
+                appRecordFileDir,
+                file.name
+            )
+            if (appRecordFile.exists()) {
+                return@runCatching
+            } else {
+                appRecordFile.createNewFile()
+            }
+            logger.d("Pull audio file: $appRecordFile")
+            val pfd =
+                ParcelFileDescriptor.open(appRecordFile, ParcelFileDescriptor.MODE_READ_WRITE)
+            shortXManager.exportAudioRecordFile(file, pfd)
+            pfd.close()
+        }.getOrElse {
+            logger.e(it, "exportToShortXApp")
+        }
+    }
+
+    private fun getAudioDuration(file: File): Long {
+        val retriever = MediaMetadataRetriever()
+        retriever.setDataSource(file.absolutePath)
+        val durationStr = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+        return durationStr?.toLong() ?: 0L
     }
 }

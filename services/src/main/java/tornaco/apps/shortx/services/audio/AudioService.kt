@@ -31,7 +31,6 @@ import tornaco.apps.shortx.services.audio.omrecorder.PullTransport
 import tornaco.apps.shortx.services.audio.omrecorder.PullableSource
 import tornaco.apps.shortx.services.audio.recorder.ScreenMediaRecorder
 import tornaco.apps.shortx.services.audio.recorder.ScreenRecordingAudioSource
-import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.data.Dirs.baseServerRecordingDir
 import tornaco.apps.shortx.services.enforceCallingPermissions
 import tornaco.apps.shortx.services.runClearCallingIdentity
@@ -204,13 +203,14 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     }
 
     fun getAllAudioRecordFiles(): List<AudioRecordFile> {
-        return Dirs.baseServerRecordingDir()
+        return baseServerRecordingDir()
             .walk(FileWalkDirection.TOP_DOWN)
             .filter { it.isFile }
-            .map {
-                AudioRecordFile.newBuilder().setName(it.nameWithoutExtension)
-                    .setPath(it.absolutePath).setDate(it.lastModified())
-                    .setFileSize(Files.size(it.toPath()))
+            .map { file ->
+                AudioRecordFile.newBuilder().setName(file.nameWithoutExtension)
+                    .setExt(file.extension)
+                    .setPath(file.absolutePath).setDate(file.lastModified())
+                    .setFileSize(Files.size(file.toPath()))
                     .build()
             }.toList()
     }
@@ -218,7 +218,20 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     fun deleteAudioRecordFile(file: AudioRecordFile) {
         enforceCallingPermissions()
         logger.i("deleteAudioRecordFile: $file")
-        File(file.path).delete()
+        val fileToDel = File(baseServerRecordingDir(), file.name + "." + file.ext)
+        if (!fileToDel.delete()) {
+            logger.w("Unable to delete file: $fileToDel")
+        }
+    }
+
+    fun renameAudioRecordFile(file: AudioRecordFile, name: String) {
+        enforceCallingPermissions()
+        logger.i("renameAudioRecordFile: $file $name")
+        val fileToRen = File(baseServerRecordingDir(), file.name + "." + file.ext)
+        val fileNew = File(baseServerRecordingDir(), name + "." + file.ext)
+        if (!fileToRen.renameTo(fileNew)) {
+            logger.w("Unable to rename file: $fileToRen $fileNew")
+        }
     }
 
     fun exportAudioRecordFile(file: AudioRecordFile, pfd: ParcelFileDescriptor) {

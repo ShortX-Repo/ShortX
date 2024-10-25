@@ -694,6 +694,13 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.audio.deleteAudioRecordFile(AudioRecordFile.parseFrom(file.byteData))
         }
 
+        override fun renameAudioRecordFile(file: ByteArrayWrapper, name: String) {
+            shortXContext.audio.renameAudioRecordFile(
+                AudioRecordFile.parseFrom(file.byteData),
+                name
+            )
+        }
+
         override fun exportAudioRecordFile(file: ByteArrayWrapper, pfd: ParcelFileDescriptor?) {
             logger.w("exportAudioRecordFile: $file $pfd")
             shortXContext.audio.exportAudioRecordFile(

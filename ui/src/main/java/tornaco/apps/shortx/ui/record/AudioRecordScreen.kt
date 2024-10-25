@@ -7,6 +7,8 @@ package tornaco.apps.shortx.ui.record
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,21 +38,31 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
+import tornaco.apps.shortx.core.proto.common.AudioRecordFile
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.util.DateUtilsKotlin
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ColoredIcon
+import tornaco.apps.shortx.ui.base.DropdownItem
+import tornaco.apps.shortx.ui.base.DropdownSelector
+import tornaco.apps.shortx.ui.base.DropdownSelectorState
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TipRow
+import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.theme.PrefIcon
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import java.io.File
 import java.text.DecimalFormat
 import java.util.Date
 import kotlin.math.log10
@@ -156,37 +168,47 @@ fun AudioRecordScreen(back: () -> Unit) {
                             }
                             val fileSizeString = readableFileSize(recordFile.fileSize)
                             Box {
+                                val popMenuState =
+                                    listItemOverflowMenu(
+                                        record = recordFile,
+                                        onDelete = {
+                                            vm.delete(it)
+                                        },
+                                        onRename = { record, name ->
+                                            vm.rename(record, name)
+                                        },
+                                        onExport = {
+                                            vm.export(recordFile)
+                                        },
+                                        onView = {
+                                            playRecordingWithExternalApp(context, recordFile)
+                                        }
+                                    )
+
                                 ListItem(
-                                    modifier = Modifier.padding(end = 16.dp),
                                     titleLines = listOf(
                                         recordFile.name,
-                                        dateString,
-                                        fileSizeString
+                                        DateUtilsKotlin.formatDuration(
+                                            recordFile.duration
+                                        ) + "\t\t" + fileSizeString + "\t\t" + dateString
                                     ),
                                     icon = {
                                         ColoredIcon {
-                                            RemixIcon(remixName = Remix.Document.file_2_line)
+                                            RemixIcon(remixName = Remix.Document.file_music_fill)
                                         }
                                     },
                                     action1 = {
                                         IconButton(onClick = {
-                                            vm.delete(recordFile)
+                                            playRecordingWithExternalApp(context, recordFile)
                                         }) {
                                             RemixIcon(
-                                                remixName = Remix.System.delete_bin_5_fill,
-                                                tint = PrefIcon
-                                            )
-                                        }
-                                        IconButton(onClick = {
-                                            vm.export(recordFile)
-                                        }) {
-                                            RemixIcon(
-                                                remixName = Remix.System.download_2_fill,
+                                                remixName = Remix.Media.play_line,
                                                 tint = PrefIcon
                                             )
                                         }
                                     },
                                     onClick = {
+                                        popMenuState.open()
                                     })
                             }
                         }
@@ -203,6 +225,70 @@ fun AudioRecordScreen(back: () -> Unit) {
     }
 }
 
+@Composable
+private fun listItemOverflowMenu(
+    record: AudioRecordFile,
+    onDelete: (AudioRecordFile) -> Unit,
+    onRename: (AudioRecordFile, String) -> Unit,
+    onExport: (AudioRecordFile) -> Unit,
+    onView: (AudioRecordFile) -> Unit,
+): DropdownSelectorState {
+    val menuState = rememberDropdownSelectorState()
+
+    val textInputState = rememberTextInputState(
+        title = LocalI18N.current["ui.common.rename"],
+        message = null,
+        showSymbolButton = false,
+        onSelected = {
+            onRename(record, it)
+        })
+    TextInputDialog(textInputState)
+
+    DropdownSelector(widthFraction = 0.33f, state = menuState, items = listOf(
+        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.view"]),
+            data = "view",
+            icon = {
+                RemixIcon(remixName = Remix.Media.play_line)
+            }),
+        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.get"]),
+            data = "export",
+            icon = {
+                RemixIcon(remixName = Remix.System.download_2_fill)
+            }),
+        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.rename"]),
+            data = "rename",
+            icon = {
+                RemixIcon(remixName = Remix.Editor.font_size)
+            }),
+        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
+            data = "delete",
+            icon = {
+                RemixIcon(remixName = Remix.System.delete_bin_fill)
+            }),
+    ), onSelect = {
+        when (it.data) {
+            "delete" -> {
+                onDelete(record)
+            }
+
+            "rename" -> {
+                textInputState.show(initialValue = record.name)
+            }
+
+            "export" -> {
+                onExport(record)
+            }
+
+            "view" -> {
+                onView(record)
+            }
+
+            else -> {}
+        }
+    })
+    return menuState
+}
+
 fun readableFileSize(size: Long): String {
     if (size <= 0) return "0"
     val units = arrayOf("B", "kB", "MB", "GB", "TB")
@@ -210,4 +296,24 @@ fun readableFileSize(size: Long): String {
     return DecimalFormat("#,##0.#").format(
         size / 1024.0.pow(digitGroups.toDouble())
     ) + " " + units[digitGroups]
+}
+
+private fun playRecordingWithExternalApp(context: Context, audioFile: AudioRecordFile) {
+    val uri: Uri = FileProvider.getUriForFile(
+        context,
+        "tornaco.apps.shortx",
+        File(audioFile.path)
+    )
+
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        setDataAndType(uri, "audio/*")
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+
+    if (intent.resolveActivity(context.packageManager) != null) {
+        context.startActivity(intent)
+    } else {
+        Toast.makeText(context, "No suitable app found to play the recording", Toast.LENGTH_SHORT)
+            .show()
+    }
 }
