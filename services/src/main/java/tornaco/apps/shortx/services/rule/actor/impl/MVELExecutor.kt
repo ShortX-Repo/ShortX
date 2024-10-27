@@ -64,7 +64,7 @@ class MVELExecutor(
             }
         }
         logger.logOnDebug("varsMap: $varsMap")
-        logger.w("Execute: $expression")
+        logger.d("Execute: $expression")
         return MVEL.executeExpression(MVEL.compileExpression(expression), varsMap)
     }
 }
