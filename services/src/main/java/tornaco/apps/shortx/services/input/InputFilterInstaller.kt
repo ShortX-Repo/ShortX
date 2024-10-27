@@ -16,12 +16,12 @@ class InputFilterInstaller(private val root: ShortXService) {
     fun installInputFilter() {
         val hasDisableGestureFlag =
             root.serviceBinder.hasHookFlags(ShortXManager.Companion.HookFlags.FLAG_DISABLE_GESTURE_HOOK)
-        logger.i("installInputFilter, hasDisableGestureFlag: $hasDisableGestureFlag")
+        logger.w("installInputFilter, hasDisableGestureFlag: $hasDisableGestureFlag")
         if (!hasDisableGestureFlag) {
             val ims = ServiceHolder.inputManagerService
-            logger.d("installInputFilter, ims: $ims")
+            logger.w("installInputFilter, ims: $ims")
             val inputFilter = Reflections.getObjectField(ims, "mInputFilter")
-            logger.d("installInputFilter, inputFilter: $inputFilter")
+            logger.w("installInputFilter, inputFilter: $inputFilter")
 
             // Not null means input filter is enabled.
             if (inputFilter == null) {

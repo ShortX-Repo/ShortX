@@ -83,6 +83,7 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
 
     override fun userPresent(isFirstTime: Boolean) {
         super.userPresent(isFirstTime)
+        logger.w("userPresent. isFirstTime- $isFirstTime")
         if (isFirstTime) {
             systemServiceScope.launchSafety {
                 delay(2000)
