@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule.cond.impl
 
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.context.ContextMapUtil.contextDataValueToString
 import tornaco.apps.shortx.core.proto.condition.EvaluateContextVar
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOp
 import tornaco.apps.shortx.core.rule.compileContextAndVars
@@ -15,7 +16,8 @@ object EvaluateContextVar : Cond {
         return with(param) {
             val data = condition unpack_ EvaluateContextVar::class.java
             val targetVarName = data.varName
-            val currentVarValueOrNull = param.contextData.get(targetVarName)?.toString()
+            val currentVarValueOrNull = param.contextData.get(targetVarName)
+                ?.contextDataValueToString()
 
             val cv = RuleContextAndVars(param)
             val payloadValue = data.payload.value.compileContextAndVars(cv)
