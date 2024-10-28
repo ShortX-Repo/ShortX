@@ -1,11 +1,16 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
-import android.R
 import android.app.AlertDialog
 import android.content.Context
+import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ArrayAdapter
+import android.widget.CheckBox
+import android.widget.LinearLayout
 import android.widget.ListView
+import android.widget.TextView
 import com.google.protobuf.Message
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -99,13 +104,8 @@ object ShowListDialog : Actor {
                         ListView.CHOICE_MODE_SINGLE
                     }
             }
-            val adapter = ArrayAdapter(
+            val adapter = CheckboxAdapter(
                 context,
-                if (d.isMultipleChoice) {
-                    R.layout.simple_list_item_multiple_choice
-                } else {
-                    R.layout.simple_list_item_single_choice
-                },
                 listItems
             )
             listView.adapter = adapter
@@ -115,14 +115,9 @@ object ShowListDialog : Actor {
                     d.title.orEmpty().compileContextAndVars(cv)
                 )
                 .setView(listView)
-                .setPositiveButton(R.string.ok) { _, _ ->
+                .setPositiveButton(android.R.string.ok) { _, _ ->
                     // 获取选中的项
-                    val selectedItems = mutableListOf<String>()
-                    for (i in 0 until listView.count) {
-                        if (listView.isItemChecked(i)) {
-                            selectedItems.add(listItems[i])
-                        }
-                    }
+                    val selectedItems = adapter.getSelectedItems()
                     selectedItemState.clear()
                     selectedItemState.addAll(selectedItems)
                     result = DialogAction.Positive
@@ -144,5 +139,53 @@ object ShowListDialog : Actor {
             }
 
         }
+    }
+}
+
+
+// 自定义适配器
+class CheckboxAdapter(context: Context, private val items: List<String>) :
+    ArrayAdapter<String>(context, android.R.layout.simple_list_item_multiple_choice, items) {
+
+    // 用于保存每个项目的选中状态
+    private val checkedStates = BooleanArray(items.size)
+
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+        // 创建根布局
+        val layout = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(8, 8, 8, 8)
+        }
+
+        // 创建复选框
+        val checkBox = CheckBox(context).apply {
+            isChecked = checkedStates[position]
+        }
+
+        // 创建文本视图
+        val textView = TextView(context).apply {
+            text = items[position]
+            textSize = 16f
+        }
+
+        // 设置点击事件来更新复选状态
+        val onItemClick: (View) -> Unit = {
+            checkedStates[position] = !checkedStates[position]
+            checkBox.isChecked = checkedStates[position]
+        }
+        checkBox.setOnClickListener(onItemClick)
+        textView.setOnClickListener(onItemClick)  // 点击文本也触发选择
+
+        // 将复选框和文本视图添加到布局中
+        layout.addView(checkBox)
+        layout.addView(textView)
+
+        return layout
+    }
+
+    // 获取选中项
+    fun getSelectedItems(): List<String> {
+        return items.filterIndexed { index, _ -> checkedStates[index] }
     }
 }
