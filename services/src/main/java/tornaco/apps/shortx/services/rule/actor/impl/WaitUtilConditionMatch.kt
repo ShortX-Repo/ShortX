@@ -4,8 +4,10 @@ import com.google.protobuf.Message
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.rule.ProtoMessage
+import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.InternalFactListener
+import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.services.rule.fact.isMatch
@@ -30,7 +32,11 @@ object WaitUtilConditionMatch : Actor {
     ) = with(params) {
         val d =
             action unpack_ tornaco.apps.shortx.core.proto.action.WaitUtilConditionMatch::class.java
-        val timeout = d.timeout
+        val cv = RuleContextAndVars(params)
+        val timeout =
+            d.timeoutStr.takeIf { it.isNotEmpty() }?.compileContextAndVars(cv)?.toLongOrNull()
+                ?: d.timeout
+        logger.d("timeout- $timeout")
 
         val matchCond: suspend () -> Boolean = {
             conditionEvaluator.evaluate(

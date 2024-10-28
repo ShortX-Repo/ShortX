@@ -14,9 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -84,7 +82,8 @@ class WaitUtilConditionMatchSelectorViewModel :
                 copy(
                     id = currentSettings.id,
                     note = currentSettings.note,
-                    timeout = currentSettings.timeout,
+                    timeoutStr = currentSettings.timeoutStr.takeIf { it.isNotEmpty() }
+                        ?: currentSettings.timeout.toString(),
                     isQuitEnabled = currentSettings.isQuitEnabled
                 )
             }
@@ -104,9 +103,9 @@ class WaitUtilConditionMatchSelectorViewModel :
         updateState { copy(isQuitEnabled = !isQuitEnabled) }
     }
 
-    fun setTimeout(l: Long) {
+    fun setTimeout(l: String) {
         updateState {
-            copy(timeout = l)
+            copy(timeoutStr = l)
         }
     }
 }
@@ -114,7 +113,7 @@ class WaitUtilConditionMatchSelectorViewModel :
 data class WaitUtilConditionMatchSelectorDialogDialogState(
     val id: String = defaultNewActionId(),
     val note: String = "",
-    val timeout: Long = 0L,
+    val timeoutStr: String = "5000",
     val isQuitEnabled: Boolean = false
 )
 
@@ -138,124 +137,122 @@ private fun BaseSelectorActivity<Action.WaitUtilConditionMatch>.WaitUtilConditio
     val quitFactContentState by quitFactHandler.state.collectAsState()
 
     ShortXTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
-        ) {
-            Scaffold(modifier = Modifier,
-                topBar = {
-                    ShortXTopAppBar(
-                        modifier = Modifier,
-                        title = { Text(LocalI18N.current["ui.action.wait.util.condition.match"]) },
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                cancelAndFinish()
-                            }) {
-                                RemixIcon(remixName = Remix.System.close_line)
-                            }
-                        },
-                        actions = {
-                            IconButton(onClick = {
-                                setResultAndFinish(
-                                    Action.WaitUtilConditionMatch(
-                                        id = vmState.id,
-                                        note = vmState.note,
-                                        op = conditionState.conditionOp,
-                                        conditions = conditionState.conditions,
 
-                                        quitFacts = quitFactContentState.facts,
-                                        quitOp = quitConditionState.conditionOp,
-                                        quitConditions = quitConditionState.conditions,
-                                        isQuitEnabled = vmState.isQuitEnabled,
-                                        timeout = vmState.timeout
-                                    )
-                                )
-                            }) {
-                                RemixIcon(remixName = Remix.System.check_line)
-                            }
-
-                        },
-                    )
-                }) { paddingValues ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                        .padding(paddingValues)
-                        .animateContentSize()
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    ConditionContent(
-                        header = {
-                            MediumTitle(LocalI18N.current["ui.conditions.add"])
-                        },
-                        state = conditionState,
-                        handler = condHandler.asConditionHandler()
-                    )
-                    StandardSpacer()
-
-                    // Timeout
-                    FieldTitleWithTip(
-                        text = LocalI18N.current["ui.action.wait.util.condition.match.timeout"],
-                        tipText = LocalI18N.current["ui.action.wait.util.condition.match.timeout.summary"]
-                    )
-                    TinySpacer()
-                    ShortXTextField(value = vmState.timeout.toString(), onValueChange = {
-                        vm.setTimeout(it.toLongOrNull() ?: 0L)
-                    })
-
-                    SectionSpacer()
-
-                    // Quit.
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        MediumTitleWithTip(
-                            LocalI18N.current["ui.action.wait.util.condition.match.quit.title"],
-                            LocalI18N.current["ui.action.wait.util.condition.match.quit.description"]
-                        )
-                        ShortXSwitch(checked = vmState.isQuitEnabled, onCheckedChange = {
-                            vm.toggleQuitEnable()
-                        })
-                    }
-                    AnimatedVisibility(visible = vmState.isQuitEnabled) {
-                        Column {
-                            StandardSpacer()
-                            FactSelectors(
-                                header = {
-                                    FieldTitle(
-                                        modifier = Modifier.padding(bottom = 12.dp),
-                                        text = LocalI18N.current["ui.fact.title"]
-                                    )
-                                },
-                                state = quitFactContentState,
-                                handler = quitFactHandler.asFactHandler(),
-                                readOnly = false
-                            )
-
-                            SectionSpacer()
-
-                            ConditionContent(
-                                header = {
-                                    FieldTitle(
-                                        modifier = Modifier.padding(bottom = 12.dp),
-                                        text = LocalI18N.current["ui.conditions.title"]
-                                    )
-                                },
-                                state = quitConditionState,
-                                readOnly = false,
-                                handler = quitCondHandler.asConditionHandler()
-                            )
-
-                            SectionSpacer()
+        Scaffold(modifier = Modifier,
+            topBar = {
+                ShortXTopAppBar(
+                    modifier = Modifier,
+                    title = { Text(LocalI18N.current["ui.action.wait.util.condition.match"]) },
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            cancelAndFinish()
+                        }) {
+                            RemixIcon(remixName = Remix.System.close_line)
                         }
-                    }
+                    },
+                    actions = {
+                        IconButton(onClick = {
+                            setResultAndFinish(
+                                Action.WaitUtilConditionMatch(
+                                    id = vmState.id,
+                                    note = vmState.note,
+                                    op = conditionState.conditionOp,
+                                    conditions = conditionState.conditions,
 
-                    SectionSpacer()
-                    SectionSpacer()
-                    SuggestedNavEntry()
+                                    quitFacts = quitFactContentState.facts,
+                                    quitOp = quitConditionState.conditionOp,
+                                    quitConditions = quitConditionState.conditions,
+                                    isQuitEnabled = vmState.isQuitEnabled,
+                                    timeoutStr = vmState.timeoutStr,
+                                    timeout = 0L
+                                )
+                            )
+                        }) {
+                            RemixIcon(remixName = Remix.System.check_line)
+                        }
+
+                    },
+                )
+            }) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+                    .padding(paddingValues)
+                    .animateContentSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                ConditionContent(
+                    header = {
+                        MediumTitle(LocalI18N.current["ui.conditions.add"])
+                    },
+                    state = conditionState,
+                    handler = condHandler.asConditionHandler()
+                )
+                StandardSpacer()
+
+                // Timeout
+                FieldTitleWithTip(
+                    text = LocalI18N.current["ui.action.wait.util.condition.match.timeout"],
+                    tipText = LocalI18N.current["ui.action.wait.util.condition.match.timeout.summary"]
+                )
+                TinySpacer()
+                ShortXTextField(value = vmState.timeoutStr, onValueChange = {
+                    vm.setTimeout(it)
+                })
+
+                SectionSpacer()
+
+                // Quit.
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    MediumTitleWithTip(
+                        LocalI18N.current["ui.action.wait.util.condition.match.quit.title"],
+                        LocalI18N.current["ui.action.wait.util.condition.match.quit.description"]
+                    )
+                    ShortXSwitch(checked = vmState.isQuitEnabled, onCheckedChange = {
+                        vm.toggleQuitEnable()
+                    })
                 }
+                AnimatedVisibility(visible = vmState.isQuitEnabled) {
+                    Column {
+                        StandardSpacer()
+                        FactSelectors(
+                            header = {
+                                FieldTitle(
+                                    modifier = Modifier.padding(bottom = 12.dp),
+                                    text = LocalI18N.current["ui.fact.title"]
+                                )
+                            },
+                            state = quitFactContentState,
+                            handler = quitFactHandler.asFactHandler(),
+                            readOnly = false
+                        )
+
+                        SectionSpacer()
+
+                        ConditionContent(
+                            header = {
+                                FieldTitle(
+                                    modifier = Modifier.padding(bottom = 12.dp),
+                                    text = LocalI18N.current["ui.conditions.title"]
+                                )
+                            },
+                            state = quitConditionState,
+                            readOnly = false,
+                            handler = quitCondHandler.asConditionHandler()
+                        )
+
+                        SectionSpacer()
+                    }
+                }
+
+                SectionSpacer()
+                SectionSpacer()
+                SuggestedNavEntry()
             }
         }
     }
