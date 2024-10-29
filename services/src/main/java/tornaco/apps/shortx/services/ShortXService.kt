@@ -1318,6 +1318,18 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.rule.clearHttpRequestLogs()
         }
 
+        override fun getJSLogFD(): ParcelFileDescriptor? {
+            return shortXContext.rule.getJSLogFD()
+        }
+
+        override fun getJSLogPath(): String {
+            return shortXContext.rule.getJSLogPath()
+        }
+
+        override fun clearJSLogs() {
+            shortXContext.rule.clearJSLogs()
+        }
+
         override fun addToggle(toggle: ByteArrayWrapper) {
             enforceCallingPermissions()
             v(context) {

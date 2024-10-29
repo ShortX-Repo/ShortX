@@ -100,6 +100,7 @@ import tornaco.apps.shortx.services.rule.actor.impl.ExecuteMVEL
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequestLogging
 import tornaco.apps.shortx.services.rule.actor.impl.ShellCommand
 import tornaco.apps.shortx.services.rule.actor.impl.js.ExecuteJS
+import tornaco.apps.shortx.services.rule.actor.impl.js.JSLogging
 import tornaco.apps.shortx.services.rule.actor.toActionEvaluateRecord
 import tornaco.apps.shortx.services.rule.cond.ConditionEvaluateRecorder
 import tornaco.apps.shortx.services.rule.cond.PrebuiltCond
@@ -1403,6 +1404,26 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     fun clearHttpRequestLogs() {
         HttpRequestLogging.clearLogs()
+    }
+
+    fun getJSLogFD(): ParcelFileDescriptor? {
+        return kotlin.runCatching {
+            ParcelFileDescriptor.open(
+                JSLogging.logFile,
+                ParcelFileDescriptor.MODE_READ_ONLY
+            )
+        }.getOrElse {
+            logger.e(it, "getJSLogFD error")
+            null
+        }
+    }
+
+    fun getJSLogPath(): String {
+        return JSLogging.logFile.absolutePath
+    }
+
+    fun clearJSLogs() {
+        JSLogging.clearLogs()
     }
 
     override fun screenOn() {

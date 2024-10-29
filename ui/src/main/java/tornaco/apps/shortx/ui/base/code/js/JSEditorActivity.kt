@@ -55,6 +55,7 @@ import tornaco.apps.shortx.ui.base.TextDisplayActivity
 import tornaco.apps.shortx.ui.base.code.ParcelableCode
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.composeLogger
+import tornaco.apps.shortx.ui.settings.log.js.JSLogActivity
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -113,7 +114,7 @@ fun JSEditorActivity.ExecuteJSEditor(
                         )
                         MenuDialog(state = contextMenuState)
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(text = LocalI18N.current["ui.title.js"])
+                            Text(text = "JS")
                             StandardSpacer()
                             AssistChip(label = {
                                 Text(LocalI18N.current[state.coroutineContext.labelKey()])
@@ -146,6 +147,12 @@ fun JSEditorActivity.ExecuteJSEditor(
                             Box(modifier = Modifier, contentAlignment = Alignment.Center) {
                                 Loading(modifier = Modifier.size(28.dp))
                             }
+                        }
+
+                        IconButton(onClick = {
+                            JSLogActivity.Starter.start(context)
+                        }) {
+                            RemixIcon(remixName = Remix.Document.file_text_line)
                         }
 
                         IconButton(onClick = {
