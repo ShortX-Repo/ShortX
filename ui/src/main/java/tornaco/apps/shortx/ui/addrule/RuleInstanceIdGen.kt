@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import tornaco.apps.shortx.core.proto.common.CoroutineContext
 import tornaco.apps.shortx.core.proto.rule.RuleInstanceIdGenerator_JS
 import tornaco.apps.shortx.core.proto.rule.RuleInstanceIdGenerator_MVEL
 import tornaco.apps.shortx.core.proto.rule.RuleInstanceIdGenerator_Static
@@ -144,7 +145,7 @@ fun RuleInstanceIdGenSelector(
             val mvelSelectorState = rememberCodeEditorState(
                 title = i18N["ui.title.mvel"],
                 execute = {
-                    shortXManager.executeMVEL(it)
+                    shortXManager.executeMVEL(it, CoroutineContext.CoroutineContext_Default)
                 },
                 onSelected = {
                     setGen(RuleInstanceIdGen.RuleInstanceIdGenMVEL(it.src))

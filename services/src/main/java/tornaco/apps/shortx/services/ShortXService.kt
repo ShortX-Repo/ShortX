@@ -45,6 +45,7 @@ import tornaco.apps.shortx.core.proto.action.HttpRequest
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AudioRecordFile
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
+import tornaco.apps.shortx.core.proto.common.CoroutineContext
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.RemoteRuleContextAndVars
 import tornaco.apps.shortx.core.proto.common.StatusBarClipUiSettings
@@ -1071,14 +1072,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             return shortXContext.rule.isKeyEventPromptEnabled()
         }
 
-        override fun executeMVEL(expression: String): String {
+        override fun executeMVEL(expression: String, context: Int): String {
             enforceCallingPermissions()
-            return shortXContext.rule.executeMVEL(expression)
+            return shortXContext.rule.executeMVEL(expression, CoroutineContext.forNumber(context))
         }
 
-        override fun executeJS(expression: String): String {
+        override fun executeJS(expression: String, context: Int): String {
             enforceCallingPermissions()
-            return shortXContext.rule.executeJS(expression)
+            return shortXContext.rule.executeJS(expression, CoroutineContext.forNumber(context))
         }
 
         override fun addOrUpdateRuleSet(rs: ByteArrayWrapper) {

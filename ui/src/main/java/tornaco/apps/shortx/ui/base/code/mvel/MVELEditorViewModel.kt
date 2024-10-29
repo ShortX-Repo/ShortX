@@ -40,7 +40,7 @@ class MVELEditorViewModel @Inject constructor() : ViewModel(),
         reduce {
             state.copy(isExecuting = true)
         }
-        val res = shortXManager.executeMVEL(state.expression)
+        val res = shortXManager.executeMVEL(state.expression, state.coroutineContext)
         postSideEffect(res)
         reduce {
             state.copy(isExecuting = false)

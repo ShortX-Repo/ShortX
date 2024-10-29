@@ -40,7 +40,7 @@ class JSEditorViewModel @Inject constructor() : ViewModel(),
         reduce {
             state.copy(isExecuting = true)
         }
-        val res = shortXManager.executeJS(state.expression)
+        val res = shortXManager.executeJS(state.expression, state.coroutineContext)
         postSideEffect(res)
         reduce {
             state.copy(isExecuting = false)

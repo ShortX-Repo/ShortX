@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.BuildPropInternal
+import tornaco.apps.shortx.core.proto.common.CoroutineContext
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.select
@@ -523,7 +524,7 @@ private fun OpSelector(
                 title = LocalI18N.current["ui.title.mvel"],
                 message = LocalI18N.current["ui.condition.op.mvel"],
                 execute = {
-                    shortXManager.executeMVEL(it)
+                    shortXManager.executeMVEL(it, CoroutineContext.CoroutineContext_Default)
                 },
                 onSelected = {
                     setConditionOp(Op.MVEL(it.src))

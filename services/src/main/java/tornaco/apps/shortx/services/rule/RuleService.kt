@@ -34,6 +34,7 @@ import tornaco.apps.shortx.core.proto.action.WaitUtilConditionMatch
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.Author
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
+import tornaco.apps.shortx.core.proto.common.CoroutineContext
 import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
@@ -1068,7 +1069,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         return signal
     }
 
-    fun executeMVEL(expression: String): String {
+    fun executeMVEL(expression: String, coroutineContext: CoroutineContext): String {
         var res = ""
         runBlocking {
             systemServiceScope.launchSafety {
@@ -1081,8 +1082,11 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                         .setSrcEvent(ContextSrcEvent.ContextSrc_ExecuteOnDAEditor)
                         .setSerialNumber(nextEvaluateContextSerialNumber())
                         .build(),
-                    action = tornaco.apps.shortx.core.proto.action.ExecuteMVEL.newBuilder()
-                        .setExpression(expression).build().pack_()
+                    action = tornaco.apps.shortx.core.proto.action.ExecuteMVEL
+                        .newBuilder()
+                        .setExpression(expression)
+                        .setContext(coroutineContext)
+                        .build().pack_()
                 )
                 runCatching {
                     ExecuteMVEL.handle(handleParams)
@@ -1097,7 +1101,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         return res
     }
 
-    fun executeJS(expression: String): String {
+    fun executeJS(expression: String, coroutineContext: CoroutineContext): String {
         var res = ""
         runBlocking {
             systemServiceScope.launchSafety {
@@ -1110,8 +1114,11 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                         .setSrcEvent(ContextSrcEvent.ContextSrc_ExecuteOnDAEditor)
                         .setSerialNumber(nextEvaluateContextSerialNumber())
                         .build(),
-                    action = tornaco.apps.shortx.core.proto.action.ExecuteJS.newBuilder()
-                        .setExpression(expression).build().pack_()
+                    action = tornaco.apps.shortx.core.proto.action.ExecuteJS
+                        .newBuilder()
+                        .setExpression(expression)
+                        .setContext(coroutineContext)
+                        .build().pack_()
                 )
                 runCatching {
                     tornaco.apps.shortx.services.rule.actor.impl.ExecuteJS.handle(handleParams)
