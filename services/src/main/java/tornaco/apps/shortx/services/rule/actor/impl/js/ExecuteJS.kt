@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.services.rule.actor.impl
+package tornaco.apps.shortx.services.rule.actor.impl.js
 
 import com.faendir.rhino_android.RhinoAndroidHelper
 import com.google.protobuf.Message
@@ -102,6 +102,9 @@ object ExecuteJS : Actor {
         val scope = ImporterTopLevel(rhinoContext)
         val wrappedAndroidContext = Context.javaToJS(androidContext, scope)
         ScriptableObject.putProperty(scope, "context", wrappedAndroidContext)
+
+        val wrappedConsole = Context.javaToJS(KotlinConsole, scope)
+        ScriptableObject.putProperty(scope, "console", wrappedConsole)
 
         contextData.map.forEach {
             ScriptableObject.putConstProperty(scope, it.key, it.value)

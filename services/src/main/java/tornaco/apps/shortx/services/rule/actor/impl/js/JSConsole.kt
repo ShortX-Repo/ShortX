@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule.actor.impl.js
 
 interface Console {
+    fun println(message: Any?)
     fun log(message: Any?)
     fun info(message: Any?)
     fun warn(message: Any?)
@@ -13,15 +14,16 @@ interface Console {
     fun countReset(label: String)
 }
 
-class KotlinConsole : Console {
+object KotlinConsole : Console {
     private val timers = mutableMapOf<String, Long>()
     private val counters = mutableMapOf<String, Int>()
     private var groupLevel = 0
 
     private fun printWithGroup(message: Any?) {
-        println("  ".repeat(groupLevel) + message)
+        JSLogging.log("  ".repeat(groupLevel) + message)
     }
 
+    override fun println(message: Any?) = printWithGroup("LOG: $message")
     override fun log(message: Any?) = printWithGroup("LOG: $message")
     override fun info(message: Any?) = printWithGroup("INFO: $message")
     override fun warn(message: Any?) = printWithGroup("WARN: $message")
@@ -63,7 +65,7 @@ class KotlinConsole : Console {
 }
 
 fun main() {
-    val console = KotlinConsole()
+    val console = KotlinConsole
 
     console.log("Hello World!")
     console.info("Information message")

@@ -4,7 +4,7 @@ import com.google.protobuf.Message
 import tornaco.apps.shortx.core.proto.condition.MatchJS
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.Interceptors
-import tornaco.apps.shortx.services.rule.actor.impl.ExecuteJS
+import tornaco.apps.shortx.services.rule.actor.impl.js.ExecuteJS
 import tornaco.apps.shortx.services.rule.cond.Cond
 
 object MatchJS : Cond {

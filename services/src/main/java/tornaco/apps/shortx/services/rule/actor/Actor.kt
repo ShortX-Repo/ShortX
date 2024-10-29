@@ -115,7 +115,7 @@ enum class PrebuiltActor : ActorProvider {
     },
     ExecuteJS {
         override val actor: Actor
-            get() = tornaco.apps.shortx.services.rule.actor.impl.ExecuteJS
+            get() = tornaco.apps.shortx.services.rule.actor.impl.js.ExecuteJS
     },
     RemoteExecuteMVEL {
         override val actor: Actor

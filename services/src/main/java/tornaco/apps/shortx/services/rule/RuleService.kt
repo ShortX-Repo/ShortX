@@ -99,6 +99,7 @@ import tornaco.apps.shortx.services.rule.actor.dummyHandlerParamsForAction
 import tornaco.apps.shortx.services.rule.actor.impl.ExecuteMVEL
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequestLogging
 import tornaco.apps.shortx.services.rule.actor.impl.ShellCommand
+import tornaco.apps.shortx.services.rule.actor.impl.js.ExecuteJS
 import tornaco.apps.shortx.services.rule.actor.toActionEvaluateRecord
 import tornaco.apps.shortx.services.rule.cond.ConditionEvaluateRecorder
 import tornaco.apps.shortx.services.rule.cond.PrebuiltCond
@@ -1121,7 +1122,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                         .build().pack_()
                 )
                 runCatching {
-                    tornaco.apps.shortx.services.rule.actor.impl.ExecuteJS.handle(handleParams)
+                    ExecuteJS.handle(handleParams)
                     res =
                         handleParams.contextData.get(ContextDataMapping.ExecuteJS.jsRet.name)
                             .toString()

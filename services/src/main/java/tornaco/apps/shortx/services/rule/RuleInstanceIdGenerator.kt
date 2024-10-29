@@ -15,7 +15,7 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
-import tornaco.apps.shortx.services.rule.actor.impl.ExecuteJS
+import tornaco.apps.shortx.services.rule.actor.impl.js.ExecuteJS
 import tornaco.apps.shortx.services.rule.actor.impl.MVELExecutor
 import tornaco.apps.shortx.services.rule.cond.impl.MatchJS
 
