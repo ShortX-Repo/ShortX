@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,14 +39,21 @@ import io.github.rosemoe.sora.app.databinding.CodeEditorComposeBinding
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 import tornaco.apps.shortx.core.logOnDebug
+import tornaco.apps.shortx.core.proto.common.CoroutineContext
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
+import tornaco.apps.shortx.ui.addrule.action.mapper.summaryKey
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MenuDialog
+import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextDisplayActivity
 import tornaco.apps.shortx.ui.base.code.ParcelableCode
+import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -87,8 +96,30 @@ fun JSEditorActivity.ExecuteJSEditor(
                 ShortXTopAppBar(
                     modifier = Modifier,
                     title = {
-                        Column {
+                        val contextMenuState = rememberMenuDialogState<CoroutineContext>(
+                            title = LocalI18N.current["ui.common.coroutine.context"],
+                            menuItems = CoroutineContext.entries.filterNot { it == CoroutineContext.UNRECOGNIZED }
+                                .map {
+                                    MenuDialogItem(
+                                        id = it.name,
+                                        title = LocalI18N.current[it.labelKey()],
+                                        summary = LocalI18N.current[it.summaryKey()]
+                                    )
+                                },
+                            onItemSelected = { _, id ->
+                                val type = CoroutineContext.valueOf(id)
+                                vm.setCoroutineContext(type)
+                            }
+                        )
+                        MenuDialog(state = contextMenuState)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(text = LocalI18N.current["ui.title.js"])
+                            StandardSpacer()
+                            AssistChip(label = {
+                                Text(LocalI18N.current[state.coroutineContext.labelKey()])
+                            }, onClick = {
+                                contextMenuState.show()
+                            })
                         }
                     },
                     navigationIcon = {
@@ -121,6 +152,7 @@ fun JSEditorActivity.ExecuteJSEditor(
                             setResultAndFinish(
                                 ParcelableCode(
                                     expression = state.expression,
+                                    coroutineContext = state.coroutineContext
                                 )
                             )
                         }) {

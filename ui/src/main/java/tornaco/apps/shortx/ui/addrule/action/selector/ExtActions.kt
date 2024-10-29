@@ -10,6 +10,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
+import tornaco.apps.shortx.core.proto.common.CoroutineContext
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
@@ -72,7 +73,12 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         onResult = { result ->
             val action = result.popupSelectorResult<ParcelableCode>()
             action?.let {
-                addAction(Action.MVEL(expression = it.expression))
+                addAction(
+                    Action.MVEL(
+                        expression = it.expression,
+                        context = it.coroutineContext
+                    )
+                )
             }
         }
     )
@@ -82,7 +88,12 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         onResult = { result ->
             val action = result.popupSelectorResult<ParcelableCode>()
             action?.let {
-                addAction(Action.ExecuteJS(expression = it.expression))
+                addAction(
+                    Action.ExecuteJS(
+                        expression = it.expression,
+                        context = it.coroutineContext
+                    )
+                )
             }
         }
     )
@@ -265,7 +276,10 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 mvelEditorLauncher.launch(
                     newIntent(
                         context,
-                        source.getActionAs<Action.MVEL>()?.expression?.toParcelableCodeOrNull(),
+                        source.getActionAs<Action.MVEL>()?.expression?.toParcelableCodeOrNull(
+                            coroutineContext = source.getActionAs<Action.MVEL>()?.context
+                                ?: CoroutineContext.CoroutineContext_Default
+                        ),
                         MVELEditorActivity::class.java
                     )
                 )
@@ -276,7 +290,10 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 jsEditorLauncher.launch(
                     newIntent(
                         context,
-                        source.getActionAs<Action.ExecuteJS>()?.expression.toParcelableCodeOrNull(),
+                        source.getActionAs<Action.ExecuteJS>()?.expression.toParcelableCodeOrNull(
+                            coroutineContext = source.getActionAs<Action.ExecuteJS>()?.context
+                                ?: CoroutineContext.CoroutineContext_Default
+                        ),
                         JSEditorActivity::class.java
                     )
                 )

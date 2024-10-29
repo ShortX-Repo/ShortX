@@ -6,12 +6,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
+import tornaco.apps.shortx.core.proto.common.CoroutineContext
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.code.ParcelableCode
 import javax.inject.Inject
 
 data class MVELEditorState(
     val expression: String = "",
+    val coroutineContext: CoroutineContext = CoroutineContext.CoroutineContext_Default,
     val isExecuting: Boolean = false,
 )
 
@@ -27,6 +29,8 @@ class MVELEditorViewModel @Inject constructor() : ViewModel(),
         reduce {
             state.copy(
                 expression = code?.expression ?: "",
+                coroutineContext = code?.coroutineContext
+                    ?: CoroutineContext.CoroutineContext_Default,
                 isExecuting = false
             )
         }
@@ -46,6 +50,12 @@ class MVELEditorViewModel @Inject constructor() : ViewModel(),
     fun updateExpression(expression: String) = intent {
         reduce {
             state.copy(expression = expression)
+        }
+    }
+
+    fun setCoroutineContext(context: CoroutineContext) = intent {
+        reduce {
+            state.copy(coroutineContext = context)
         }
     }
 }

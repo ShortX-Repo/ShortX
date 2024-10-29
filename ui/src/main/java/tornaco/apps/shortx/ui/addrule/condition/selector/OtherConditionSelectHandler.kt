@@ -4,6 +4,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import tornaco.apps.shortx.core.proto.common.CoroutineContext
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.FindPointsByColorConfig
 import tornaco.apps.shortx.ui.addrule.action.selector.DelaySelectorDialog
@@ -22,7 +23,6 @@ import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateContextVarSelect
 import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateGlobalVarSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateLocalVarSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberTheXXTimeTodaySelectorState
-import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.newIntent
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -121,9 +121,11 @@ fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSe
         when (source.clazz) {
             Condition.MVEL::class -> {
                 mvelEditorLauncher.launch(
-                    BaseSelectorActivity.newIntent(
+                    newIntent(
                         context,
-                        source.getConditionAs<Condition.MVEL>()?.expression?.toParcelableCodeOrNull(),
+                        source.getConditionAs<Condition.MVEL>()?.expression?.toParcelableCodeOrNull(
+                            CoroutineContext.CoroutineContext_Default
+                        ),
                         MVELEditorActivity::class.java
                     )
                 )
@@ -132,9 +134,11 @@ fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSe
 
             Condition.JS::class -> {
                 jsEditorLauncher.launch(
-                    BaseSelectorActivity.newIntent(
+                    newIntent(
                         context,
-                        source.getConditionAs<Condition.JS>()?.expression?.toParcelableCodeOrNull(),
+                        source.getConditionAs<Condition.JS>()?.expression?.toParcelableCodeOrNull(
+                            CoroutineContext.CoroutineContext_Default
+                        ),
                         JSEditorActivity::class.java
                     )
                 )

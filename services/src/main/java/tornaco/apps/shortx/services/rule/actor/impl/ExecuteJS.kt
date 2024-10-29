@@ -2,6 +2,10 @@ package tornaco.apps.shortx.services.rule.actor.impl
 
 import com.faendir.rhino_android.RhinoAndroidHelper
 import com.google.protobuf.Message
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.android.asCoroutineDispatcher
+import kotlinx.coroutines.withContext
 import org.mozilla.javascript.Context
 import org.mozilla.javascript.ImporterTopLevel
 import org.mozilla.javascript.ScriptableObject
@@ -10,6 +14,7 @@ import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.localvar.LocalVars
+import tornaco.apps.shortx.core.proto.common.CoroutineContext
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.rule.FUNC_PARAM_REF_PREFIX
 import tornaco.apps.shortx.core.rule.GLOBAL_VAR_REF_PREFIX
@@ -19,6 +24,7 @@ import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.rule.valueList
 import tornaco.apps.shortx.core.rule.valueString
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
+import tornaco.apps.shortx.core.util.newHandlerOfNewThread
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.Interceptors
@@ -27,6 +33,9 @@ import tornaco.apps.shortx.services.rule.actor.HandleParams
 
 
 object ExecuteJS : Actor {
+    private val jsOSHandler by lazy { newHandlerOfNewThread("ShortXJS") }
+    private val handlerDispatcher: CoroutineDispatcher by lazy { jsOSHandler.asCoroutineDispatcher() }
+
     private val rhinoAndroidHelper by lazy { RhinoAndroidHelper(Dirs.jsCacheDir()) }
 
     override fun actionsCanHandle(): Class<out Message> {
@@ -39,14 +48,37 @@ object ExecuteJS : Actor {
         require(Interceptors.checkExecuteMVEL(params.shortXContext, params.androidContext))
         val d = params.action unpack_ tornaco.apps.shortx.core.proto.action.ExecuteJS::class.java
 
-        val res = executeJS(
-            androidContext = params.androidContext,
-            shortXContext = params.shortXContext,
-            contextData = params.contextData,
-            localVars = params.localVars,
-            parameterInputs = params.parameterInputs,
-            rawExpression = d.expression
-        )
+        logger.d("Before execute JS: ${Thread.currentThread()}")
+
+        // In-case they want to handle UI.
+        val coroutineContext = when (d.context ?: CoroutineContext.CoroutineContext_Default) {
+            CoroutineContext.CoroutineContext_Default -> {
+                Dispatchers.Default
+            }
+
+            CoroutineContext.CoroutineContext_IO -> {
+                Dispatchers.IO
+            }
+
+            CoroutineContext.CoroutineContext_UI -> {
+                handlerDispatcher
+            }
+
+            CoroutineContext.UNRECOGNIZED -> {
+                Dispatchers.Default
+            }
+        }
+        logger.d("Choose coroutineContext: $coroutineContext")
+        val res = withContext(coroutineContext) {
+            executeJS(
+                androidContext = params.androidContext,
+                shortXContext = params.shortXContext,
+                contextData = params.contextData,
+                localVars = params.localVars,
+                parameterInputs = params.parameterInputs,
+                rawExpression = d.expression
+            )
+        }
 
         params.contextData.add(
             d.customContextDataKey.forKey(ContextDataMapping.ExecuteJS.jsRet.name)
@@ -114,6 +146,7 @@ object ExecuteJS : Actor {
         }
 
         return runCatching {
+            logger.d("In execute JS: ${Thread.currentThread()}")
             val obj = rhinoContext.evaluateString(scope, expression, "<shortx_js>", 1, null)
             Context.toString(obj)
         }.onSuccess {
