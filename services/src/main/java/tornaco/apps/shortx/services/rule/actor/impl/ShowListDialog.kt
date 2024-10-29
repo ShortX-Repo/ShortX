@@ -6,11 +6,11 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.ArrayAdapter
 import android.widget.CheckBox
 import android.widget.LinearLayout
-import android.widget.ListView
 import android.widget.TextView
+import com.android.internal.widget.LinearLayoutManager
+import com.android.internal.widget.RecyclerView
 import com.google.protobuf.Message
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -96,25 +96,23 @@ object ShowListDialog : Actor {
         return suspendCancellableCoroutine { continuation ->
             var result: DialogAction = DialogAction.None
 
-            val listView = ListView(context).apply {
-                choiceMode =
-                    if (d.isMultipleChoice) {
-                        ListView.CHOICE_MODE_MULTIPLE
-                    } else {
-                        ListView.CHOICE_MODE_SINGLE
-                    }
+            val recyclerView = RecyclerView(context).apply {
+                layoutManager = LinearLayoutManager(context)
             }
-            val adapter = CheckboxAdapter(
-                context,
-                listItems
-            )
-            listView.adapter = adapter
+            val adapter =
+                CustomMultiSelectAdapter(
+                    recyclerView,
+                    context,
+                    listItems,
+                    isMultiSelect = d.isMultipleChoice
+                )
+            recyclerView.adapter = adapter
 
             val dialogBuilder = AlertDialog.Builder(context)
                 .setTitle(
                     d.title.orEmpty().compileContextAndVars(cv)
                 )
-                .setView(listView)
+                .setView(recyclerView)
                 .setPositiveButton(android.R.string.ok) { _, _ ->
                     // 获取选中的项
                     val selectedItems = adapter.getSelectedItems()
@@ -143,49 +141,83 @@ object ShowListDialog : Actor {
 }
 
 
-// 自定义适配器
-class CheckboxAdapter(context: Context, private val items: List<String>) :
-    ArrayAdapter<String>(context, android.R.layout.simple_list_item_multiple_choice, items) {
+class CustomMultiSelectAdapter(
+    private val recyclerView: RecyclerView,
+    private val context: Context,
+    private val items: List<String>,
+    private val isMultiSelect: Boolean = true // 配置参数，默认为多选模式
+) : RecyclerView.Adapter<CustomMultiSelectAdapter.ViewHolder>() {
 
-    // 用于保存每个项目的选中状态
-    private val checkedStates = BooleanArray(items.size)
+    // 用于存储每个选项的选中状态
+    private val selectedItems = BooleanArray(items.size) { false }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        // 创建根布局
-        val layout = LinearLayout(context).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(8, 8, 8, 8)
+    // ViewHolder类，包含CheckBox和TextView
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val checkBox: CheckBox = CheckBox(context)
+        val textView: TextView = TextView(context)
+
+        init {
+            // 动态添加CheckBox和TextView到itemView
+            (view as LinearLayout).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL // 垂直居中
+                setPadding(16, 16, 16, 16)
+                addView(checkBox)
+
+                // 配置 TextView，添加权重确保其占用剩余空间
+                addView(
+                    textView,
+                    LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+                )
+            }
         }
-
-        // 创建复选框
-        val checkBox = CheckBox(context).apply {
-            isChecked = checkedStates[position]
-        }
-
-        // 创建文本视图
-        val textView = TextView(context).apply {
-            text = items[position]
-            textSize = 16f
-        }
-
-        // 设置点击事件来更新复选状态
-        val onItemClick: (View) -> Unit = {
-            checkedStates[position] = !checkedStates[position]
-            checkBox.isChecked = checkedStates[position]
-        }
-        checkBox.setOnClickListener(onItemClick)
-        textView.setOnClickListener(onItemClick)  // 点击文本也触发选择
-
-        // 将复选框和文本视图添加到布局中
-        layout.addView(checkBox)
-        layout.addView(textView)
-
-        return layout
     }
 
-    // 获取选中项
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LinearLayout(context).apply {
+            layoutParams = ViewGroup.LayoutParams(
+                /* width = */ ViewGroup.LayoutParams.MATCH_PARENT,
+                /* height = */ ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        }
+        return ViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.textView.text = items[position]
+        holder.checkBox.isChecked = selectedItems[position]
+
+        holder.itemView.setOnClickListener {
+            holder.checkBox.performClick()
+        }
+        holder.textView.setOnClickListener {
+            holder.checkBox.performClick()
+        }
+
+        holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
+            if (isMultiSelect) {
+                selectedItems[position] = isChecked
+            } else {
+                if (isChecked) {
+                    for (i in selectedItems.indices) {
+                        selectedItems[i] = i == position
+                    }
+                }
+            }
+            recyclerView.postDelayed({ notifyDataSetChanged() }, 300)
+        }
+    }
+
+    override fun getItemCount(): Int = items.size
+
+    // 返回选中的选项
     fun getSelectedItems(): List<String> {
-        return items.filterIndexed { index, _ -> checkedStates[index] }
+        return items.filterIndexed { index, _ -> selectedItems[index] }
+    }
+
+    // 返回单选模式下选中的索引
+    fun getSelectedIndex(): Int? {
+        return selectedItems.indexOfFirst { it }.takeIf { it >= 0 }
     }
 }
+
