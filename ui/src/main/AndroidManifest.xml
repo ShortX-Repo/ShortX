@@ -46,7 +46,8 @@
             android:excludeFromRecents="true"
             android:exported="true"
             android:launchMode="singleTask"
-            android:taskAffinity="ui.biometric.BiometricVerifyActivity" />
+            android:taskAffinity="ui.biometric.BiometricVerifyActivity"
+            android:theme="@style/UiTheme.MaterialTransparent" />
 
         <activity
             android:name=".shortcut.ActionShortcutActivity"
