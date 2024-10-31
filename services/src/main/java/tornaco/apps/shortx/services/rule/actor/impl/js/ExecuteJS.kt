@@ -33,8 +33,7 @@ import tornaco.apps.shortx.services.rule.actor.HandleParams
 
 
 object ExecuteJS : Actor {
-    private val jsOSHandler by lazy { newHandlerOfNewThread("ShortXJS") }
-    private val handlerDispatcher: CoroutineDispatcher by lazy { jsOSHandler.asCoroutineDispatcher() }
+    private val handlerDispatcher: CoroutineDispatcher by lazy { newHandlerOfNewThread("ShortXJS").asCoroutineDispatcher() }
 
     private val rhinoAndroidHelper by lazy { RhinoAndroidHelper(Dirs.jsCacheDir()) }
 
