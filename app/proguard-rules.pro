@@ -211,6 +211,10 @@
 -dontwarn com.android.internal.util.Preconditions
 -dontwarn com.android.internal.util.ToBooleanFunction
 -dontwarn android.app.ActivityClient
+-dontwarn com.android.internal.widget.LinearLayoutManager
+-dontwarn com.android.internal.widget.RecyclerView$Adapter
+-dontwarn com.android.internal.widget.RecyclerView$LayoutManager
+-dontwarn com.android.internal.widget.RecyclerView
 
 -dontwarn com.android.internal.telephony.ITelephony$Stub
 -dontwarn com.android.internal.telephony.ITelephony

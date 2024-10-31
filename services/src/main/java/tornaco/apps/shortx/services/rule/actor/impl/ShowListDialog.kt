@@ -190,7 +190,8 @@ class CustomMultiSelectAdapter(
         holder.itemView.setOnClickListener {
             holder.checkBox.performClick()
         }
-        holder.textView.setOnClickListener {
+
+        holder.itemView.setOnClickListener {
             holder.checkBox.performClick()
         }
 

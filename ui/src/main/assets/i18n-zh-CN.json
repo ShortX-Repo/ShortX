@@ -962,6 +962,7 @@
     "ui.action.show.list.dialog.data.summary": "输入要用分隔符隔开为列表项的字符串 \ne.g. 小明,小龙,大吉大利,今晚吃鸡",
     "ui.action.show.list.dialog.delimiters": "分隔符",
     "ui.action.show.list.dialog.delimiters.summary": "输入一个或多个分隔符用于切分字符串为列表",
+    "ui.action.show.list.dialog.is.multiple": "支持多选",
     "ui.action.show.choice.dialog.item": "选择",
     "ui.action.show.choice.dialog.item.label": "选项标题，用于展示",
     "ui.action.show.choice.dialog.item.value": "选项值，会被设入变量",
