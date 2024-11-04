@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Rect
 import com.google.protobuf.Message
 import kotlinx.coroutines.delay
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.logOnDebug
@@ -63,6 +64,15 @@ object OcrDetect : Actor {
                 shortXContext
             ) { bitmap ->
                 logger.d("recognizeText, bitmap: $bitmap")
+                if (BuildPropInternal.APP_IS_DEBUG) {
+                    runCatching {
+                        saveScreenBitmapToFile(
+                            bitmap,
+                            Dirs.baseServerCacheDir(),
+                            "ocr_recognize"
+                        )
+                    }
+                }
                 shortXContext.ocr.requireOCR().recognizeText(
                     bitmap,
                     4,
@@ -83,6 +93,15 @@ object OcrDetect : Actor {
                 shortXContext
             ) { bitmap ->
                 logger.d("detect, bitmap: $bitmap")
+                if (BuildPropInternal.APP_IS_DEBUG) {
+                    runCatching {
+                        saveScreenBitmapToFile(
+                            bitmap,
+                            Dirs.baseServerCacheDir(),
+                            "ocr_detect"
+                        )
+                    }
+                }
                 shortXContext.ocr.requireOCR().detect(
                     bitmap,
                     4,

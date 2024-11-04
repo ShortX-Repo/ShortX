@@ -8,6 +8,7 @@ import com.google.protobuf.Message
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.os.ScreenCap
@@ -32,7 +33,9 @@ object AreaScreenshot : Actor {
     ): Unit = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.AreaScreenshot::class.java
         val area = startSelectScreenArea(shortXContext)
+        logger.d("area: $area")
         val rect: Rect? = area?.getRect(androidContext)
+        logger.d("rect: $rect")
 
         requireNotNull(rect) {
             "No Screen Rect selected."
@@ -48,9 +51,20 @@ object AreaScreenshot : Actor {
         }
         logger.d("screen: $screen")
 
+        if (BuildPropInternal.APP_IS_DEBUG) {
+            runCatching {
+                saveScreenBitmapToFile(
+                    screen,
+                    Dirs.baseServerCacheDir(),
+                    "screen"
+                )
+            }
+        }
+
         val cropped =
             if (area is AreaSelection.FullScreen) screen else BitmapUtils.cropBitmap(screen, rect)
         logger.d("cropped: $cropped")
+        requireNotNull(cropped) { "Cropped is null." }
 
         val tmpFile = saveScreenBitmapToFile(cropped, Dirs.screenshotCacheDir())
         cropped.recycle()
