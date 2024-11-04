@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.dialog
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -18,14 +19,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.ui.BaseComposeView
-import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
+
+private val semiTransparentGray = Color(0x80000000)
 
 @SuppressLint("ViewConstructor")
 abstract class DialogView(
@@ -42,6 +45,7 @@ abstract class DialogView(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(semiTransparentGray)
                     .onKeyEvent {
                         if (it.key == Key.Back) {
                             detach()
@@ -65,13 +69,17 @@ abstract class DialogView(
 
                 Surface(
                     modifier = Modifier
-                        .fillMaxWidth(0.8f)
-                        .fillMaxHeight(0.7f),
+                        .fillMaxWidth(0.81f)
+                        .fillMaxHeight(0.82f),
                     shape = RoundedCornerShape(24.dp),
-                    color = ColorDefaults.backgroundSurfaceColor(),
                     shadowElevation = 8.dp,
+                    tonalElevation = 4.dp,
                 ) {
-                    DialogContent()
+                    Box(Modifier
+                        .fillMaxSize()
+                        .clickable { }) {
+                        DialogContent()
+                    }
                 }
             }
         }

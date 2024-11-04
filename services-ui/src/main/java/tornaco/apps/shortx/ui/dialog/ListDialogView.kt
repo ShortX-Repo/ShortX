@@ -57,7 +57,6 @@ class ListDialogView(
                     .fillMaxWidth()
                     .heightIn(max = 200.dp)
             ) {
-
                 stickyHeader {
                     Box(
                         Modifier
