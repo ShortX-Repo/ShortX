@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,9 +28,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.ui.BaseComposeView
-import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.ListItem
-import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.SearchBar
+import tornaco.apps.shortx.ui.base.rememberSearchBarState
 
 @SuppressLint("ViewConstructor")
 class ListDialogView(
@@ -49,19 +50,40 @@ class ListDialogView(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
+            val searchBarState = rememberSearchBarState()
             LazyColumn(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
                     .heightIn(max = 200.dp)
             ) {
+
                 stickyHeader {
-                    StandardSpacer()
-                    Text(title, style = MaterialTheme.typography.titleLarge)
-                    LargeSpacer()
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 20.dp, horizontal = 16.dp)
+                    ) {
+                        Text(title, style = MaterialTheme.typography.titleLarge)
+                    }
                 }
 
-                items(listItems) {
+                stickyHeader {
+                    SearchBar(
+                        searchBarState = searchBarState,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp)
+                            .padding(top = 8.dp)
+                    )
+                }
+
+                items(listItems.filter {
+                    searchBarState.keyword.isBlank() || it.contains(
+                        searchBarState.keyword,
+                        true
+                    )
+                }) {
                     val isSelected = data.contains(it)
                     val handleCheckClick = {
                         if (!multipleSelection) {
