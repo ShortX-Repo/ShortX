@@ -104,6 +104,7 @@ fun ToggleListScreen() {
                         key = { listItem: ToggleUM -> listItem.uniqueUIKey }) { toggle ->
                         ShortXCard(
                             modifier = Modifier
+                                .animateItem()
                                 .padding(horizontal = 16.dp, vertical = 8.dp),
                         ) {
                             ToggleItem(toggle = toggle, isSubscribed = subscribeState.isSubscribed)

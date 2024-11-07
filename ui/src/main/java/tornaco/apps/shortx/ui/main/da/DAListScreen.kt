@@ -308,6 +308,7 @@ private fun DAListContent(
         items(items = das, key = { it.uniqueUIKey }) { da ->
             ShortXCard(
                 modifier = Modifier
+                    .animateItem()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 backgroundColor = if (!colorfulCard || da.isDirectActionSet) {
                     ColorDefaults.backgroundSurfaceColor()

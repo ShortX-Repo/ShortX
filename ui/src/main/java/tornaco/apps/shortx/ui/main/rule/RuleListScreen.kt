@@ -254,6 +254,7 @@ private fun RuleListContent(
             key = { listItem: RuleUM -> listItem.uniqueUIKey }) { rule ->
             ShortXCard(
                 modifier = Modifier
+                    .animateItem()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 backgroundColor = if (!colorfulCard || rule.isRuleSet) {
                     ColorDefaults.backgroundSurfaceColor()

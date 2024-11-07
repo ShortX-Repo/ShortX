@@ -281,6 +281,7 @@ private fun DiscoverRule(discoverState: DiscoverState, refresh: () -> Unit) {
 
                             ShortXCard(
                                 modifier = Modifier
+                                    .animateItem()
                                     .padding(horizontal = 16.dp, vertical = 8.dp)
                             ) {
                                 Column(modifier = Modifier
