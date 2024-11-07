@@ -1,7 +1,8 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
-import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
+import android.view.Window
 import android.view.WindowManager
 import com.google.protobuf.Message
 import kotlinx.coroutines.Dispatchers
@@ -64,19 +65,11 @@ object ShowListDialog : Actor {
 
         withContext(Dispatchers.Default) {
             logger.d("ShowListDialog, selectedItemState is: $selectedItemState")
-            when (result) {
-                DialogAction.Positive -> {
-                    contextData.add(
-                        d.customContextDataKey.forKey(ContextDataMapping.ShowListDialog.selectedListItem.name)
-                            .fallbackOnEmpty { ContextDataMapping.ShowListDialog.selectedListItem.name },
-                        selectedItemState
-                    )
-                }
-
-                else -> {
-                    // Noop.
-                }
-            }
+            contextData.add(
+                d.customContextDataKey.forKey(ContextDataMapping.ShowListDialog.selectedListItem.name)
+                    .fallbackOnEmpty { ContextDataMapping.ShowListDialog.selectedListItem.name },
+                selectedItemState
+            )
         }
     }
 
@@ -88,7 +81,9 @@ object ShowListDialog : Actor {
         selectedItemState: MutableList<String>,
     ): DialogAction {
         return suspendCancellableCoroutine { continuation ->
-            var result: DialogAction = DialogAction.None
+            val result: DialogAction = DialogAction.None
+
+            val androidDialog = Dialog(context)
 
             val guideLineView =
                 ListDialogView(
@@ -103,33 +98,24 @@ object ShowListDialog : Actor {
                         selectedItemState.addAll(it)
                     },
                     onDismissRequest = {
-
+                        androidDialog.dismiss()
                     }
                 )
             guideLineView.initView()
 
-            val dialogBuilder = AlertDialog.Builder(context)
-                .setView(guideLineView)
-                .setPositiveButton(android.R.string.ok) { _, _ ->
-                    result = DialogAction.Positive
-                }
-                .apply {
-
-                }
-                .setCancelable(d.cancelable)
-
-
-            dialogBuilder.setOnDismissListener {
-                continuation.resume(result) {}
-            }
-
-            val dialog = dialogBuilder.create().apply {
+            androidDialog.apply {
+                requestWindowFeature(Window.FEATURE_NO_TITLE)
+                setContentView(guideLineView)
+                setCancelable(d.cancelable)
                 window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG)
+                setOnDismissListener {
+                    continuation.resume(result) {}
+                }
                 show()
             }
 
             continuation.invokeOnCancellation {
-                dialog.dismiss()
+                androidDialog.dismiss()
             }
 
         }

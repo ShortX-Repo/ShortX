@@ -66,6 +66,8 @@ import com.android.internal.policy.PhoneWindow;
 
 import java.lang.ref.WeakReference;
 
+// To TEST Android Dialog.
+// Currently can use Android SDK Dialog.
 public class Dialog implements DialogInterface, Window.Callback,
         KeyEvent.Callback, OnCreateContextMenuListener, Window.OnWindowDismissedCallback {
     private static final String TAG = "ShortXDialog";
@@ -227,6 +229,8 @@ public class Dialog implements DialogInterface, Window.Callback,
      * that in {@link #onStart}.
      */
     public void show() {
+        mWindow.setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
+
         if (mShowing) {
             if (mDecor != null) {
                 if (mWindow.hasFeature(Window.FEATURE_ACTION_BAR)) {
