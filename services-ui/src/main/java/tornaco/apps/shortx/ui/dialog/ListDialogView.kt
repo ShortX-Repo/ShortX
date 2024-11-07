@@ -6,7 +6,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +15,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -24,28 +25,30 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.I18N
-import tornaco.apps.shortx.ui.BaseComposeView
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.SearchBar
+import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
 
 @SuppressLint("ViewConstructor")
 class ListDialogView(
     context: Context,
     i18N: I18N,
-    onDismiss: (BaseComposeView) -> Unit,
+    private val onDismissRequest: () -> Unit,
     private val title: String,
     private val multipleSelection: Boolean,
     private val defaultSelectedItems: List<String>,
     private val listItems: List<String>,
     private val onSelectionChange: (List<String>) -> Unit,
-) : DialogView(context, i18N, { onDismiss(it) }) {
+) : DialogView(context, i18N) {
     @Composable
     override fun DialogContent() {
         val data = remember { mutableStateListOf(*defaultSelectedItems.toTypedArray()) }
+
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.SpaceBetween
@@ -53,28 +56,30 @@ class ListDialogView(
             val searchBarState = rememberSearchBarState()
             LazyColumn(
                 modifier = Modifier
-                    .weight(1f)
+                    .weight(1f, fill = false)
                     .fillMaxWidth()
-                    .heightIn(max = 200.dp)
+                    .heightIn(max = 800.dp),
             ) {
                 stickyHeader {
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 20.dp, horizontal = 16.dp)
-                    ) {
-                        Text(title, style = MaterialTheme.typography.titleLarge)
-                    }
-                }
-
-                stickyHeader {
-                    SearchBar(
-                        searchBarState = searchBarState,
+                    Surface(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 12.dp)
-                            .padding(top = 8.dp)
-                    )
+                    ) {
+                        Column {
+                            Text(
+                                title, style = MaterialTheme.typography.titleLarge.copy(
+                                    fontWeight = FontWeight.W500
+                                )
+                            )
+                            SmallSpacer()
+                            SearchBar(
+                                searchBarState = searchBarState,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 16.dp)
+                            )
+                        }
+                    }
                 }
 
                 items(listItems.filter {
@@ -89,7 +94,6 @@ class ListDialogView(
                             data.clear()
                             data.add(it)
                             onSelectionChange(data)
-                            detach()
                         } else {
                             if (isSelected) {
                                 data.remove(it)
@@ -106,6 +110,10 @@ class ListDialogView(
                                 Checkbox(isSelected, onCheckedChange = {
                                     handleCheckClick()
                                 })
+                            } else {
+                                RadioButton(isSelected, onClick = {
+                                    handleCheckClick()
+                                })
                             }
                         },
                         onClick = {
@@ -114,10 +122,9 @@ class ListDialogView(
                     )
                 }
             }
-
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                 TextButton(onClick = {
-                    detach()
+                    onDismissRequest()
                 }) {
                     Text(stringResource(android.R.string.ok))
                 }

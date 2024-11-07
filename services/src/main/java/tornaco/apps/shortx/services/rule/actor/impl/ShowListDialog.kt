@@ -1,6 +1,9 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
+import android.app.Dialog
 import android.content.Context
+import android.view.Window
+import android.view.WindowManager
 import com.google.protobuf.Message
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -9,7 +12,9 @@ import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.localvar.LocalVars
+import tornaco.apps.shortx.core.proto.action.DialogAction
 import tornaco.apps.shortx.core.proto.action.ShowListDialog
+import tornaco.apps.shortx.core.rule.RuleContextAndVars
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
@@ -17,6 +22,8 @@ import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
+import tornaco.apps.shortx.services.ui.i18NIns
+import tornaco.apps.shortx.ui.dialog.ListDialogView
 
 object ShowListDialog : Actor {
     override fun actionsCanHandle(): Class<out Message> {
@@ -51,31 +58,67 @@ object ShowListDialog : Actor {
         logger.v("listItems: $listItems")
 
         val selectedItemState = mutableListOf<String>()
+        val result: DialogAction =
+            showMultipleChoiceDialog(context, listItems, d, cv, selectedItemState)
 
-        suspendCancellableCoroutine<Unit> { con ->
-            shortXContext.wm.showListDialogView(
-                title = d.title.compileContextAndVars(cv),
-                onDismiss = {
-                    logger.d("onDismiss")
-                    con.resume(Unit) { _, _, _ -> }
-                },
-                multipleSelection = d.isMultipleChoice,
-                defaultSelectedItems = emptyList(),
-                listItems = listItems,
-                onSelectionChange = {
-                    logger.d("onSelectionChange: ${it.joinToString()}")
-                    selectedItemState.clear()
-                    selectedItemState.addAll(it)
-                }
+        logger.d("ShowListDialog, result is: $result $selectedItemState")
+
+        withContext(Dispatchers.Default) {
+            logger.d("ShowListDialog, selectedItemState is: $selectedItemState")
+            contextData.add(
+                d.customContextDataKey.forKey(ContextDataMapping.ShowListDialog.selectedListItem.name)
+                    .fallbackOnEmpty { ContextDataMapping.ShowListDialog.selectedListItem.name },
+                selectedItemState
             )
         }
-        logger.d("ShowListDialog, result: $selectedItemState")
+    }
 
-        contextData.add(
-            d.customContextDataKey.forKey(ContextDataMapping.ShowListDialog.selectedListItem.name)
-                .fallbackOnEmpty { ContextDataMapping.ShowListDialog.selectedListItem.name },
-            selectedItemState
-        )
+    private suspend fun showMultipleChoiceDialog(
+        context: Context,
+        listItems: List<String>,
+        d: ShowListDialog,
+        cv: RuleContextAndVars,
+        selectedItemState: MutableList<String>,
+    ): DialogAction {
+        return suspendCancellableCoroutine { continuation ->
+            val result: DialogAction = DialogAction.None
+
+            val androidDialog = Dialog(context)
+
+            val guideLineView =
+                ListDialogView(
+                    context = context,
+                    i18N = i18NIns,
+                    title = d.title.compileContextAndVars(cv),
+                    multipleSelection = d.isMultipleChoice,
+                    defaultSelectedItems = emptyList(),
+                    listItems = listItems,
+                    onSelectionChange = {
+                        selectedItemState.clear()
+                        selectedItemState.addAll(it)
+                    },
+                    onDismissRequest = {
+                        androidDialog.dismiss()
+                    }
+                )
+            guideLineView.initView()
+
+            androidDialog.apply {
+                requestWindowFeature(Window.FEATURE_NO_TITLE)
+                setContentView(guideLineView)
+                setCancelable(d.cancelable)
+                window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG)
+                setOnDismissListener {
+                    continuation.resume(result) {}
+                }
+                show()
+            }
+
+            continuation.invokeOnCancellation {
+                androidDialog.dismiss()
+            }
+
+        }
     }
 }
 

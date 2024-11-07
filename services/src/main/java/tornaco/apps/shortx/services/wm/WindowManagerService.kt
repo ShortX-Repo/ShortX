@@ -45,8 +45,6 @@ import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
 import tornaco.apps.shortx.ui.clipbord.ClipboardView
-import tornaco.apps.shortx.ui.dialog.DialogView
-import tornaco.apps.shortx.ui.dialog.ListDialogView
 import tornaco.apps.shortx.ui.draw.DrawBoardView
 import tornaco.apps.shortx.ui.overlay.IdViewerView
 import tornaco.apps.shortx.ui.overlay.UniversalCopyView
@@ -66,7 +64,6 @@ class WindowManagerService(shortXContext: ShortXContext) :
     private val showingDrawerBoard: MutableSet<DrawBoardView> = mutableSetOf()
     private val showingClipboard: MutableSet<ClipboardView> = mutableSetOf()
     private val showingAreaSelector: MutableSet<AreaSelectorView> = mutableSetOf()
-    private val showingDialogs: MutableSet<DialogView> = mutableSetOf()
 
     private val mainHandler by lazy {
         Handler(Looper.getMainLooper())
@@ -556,36 +553,6 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
     }
 
-    fun showListDialogView(
-        title: String,
-        onDismiss: () -> Unit,
-        multipleSelection: Boolean,
-        defaultSelectedItems: List<String>,
-        listItems: List<String>,
-        onSelectionChange: (List<String>) -> Unit,
-    ) {
-        disableAllOverlayViews {
-            val guideLineView =
-                ListDialogView(
-                    context = context,
-                    i18N = i18NIns,
-                    onDismiss = {
-                        showingDialogs.remove(it)
-                        onDismiss()
-                    },
-                    title = title,
-                    multipleSelection = multipleSelection,
-                    defaultSelectedItems = defaultSelectedItems,
-                    listItems = listItems,
-                    onSelectionChange = onSelectionChange,
-                )
-            showingDialogs.add(guideLineView)
-            mainHandler.postSafety {
-                guideLineView.attach()
-            }
-        }
-    }
-
     fun enableIdViewer() {
         disableAllOverlayViews {
             val idNodes = mutableListOf<ViewNode>()
@@ -722,12 +689,6 @@ class WindowManagerService(shortXContext: ShortXContext) :
                     .onFailure { logger.e(it, "disableClipboard detach fail") }
             }
             showingClipboard.clear()
-
-            showingDialogs.forEach {
-                kotlin.runCatching { it.detach() }
-                    .onFailure { logger.e(it, "showingDialogs detach fail") }
-            }
-            showingDialogs.clear()
 
             systemServiceScope.launchSafety {
                 action()

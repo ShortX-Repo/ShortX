@@ -5,7 +5,7 @@ import android.content.Context
 import android.graphics.Rect
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.I18N
-import tornaco.apps.shortx.ui.BaseComposeView
+import tornaco.apps.shortx.ui.AttachableComposeView
 import tornaco.apps.shortx.ui.FlashingBorderBox
 import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
 
@@ -13,11 +13,11 @@ import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
 class AreaSelectorView(
     context: Context,
     i18N: I18N,
-    onDetach: (BaseComposeView) -> Unit,
+    onDetach: (AttachableComposeView) -> Unit,
     private val onDragEnd: () -> Unit,
     private val onSelectFullScreen: () -> Unit = {},
     val selected: (Rect) -> Unit,
-) : BaseComposeView(context, i18N, onDetach) {
+) : AttachableComposeView(context, i18N, onDetach) {
     override var enableLayoutAnim = false
 
     @Composable

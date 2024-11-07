@@ -48,7 +48,7 @@ import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.proto.clipboard.ClipboardItem
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.DateUtils
-import tornaco.apps.shortx.ui.BaseComposeView
+import tornaco.apps.shortx.ui.AttachableComposeView
 import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.DropdownItem
@@ -70,12 +70,12 @@ class ClipboardView(
     context: Context,
     i18N: I18N,
     val clips: List<ClipboardItem>,
-    onDetach: (BaseComposeView) -> Unit,
+    onDetach: (AttachableComposeView) -> Unit,
     val inputText: (String) -> Unit,
     val addText: (ClipboardItem) -> Unit,
     val removeText: (id: String) -> Unit,
     val clearAll: () -> Unit,
-) : BaseComposeView(context, i18N, onDetach) {
+) : AttachableComposeView(context, i18N, onDetach) {
 
     @Composable
     override fun ComposeContent() {

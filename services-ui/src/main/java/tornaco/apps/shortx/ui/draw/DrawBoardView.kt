@@ -15,7 +15,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.I18N
-import tornaco.apps.shortx.ui.BaseComposeView
+import tornaco.apps.shortx.ui.AttachableComposeView
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
 
@@ -23,8 +23,8 @@ import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
 class DrawBoardView(
     context: Context,
     i18N: I18N,
-    onDetach: (BaseComposeView) -> Unit
-) : BaseComposeView(context, i18N, onDetach) {
+    onDetach: (AttachableComposeView) -> Unit
+) : AttachableComposeView(context, i18N, onDetach) {
     @Composable
     override fun ComposeContent() {
         DrawBoardContent {
