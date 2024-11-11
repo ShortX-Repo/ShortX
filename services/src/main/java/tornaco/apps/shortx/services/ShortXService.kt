@@ -349,28 +349,33 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         ): List<ByteArrayWrapper> {
             logger.d("getAllDirectAction-$queryId")
             return v(context) {
-                synchronized(directActionQueryCache) {
-                    val cache = directActionQueryCache[queryId]
-                    // Keep only one.
-                    if (cache == null) {
-                        directActionQueryCache.clear()
-                    } else {
-                        logger.d("Use directActionQueryCache")
-                    }
-                    val batches =
-                        cache ?: ListBatchUtils.toArrayBatch(
-                            shortXContext.rule.getAllDirectAction(),
-                            pageSize
-                        ).also {
-                            directActionQueryCache[queryId] = it
+                kotlin.runCatching {
+                    synchronized(directActionQueryCache) {
+                        val cache = directActionQueryCache[queryId]
+                        // Keep only one.
+                        if (cache == null) {
+                            directActionQueryCache.clear()
+                        } else {
+                            logger.d("Use directActionQueryCache")
                         }
+                        val batches =
+                            cache ?: ListBatchUtils.toArrayBatch(
+                                shortXContext.rule.getAllDirectAction(),
+                                pageSize
+                            ).also {
+                                directActionQueryCache[queryId] = it
+                            }
 
-                    val totalBatchCount: Int = batches.batches.size
-                    if (pageNumber >= totalBatchCount) {
-                        emptyList()
-                    } else batches.batches[pageNumber].map {
-                        ByteArrayWrapper(it.toByteArray())
+                        val totalBatchCount: Int = batches.batches.size
+                        if (pageNumber >= totalBatchCount) {
+                            emptyList()
+                        } else batches.batches[pageNumber].map {
+                            ByteArrayWrapper(it.toByteArray())
+                        }
                     }
+                }.getOrElse {
+                    shortXContext.watchDog.onFatalError(it, "getAllDirectAction")
+                    null
                 }
             } ?: emptyList()
         }
