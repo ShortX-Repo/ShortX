@@ -44,6 +44,7 @@ import tornaco.apps.shortx.core.phone.ISMSProvider
 import tornaco.apps.shortx.core.proto.action.HttpRequest
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AudioRecordFile
+import tornaco.apps.shortx.core.proto.common.Author
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.common.CoroutineContext
 import tornaco.apps.shortx.core.proto.common.GestureRecord
@@ -104,6 +105,19 @@ import java.io.File
 
 @SuppressLint("StaticFieldLeak")
 object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
+    private val errorGetAllDARes = listOf(
+        ByteArrayWrapper(
+            DirectAction.newBuilder()
+                .setId("ERROR-GET-DA")
+                .setCreateTime(System.currentTimeMillis())
+                .setTitle("ERROR")
+                .setDescription("ERROR!!! please file a bug")
+                .setAuthor(Author.newBuilder().setName("ShortX").build())
+                .build()
+                .toByteArray()
+        )
+    )
+
     fun main() {
         LogInit.initEarlyLogging()
         ShortXManagerNative.attachLocalService(serviceBinder)
@@ -347,37 +361,50 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             pageNumber: Int,
             pageSize: Int
         ): List<ByteArrayWrapper> {
-            logger.d("getAllDirectAction-$queryId")
-            return v(context) {
-                kotlin.runCatching {
-                    synchronized(directActionQueryCache) {
-                        val cache = directActionQueryCache[queryId]
-                        // Keep only one.
-                        if (cache == null) {
-                            directActionQueryCache.clear()
-                        } else {
-                            logger.d("Use directActionQueryCache")
-                        }
-                        val batches =
-                            cache ?: ListBatchUtils.toArrayBatch(
-                                shortXContext.rule.getAllDirectAction(),
-                                pageSize
-                            ).also {
-                                directActionQueryCache[queryId] = it
+            logger.w("getAllDirectAction-$queryId pageNumber: $pageNumber pageSize: $pageSize")
+            val res = kotlin.runCatching {
+                v(context) {
+                    kotlin.runCatching {
+                        synchronized(directActionQueryCache) {
+                            val cache = directActionQueryCache[queryId]
+                            // Keep only one.
+                            if (cache == null) {
+                                directActionQueryCache.clear()
+                            } else {
+                                logger.w("Use directActionQueryCache")
                             }
+                            val batches =
+                                cache ?: ListBatchUtils.toArrayBatch(
+                                    shortXContext.rule.getAllDirectAction(),
+                                    pageSize
+                                ).also {
+                                    directActionQueryCache[queryId] = it
+                                }
 
-                        val totalBatchCount: Int = batches.batches.size
-                        if (pageNumber >= totalBatchCount) {
-                            emptyList()
-                        } else batches.batches[pageNumber].map {
-                            ByteArrayWrapper(it.toByteArray())
+                            val totalBatchCount: Int = batches.batches.size
+                            logger.w("totalBatchCount- $totalBatchCount")
+                            logger.w("totalBatchCount total - ${batches.batches.sumOf { it.size }}")
+
+                            if (pageNumber >= totalBatchCount) {
+                                emptyList()
+                            } else batches.batches[pageNumber].mapNotNull { directAction ->
+                                runCatching { ByteArrayWrapper(directAction.toByteArray()) }.getOrElse {
+                                    logger.e(it, "Map one DA error: $directAction")
+                                    null
+                                }
+                            }
                         }
+                    }.getOrElse {
+                        shortXContext.watchDog.onFatalError(it, "getAllDirectAction")
+                        errorGetAllDARes
                     }
-                }.getOrElse {
-                    shortXContext.watchDog.onFatalError(it, "getAllDirectAction")
-                    null
                 }
-            } ?: emptyList()
+            }.getOrElse {
+                shortXContext.watchDog.onFatalError(it, "getAllDirectActionRoot")
+                errorGetAllDARes
+            }
+            logger.w("getAllDirectAction, returning res size: ${res?.size}")
+            return res ?: emptyList()
         }
 
         override fun getDirectActionCount(): Int {
