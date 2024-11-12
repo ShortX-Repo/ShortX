@@ -164,9 +164,15 @@ class AudioRecordViewModel @Inject constructor(@ApplicationContext context: Cont
     }
 
     private fun getAudioDuration(file: File): Long {
-        val retriever = MediaMetadataRetriever()
-        retriever.setDataSource(file.absolutePath)
-        val durationStr = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-        return durationStr?.toLong() ?: 0L
+        return kotlin.runCatching {
+            val retriever = MediaMetadataRetriever()
+            retriever.setDataSource(file.absolutePath)
+            val durationStr =
+                retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+            return durationStr?.toLong() ?: 0L
+        }.getOrElse {
+            logger.e(it, "getAudioDuration err - $file")
+            0L
+        }
     }
 }
