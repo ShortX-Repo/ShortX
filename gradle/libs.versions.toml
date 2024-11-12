@@ -9,11 +9,14 @@ biometric = "1.4.0-alpha02"
 compressor = "3.0.1"
 firebase-bom = "33.5.1"
 glance-appwidget = "1.1.1"
+paging-compose = "3.3.2"
+paging-runtime-ktx = "3.3.2"
 shortx-core = "1.1.2-SNAPSHOT"
 rang-vikalp = "1.0.0-alpha02"
 sardine-android = "v0.9"
 shortx-plugin-sdk = "1.1.2"
 tinypinyin = "3.0.0"
+touchimageview = "3.6"
 ui-graphics = "1.7.5"
 stringfog-xor = "5.0.0"
 stringfog-plugin = "5.2.0"
@@ -89,6 +92,8 @@ kover = { id = "org.jetbrains.kotlinx.kover", version = "0.8.3" }
 androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
 androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glance-appwidget" }
 androidx-glance-material3 = { module = "androidx.glance:glance-material3", version.ref = "glance-appwidget" }
+androidx-paging-runtime-ktx = { module = "androidx.paging:paging-runtime-ktx", version.ref = "paging-runtime-ktx" }
+androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging-compose" }
 androidx-ui-graphics = { module = "androidx.compose.ui:ui-graphics", version.ref = "ui-graphics" }
 apksig = { module = "com.android.tools.build:apksig", version.ref = "apksig" }
 
@@ -118,6 +123,7 @@ shortx-plugin-sdk = { module = "shortx:plugin.sdk", version.ref = "shortx-plugin
 tinypinyin = { module = "com.github.promeg:tinypinyin", version.ref = "tinypinyin" }
 stringfog-xor = { module = "com.github.megatronking.stringfog:xor", version.ref = "stringfog-xor" }
 stringfog-plugin = { module = "com.github.megatronking.stringfog:gradle-plugin", version.ref = "stringfog-plugin" }
+touchimageview = { module = "com.github.MikeOrtiz:TouchImageView", version.ref = "touchimageview" }
 zxing-core = { module = "com.google.zxing:core", version.ref = "zxing-core" }
 dalvik-dx = { module = "com.jakewharton.android.repackaged:dalvik-dx", version.ref = "dalvik-dx" }
 jotp = { module = "com.amdelamar:jotp", version.ref = "jotp" }

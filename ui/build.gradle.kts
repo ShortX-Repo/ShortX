@@ -133,7 +133,9 @@ dependencies {
     // For interop APIs with Material 3
     implementation(libs.androidx.glance.material3)
 
-    implementation("com.github.MikeOrtiz:TouchImageView:3.6")
+    implementation(libs.touchimageview)
+    implementation(libs.androidx.paging.runtime.ktx)
+    implementation(libs.androidx.paging.compose)
 
     val rowImplementation by configurations
     // This dependency is downloaded from the Google’s Maven repository.
