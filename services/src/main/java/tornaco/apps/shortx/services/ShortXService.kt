@@ -361,8 +361,8 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             pageNumber: Int,
             pageSize: Int
         ): List<ByteArrayWrapper> {
-            logger.w("getAllDirectAction-$queryId pageNumber: $pageNumber pageSize: $pageSize")
-            val res = kotlin.runCatching {
+            logger.d("getAllDirectAction-$queryId pageNumber: $pageNumber pageSize: $pageSize")
+            val res =
                 v(context) {
                     kotlin.runCatching {
                         synchronized(directActionQueryCache) {
@@ -371,7 +371,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                             if (cache == null) {
                                 directActionQueryCache.clear()
                             } else {
-                                logger.w("Use directActionQueryCache")
+                                logger.d("Use directActionQueryCache")
                             }
                             val batches =
                                 cache ?: ListBatchUtils.toArrayBatch(
@@ -382,8 +382,8 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                                 }
 
                             val totalBatchCount: Int = batches.batches.size
-                            logger.w("totalBatchCount- $totalBatchCount")
-                            logger.w("totalBatchCount total - ${batches.batches.sumOf { it.size }}")
+                            logger.d("totalBatchCount- $totalBatchCount")
+                            logger.d("totalBatchCount total - ${batches.batches.sumOf { it.size }}")
 
                             if (pageNumber >= totalBatchCount) {
                                 emptyList()
@@ -399,11 +399,9 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                         errorGetAllDARes
                     }
                 }
-            }.getOrElse {
-                shortXContext.watchDog.onFatalError(it, "getAllDirectActionRoot")
-                errorGetAllDARes
-            }
-            logger.w("getAllDirectAction, returning res size: ${res?.size}")
+            val byteSize = res?.sumOf { it.byteData.size }
+            logger.d("getAllDirectAction, returning res size: ${res?.size}, byteSize: $byteSize")
+
             return res ?: emptyList()
         }
 
