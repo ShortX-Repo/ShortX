@@ -48,7 +48,14 @@ androidGitVersion {
     baseCode = 5555
 }
 
-sxVersionCode = androidGitVersion.code()
+// Make sure new code > released.
+val legacyCodeBase = 100000
+// 2000.1.1 millis
+val startOf2000 = 946684800000L
+// +1 10min
+val versionCodeByTime =
+    ((System.currentTimeMillis() - startOf2000) / 1000 / 60 / 10).toInt() + legacyCodeBase
+sxVersionCode = versionCodeByTime
 sxVersionName = androidGitVersion.name()
 
 val androidSourceCompatibility by extra(JavaVersion.VERSION_21)
