@@ -25,6 +25,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator
+import com.luckycatlabs.sunrisesunset.dto.Location
 import io.github.rosemoe.sora.app.CEActivity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -36,7 +38,9 @@ import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.settings.TileSettingsActivity
+import java.util.Calendar
 import java.util.Locale
+import java.util.TimeZone
 
 class DemoActivity : BaseActivity() {
     private val nfcListener = object : INFCTagEndpointListener.Stub() {
@@ -193,6 +197,23 @@ class DemoActivity : BaseActivity() {
                     context.startActivity(Intent(context, DialogStyleActivity::class.java))
                 }) {
                     Text(text = "Dialog Activity")
+                }
+
+                Button(onClick = {
+                    val location = Location("108.94", "34.34")
+                    val calculator = SunriseSunsetCalculator(location, TimeZone.getDefault())
+
+                    val sunrise =
+                        calculator.getOfficialSunriseCalendarForDate(Calendar.getInstance())
+                    val sunset = calculator.getOfficialSunsetCalendarForDate(Calendar.getInstance())
+
+                    Toast.makeText(
+                        context,
+                        "日出时间: ${sunrise.time}" + " 日落时间: ${sunset.time}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }) {
+                    Text(text = "SunriseSunsetCalculator")
                 }
 
                 Button(onClick = {

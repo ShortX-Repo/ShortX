@@ -15,6 +15,7 @@ shortx-core = "1.1.2-SNAPSHOT"
 rang-vikalp = "1.0.0-alpha02"
 sardine-android = "v0.9"
 shortx-plugin-sdk = "1.1.2"
+sunrisesunsetcalculator-version = "1.2"
 tinypinyin = "3.0.0"
 touchimageview = "3.6"
 ui-graphics = "1.7.5"
@@ -104,6 +105,7 @@ firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-config = { module = "com.google.firebase:firebase-config" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+luckycatlabs-sunrisesunsetcalculator = { module = "com.luckycatlabs:SunriseSunsetCalculator", version.ref = "sunrisesunsetcalculator-version" }
 shortx-core = { module = "shortx:core", version.ref = "shortx-core" }
 shortx-ui-base = { module = "shortx:ui-base", version.ref = "shortx-core" }
 shortx-ext-utils = { module = "shortx:external-utils", version.ref = "shortx-core" }

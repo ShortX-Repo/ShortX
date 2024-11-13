@@ -11,7 +11,6 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.dagger.hilt.android)
-    alias(libs.plugins.kover)
     alias(libs.plugins.compose.compiler)
 }
 
@@ -153,9 +152,8 @@ dependencies {
     implementation(libs.shortx.ui.base)
 
     debugImplementation(project(":services-ui"))
-
-    kover(project(":core"))
-    kover(project(":services"))
+    // Demo to test
+    debugImplementation(libs.luckycatlabs.sunrisesunsetcalculator)
 
     testImplementation(libs.junit)
     testImplementation(libs.mockk)

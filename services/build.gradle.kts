@@ -45,6 +45,8 @@ dependencies {
 
     implementation(libs.shortx.plugin.sdk)
 
+    implementation(libs.luckycatlabs.sunrisesunsetcalculator)
+
     testImplementation(libs.junit)
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotest.property)
