@@ -22,6 +22,7 @@ import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.rule.AsyncMode
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
+import tornaco.apps.shortx.core.proto.rule.Quit_EvaluatePolicy
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleInstanceIdGenerator_Static
 import tornaco.apps.shortx.core.rule.ProtoAny
@@ -113,6 +114,8 @@ class DefaultRuleEngine(
 ) : Engine {
     private val logger = Logger("DefaultRuleEngine")
     private val jobs = mutableListOf<JobRecord>()
+
+    private val canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce = mutableSetOf<String>()
 
     private val globalMuteX = Mutex()
     private val muteXMap = ConcurrentHashMap<String, Mutex>()
@@ -405,8 +408,11 @@ class DefaultRuleEngine(
                 logger.d("fire, not match for rule it self: ${fact.javaClass} ${rule.title}, will check it's quit.")
 
                 val quit = rule.quit
-
-                if (quit.isEnabled) {
+                if (quit.isEnabled && checkQuitEvaluatePolicyForRule(
+                        quit.evaluatePolicy,
+                        rule.id
+                    ) { activeJobs().map { it.srcId } }
+                ) {
                     val quitFactMatcherResult = factMatcher.match(fact, quit.factsList)
                     logger.d("quitFactMatcherResult: $quitFactMatcherResult")
                     if (quitFactMatcherResult.isMatch) {
@@ -483,6 +489,10 @@ class DefaultRuleEngine(
                                         localVars = localVars,
                                         parameterInputs = parameterInputs
                                     )
+
+                                    canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce.remove(
+                                        evaluateContext.srcId
+                                    )
                                 }
                                 // Launch End
                             }
@@ -494,7 +504,7 @@ class DefaultRuleEngine(
         }
 
         das.filterHasQuit()
-            .filterIsActive()
+            .filterDirectActionQuitEvaluatePolicy()
             .forEach { da ->
                 logger.d("fire, check da quit: ${fact.javaClass} ${da.title}")
 
@@ -573,6 +583,11 @@ class DefaultRuleEngine(
                                         contextData = contextData,
                                         localVars = localVars,
                                         parameterInputs = parameterInputs
+                                    )
+
+                                    logger.d("Remove from canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce: ${evaluateContext.srcId}")
+                                    canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce.remove(
+                                        evaluateContext.srcId
                                     )
                                 }
                                 // Launch End
@@ -680,6 +695,8 @@ class DefaultRuleEngine(
                 }
             }
         }
+        logger.d("Add to canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce: ${context.srcId}")
+        canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce.add(context.srcId)
 
         val job = coroutineScope.launchSafety {
             withContext(Dispatchers.IO) {
@@ -776,10 +793,59 @@ class DefaultRuleEngine(
         }
     }
 
-    private fun List<DirectAction>.filterIsActive(): List<DirectAction> {
+    private fun List<DirectAction>.filterDirectActionQuitEvaluatePolicy(): List<DirectAction> {
         val jobs = activeJobs().map { it.srcId }
         return filter { da ->
-            jobs.contains(da.id)
+            val policy: Quit_EvaluatePolicy = da.quit.evaluatePolicy
+            checkQuitEvaluatePolicyForDA(policy, da.id) { jobs }
+        }
+    }
+
+    private fun checkQuitEvaluatePolicyForDA(
+        policy: Quit_EvaluatePolicy,
+        srcId: String,
+        jobIdProvider: () -> List<String>
+    ): Boolean {
+        logger.d("checkQuitEvaluatePolicyForDA: srcId $srcId")
+        logger.d("checkQuitEvaluatePolicyForDA: jobs $jobs")
+        logger.d("checkQuitEvaluatePolicyForDA: can...OnlyOnce $canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce")
+        return when (policy) {
+            Quit_EvaluatePolicy.Quit_EvaluatePolicy_Only_When_Is_Running, Quit_EvaluatePolicy.UNRECOGNIZED -> {
+                val jobs = jobIdProvider()
+                jobs.contains(srcId)
+            }
+
+            Quit_EvaluatePolicy.Quit_EvaluatePolicy_Always -> {
+                true
+            }
+
+            Quit_EvaluatePolicy.Quit_EvaluatePolicy_Once -> {
+                canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce.contains(srcId)
+            }
+        }
+    }
+
+    private fun checkQuitEvaluatePolicyForRule(
+        policy: Quit_EvaluatePolicy,
+        srcId: String,
+        jobIdProvider: () -> List<String>
+    ): Boolean {
+        logger.d("checkQuitEvaluatePolicyForRule: srcId $srcId")
+        logger.d("checkQuitEvaluatePolicyForRule: jobs $jobs")
+        logger.d("checkQuitEvaluatePolicyForRule: can...OnlyOnce $canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce")
+        return when (policy) {
+            Quit_EvaluatePolicy.Quit_EvaluatePolicy_Only_When_Is_Running -> {
+                val jobs = jobIdProvider()
+                jobs.contains(srcId)
+            }
+
+            Quit_EvaluatePolicy.Quit_EvaluatePolicy_Always, Quit_EvaluatePolicy.UNRECOGNIZED -> {
+                true
+            }
+
+            Quit_EvaluatePolicy.Quit_EvaluatePolicy_Once -> {
+                canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce.contains(srcId)
+            }
         }
     }
 }
@@ -812,5 +878,4 @@ data class JobRecord(
     fun hasTag(tag: Any) = tags.contains(tag)
 }
 
-object JobTags {
-}
+object JobTags

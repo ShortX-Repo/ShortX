@@ -38,6 +38,7 @@ import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.ConflictStrategy
+import tornaco.apps.shortx.ui.addrule.QuitEvaluatePolicy
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.ActionContentState
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
@@ -378,6 +379,11 @@ private fun DAContent(
             }
             AnimatedVisibility(visible = addDirectActionState.isQuitEnabled) {
                 Column {
+                    // Policy
+                    QuitEvaluatePolicy(addDirectActionState.quitEvaluatePolicy) {
+                        vm.setQuitEvaluatePolicy(it)
+                    }
+
                     StandardSpacer()
                     FactSelectors(
                         header = {

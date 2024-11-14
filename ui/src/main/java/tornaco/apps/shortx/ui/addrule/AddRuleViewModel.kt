@@ -20,6 +20,7 @@ import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.containsAnyTypeUrl
 import tornaco.apps.shortx.core.proto.func.FuncParameter
 import tornaco.apps.shortx.core.proto.rule.AsyncMode
+import tornaco.apps.shortx.core.proto.rule.Quit_EvaluatePolicy
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleHook
 import tornaco.apps.shortx.core.proto.rule.RuleQuit
@@ -63,6 +64,7 @@ data class AddRuleState(
     val showAdvancedOptions: Boolean = false,
     val showGeeksOptions: Boolean = false,
     val isQuitEnabled: Boolean = false,
+    val quitEvaluatePolicy: Quit_EvaluatePolicy = Quit_EvaluatePolicy.Quit_EvaluatePolicy_Always,
     val asyncMode: AsyncMode = AsyncMode.AsyncMode_Async,
     val conflictStrategy: ConflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
     val ruleSetId: String = "",
@@ -268,6 +270,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         }
                         .addAllActions(quitActions.map { it.toProtoAction().pack_() })
                         .setIsEnabled(state.value.isQuitEnabled)
+                        .setEvaluatePolicy(state.value.quitEvaluatePolicy)
                         .build()
                 )
                 .setIsEnabled(state.value.isEnabled)
@@ -421,6 +424,8 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         showGeeksOptions = hasAnyGeeksOptions,
                         instanceIdGen = r.ruleInstanceIdGenerator.toRuleInstanceIdGen(),
                         isQuitEnabled = r.quit.isEnabled,
+                        quitEvaluatePolicy = r.quit.evaluatePolicy.takeIf { it != Quit_EvaluatePolicy.UNRECOGNIZED }
+                            ?: Quit_EvaluatePolicy.Quit_EvaluatePolicy_Always,
                         asyncMode = r.asyncMode,
                         conflictStrategy = r.conflictPolicy,
                         evaluatingActions = evaluatingActions,
@@ -464,6 +469,10 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
 
     fun toggleQuitEnable() {
         updateState { copy(isQuitEnabled = !isQuitEnabled, ruleChanged = true) }
+    }
+
+    fun setQuitEvaluatePolicy(quitEvaluatePolicy: Quit_EvaluatePolicy) {
+        updateState { copy(quitEvaluatePolicy = quitEvaluatePolicy, ruleChanged = true) }
     }
 
     fun addParameter(parameter: FuncParameter, override: Boolean) {

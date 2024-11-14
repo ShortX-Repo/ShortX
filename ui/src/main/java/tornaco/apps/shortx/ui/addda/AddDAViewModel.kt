@@ -21,6 +21,7 @@ import tornaco.apps.shortx.core.proto.containsAnyTypeUrl
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionQuit
 import tornaco.apps.shortx.core.proto.func.FuncParameter
+import tornaco.apps.shortx.core.proto.rule.Quit_EvaluatePolicy
 import tornaco.apps.shortx.core.proto.toStringPair
 import tornaco.apps.shortx.core.rule.Security
 import tornaco.apps.shortx.core.rule.pack_
@@ -65,6 +66,7 @@ data class AddDirectActionState(
     val evaluatingActions: List<String> = emptyList(),
     val daSetId: String = "",
     val isQuitEnabled: Boolean = false,
+    val quitEvaluatePolicy: Quit_EvaluatePolicy = Quit_EvaluatePolicy.Quit_EvaluatePolicy_Always,
     // For online.
     val onlineDALoadState: LoadState<Unit> = LoadState.Success(Unit),
     val securityCheckRes: Boolean = true,
@@ -231,6 +233,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                         }
                         .addAllActions(quitActions.map { it.toProtoAction().pack_() })
                         .setIsEnabled(state.value.isQuitEnabled)
+                        .setEvaluatePolicy(state.value.quitEvaluatePolicy)
                         .build()
                 )
                 .addAllExtras(mutableListOf<StringPair>().apply {
@@ -314,6 +317,8 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                         evaluatingActions = shortXManager.getEvaluatingActions(),
                         daSetId = da.directActionSetId,
                         isQuitEnabled = da.quit.isEnabled,
+                        quitEvaluatePolicy = da.quit.evaluatePolicy.takeIf { it != Quit_EvaluatePolicy.UNRECOGNIZED }
+                            ?: Quit_EvaluatePolicy.Quit_EvaluatePolicy_Always,
                         securityCheckRes = Security.checkSecurity(da),
                         hasSMSAction = hasAnySMSAction,
                         parameters = da.parametersList,
@@ -354,5 +359,9 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
 
     fun toggleQuitEnable() {
         updateState { copy(isQuitEnabled = !isQuitEnabled, daChanged = true) }
+    }
+
+    fun setQuitEvaluatePolicy(quitEvaluatePolicy: Quit_EvaluatePolicy) {
+        updateState { copy(quitEvaluatePolicy = quitEvaluatePolicy, daChanged = true) }
     }
 }

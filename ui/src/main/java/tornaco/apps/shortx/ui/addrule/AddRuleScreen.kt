@@ -36,6 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.rule.AsyncMode
+import tornaco.apps.shortx.core.proto.rule.Quit_EvaluatePolicy
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addda.FuncParamList
@@ -494,6 +495,11 @@ private fun RuleContent(
             }
             AnimatedVisibility(visible = addRuleState.isQuitEnabled) {
                 Column {
+                    // Policy
+                    QuitEvaluatePolicy(addRuleState.quitEvaluatePolicy) {
+                        vm.setQuitEvaluatePolicy(it)
+                    }
+
                     StandardSpacer()
                     FactSelectors(
                         header = {
@@ -651,6 +657,43 @@ fun ConflictStrategy(
                 },
             onSelect = {
                 setConflictStrategy(it.data)
+            })
+    }
+}
+
+@Composable
+fun QuitEvaluatePolicy(
+    policy: Quit_EvaluatePolicy,
+    setPolicy: (Quit_EvaluatePolicy) -> Unit
+) {
+    MediumTitle(text = LocalI18N.current["ui.rule.quit.eva.policy"])
+    SmallSpacer()
+
+    val dropState = rememberDropdownSelectorState()
+    Box(modifier = Modifier.fillMaxWidth()) {
+        FilledTonalButton(onClick = {
+            dropState.open()
+        }) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = LocalI18N.current[LocalI18N.current["ui.rule.quit.eva.policy.${policy.name}"]])
+                StandardSpacer()
+                RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
+            }
+        }
+        DropdownSelector(
+            state = dropState,
+            items = Quit_EvaluatePolicy.entries
+                .filterNot { it == Quit_EvaluatePolicy.UNRECOGNIZED }.map {
+                    DropdownItem(
+                        labelLines = listOf(
+                            LocalI18N.current["ui.rule.quit.eva.policy.${policy.name}"],
+                            LocalI18N.current["ui.rule.quit.eva.policy.description.${policy.name}"]
+                        ),
+                        data = it
+                    )
+                },
+            onSelect = {
+                setPolicy(it.data)
             })
     }
 }
