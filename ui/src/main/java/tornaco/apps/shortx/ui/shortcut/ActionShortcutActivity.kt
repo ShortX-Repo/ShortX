@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.drawable.LayerDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
@@ -12,17 +11,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.IconCompat
 import com.elvishew.xlog.XLog
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
-import tornaco.apps.shortx.core.res.remixResId
 import tornaco.apps.shortx.core.shortXManager
-import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.shortcutManager
-import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.base.i18NIns
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 
@@ -143,24 +138,11 @@ class ActionShortcutActivity : Activity() {
         }
 
         private fun createIconForDA(context: Context, action: DirectActionUM): Bitmap? {
-            val actionIconDrawable = ResourcesCompat.getDrawable(
-                context.resources,
-                context.remixResId(action.icon),
-                null
-            )?.apply {
-                setTint(android.graphics.Color.WHITE)
-            }
-            val templateDrawable =
-                ResourcesCompat.getDrawable(
-                    context.resources,
-                    R.drawable.ui_ic_shortcut_template,
-                    null
-                )
-            val ld = templateDrawable as LayerDrawable
-            ld.setTint(Color(action.iconColor).toArgb())
-            ld.setDrawableByLayerId(R.id.settings_ic_foreground, actionIconDrawable)
-
-            return BitmapUtils.getBitmap(context, templateDrawable)
+            return ShortcutIconUtil.createIconForDA(
+                context = context,
+                icon = action.icon,
+                tint = Color(action.iconColor).toArgb()
+            )
         }
     }
 

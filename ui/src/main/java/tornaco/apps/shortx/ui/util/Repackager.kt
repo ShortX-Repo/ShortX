@@ -2,11 +2,6 @@ package tornaco.apps.shortx.ui.util
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Bitmap.CompressFormat
-import android.graphics.drawable.LayerDrawable
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import androidx.core.content.res.ResourcesCompat
 import com.android.tools.build.apkzlib.zip.AlignmentRules
 import com.android.tools.build.apkzlib.zip.ZFile
 import com.android.tools.build.apkzlib.zip.ZFileOptions
@@ -14,10 +9,8 @@ import com.wind.meditor.core.ManifestEditor
 import com.wind.meditor.property.AttributeItem
 import com.wind.meditor.property.ModificationProperty
 import com.wind.meditor.utils.NodeValue
-import tornaco.apps.shortx.core.res.remixResId
-import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.ui.R
+import tornaco.apps.shortx.ui.shortcut.ShortcutIconUtil
 import tornaco.apps.shortx.ui.shortcut.ShortcutStubInfo
 import tornaco.apps.shortx.ui.util.ApkSignatureHelper.provideSigningExtension
 import java.io.ByteArrayInputStream
@@ -127,26 +120,11 @@ class Repackager(private val context: Context) {
     }
 
     private fun patchIcon(info: ShortcutStubInfo): ByteArrayInputStream? {
-        val actionIconDrawable = ResourcesCompat.getDrawable(
-            context.resources,
-            context.remixResId(info.appIcon),
-            null
-        )?.apply {
-            setTint(Color(info.appIconTintColor).toArgb())
-        }
-        val templateDrawable =
-            ResourcesCompat.getDrawable(
-                context.resources,
-                R.drawable.ui_ic_shortcut_template,
-                null
-            )
-        val ld = templateDrawable as LayerDrawable
-        ld.setTint(Color(info.appIconBgColor).toArgb())
-        ld.setDrawableByLayerId(R.id.settings_ic_foreground, actionIconDrawable)
-
-        val bitmap: Bitmap = BitmapUtils.getBitmap(context, templateDrawable) ?: return null
+        val bitmap: Bitmap =
+            ShortcutIconUtil.createIconForDA(context, info.appIcon, info.appIconBgColor)
+                ?: return null
         val bos = ByteArrayOutputStream()
-        bitmap.compress(CompressFormat.PNG, 0 /*ignored for PNG*/, bos)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos)
         return ByteArrayInputStream(bos.toByteArray())
     }
 }
