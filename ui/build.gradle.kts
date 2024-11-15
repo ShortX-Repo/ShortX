@@ -124,8 +124,6 @@ dependencies {
     implementation(libs.mmkv)
     implementation(libs.jotp)
 
-    implementation(libs.sardine.android)
-
     implementation(libs.apksig)
 
     // For AppWidgets support

@@ -22,6 +22,7 @@ dependencies {
 
     implementation(libs.shortx.ext.dex.maker)
     implementation(libs.shortx.ext.utils)
+    implementation(libs.shortx.ext.sardine.android)
     implementation(libs.shortx.ext.picasso)
     implementation(libs.shortx.ext.rhino.android)
 

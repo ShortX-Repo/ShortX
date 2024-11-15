@@ -13,7 +13,6 @@ paging-compose = "3.3.2"
 paging-runtime-ktx = "3.3.2"
 shortx-core = "1.1.2-SNAPSHOT"
 rang-vikalp = "1.0.0-alpha02"
-sardine-android = "v0.9"
 shortx-plugin-sdk = "1.1.2"
 sunrisesunsetcalculator-version = "1.2"
 tinypinyin = "3.0.0"
@@ -109,6 +108,7 @@ luckycatlabs-sunrisesunsetcalculator = { module = "com.luckycatlabs:SunriseSunse
 shortx-core = { module = "shortx:core", version.ref = "shortx-core" }
 shortx-ui-base = { module = "shortx:ui-base", version.ref = "shortx-core" }
 shortx-ext-utils = { module = "shortx:external-utils", version.ref = "shortx-core" }
+shortx-ext-sardine-android = { module = "shortx:external-sardine-android", version.ref = "shortx-core" }
 shortx-ext-compose-color-picker = { module = "shortx:external-compose-color-picker", version.ref = "shortx-core" }
 shortx-ext-codeditor = { module = "shortx:external-codeditor", version.ref = "shortx-core" }
 shortx-ext-dateformatter = { module = "shortx:external-dateformatter", version.ref = "shortx-core" }
@@ -120,7 +120,6 @@ shortx-ext-rhino-android = { module = "shortx:external-rhino-android", version.r
 shortx-ext-reorderable = { module = "shortx:external-reorderable", version.ref = "shortx-core" }
 
 rang-vikalp = { module = "io.ak1:rang-vikalp", version.ref = "rang-vikalp" }
-sardine-android = { module = "com.github.thegrizzlylabs:sardine-android", version.ref = "sardine-android" }
 shortx-plugin-sdk = { module = "shortx:plugin.sdk", version.ref = "shortx-plugin-sdk" }
 tinypinyin = { module = "com.github.promeg:tinypinyin", version.ref = "tinypinyin" }
 stringfog-xor = { module = "com.github.megatronking.stringfog:xor", version.ref = "stringfog-xor" }

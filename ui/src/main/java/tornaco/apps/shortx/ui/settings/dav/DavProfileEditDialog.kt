@@ -39,13 +39,11 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 class DavProfileEditDialogState(val save: (WebDavProfile) -> Unit) : CommonDialogState() {
     var id: String by mutableStateOf("")
     var alias: String by mutableStateOf("")
-    var url: String by mutableStateOf("")
     var userName: String by mutableStateOf("")
     var password: String by mutableStateOf("")
 
     fun show(profile: WebDavProfile) {
         this.id = profile.profileId
-        this.url = profile.url
         this.alias = profile.alias
         this.userName = profile.userName
         this.password = profile.password
@@ -85,8 +83,7 @@ fun DavProfileEditDialog(state: DavProfileEditDialogState) {
                                 },
                                 actions = {
                                     IconButton(onClick = {
-                                        if (state.url.isNotBlank()
-                                            && state.userName.isNotBlank()
+                                        if (state.userName.isNotBlank()
                                             && state.password.isNotBlank()
                                         ) {
                                             state.save(
@@ -94,7 +91,6 @@ fun DavProfileEditDialog(state: DavProfileEditDialogState) {
                                                     .setProfileId(state.id)
                                                     .setUserName(state.userName)
                                                     .setPassword(state.password)
-                                                    .setUrl(state.url)
                                                     .setAlias(state.alias)
                                                     .build()
                                             )
@@ -121,18 +117,6 @@ fun DavProfileEditDialog(state: DavProfileEditDialogState) {
                                     value = state.alias,
                                     onValueChange = {
                                         state.alias = it
-                                    },
-                                    showSymbolButton = false
-                                )
-                                StandardSpacer()
-
-                                FieldTitle(text = LocalI18N.current["ui.settings.webdav.profile.url"])
-                                SmallSpacer()
-                                ShortXTextField(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    value = state.url,
-                                    onValueChange = {
-                                        state.url = it
                                     },
                                     showSymbolButton = false
                                 )

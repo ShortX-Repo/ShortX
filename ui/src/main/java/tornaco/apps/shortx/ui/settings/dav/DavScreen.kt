@@ -49,7 +49,6 @@ fun DavScreen(back: () -> Unit) {
             ListItem(
                 titleLines = listOf(
                     profile.alias,
-                    profile.url,
                     profile.userName,
                     profile.password
                 ),
