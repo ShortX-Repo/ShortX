@@ -40,8 +40,6 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.composeLogger
-import tornaco.apps.shortx.ui.dav.DavPref
-import tornaco.apps.shortx.ui.dav.DavRepo
 import tornaco.apps.shortx.ui.settings.TileSettingsActivity
 import java.util.Calendar
 import java.util.Locale
@@ -207,12 +205,7 @@ class DemoActivity : BaseActivity() {
                 Button(onClick = {
                     lifecycleScope.launch {
                         withContext(Dispatchers.IO) {
-                            DavPref().apply {
-                                setUserName("****")
-                                setPassword("****")
-                                setServerUrl("https://dav.jianguoyun.com/dav/")
-                                DavRepo().listFiles()
-                            }
+
                         }
                     }
                 }) {

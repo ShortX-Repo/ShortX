@@ -11,8 +11,6 @@ import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DismissibleDrawerSheet
 import androidx.compose.material3.DismissibleNavigationDrawer
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
@@ -53,6 +51,7 @@ import tornaco.apps.shortx.ui.record.EvaRecordActivity
 import tornaco.apps.shortx.ui.record.SettingsAccessRecordActivity
 import tornaco.apps.shortx.ui.settings.SettingsScreen
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsActivity
+import tornaco.apps.shortx.ui.settings.dav.DavSettingsActivity
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.settings.statusbar.StatusBarClipUISettingsActivity
 import tornaco.apps.shortx.ui.shortcut.ShortcutStubManageActivity
@@ -160,7 +159,11 @@ fun HomeScreen() {
                         },
                         goToFeatToggle = {
                             FeatureToggleActivity.start(context)
-                        })
+                        },
+                        goToWebdavProfile = {
+                            DavSettingsActivity.start(context)
+                        }
+                    )
 
                     BackHandler(enabled = drawerState.isOpen) {
                         scope.launch { drawerState.close() }

@@ -105,6 +105,7 @@ fun SettingsScreen(
     manageShortcutApps: () -> Unit,
     goToFeatToggle: () -> Unit,
     goToSettingsCatcherRecord: () -> Unit,
+    goToWebdavProfile: () -> Unit,
 ) {
     val vm = hiltViewModel<SettingsViewModel>()
     val state by vm.state.collectAsState()
@@ -381,7 +382,8 @@ fun SettingsScreen(
                                 state = state,
                                 mainState = subscribeState,
                                 vm = vm,
-                                manageShortcutApps = manageShortcutApps
+                                manageShortcutApps = manageShortcutApps,
+                                goToWebdavProfile = goToWebdavProfile
                             )
                         )
                         addAll(
@@ -884,6 +886,7 @@ private fun engineSettings(
     mainState: LVLStateHolder.State,
     vm: SettingsViewModel,
     manageShortcutApps: () -> Unit,
+    goToWebdavProfile: () -> Unit,
 ): List<Preference> {
     val context = LocalContext.current
     val i18N = LocalI18N.current
@@ -1021,11 +1024,19 @@ private fun engineSettings(
             Preference.TextPreference(
                 icon = Remix.System.apps_fill,
                 title = i18N["ui.shortx.stub.apk"],
-                summary = i18N["ui.shortx.stub.apk.description"],
+                summary = i18N["ui.shortx.stub.apk.description"] + " DEBUG VISIBLE",
                 hasLongSummary = false,
                 onClick = manageShortcutApps
             ),
             null
+        ),
+
+        Preference.TextPreference(
+            icon = Remix.Document.file_cloud_fill,
+            title = i18N["ui.settings.webdav.profile"],
+            summary = i18N["ui.settings.webdav.profile.description"],
+            hasLongSummary = false,
+            onClick = goToWebdavProfile
         ),
 
         Preference.TextPreference(

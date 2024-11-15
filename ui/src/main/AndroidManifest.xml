@@ -241,7 +241,7 @@
             android:name="tornaco.apps.shortx.ui.addrule.action.selector.WaitUtilConditionMatchSelectorActivity"
             android:exported="false" />
         <activity
-            android:name="tornaco.apps.shortx.ui.dav.DavSettingsActivity"
+            android:name="tornaco.apps.shortx.ui.settings.dav.DavSettingsActivity"
             android:exported="false" />
         <activity
             android:name="tornaco.apps.shortx.ui.addrule.action.selector.ForEachPkgSetSelectorActivity"

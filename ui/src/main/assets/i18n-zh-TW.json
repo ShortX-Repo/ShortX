@@ -1287,5 +1287,12 @@
     "ui.rule.action.lego": "自定义UI",
     "ui.rule.action.lego.component": "组件",
     "ui.rule.action.lego.container": "容器",
-    "ui.rule.action.lego.preview": "预览"
+    "ui.rule.action.lego.preview": "预览",
+    "ui.settings.webdav.profile": "Webdav配置",
+    "ui.settings.webdav.profile.description": "管理你的Webdav配置",
+    "ui.settings.webdav.profile.alias": "备注 (可选)",
+    "ui.settings.webdav.profile.url": "服务器地址",
+    "ui.settings.webdav.profile.user.name": "用户名",
+    "ui.settings.webdav.profile.password": "密码",
+    "ui.action.webdav": "Webdav"
 }

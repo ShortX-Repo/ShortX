@@ -1,10 +1,12 @@
-package tornaco.apps.shortx.ui.dav
+package tornaco.apps.shortx.ui.settings.dav
 
 import android.content.Context
 import android.content.Intent
 import androidx.compose.runtime.Composable
+import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.ui.base.BaseActivity
 
+@AndroidEntryPoint
 class DavSettingsActivity : BaseActivity() {
 
     companion object {
@@ -17,6 +19,6 @@ class DavSettingsActivity : BaseActivity() {
 
     @Composable
     override fun Content() {
-
+        DavScreen { finish() }
     }
 }
