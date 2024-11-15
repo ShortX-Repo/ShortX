@@ -36,6 +36,7 @@ import tornaco.apps.shortx.core.proto.common.Author
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.common.CoroutineContext
 import tornaco.apps.shortx.core.proto.common.ShellRes
+import tornaco.apps.shortx.core.proto.common.WebDavProfile
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.da.DirectAction
@@ -86,6 +87,7 @@ import tornaco.apps.shortx.services.data.RuleSetsStore
 import tornaco.apps.shortx.services.data.RuleSettingsStore
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.ToggleSettingsStore
+import tornaco.apps.shortx.services.data.WebDavProfileStore
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.policy.KeyCombinationManager
@@ -138,6 +140,14 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     private val daSetsStore by lazy {
         DirectActionSetsStore(systemServiceScope)
+    }
+
+    private val webDavProfileStore: WebDavProfileStore by lazy {
+        WebDavProfileStore(
+            scope = systemServiceScope,
+            encKey = requireNotNull(store.read(Settings.StringSettings.ServiceIns)) {
+                "ServiceIns is null"
+            })
     }
 
     private val globalVarStore: GlobalVarStore by lazy {
@@ -1546,5 +1556,17 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 }
             }
         }
+    }
+
+    fun addWebDavProfile(profile: WebDavProfile) {
+        webDavProfileStore.addProfile(profile)
+    }
+
+    fun removeWebDavProfile(id: String) {
+        webDavProfileStore.removeProfile(id)
+    }
+
+    fun getAllWebDavProfiles(): List<WebDavProfile> {
+        return webDavProfileStore.getAllProfiles()
     }
 }

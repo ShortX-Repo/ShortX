@@ -53,6 +53,7 @@ import tornaco.apps.shortx.core.proto.common.StatusBarClipUiSettings
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.common.UserInfo
+import tornaco.apps.shortx.core.proto.common.WebDavProfile
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.core.proto.fact.DeepLinkCall
@@ -1402,6 +1403,21 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun clearJSLogs() {
             shortXContext.rule.clearJSLogs()
+        }
+
+        override fun addWebDavProfile(profile: ByteArrayWrapper) {
+            shortXContext.rule.addWebDavProfile(WebDavProfile.parseFrom(profile.byteData))
+        }
+
+        override fun removeWebDavProfile(id: String) {
+            shortXContext.rule.removeWebDavProfile(id)
+        }
+
+        override fun getAllWebDavProfiles(): List<ByteArrayWrapper> {
+            enforceCallingPermissions()
+            return shortXContext.rule.getAllWebDavProfiles().map {
+                ByteArrayWrapper(it.toByteArray())
+            }
         }
 
         override fun addToggle(toggle: ByteArrayWrapper) {

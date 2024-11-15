@@ -25,11 +25,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.lifecycleScope
 import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator
 import com.luckycatlabs.sunrisesunset.dto.Location
 import io.github.rosemoe.sora.app.CEActivity
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.INFCTagEndpointListener
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.shortXManager
@@ -37,6 +40,8 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.composeLogger
+import tornaco.apps.shortx.ui.dav.DavPref
+import tornaco.apps.shortx.ui.dav.DavRepo
 import tornaco.apps.shortx.ui.settings.TileSettingsActivity
 import java.util.Calendar
 import java.util.Locale
@@ -197,6 +202,21 @@ class DemoActivity : BaseActivity() {
                     context.startActivity(Intent(context, DialogStyleActivity::class.java))
                 }) {
                     Text(text = "Dialog Activity")
+                }
+
+                Button(onClick = {
+                    lifecycleScope.launch {
+                        withContext(Dispatchers.IO) {
+                            DavPref().apply {
+                                setUserName("****")
+                                setPassword("****")
+                                setServerUrl("https://dav.jianguoyun.com/dav/")
+                                DavRepo().listFiles()
+                            }
+                        }
+                    }
+                }) {
+                    Text(text = "WebDAV")
                 }
 
                 Button(onClick = {
