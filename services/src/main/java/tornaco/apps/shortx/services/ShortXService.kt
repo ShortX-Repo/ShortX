@@ -1420,6 +1420,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }
         }
 
+        override fun getWebDavProfileById(id: String): ByteArrayWrapper? {
+            return shortXContext.rule.getAllWebDavProfiles().firstOrNull {
+                it.profileId == id
+            }?.let {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
         override fun addToggle(toggle: ByteArrayWrapper) {
             enforceCallingPermissions()
             v(context) {
