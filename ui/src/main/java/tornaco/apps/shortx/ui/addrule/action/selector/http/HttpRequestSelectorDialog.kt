@@ -37,6 +37,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.context.asContextDataKey
 import tornaco.apps.shortx.core.proto.action.HttpRequest
 import tornaco.apps.shortx.core.proto.common.HttpRequestBodyFormItem
 import tornaco.apps.shortx.core.proto.common.HttpRequestHeader
@@ -414,7 +415,7 @@ private fun Method(method: HttpRequestMethod, update: (HttpRequestMethod) -> Uni
         }
         DropdownSelector(
             state = methodDropdownState,
-            items = HttpRequestMethod.values()
+            items = HttpRequestMethod.entries
                 .filterNot { it == HttpRequestMethod.UNRECOGNIZED }.map {
                     DropdownItem(
                         labelLines = listOf(it.name),
@@ -517,8 +518,7 @@ private fun ColumnScope.ResponseAdapter(
     StandardSpacer()
 
     AnimatedVisibility(visible = responseAdapter == AdapterType.Raw) {
-        val contextDataKey =
-            "{${ContextDataMapping.HttpRequest.httpRequestRet.name}}"
+        val contextDataKey = ContextDataMapping.HttpRequest.httpRequestRet.name.asContextDataKey()
         ListItem(
             title = LocalI18N.current["ui.action.http.request.json.expression.key", mapOf(
                 "key" to contextDataKey
@@ -651,7 +651,8 @@ private fun ExpressionItem(
 ) {
     val context = LocalContext.current
     val i18N = LocalI18N.current
-    val contextDataKey = "{${ContextDataMapping.HttpRequest.httpRequestRet.name}${index + 1}}"
+    val contextDataKey =
+        "${ContextDataMapping.HttpRequest.httpRequestRet.name}${index + 1}".asContextDataKey()
     ShortXCard(
         modifier = Modifier
             .padding(horizontal = 12.dp, vertical = 4.dp),

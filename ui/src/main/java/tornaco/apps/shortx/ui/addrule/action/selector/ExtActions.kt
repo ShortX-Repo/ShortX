@@ -159,6 +159,16 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         }
     )
 
+    val forEachLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action.ForEach>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
     val vm = hiltViewModel<PkgSetListViewModel>()
     val addPkgSetDialogState =
         rememberTextInputState(
@@ -387,6 +397,17 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.ForEach::class -> {
+                forEachLauncher.launch(
+                    newIntent(
+                        context,
+                        source.getActionAs<Action.ForEach>(),
+                        ForEachSelectorActivity::class.java
+                    )
+                )
+                true
+            }
+
             Action.CreatePkgSet::class -> {
                 addPkgSetDialogState.show(source.getActionAs<Action.CreatePkgSet>()?.label)
                 true
@@ -518,6 +539,7 @@ fun ExtActions(
         Action.IfThenElse::class,
         Action.SwitchCase::class,
         Action.WhileLoop::class,
+        Action.ForEach::class,
         Action.WaitUtilConditionMatch::class,
         Action.HttpRequest::class,
         Action.WebSocketConnect::class,

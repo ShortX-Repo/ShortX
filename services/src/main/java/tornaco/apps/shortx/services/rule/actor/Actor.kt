@@ -269,6 +269,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.WhileLoop
     },
+    ForEach {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ForEach
+    },
     CreatePkgSet {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.CreatePkgSet
