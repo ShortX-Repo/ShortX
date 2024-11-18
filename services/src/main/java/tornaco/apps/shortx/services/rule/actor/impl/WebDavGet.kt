@@ -5,8 +5,11 @@ import com.thegrizzlylabs.sardineandroid.Sardine
 import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
@@ -35,7 +38,10 @@ object WebDavGet : Actor {
                 sardine.setCredentials(profile.userName, profile.password)
                 val inputStream = sardine.get(url, headers)
                 logger.d("input: $inputStream")
-                val tmpFile = File(Dirs.baseServerTmpDir(), "download.tmp").apply {
+                val tmpFile = File(
+                    Dirs.baseServerTmpDir(),
+                    "download_${System.currentTimeMillis()}.tmp"
+                ).apply {
                     parentFile?.mkdirs()
                 }
                 logger.d("tmpFile: $tmpFile")
@@ -46,7 +52,22 @@ object WebDavGet : Actor {
                 }
                 logger.d("Write success")
 
+                val destFile = File(data.destPath.compileContextAndVars(cv)).apply {
+                    parentFile?.mkdirs()
+                }
+                logger.d("destFile: $destFile")
 
+                CopyFile.copyFile(
+                    shortXContext,
+                    tmpFile,
+                    destFile,
+                )
+
+                contextData.add(
+                    data.customContextDataKey.forKey(ContextDataMapping.WebDavGet.webdavGetPath.name)
+                        .fallbackOnEmpty(ContextDataMapping.WebDavGet.webdavGetPath.name),
+                    destFile
+                )
             }
         }
     }

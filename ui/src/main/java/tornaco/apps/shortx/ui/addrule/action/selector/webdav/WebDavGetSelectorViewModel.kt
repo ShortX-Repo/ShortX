@@ -14,6 +14,7 @@ import javax.inject.Inject
 data class WebDavGetSelectorState(
     val id: String = defaultNewActionId(),
     val url: String = "",
+    val destPath: String = "",
     val headers: List<HttpRequestHeader> = emptyList(),
     val profile: WebDavProfile? = null
 )
@@ -31,6 +32,7 @@ class WebDavGetSelectorViewModel @Inject constructor(@ApplicationContext context
                 copy(
                     id = currentAction.id,
                     url = currentAction.url,
+                    destPath = currentAction.destPath,
                     profile = currentAction.profile,
                     headers = currentAction.headers
                 )
@@ -41,6 +43,12 @@ class WebDavGetSelectorViewModel @Inject constructor(@ApplicationContext context
     fun inputUrl(url: String) {
         updateState {
             copy(url = url)
+        }
+    }
+
+    fun inputDest(destPath: String) {
+        updateState {
+            copy(destPath = destPath)
         }
     }
 

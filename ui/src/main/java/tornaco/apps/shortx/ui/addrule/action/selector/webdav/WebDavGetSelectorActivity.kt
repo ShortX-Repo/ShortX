@@ -62,6 +62,7 @@ private fun BaseSelectorActivity<Action.WebDavGet>.Selector(currentAction: Actio
                     Action.WebDavGet(
                         id = dialogState.id,
                         url = dialogState.url,
+                        destPath = dialogState.destPath,
                         headers = dialogState.headers,
                         profile = dialogState.profile
                     )
@@ -86,6 +87,17 @@ private fun BaseSelectorActivity<Action.WebDavGet>.Selector(currentAction: Actio
                     vm.inputUrl(it)
                 })
             LargeSpacer()
+
+            FieldTitle(text = "ui.action.web.dav.get.dest.path")
+            SmallSpacer()
+            ShortXTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = dialogState.destPath,
+                onValueChange = {
+                    vm.inputDest(it)
+                })
+            LargeSpacer()
+
 
             FieldTitle(text = LocalI18N.current["ui.settings.webdav.profile"])
             SmallSpacer()
