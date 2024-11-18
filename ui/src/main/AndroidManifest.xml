@@ -360,6 +360,9 @@
         <activity
             android:name="tornaco.apps.shortx.ui.addrule.action.selector.webdav.WebDavListSelectorActivity"
             android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.addrule.action.selector.webdav.WebDavGetSelectorActivity"
+            android:exported="false" />
 
         <service
             android:name=".service.tile.Tile1"

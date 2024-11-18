@@ -10,7 +10,7 @@ import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import javax.inject.Inject
 
-data class WebDavSelectorState(
+data class WebDavListSelectorState(
     val id: String = defaultNewActionId(),
     val url: String = "",
     val depth: String = "",
@@ -19,9 +19,9 @@ data class WebDavSelectorState(
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
-class WebDavSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ShortXContextViewModel<WebDavSelectorState>(context, {
-        WebDavSelectorState()
+class WebDavListSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
+    ShortXContextViewModel<WebDavListSelectorState>(context, {
+        WebDavListSelectorState()
     }) {
 
     fun init(currentAction: Action.WebDavList?) {

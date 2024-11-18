@@ -20,6 +20,7 @@ import tornaco.apps.shortx.ui.addrule.action.model.FindPointsByColorConfig
 import tornaco.apps.shortx.ui.addrule.action.selector.cv.FindColorSelectorActivity
 import tornaco.apps.shortx.ui.addrule.action.selector.cv.FindImageSelectorActivity
 import tornaco.apps.shortx.ui.addrule.action.selector.http.HttpRequestSelectorActivity
+import tornaco.apps.shortx.ui.addrule.action.selector.webdav.WebDavGetSelectorActivity
 import tornaco.apps.shortx.ui.addrule.action.selector.webdav.WebDavListSelectorActivity
 import tornaco.apps.shortx.ui.addrule.action.selector.ws.WSConnectSelectorActivity
 import tornaco.apps.shortx.ui.addrule.action.selector.ws.WSSendSelectorActivity
@@ -206,6 +207,16 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
             val action = result.popupSelectorResult<Action.WebDavList>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
+    val webdavGetLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action.WebDavGet>()
             action?.let {
                 addAction(it)
             }
@@ -425,6 +436,17 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.WebDavGet::class -> {
+                webdavGetLauncher.launch(
+                    newIntent(
+                        context,
+                        source.getActionAs<Action.WebDavGet>(),
+                        WebDavGetSelectorActivity::class.java
+                    )
+                )
+                true
+            }
+
             Action.FindImagePosition::class -> {
                 findImageLauncher.launch(
                     newIntent(
@@ -510,6 +532,7 @@ fun ExtActions(
         Action.FindPointsByColorAndClick::class,
         Action.OcrDetect::class,
         Action.WebDavList::class,
+        Action.WebDavGet::class,
     ).map {
         SelectorItem(
             type = it,

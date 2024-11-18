@@ -323,6 +323,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         globalVarStore.readBlocking()
         ruleSetsStore.readBlocking()
         daSetsStore.readBlocking()
+        webDavProfileStore.readBlocking()
 
         installListeners()
 
