@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.dialog
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -20,7 +21,7 @@ abstract class DialogView(
     override fun ComposeContent() {
         ShortXServiceUITheme {
             Surface(
-                modifier = Modifier,
+                modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
                 shadowElevation = 8.dp,
                 tonalElevation = 4.dp,

@@ -24,9 +24,7 @@ abstract class BaseComposeView(
     LinearLayout(context) {
 
     fun initView() {
-        val wrapContent = FrameLayout.LayoutParams(
-            LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT
-        )
+        val wrapContent = layoutParams()
 
         val appResources = AppResources(context, BuildPropInternal.APP_PACKAGE_NAME)
         val appContext = appResources.appContext
@@ -64,6 +62,10 @@ abstract class BaseComposeView(
         isFocusable = true
         isClickable = true
     }
+
+    open fun layoutParams() = FrameLayout.LayoutParams(
+        LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT
+    )
 
     @Composable
     abstract fun ComposeContent()

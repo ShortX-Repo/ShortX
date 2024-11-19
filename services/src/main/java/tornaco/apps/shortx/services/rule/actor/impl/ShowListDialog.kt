@@ -2,8 +2,6 @@ package tornaco.apps.shortx.services.rule.actor.impl
 
 import android.app.Dialog
 import android.content.Context
-import android.view.Window
-import android.view.WindowManager
 import com.google.protobuf.Message
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -23,6 +21,7 @@ import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.services.ui.i18NIns
+import tornaco.apps.shortx.services.ui.widget.showInSystemServer
 import tornaco.apps.shortx.ui.dialog.ListDialogView
 
 object ShowListDialog : Actor {
@@ -103,21 +102,13 @@ object ShowListDialog : Actor {
                 )
             guideLineView.initView()
 
-            androidDialog.apply {
-                requestWindowFeature(Window.FEATURE_NO_TITLE)
-                setContentView(guideLineView)
-                setCancelable(d.cancelable)
-                window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG)
-                setOnDismissListener {
-                    continuation.resume(result) {}
-                }
-                show()
+            androidDialog.showInSystemServer(guideLineView, d.cancelable) {
+                continuation.resume(result) {}
             }
 
             continuation.invokeOnCancellation {
                 androidDialog.dismiss()
             }
-
         }
     }
 }
