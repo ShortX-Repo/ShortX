@@ -12,7 +12,6 @@ import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.DialogAction
 import tornaco.apps.shortx.core.proto.action.ShowListDialog
-import tornaco.apps.shortx.core.rule.RuleContextAndVars
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
@@ -58,7 +57,14 @@ object ShowListDialog : Actor {
 
         val selectedItemState = mutableListOf<String>()
         val result: DialogAction =
-            showMultipleChoiceDialog(context, listItems, d, cv, selectedItemState)
+            showMultipleChoiceDialog(
+                context = context,
+                listItems = listItems,
+                title = d.title.compileContextAndVars(cv),
+                isMultipleChoice = d.isMultipleChoice,
+                cancelable = d.cancelable,
+                selectedItemState = selectedItemState
+            )
 
         logger.d("ShowListDialog, result is: $result $selectedItemState")
 
@@ -75,8 +81,9 @@ object ShowListDialog : Actor {
     private suspend fun showMultipleChoiceDialog(
         context: Context,
         listItems: List<String>,
-        d: ShowListDialog,
-        cv: RuleContextAndVars,
+        title: String,
+        isMultipleChoice: Boolean,
+        cancelable: Boolean,
         selectedItemState: MutableList<String>,
     ): DialogAction {
         return suspendCancellableCoroutine { continuation ->
@@ -88,8 +95,8 @@ object ShowListDialog : Actor {
                 ListDialogView(
                     context = context,
                     i18N = i18NIns,
-                    title = d.title.compileContextAndVars(cv),
-                    multipleSelection = d.isMultipleChoice,
+                    title = title,
+                    multipleSelection = isMultipleChoice,
                     defaultSelectedItems = emptyList(),
                     listItems = listItems,
                     onSelectionChange = {
@@ -102,7 +109,7 @@ object ShowListDialog : Actor {
                 )
             guideLineView.initView()
 
-            androidDialog.showInSystemServer(guideLineView, d.cancelable) {
+            androidDialog.showInSystemServer(guideLineView, cancelable) {
                 continuation.resume(result) {}
             }
 
