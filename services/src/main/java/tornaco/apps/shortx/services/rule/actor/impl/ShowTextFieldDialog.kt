@@ -1,12 +1,7 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
-import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
-import android.view.Gravity
-import android.view.WindowManager
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.TextView
 import com.google.protobuf.Message
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -17,11 +12,14 @@ import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.DialogAction
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
-import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
+import tornaco.apps.shortx.services.ui.i18NIns
+import tornaco.apps.shortx.services.ui.widget.showInSystemServer
+import tornaco.apps.shortx.ui.dialog.EditTextItem
+import tornaco.apps.shortx.ui.dialog.EditTextListDialogView
 
 
 object ShowTextFieldDialog : Actor {
@@ -50,91 +48,55 @@ object ShowTextFieldDialog : Actor {
         localVars: LocalVars
     ) = withContext(Dispatchers.Main) {
         logger.d("ShowTextFieldDialog, showing")
-        val linearLayout = LinearLayout(context)
         val cv = RuleContextAndVars(localVars, contextData, shortXContext)
-        val result = ShowDialog(context).invoke { dialogContext ->
-            val messageText = TextView(context)
-            messageText.text = d.message
-            linearLayout.layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
-            )
-            linearLayout.orientation = LinearLayout.VERTICAL
-            linearLayout.gravity = Gravity.CENTER
-            linearLayout.addView(messageText, commonElementLP)
 
-            d.textFieldsList.forEachIndexed { index, field ->
-                val editText = EditText(context)
-                editText.hint = field.placeholder
-                editText.id = 10086 + index
-                editText.tag =
+        val tagAndValue = mutableMapOf<String, String>().apply {
+            d.textFieldsList.forEachIndexed { index, textFieldProp ->
+                val key =
                     ContextDataMapping.ShowTextFieldDialog.textFieldInput.name + (index + 1)
-                linearLayout.addView(editText, commonElementLP)
+                val value = ""
+                put(key, value)
             }
-
-            AlertDialog.Builder(dialogContext)
-                .setTitle(
-                    d.title.compileContextAndVars(cv)
-                )
-                .setCancelable(d.cancelable)
-                .setView(linearLayout)
         }
 
-        logger.d("ShowAlertDialog, result is: $result")
+        suspendCancellableCoroutine { continuation ->
+            val result: DialogAction = DialogAction.None
+            val androidDialog = Dialog(context)
 
-        withContext(Dispatchers.Default) {
-            logger.d("handle result: $result")
-            when (result) {
-                DialogAction.Positive -> {
-                    d.textFieldsList.forEachIndexed { index, _ ->
-                        val editText = linearLayout.findViewById<EditText>(10086 + index)
-                        val text = editText.editableText.toString()
-                        val tag = editText.tag.toString()
-                        logger.d("editText: $editText, text: $text, tag: $tag")
-                        contextData.add(tag, text)
+            val dialogView =
+                EditTextListDialogView(
+                    context = context,
+                    i18N = i18NIns,
+                    title = d.title.compileContextAndVars(cv),
+                    items = d.textFieldsList.mapIndexed { index, textFieldProp ->
+                        EditTextItem(
+                            value = "",
+                            placeholder = textFieldProp.placeholder.compileContextAndVars(cv),
+                            onValueChange = {
+                                val key =
+                                    ContextDataMapping.ShowTextFieldDialog.textFieldInput.name + (index + 1)
+                                tagAndValue[key] = it
+                            },
+                        )
+                    },
+                    onDismissRequest = {
+                        androidDialog.dismiss()
                     }
-                }
+                )
+            dialogView.initView()
 
-                else -> {
-                    // Noop.
-                }
-            }
-        }
-    }
-
-    class ShowDialog(val context: Context) {
-
-        suspend inline fun invoke(
-            crossinline builder: (Context) -> AlertDialog.Builder
-        ) = suspendCancellableCoroutine { continuation ->
-            val dialogBuilder = builder(context)
-
-            var result: DialogAction = DialogAction.None
-
-            dialogBuilder.setPositiveButton(android.R.string.ok) { _, _ ->
-                result = DialogAction.Positive
-            }
-
-            dialogBuilder.setOnDismissListener {
+            androidDialog.showInSystemServer(dialogView, d.cancelable) {
                 continuation.resume(result) {}
             }
 
-            val dialog = dialogBuilder.create().apply {
-                window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG)
-                show()
-            }
-
             continuation.invokeOnCancellation {
-                dialog.dismiss()
+                androidDialog.dismiss()
             }
         }
+
+        logger.d("tagAndValue: $tagAndValue")
+        tagAndValue.forEach {
+            contextData.add(it.key, it.value)
+        }
     }
-}
-
-
-private val commonElementLP = LinearLayout.LayoutParams(
-    LinearLayout.LayoutParams.MATCH_PARENT,
-    LinearLayout.LayoutParams.WRAP_CONTENT
-).apply {
-    setMargins(16._dp, 16._dp, 16._dp, 16._dp)
 }
