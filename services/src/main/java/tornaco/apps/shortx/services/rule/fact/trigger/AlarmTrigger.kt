@@ -115,7 +115,6 @@ class AlarmTrigger(
     override fun register() {
         scope.launch {
             delay(ALARM_SCHEDULE_DELAY)
-            alarmScheduler.systemReady()
             shortXContext.rule.getAllEnabledRules().forEach { rule ->
                 checkAndScheduleAlarmForRule(rule) { "AlarmTrigger.register for rule: ${rule.title}" }
             }
@@ -194,7 +193,6 @@ class AlarmTrigger(
     }
 
     override fun unRegister() {
-        alarmScheduler.shutdown()
     }
 
     private fun ProtoAny.isAlarm() = this is_ Alarm::class.java

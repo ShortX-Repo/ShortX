@@ -73,11 +73,13 @@ class RandomInPeriodTrigger(
     override fun register() {
         scope.launch {
             delay(ALARM_SCHEDULE_DELAY)
-            scheduler.systemReady()
             shortXContext.rule.getAllEnabledRules().forEach { rule ->
                 checkAndSchedulePeriodForRule(rule) { "PeriodTrigger.register for rule: ${rule.title}" }
             }
         }
+    }
+
+    override fun unRegister() {
     }
 
     private fun checkAndSchedulePeriodForRule(rule: Rule, reason: () -> String) {
@@ -152,10 +154,6 @@ class RandomInPeriodTrigger(
     override fun onDeleteRule(rule: Rule) {
         super.onDeleteRule(rule)
         cancelPeriodForRule(rule) { "onDeleteRule: ${rule.title}" }
-    }
-
-    override fun unRegister() {
-        scheduler.shutdown()
     }
 
     private fun ProtoAny.isPeriod() = this is_ RandomInPeriod::class.java

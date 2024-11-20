@@ -17,152 +17,72 @@
 
 package tornaco.apps.shortx.services.rule.fact.fixed
 
-import android.app.PendingIntent
-import android.content.BroadcastReceiver
+import android.app.AlarmManager
+import android.app.AlarmManager.OnAlarmListener
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.os.Handler
 import tornaco.apps.shortx.core.alarm.formatDuration
 import tornaco.apps.shortx.core.alarm.getTriggerTimeOffset
-import tornaco.apps.shortx.core.compat.AlarmManagerCompat
-import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.alarmManager
-import tornaco.apps.shortx.services.rule.fact.alarm.alarmClockViewerIntent
-import tornaco.apps.shortx.services.watchdog.postSafety
 import java.time.Duration
-import java.util.concurrent.atomic.AtomicInteger
-
-private const val BROADCAST_ACTION = "tornaco.apps.shortx.services.rule.fact.fixed.period.action"
-private const val BROADCAST_EXTRA_RULE_ID =
-    "tornaco.apps.shortx.services.rule.fact.fixed.period.extra.rule.id"
-private const val BROADCAST_EXTRA_RULE_TITLE =
-    "tornaco.apps.shortx.services.rule.fact.fixed.period.extra.rule.title"
-private const val BROADCAST_EXTRA_FACT_ID =
-    "tornaco.apps.shortx.services.rule.fact.fixed.period.extra.fact.id"
 
 class FixedInPeriodScheduler(
     private val context: Context,
     private val handler: Handler,
     private val onFixedInPeriod: FixedInPeriodScheduler.(ruleTitle: String, ruleId: String, factId: String) -> Unit,
 ) {
-    private val logger = Logger("ShortXFixedInPeriod")
+    private val logger = Logger("FixedInPeriodScheduler")
     private val alarmManager get() = context.alarmManager
 
-    private val receiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent) {
-            val action = intent.action ?: return
-            if (action != BROADCAST_ACTION) return
-            val ruleId = intent.getStringExtra(BROADCAST_EXTRA_RULE_ID)
-            if (ruleId == null) {
-                logger.w("onReceive, ruleId extra is null.")
-                return
-            }
-            val ruleTitle = intent.getStringExtra(BROADCAST_EXTRA_RULE_TITLE)
-            if (ruleTitle == null) {
-                logger.w("onReceive, ruleTitle extra is null.")
-                return
-            }
-            val factId = intent.getStringExtra(BROADCAST_EXTRA_FACT_ID)
-            if (factId == null) {
-                logger.w("onReceive, factId extra is null.")
-                return
-            }
-            handler.postSafety {
-                logger.i("receiver, call on alarm, ruleTitle: $ruleTitle, ruleId: $ruleId, factId: $factId")
-                onFixedInPeriod(ruleTitle, ruleId, factId)
-            }
-        }
-    }
+    private val idToListeners = mutableMapOf<String, OnAlarmListener>()
 
+    @Suppress("ObjectLiteralToLambda")
     fun schedule(rule: Rule, alarm: FixedInPeriod, reason: String) = kotlin.runCatching {
-        val pi = PendingIntent.getBroadcast(
-            context,
-            requestCode(alarm),
-            Intent(BROADCAST_ACTION)
-                .setPackage("android")
-                .putExtra(BROADCAST_EXTRA_RULE_ID, rule.id)
-                .putExtra(BROADCAST_EXTRA_RULE_TITLE, rule.title)
-                .putExtra(BROADCAST_EXTRA_FACT_ID, alarm.id)
-                .addFlags(Intent.FLAG_RECEIVER_FOREGROUND),
-            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
+        // Cancel anyway
+        cancel(rule, alarm, "Before schedule.")
 
         val triggerOffset = alarm.getTriggerTimeOffset()
 
         if (triggerOffset <= 0) {
-            logger.i("FixedInPeriodScheduler, skip this alarm since offset < 0, maybe we have missed this alarm and it has no repeat")
+            logger.w("FixedInPeriodScheduler, skip this alarm since offset < 0, maybe we have missed this alarm and it has no repeat")
         } else {
-            logger.i(
-                "FixedInPeriodScheduler schedule for rule: ${rule.title}, reason: $reason, pi: $pi, trigger offset: ${
+            logger.w(
+                "FixedInPeriodScheduler schedule for rule: ${rule.title}, reason: $reason, trigger offset: ${
                     formatDuration(Duration.ofMillis(triggerOffset))
                 }"
             )
-
-            AlarmManagerCompat.setAlarmClock(
-                alarmManager,
+            val listener = object : OnAlarmListener {
+                override fun onAlarm() {
+                    logger.w("FixedInPeriodScheduler onAlarm - ${rule.title} ${rule.id} ${alarm.id}")
+                    onFixedInPeriod(rule.title, rule.id, alarm.id)
+                }
+            }
+            alarmManager.setExact(
+                AlarmManager.RTC_WAKEUP,
                 System.currentTimeMillis() + triggerOffset,
-                context.alarmClockViewerIntent(),
-                pi
+                rule.title,
+                listener,
+                handler
             )
+
+            synchronized(idToListeners) {
+                idToListeners[alarm.id] = listener
+            }
         }
     }.onFailure {
         logger.e(it, "FixedInPeriodScheduler schedule error")
     }
 
-    fun cancel(rule: Rule, alarm: FixedInPeriod, reason: String) = kotlin.runCatching {
-        // Get pending intent used to create alarm, use FLAG_NO_CREATE if PendingIntent
-        // does not already exist, then null will be returned.
-        val pi = PendingIntent.getBroadcast(
-            context,
-            requestCode(alarm),
-            Intent(BROADCAST_ACTION)
-                .setPackage("android")
-                .putExtra(BROADCAST_EXTRA_RULE_ID, rule.id)
-                .putExtra(BROADCAST_EXTRA_RULE_TITLE, rule.title)
-                .putExtra(BROADCAST_EXTRA_FACT_ID, alarm.id)
-                .addFlags(Intent.FLAG_RECEIVER_FOREGROUND),
-            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
-        )
-        logger.i("FixedInPeriodScheduler cancel for fact: ${rule.title}, $reason, pi: $pi")
-        pi?.let {
-            alarmManager.cancel(pi)
+    fun cancel(rule: Rule, period: FixedInPeriod, reason: String) = kotlin.runCatching {
+        synchronized(idToListeners) {
+            val listener = idToListeners.remove(period.id)
+            logger.w("FixedInPeriodScheduler cancel for fact: ${rule.title}, $reason ${period.id} listener: $listener")
+            listener?.let { alarmManager.cancel(it) }
         }
     }.onFailure {
         logger.e(it, "FixedInPeriodScheduler cancel error")
-    }
-
-    // Check req code.
-    private fun requestCode(alarm: FixedInPeriod) = FixedInPeriodReqCodeCache.get(alarm.id)
-
-    fun systemReady() {
-        logger.i("FixedInPeriodScheduler systemReady")
-        ContextCompat.registerReceiver(
-            context, receiver, IntentFilter(BROADCAST_ACTION),
-            ContextCompat.RECEIVER_EXPORTED
-        )
-    }
-
-    fun shutdown() {
-        logger.i("FixedInPeriodScheduler shutdown")
-        context.unregisterReceiver(receiver)
-    }
-}
-
-object FixedInPeriodReqCodeCache {
-    private val code = AtomicInteger(100)
-    private val cache = mutableMapOf<String, Int>()
-
-    fun get(alarmId: String): Int {
-        val current = cache[alarmId]
-        if (current != null) return current
-
-        val newCode = code.incrementAndGet()
-        cache[alarmId] = newCode
-
-        return newCode
     }
 }

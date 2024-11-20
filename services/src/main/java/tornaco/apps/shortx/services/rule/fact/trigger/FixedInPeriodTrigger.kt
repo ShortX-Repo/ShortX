@@ -73,7 +73,6 @@ class FixedInPeriodTrigger(
     override fun register() {
         scope.launch {
             delay(ALARM_SCHEDULE_DELAY)
-            fixedInPeriodScheduler.systemReady()
             shortXContext.rule.getAllEnabledRules().forEach { rule ->
                 checkAndScheduleFixedInPeriodForRule(rule) { "FixedInPeriodTrigger.register for rule: ${rule.title}" }
             }
@@ -155,7 +154,6 @@ class FixedInPeriodTrigger(
     }
 
     override fun unRegister() {
-        fixedInPeriodScheduler.shutdown()
     }
 
     private fun ProtoAny.isFixedInPeriod() = this is_ FixedInPeriod::class.java
