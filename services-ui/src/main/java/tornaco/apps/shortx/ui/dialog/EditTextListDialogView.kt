@@ -84,12 +84,12 @@ class EditTextListDialogView(
             }
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                 TextButton(onClick = {
-                    onDismissRequest(DialogButton.Cancel)
+                    onDismissRequest(DialogButton.Negative)
                 }) {
                     Text(stringResource(android.R.string.cancel))
                 }
                 TextButton(onClick = {
-                    onDismissRequest(DialogButton.OK)
+                    onDismissRequest(DialogButton.Positive)
                 }) {
                     Text(stringResource(android.R.string.ok))
                 }

@@ -1,8 +1,7 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
-import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
-import android.view.WindowManager
 import com.google.protobuf.Message
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -21,6 +20,10 @@ import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.ActionEvaluator
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
+import tornaco.apps.shortx.services.ui.i18NIns
+import tornaco.apps.shortx.services.ui.widget.showInSystemServer
+import tornaco.apps.shortx.ui.dialog.AlertDialogView
+import tornaco.apps.shortx.ui.dialog.DialogButton
 
 
 object ShowAlertDialog : Actor {
@@ -59,15 +62,45 @@ object ShowAlertDialog : Actor {
         ) -> ActionEvaluator.EvaluateResult
     ) = withContext(Dispatchers.Main) {
         logger.d("ShowAlertDialog, showing")
-        val result = ShowDialog(context).invoke(
-            positiveButtonText = d.positive.compileContextAndVars(cv),
-            negativeButtonText = d.negative.compileContextAndVars(cv),
-            neutralButtonText = d.neutral.compileContextAndVars(cv)
-        ) {
-            AlertDialog.Builder(it)
-                .setTitle(d.title.compileContextAndVars(cv))
-                .setMessage(d.message.compileContextAndVars(cv))
-                .setCancelable(d.cancelable)
+        val result = suspendCancellableCoroutine { continuation ->
+            var result: DialogAction = DialogAction.None
+            val androidDialog = Dialog(context)
+
+            val dialogView =
+                AlertDialogView(
+                    context = context,
+                    i18N = i18NIns,
+                    title = d.title.compileContextAndVars(cv),
+                    message = d.message.compileContextAndVars(cv),
+                    positiveText = d.positive.takeIf { it.isNotBlank() }?.compileContextAndVars(cv),
+                    negativeText = d.negative.takeIf { it.isNotBlank() }?.compileContextAndVars(cv),
+                    neutralText = d.neutral.takeIf { it.isNotBlank() }?.compileContextAndVars(cv),
+                    onDismissRequest = { btn ->
+                        result = when (btn) {
+                            DialogButton.Positive -> {
+                                DialogAction.Positive
+                            }
+
+                            DialogButton.Negative -> {
+                                DialogAction.Negative
+                            }
+
+                            DialogButton.Neutral -> {
+                                DialogAction.Neutral
+                            }
+                        }
+                        androidDialog.dismiss()
+                    }
+                )
+            dialogView.initView()
+
+            androidDialog.showInSystemServer(dialogView, d.cancelable) {
+                continuation.resume(result) {}
+            }
+
+            continuation.invokeOnCancellation {
+                androidDialog.dismiss()
+            }
         }
 
         logger.d("ShowAlertDialog, result is: $result")
@@ -156,45 +189,6 @@ object ShowAlertDialog : Actor {
                 DialogAction.UNRECOGNIZED, DialogAction.None -> {
                     // Noop.
                 }
-            }
-        }
-    }
-
-    private class ShowDialog(val context: Context) {
-
-        suspend inline fun invoke(
-            positiveButtonText: CharSequence? = null,
-            negativeButtonText: CharSequence? = null,
-            neutralButtonText: CharSequence? = null,
-            crossinline builder: (Context) -> AlertDialog.Builder
-        ) = suspendCancellableCoroutine { continuation ->
-            val dialogBuilder = builder(context)
-
-            var result: DialogAction = DialogAction.None
-
-            if (positiveButtonText != null) dialogBuilder.setPositiveButton(positiveButtonText) { _, _ ->
-                result = DialogAction.Positive
-            }
-
-            if (negativeButtonText != null) dialogBuilder.setNegativeButton(negativeButtonText) { _, _ ->
-                result = DialogAction.Negative
-            }
-
-            if (neutralButtonText != null) dialogBuilder.setNeutralButton(neutralButtonText) { _, _ ->
-                result = DialogAction.Neutral
-            }
-
-            dialogBuilder.setOnDismissListener {
-                continuation.resume(result) {}
-            }
-
-            val dialog = dialogBuilder.create().apply {
-                window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG)
-                show()
-            }
-
-            continuation.invokeOnCancellation {
-                dialog.dismiss()
             }
         }
     }

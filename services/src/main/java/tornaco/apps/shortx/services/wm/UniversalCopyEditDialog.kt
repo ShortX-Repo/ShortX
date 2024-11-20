@@ -41,7 +41,7 @@ class UniversalCopyEditDialog(
                     onDismissRequest = {
                         androidDialog.dismiss()
 
-                        if (it == DialogButton.OK && userValue.isNotEmpty()) {
+                        if (it == DialogButton.Positive && userValue.isNotEmpty()) {
                             context.clipboardManager.setPrimaryClip(
                                 newPlainText(
                                     "ShortX-Copy",
