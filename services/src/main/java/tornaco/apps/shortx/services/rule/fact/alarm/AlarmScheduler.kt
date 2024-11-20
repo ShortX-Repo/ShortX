@@ -17,6 +17,8 @@
 
 package tornaco.apps.shortx.services.rule.fact.alarm
 
+import android.app.AlarmManager
+import android.app.AlarmManager.OnAlarmListener
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.ComponentName
@@ -126,6 +128,18 @@ class AlarmScheduler(
                 System.currentTimeMillis() + triggerOffset,
                 viewerIntent,
                 pi
+            )
+
+            context.alarmManager.setExact(
+                AlarmManager.RTC_WAKEUP,
+                System.currentTimeMillis() + triggerOffset,
+                rule.title,
+                object : OnAlarmListener {
+                    override fun onAlarm() {
+
+                    }
+                },
+                handler
             )
         }
     }.onFailure {
