@@ -32,7 +32,6 @@ object EntryPoint {
         I18NCache.init(context)
         LVLStateHolder.init(context)
         checkCB(context)
-        LCRulesAdapter.initRules(context)
         initContextVM()
 
         PicassoInitializer.install(
@@ -41,10 +40,11 @@ object EntryPoint {
             BuildPropInternal.APP_PACKAGE_NAME
         )
 
-        // Async clean up.
+        // Async init.
         @Suppress("OPT_IN_USAGE")
         GlobalScope.launch {
             withContext(Dispatchers.IO) {
+                LCRulesAdapter.initRules(context)
                 StubApkGen.cleanUp(context)
             }
         }
