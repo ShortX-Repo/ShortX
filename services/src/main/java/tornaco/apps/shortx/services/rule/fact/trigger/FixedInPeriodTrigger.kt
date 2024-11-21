@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.fact.alarm.acquireWakeLockForPublishFactAndNextAlarmSchedule
 import tornaco.apps.shortx.services.rule.fact.fixed.FixedInPeriodScheduler
 import tornaco.apps.shortx.services.watchdog.launchSafety
 
@@ -21,11 +22,11 @@ class FixedInPeriodTrigger(
     override val shortXContext: ShortXContext
 ) :
     Trigger {
-    private val logger = Logger("ShortXFixedInPeriodTrigger")
+    private val logger = Logger("FixedInPeriodTrigger")
     private val scope by lazy { CoroutineScope(SupervisorJob()) }
     private val fixedInPeriodScheduler by lazy {
         FixedInPeriodScheduler(context, shortXContext.rule.handler) { ruleTitle, ruleId, factId ->
-            logger.i("onAlarm: $ruleTitle $ruleId $factId")
+            logger.i("FixedInPeriodTrigger onAlarm: $ruleTitle $ruleId $factId")
 
             val ruleOrNull = shortXContext.rule.getRuleById(ruleId)
             if (ruleOrNull == null) {
@@ -50,7 +51,9 @@ class FixedInPeriodTrigger(
                 return@FixedInPeriodScheduler
             }
 
-            logger.i("Good, will publish fact.")
+            val wakeLock = context.acquireWakeLockForPublishFactAndNextAlarmSchedule("FixedPeriod")
+            logger.i("Good, will publish fact: $wakeLock")
+
             shortXContext.rule.publishFact(
                 reason = "onAlarm",
                 fact = FixedInPeriod.newBuilder().setStart(targetFact.start)
@@ -66,6 +69,7 @@ class FixedInPeriodTrigger(
                 logger.i("Schedule Next FixedInPeriod")
                 delay(3000)
                 schedule(ruleOrNull, targetFact, "FixedInPeriodTrigger.Next")
+                wakeLock?.release()
             }
         }
     }

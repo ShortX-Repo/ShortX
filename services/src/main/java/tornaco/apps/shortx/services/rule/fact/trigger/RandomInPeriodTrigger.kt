@@ -14,6 +14,7 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.fact.alarm.acquireWakeLockForPublishFactAndNextAlarmSchedule
 import tornaco.apps.shortx.services.rule.fact.period.RandomInPeriodScheduler
 
 class RandomInPeriodTrigger(
@@ -21,7 +22,7 @@ class RandomInPeriodTrigger(
     override val shortXContext: ShortXContext
 ) :
     Trigger {
-    private val logger = Logger("ShortXRandomInPeriodTrigger")
+    private val logger = Logger("RandomInPeriodTrigger")
     private val scheduler by lazy {
         RandomInPeriodScheduler(context, shortXContext.rule.handler) { ruleTitle, ruleId, factId ->
             logger.i("onAlarm: $ruleTitle $ruleId $factId")
@@ -49,7 +50,8 @@ class RandomInPeriodTrigger(
                 return@RandomInPeriodScheduler
             }
 
-            logger.i("Good, will publish fact.")
+            val wakeLock = context.acquireWakeLockForPublishFactAndNextAlarmSchedule("RandomPeriod")
+            logger.i("Good, will publish fact: $wakeLock")
             shortXContext.rule.publishFact(
                 reason = "Period#onAlarm",
                 fact = RandomInPeriod.newBuilder()
@@ -64,6 +66,7 @@ class RandomInPeriodTrigger(
             if (!targetFact.repeat.isNo) {
                 logger.i("Repeat period")
                 schedule(ruleOrNull, targetFact, true, "PeriodTrigger.repeat")
+                wakeLock?.release()
             }
         }
     }

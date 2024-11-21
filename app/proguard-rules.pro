@@ -221,3 +221,11 @@
 -dontwarn com.google.auto.value.AutoValue$Builder
 -dontwarn com.google.auto.value.AutoValue
 -dontwarn com.android.internal.statusbar.IStatusBar
+
+-dontwarn javax.xml.stream.Location
+-dontwarn javax.xml.stream.XMLEventReader
+-dontwarn javax.xml.stream.XMLInputFactory
+-dontwarn javax.xml.stream.events.Attribute
+-dontwarn javax.xml.stream.events.Characters
+-dontwarn javax.xml.stream.events.StartElement
+-dontwarn javax.xml.stream.events.XMLEvent

@@ -15,6 +15,7 @@ import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.fact.alarm.AlarmScheduler
+import tornaco.apps.shortx.services.rule.fact.alarm.acquireWakeLockForPublishFactAndNextAlarmSchedule
 
 // [ 2024-05-27T21:39:47.706    10284:  4122:  4122 I/LSPosed-Bridge  ]   Loading class one.yufz.hmspush.hook.XposedMod
 //[ 2024-05-27T21:39:47.817    10284:  4122:  4122 I/LSPosed-Bridge  ] [HMSPush]  XposedMod  Loaded app: com.huawei.hwid process:com.huawei.hwid.container2
@@ -93,7 +94,8 @@ class AlarmTrigger(
                 return@AlarmScheduler
             }
 
-            logger.i("Good, will publish fact.")
+            val wakeLock = context.acquireWakeLockForPublishFactAndNextAlarmSchedule("Alarm")
+            logger.i("Good, will publish fact: $wakeLock")
             shortXContext.rule.publishFact(
                 reason = "onAlarm",
                 fact = Alarm.newBuilder().setTriggerAt(targetFact.triggerAt)
@@ -106,6 +108,7 @@ class AlarmTrigger(
             if (!targetFact.repeat.isNo) {
                 logger.i("Repeat alarm")
                 schedule(ruleOrNull, targetFact, "AlarmTrigger.repeat")
+                wakeLock?.release()
             }
         }
     }
