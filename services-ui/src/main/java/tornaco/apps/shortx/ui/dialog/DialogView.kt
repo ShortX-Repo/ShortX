@@ -2,6 +2,8 @@ package tornaco.apps.shortx.ui.dialog
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
+import android.util.TypedValue
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
@@ -19,10 +21,19 @@ abstract class DialogView(
 ) : BaseComposeView(context, i18N) {
     @Composable
     override fun ComposeContent() {
+        val platformRadius = kotlin.runCatching {
+            context.getDialogCornerRadius()
+        }.getOrNull()
         ShortXServiceUITheme {
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp),
+                shape = if (platformRadius == null) {
+                    RoundedCornerShape(24.dp)
+                } else {
+                    RoundedCornerShape(
+                        platformRadius
+                    )
+                },
                 shadowElevation = 8.dp,
                 tonalElevation = 4.dp,
             ) {
@@ -33,4 +44,14 @@ abstract class DialogView(
 
     @Composable
     abstract fun DialogContent()
+}
+
+private fun Context.getDialogCornerRadius(): Float {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        val typedValue = TypedValue()
+        theme.resolveAttribute(android.R.attr.dialogCornerRadius, typedValue, true)
+        return typedValue.getDimension(resources.displayMetrics)
+    } else {
+        return 10f
+    }
 }

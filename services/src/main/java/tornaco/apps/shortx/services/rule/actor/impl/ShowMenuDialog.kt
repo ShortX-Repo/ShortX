@@ -1,8 +1,7 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
-import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
-import android.view.WindowManager
 import com.google.protobuf.Message
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -20,6 +19,10 @@ import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.ActionEvaluator
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
+import tornaco.apps.shortx.services.ui.i18NIns
+import tornaco.apps.shortx.services.ui.widget.showInSystemServer
+import tornaco.apps.shortx.ui.dialog.MenuDialogView
+import tornaco.apps.shortx.ui.dialog.MenuItem
 
 object ShowMenuDialog : Actor {
     override fun actionsCanHandle(): Class<out Message> {
@@ -61,12 +64,42 @@ object ShowMenuDialog : Actor {
     ) = withContext(Dispatchers.Main) {
         logger.d("ShowMenuDialog, showing: ${d.itemsList.size} ${d.cancelable}")
         val cv = RuleContextAndVars(localVars, contextData, shortXContext)
-        val result =
-            ShowDialog(context, shortXContext, localVars, contextData).invoke(d.itemsList) {
-                AlertDialog.Builder(it)
-                    .setTitle(d.title.compileContextAndVars(cv))
-                    .setCancelable(d.cancelable || d.itemsList.isEmpty())
+
+        val result = suspendCancellableCoroutine { continuation ->
+            var clickedItem: DialogMenuItem? = null
+            val androidDialog = Dialog(context)
+
+            val dialogView =
+                MenuDialogView(
+                    context = context,
+                    i18N = i18NIns,
+                    title = d.title.compileContextAndVars(cv),
+                    menuItems = d.itemsList.mapIndexed { index, dialogMenuItem ->
+                        MenuItem(
+                            id = index,
+                            title = dialogMenuItem.title.compileContextAndVars(cv),
+                            message = dialogMenuItem.message.takeIf { it.isNotBlank() }
+                                ?.compileContextAndVars(cv)
+                        )
+                    },
+                    onItemClick = {
+                        clickedItem = d.itemsList[it]
+                        androidDialog.dismiss()
+                    },
+                    onDismissRequest = {
+                        androidDialog.dismiss()
+                    }
+                )
+            dialogView.initView()
+
+            androidDialog.showInSystemServer(dialogView, d.cancelable) {
+                continuation.resume(clickedItem) {}
             }
+
+            continuation.invokeOnCancellation {
+                androidDialog.dismiss()
+            }
+        }
 
         logger.d("ShowMenuDialog, result is: $result")
 
@@ -96,45 +129,6 @@ object ShowMenuDialog : Actor {
                 }
 
             }
-        }
-    }
-}
-
-private class ShowDialog(
-    val context: Context,
-    val shortXContext: ShortXContext,
-    val localVars: LocalVars,
-    val contextData: ContextData
-) {
-    suspend inline fun invoke(
-        menuItems: List<DialogMenuItem>,
-        crossinline builder: (Context) -> AlertDialog.Builder
-    ) = suspendCancellableCoroutine { continuation ->
-        val dialogBuilder = builder(context)
-
-        var result: DialogMenuItem? = null
-
-        val cv = RuleContextAndVars(localVars, contextData, shortXContext)
-
-        dialogBuilder.setItems(
-            menuItems.map {
-                it.title.compileContextAndVars(cv)
-            }.toTypedArray()
-        ) { _, which ->
-            result = menuItems[which]
-        }
-
-        dialogBuilder.setOnDismissListener {
-            continuation.resume(result) {}
-        }
-
-        val dialog = dialogBuilder.create().apply {
-            window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG)
-            show()
-        }
-
-        continuation.invokeOnCancellation {
-            dialog.dismiss()
         }
     }
 }
