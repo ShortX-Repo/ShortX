@@ -675,7 +675,7 @@ fun QuitEvaluatePolicy(
             dropState.open()
         }) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = LocalI18N.current[LocalI18N.current["ui.rule.quit.eva.policy.${policy.name}"]])
+                Text(text = LocalI18N.current["ui.rule.quit.eva.policy.${policy.name}"])
                 StandardSpacer()
                 RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
             }

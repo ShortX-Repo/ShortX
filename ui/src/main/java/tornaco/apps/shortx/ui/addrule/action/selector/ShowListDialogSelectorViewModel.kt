@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import tornaco.apps.shortx.core.proto.action.ShowListDialogDataType
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
@@ -16,6 +17,8 @@ data class ShowListDialogSelectorState(
     val cancelable: Boolean = true,
     val data: String = "A,B,C",
     val isMultipleChoice: Boolean = false,
+    val needConfirmAction: Boolean = false,
+    val dataType: ShowListDialogDataType = ShowListDialogDataType.ShowListDialogDataType_String,
     val delimiters: List<String> = listOf(",")
 )
 
@@ -36,7 +39,9 @@ class ShowListDialogSelectorViewModel @Inject constructor(@ApplicationContext co
                     cancelable = settings.cancelable,
                     data = settings.data,
                     isMultipleChoice = settings.isMultipleChoice,
-                    delimiters = settings.delimiters
+                    delimiters = settings.delimiters,
+                    dataType = settings.dataType,
+                    needConfirmAction = settings.needConfirmAction
                 )
             }
         }
@@ -57,6 +62,18 @@ class ShowListDialogSelectorViewModel @Inject constructor(@ApplicationContext co
     fun updateCancelable(cancelable: Boolean) {
         updateState {
             copy(cancelable = cancelable)
+        }
+    }
+
+    fun updateDataType(dataType: ShowListDialogDataType) {
+        updateState {
+            copy(dataType = dataType)
+        }
+    }
+
+    fun updateNeedConfirmAction(needConfirmAction: Boolean) {
+        updateState {
+            copy(needConfirmAction = needConfirmAction)
         }
     }
 
