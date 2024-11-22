@@ -61,6 +61,7 @@ object ShowChoiceDialog : Actor {
                 ChoiceDialogView(
                     context = context,
                     i18N = i18NIns,
+                    style = d.style,
                     title = d.title.compileContextAndVars(cv),
                     choices = d.choicesList.mapIndexed { index, choiceProp ->
                         ChoiceItem(

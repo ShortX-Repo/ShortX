@@ -73,6 +73,7 @@ object ShowMenuDialog : Actor {
                 MenuDialogView(
                     context = context,
                     i18N = i18NIns,
+                    style = d.style,
                     title = d.title.compileContextAndVars(cv),
                     menuItems = d.itemsList.mapIndexed { index, dialogMenuItem ->
                         MenuItem(

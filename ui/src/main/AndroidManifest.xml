@@ -172,7 +172,7 @@
             android:name="tornaco.apps.shortx.ui.record.SettingsAccessRecordActivity"
             android:exported="false" />
         <activity
-            android:name="tornaco.apps.shortx.ui.addrule.action.selector.ShowDialogSelectorActivity"
+            android:name="tornaco.apps.shortx.ui.addrule.action.selector.dialog.ShowDialogSelectorActivity"
             android:exported="false" />
         <activity
             android:name="tornaco.apps.shortx.ui.addrule.action.selector.ShowOverlayButtonSelectorActivity"
@@ -319,7 +319,7 @@
             android:name="tornaco.apps.shortx.ui.addrule.action.selector.DisplayImageSelectorActivity"
             android:exported="false" />
         <activity
-            android:name="tornaco.apps.shortx.ui.addrule.action.selector.ShowMenuDialogSelectorActivity"
+            android:name="tornaco.apps.shortx.ui.addrule.action.selector.dialog.ShowMenuDialogSelectorActivity"
             android:exported="false" />
         <activity
             android:name="tornaco.apps.shortx.ui.addrule.fact.selector.LightSensorSelectorActivity"
@@ -346,10 +346,10 @@
             android:name="tornaco.apps.shortx.ui.addrule.action.selector.SetStatusBarIconSelectorActivity"
             android:exported="false" />
         <activity
-            android:name="tornaco.apps.shortx.ui.addrule.action.selector.ShowChoiceDialogSelectorActivity"
+            android:name="tornaco.apps.shortx.ui.addrule.action.selector.dialog.ShowChoiceDialogSelectorActivity"
             android:exported="false" />
         <activity
-            android:name="tornaco.apps.shortx.ui.addrule.action.selector.ShowListDialogSelectorActivity"
+            android:name="tornaco.apps.shortx.ui.addrule.action.selector.dialog.ShowListDialogSelectorActivity"
             android:exported="false" />
         <activity
             android:name="tornaco.apps.shortx.ui.addrule.action.selector.ShowHideInsetsSelectorActivity"

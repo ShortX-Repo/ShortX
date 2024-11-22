@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.addrule.action.selector
+package tornaco.apps.shortx.ui.addrule.action.selector.dialog
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import tornaco.apps.shortx.core.IActionEvaluateListener
 import tornaco.apps.shortx.core.proto.action.DialogAction
+import tornaco.apps.shortx.core.proto.common.DialogUiStyleSettings
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
@@ -21,6 +22,7 @@ data class ShowDialogSelectorState(
     val positiveText: String? = null,
     val negativeText: String? = null,
     val neutralText: String? = null,
+    val style: DialogUiStyleSettings = DialogUiStyleSettings.getDefaultInstance(),
     val evaluatingActions: List<String> = emptyList()
 )
 
@@ -73,6 +75,7 @@ class ShowDialogSelectorViewModel @Inject constructor(@ApplicationContext contex
                 positiveText = settings.positiveText,
                 negativeText = settings.negativeText,
                 neutralText = settings.neutralText,
+                style = settings.style,
                 evaluatingActions = shortXManager.getEvaluatingActions()
             )
         }
@@ -121,5 +124,9 @@ class ShowDialogSelectorViewModel @Inject constructor(@ApplicationContext contex
 
             DialogAction.UNRECOGNIZED, DialogAction.None -> {}
         }
+    }
+
+    fun updateStyle(it: DialogUiStyleSettings) {
+        updateState { copy(style = it) }
     }
 }

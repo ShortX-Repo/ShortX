@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.I18N
+import tornaco.apps.shortx.core.proto.common.DialogUiStyleSettings
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
@@ -47,6 +48,7 @@ data class ListItem(
 class ListDialogView(
     context: Context,
     i18N: I18N,
+    style: DialogUiStyleSettings,
     private val onDismissRequest: () -> Unit,
     private val title: String,
     private val multipleSelection: Boolean,
@@ -54,7 +56,7 @@ class ListDialogView(
     private val defaultSelectedItems: List<Int>,
     private val listItems: List<ListItem>,
     private val onSelectionChange: (List<Int>) -> Unit,
-) : DialogView(context, i18N) {
+) : DialogView(context, i18N, style) {
     @Composable
     override fun DialogContent() {
         val selectedIdList = remember { mutableStateListOf(*defaultSelectedItems.toTypedArray()) }
@@ -85,7 +87,7 @@ class ListDialogView(
                                 Text(
                                     title, style = MaterialTheme.typography.titleLarge.copy(
                                         fontWeight = FontWeight.W500
-                                    )
+                                    ).applyStyle(style)
                                 )
                             }
                             SmallSpacer()
@@ -157,7 +159,10 @@ class ListDialogView(
                     TextButton(onClick = {
                         onDismissRequest()
                     }) {
-                        Text(stringResource(android.R.string.ok))
+                        Text(
+                            text = stringResource(android.R.string.ok),
+                            style = MaterialTheme.typography.labelLarge.applyStyle(style)
+                        )
                     }
                 }
             }

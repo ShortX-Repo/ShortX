@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.I18N
+import tornaco.apps.shortx.core.proto.common.DialogUiStyleSettings
 import tornaco.apps.shortx.ui.base.ListItem
 
 data class MenuItem(
@@ -32,11 +33,12 @@ data class MenuItem(
 class MenuDialogView(
     context: Context,
     i18N: I18N,
+    style: DialogUiStyleSettings,
     private val onDismissRequest: () -> Unit,
     private val title: String,
     private val menuItems: List<MenuItem>,
     private val onItemClick: (Int) -> Unit,
-) : DialogView(context, i18N) {
+) : DialogView(context, i18N, style) {
     @Composable
     override fun DialogContent() {
         Column(
@@ -57,7 +59,7 @@ class MenuDialogView(
                         Text(
                             title, style = MaterialTheme.typography.titleLarge.copy(
                                 fontWeight = FontWeight.W500
-                            )
+                            ).applyStyle(style)
                         )
                     }
                 }

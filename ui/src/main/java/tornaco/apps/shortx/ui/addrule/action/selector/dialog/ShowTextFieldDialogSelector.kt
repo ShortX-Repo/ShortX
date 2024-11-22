@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package tornaco.apps.shortx.ui.addrule.action.selector
+package tornaco.apps.shortx.ui.addrule.action.selector.dialog
 
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
@@ -155,7 +155,8 @@ private fun ShowTextFieldDialogSelector(dialogState: ShowTextFieldDialogSettings
                                         title = dialogState.title,
                                         message = dialogState.message,
                                         cancelable = dialogState.isCancelable,
-                                        textFields = dialogState.items
+                                        textFields = dialogState.items,
+                                        style = tornaco.apps.shortx.core.proto.common.DialogUiStyleSettings.getDefaultInstance()
                                     )
                                 )
                                 dialogState.dismiss()

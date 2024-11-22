@@ -16,6 +16,12 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.action.mapper.summaryKey
 import tornaco.apps.shortx.ui.addrule.action.mapper.toAndroidContextMenuActionLabelKey
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.selector.dialog.ShowChoiceDialogSelectorActivity
+import tornaco.apps.shortx.ui.addrule.action.selector.dialog.ShowDialogSelectorActivity
+import tornaco.apps.shortx.ui.addrule.action.selector.dialog.ShowListDialogSelectorActivity
+import tornaco.apps.shortx.ui.addrule.action.selector.dialog.ShowMenuDialogSelectorActivity
+import tornaco.apps.shortx.ui.addrule.action.selector.dialog.ShowTextFieldDialogSettingsDialog
+import tornaco.apps.shortx.ui.addrule.action.selector.dialog.rememberShowTextFieldDialogSettingsDialogState
 import tornaco.apps.shortx.ui.addrule.base.ActionCategory
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList

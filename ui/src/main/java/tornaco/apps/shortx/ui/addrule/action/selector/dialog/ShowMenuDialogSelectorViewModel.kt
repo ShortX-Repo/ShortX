@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.addrule.action.selector
+package tornaco.apps.shortx.ui.addrule.action.selector.dialog
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -7,6 +7,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import tornaco.apps.shortx.core.IActionEvaluateListener
 import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.action.DialogMenuItem
+import tornaco.apps.shortx.core.proto.common.DialogUiStyleSettings
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
@@ -28,6 +29,7 @@ data class ShowMenuDialogSelectorState(
     val title: String = "",
     val message: String = "",
     val cancelable: Boolean = true,
+    val style: DialogUiStyleSettings = DialogUiStyleSettings.getDefaultInstance(),
     val items: List<MenuDialogUiItem> = emptyList(),
     val evaluatingActions: List<String> = emptyList()
 )
@@ -89,7 +91,8 @@ class ShowMenuDialogSelectorViewModel @Inject constructor(@ApplicationContext co
                     title = settings.title,
                     message = settings.message,
                     cancelable = settings.cancelable,
-                    items = settings.items.toUiItems(shortXManager)
+                    items = settings.items.toUiItems(shortXManager),
+                    style = settings.style,
                 )
             }
         }
@@ -166,5 +169,9 @@ class ShowMenuDialogSelectorViewModel @Inject constructor(@ApplicationContext co
                 items = sortedItems
             )
         }
+    }
+
+    fun updateStyle(it: DialogUiStyleSettings) {
+        updateState { copy(style = it) }
     }
 }

@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.I18N
+import tornaco.apps.shortx.core.proto.common.DialogUiStyleSettings
 import tornaco.apps.shortx.ui.base.ListItem
 
 data class ChoiceItem(
@@ -41,13 +42,14 @@ data class ChoiceItem(
 class ChoiceDialogView(
     context: Context,
     i18N: I18N,
+    style: DialogUiStyleSettings,
     private val onDismissRequest: () -> Unit,
     private val title: String,
     private val multipleSelection: Boolean,
     private val choices: List<ChoiceItem>,
     // Selected id.
     private val onSelectionChange: (List<Int>) -> Unit,
-) : DialogView(context, i18N) {
+) : DialogView(context, i18N, style) {
     @Composable
     override fun DialogContent() {
         val selectedValues = remember {
@@ -75,7 +77,7 @@ class ChoiceDialogView(
                         Text(
                             title, style = MaterialTheme.typography.titleLarge.copy(
                                 fontWeight = FontWeight.W500
-                            )
+                            ).applyStyle(style)
                         )
                     }
                 }
@@ -125,7 +127,10 @@ class ChoiceDialogView(
                 TextButton(onClick = {
                     onDismissRequest()
                 }) {
-                    Text(stringResource(android.R.string.ok))
+                    Text(
+                        text = stringResource(android.R.string.ok),
+                        style = MaterialTheme.typography.labelLarge.applyStyle(style)
+                    )
                 }
             }
         }

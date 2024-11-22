@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package tornaco.apps.shortx.ui.addrule.action.selector
+package tornaco.apps.shortx.ui.addrule.action.selector.dialog
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -88,7 +88,8 @@ private fun ShowMenuDialogSelectorActivity.ShowMenuDialogSelector(currentData: A
                                 title = dialogState.title,
                                 message = dialogState.message,
                                 cancelable = dialogState.cancelable,
-                                items = dialogState.items.toProtoItems()
+                                items = dialogState.items.toProtoItems(),
+                                style = dialogState.style,
                             )
                         )
                     }) {
@@ -160,6 +161,11 @@ private fun ShowMenuDialogSelectorActivity.ShowMenuDialogSelector(currentData: A
                 }) {
                     Text(text = LocalI18N.current["ui.action.show.menu.dialog.item.add"])
                 }
+                SectionSpacer()
+
+                DialogUiStyleSettings(style = dialogState.style, update = {
+                    vm.updateStyle(it)
+                })
 
                 SectionSpacer()
 

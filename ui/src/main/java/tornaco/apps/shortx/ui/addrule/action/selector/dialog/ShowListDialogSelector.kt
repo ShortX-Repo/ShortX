@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package tornaco.apps.shortx.ui.addrule.action.selector
+package tornaco.apps.shortx.ui.addrule.action.selector.dialog
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Box
@@ -89,7 +89,8 @@ private fun ShowListDialogSelectorActivity.ShowListDialogSelector(currentData: A
                                 isMultipleChoice = dialogState.isMultipleChoice,
                                 delimiters = dialogState.delimiters,
                                 dataType = dialogState.dataType,
-                                needConfirmAction = dialogState.needConfirmAction
+                                needConfirmAction = dialogState.needConfirmAction,
+                                style = dialogState.style,
                             )
                         )
                     }) {
@@ -194,6 +195,11 @@ private fun ShowListDialogSelectorActivity.ShowListDialogSelector(currentData: A
                         Text(LocalI18N.current["ui.common.add"])
                     }
                 }
+                LargeSpacer()
+
+                DialogUiStyleSettings(style = dialogState.style, update = {
+                    vm.updateStyle(it)
+                })
 
                 SectionSpacer()
 

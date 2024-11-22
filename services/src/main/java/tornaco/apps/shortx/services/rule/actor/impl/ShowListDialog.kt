@@ -16,6 +16,7 @@ import tornaco.apps.shortx.core.proto.SHOW_LIST_DIALOG_JSON_VALUE_KEY
 import tornaco.apps.shortx.core.proto.action.DialogAction
 import tornaco.apps.shortx.core.proto.action.ShowListDialog
 import tornaco.apps.shortx.core.proto.action.ShowListDialogDataType
+import tornaco.apps.shortx.core.proto.common.DialogUiStyleSettings
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
@@ -97,6 +98,7 @@ object ShowListDialog : Actor {
         val result: DialogAction =
             showMultipleChoiceDialog(
                 context = context,
+                style = d.style,
                 listItems = listItems,
                 title = d.title.compileContextAndVars(cv),
                 isMultipleChoice = d.isMultipleChoice,
@@ -123,6 +125,7 @@ object ShowListDialog : Actor {
 
     private suspend fun showMultipleChoiceDialog(
         context: Context,
+        style: DialogUiStyleSettings,
         listItems: List<ListItem>,
         title: String,
         isMultipleChoice: Boolean,
@@ -139,6 +142,7 @@ object ShowListDialog : Actor {
                 ListDialogView(
                     context = context,
                     i18N = i18NIns,
+                    style = style,
                     title = title,
                     multipleSelection = isMultipleChoice,
                     defaultSelectedItems = emptyList(),

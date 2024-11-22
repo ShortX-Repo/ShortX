@@ -67,6 +67,7 @@ object ShowTextFieldDialog : Actor {
                 EditTextListDialogView(
                     context = context,
                     i18N = i18NIns,
+                    style = d.style,
                     title = d.title.compileContextAndVars(cv),
                     items = d.textFieldsList.mapIndexed { index, textFieldProp ->
                         EditTextItem(

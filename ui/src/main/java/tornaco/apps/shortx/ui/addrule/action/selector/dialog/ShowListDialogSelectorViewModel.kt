@@ -1,10 +1,11 @@
-package tornaco.apps.shortx.ui.addrule.action.selector
+package tornaco.apps.shortx.ui.addrule.action.selector.dialog
 
 import android.annotation.SuppressLint
 import android.content.Context
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import tornaco.apps.shortx.core.proto.action.ShowListDialogDataType
+import tornaco.apps.shortx.core.proto.common.DialogUiStyleSettings
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
@@ -19,6 +20,7 @@ data class ShowListDialogSelectorState(
     val isMultipleChoice: Boolean = false,
     val needConfirmAction: Boolean = false,
     val dataType: ShowListDialogDataType = ShowListDialogDataType.ShowListDialogDataType_String,
+    val style: DialogUiStyleSettings = DialogUiStyleSettings.getDefaultInstance(),
     val delimiters: List<String> = listOf(",")
 )
 
@@ -41,7 +43,8 @@ class ShowListDialogSelectorViewModel @Inject constructor(@ApplicationContext co
                     isMultipleChoice = settings.isMultipleChoice,
                     delimiters = settings.delimiters,
                     dataType = settings.dataType,
-                    needConfirmAction = settings.needConfirmAction
+                    needConfirmAction = settings.needConfirmAction,
+                    style = settings.style,
                 )
             }
         }
@@ -108,5 +111,9 @@ class ShowListDialogSelectorViewModel @Inject constructor(@ApplicationContext co
                 }
             )
         }
+    }
+
+    fun updateStyle(it: DialogUiStyleSettings) {
+        updateState { copy(style = it) }
     }
 }

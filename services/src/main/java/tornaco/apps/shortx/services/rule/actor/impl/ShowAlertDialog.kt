@@ -70,6 +70,7 @@ object ShowAlertDialog : Actor {
                 AlertDialogView(
                     context = context,
                     i18N = i18NIns,
+                    style = d.style,
                     title = d.title.compileContextAndVars(cv),
                     message = d.message.compileContextAndVars(cv),
                     positiveText = d.positive.takeIf { it.isNotBlank() }?.compileContextAndVars(cv),

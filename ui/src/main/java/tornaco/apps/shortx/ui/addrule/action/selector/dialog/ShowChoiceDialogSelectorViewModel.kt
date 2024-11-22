@@ -1,10 +1,11 @@
-package tornaco.apps.shortx.ui.addrule.action.selector
+package tornaco.apps.shortx.ui.addrule.action.selector.dialog
 
 import android.annotation.SuppressLint
 import android.content.Context
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import tornaco.apps.shortx.core.proto.common.ChoiceProp
+import tornaco.apps.shortx.core.proto.common.DialogUiStyleSettings
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
@@ -18,7 +19,8 @@ data class ShowChoiceDialogSelectorState(
     val message: String = "",
     val cancelable: Boolean = true,
     val choices: List<ChoiceProp> = emptyList(),
-    val isMultipleChoice: Boolean = false
+    val isMultipleChoice: Boolean = false,
+    val style: DialogUiStyleSettings = DialogUiStyleSettings.getDefaultInstance(),
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -38,6 +40,7 @@ class ShowChoiceDialogSelectorViewModel @Inject constructor(@ApplicationContext 
                     cancelable = settings.cancelable,
                     choices = settings.choices,
                     isMultipleChoice = settings.isMultipleChoice,
+                    style = settings.style,
                 )
             }
         }
@@ -139,5 +142,9 @@ class ShowChoiceDialogSelectorViewModel @Inject constructor(@ApplicationContext 
         updateState {
             copy(isMultipleChoice = isMultipleChoice)
         }
+    }
+
+    fun updateStyle(it: DialogUiStyleSettings) {
+        updateState { copy(style = it) }
     }
 }

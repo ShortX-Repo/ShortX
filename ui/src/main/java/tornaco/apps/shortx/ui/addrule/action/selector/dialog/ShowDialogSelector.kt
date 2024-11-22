@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package tornaco.apps.shortx.ui.addrule.action.selector
+package tornaco.apps.shortx.ui.addrule.action.selector.dialog
 
 import android.app.Activity
 import androidx.compose.animation.animateContentSize
@@ -95,6 +95,7 @@ class ShowDialogSelectorActivity : BaseSelectorActivity<Action.ShowAlertDialog>(
                                         positiveText = showDialogSelectorState.positiveText,
                                         negativeText = showDialogSelectorState.negativeText,
                                         neutralText = showDialogSelectorState.neutralText,
+                                        style = showDialogSelectorState.style,
                                         positiveActions = vm.positiveActionContent.state.value.actions,
                                         negativeActions = vm.negativeActionContent.state.value.actions,
                                         neutralActions = vm.neutralActionContent.state.value.actions,
@@ -127,8 +128,6 @@ class ShowDialogSelectorActivity : BaseSelectorActivity<Action.ShowAlertDialog>(
         ) {
             ShortXTextField(
                 modifier = Modifier.fillMaxWidth(),
-
-
                 label = {
                     Text(text = LocalI18N.current["ui.action.dialog.title"])
                 },
@@ -161,6 +160,11 @@ class ShowDialogSelectorActivity : BaseSelectorActivity<Action.ShowAlertDialog>(
             StandardSpacer()
 
             NeutralButton(state, vm)
+            StandardSpacer()
+
+            DialogUiStyleSettings(style = state.style, update = {
+                vm.updateStyle(it)
+            })
             StandardSpacer()
 
 

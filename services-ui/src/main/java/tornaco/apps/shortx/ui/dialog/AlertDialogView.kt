@@ -21,18 +21,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.I18N
+import tornaco.apps.shortx.core.proto.common.DialogUiStyleSettings
 
 @SuppressLint("ViewConstructor")
 class AlertDialogView(
     context: Context,
     i18N: I18N,
+    style: DialogUiStyleSettings,
     private val onDismissRequest: (DialogButton) -> Unit,
     private val title: String,
     private val message: String,
     private val positiveText: String?,
     private val negativeText: String?,
     private val neutralText: String?,
-) : DialogView(context, i18N) {
+) : DialogView(context, i18N, style) {
     @Composable
     override fun DialogContent() {
         Column(
@@ -52,7 +54,9 @@ class AlertDialogView(
                     ) {
                         Text(
                             title,
-                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.W500)
+                            style = MaterialTheme.typography.titleLarge
+                                .copy(fontWeight = FontWeight.W500)
+                                .applyStyle(style)
                         )
                     }
                 }
@@ -62,7 +66,7 @@ class AlertDialogView(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        Text(message, style = MaterialTheme.typography.bodySmall)
+                        Text(message, style = MaterialTheme.typography.bodySmall.applyStyle(style))
                     }
                 }
             }
@@ -74,7 +78,10 @@ class AlertDialogView(
                     TextButton(onClick = {
                         onDismissRequest(DialogButton.Neutral)
                     }) {
-                        Text(it)
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.labelLarge.applyStyle(style)
+                        )
                     }
                 }
 
@@ -86,14 +93,20 @@ class AlertDialogView(
                         TextButton(onClick = {
                             onDismissRequest(DialogButton.Negative)
                         }) {
-                            Text(it)
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.labelLarge.applyStyle(style)
+                            )
                         }
                     }
                     positiveText?.let {
                         TextButton(onClick = {
                             onDismissRequest(DialogButton.Positive)
                         }) {
-                            Text(it)
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.labelLarge.applyStyle(style)
+                            )
                         }
                     }
                 }

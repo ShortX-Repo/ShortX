@@ -26,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.I18N
+import tornaco.apps.shortx.core.proto.common.DialogUiStyleSettings
 import tornaco.apps.shortx.ui.base.ShortXTextField
 
 data class EditTextItem(
@@ -38,10 +39,11 @@ data class EditTextItem(
 class EditTextListDialogView(
     context: Context,
     i18N: I18N,
+    style: DialogUiStyleSettings,
     private val onDismissRequest: (DialogButton) -> Unit,
     private val title: String,
     private val items: List<EditTextItem>
-) : DialogView(context, i18N) {
+) : DialogView(context, i18N, style) {
     @Composable
     override fun DialogContent() {
         Column(
@@ -58,7 +60,7 @@ class EditTextListDialogView(
                     Text(
                         title, style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.W500
-                        ),
+                        ).applyStyle(style),
                         modifier = Modifier.padding(bottom = 24.dp)
                     )
                 }
@@ -86,12 +88,18 @@ class EditTextListDialogView(
                 TextButton(onClick = {
                     onDismissRequest(DialogButton.Negative)
                 }) {
-                    Text(stringResource(android.R.string.cancel))
+                    Text(
+                        text = stringResource(android.R.string.cancel),
+                        style = MaterialTheme.typography.labelLarge.applyStyle(style)
+                    )
                 }
                 TextButton(onClick = {
                     onDismissRequest(DialogButton.Positive)
                 }) {
-                    Text(stringResource(android.R.string.ok))
+                    Text(
+                        text = stringResource(android.R.string.ok),
+                        style = MaterialTheme.typography.labelLarge.applyStyle(style)
+                    )
                 }
             }
         }

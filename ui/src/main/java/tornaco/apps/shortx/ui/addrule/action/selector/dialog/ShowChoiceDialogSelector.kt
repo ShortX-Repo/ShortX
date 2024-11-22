@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package tornaco.apps.shortx.ui.addrule.action.selector
+package tornaco.apps.shortx.ui.addrule.action.selector.dialog
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -86,6 +86,7 @@ private fun ShowChoiceDialogSelectorActivity.ShowChoiceDialogSelector(currentDat
                                 cancelable = dialogState.cancelable,
                                 choices = dialogState.choices,
                                 isMultipleChoice = dialogState.isMultipleChoice,
+                                style = dialogState.style,
                             )
                         )
                     }) {
@@ -173,6 +174,11 @@ private fun ShowChoiceDialogSelectorActivity.ShowChoiceDialogSelector(currentDat
                     vm.updateCancelable(it)
                 }
 
+                LargeSpacer()
+
+                DialogUiStyleSettings(style = dialogState.style, update = {
+                    vm.updateStyle(it)
+                })
                 LargeSpacer()
 
                 SwitchRow(

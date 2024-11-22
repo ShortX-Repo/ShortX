@@ -6,6 +6,7 @@ import android.content.Context
 import android.widget.LinearLayout
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.proto.common.DialogUiStyleSettings
 import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.core.util.clipboardManager
 import tornaco.apps.shortx.services.ui.i18NIns
@@ -33,6 +34,7 @@ class UniversalCopyEditDialog(
                 EditTextDialogView(
                     context = context,
                     i18N = i18NIns,
+                    style = DialogUiStyleSettings.getDefaultInstance(),
                     title = i18NIns["ui.action.enable.universal.copy"],
                     value = text,
                     onValueChange = {
