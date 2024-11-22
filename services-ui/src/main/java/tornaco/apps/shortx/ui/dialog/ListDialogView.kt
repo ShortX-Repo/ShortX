@@ -101,10 +101,13 @@ class ListDialogView(
                     }
                 }
 
-                items(listItems.filter {
-                    searchBarState.keyword.isBlank() || it.lines.contains(
-                        searchBarState.keyword,
-                    )
+                items(listItems.filter { listItem ->
+                    searchBarState.keyword.isBlank() || listItem.lines.any {
+                        it.contains(
+                            searchBarState.keyword,
+                            ignoreCase = true
+                        )
+                    }
                 }) { listItem ->
                     val isSelected = selectedIdList.contains(listItem.id)
                     val handleCheckClick = {

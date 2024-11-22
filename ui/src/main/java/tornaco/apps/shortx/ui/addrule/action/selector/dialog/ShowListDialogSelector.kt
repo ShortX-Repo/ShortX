@@ -16,12 +16,14 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -48,7 +50,44 @@ import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
+import tornaco.apps.shortx.ui.util.ClipboardUtils
 
+private const val LIST_JSON_EXAMPLE = """
+ [
+    {
+        "name": "Android",
+        "version": 16,
+        "__value": "android",
+        "__icon": "android-fill"
+    },
+    {
+        "name": "iOS",
+        "version": 19,
+        "__value": "iOS",
+        "__icon": "apple-line"
+    },
+    {
+        "name": "Windows",
+        "version": 12,
+        "summary": "Windows 11 is more powerful than ever. Discover the latest features to help you be productive, creative, and more.",
+        "__value": "win",
+        "__icon": "windows-fill"
+    },
+    {
+        "name": "Google",
+        "version": 100,
+        "__value": "google",
+        "__icon": "google-fill"
+    },
+    {
+        "name": "Ubuntu",
+        "version": 24,
+        "summary": "Ubuntu is the modern, open source operating system on Linux for the enterprise server, desktop, cloud, and IoT.",
+        "__value": "ubuntu",
+        "__icon": "ubuntu-fill"
+    }
+]
+"""
 
 @AndroidEntryPoint
 class ShowListDialogSelectorActivity : BaseSelectorActivity<Action.ShowListDialog>() {
@@ -159,7 +198,13 @@ private fun ShowListDialogSelectorActivity.ShowListDialogSelector(currentData: A
                     // Summary for String type, tip for string split.
                     TipBody(LocalI18N.current["ui.action.show.list.dialog.data.summary"])
                 } else {
+                    val context = LocalContext.current
                     TipBody(LocalI18N.current["ui.action.show.list.dialog.data.summary.json"])
+                    TextButton(onClick = {
+                        ClipboardUtils.copyToClipboard(context, "example", LIST_JSON_EXAMPLE)
+                    }) {
+                        Text(LocalI18N.current["ui.action.show.list.dialog.data.summary.json.copy.example"])
+                    }
                 }
 
                 MediumSpacer()
