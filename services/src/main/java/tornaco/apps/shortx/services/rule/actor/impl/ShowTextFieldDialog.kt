@@ -71,7 +71,7 @@ object ShowTextFieldDialog : Actor {
                     title = d.title.compileContextAndVars(cv),
                     items = d.textFieldsList.mapIndexed { index, textFieldProp ->
                         EditTextItem(
-                            value = "",
+                            value = textFieldProp.value.compileContextAndVars(cv),
                             placeholder = textFieldProp.placeholder.compileContextAndVars(cv),
                             onValueChange = {
                                 val key =

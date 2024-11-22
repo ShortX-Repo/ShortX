@@ -106,6 +106,14 @@ class ShowTextFieldDialogSettingsDialogState(
         }
     }
 
+    fun updateItemValue(value: String, index: Int) {
+        this.items = this.items.toMutableList().apply {
+            val current = get(index)
+            val updated = TextFieldProp.newBuilder(current).setValue(value).build()
+            set(index, updated)
+        }
+    }
+
     fun applySort(items: List<SortItem>) {
         val sorted = sortByIndex(this.items, items.map { it.index })
         this.items = sorted
@@ -251,8 +259,12 @@ private fun Items(
             index = index,
             headerTitle = LocalI18N.current["ui.action.show.text.field.dialog.item"] + " ${index + 1}",
             placeholder = menuDialogUiItem.placeholder,
-            onTextChange = {
+            value = menuDialogUiItem.value,
+            onPlaceholderChange = {
                 state.updateItemPlaceholder(it, index)
+            },
+            onValueChange = {
+                state.updateItemValue(it, index)
             },
             removeItem = {
                 state.removeItem(index)
@@ -268,7 +280,9 @@ private fun ItemSettings(
     index: Int,
     headerTitle: String,
     placeholder: String,
-    onTextChange: (String) -> Unit,
+    value: String,
+    onPlaceholderChange: (String) -> Unit,
+    onValueChange: (String) -> Unit,
     removeItem: () -> Unit
 ) {
     val i18N = LocalI18N.current
@@ -288,6 +302,18 @@ private fun ItemSettings(
             RemixIcon(remixName = Remix.System.close_line)
         }
     }
+
+    ShortXTextField(
+        modifier = Modifier.fillMaxWidth(),
+        label = {
+            Text(text = i18N["ui.action.show.text.field.dialog.item.value"])
+        },
+        value = value,
+        onValueChange = {
+            onValueChange(it)
+        })
+    StandardSpacer()
+
     ShortXTextField(
         modifier = Modifier.fillMaxWidth(),
         label = {
@@ -295,7 +321,7 @@ private fun ItemSettings(
         },
         value = placeholder,
         onValueChange = {
-            onTextChange(it)
+            onPlaceholderChange(it)
         })
     MediumSpacer()
     TextButton(onClick = {
