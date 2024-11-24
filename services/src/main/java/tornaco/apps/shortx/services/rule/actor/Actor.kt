@@ -44,6 +44,8 @@ interface Actor {
         logger.i("Actor $this init")
     }
 
+    val withWakelock: Boolean get() = false
+
     val logger get() = LoggerCache.getLogger("Actor-${actionsCanHandle().simpleName}")
 }
 

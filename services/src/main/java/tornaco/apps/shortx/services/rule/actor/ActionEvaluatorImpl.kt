@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.rule.actor
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Handler
+import android.os.PowerManager.PARTIAL_WAKE_LOCK
 import com.google.protobuf.Descriptors
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.localvar.LocalVars
@@ -16,6 +17,7 @@ import tornaco.apps.shortx.core.rule.toLogString
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
+import tornaco.apps.shortx.core.util.powerManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.cond.ConditionEvaluator
 import tornaco.apps.shortx.services.rule.fact.FactMatcher
@@ -75,6 +77,21 @@ class ActionEvaluatorImpl(
         }
         val shouldContinueOnError = attrs != null && attrs.onError == ActionOnError.Continue
 
+        val wakeLockTag = "${action.typeUrl}_${System.currentTimeMillis()}:wakelock"
+        val wakelock = if (actor.withWakelock) {
+            context.powerManager.newWakeLock(
+                PARTIAL_WAKE_LOCK,
+                wakeLockTag
+            ).apply {
+                setReferenceCounted(false)
+                // Action timeout is 1h
+                acquire(60 * 60 * 1000)
+            }
+        } else null
+        if (wakelock != null) {
+            logger.w("Acquired wakelock: $wakeLockTag")
+        }
+
         return kotlin.runCatching {
             evaluateStartListener(actionId)
 
@@ -127,6 +144,10 @@ class ActionEvaluatorImpl(
             }
         }.apply {
             evaluateResultListener(this)
+            if (wakelock != null) {
+                wakelock.release()
+                logger.w("Released wakelock: $wakeLockTag")
+            }
         }
     }
 

@@ -48,6 +48,8 @@ import java.util.concurrent.atomic.AtomicReference
 
 
 object HttpRequest : Actor {
+    override val withWakelock: Boolean get() = true
+
     lateinit var localCallerImpl: HttpCallerImpl
     private val scope by lazy { CoroutineScope(SupervisorJob()) }
 
