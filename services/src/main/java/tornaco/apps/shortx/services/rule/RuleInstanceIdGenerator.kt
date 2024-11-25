@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.rule
 import android.content.Context
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
+import tornaco.apps.shortx.core.context.SystemEnv.inflateSystemEnv
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.rule.RuleInstanceIdGenerator_JS
 import tornaco.apps.shortx.core.proto.rule.RuleInstanceIdGenerator_MVEL
@@ -52,7 +53,9 @@ object RuleInstanceIdGenerator {
             val res = MVELExecutor(
                 context,
                 shortXContext,
-                d.expression.inflateContextMap(contextData.map.mapValues { entry ->
+                d.expression
+                    .inflateSystemEnv()
+                    .inflateContextMap(contextData.map.mapValues { entry ->
                     // Wrap all data with ""
                     entry.value?.let {
                         if (it is String) "\"$it\"" else it

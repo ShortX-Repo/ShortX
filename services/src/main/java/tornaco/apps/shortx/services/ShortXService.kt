@@ -94,6 +94,7 @@ import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.handleResponseBo
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequestLogging
 import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper
 import tornaco.apps.shortx.services.rule.nextEvaluateContextSerialNumber
+import tornaco.apps.shortx.services.rule.systemenv.SystemEnvInit
 import tornaco.apps.shortx.services.ui.I18NCache
 import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.util.ListBatchUtils
@@ -1424,6 +1425,12 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             return shortXContext.rule.getAllWebDavProfiles().firstOrNull {
                 it.profileId == id
             }?.let {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun getAllSystemEnv(): List<ByteArrayWrapper> {
+            return SystemEnvInit.getAllEnv().map {
                 ByteArrayWrapper(it.toByteArray())
             }
         }

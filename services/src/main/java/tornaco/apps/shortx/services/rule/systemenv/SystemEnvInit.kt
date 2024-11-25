@@ -13,6 +13,17 @@ object SystemEnvInit {
             })
         }
     }
+
+    fun getAllEnv(): List<tornaco.apps.shortx.core.proto.common.SystemEnv> {
+        return Env.entries.map {
+            tornaco.apps.shortx.core.proto.common.SystemEnv.newBuilder()
+                .setDisplayName(it.displayName)
+                .setKeyDecored(with(SystemEnv) {
+                    it.key.asEnvName()
+                })
+                .build()
+        }
+    }
 }
 
 data class GetValueInput(
@@ -20,19 +31,19 @@ data class GetValueInput(
     val shortXContext: ShortXContext
 )
 
+private const val I18N_KEY_PREFIX = "ui.system.env"
+
 enum class Env(
     val displayName: String,
     val key: String,
     val getValue: GetValueInput.() -> String
 ) {
     BatteryLevel(
-        displayName = "BatteryLevel",
+        displayName = "$I18N_KEY_PREFIX.battery.level",
         key = "BatteryLevel",
         getValue = {
             val batteryManager = context.getSystemService(Context.BATTERY_SERVICE) as BatteryManager
             batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY).toString()
         }
     ),
-
-
 }
