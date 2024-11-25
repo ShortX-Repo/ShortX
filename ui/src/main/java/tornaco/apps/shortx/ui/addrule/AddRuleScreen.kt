@@ -675,7 +675,7 @@ fun QuitEvaluatePolicy(
             dropState.open()
         }) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = LocalI18N.current["ui.rule.quit.eva.policy.${policy.name}"])
+                Text(text = LocalI18N.current["ui.rule.quit.eva.policy.${policy.name.lowercase()}"])
                 StandardSpacer()
                 RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
             }
@@ -686,8 +686,8 @@ fun QuitEvaluatePolicy(
                 .filterNot { it == Quit_EvaluatePolicy.UNRECOGNIZED }.map {
                     DropdownItem(
                         labelLines = listOf(
-                            LocalI18N.current["ui.rule.quit.eva.policy.${policy.name}"],
-                            LocalI18N.current["ui.rule.quit.eva.policy.description.${policy.name}"]
+                            LocalI18N.current["ui.rule.quit.eva.policy.${policy.name.lowercase()}"],
+                            LocalI18N.current["ui.rule.quit.eva.policy.description.${policy.name.lowercase()}"]
                         ),
                         data = it
                     )

@@ -26,7 +26,7 @@ object I18NCache {
 
     fun get(key: String, args: Map<String, String>, fallback: String?): String {
         return res[key]?.let {
-            MessageFormat(it.lowercase()).format(args)
+            MessageFormat(it).format(args)
         } ?: (fallback ?: key)
     }
 
@@ -45,10 +45,9 @@ object I18NCache {
         kotlin.runCatching { context.assets.open(i18NFileName) }.getOrElse {
             logger.e(it, "Using fallback file: $DEFAULT_LANGUAGE")
             context.assets.open(DEFAULT_LANGUAGE)
-        }.use { stream ->
-            val content = stream.bufferedReader(Charsets.UTF_8).readText()
-            res.putAll(
-                Json.decodeFromString<Map<String, String>>(content).mapKeys { it.key.lowercase() })
+        }.use {
+            val content = it.bufferedReader(Charsets.UTF_8).readText()
+            res.putAll(Json.decodeFromString<Map<String, String>>(content).mapKeys { it.key.lowercase() })
         }
     }
 }
