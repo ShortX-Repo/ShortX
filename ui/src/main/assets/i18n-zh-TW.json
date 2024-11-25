@@ -988,6 +988,7 @@
     "ui.action.show.text.field.dialog.item": "輸入框",
     "ui.action.show.text.field.dialog.item.add": "新增輸入框",
     "ui.action.show.text.field.dialog.item.placeholder": "輸入框提示",
+    "ui.action.show.text.field.dialog.item.value": "默认值",
     "ui.action.show.text.field.dialog.item.context.var": "使用上下文變數 {var} 來獲取用戶輸入的內容",
     "ui.action.advanced": "高級",
     "ui.action.misc": "其他",
