@@ -111,6 +111,7 @@ import tornaco.apps.shortx.services.rule.fact.FactPublishRecorder
 import tornaco.apps.shortx.services.rule.fact.toFactPublishRecord
 import tornaco.apps.shortx.services.rule.fact.trigger.KeyPressTimesInIntervalListener
 import tornaco.apps.shortx.services.rule.fact.trigger.allTriggers
+import tornaco.apps.shortx.services.rule.systemenv.SystemEnvInit
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.util.callIfAlive
@@ -326,6 +327,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         webDavProfileStore.readBlocking()
 
         installListeners()
+
+        SystemEnvInit.install(context, shortXContext)
 
         PrebuiltActor.entries.forEach {
             it.actor.init(context, shortXContext)
