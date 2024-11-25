@@ -359,6 +359,7 @@ class DefaultRuleEngine(
 
                                 val localVars = LocalVars.obtain()
                                 runActionsJob(
+                                    reason = "Fire#Rule-Actions",
                                     ruleTitleForLog = rule.title,
                                     asyncMode = rule.asyncMode,
                                     muteX = rule.muteX,
@@ -480,6 +481,7 @@ class DefaultRuleEngine(
                                     updateTheXXTimeToday(shortXContext, quit.conditionsList)
 
                                     runActionsJob(
+                                        reason = "Fire#Rule-Action-Quit",
                                         ruleTitleForLog = "$LOG_TAG_RULE_QUIT-${rule.title}",
                                         asyncMode = rule.asyncMode,
                                         muteX = rule.muteX,
@@ -575,6 +577,7 @@ class DefaultRuleEngine(
                                     updateTheXXTimeToday(shortXContext, quit.conditionsList)
 
                                     runActionsJob(
+                                        reason = "Fire#DA-Quit-Actions",
                                         ruleTitleForLog = "$LOG_TAG_RULE_QUIT-${da.title}",
                                         asyncMode = da.asyncMode,
                                         muteX = da.muteX,
@@ -602,6 +605,7 @@ class DefaultRuleEngine(
     }
 
     private suspend fun runActionsJob(
+        reason: String,
         ruleTitleForLog: String,
         asyncMode: AsyncMode,
         muteX: Mutex,
@@ -612,7 +616,7 @@ class DefaultRuleEngine(
         parameterInputs: List<FuncParameterInput>
     ) {
         // By default, execute action in IO
-        logger.d("job for rule: $ruleTitleForLog start.")
+        logger.d("job for rule: $ruleTitleForLog start. ($reason)")
         val runActions: suspend () -> Unit = {
             kotlin.run loop@{
                 logger.d("about to execute ${actionsToRun.size} actions for $ruleTitleForLog")
