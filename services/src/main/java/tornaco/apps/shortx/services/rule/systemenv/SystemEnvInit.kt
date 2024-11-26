@@ -5,6 +5,7 @@ import android.os.BatteryManager
 import android.provider.Settings
 import tornaco.apps.shortx.core.context.SystemEnv
 import tornaco.apps.shortx.core.util.DateUtils
+import tornaco.apps.shortx.core.util.clipboardManager
 import tornaco.apps.shortx.services.ShortXContext
 
 object SystemEnvInit {
@@ -39,8 +40,15 @@ private const val I18N_KEY_PREFIX = "ui.system.env"
 enum class Env(
     val displayName: String,
     val key: String,
-    val getValue: GetValueInput.() -> String
+    val getValue: GetValueInput.() -> String?
 ) {
+    UUID(
+        displayName = "$I18N_KEY_PREFIX.uuid",
+        key = "UUID",
+        getValue = {
+            java.util.UUID.randomUUID().toString()
+        }
+    ),
     BatteryLevel(
         displayName = "$I18N_KEY_PREFIX.battery.level",
         key = "BatteryLevel",
@@ -61,6 +69,31 @@ enum class Env(
         key = "CurrentTimeFormated",
         getValue = {
             DateUtils.formatLongForMessageTime(System.currentTimeMillis())
+        }
+    ),
+    ClipboardText(
+        displayName = "$I18N_KEY_PREFIX.clipboard.text",
+        key = "ClipboardText",
+        getValue = {
+            context.clipboardManager.primaryClip?.getItemAt(0)?.text?.toString()
+        }
+    ),
+    FrontAppLabel(
+        displayName = "$I18N_KEY_PREFIX.front.app.label",
+        key = "FrontAppLabel",
+        getValue = {
+            shortXContext.appState.currentFrontPkgs().joinToString {
+                shortXContext.appState.getAppLabel(it) ?: it.pkgName
+            }
+        }
+    ),
+    FrontAppPkgName(
+        displayName = "$I18N_KEY_PREFIX.front.app.pkg.name",
+        key = "FrontAppPkgName",
+        getValue = {
+            shortXContext.appState.currentFrontPkgs().joinToString {
+                it.pkgName
+            }
         }
     ),
     SystemSettings(
