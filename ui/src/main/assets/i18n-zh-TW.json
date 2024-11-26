@@ -1308,5 +1308,14 @@
     "ui.action.for.each.delimiters": "数据分割符",
     "ui.action.for.each.action": "动作",
     "ui.action.for.each.action.context.data.loop.index": "可以通过变量 {index} 来访问循环中的索引",
-    "ui.action.for.each.action.context.data.loop.data": "可以通过变量 {data} 来访问循环中的数据"
+    "ui.action.for.each.action.context.data.loop.data": "可以通过变量 {data} 来访问循环中的数据",
+    "ui.system.env": "系统环境变量",
+    "ui.system.env.battery.level": "电量",
+    "ui.system.env.current.time.millis": "当前时间 ms",
+    "ui.system.env.current.time.formated": "当前时间",
+    "ui.system.env.system.settings": "系统设置",
+    "ui.system.env.front.app.label": "前台应用名称",
+    "ui.system.env.front.app.pkg.name": "前台应用包名",
+    "ui.system.env.uuid": "UUID",
+    "ui.system.env.random.int": "随机数字"
 }

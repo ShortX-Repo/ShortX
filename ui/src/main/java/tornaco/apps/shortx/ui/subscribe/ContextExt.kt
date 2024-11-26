@@ -28,6 +28,9 @@ val crackModPaths = setOf(
     "8B62FB022B2ABB5DFCAD97BCFD81D8EE"
 )
 
+const val EXT_JS = "7E4BEEE5A92DCDDD48B5B7798CDEC79A"
+const val EXT_DEX = "2C318A629B22F56EA6665AC81F0210CB"
+
 fun initContextVM() {
     ContextViewModel.shortxProvider = {
         shortx {
@@ -48,13 +51,15 @@ inline fun Context.shortx(callback: ShortXManager.() -> Unit = {}): ShortXManage
         val hookVipEnc = EncryptUtils.encrypt("HookVip")
         crackLogger.d("AntiCrack hookVipEnc: $hookVipEnc")
         crackLogger.d("AntiCrack hookVipEnc - dec: ${EncryptUtils.decrypt(hookVipEnc)}")
+        crackLogger.d("AntiCrack hookVipEnc - dec: ${EncryptUtils.decrypt(EXT_JS)}")
+        crackLogger.d("AntiCrack hookVipEnc - dec: ${EncryptUtils.decrypt(EXT_DEX)}")
     }
     val crackDetected = crackModPaths.any {
         kotlin.runCatching { File(dataDir, EncryptUtils.decrypt(it)).exists() }.getOrElse {
             crackLogger.logOnDebug(it.stackTraceToString())
             false
         }
-    }
+    } || hasJsAndDexFilesInAnyFolder(dataDir)
     crackLogger.d("AntiCrack crackDetected: $crackDetected")
     if (crackDetected) {
         MMKVExt.encMMKV().encode(isCrackedKey, BuildPropInternal.APP_VERSION_CODE)
@@ -73,4 +78,27 @@ inline fun Context.shortx(callback: ShortXManager.() -> Unit = {}): ShortXManage
         }
     }
     return stubShortXManager
+}
+
+fun hasJsAndDexFilesInAnyFolder(directory: File): Boolean {
+    // 遍历主目录及子目录
+    directory.listFiles()?.forEach { file ->
+        if (file.isDirectory) {
+            val containsJs =
+                file.listFiles()?.any { it.extension == EncryptUtils.decrypt(EXT_JS) } ?: false
+            val containsDex =
+                file.listFiles()?.any { it.extension == EncryptUtils.decrypt(EXT_DEX) } ?: false
+
+            // 如果当前文件夹包含 .js 和 .dex 文件，则返回 true
+            if (containsJs && containsDex) {
+                return true
+            }
+
+            // 递归检查子目录
+            if (hasJsAndDexFilesInAnyFolder(file)) {
+                return true
+            }
+        }
+    }
+    return false
 }
