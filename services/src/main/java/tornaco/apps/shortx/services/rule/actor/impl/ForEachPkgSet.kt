@@ -4,9 +4,9 @@ import com.google.protobuf.Message
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.rule.unpack_
-import tornaco.apps.shortx.services.rule.actor.ActionEvaluator
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
+import tornaco.apps.shortx.services.rule.actor.impl.util.runSubActions
 
 
 object ForEachPkgSet : Actor {
@@ -35,33 +35,7 @@ object ForEachPkgSet : Actor {
                 app?.label ?: appPkg.pkgName
             )
             contextData.override(ContextDataMapping.ForEachPkgSet.loopAppUserId.name, appPkg.userId)
-            run loop@{
-                actions.forEach {
-                    logger.d("about to execute action: ${it.typeUrl}")
-                    val evaRes =
-                        recursiveExecute(
-                            evaluateContext,
-                            it,
-                            contextData,
-                            localVars,
-                            parameterInputs
-                        )
-                    if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
-                        logger.e(evaRes.error, "evaluate fail")
-                        if (evaRes.shouldContinue) {
-                            logger.d("Action on error is continue execute.")
-                        } else {
-                            return@loop
-                        }
-                    } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
-                        val scope = evaRes.scope
-                        logger.w("evaluate break! $scope")
-                        scope.rethrowOrReturnLoop {
-                            return@loop
-                        }
-                    }
-                }
-            }
+            runSubActions(actions)
         }
     }
 }

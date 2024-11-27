@@ -6,9 +6,9 @@ import tornaco.apps.shortx.core.proto.action.FromDA
 import tornaco.apps.shortx.core.rule.asDefaultInput
 import tornaco.apps.shortx.core.rule.toLogString
 import tornaco.apps.shortx.core.rule.unpack_
-import tornaco.apps.shortx.services.rule.actor.ActionEvaluator
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
+import tornaco.apps.shortx.services.rule.actor.impl.util.runSubActions
 
 
 object FromDA : Actor {
@@ -45,31 +45,6 @@ object FromDA : Actor {
         } + parameterInputs
         logger.logOnDebug("allParameters: ${allParameters.map { it.toLogString() }}")
 
-        run loop@{
-            if (da.actionsList.isNullOrEmpty().not()) {
-                da.actionsList.forEach { actionProto ->
-                    val evaRes =
-                        recursiveExecute(
-                            evaluateContext,
-                            actionProto,
-                            contextData,
-                            localVars,
-                            allParameters
-                        )
-                    if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
-                        logger.e(evaRes.error, "evaluate fail")
-                        if (evaRes.shouldContinue) {
-                            logger.d("Action on error is continue execute.")
-                        } else {
-                            return@loop
-                        }
-                    } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
-                        logger.w("evaluate break!")
-                        return@loop
-                    }
-                }
-            }
-        }
-
+        runSubActions(da.actionsList)
     }
 }

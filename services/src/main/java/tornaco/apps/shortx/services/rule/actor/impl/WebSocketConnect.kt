@@ -15,9 +15,9 @@ import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.rule.RuleContextAndVars
-import tornaco.apps.shortx.services.rule.actor.ActionEvaluator
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
+import tornaco.apps.shortx.services.rule.actor.impl.util.runSubActions
 import tornaco.apps.shortx.services.util.WSCallback
 import tornaco.apps.shortx.services.util.WebSocketClient
 import tornaco.apps.shortx.services.util.loopUntilQuitWithError
@@ -99,7 +99,11 @@ object WebSocketConnect : Actor {
                         quitError = Error(WebSocketEvent.WS_FAILURE.name, t)
                     }
                 }
-                val client = WebSocketClient(url = data.url.compileContextAndVars(cv), callback = callback, scope = scope)
+                val client = WebSocketClient(
+                    url = data.url.compileContextAndVars(cv),
+                    callback = callback,
+                    scope = scope
+                )
                 var socket: WebSocket? = null
                 runCatching {
                     socket = client.start()
@@ -125,33 +129,7 @@ object WebSocketConnect : Actor {
     }
 
     private suspend fun HandleParams.invokeCallback(actions: List<ProtoAny>?) {
-        run loop@{
-            if (actions.isNullOrEmpty().not()) {
-                actions?.forEach {
-                    val evaRes = recursiveExecute(
-                        evaluateContext,
-                        it,
-                        contextData,
-                        localVars,
-                        parameterInputs
-                    )
-                    if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
-                        logger.e(evaRes.error, "evaluate fail")
-                        if (evaRes.shouldContinue) {
-                            logger.d("Action on error is continue execute.")
-                        } else {
-                            return@loop
-                        }
-                    } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
-                        val scope = evaRes.scope
-                        logger.w("evaluate break! $scope")
-                        scope.rethrowOrReturnLoop {
-                            return@loop
-                        }
-                    }
-                }
-            }
-        }
+        actions?.let { runSubActions(it) }
     }
 
     private fun dumpWSMap() {
