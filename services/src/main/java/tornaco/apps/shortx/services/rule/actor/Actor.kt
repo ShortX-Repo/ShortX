@@ -694,6 +694,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.WebDavGet
     },
+    WebDavPut {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.WebDavPut
+    },
 
     ;
 

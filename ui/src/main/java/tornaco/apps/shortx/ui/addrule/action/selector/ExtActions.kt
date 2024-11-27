@@ -22,6 +22,7 @@ import tornaco.apps.shortx.ui.addrule.action.selector.cv.FindImageSelectorActivi
 import tornaco.apps.shortx.ui.addrule.action.selector.http.HttpRequestSelectorActivity
 import tornaco.apps.shortx.ui.addrule.action.selector.webdav.WebDavGetSelectorActivity
 import tornaco.apps.shortx.ui.addrule.action.selector.webdav.WebDavListSelectorActivity
+import tornaco.apps.shortx.ui.addrule.action.selector.webdav.WebDavPutSelectorActivity
 import tornaco.apps.shortx.ui.addrule.action.selector.ws.WSConnectSelectorActivity
 import tornaco.apps.shortx.ui.addrule.action.selector.ws.WSSendSelectorActivity
 import tornaco.apps.shortx.ui.addrule.base.ActionCategory
@@ -227,6 +228,16 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
             val action = result.popupSelectorResult<Action.WebDavGet>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
+    val webdavPutLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action.WebDavPut>()
             action?.let {
                 addAction(it)
             }
@@ -468,6 +479,17 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.WebDavPut::class -> {
+                webdavPutLauncher.launch(
+                    newIntent(
+                        context,
+                        source.getActionAs<Action.WebDavPut>(),
+                        WebDavPutSelectorActivity::class.java
+                    )
+                )
+                true
+            }
+
             Action.FindImagePosition::class -> {
                 findImageLauncher.launch(
                     newIntent(
@@ -555,6 +577,7 @@ fun ExtActions(
         Action.OcrDetect::class,
         Action.WebDavList::class,
         Action.WebDavGet::class,
+        Action.WebDavPut::class,
     ).map {
         SelectorItem(
             type = it,

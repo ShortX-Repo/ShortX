@@ -88,7 +88,7 @@ private fun BaseSelectorActivity<Action.WebDavGet>.Selector(currentAction: Actio
                 })
             LargeSpacer()
 
-            FieldTitle(text = "ui.action.web.dav.get.dest.path")
+            FieldTitle(text = LocalI18N.current["ui.action.web.dav.get.dest.path"])
             SmallSpacer()
             ShortXTextField(
                 modifier = Modifier.fillMaxWidth(),
