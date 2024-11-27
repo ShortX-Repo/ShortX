@@ -37,6 +37,7 @@ import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.common.ActionOnError
 import tornaco.apps.shortx.core.proto.common.StringPair
+import tornaco.apps.shortx.core.proto.rule.ActionAsyncMode
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.res.isBase64Image
 import tornaco.apps.shortx.ui.ClipboardDialog
@@ -111,13 +112,15 @@ fun ActionContent(
     evaluatingActions: List<String>,
     warnings: Map<String, List<String>>,
     readOnly: Boolean = false,
-    handler: ActionHandler
+    handler: ActionHandler,
+    actionAsyncMode: ActionAsyncMode = ActionAsyncMode.ActionAsyncMode_Sync
 ) {
     Actions(
         header = header,
         warnings = warnings,
         srcId = srcId,
         actions = actions,
+        actionAsyncMode = actionAsyncMode,
         evaluatingActions = evaluatingActions,
         readOnly = readOnly,
         handler = handler
@@ -129,6 +132,7 @@ private fun Actions(
     header: @Composable ColumnScope.() -> Unit,
     srcId: String?,
     actions: List<Action>,
+    actionAsyncMode: ActionAsyncMode,
     evaluatingActions: List<String>,
     warnings: Map<String, List<String>>,
     readOnly: Boolean,
@@ -143,6 +147,23 @@ private fun Actions(
             handler.applySort(it)
         })
 
+    val actionAsyncModeMenuDialogState =
+        rememberMenuDialogState<String>(title = "Action execute mode",
+            menuItems = listOf(
+                MenuDialogItem(
+                    ActionAsyncMode.ActionAsyncMode_Sync.name,
+                    "Sync"
+                ),
+                MenuDialogItem(
+                    ActionAsyncMode.ActionAsyncMode_Async.name,
+                    "Async"
+                )
+            ), onItemSelected = { _, id ->
+                val mode = ActionAsyncMode.valueOf(id)
+                handler.setAsyncMode(mode)
+            })
+    MenuDialog(actionAsyncModeMenuDialogState)
+
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -154,6 +175,23 @@ private fun Actions(
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
+                if (BuildPropInternal.APP_IS_DEBUG) {
+                    // Async mode.
+                    IconButton(onClick = {
+                        actionAsyncModeMenuDialogState.show(
+                            currentSelection = listOf(
+                                actionAsyncMode.name
+                            )
+                        )
+                    }) {
+                        if (actionAsyncMode == ActionAsyncMode.ActionAsyncMode_Async) {
+                            RemixIcon(Remix.Charts.multicast)
+                        } else {
+                            RemixIcon(Remix.Charts.unicast)
+                        }
+                    }
+                }
+
                 // Sort
                 AnimatedVisibility(visible = !readOnly && actions.size > 1) {
                     IconButton(onClick = {
@@ -775,6 +813,7 @@ class ActionHandler(
     val batchEnableDisable: (actionId: List<String>) -> Unit = {},
     val setOnError: (actionId: String, onError: ActionOnError) -> Unit = { _, _ -> run {} },
     val setNote: (actionId: String, note: String) -> Unit = { _, _ -> run {} },
+    val setAsyncMode: (mode: ActionAsyncMode) -> Unit = { },
     val execute: suspend (actionId: String) -> Unit = { },
     val executeAll: suspend () -> Unit = { },
     val setCustomContextDataKey: (actionId: String, StringPair) -> Unit = { _, _ -> run {} },

@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.func.FuncParameter
+import tornaco.apps.shortx.core.proto.rule.ActionAsyncMode
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.pack_
@@ -21,6 +22,7 @@ import java.util.Date
 
 data class ActionContentState(
     val actions: List<Action> = emptyList(),
+    val asyncMode: ActionAsyncMode = ActionAsyncMode.ActionAsyncMode_Sync,
     val actionWarningMessages: Map<String, List<String>> = emptyMap(),
     val isChanged: Boolean = false,
 )
@@ -101,6 +103,9 @@ fun ActionContentStateHandler.asActionHandler(name: String = "unnamed"): ActionH
             actions.first { it.id == actionId }.let { action ->
                 this.setNote(action, note)
             }
+        },
+        setAsyncMode = {
+            this.setAsyncMode(it)
         },
         execute = { actionId ->
             actions.first { it.id == actionId }.let { this.executeAction(it) }
@@ -221,6 +226,12 @@ class ActionContentStateHandler(
             .pack_().toAction(shortXManager)?.let { addAction(it) }
     }
 
+    fun setAsyncMode(actionAsyncMode: ActionAsyncMode) {
+        updateState {
+            copy(asyncMode = actionAsyncMode, isChanged = true)
+        }
+    }
+
     fun init(actions: List<Action>) {
         composeLogger.d("init@${this}: ${actions.joinToString(System.lineSeparator())}")
         updateState { copy(actions = actions) }
@@ -278,6 +289,7 @@ class ActionContentStateHandler(
                 .setTitle("Testing")
                 .addAllActions(protoActions)
                 .addAllParameters(parameterInputsProvider.invoke())
+                .setActionAsyncMode(state.value.asyncMode)
                 .build()
 
             val evaluateContext = EvaluateContext.newBuilder()

@@ -328,6 +328,7 @@ private fun DAContent(
     ActionContent(
         srcId = addDirectActionState.id,
         actions = actionContentState.actions,
+        actionAsyncMode = actionContentState.asyncMode,
         evaluatingActions = addDirectActionState.evaluatingActions,
         handler = actionContentStateHandler.asActionHandler(),
         readOnly = readOnly,
@@ -422,6 +423,7 @@ private fun DAContent(
                         },
                         srcId = addDirectActionState.id,
                         actions = quitActionState.actions,
+                        actionAsyncMode = quitActionState.asyncMode,
                         evaluatingActions = addDirectActionState.evaluatingActions,
                         warnings = emptyMap(),
                         handler = quitActionHandler.asActionHandler()

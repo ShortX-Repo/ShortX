@@ -211,6 +211,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                     }
                 }
                 .addAllActions(protoActions)
+                .setActionAsyncMode(actionContentStateHandler.state.value.asyncMode)
                 .setAuthor(authorPref)
                 .setVersionCode(state.value.versionCode)
                 .setConflictPolicy(state.value.conflictStrategy)
@@ -232,6 +233,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                             }
                         }
                         .addAllActions(quitActions.map { it.toProtoAction().pack_() })
+                        .setActionAsyncMode(quitActionStateHandler.state.value.asyncMode)
                         .setIsEnabled(state.value.isQuitEnabled)
                         .setEvaluatePolicy(state.value.quitEvaluatePolicy)
                         .build()
