@@ -309,8 +309,7 @@ class DefaultRuleEngine(
                                 updateTheXXTimeToday(shortXContext, rule.conditionsList)
 
                                 val localVars = LocalVars.obtain()
-                                runActionsJob(
-                                    reason = "Fire#Rule-Actions",
+                                runActionsJobLocked(reason = "Fire#Rule-Actions",
                                     ruleTitleForLog = rule.title,
                                     asyncMode = rule.asyncMode,
                                     muteX = rule.muteX,
@@ -431,8 +430,7 @@ class DefaultRuleEngine(
 
                                     updateTheXXTimeToday(shortXContext, quit.conditionsList)
 
-                                    runActionsJob(
-                                        reason = "Fire#Rule-Action-Quit",
+                                    runActionsJobLocked(reason = "Fire#Rule-Action-Quit",
                                         ruleTitleForLog = "$LOG_TAG_RULE_QUIT-${rule.title}",
                                         asyncMode = rule.asyncMode,
                                         muteX = rule.muteX,
@@ -527,8 +525,7 @@ class DefaultRuleEngine(
 
                                     updateTheXXTimeToday(shortXContext, quit.conditionsList)
 
-                                    runActionsJob(
-                                        reason = "Fire#DA-Quit-Actions",
+                                    runActionsJobLocked(reason = "Fire#DA-Quit-Actions",
                                         ruleTitleForLog = "$LOG_TAG_RULE_QUIT-${da.title}",
                                         asyncMode = da.asyncMode,
                                         muteX = da.muteX,
@@ -555,7 +552,7 @@ class DefaultRuleEngine(
         return anyMatch
     }
 
-    private suspend fun runActionsJob(
+    private suspend fun runActionsJobLocked(
         reason: String,
         ruleTitleForLog: String,
         asyncMode: AsyncMode,
@@ -569,33 +566,14 @@ class DefaultRuleEngine(
         // By default, execute action in IO
         logger.d("job for rule: $ruleTitleForLog start. ($reason)")
         val runActions: suspend () -> Unit = {
-            kotlin.run loop@{
-                logger.d("about to execute ${actionsToRun.size} actions for $ruleTitleForLog")
-                actionsToRun.forEach {
-                    logger.d("about to execute action: ${it.typeUrl}")
-                    val evaRes = actionEvaluator.evaluate(
-                        evaluateContext = evaluateContext,
-                        action = it,
-                        contextData = contextData,
-                        localVars = localVars,
-                        parameterInputs = parameterInputs
-                    )
-                    logger.d("action evaluate res: $evaRes")
-                    if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
-                        logger.e(evaRes.error, "evaluate fail")
-                        if (evaRes.shouldContinue) {
-                            logger.d("Action on error is continue execute.")
-                        } else {
-                            return@loop
-                        }
-                    } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
-                        logger.w("evaluate break!")
-                        return@loop
-                    } else if (evaRes is ActionEvaluator.EvaluateResult.Disabled) {
-                        logger.d("action is disabled: ${evaRes.action.typeUrl}")
-                    }
-                }
-            }
+            realRunActions(
+                actionsToRun = actionsToRun,
+                ruleTitleForLog = ruleTitleForLog,
+                evaluateContext = evaluateContext,
+                contextData = contextData,
+                localVars = localVars,
+                parameterInputs = parameterInputs
+            )
         }
 
         when (asyncMode) {
@@ -656,30 +634,14 @@ class DefaultRuleEngine(
         val job = coroutineScope.launchSafety {
             withContext(Dispatchers.IO) {
                 logger.d("evaluateActions, job for id: ${context.srcId} start.")
-                kotlin.run loop@{
-                    actions.forEach {
-                        val evaRes = actionEvaluator.evaluate(
-                            evaluateContext = context,
-                            action = it,
-                            contextData = contextData,
-                            localVars = localVars,
-                            parameterInputs = parameterInputs
-                        )
-                        if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
-                            logger.e(evaRes.error, "evaluate fail")
-                            if (evaRes.shouldContinue) {
-                                logger.d("Action on error is continue execute.")
-                            } else {
-                                return@loop
-                            }
-                        } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
-                            logger.w("evaluate break!")
-                            return@loop
-                        } else if (evaRes is ActionEvaluator.EvaluateResult.Disabled) {
-                            logger.d("action is disabled: ${evaRes.action.typeUrl}")
-                        }
-                    }
-                }
+                realRunActions(
+                    actionsToRun = actions,
+                    ruleTitleForLog = context.srcTitle,
+                    evaluateContext = context,
+                    contextData = contextData,
+                    localVars = localVars,
+                    parameterInputs = parameterInputs
+                )
             }
         }
         synchronized(jobs) {
@@ -705,6 +667,43 @@ class DefaultRuleEngine(
             contextData.recycle()
             onJobCompleted(context.srcId)
             onComplete()
+        }
+    }
+
+    private suspend fun realRunActions(
+        actionsToRun: List<ProtoAny>,
+        ruleTitleForLog: String,
+        evaluateContext: EvaluateContext,
+        contextData: ContextData,
+        localVars: LocalVars,
+        parameterInputs: List<FuncParameterInput>
+    ) {
+        kotlin.run loop@{
+            logger.d("doRunActions, about to execute ${actionsToRun.size} actions for $ruleTitleForLog")
+            actionsToRun.forEach {
+                logger.d("doRunActions, about to execute action: ${it.typeUrl}")
+                val evaRes = actionEvaluator.evaluate(
+                    evaluateContext = evaluateContext,
+                    action = it,
+                    contextData = contextData,
+                    localVars = localVars,
+                    parameterInputs = parameterInputs
+                )
+                logger.d("doRunActions, action evaluate res: $evaRes")
+                if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
+                    logger.e(evaRes.error, "doRunActions, evaluate fail")
+                    if (evaRes.shouldContinue) {
+                        logger.d("doRunActions, action on error is continue execute.")
+                    } else {
+                        return@loop
+                    }
+                } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
+                    logger.w("doRunActions, evaluate break!")
+                    return@loop
+                } else if (evaRes is ActionEvaluator.EvaluateResult.Disabled) {
+                    logger.d("doRunActions, action is disabled: ${evaRes.action.typeUrl}")
+                }
+            }
         }
     }
 
