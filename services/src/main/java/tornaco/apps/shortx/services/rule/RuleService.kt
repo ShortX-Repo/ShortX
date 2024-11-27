@@ -52,6 +52,7 @@ import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.getTypeUrl
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.quitFacts
+import tornaco.apps.shortx.core.proto.rule.ActionAsyncMode
 import tornaco.apps.shortx.core.proto.rule.ActionEvaluateRecord
 import tornaco.apps.shortx.core.proto.rule.ConditionEvaluateRecord
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
@@ -559,6 +560,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     fun executeActions(
         context: EvaluateContext,
         actions: List<ProtoAny>,
+        actionAsyncMode: ActionAsyncMode,
         initialContextData: Map<String, Any> = emptyMap(),
         localVars: LocalVars = LocalVars.obtain(),
         parameterInputs: List<FuncParameterInput> = emptyList(),
@@ -575,6 +577,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 parameterInputs = parameterInputs,
                 conflictStrategy = conflictStrategy,
                 onComplete = onComplete,
+                actionAsyncMode = actionAsyncMode
             )
         }
     }
@@ -604,7 +607,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             context = context,
             actions = actions,
             initialContextData = initialContextData,
-            conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth
+            conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
+            actionAsyncMode = ActionAsyncMode.ActionAsyncMode_Sync
         )
         latch.await(60, TimeUnit.SECONDS)
         unregisterJobStatusListener(listener)
@@ -866,7 +870,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             },
             initialContextData = initialContextData,
             localVars = localVars,
-            conflictStrategy = directAction.conflictPolicy
+            conflictStrategy = directAction.conflictPolicy,
+            actionAsyncMode = directAction.actionAsyncMode
         )
     }
 
@@ -879,7 +884,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 context = context,
                 actions = actions,
                 parameterInputs = r.parametersList.map { it.asDefaultInput() },
-                conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth
+                conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
+                actionAsyncMode = r.actionAsyncMode
             )
         }
     }
@@ -963,6 +969,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             actions = enable.select(
                 { toggle.actionsOnEnabledList },
                 { toggle.actionsOnDisabledList }),
+            actionAsyncMode = ActionAsyncMode.ActionAsyncMode_Sync,
             conflictStrategy = ConflictStrategy.ConflictStrategy_ReplaceOld,
             onComplete = {
                 logger.d("Toggle actions execute complete, broadcast onEnableStateMayChange")

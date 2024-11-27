@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.rule.fact.trigger
 
 import android.content.Context
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
+import tornaco.apps.shortx.core.proto.rule.ActionAsyncMode
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.Rule
@@ -36,7 +37,8 @@ class RuleHooksTrigger(
                         shortXContext.rule.executeActions(
                             context = evaluateContext,
                             actions = this,
-                            conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth
+                            conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
+                            actionAsyncMode = ActionAsyncMode.ActionAsyncMode_Sync
                         )
                     }
                 }
@@ -59,7 +61,8 @@ class RuleHooksTrigger(
                         shortXContext.rule.executeActions(
                             context = evaluateContext,
                             actions = this,
-                            conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth
+                            conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
+                            actionAsyncMode = ActionAsyncMode.ActionAsyncMode_Sync
                         )
                     }
                 }
@@ -82,7 +85,8 @@ class RuleHooksTrigger(
                     shortXContext.rule.executeActions(
                         context = evaluateContext,
                         actions = this,
-                        conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth
+                        conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
+                        actionAsyncMode = ActionAsyncMode.ActionAsyncMode_Sync
                     )
                 }
             }

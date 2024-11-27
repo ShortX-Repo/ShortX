@@ -4,6 +4,9 @@ import android.content.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -19,6 +22,7 @@ import tornaco.apps.shortx.core.proto.condition.TheXXTimeToday
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
+import tornaco.apps.shortx.core.proto.rule.ActionAsyncMode
 import tornaco.apps.shortx.core.proto.rule.AsyncMode
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
@@ -309,7 +313,8 @@ class DefaultRuleEngine(
                                 updateTheXXTimeToday(shortXContext, rule.conditionsList)
 
                                 val localVars = LocalVars.obtain()
-                                runActionsJobLocked(reason = "Fire#Rule-Actions",
+                                runActionsJobLocked(
+                                    reason = "Fire#Rule-Actions",
                                     ruleTitleForLog = rule.title,
                                     asyncMode = rule.asyncMode,
                                     muteX = rule.muteX,
@@ -317,7 +322,8 @@ class DefaultRuleEngine(
                                     evaluateContext = evaluateContext,
                                     contextData = contextData,
                                     localVars = localVars,
-                                    parameterInputs = parameterInputs
+                                    parameterInputs = parameterInputs,
+                                    actionAsyncMode = rule.actionAsyncMode
                                 )
                             } else {
                                 logger.d("Won't runActions since condition not match.")
@@ -430,7 +436,8 @@ class DefaultRuleEngine(
 
                                     updateTheXXTimeToday(shortXContext, quit.conditionsList)
 
-                                    runActionsJobLocked(reason = "Fire#Rule-Action-Quit",
+                                    runActionsJobLocked(
+                                        reason = "Fire#Rule-Action-Quit",
                                         ruleTitleForLog = "$LOG_TAG_RULE_QUIT-${rule.title}",
                                         asyncMode = rule.asyncMode,
                                         muteX = rule.muteX,
@@ -438,7 +445,8 @@ class DefaultRuleEngine(
                                         evaluateContext = evaluateContext,
                                         contextData = contextData,
                                         localVars = localVars,
-                                        parameterInputs = parameterInputs
+                                        parameterInputs = parameterInputs,
+                                        actionAsyncMode = quit.actionAsyncMode
                                     )
 
                                     canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce.remove(
@@ -525,7 +533,8 @@ class DefaultRuleEngine(
 
                                     updateTheXXTimeToday(shortXContext, quit.conditionsList)
 
-                                    runActionsJobLocked(reason = "Fire#DA-Quit-Actions",
+                                    runActionsJobLocked(
+                                        reason = "Fire#DA-Quit-Actions",
                                         ruleTitleForLog = "$LOG_TAG_RULE_QUIT-${da.title}",
                                         asyncMode = da.asyncMode,
                                         muteX = da.muteX,
@@ -533,7 +542,8 @@ class DefaultRuleEngine(
                                         evaluateContext = evaluateContext,
                                         contextData = contextData,
                                         localVars = localVars,
-                                        parameterInputs = parameterInputs
+                                        parameterInputs = parameterInputs,
+                                        actionAsyncMode = quit.actionAsyncMode
                                     )
 
                                     logger.d("Remove from canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce: ${evaluateContext.srcId}")
@@ -558,6 +568,7 @@ class DefaultRuleEngine(
         asyncMode: AsyncMode,
         muteX: Mutex,
         actionsToRun: List<ProtoAny>,
+        actionAsyncMode: ActionAsyncMode,
         evaluateContext: EvaluateContext,
         contextData: ContextData,
         localVars: LocalVars,
@@ -572,7 +583,8 @@ class DefaultRuleEngine(
                 evaluateContext = evaluateContext,
                 contextData = contextData,
                 localVars = localVars,
-                parameterInputs = parameterInputs
+                parameterInputs = parameterInputs,
+                actionAsyncMode = actionAsyncMode,
             )
         }
 
@@ -601,6 +613,7 @@ class DefaultRuleEngine(
     override fun evaluateActions(
         context: EvaluateContext,
         actions: List<ProtoAny>,
+        actionAsyncMode: ActionAsyncMode,
         initialContextData: Map<String, Any>,
         localVars: LocalVars,
         parameterInputs: List<FuncParameterInput>,
@@ -640,7 +653,8 @@ class DefaultRuleEngine(
                     evaluateContext = context,
                     contextData = contextData,
                     localVars = localVars,
-                    parameterInputs = parameterInputs
+                    parameterInputs = parameterInputs,
+                    actionAsyncMode = actionAsyncMode
                 )
             }
         }
@@ -676,12 +690,73 @@ class DefaultRuleEngine(
         evaluateContext: EvaluateContext,
         contextData: ContextData,
         localVars: LocalVars,
+        parameterInputs: List<FuncParameterInput>,
+        actionAsyncMode: ActionAsyncMode
+    ) {
+        when (actionAsyncMode) {
+            ActionAsyncMode.ActionAsyncMode_Async -> {
+                realRunActionsInAsyncMode(
+                    actionsToRun,
+                    ruleTitleForLog,
+                    evaluateContext,
+                    contextData,
+                    localVars,
+                    parameterInputs
+                )
+            }
+
+            else -> {
+                realRunActionsInSyncMode(
+                    actionsToRun,
+                    ruleTitleForLog,
+                    evaluateContext,
+                    contextData,
+                    localVars,
+                    parameterInputs
+                )
+            }
+        }
+    }
+
+    private suspend fun realRunActionsInAsyncMode(
+        actionsToRun: List<ProtoAny>,
+        ruleTitleForLog: String,
+        evaluateContext: EvaluateContext,
+        contextData: ContextData,
+        localVars: LocalVars,
+        parameterInputs: List<FuncParameterInput>
+    ) {
+        logger.d("realRunActionsInAsyncMode, about to execute ${actionsToRun.size} actions for $ruleTitleForLog")
+        coroutineScope {
+            actionsToRun.map {
+                async {
+                    logger.d("realRunActionsInAsyncMode, about to execute action: ${it.typeUrl}")
+                    val evaRes = actionEvaluator.evaluate(
+                        evaluateContext = evaluateContext,
+                        action = it,
+                        contextData = contextData,
+                        localVars = localVars,
+                        parameterInputs = parameterInputs
+                    )
+                    logger.d("realRunActionsInAsyncMode, action evaluate res: $evaRes")
+                }
+            }.awaitAll()
+            logger.d("realRunActionsInAsyncMode, all complete.")
+        }
+    }
+
+    private suspend fun realRunActionsInSyncMode(
+        actionsToRun: List<ProtoAny>,
+        ruleTitleForLog: String,
+        evaluateContext: EvaluateContext,
+        contextData: ContextData,
+        localVars: LocalVars,
         parameterInputs: List<FuncParameterInput>
     ) {
         kotlin.run loop@{
-            logger.d("doRunActions, about to execute ${actionsToRun.size} actions for $ruleTitleForLog")
+            logger.d("realRunActionsInSyncMode, about to execute ${actionsToRun.size} actions for $ruleTitleForLog")
             actionsToRun.forEach {
-                logger.d("doRunActions, about to execute action: ${it.typeUrl}")
+                logger.d("realRunActionsInSyncMode, about to execute action: ${it.typeUrl}")
                 val evaRes = actionEvaluator.evaluate(
                     evaluateContext = evaluateContext,
                     action = it,
@@ -689,19 +764,19 @@ class DefaultRuleEngine(
                     localVars = localVars,
                     parameterInputs = parameterInputs
                 )
-                logger.d("doRunActions, action evaluate res: $evaRes")
+                logger.d("realRunActionsInSyncMode, action evaluate res: $evaRes")
                 if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
-                    logger.e(evaRes.error, "doRunActions, evaluate fail")
+                    logger.e(evaRes.error, "realRunActionsInSyncMode, evaluate fail")
                     if (evaRes.shouldContinue) {
-                        logger.d("doRunActions, action on error is continue execute.")
+                        logger.d("realRunActionsInSyncMode, action on error is continue execute.")
                     } else {
                         return@loop
                     }
                 } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
-                    logger.w("doRunActions, evaluate break!")
+                    logger.w("realRunActionsInSyncMode, evaluate break!")
                     return@loop
                 } else if (evaRes is ActionEvaluator.EvaluateResult.Disabled) {
-                    logger.d("doRunActions, action is disabled: ${evaRes.action.typeUrl}")
+                    logger.d("realRunActionsInSyncMode, action is disabled: ${evaRes.action.typeUrl}")
                 }
             }
         }

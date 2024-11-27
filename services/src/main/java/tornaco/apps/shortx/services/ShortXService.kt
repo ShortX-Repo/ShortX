@@ -61,6 +61,7 @@ import tornaco.apps.shortx.core.proto.fact.MethodHook
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
+import tornaco.apps.shortx.core.proto.rule.ActionAsyncMode
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.Rule
@@ -1042,7 +1043,8 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                 localVars = LocalVars.obtain().apply { addAll(cv.localVarList) },
                 parameterInputs = cv.funcParameterList,
                 initialContextData = cv.contextDataList.associate { it.first to it.second },
-                conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth
+                conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
+                actionAsyncMode = ActionAsyncMode.ActionAsyncMode_Sync
             )
         }
 

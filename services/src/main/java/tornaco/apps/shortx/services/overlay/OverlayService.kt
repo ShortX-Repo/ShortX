@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.proto.action.ShowFloatWindow
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
+import tornaco.apps.shortx.core.proto.rule.ActionAsyncMode
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.rule.toLogString
@@ -120,7 +121,8 @@ class OverlayService(shortXContext: ShortXContext) :
                     actions = button.actionsList,
                     conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
                     localVars = localVars,
-                    parameterInputs = parameters
+                    parameterInputs = parameters,
+                    actionAsyncMode = ActionAsyncMode.ActionAsyncMode_Sync
                 )
             },
             onButtonLongClick = { button: OverlayButtonSetting ->
@@ -129,7 +131,8 @@ class OverlayService(shortXContext: ShortXContext) :
                     actions = button.longClickActionsList,
                     conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
                     localVars = localVars,
-                    parameterInputs = parameters
+                    parameterInputs = parameters,
+                    actionAsyncMode = ActionAsyncMode.ActionAsyncMode_Sync
                 )
             },
             onTouchOutside = {
@@ -185,7 +188,8 @@ class OverlayService(shortXContext: ShortXContext) :
                     actions = button.actionsList,
                     conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
                     localVars = localVars,
-                    parameterInputs = parameters
+                    parameterInputs = parameters,
+                    actionAsyncMode = ActionAsyncMode.ActionAsyncMode_Sync
                 )
             },
             onButtonLongClick = { button: OverlayButtonSetting ->
@@ -194,7 +198,8 @@ class OverlayService(shortXContext: ShortXContext) :
                     actions = button.longClickActionsList,
                     conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
                     localVars = localVars,
-                    parameterInputs = parameters
+                    parameterInputs = parameters,
+                    actionAsyncMode = ActionAsyncMode.ActionAsyncMode_Sync
                 )
             },
         )
