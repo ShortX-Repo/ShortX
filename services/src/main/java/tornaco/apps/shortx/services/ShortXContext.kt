@@ -8,6 +8,7 @@ import tornaco.apps.shortx.services.cv.CVService
 import tornaco.apps.shortx.services.dev.DevService
 import tornaco.apps.shortx.services.gesture.GestureService
 import tornaco.apps.shortx.services.input.InputService
+import tornaco.apps.shortx.services.location.TwilightService
 import tornaco.apps.shortx.services.media.MediaService
 import tornaco.apps.shortx.services.network.NetworkService
 import tornaco.apps.shortx.services.notification.NotificationService
@@ -35,6 +36,7 @@ interface ShortXContext {
     val ui: UIService
     val input: InputService
     val user: UserService
+    val twilight: TwilightService
     val notification: NotificationService
     val wm: WindowManagerService
     val systemSettings: SystemSettingsService
@@ -63,6 +65,7 @@ interface ShortXContext {
             ui,
             input,
             user,
+            twilight,
             notification,
             wm,
             systemSettings,
@@ -93,6 +96,7 @@ class ShortXContextImpl : ShortXContext {
     override val ui = UIService(this)
     override val input = InputService(this)
     override val user = UserService(this)
+    override val twilight = TwilightService(this)
     override val notification = NotificationService(this)
     override val wm = WindowManagerService(this)
     override val systemSettings = SystemSettingsService(this)

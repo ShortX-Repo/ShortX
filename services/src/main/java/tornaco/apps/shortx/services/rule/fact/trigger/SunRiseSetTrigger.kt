@@ -6,7 +6,10 @@ import tornaco.apps.shortx.core.proto.fact.SunRiseSet
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.newHandlerOfNewThread
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.location.TwilightListener
+import tornaco.apps.shortx.services.location.TwilightState
 
 class SunRiseSetTrigger(
     context: Context,
@@ -18,6 +21,11 @@ class SunRiseSetTrigger(
     }
 
     private val logger = Logger(LOG_TAG)
+
+    private val handler by lazy { newHandlerOfNewThread(LOG_TAG) }
+    private val listener = TwilightListener {
+        logger.d("TwilightListener: $it")
+    }
 
     override fun register() {
         updateTriggerState()
@@ -41,9 +49,9 @@ class SunRiseSetTrigger(
         }
         logger.d("anyFat: $anyFat")
         if (anyFat) {
-            runCatching {
-                TwilightState
-            }
+            shortXContext.twilight.manager.registerListener(listener, handler)
+        } else {
+            shortXContext.twilight.manager.unregisterListener(listener)
         }
     }
 

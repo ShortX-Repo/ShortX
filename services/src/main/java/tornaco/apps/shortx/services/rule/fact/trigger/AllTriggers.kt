@@ -42,4 +42,5 @@ internal fun allTriggers(context: Context, shortXContext: ShortXContext) = mutab
     SoundTrigger(context, shortXContext),
     ProximitySensorTrigger(context, shortXContext),
     AccelerometerSensorTrigger(context, shortXContext),
+    SunRiseSetTrigger(context, shortXContext),
 )

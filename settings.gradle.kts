@@ -28,7 +28,7 @@ pluginManagement {
         mavenLocal()
         jcenter()
         maven(url = "https://jitpack.io")
-
+        maven(url = "https://maven.aliyun.com/repository/public")
         maven {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/ShortX-Repo/ShortX-Core")

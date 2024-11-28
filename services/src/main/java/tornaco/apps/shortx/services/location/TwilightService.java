@@ -115,8 +115,8 @@ public final class TwilightService
         }
     };
 
-    public TwilightService(ShortXContext context, String name) {
-        super(context, name);
+    public TwilightService(ShortXContext context) {
+        super(context, "TwilightService");
         mHandler = new Handler(Looper.getMainLooper(), this);
     }
 
