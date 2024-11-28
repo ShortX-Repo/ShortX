@@ -15,7 +15,9 @@ import tornaco.apps.shortx.core.proto.action.FindAndClickViewById
 import tornaco.apps.shortx.core.proto.action.FindAndClickViewByText
 import tornaco.apps.shortx.core.proto.action.FindImagePosition
 import tornaco.apps.shortx.core.proto.action.FindPointsByColor
+import tornaco.apps.shortx.core.proto.action.ForEach
 import tornaco.apps.shortx.core.proto.action.ForEachPkgSet
+import tornaco.apps.shortx.core.proto.action.GetScreenOnTime
 import tornaco.apps.shortx.core.proto.action.GetTextFromScreenNode
 import tornaco.apps.shortx.core.proto.action.HttpRequest
 import tornaco.apps.shortx.core.proto.action.InjectCombineKeyCode
@@ -42,10 +44,12 @@ import tornaco.apps.shortx.core.proto.action.SetAppSuspend
 import tornaco.apps.shortx.core.proto.action.SetAppSuspendByPkg
 import tornaco.apps.shortx.core.proto.action.SetScreenTimeout
 import tornaco.apps.shortx.core.proto.action.SetStatusBarIcon
+import tornaco.apps.shortx.core.proto.action.ShowChoiceDialog
 import tornaco.apps.shortx.core.proto.action.ShowClipboardView
 import tornaco.apps.shortx.core.proto.action.ShowDrawBoard
 import tornaco.apps.shortx.core.proto.action.ShowFloatWindow
 import tornaco.apps.shortx.core.proto.action.ShowGlobalActionsMenu
+import tornaco.apps.shortx.core.proto.action.ShowListDialog
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.action.ShowRecentApps
 import tornaco.apps.shortx.core.proto.action.ShowStatusBarChip
@@ -59,6 +63,9 @@ import tornaco.apps.shortx.core.proto.action.Toggle5G
 import tornaco.apps.shortx.core.proto.action.ToggleGestureRecording
 import tornaco.apps.shortx.core.proto.action.ToggleSlot
 import tornaco.apps.shortx.core.proto.action.WaitUtilConditionMatch
+import tornaco.apps.shortx.core.proto.action.WebDavGet
+import tornaco.apps.shortx.core.proto.action.WebDavList
+import tornaco.apps.shortx.core.proto.action.WebDavPut
 import tornaco.apps.shortx.core.proto.condition.AppHasAudioFocus
 import tornaco.apps.shortx.core.proto.condition.AppHasTask
 import tornaco.apps.shortx.core.proto.condition.AppHasTaskByPkg
@@ -111,8 +118,8 @@ import tornaco.apps.shortx.core.proto.fact.VPNDisconnected
 import kotlin.reflect.KClass
 
 
-inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out GeneratedMessageV3>> =
-    arrayOf(
+inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out GeneratedMessageV3>> {
+    return arrayOf(
         FixedInPeriod::class,
         VPNConnected::class,
         VPNDisconnected::class,
@@ -223,4 +230,14 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         ToggleSlot::class,
         ShowRecentApps::class,
         ShowGlobalActionsMenu::class,
-    )
+        WebDavGet::class,
+        WebDavPut::class,
+        WebDavList::class,
+        GetScreenOnTime::class,
+        ShowListDialog::class,
+        ShowChoiceDialog::class,
+        ForEach::class,
+    ).also {
+        onRes()
+    }
+}

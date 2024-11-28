@@ -201,6 +201,13 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Action.ToggleSlot::class,
     Action.ShowRecentApps::class,
     Action.ShowGlobalActionsMenu::class,
+    Action.WebDavGet::class,
+    Action.WebDavPut::class,
+    Action.WebDavList::class,
+    Action.GetScreenOnTime::class,
+    Action.ShowListDialog::class,
+    Action.ShowChoiceDialog::class,
+    Action.ForEach::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 )
 
