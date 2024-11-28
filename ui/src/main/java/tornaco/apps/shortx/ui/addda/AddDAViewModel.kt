@@ -274,11 +274,14 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
             action?.let { da ->
                 logger.d("initFromDirectAction: $da")
 
-                actionContentStateHandler.init(da.actionsList.mapNotNull {
-                    it.toAction(
-                        shortXManager
-                    )
-                })
+                actionContentStateHandler.init(
+                    da.actionsList.mapNotNull {
+                        it.toAction(
+                            shortXManager
+                        )
+                    },
+                    actionAsyncMode = da.actionAsyncMode
+                )
                 quitFactContentStateHandler.init(
                     facts = da.quit.factsList.mapNotNull {
                         it.toFact(shortXManager)
@@ -297,7 +300,9 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                         it.toAction(
                             shortXManager
                         )
-                    })
+                    },
+                    actionAsyncMode = da.quit.actionAsyncMode
+                )
                 val smsTyprUrls = listOf(
                     SendSMS.getDefaultInstance().pack_().typeUrl,
                 )

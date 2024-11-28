@@ -194,11 +194,15 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
             val condOp = conditionContentStateHandler.conditionOp
 
             val actions = actionContentStateHandler.actions
+            val actionAsyncMode = actionContentStateHandler.state.value.asyncMode
 
             // Hooks
             val actionsOnEnabled = actionOnEnabledStateHandler.actions
             val actionsOnDisabled = actionOnDisabledStateHandler.actions
             val actionsOnDeleted = actionOnDeletedStateHandler.actions
+            val actionsOnEnabledAsyncMode = actionOnEnabledStateHandler.state.value.asyncMode
+            val actionsOnDisabledAsyncMode = actionOnDisabledStateHandler.state.value.asyncMode
+            val actionsOnDeletedAsyncMode = actionOnDeletedStateHandler.state.value.asyncMode
 
             val facts = factContentStateHandler.facts
 
@@ -207,6 +211,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
             val quitConditions = quitConditionContentStateHandler.conditions
             val quitCondOp = quitConditionContentStateHandler.conditionOp
             val quitActions = quitActionStateHandler.actions
+            val quitActionsAsyncMode = quitActionStateHandler.state.value.asyncMode
 
             val ruleInsGenProtoOrNull = state.value.instanceIdGen.toProto()
 
@@ -239,17 +244,21 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                 .addAllActions(actions.map {
                     it.toProtoAction().pack_()
                 })
+                .setActionAsyncMode(actionAsyncMode)
                 .setHook(
                     RuleHook.newBuilder()
                         .addAllActionsOnEnabled(actionsOnEnabled.map {
                             it.toProtoAction().pack_()
                         })
+                        .setActionsOnEnabledAsyncMode(actionsOnEnabledAsyncMode)
                         .addAllActionsOnDisabled(actionsOnDisabled.map {
                             it.toProtoAction().pack_()
                         })
+                        .setActionsOnDisabledAsyncMode(actionsOnDisabledAsyncMode)
                         .addAllActionsOnDeleted(actionsOnDeleted.map {
                             it.toProtoAction().pack_()
                         })
+                        .setActionsOnDeletedAsyncMode(actionsOnDeletedAsyncMode)
                         .build()
                 )
                 .setQuit(
@@ -269,6 +278,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                             }
                         }
                         .addAllActions(quitActions.map { it.toProtoAction().pack_() })
+                        .setActionAsyncMode(quitActionsAsyncMode)
                         .setIsEnabled(state.value.isQuitEnabled)
                         .setEvaluatePolicy(state.value.quitEvaluatePolicy)
                         .build()
@@ -332,7 +342,9 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         it.toAction(
                             shortXManager
                         )
-                    })
+                    },
+                    actionAsyncMode = r.actionAsyncMode
+                )
 
                 r.hook?.let { hook ->
                     actionOnEnabledStateHandler.init(
@@ -340,21 +352,27 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                             it.toAction(
                                 shortXManager
                             )
-                        })
+                        },
+                        actionAsyncMode = hook.actionsOnEnabledAsyncMode
+                    )
 
                     actionOnDisabledStateHandler.init(
                         actions = hook.actionsOnDisabledList.mapNotNull {
                             it.toAction(
                                 shortXManager
                             )
-                        })
+                        },
+                        actionAsyncMode = hook.actionsOnDisabledAsyncMode
+                    )
 
                     actionOnDeletedStateHandler.init(
                         actions = hook.actionsOnDeletedList.mapNotNull {
                             it.toAction(
                                 shortXManager
                             )
-                        })
+                        },
+                        actionAsyncMode = hook.actionsOnDeletedAsyncMode
+                    )
                 }
 
 
@@ -391,7 +409,9 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         it.toAction(
                             shortXManager
                         )
-                    })
+                    },
+                    actionAsyncMode = r.quit.actionAsyncMode
+                )
 
                 val hasAnyHookActions: Boolean =
                     actionOnEnabledStateHandler.actions.isNotEmpty()

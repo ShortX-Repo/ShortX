@@ -232,9 +232,12 @@ class ActionContentStateHandler(
         }
     }
 
-    fun init(actions: List<Action>) {
+    fun init(
+        actions: List<Action>,
+        actionAsyncMode: ActionAsyncMode = ActionAsyncMode.ActionAsyncMode_Sync
+    ) {
         composeLogger.d("init@${this}: ${actions.joinToString(System.lineSeparator())}")
-        updateState { copy(actions = actions) }
+        updateState { copy(actions = actions, asyncMode = actionAsyncMode) }
         checkUpdateWarnings()
     }
 

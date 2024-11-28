@@ -113,7 +113,8 @@ fun ActionContent(
     warnings: Map<String, List<String>>,
     readOnly: Boolean = false,
     handler: ActionHandler,
-    actionAsyncMode: ActionAsyncMode = ActionAsyncMode.ActionAsyncMode_Sync
+    actionAsyncMode: ActionAsyncMode = ActionAsyncMode.ActionAsyncMode_Sync,
+    canSelectActionAsyncMode: Boolean = false
 ) {
     Actions(
         header = header,
@@ -121,6 +122,7 @@ fun ActionContent(
         srcId = srcId,
         actions = actions,
         actionAsyncMode = actionAsyncMode,
+        canSelectActionAsyncMode = canSelectActionAsyncMode,
         evaluatingActions = evaluatingActions,
         readOnly = readOnly,
         handler = handler
@@ -133,6 +135,7 @@ private fun Actions(
     srcId: String?,
     actions: List<Action>,
     actionAsyncMode: ActionAsyncMode,
+    canSelectActionAsyncMode: Boolean = false,
     evaluatingActions: List<String>,
     warnings: Map<String, List<String>>,
     readOnly: Boolean,
@@ -148,21 +151,24 @@ private fun Actions(
         })
 
     val actionAsyncModeMenuDialogState =
-        rememberMenuDialogState<String>(title = "Action execute mode",
+        rememberMenuDialogState<String>(title = LocalI18N.current["ui.action.async.mode"],
             menuItems = listOf(
                 MenuDialogItem(
-                    ActionAsyncMode.ActionAsyncMode_Sync.name,
-                    "Sync"
+                    id = ActionAsyncMode.ActionAsyncMode_Sync.name,
+                    title = LocalI18N.current["ui.rule.async.mode.sync"],
                 ),
                 MenuDialogItem(
-                    ActionAsyncMode.ActionAsyncMode_Async.name,
-                    "Async"
+                    id = ActionAsyncMode.ActionAsyncMode_Async.name,
+                    title = LocalI18N.current["ui.rule.async.mode.async"],
+                    summary = LocalI18N.current["ui.common.experimental"]
                 )
             ), onItemSelected = { _, id ->
                 val mode = ActionAsyncMode.valueOf(id)
                 handler.setAsyncMode(mode)
             })
-    MenuDialog(actionAsyncModeMenuDialogState)
+    if (canSelectActionAsyncMode) {
+        MenuDialog(actionAsyncModeMenuDialogState)
+    }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -175,7 +181,7 @@ private fun Actions(
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                if (BuildPropInternal.APP_IS_DEBUG) {
+                if (canSelectActionAsyncMode) {
                     // Async mode.
                     IconButton(onClick = {
                         actionAsyncModeMenuDialogState.show(
