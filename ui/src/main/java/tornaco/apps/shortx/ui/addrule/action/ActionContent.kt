@@ -69,6 +69,7 @@ import tornaco.apps.shortx.ui.addrule.base.BatchOpToolbar
 import tornaco.apps.shortx.ui.addrule.base.batchOpSelectedItemHighlightColor
 import tornaco.apps.shortx.ui.addrule.base.rememberBatchOpState
 import tornaco.apps.shortx.ui.addrule.rememberContextDataInfoDialogState
+import tornaco.apps.shortx.ui.base.ClickableBadge
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
@@ -183,19 +184,21 @@ private fun Actions(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (canSelectActionAsyncMode) {
                     // Async mode.
-                    IconButton(onClick = {
+                    ClickableBadge(
+                        text = if (actionAsyncMode == ActionAsyncMode.ActionAsyncMode_Async) {
+                            LocalI18N.current["ui.rule.async.mode.async"]
+                        } else {
+                            LocalI18N.current["ui.rule.async.mode.sync"]
+                        }
+                    ) {
                         actionAsyncModeMenuDialogState.show(
                             currentSelection = listOf(
                                 actionAsyncMode.name
                             )
                         )
-                    }) {
-                        if (actionAsyncMode == ActionAsyncMode.ActionAsyncMode_Async) {
-                            RemixIcon(Remix.Charts.multicast)
-                        } else {
-                            RemixIcon(Remix.Charts.unicast)
-                        }
                     }
+
+                    VerticalDivider(modifier = Modifier.height(18.dp))
                 }
 
                 // Sort
