@@ -16,6 +16,8 @@
 
 package tornaco.apps.shortx.services.location;
 
+import static android.location.LocationManager.FUSED_PROVIDER;
+
 import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.annotation.SuppressLint;
@@ -25,6 +27,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.icu.util.Calendar;
+import android.location.LastLocationRequest;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -59,7 +62,7 @@ public final class TwilightService
 
     private static final String TAG = "TwilightService";
     private static final String ATTRIBUTION_TAG = "TwilightService";
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private static final int MSG_START_LISTENING = 1;
     private static final int MSG_STOP_LISTENING = 2;
@@ -122,7 +125,7 @@ public final class TwilightService
 
     @Override
     public void start(@NotNull Context context) {
-        super.start(context);
+        super.start(context.createAttributionContext(getServiceName()));
     }
 
     @Override
@@ -171,7 +174,8 @@ public final class TwilightService
                 null /* default */, this, Looper.getMainLooper());
 
         // Request the device's location immediately if a previous location isn't available.
-        if (mLocationManager.getLastLocation() == null) {
+        if (mLocationManager.getLastKnownLocation(FUSED_PROVIDER, new LastLocationRequest.Builder()
+                .build()) == null) {
             if (mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                 mLocationManager.getCurrentLocation(
                         LocationManager.NETWORK_PROVIDER, null, getContext().getMainExecutor(),
