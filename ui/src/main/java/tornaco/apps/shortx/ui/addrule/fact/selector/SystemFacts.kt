@@ -33,6 +33,7 @@ fun SystemFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: 
         Fact.UserPresent::class,
         Fact.UserPresentAtTheFirstTime::class,
         Fact.SystemReady::class,
+        Fact.SunRiseSet::class,
 
         Fact.Alarm::class,
         Fact.RandomInPeriod::class,

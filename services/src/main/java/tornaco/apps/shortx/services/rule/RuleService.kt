@@ -1542,7 +1542,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     }
 
     // SrcId - Proto
-    fun forEachEnabledFacts(forEachAction: (String, ProtoAny) -> Unit) {
+    inline fun forEachEnabledFacts(forEachAction: (String, ProtoAny) -> Unit) {
         // Rules
         getAllEnabledRules().forEach { rule ->
             (rule.factsAndQuitFacts).forEach { factProtoAny ->

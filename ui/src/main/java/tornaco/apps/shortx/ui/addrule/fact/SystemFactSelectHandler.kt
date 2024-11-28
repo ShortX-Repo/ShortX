@@ -11,6 +11,7 @@ import tornaco.apps.shortx.core.alarm.toLocalTime
 import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.proto.common.CallState
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
+import tornaco.apps.shortx.core.proto.fact.SunRise
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.core.util.select
@@ -129,6 +130,19 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
             addFact(Fact.HeadsetPlug(isPlug = id == "in"))
         })
     MenuDialog(state = headsetPlugMenuState)
+
+    val sunRiseSetState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.fact.sun.rise.set"],
+        menuItems = listOf(
+            SunRise.SunRise_Rise,
+            SunRise.SunRise_Set
+        ).map {
+            MenuDialogItem(id = it.name, title = LocalI18N.current[it.factLabelKey()])
+        },
+        onItemSelected = { _, id ->
+            addFact(Fact.SunRiseSet(rise = SunRise.valueOf(id)))
+        })
+    MenuDialog(state = sunRiseSetState)
 
     val wifiConnectedToSelectorState = rememberWifiSSIDSelectorState(
         title = LocalI18N.current["ui.fact.wifi.connect.to"],
@@ -747,6 +761,11 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
                     initialValue = source.getFactAs<Fact.UsbDeviceDetached>()?.deviceName ?: "",
                     options = source.getFactAs<Fact.UsbDeviceDetached>()?.deviceNameRegexMatchOptions
                 )
+                true
+            }
+
+            Fact.SunRiseSet::class -> {
+                sunRiseSetState.show()
                 true
             }
 
