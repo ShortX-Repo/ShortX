@@ -420,6 +420,8 @@ private fun DAContent(
                                 modifier = Modifier.padding(bottom = 6.dp),
                                 text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.actions.title"]}"
                             )
+                        },
+                        summary = {
                             TipBody(text = LocalI18N.current["ui.rule.quit.action.description"])
                         },
                         srcId = addDirectActionState.id,

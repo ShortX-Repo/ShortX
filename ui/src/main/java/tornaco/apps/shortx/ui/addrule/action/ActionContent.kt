@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -70,6 +71,7 @@ import tornaco.apps.shortx.ui.addrule.base.batchOpSelectedItemHighlightColor
 import tornaco.apps.shortx.ui.addrule.base.rememberBatchOpState
 import tornaco.apps.shortx.ui.addrule.rememberContextDataInfoDialogState
 import tornaco.apps.shortx.ui.base.ClickableBadge
+import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
@@ -104,9 +106,10 @@ import kotlin.reflect.KClass
 
 @Composable
 fun ActionContent(
-    header: @Composable() (ColumnScope.() -> Unit) = {
+    header: @Composable (() -> Unit) = {
         MediumTitle(LocalI18N.current["ui.actions.title"])
     },
+    summary: @Composable ColumnScope.() -> Unit = {},
     // Rule Or DA id.
     srcId: String? = null,
     actions: List<Action>,
@@ -119,6 +122,7 @@ fun ActionContent(
 ) {
     Actions(
         header = header,
+        summary = summary,
         warnings = warnings,
         srcId = srcId,
         actions = actions,
@@ -132,7 +136,8 @@ fun ActionContent(
 
 @Composable
 private fun Actions(
-    header: @Composable ColumnScope.() -> Unit,
+    header: @Composable () -> Unit,
+    summary: @Composable ColumnScope.() -> Unit,
     srcId: String?,
     actions: List<Action>,
     actionAsyncMode: ActionAsyncMode,
@@ -177,19 +182,28 @@ private fun Actions(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column(modifier = Modifier.weight(1f, fill = false)) {
+            Row(
+                modifier = Modifier
+                    .weight(1f, fill = false)
+                    .thenIf(
+                        Modifier
+                            .clip(ShortXCardRoundedCornerShape)
+                            .clickable {
+                                actionAsyncModeMenuDialogState.show(
+                                    currentSelection = listOf(
+                                        actionAsyncMode.name
+                                    )
+                                )
+                            }, canSelectActionAsyncMode
+                    ),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 header()
-            }
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (canSelectActionAsyncMode) {
-                    // Async mode.
+                AnimatedVisibility(actionAsyncMode == ActionAsyncMode.ActionAsyncMode_Async) {
                     ClickableBadge(
-                        text = if (actionAsyncMode == ActionAsyncMode.ActionAsyncMode_Async) {
-                            LocalI18N.current["ui.rule.async.mode.async"]
-                        } else {
-                            LocalI18N.current["ui.rule.async.mode.sync"]
-                        }
+                        text = LocalI18N.current["ui.rule.async.mode.async"],
+                        containerColor = ColorDefaults.backgroundSurfaceColor()
                     ) {
                         actionAsyncModeMenuDialogState.show(
                             currentSelection = listOf(
@@ -197,10 +211,10 @@ private fun Actions(
                             )
                         )
                     }
-
-                    VerticalDivider(modifier = Modifier.height(18.dp))
                 }
+            }
 
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 // Sort
                 AnimatedVisibility(visible = !readOnly && actions.size > 1) {
                     IconButton(onClick = {
@@ -239,6 +253,8 @@ private fun Actions(
                 }
             }
         }
+
+        summary()
 
         UserTip(
             modifier = Modifier,
