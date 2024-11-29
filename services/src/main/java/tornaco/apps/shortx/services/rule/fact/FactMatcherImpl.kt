@@ -83,6 +83,7 @@ import tornaco.apps.shortx.core.proto.fact.ScreenRotate
 import tornaco.apps.shortx.core.proto.fact.SensorValueTrend
 import tornaco.apps.shortx.core.proto.fact.ShakeDevice
 import tornaco.apps.shortx.core.proto.fact.Sound
+import tornaco.apps.shortx.core.proto.fact.SunRiseSet
 import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.fact.SystemSettingsChanged
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
@@ -717,6 +718,11 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
         }
         register(ShakeDevice::class.java) { actual, rule ->
             true
+        }
+        register(SunRiseSet::class.java) { actual, rule ->
+            (actual as SunRiseSet)
+            (rule as SunRiseSet)
+            actual.rise == rule.rise
         }
 
         logger.i("Init complete.")

@@ -21,7 +21,6 @@ import static android.location.LocationManager.FUSED_PROVIDER;
 import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.annotation.SuppressLint;
-import android.app.AlarmManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -39,11 +38,15 @@ import android.util.ArrayMap;
 import android.util.Slog;
 
 import com.android.internal.annotations.GuardedBy;
+import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.TimeZone;
 
+import tornaco.apps.shortx.core.BuildPropInternal;
+import tornaco.apps.shortx.core.util.DateUtils;
 import tornaco.apps.shortx.services.ShortXContext;
 import tornaco.apps.shortx.services.SystemService;
 import tornaco.apps.shortx.services.util.CalendarAstronomer;
@@ -58,11 +61,10 @@ import tornaco.apps.shortx.services.util.CalendarAstronomer;
 // API 30+
 public final class TwilightService
         extends SystemService
-        implements AlarmManager.OnAlarmListener, Handler.Callback, LocationListener {
+        implements Handler.Callback, LocationListener {
 
-    private static final String TAG = "TwilightService";
-    private static final String ATTRIBUTION_TAG = "TwilightService";
-    private static final boolean DEBUG = true;
+    private static final String TAG = "ShortXTwilightService";
+    private static final boolean DEBUG = BuildPropInternal.APP_IS_DEBUG;
 
     private static final int MSG_START_LISTENING = 1;
     private static final int MSG_STOP_LISTENING = 2;
@@ -72,7 +74,6 @@ public final class TwilightService
 
     private final Handler mHandler;
 
-    private AlarmManager mAlarmManager;
     private LocationManager mLocationManager;
 
     private boolean mBootCompleted;
@@ -132,7 +133,6 @@ public final class TwilightService
     public void systemReady() {
         super.systemReady();
         final Context c = getContext();
-        mAlarmManager = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
         mLocationManager = (LocationManager) c.getSystemService(Context.LOCATION_SERVICE);
 
         mBootCompleted = true;
@@ -167,97 +167,98 @@ public final class TwilightService
 
     @SuppressLint({"MissingPermission"})
     private void startListening() {
-        Slog.d(TAG, "startListening");
+        try {
+            Slog.d(TAG, "startListening");
 
-        // Start listening for location updates (default: low power, max 1h, min 10m).
-        mLocationManager.requestLocationUpdates(
-                null /* default */, this, Looper.getMainLooper());
+            // Start listening for location updates (default: low power, max 1h, min 10m).
+            mLocationManager.requestLocationUpdates(
+                    null /* default */, this, Looper.getMainLooper());
 
-        // Request the device's location immediately if a previous location isn't available.
-        if (mLocationManager.getLastKnownLocation(FUSED_PROVIDER, new LastLocationRequest.Builder()
-                .build()) == null) {
-            if (mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                mLocationManager.getCurrentLocation(
-                        LocationManager.NETWORK_PROVIDER, null, getContext().getMainExecutor(),
-                        this::onLocationChanged);
-            } else if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                mLocationManager.getCurrentLocation(
-                        LocationManager.GPS_PROVIDER, null, getContext().getMainExecutor(),
-                        this::onLocationChanged);
-            }
-        }
-
-        // Update whenever the system clock is changed.
-        if (mTimeChangedReceiver == null) {
-            mTimeChangedReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    Slog.d(TAG, "onReceive: " + intent);
-                    updateTwilightState();
+            // Request the device's location immediately if a previous location isn't available.
+            if (mLocationManager.getLastKnownLocation(FUSED_PROVIDER, new LastLocationRequest.Builder()
+                    .build()) == null) {
+                if (mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                    mLocationManager.getCurrentLocation(
+                            LocationManager.NETWORK_PROVIDER, null, getContext().getMainExecutor(),
+                            this::onLocationChanged);
+                } else if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    mLocationManager.getCurrentLocation(
+                            LocationManager.GPS_PROVIDER, null, getContext().getMainExecutor(),
+                            this::onLocationChanged);
                 }
-            };
+            }
 
-            final IntentFilter intentFilter = new IntentFilter(Intent.ACTION_TIME_CHANGED);
-            intentFilter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
-            getContext().registerReceiver(mTimeChangedReceiver, intentFilter);
+            // Update whenever the system clock is changed.
+            if (mTimeChangedReceiver == null) {
+                mTimeChangedReceiver = new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        Slog.d(TAG, "onReceive: " + intent);
+                        updateTwilightState();
+                    }
+                };
+
+                final IntentFilter intentFilter = new IntentFilter(Intent.ACTION_TIME_CHANGED);
+                intentFilter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
+                getContext().registerReceiver(mTimeChangedReceiver, intentFilter);
+            }
+
+            // Force an update now that we have listeners registered.
+            updateTwilightState();
+        } catch (Throwable e) {
+            getShortXContext().getWatchDog().onFatalError(e, "startListening");
         }
-
-        // Force an update now that we have listeners registered.
-        updateTwilightState();
     }
 
     private void stopListening() {
-        Slog.d(TAG, "stopListening");
+        try {
+            Slog.d(TAG, "stopListening");
 
-        if (mTimeChangedReceiver != null) {
-            getContext().unregisterReceiver(mTimeChangedReceiver);
-            mTimeChangedReceiver = null;
+            if (mTimeChangedReceiver != null) {
+                getContext().unregisterReceiver(mTimeChangedReceiver);
+                mTimeChangedReceiver = null;
+            }
+
+            mLocationManager.removeUpdates(this);
+            mLastLocation = null;
+        } catch (Throwable e) {
+            getShortXContext().getWatchDog().onFatalError(e, "stopListening");
         }
-
-        if (mLastTwilightState != null) {
-            mAlarmManager.cancel(this);
-        }
-
-        mLocationManager.removeUpdates(this);
-        mLastLocation = null;
     }
 
     @SuppressLint("MissingPermission")
     private void updateTwilightState() {
-        // Calculate the twilight state based on the current time and location.
-        final long currentTimeMillis = System.currentTimeMillis();
-        @SuppressLint("MissingPermission") final Location location = mLastLocation != null ? mLastLocation
-                : mLocationManager.getLastLocation();
-        final TwilightState state = calculateTwilightState(location, currentTimeMillis);
-        if (DEBUG) {
-            Slog.d(TAG, "updateTwilightState: " + state);
-        }
+        try {
+            // Calculate the twilight state based on the current time and location.
+            final long currentTimeMillis = System.currentTimeMillis();
+            final Location location = mLastLocation != null ? mLastLocation
+                    : mLocationManager.getLastLocation();
+            final TwilightState state = calculateTwilightState(location, currentTimeMillis);
+            if (DEBUG) {
+                Slog.d(TAG, "updateTwilightState: " + state);
+            }
 
-        // Notify listeners if the state has changed.
-        synchronized (mListeners) {
-            if (!Objects.equals(mLastTwilightState, state)) {
-                mLastTwilightState = state;
+            // Notify listeners if the state has changed.
+            synchronized (mListeners) {
+                if (!Objects.equals(mLastTwilightState, state)) {
+                    mLastTwilightState = state;
 
-                for (int i = mListeners.size() - 1; i >= 0; --i) {
-                    final TwilightListener listener = mListeners.keyAt(i);
-                    final Handler handler = mListeners.valueAt(i);
-                    handler.post(() -> listener.onTwilightStateChanged(state));
+                    for (int i = mListeners.size() - 1; i >= 0; --i) {
+                        final TwilightListener listener = mListeners.keyAt(i);
+                        final Handler handler = mListeners.valueAt(i);
+                        handler.post(() -> {
+                            try {
+                                listener.onTwilightStateChanged(state);
+                            } catch (Throwable e) {
+                                getShortXContext().getWatchDog().onFatalError(e, "Call onTwilightStateChanged");
+                            }
+                        });
+                    }
                 }
             }
+        } catch (Throwable e) {
+            getShortXContext().getWatchDog().onFatalError(e, "updateTwilightState");
         }
-
-        // Schedule an alarm to update the state at the next sunrise or sunset.
-        if (state != null) {
-            final long triggerAtMillis = state.isNight()
-                    ? state.sunriseTimeMillis() : state.sunsetTimeMillis();
-            mAlarmManager.setExact(AlarmManager.RTC, triggerAtMillis, TAG, this, mHandler);
-        }
-    }
-
-    @Override
-    public void onAlarm() {
-        Slog.d(TAG, "onAlarm");
-        updateTwilightState();
     }
 
     @Override
@@ -296,6 +297,18 @@ public final class TwilightService
             return null;
         }
 
+        // Solution 2. test.
+        if (DEBUG) {
+            com.luckycatlabs.sunrisesunset.dto.Location dotLoc
+                    = new com.luckycatlabs.sunrisesunset.dto.Location(location.getLatitude(), location.getLongitude());
+            SunriseSunsetCalculator calculator = new SunriseSunsetCalculator(dotLoc, TimeZone.getDefault());
+            java.util.Calendar sunrise =
+                    calculator.getOfficialSunriseCalendarForDate(java.util.Calendar.getInstance());
+            java.util.Calendar sunset = calculator.getOfficialSunsetCalendarForDate(java.util.Calendar.getInstance());
+            Slog.d(TAG, "SunriseSunsetCalculator sunrise-" + sunrise.getTime() + ", sunset-" + sunset.getTime());
+        }
+
+
         final CalendarAstronomer ca = new CalendarAstronomer(
                 location.getLongitude(), location.getLatitude());
 
@@ -306,18 +319,26 @@ public final class TwilightService
         noon.set(Calendar.SECOND, 0);
         noon.set(Calendar.MILLISECOND, 0);
         ca.setTime(noon.getTimeInMillis());
+        Slog.d(TAG, "Current time: " + ca.getDate());
+        Slog.d(TAG, "Current time format: " + DateUtils.formatLong(timeMillis));
 
         long sunriseTimeMillis = ca.getSunRiseSet(true /* rise */);
         long sunsetTimeMillis = ca.getSunRiseSet(false /* rise */);
 
+        // 日落以后了，晚上了，更新日出时间+1
         if (sunsetTimeMillis < timeMillis) {
+            Slog.d(TAG, "日落以后了");
             noon.add(Calendar.DATE, 1);
             ca.setTime(noon.getTimeInMillis());
             sunriseTimeMillis = ca.getSunRiseSet(true /* rise */);
         } else if (sunriseTimeMillis > timeMillis) {
+            Slog.d(TAG, "日出之后，日落之前");
+            // 日出之后，日落之前，
             noon.add(Calendar.DATE, -1);
             ca.setTime(noon.getTimeInMillis());
             sunsetTimeMillis = ca.getSunRiseSet(false /* rise */);
+        } else {
+            Slog.d(TAG, "日出之前");
         }
 
         return new TwilightState(sunriseTimeMillis, sunsetTimeMillis);
