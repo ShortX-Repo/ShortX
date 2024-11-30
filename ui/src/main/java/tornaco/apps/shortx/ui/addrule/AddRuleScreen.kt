@@ -696,8 +696,8 @@ fun QuitEvaluatePolicy(
                 .filterNot { it == Quit_EvaluatePolicy.UNRECOGNIZED }.map {
                     DropdownItem(
                         labelLines = listOf(
-                            LocalI18N.current["ui.rule.quit.eva.policy.${policy.name.lowercase()}"],
-                            LocalI18N.current["ui.rule.quit.eva.policy.description.${policy.name.lowercase()}"]
+                            LocalI18N.current["ui.rule.quit.eva.policy.${it.name.lowercase()}"],
+                            LocalI18N.current["ui.rule.quit.eva.policy.description.${it.name.lowercase()}"]
                         ),
                         data = it
                     )
