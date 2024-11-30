@@ -229,3 +229,6 @@
 -dontwarn javax.xml.stream.events.Characters
 -dontwarn javax.xml.stream.events.StartElement
 -dontwarn javax.xml.stream.events.XMLEvent
+
+-dontwarn android.location.LastLocationRequest$Builder
+-dontwarn android.location.LastLocationRequest
