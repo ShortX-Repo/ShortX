@@ -73,9 +73,10 @@ class ChoiceDialogView(
                     Surface(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .padding(16.dp)
                     ) {
                         Text(
-                            title, style = MaterialTheme.typography.titleLarge.copy(
+                            title, style = MaterialTheme.typography.headlineMedium.copy(
                                 fontWeight = FontWeight.W500
                             ).applyStyle(style)
                         )
@@ -123,7 +124,11 @@ class ChoiceDialogView(
                     )
                 }
             }
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp), horizontalArrangement = Arrangement.End
+            ) {
                 TextButton(onClick = {
                     onDismissRequest()
                 }) {

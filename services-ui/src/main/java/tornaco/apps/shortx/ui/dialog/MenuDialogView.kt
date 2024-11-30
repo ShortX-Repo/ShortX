@@ -55,9 +55,10 @@ class MenuDialogView(
                     Surface(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .padding(16.dp)
                     ) {
                         Text(
-                            title, style = MaterialTheme.typography.titleLarge.copy(
+                            title, style = MaterialTheme.typography.headlineMedium.copy(
                                 fontWeight = FontWeight.W500
                             ).applyStyle(style)
                         )

@@ -45,16 +45,18 @@ class AlertDialogView(
                 modifier = Modifier
                     .weight(1f, fill = false)
                     .fillMaxWidth()
-                    .heightIn(max = 800.dp),
+                    .heightIn(max = 800.dp)
+                    .padding(horizontal = 8.dp),
             ) {
                 stickyHeader {
                     Surface(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .padding(bottom = 16.dp)
                     ) {
                         Text(
                             title,
-                            style = MaterialTheme.typography.titleLarge
+                            style = MaterialTheme.typography.headlineMedium
                                 .copy(fontWeight = FontWeight.W500)
                                 .applyStyle(style)
                         )
@@ -86,7 +88,9 @@ class AlertDialogView(
                 }
 
                 Row(
-                    modifier = Modifier.weight(1f, fill = false),
+                    modifier = Modifier
+                        .weight(1f, fill = false)
+                        .padding(top = 16.dp),
                     horizontalArrangement = Arrangement.End
                 ) {
                     negativeText?.let {

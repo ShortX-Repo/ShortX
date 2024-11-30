@@ -85,7 +85,7 @@ class ListDialogView(
                                 scope.launch { listState.scrollToItem(0) }
                             }) {
                                 Text(
-                                    title, style = MaterialTheme.typography.titleLarge.copy(
+                                    title, style = MaterialTheme.typography.headlineMedium.copy(
                                         fontWeight = FontWeight.W500
                                     ).applyStyle(style)
                                 )
@@ -156,7 +156,9 @@ class ListDialogView(
             }
             if (needConfirmAction) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = {
