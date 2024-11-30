@@ -199,22 +199,30 @@ private fun Actions(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 header()
-
-                AnimatedVisibility(actionAsyncMode == ActionAsyncMode.ActionAsyncMode_Async) {
-                    ClickableBadge(
-                        text = LocalI18N.current["ui.rule.async.mode.async"],
-                        containerColor = ColorDefaults.backgroundSurfaceColor()
-                    ) {
-                        actionAsyncModeMenuDialogState.show(
-                            currentSelection = listOf(
-                                actionAsyncMode.name
-                            )
-                        )
-                    }
-                }
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
+                ClickableBadge(
+                    text = if (actionAsyncMode == ActionAsyncMode.ActionAsyncMode_Sync) {
+                        LocalI18N.current["ui.rule.async.mode.sync"]
+                    } else {
+                        LocalI18N.current["ui.rule.async.mode.async"]
+                    },
+                    containerColor = ColorDefaults.backgroundSurfaceColor()
+                ) {
+                    actionAsyncModeMenuDialogState.show(
+                        currentSelection = listOf(
+                            actionAsyncMode.name
+                        )
+                    )
+                }
+
+                VerticalDivider(
+                    modifier = Modifier
+                        .height(18.dp)
+                        .padding(horizontal = 12.dp)
+                )
+
                 // Sort
                 AnimatedVisibility(visible = !readOnly && actions.size > 1) {
                     IconButton(onClick = {
