@@ -70,7 +70,13 @@ class DefaultRuleEngine(
     private val logger = Logger("DefaultRuleEngine")
     private val jobs = mutableListOf<JobRecord>()
 
-    private val canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce = mutableSetOf<String>()
+    // canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce
+    private val quitEvaPolicyOO = mutableSetOf<String>()
+    private fun <T> withQuitEvaPolicyOO(action: MutableSet<String>.() -> T): T {
+        return synchronized(quitEvaPolicyOO) {
+            action.invoke(quitEvaPolicyOO)
+        }
+    }
 
     private val globalMuteX = Mutex()
     private val muteXMap = ConcurrentHashMap<String, Mutex>()
@@ -449,9 +455,11 @@ class DefaultRuleEngine(
                                         actionAsyncMode = quit.actionAsyncMode
                                     )
 
-                                    canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce.remove(
-                                        evaluateContext.srcId
-                                    )
+                                    withQuitEvaPolicyOO {
+                                        remove(
+                                            evaluateContext.srcId
+                                        )
+                                    }
                                 }
                                 // Launch End
                             }
@@ -547,9 +555,11 @@ class DefaultRuleEngine(
                                     )
 
                                     logger.d("Remove from canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce: ${evaluateContext.srcId}")
-                                    canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce.remove(
-                                        evaluateContext.srcId
-                                    )
+                                    withQuitEvaPolicyOO {
+                                        remove(
+                                            evaluateContext.srcId
+                                        )
+                                    }
                                 }
                                 // Launch End
                             }
@@ -642,7 +652,7 @@ class DefaultRuleEngine(
             }
         }
         logger.d("Add to canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce: ${context.srcId}")
-        canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce.add(context.srcId)
+        withQuitEvaPolicyOO { add(context.srcId) }
 
         val job = coroutineScope.launchSafety("EvaluateActions.Wend") {
             withContext(Dispatchers.IO) {
@@ -837,7 +847,7 @@ class DefaultRuleEngine(
     ): Boolean {
         logger.d("checkQuitEvaluatePolicyForDA: srcId $srcId")
         logger.d("checkQuitEvaluatePolicyForDA: jobs $jobs")
-        logger.d("checkQuitEvaluatePolicyForDA: can...OnlyOnce $canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce")
+        withQuitEvaPolicyOO { logger.d("checkQuitEvaluatePolicyForDA: can...OnlyOnce $this") }
         return when (policy) {
             Quit_EvaluatePolicy.Quit_EvaluatePolicy_Only_When_Is_Running, Quit_EvaluatePolicy.UNRECOGNIZED -> {
                 val jobs = jobIdProvider()
@@ -849,7 +859,7 @@ class DefaultRuleEngine(
             }
 
             Quit_EvaluatePolicy.Quit_EvaluatePolicy_Once -> {
-                canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce.contains(srcId)
+                withQuitEvaPolicyOO { contains(srcId) }
             }
         }
     }
@@ -861,7 +871,9 @@ class DefaultRuleEngine(
     ): Boolean {
         logger.d("checkQuitEvaluatePolicyForRule: srcId $srcId")
         logger.d("checkQuitEvaluatePolicyForRule: jobs $jobs")
-        logger.d("checkQuitEvaluatePolicyForRule: can...OnlyOnce $canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce")
+        withQuitEvaPolicyOO {
+            logger.d("checkQuitEvaluatePolicyForRule: can...OnlyOnce $this")
+        }
         return when (policy) {
             Quit_EvaluatePolicy.Quit_EvaluatePolicy_Only_When_Is_Running -> {
                 val jobs = jobIdProvider()
@@ -873,7 +885,7 @@ class DefaultRuleEngine(
             }
 
             Quit_EvaluatePolicy.Quit_EvaluatePolicy_Once -> {
-                canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce.contains(srcId)
+                withQuitEvaPolicyOO { contains(srcId) }
             }
         }
     }
