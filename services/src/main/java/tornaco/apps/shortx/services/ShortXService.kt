@@ -683,7 +683,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         override fun attachSUImpl(from: String?, su: ISu?) {
             shortXContext.shell.attachSUImpl(from, su)
 
-            systemServiceScope.launchSafety {
+            systemServiceScope.launchSafety("attachSUImpl") {
                 // Sometimes SystemUI attached before system ready called, something has not been initilised...
                 while (!shortXContext.serviceLifecycle.isSystemReadyCalled) {
                     delay(1000)
@@ -882,7 +882,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             enforceCallingPermissions()
             val res = mutableListOf<SubscriptionInfo>()
             runBlocking {
-                systemServiceScope.launchSafety {
+                systemServiceScope.launchSafety("getActiveSubscriptionInfoList") {
                     @Suppress("DEPRECATION")
                     SubscriptionManager.from(context).activeSubscriptionInfoList.apply {
                         res.addAll(this)
@@ -917,7 +917,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             speed: Float,
             onComplete: SynchronousResultReceiver?
         ) {
-            systemServiceScope.launchSafety {
+            systemServiceScope.launchSafety("injectGestureRecord") {
                 shortXContext.gesture.injectGestureRecord(
                     id = id,
                     speed = speed,
@@ -1201,7 +1201,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         }
 
         override fun loadOnlineRules(code: String, deviceId: String, cb: ICallback) {
-            systemServiceScope.launchSafety {
+            systemServiceScope.launchSafety("loadOnlineRules") {
                 tornaco.apps.shortx.services.v.vb(
                     code = code,
                     deviceId = deviceId,
@@ -1602,7 +1602,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         @SuppressLint("MissingPermission")
         override fun reboot(reason: String?) {
             logger.w("reboot: $reason")
-            handler.postSafety {
+            handler.postSafety("reboot") {
                 context.powerManager.reboot(null)
             }
         }

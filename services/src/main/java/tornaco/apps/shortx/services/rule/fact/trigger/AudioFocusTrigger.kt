@@ -16,7 +16,7 @@ class AudioFocusTrigger(override val context: Context, override val shortXContex
     private val logger = Logger("AudioFocusTrigger")
 
     override fun register() {
-        shortXContext.audio.systemServiceScope.launchSafety {
+        shortXContext.audio.systemServiceScope.launchSafety("AudioFocusTrigger.reg") {
             shortXContext.audio.focusEvent.collect {
                 logger.d("focusEvent: ${it.javaClass.simpleName} ${it.target}")
 

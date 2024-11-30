@@ -30,7 +30,7 @@ class SystemSettingsService(shortXContext: ShortXContext) :
             if (Intent.ACTION_CONFIGURATION_CHANGED != intent.action) {
                 return
             }
-            systemServiceScope.launchSafety {
+            systemServiceScope.launchSafety("configurationChangeReceiver") {
                 val newConfig = context.resources.configuration
                 logger.i("configuration change received, new config: $newConfig")
                 _currentConfig.emit(newConfig)
@@ -63,7 +63,7 @@ class SystemSettingsService(shortXContext: ShortXContext) :
 
     fun setPointerLocationEnabled(enable: Boolean) {
         runBlocking {
-            systemServiceScope.launchSafety {
+            systemServiceScope.launchSafety("setPointerLocationEnabled") {
                 Settings.System.putInt(
                     context.contentResolver,
                     Settings.System.POINTER_LOCATION,

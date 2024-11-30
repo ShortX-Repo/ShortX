@@ -95,7 +95,7 @@ class SoundTrigger(
 
         val buffer = ShortArray(bufferSize)
 
-        scope.launchSafety {
+        scope.launchSafety("Sound.startListening") {
             while (isRecording && isActive) {
                 val readSize = audioRecord?.read(buffer, 0, buffer.size) ?: 0
                 if (readSize > 0) {

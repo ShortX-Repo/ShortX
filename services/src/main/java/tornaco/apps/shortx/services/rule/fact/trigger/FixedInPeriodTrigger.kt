@@ -64,7 +64,7 @@ class FixedInPeriodTrigger(
                 initialContextDataLazy = { emptyMap() }
             )
 
-            scope.launchSafety {
+            scope.launchSafety("FixedInPeriodTrigger.next") {
                 // Schedule after 3s
                 logger.i("Schedule Next FixedInPeriod")
                 delay(3000)

@@ -85,7 +85,7 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         super.userPresent(isFirstTime)
         logger.w("userPresent. isFirstTime- $isFirstTime")
         if (isFirstTime) {
-            systemServiceScope.launchSafety {
+            systemServiceScope.launchSafety("InputService.userPresent") {
                 delay(2000)
                 if (!hasEverReceivedInputFilterCallback) {
                     inputFilterInstaller.installInputFilter()
@@ -138,7 +138,7 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     }
 
     fun onClipboardChange(text: String) {
-        postSafety {
+        postSafety("onClipboardChange") {
             _onClipboardListener.forEach {
                 it(text)
             }

@@ -29,7 +29,7 @@ object ShowStatusBarChip : Actor {
 
     override fun init(androidContext: Context, shortXContext: ShortXContext) {
         super.init(androidContext, shortXContext)
-        scope.launchSafety {
+        scope.launchSafety("ShowStatusBarChip.init") {
             shortXContext.statusbar.statusBarChipEvent.collectLatest {
                 runCatching {
                     logger.d("statusBarChipEvent: $it")

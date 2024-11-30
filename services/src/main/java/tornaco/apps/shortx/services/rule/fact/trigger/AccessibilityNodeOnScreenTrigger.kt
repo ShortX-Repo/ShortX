@@ -72,7 +72,7 @@ class AccessibilityNodeOnScreenTrigger(
     }
 
     override fun register() {
-        scope.launchSafety {
+        scope.launchSafety("AccTrigger.register") {
             doRegister()
         }
     }

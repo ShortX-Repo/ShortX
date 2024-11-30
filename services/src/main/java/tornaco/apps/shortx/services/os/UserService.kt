@@ -79,13 +79,13 @@ class UserService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     }
 
     private fun onUserRemoved(userId: Int) {
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("onUserRemoved") {
             _userEvent.emit(UserEvent.Removed(userId))
         }
     }
 
     private fun onUserAdded(userId: Int) {
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("onUserAdded") {
             _userEvent.emit(UserEvent.Added(userId))
         }
     }

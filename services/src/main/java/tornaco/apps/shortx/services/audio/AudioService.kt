@@ -173,7 +173,7 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         }
     }
 
-    fun stopRecording() = systemServiceScope.launchSafety {
+    fun stopRecording() = systemServiceScope.launchSafety("stopRecording") {
         synchronized(recorderSync) {
             currentRecorder?.let {
                 runCatching {
@@ -324,10 +324,10 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext, 
             logger.d("gainPkgs: $gainPkgs")
             logger.d("losingPkgs: $losingPkgs")
 
-            systemServiceScope.launchSafety {
+            systemServiceScope.launchSafety("FocusEvent1") {
                 gainPkgs.forEach { _focusEvent.emit(FocusEvent.Gain(it)) }
             }
-            systemServiceScope.launchSafety {
+            systemServiceScope.launchSafety("FocusEvent2") {
                 losingPkgs.forEach { _focusEvent.emit(FocusEvent.Lost(it)) }
             }
 
@@ -362,7 +362,7 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     fun getAllRingtones(): List<Ringtone> {
         val res = mutableListOf<Ringtone>()
         runBlocking {
-            systemServiceScope.launchSafety {
+            systemServiceScope.launchSafety("getAllRingtones") {
                 val all = RingtoneLoader(context).load(RingtoneManager.TYPE_ALARM) + RingtoneLoader(
                     context
                 ).load(

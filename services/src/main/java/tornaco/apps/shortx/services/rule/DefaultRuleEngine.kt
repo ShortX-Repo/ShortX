@@ -284,7 +284,7 @@ class DefaultRuleEngine(
                         .setSerialNumber(nextEvaluateContextSerialNumber())
                         .build()
 
-                    val job = coroutineScope.launchSafety {
+                    val job = coroutineScope.launchSafety("Fire-NTD") {
                         val parameterInputs =
                             rule.parametersList.map { it.asDefaultInput() }
                         // Launch Start
@@ -405,7 +405,7 @@ class DefaultRuleEngine(
                         } ?: "FALLBACK_${rule.id}"
                         logger.d("quit, ruleInstanceId: $ruleInstanceId")
 
-                        coroutineScope.launchSafety {
+                        coroutineScope.launchSafety("fire-Nick") {
                             // Launch start
                             withContext(Dispatchers.IO) {
                                 val parameterInputs =
@@ -502,7 +502,7 @@ class DefaultRuleEngine(
                         } ?: "FALLBACK_${da.id}"
                         logger.d("quit, ruleInstanceId: $ruleInstanceId")
 
-                        coroutineScope.launchSafety {
+                        coroutineScope.launchSafety("fire-Tornaco") {
                             // Launch start
                             withContext(Dispatchers.IO) {
                                 val parameterInputs =
@@ -644,7 +644,7 @@ class DefaultRuleEngine(
         logger.d("Add to canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce: ${context.srcId}")
         canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce.add(context.srcId)
 
-        val job = coroutineScope.launchSafety {
+        val job = coroutineScope.launchSafety("EvaluateActions.Wend") {
             withContext(Dispatchers.IO) {
                 logger.d("evaluateActions, job for id: ${context.srcId} start.")
                 realRunActions(

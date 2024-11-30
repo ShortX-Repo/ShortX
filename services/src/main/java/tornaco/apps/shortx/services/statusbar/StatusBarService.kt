@@ -81,7 +81,7 @@ class StatusBarService(shortXContext: ShortXContext) :
                 if (toggle != null && toggle.hasTileSetting()) {
                     val tileSetting = toggle.tileSetting
                     logger.d("onToggleChanged: $id, update tile state for number: ${tileSetting.bondToTileNumber}")
-                    systemServiceScope.launchSafety {
+                    systemServiceScope.launchSafety("onToggleChanged") {
                         withContext(Dispatchers.IO) {
                             val isEnabled = shortXContext.rule.isToggleEnabled(id)
                             logger.d("onToggleChanged, updated isEnabled: $isEnabled")
@@ -111,12 +111,12 @@ class StatusBarService(shortXContext: ShortXContext) :
             }
         }
 
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("StatusBarService.statusBarClipState.collect") {
             statusBarClipState.collectLatest {
                 notifyStatusBarClipStateChanged(it)
             }
         }
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("statusBarClipState.statusBarClipSettings") {
             statusBarClipSettings.collectLatest {
                 notifyStatusBarClipSettingsChanged(it)
             }
@@ -138,7 +138,7 @@ class StatusBarService(shortXContext: ShortXContext) :
         )
 
         if (BuildPropInternal.APP_IS_DEBUG) {
-            systemServiceScope.launchSafety {
+            systemServiceScope.launchSafety("setStatusBarIcon") {
                 setStatusBarIcon("ShortX", Remix.Animals.cat)
             }
         }
@@ -204,7 +204,7 @@ class StatusBarService(shortXContext: ShortXContext) :
                 fact = OnQSTileClick.newBuilder().setTileNumber(tileNumber).build()
             ) { emptyMap() }
             if (OsUtils.isQOrAbove()) {
-                systemServiceScope.launchSafety {
+                systemServiceScope.launchSafety("collapsePanels") {
                     context.statusBarManager.collapsePanels()
                 }
             }
@@ -217,7 +217,7 @@ class StatusBarService(shortXContext: ShortXContext) :
         }
         logger.d("updateQSTileActiveState, bondToggle: $bondToggle")
         bondToggle?.let {
-            systemServiceScope.launchSafety {
+            systemServiceScope.launchSafety("updateQSTileActiveState") {
                 withContext(Dispatchers.IO) {
                     val isEnabled = shortXContext.rule.isToggleEnabled(it.id)
                     val currentTileSetting =
@@ -275,14 +275,14 @@ class StatusBarService(shortXContext: ShortXContext) :
 
     fun onStatusBarClipClick(id: String) {
         logger.d("onStatusBarClipClick: $id")
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("onStatusBarClipClick") {
             _statusBarChipEvent.emit(StatusBarChipEvent.Click(id))
         }
     }
 
     fun onStatusBarClipLongClick(id: String) {
         logger.d("onStatusBarClipLongClick: $id")
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("onStatusBarClipLongClick") {
             _statusBarChipEvent.emit(StatusBarChipEvent.LongClick(id))
         }
     }

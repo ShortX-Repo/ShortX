@@ -76,7 +76,7 @@ class GestureService(shortXContext: ShortXContext) :
                 it.dump()
             }
 
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("GestureService.systemReady") {
             shortXContext.systemSettings.currentConfig.collectLatest {
                 gestureDetector?.onConfigurationChanged()
             }
@@ -98,7 +98,7 @@ class GestureService(shortXContext: ShortXContext) :
     }
 
     private fun showGideLineViewForArea(area: List<Edge>) {
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("showGideLineViewForArea") {
             // Dismiss first.
             showingHints.forEach {
                 kotlin.runCatching { it.detach() }.onFailure { logger.e(it, "detach fail") }
@@ -194,7 +194,7 @@ class GestureService(shortXContext: ShortXContext) :
         if (event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || event.keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
             if (gesturePlayer.isInjecting) {
                 logger.i("Stop inject gesture since VOL key event.")
-                systemServiceScope.launchSafety {
+                systemServiceScope.launchSafety("handleKeyEvent") {
                     gesturePlayer.stopInject()
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
@@ -300,20 +300,20 @@ class GestureService(shortXContext: ShortXContext) :
     }
 
     fun startGestureRecording() {
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("startGestureRecording") {
             logger.d("startGestureRecording")
             gestureRecorder.start()
         }
     }
 
     fun stopGestureRecording(save: Boolean) {
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("stopGestureRecording") {
             gestureRecorder.stop()?.let {
                 if (save) {
                     logger.d("stopGestureRecording: ${it.label}")
                     addGestureRecord(it)
 
-                    handler.postSafety {
+                    handler.postSafety("showDanmu") {
                         shortXContext.ui.showDanmu(
                             null,
                             i18NIns["ui.settings.gesture.record"] + i18NIns["ui.common.saved"]

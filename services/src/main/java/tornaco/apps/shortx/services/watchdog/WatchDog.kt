@@ -46,7 +46,7 @@ class WatchDogService(shortXContext: ShortXContext) :
     fun onSensorUsage(sensor: Int, srcId: List<String>) {
         sensorUsages[sensor] = srcId
         logger.i("onSensorUsage: $sensor $srcId")
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("onSensorUsage") {
             sensorUsageListeners.broadcast {
                 kotlin.runCatching { it.onUpdate() }
                     .onFailure { logger.e(it, "call onUpdate") }
@@ -56,7 +56,7 @@ class WatchDogService(shortXContext: ShortXContext) :
 
     fun removeSensorUsage(sensor: Int) {
         sensorUsages.remove(sensor)
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("removeSensorUsage") {
             sensorUsageListeners.broadcast {
                 kotlin.runCatching { it.onUpdate() }
                     .onFailure { logger.e(it, "call onUpdate") }
@@ -140,40 +140,41 @@ class WatchDogService(shortXContext: ShortXContext) :
     fun hasFatalError() = fatalErrors.isNotEmpty()
 }
 
-fun SystemService.postSafety(delay: Long = 0L, runnable: () -> Unit) {
+fun SystemService.postSafety(logMessage: String, delay: Long = 0L, runnable: () -> Unit) {
     if (delay == 0L) {
         handler.post {
             kotlin.runCatching { runnable() }.onFailure {
-                this.shortXContext.watchDog.onFatalError(it)
+                this.shortXContext.watchDog.onFatalError(it, logMessage)
             }
         }
     } else {
         handler.postDelayed({
             kotlin.runCatching { runnable() }.onFailure {
-                this.shortXContext.watchDog.onFatalError(it)
+                this.shortXContext.watchDog.onFatalError(it, logMessage)
             }
         }, delay)
     }
 }
 
-fun Handler.postSafety(delay: Long = 0L, runnable: () -> Unit) {
+fun Handler.postSafety(logMessage: String, delay: Long = 0L, runnable: () -> Unit) {
     if (delay == 0L) {
         post {
             kotlin.runCatching { runnable() }.onFailure {
                 // TODO Ref Static
-                shortXContext.watchDog.onFatalError(it)
+                shortXContext.watchDog.onFatalError(it, logMessage)
             }
         }
     } else {
         postDelayed({
             kotlin.runCatching { runnable() }.onFailure {
-                shortXContext.watchDog.onFatalError(it)
+                shortXContext.watchDog.onFatalError(it, logMessage)
             }
         }, delay)
     }
 }
 
 fun CoroutineScope.launchSafety(
+    logMessage: String,
     context: CoroutineContext = EmptyCoroutineContext,
     start: CoroutineStart = CoroutineStart.DEFAULT,
     block: suspend CoroutineScope.() -> Unit,
@@ -182,7 +183,7 @@ fun CoroutineScope.launchSafety(
         if (it is CancellationException) {
             // Ignore this error
         } else {
-            shortXContext.watchDog.onFatalError(it)
+            shortXContext.watchDog.onFatalError(it, logMessage)
         }
     }
 })

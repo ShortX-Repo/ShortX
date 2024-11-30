@@ -17,7 +17,7 @@ class MediaService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     fun onMediaStoreInsert(uri: Uri, path: String) {
         kotlin.runCatching {
             logger.logOnDebug("onMediaStoreInsert: $uri -- $path")
-            handler.postSafety {
+            handler.postSafety("onMediaStoreInsert") {
                 shortXContext.rule.publishFact(
                     "onMediaStoreInsert",
                     MediaStoreInsert.newBuilder()

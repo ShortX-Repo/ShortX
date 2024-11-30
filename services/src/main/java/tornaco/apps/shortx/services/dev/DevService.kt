@@ -46,7 +46,7 @@ class DevService(shortXContext: ShortXContext) : SystemService(shortXContext, "D
                     logger.logOnDebug {
                         "onSmsReceived: $sms"
                     }
-                    systemServiceScope.launchSafety {
+                    systemServiceScope.launchSafety("DevRadar") {
                         delay(3000)
                         kotlin.runCatching {
                             shortXContext.phone.markSMSAsReadOrThrow(sms.id)

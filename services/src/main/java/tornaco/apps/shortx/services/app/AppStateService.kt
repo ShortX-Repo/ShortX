@@ -101,14 +101,14 @@ class AppStateService(shortXContext: ShortXContext) :
 
     override fun systemReady() {
         super.systemReady()
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("AppStateService.systemReady.initPoolForUser") {
             shortXContext.user.getUsers().forEach {
                 val pool = initPoolForUser(it.id)
                 pkgPools.add(pool)
             }
         }
 
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("AppStateService.systemReady.userEvent") {
             shortXContext.user.userEvent.collectLatest { event ->
                 when (event) {
                     is UserEvent.Added -> {
@@ -127,7 +127,7 @@ class AppStateService(shortXContext: ShortXContext) :
             }
         }
 
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("AppStateService.systemReady.registerTaskStackListener") {
             ActivityManager.getService().registerTaskStackListener(
                 @DoNotStrip
                 object : TaskStackListener() {
@@ -181,7 +181,7 @@ class AppStateService(shortXContext: ShortXContext) :
                 })
         }
 
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("AppStateService.systemReady.UidObserverRegisterCompat") {
             UidObserverRegisterCompat.register(object : UidObserverCompat {
                 override fun onUidActive(uid: Int) {
                     super.onUidActive(uid)
@@ -236,17 +236,17 @@ class AppStateService(shortXContext: ShortXContext) :
             handler = handler,
             userId = id,
             onPackageUpdateFinished = { from, to ->
-                handler.postSafety {
+                handler.postSafety("onPackageAdded") {
                     onPackageUpdatedListeners.forEach { it(from, to) }
                 }
             },
             onPackageAdded = { added ->
-                handler.postSafety {
+                handler.postSafety("onPackageAdded") {
                     onPackageAddedListeners.forEach { it(added) }
                 }
             },
             onPackageRemoved = { removed ->
-                handler.postSafety {
+                handler.postSafety("onPackageRemoved") {
                     if (removed.pkg.pkgName == BuildPropInternal.APP_PACKAGE_NAME) {
                         onShortXRemoved()
                     }
@@ -269,7 +269,7 @@ class AppStateService(shortXContext: ShortXContext) :
                 shortXContext.rule.setRuleEnabled(it, false)
             }
             shortXContext.rule.cancelJobs(shortXContext.rule.getActiveJobs(), "ShortX uninstalled")
-            systemServiceScope.launchSafety {
+            systemServiceScope.launchSafety("onShortXRemoved.resetAndClearData") {
                 // After all file persisted.
                 delay(WRITE_DELAY + 100L)
 
@@ -281,7 +281,7 @@ class AppStateService(shortXContext: ShortXContext) :
             }
         }
 
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("onShortXRemoved") {
             // Let system handle some UI changes first.
             delay(2000)
 
@@ -326,21 +326,21 @@ class AppStateService(shortXContext: ShortXContext) :
         intentUri: String,
         taskId: Int
     ) {
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("onActivityResumed") {
             val label = getTaskLabel(componentName, taskId)
             activityState.onActivityResumed(componentName, userId, intentUri, label)
         }
     }
 
     fun onActivityStopped(componentName: ComponentName, userId: Int, taskId: Int) {
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("onActivityStopped") {
             val label = getTaskLabel(componentName, taskId)
             activityState.onActivityStopped(componentName, userId, label)
         }
     }
 
     fun onActivityDestroyed(componentName: ComponentName, userId: Int, taskId: Int) {
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("onActivityDestroyed") {
             val label = getTaskLabel(componentName, taskId)
             activityState.onActivityDestroyed(componentName, userId, label)
         }
@@ -403,7 +403,7 @@ class AppStateService(shortXContext: ShortXContext) :
 
     fun forceStopApp(appPkg: AppPkg, reason: String) {
         logger.w("forceStopApp, $appPkg $reason")
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("forceStopApp1") {
             val amForceStop =
                 { context.activityManager.forceStopPackageAsUser(appPkg.pkgName, appPkg.userId) }
             amForceStop()
@@ -417,7 +417,7 @@ class AppStateService(shortXContext: ShortXContext) :
 
     fun forceStopApp(appPkgList: List<AppPkg>, reason: String) {
         logger.w("forceStopApp, $appPkgList $reason")
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("forceStopApp2") {
             appPkgList.forEach {
                 context.activityManager.forceStopPackageAsUser(it.pkgName, it.userId)
             }
@@ -435,7 +435,7 @@ class AppStateService(shortXContext: ShortXContext) :
 
     fun startAppProcess(appPkgList: List<AppPkg>, reason: String) {
         logger.w("startAppProcess, $appPkgList $reason")
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("startAppProcess") {
             appPkgList.forEach { targetPkg ->
                 kotlin.runCatching {
                     val info: ApplicationInfo? = PkgUtils.getApplicationInfoAsUser(
@@ -463,7 +463,7 @@ class AppStateService(shortXContext: ShortXContext) :
 
     fun setAppEnabled(appPkgList: List<AppPkg>, enable: Boolean, reason: String) {
         logger.w("setAppEnabled, enable: $enable $appPkgList $reason")
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("setAppEnabled") {
             appPkgList.forEach {
                 if (enable) enableAppPkg.enable(it) else enableAppPkg.disable(it)
             }
@@ -472,7 +472,7 @@ class AppStateService(shortXContext: ShortXContext) :
 
     fun setAppSuspend(appPkgList: List<AppPkg>, suspend: Boolean, reason: String) {
         logger.w("setAppSuspend, suspend: $suspend $appPkgList $reason")
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("setAppSuspend") {
             appPkgList.forEach {
                 if (suspend) suspendAppPkg.disable(it) else suspendAppPkg.enable(it)
             }
@@ -569,13 +569,13 @@ class AppStateService(shortXContext: ShortXContext) :
     }
 
     fun setAppInactive(pkgs: List<AppPkg>) {
-        handler.postSafety {
+        handler.postSafety("setAppInactive") {
             pkgs.forEach { USMFuncs.setAppInactive(it) }
         }
     }
 
     fun setAppInactive(pkg: AppPkg) {
-        handler.postSafety {
+        handler.postSafety("setAppInactive") {
             USMFuncs.setAppInactive(pkg)
         }
     }
@@ -765,7 +765,7 @@ class AppStateService(shortXContext: ShortXContext) :
     }
 
     fun startLastApp() {
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("startLastApp") {
             loadHomeAppPkgs()
             TaskMapping.getLastTaskIdExcludeLauncher(context, homePkgs).apply {
                 logger.d("startLastApp, taskId: $this")
@@ -826,7 +826,7 @@ class AppStateService(shortXContext: ShortXContext) :
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
     ) {
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("installApk") {
             withContext(Dispatchers.IO) {
                 runCatching {
                     installApkInternal(packageName, fd).apply {

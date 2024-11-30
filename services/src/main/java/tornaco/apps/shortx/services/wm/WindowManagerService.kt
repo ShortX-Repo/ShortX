@@ -119,7 +119,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
     }
 
     fun onProposedRotationChanged(@Surface.Rotation rotation: Int) {
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("onProposedRotationChanged") {
             val degree = rotation.rotationToDegree()
             if (degree != ScreenRotateDegree.UNRECOGNIZED) {
                 if (degree != shortXContext.wm.screenRotateDegree) {
@@ -422,7 +422,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
                 )
 
             showingUCHints.add(guideLineView)
-            mainHandler.postSafety {
+            mainHandler.postSafety("guideLineView.attach()") {
                 guideLineView.attach()
             }
 
@@ -438,7 +438,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
 
             root?.recycle()
 
-            mainHandler.postSafety {
+            mainHandler.postSafety("guideLineView.loadComplete()") {
                 guideLineView.loadComplete()
             }
         }
@@ -454,7 +454,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
                     showingDrawerBoard.remove(it)
                 }
             showingDrawerBoard.add(guideLineView)
-            mainHandler.postSafety {
+            mainHandler.postSafety("enableDrawBoard") {
                 guideLineView.attach()
             }
         }
@@ -489,14 +489,14 @@ class WindowManagerService(shortXContext: ShortXContext) :
                     }
                 )
             showingAreaSelector.add(guideLineView)
-            mainHandler.postSafety {
+            mainHandler.postSafety("Area.attach") {
                 guideLineView.attach()
             }
         }
     }
 
     private fun showAreaSelectorTips() {
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("showAreaSelectorTips") {
             shortXContext.ui.showDanmu(
                 null,
                 i18NIns["ui.action.select.screen.area.tip"]
@@ -526,7 +526,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
                         shortXContext.input.addClipboardText(it)
                     },
                     inputText = { text ->
-                        systemServiceScope.launchSafety {
+                        systemServiceScope.launchSafety("inputText") {
                             logger.d("ClipboardView input text: $text")
                             var isSuccess = false
                             var retryCount = 0
@@ -547,7 +547,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
                     }
                 )
             showingClipboard.add(guideLineView)
-            mainHandler.postSafety {
+            mainHandler.postSafety("Clipboard.attach") {
                 guideLineView.attach()
             }
         }
@@ -584,7 +584,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
 
             root?.recycle()
 
-            mainHandler.postSafety {
+            mainHandler.postSafety("IDViewer.attach") {
                 guideLineView.attach(idNodes)
                 guideLineView.loadComplete()
             }
@@ -601,7 +601,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
         logger.logOnDebug("matchText [$x $y]: $matchText")
 
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("lookUpTextFromClick") {
             if (matchText == null) {
                 shortXContext.ui.showDanmu(
                     null,
@@ -633,7 +633,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
 
         logger.logOnDebug("matchNode [$x $y]: $matchNodes")
 
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("matchNode.1") {
             if (matchNodes.isEmpty()) {
                 Toast.makeText(
                     context,
@@ -659,7 +659,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
     }
 
     private fun disableAllOverlayViews(action: suspend () -> Unit) {
-        mainHandler.postSafety {
+        mainHandler.postSafety("disableAllOverlayViews-1") {
             showingDrawerBoard.forEach {
                 kotlin.runCatching { it.detach() }
                     .onFailure { logger.e(it, "disableDrawBoard detach fail") }
@@ -690,7 +690,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
             }
             showingClipboard.clear()
 
-            systemServiceScope.launchSafety {
+            systemServiceScope.launchSafety("disableAllOverlay") {
                 action()
             }
         }
@@ -801,7 +801,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
     }
 
     fun onWindowFocusChanged(ownerUid: Int, windowTag: String) {
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("onWindowFocusChanged") {
             windowOwnerUIDChanged(ownerUid)
             windowTagChanged(windowTag)
         }

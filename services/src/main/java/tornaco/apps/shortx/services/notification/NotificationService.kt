@@ -180,7 +180,7 @@ class NotificationService(shortXContext: ShortXContext) :
 
     fun registerPostedByApp(n: Notification) {
         logger.logOnDebug("registerPostedByApp: $n")
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("registerPostedByApp") {
             shortXContext.rule.publishFact(
                 "registerPostedByApp",
                 NotificationPosted.newBuilder().setRecord(n).build(),
@@ -192,7 +192,7 @@ class NotificationService(shortXContext: ShortXContext) :
 
     fun registerUpdatedByApp(n: Notification) {
         logger.logOnDebug("registerUpdatedByApp: $n")
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("registerUpdatedByApp") {
             shortXContext.rule.publishFact(
                 "registerUpdatedByApp",
                 NotificationUpdated.newBuilder().setNew(n).build(),
@@ -203,7 +203,7 @@ class NotificationService(shortXContext: ShortXContext) :
 
     fun registerDismissedByUser(n: Notification) {
         logger.logOnDebug("registerDismissedByUser: $n")
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("registerUpdatedByApp") {
             shortXContext.rule.publishFact(
                 "registerDismissedByUser",
                 NotificationRemoved.newBuilder().setByUser(true).setRecord(n).build(),
@@ -215,7 +215,7 @@ class NotificationService(shortXContext: ShortXContext) :
 
     fun registerRemovedByApp(n: Notification) {
         logger.logOnDebug("registerRemovedByApp: $n")
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("registerRemovedByApp") {
             shortXContext.rule.publishFact(
                 "registerDismissedByUser",
                 NotificationRemoved.newBuilder().setByUser(false).setRecord(n).build(),

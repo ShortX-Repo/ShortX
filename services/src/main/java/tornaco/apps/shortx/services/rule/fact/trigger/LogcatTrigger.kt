@@ -38,7 +38,7 @@ class LogcatTrigger(
     private val mutex = Mutex()
 
     override fun register() {
-        logScope.launchSafety {
+        logScope.launchSafety("LogcatTrigger.reg") {
             withContext(Dispatchers.Default) {
                 logcat.logsFlow.collect { logLine ->
                     if (logLine == null) return@collect
@@ -68,17 +68,17 @@ class LogcatTrigger(
             }
         }
 
-        logScope.launchSafety { updateTriggerState() }
+        logScope.launchSafety("LogcatTrigger.updateTriggerState") { updateTriggerState() }
     }
 
     override fun unRegister() {
-        logScope.launchSafety { logcat.stopLogging() }
+        logScope.launchSafety("updateTriggerState.un.reg") { logcat.stopLogging() }
     }
 
     override val factClass: Class<out Message> = Logcat::class.java
 
     override fun updateTriggerState() {
-        logScope.launchSafety {
+        logScope.launchSafety("updateTriggerState.updateTriggerState") {
             mutex.withLock {
                 logger.d("updateTriggerState")
                 regexMatchers.clear()

@@ -62,7 +62,7 @@ class OverlayService(shortXContext: ShortXContext) :
 
     override fun systemReady() {
         super.systemReady()
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("OverlayService.systemReady") {
             shortXContext.systemSettings.currentConfig.collectLatest {
                 showingFloats.forEach {
                     it.token.onConfigurationChanged()
@@ -72,7 +72,7 @@ class OverlayService(shortXContext: ShortXContext) :
     }
 
     fun flashScreen(@ColorInt color: Int, times: Int) {
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("flashScreen") {
             repeat(times) {
                 delay(100)
                 screenFlash.flash(color)
@@ -86,7 +86,7 @@ class OverlayService(shortXContext: ShortXContext) :
         contextData: Map<String, String>,
         parameters: List<FuncParameterInput>,
         action: ShowOverlayButton
-    ) = mainHandler.postSafety {
+    ) = mainHandler.postSafety("postShowOverlay") {
         logger.d("showOverlay: ${action.tag}, current showing: ${showingOverlays.map { it.tag }}")
         logger.logOnDebug("local vars: ${localVars.all.joinToString { it.name }}")
         logger.logOnDebug("parameters: ${parameters.joinToString { it.toLogString() }}")
@@ -109,7 +109,7 @@ class OverlayService(shortXContext: ShortXContext) :
             parameters = parameters,
             initialPos = posX to posY,
             onPosChange = { x, y ->
-                handler.postSafety {
+                handler.postSafety("onPosChange") {
                     logger.d("OverlayButton onPosChange, write settings: $x-$y")
                     store.write(Settings.IntSettings.OverlayButtonPosX(action.tag), x)
                     store.write(Settings.IntSettings.OverlayButtonPosY(action.tag), y)
@@ -158,7 +158,7 @@ class OverlayService(shortXContext: ShortXContext) :
         localVars: LocalVars,
         parameters: List<FuncParameterInput>,
         action: ShowFloatWindow
-    ) = mainHandler.postSafety {
+    ) = mainHandler.postSafety("postShowFloatWindow") {
         logger.d("postShowFloatWindow: ${action.tag}, current showing: ${showingFloats.map { it.tag }}")
         logger.logOnDebug("local vars: ${localVars.all.joinToString { it.name }}")
         logger.logOnDebug("parameters: ${parameters.joinToString { it.toLogString() }}")
@@ -178,7 +178,7 @@ class OverlayService(shortXContext: ShortXContext) :
             initialPosP = fixedPosXP to fixedPosYP,
             initialPosL = fixedPosXL to fixedPosYL,
             onPosChange = { x, y ->
-                handler.postSafety {
+                handler.postSafety("onPosChange.2") {
                     writeFloatWindowPos(action.tag, x, y)
                 }
             },
@@ -214,7 +214,7 @@ class OverlayService(shortXContext: ShortXContext) :
             })
     }
 
-    fun postHideAllOverlay() = mainHandler.postSafety {
+    fun postHideAllOverlay() = mainHandler.postSafety("postHideAllOverlay") {
         logger.d("postHideAllOverlay")
         showingOverlays.forEach {
             it.token.dismiss()
@@ -222,7 +222,7 @@ class OverlayService(shortXContext: ShortXContext) :
         showingOverlays.clear()
     }
 
-    fun postHideOverlay(tags: List<String>) = mainHandler.postSafety {
+    fun postHideOverlay(tags: List<String>) = mainHandler.postSafety("postHideOverlay") {
         logger.d("postHideOverlay: $tags")
         showingOverlays.filter { tags.contains(it.tag) }.apply {
             showingOverlays.removeAll(this)
@@ -232,7 +232,7 @@ class OverlayService(shortXContext: ShortXContext) :
         }
     }
 
-    fun postHideAllFloatWindow() = mainHandler.postSafety {
+    fun postHideAllFloatWindow() = mainHandler.postSafety("postHideAllFloatWindow") {
         logger.d("postHideAllFloatWindow")
         showingFloats.forEach {
             it.token.removeFloatWindow()
@@ -240,7 +240,7 @@ class OverlayService(shortXContext: ShortXContext) :
         showingFloats.clear()
     }
 
-    fun postHideFloatWindow(tags: List<String>) = mainHandler.postSafety {
+    fun postHideFloatWindow(tags: List<String>) = mainHandler.postSafety("postHideFloatWindow") {
         logger.d("postHideFloatWindow: $tags")
         showingFloats.filter { tags.contains(it.tag) }.apply {
             showingFloats.removeAll(this)

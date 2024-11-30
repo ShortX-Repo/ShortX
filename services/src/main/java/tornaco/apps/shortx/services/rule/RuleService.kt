@@ -243,7 +243,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             androidUiContext = context,
             handler = handler,
             onJobStarted = { id ->
-                systemServiceScope.launchSafety {
+                systemServiceScope.launchSafety("onJobStarted") {
                     jobStatusListeners.broadcast {
                         kotlin.runCatching { it.onJobStarted(id) }
                             .onFailure { logger.e(it, "call onJobStarted") }
@@ -251,7 +251,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 }
             },
             onJobCompleted = { id ->
-                systemServiceScope.launchSafety {
+                systemServiceScope.launchSafety("onJobCompleted") {
                     jobStatusListeners.broadcast {
                         kotlin.runCatching { it.onJobCompleted(id) }
                             .onFailure { logger.e(it, "call onJobCompleted") }
@@ -259,7 +259,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 }
             },
             onJobCancelled = { id ->
-                systemServiceScope.launchSafety {
+                systemServiceScope.launchSafety("onJobCancelled") {
                     jobStatusListeners.broadcast {
                         kotlin.runCatching { it.onJobCancelled(id) }
                             .onFailure { logger.e(it, "call onJobCancelled") }
@@ -269,7 +269,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             actionEvaluateStartListener = { actionId ->
                 logger.d("ActionLifecycle actionEvaluateStartListener: $actionId")
                 actionEvaluateRecorder.addEvaluating(actionId)
-                systemServiceScope.launchSafety {
+                systemServiceScope.launchSafety("actionEvaluateStartListener") {
                     actionEvaluateListener.broadcast {
                         kotlin.runCatching { it.onStart(actionId) }
                             .onFailure { logger.e(it, "call onStart") }
@@ -281,7 +281,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                     "ActionLifecycle actionEvaluateResultListener: ${result.actionId} ${result.action.typeUrl} ${result.evaluateContext.srcTitle}"
                 }
                 actionEvaluateRecorder.removeEvaluating(result.actionId)
-                systemServiceScope.launchSafety {
+                systemServiceScope.launchSafety("actionEvaluateResultListener") {
                     actionEvaluateListener.broadcast {
                         kotlin.runCatching { it.onComplete(result.actionId) }
                             .onFailure { logger.e(it, "call onComplete") }
@@ -381,7 +381,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             logger.d("onKeyEvent up for keyCode: ${it.keyCode}")
 
             if (it.action == android.view.KeyEvent.ACTION_UP && isKeyEventPromptEnabled()) {
-                handler.postSafety {
+                handler.postSafety("Toast Key") {
                     Toast.makeText(context, "Key code: ${it.keyCode}", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -539,7 +539,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         initialContextDataLazy: () -> Map<String, Any>
     ) {
         val publishTimeMillis = System.currentTimeMillis()
-        handler.postSafety {
+        handler.postSafety("publishFact") {
             logger.i("publishFact, ${fact::class.java}: $reason")
             logger.logOnDebug("publishFact: $fact")
             val anyMatch = engine.fire(
@@ -654,14 +654,14 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             logger.d("onAddRule: ${rule.title}")
             // Add
             ruleSettingsStore.addRule(rule)
-            handler.postSafety {
+            handler.postSafety("Call onAddRule") {
                 allTriggers.forEach { it.onAddRule(rule) }
             }
         } else {
             logger.d("onUpdateRule: ${rule.title}")
             // Update
             ruleSettingsStore.addRule(rule)
-            handler.postSafety {
+            handler.postSafety("Call onUpdateRule") {
                 allTriggers.forEach { it.onUpdateRule(oldRule = existing, newRule = rule) }
             }
         }
@@ -679,7 +679,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         setRuleEnabled(ruleId, false)
 
         val rules = ruleSettingsStore.deleteRule(ruleId)
-        handler.postSafety {
+        handler.postSafety("Call onDeleteRule") {
             rules.forEach { r ->
                 allTriggers.forEach { it.onDeleteRule(r) }
             }
@@ -709,7 +709,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 }
             }.onFailure { logger.e("Call onEnabled/onDisabled") }
         }
-        handler.postSafety {
+        handler.postSafety("Call onRuleEnabled") {
             allTriggers.forEach {
                 if (enable) it.onRuleEnabled(ruleId) else it.onRuleDisabled(ruleId)
             }
@@ -718,7 +718,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         shortXContext.gesture.onRuleChanged()
 
         // Stop tasks
-        handler.postSafety {
+        handler.postSafety("cancelJobs") {
             engine.cancelJobs("Rule disabled(指令关闭)") {
                 // Do not cancel RuleHook jobs.
                 it.srcId == ruleId && !it.hasTag(ContextSrcEvent.ContextSrc_RuleHook)
@@ -731,7 +731,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     // For App
     fun cancelJobs(jobs: List<String>, reason: String) {
-        handler.postSafety {
+        handler.postSafety("cancelJobs") {
             engine.cancelJobs(reason) {
                 jobs.contains(it.srcId)
             }
@@ -792,7 +792,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 kotlin.runCatching { it.onAddOrUpdate(da.id) }
                     .onFailure { logger.e("Call onAddOrUpdate") }
             }
-            handler.postSafety {
+            handler.postSafety("Call onAddDA") {
                 allTriggers.forEach { it.onAddDA(da) }
             }
         } else {
@@ -802,7 +802,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 kotlin.runCatching { it.onAddOrUpdate(da.id) }
                     .onFailure { logger.e("Call onAddOrUpdate") }
             }
-            handler.postSafety {
+            handler.postSafety("Call onUpdateDA") {
                 allTriggers.forEach { it.onUpdateDA(existing, da) }
             }
         }
@@ -816,7 +816,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 kotlin.runCatching { it.onDelete(id) }
                     .onFailure { logger.e("Call onDelete") }
             }
-            handler.postSafety {
+            handler.postSafety("Call onDeleteDA") {
                 allTriggers.forEach { it.onDeleteDA(existing) }
             }
 
@@ -1028,7 +1028,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             }
 
         val asBinder = callback.asBinder()
-        val job = systemServiceScope.launchSafety {
+        val job = systemServiceScope.launchSafety("executeShell.job") {
             val handleParams = dummyHandlerParamsForAction(
                 androidContext = context,
                 shortXContext = shortXContext,
@@ -1095,7 +1095,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     fun executeMVEL(expression: String, coroutineContext: CoroutineContext): String {
         var res = ""
         runBlocking {
-            systemServiceScope.launchSafety {
+            systemServiceScope.launchSafety("executeMVEL.runBlocking") {
                 val handleParams = dummyHandlerParamsForAction(
                     androidContext = context,
                     shortXContext = shortXContext,
@@ -1127,7 +1127,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     fun executeJS(expression: String, coroutineContext: CoroutineContext): String {
         var res = ""
         runBlocking {
-            systemServiceScope.launchSafety {
+            systemServiceScope.launchSafety("executeJS.runBlocking") {
                 val handleParams = dummyHandlerParamsForAction(
                     androidContext = context,
                     shortXContext = shortXContext,
@@ -1451,7 +1451,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         super.screenOn()
         logger.d("onScreenOn")
 
-        handler.postSafety {
+        handler.postSafety("Call onScreenOn") {
             allTriggers.forEach {
                 it.onScreenOn()
             }
@@ -1467,7 +1467,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         super.screenOff()
         logger.d("screenOff")
 
-        handler.postSafety {
+        handler.postSafety("Call onScreenOff") {
             allTriggers.forEach {
                 it.onScreenOff()
             }
@@ -1505,7 +1505,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         fact: ProtoMessage,
         initialContextDataLazy: () -> Map<String, Any>
     ) {
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("notifyInternalFactListeners") {
             val listeners: Array<InternalFactListener> = synchronized(internalFactListeners) {
                 internalFactListeners.toTypedArray()
             }
@@ -1516,7 +1516,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     }
 
     private fun forceDisableShortX() {
-        systemServiceScope.launchSafety {
+        systemServiceScope.launchSafety("forceDisableShortX") {
             setRuleFeatureEnabled(false)
             cancelJobs(getActiveJobs(), "Force disable ShortX")
 
