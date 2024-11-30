@@ -7,7 +7,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -184,44 +183,34 @@ private fun Actions(
         ) {
             Row(
                 modifier = Modifier
-                    .weight(1f, fill = false)
-                    .thenIf(
-                        Modifier
-                            .clip(ShortXCardRoundedCornerShape)
-                            .clickable {
-                                actionAsyncModeMenuDialogState.show(
-                                    currentSelection = listOf(
-                                        actionAsyncMode.name
-                                    )
-                                )
-                            }, canSelectActionAsyncMode
-                    ),
+                    .weight(1f, fill = false),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 header()
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                ClickableBadge(
-                    text = if (actionAsyncMode == ActionAsyncMode.ActionAsyncMode_Sync) {
-                        LocalI18N.current["ui.rule.async.mode.sync"]
-                    } else {
-                        LocalI18N.current["ui.rule.async.mode.async"]
-                    },
-                    containerColor = ColorDefaults.backgroundSurfaceColor()
-                ) {
-                    actionAsyncModeMenuDialogState.show(
-                        currentSelection = listOf(
-                            actionAsyncMode.name
+                if (actionAsyncMode == ActionAsyncMode.ActionAsyncMode_Async || canSelectActionAsyncMode) {
+                    ClickableBadge(
+                        text = if (actionAsyncMode == ActionAsyncMode.ActionAsyncMode_Sync) {
+                            LocalI18N.current["ui.rule.async.mode.sync"]
+                        } else {
+                            LocalI18N.current["ui.rule.async.mode.async"]
+                        },
+                        containerColor = ColorDefaults.backgroundSurfaceColor()
+                    ) {
+                        actionAsyncModeMenuDialogState.show(
+                            currentSelection = listOf(
+                                actionAsyncMode.name
+                            )
                         )
+                    }
+                    VerticalDivider(
+                        modifier = Modifier
+                            .height(18.dp)
+                            .padding(horizontal = 12.dp)
                     )
                 }
-
-                VerticalDivider(
-                    modifier = Modifier
-                        .height(18.dp)
-                        .padding(horizontal = 12.dp)
-                )
 
                 // Sort
                 AnimatedVisibility(visible = !readOnly && actions.size > 1) {
