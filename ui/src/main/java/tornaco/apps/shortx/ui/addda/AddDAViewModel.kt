@@ -325,7 +325,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                         daSetId = da.directActionSetId,
                         isQuitEnabled = da.quit.isEnabled,
                         quitEvaluatePolicy = da.quit.evaluatePolicy.takeIf { it != Quit_EvaluatePolicy.UNRECOGNIZED }
-                            ?: Quit_EvaluatePolicy.Quit_EvaluatePolicy_Always,
+                            ?: Quit_EvaluatePolicy.Quit_EvaluatePolicy_Only_When_Is_Running,
                         securityCheckRes = Security.checkSecurity(da),
                         hasSMSAction = hasAnySMSAction,
                         parameters = da.parametersList,
