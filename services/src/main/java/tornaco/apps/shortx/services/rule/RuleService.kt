@@ -543,6 +543,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     ) {
         val publishTimeMillis = System.currentTimeMillis()
         handler.postSafety("publishFact") {
+            val startTime = System.currentTimeMillis()
             synchronized(publishFactLock) {
                 logger.logOnDebug("publishFact, ${fact::class.java}: $reason")
                 logger.logOnDebug("publishFact: $fact")
@@ -559,6 +560,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
                 notifyInternalFactListeners(fact, initialContextDataLazy)
             }
+            val takenTime = System.currentTimeMillis() - startTime
+            logger.d("publishFact, take time: $takenTime ms")
         }
     }
 

@@ -846,11 +846,11 @@ class DefaultRuleEngine(
         jobIdProvider: () -> List<String>
     ): Boolean {
         logger.d("checkQuitEvaluatePolicyForDA: srcId $srcId")
-        logger.d("checkQuitEvaluatePolicyForDA: jobs $jobs")
         withQuitEvaPolicyOO { logger.d("checkQuitEvaluatePolicyForDA: can...OnlyOnce $this") }
         return when (policy) {
             Quit_EvaluatePolicy.Quit_EvaluatePolicy_Only_When_Is_Running, Quit_EvaluatePolicy.UNRECOGNIZED -> {
                 val jobs = jobIdProvider()
+                logger.d("checkQuitEvaluatePolicyForDA: jobs $jobs")
                 jobs.contains(srcId)
             }
 
@@ -870,13 +870,13 @@ class DefaultRuleEngine(
         jobIdProvider: () -> List<String>
     ): Boolean {
         logger.d("checkQuitEvaluatePolicyForRule: srcId $srcId")
-        logger.d("checkQuitEvaluatePolicyForRule: jobs $jobs")
         withQuitEvaPolicyOO {
             logger.d("checkQuitEvaluatePolicyForRule: can...OnlyOnce $this")
         }
         return when (policy) {
             Quit_EvaluatePolicy.Quit_EvaluatePolicy_Only_When_Is_Running -> {
                 val jobs = jobIdProvider()
+                logger.d("checkQuitEvaluatePolicyForRule: jobs $jobs")
                 jobs.contains(srcId)
             }
 
