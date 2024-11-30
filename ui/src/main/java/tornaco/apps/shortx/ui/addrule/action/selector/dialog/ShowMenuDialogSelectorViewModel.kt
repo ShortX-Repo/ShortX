@@ -29,7 +29,7 @@ data class ShowMenuDialogSelectorState(
     val title: String = "",
     val message: String = "",
     val cancelable: Boolean = true,
-    val style: DialogUiStyleSettings = DialogUiStyleSettings.getDefaultInstance(),
+    val style: DialogUiStyleSettings = DialogUiStyleSettings.newBuilder().setFontScale(1f).build(),
     val items: List<MenuDialogUiItem> = emptyList(),
     val evaluatingActions: List<String> = emptyList()
 )

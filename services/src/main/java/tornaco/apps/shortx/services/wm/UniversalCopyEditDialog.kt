@@ -34,7 +34,7 @@ class UniversalCopyEditDialog(
                 EditTextDialogView(
                     context = context,
                     i18N = i18NIns,
-                    style = DialogUiStyleSettings.getDefaultInstance(),
+                    style = DialogUiStyleSettings.newBuilder().setFontScale(1f).build(),
                     title = i18NIns["ui.action.enable.universal.copy"],
                     value = text,
                     onValueChange = {

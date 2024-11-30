@@ -22,7 +22,7 @@ data class ShowDialogSelectorState(
     val positiveText: String? = null,
     val negativeText: String? = null,
     val neutralText: String? = null,
-    val style: DialogUiStyleSettings = DialogUiStyleSettings.getDefaultInstance(),
+    val style: DialogUiStyleSettings = DialogUiStyleSettings.newBuilder().setFontScale(1f).build(),
     val evaluatingActions: List<String> = emptyList()
 )
 

@@ -20,7 +20,7 @@ data class ShowListDialogSelectorState(
     val isMultipleChoice: Boolean = false,
     val needConfirmAction: Boolean = false,
     val dataType: ShowListDialogDataType = ShowListDialogDataType.ShowListDialogDataType_String,
-    val style: DialogUiStyleSettings = DialogUiStyleSettings.getDefaultInstance(),
+    val style: DialogUiStyleSettings = DialogUiStyleSettings.newBuilder().setFontScale(1f).build(),
     val delimiters: List<String> = listOf(",")
 )
 

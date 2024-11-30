@@ -14,10 +14,10 @@ fun DialogUiStyleSettings(style: DialogUiStyleSettings, update: (DialogUiStyleSe
     Column {
         FieldTitle(text = LocalI18N.current["ui.common.ui.style.font.scale"])
         MediumSpacer()
-        Text(text = "${style.fontScale} x")
+        Text(text = "${style.fontScale.takeIf { it > 0 } ?: 1f} x")
         Slider(
             valueRange = 0.5f..5f,
-            value = style.fontScale,
+            value = style.fontScale.takeIf { it > 0 } ?: 1f,
             onValueChange = {
                 update(DialogUiStyleSettings.newBuilder(style).setFontScale(it).build())
             }

@@ -20,7 +20,7 @@ data class ShowChoiceDialogSelectorState(
     val cancelable: Boolean = true,
     val choices: List<ChoiceProp> = emptyList(),
     val isMultipleChoice: Boolean = false,
-    val style: DialogUiStyleSettings = DialogUiStyleSettings.getDefaultInstance(),
+    val style: DialogUiStyleSettings = DialogUiStyleSettings.newBuilder().setFontScale(1f).build(),
 )
 
 @SuppressLint("StaticFieldLeak")
