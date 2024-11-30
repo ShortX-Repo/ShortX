@@ -115,7 +115,6 @@ import tornaco.apps.shortx.services.rule.fact.trigger.allTriggers
 import tornaco.apps.shortx.services.rule.systemenv.SystemEnvInit
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
-import tornaco.apps.shortx.services.util.KtObject
 import tornaco.apps.shortx.services.util.callIfAlive
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
@@ -126,8 +125,6 @@ import java.util.concurrent.TimeUnit
 
 
 class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "RuleService") {
-    private val publishFactLock = KtObject("publishFactLock")
-
     private val ruleSettingsStore: RuleSettingsStore by lazy {
         RuleSettingsStore(systemServiceScope)
     }
@@ -544,22 +541,20 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         val publishTimeMillis = System.currentTimeMillis()
         handler.postSafety("publishFact") {
             val startTime = System.currentTimeMillis()
-            synchronized(publishFactLock) {
-                logger.logOnDebug("publishFact, ${fact::class.java}: $reason")
-                logger.logOnDebug("publishFact: $fact")
-                val anyMatch = engine.fire(
-                    fact = fact,
-                    rules = getAllEnabledRules(),
-                    das = getAllDirectAction(),
-                    initialContextDataLazy = initialContextDataLazy
-                )
+            logger.logOnDebug("publishFact, ${fact::class.java}: $reason")
+            logger.logOnDebug("publishFact: $fact")
+            val anyMatch = engine.fire(
+                fact = fact,
+                rules = getAllEnabledRules(),
+                das = getAllDirectAction(),
+                initialContextDataLazy = initialContextDataLazy
+            )
 
-                if (anyMatch) {
-                    factPublishRecorder.add(fact.toFactPublishRecord(publishTimeMillis))
-                }
-
-                notifyInternalFactListeners(fact, initialContextDataLazy)
+            if (anyMatch) {
+                factPublishRecorder.add(fact.toFactPublishRecord(publishTimeMillis))
             }
+
+            notifyInternalFactListeners(fact, initialContextDataLazy)
             val takenTime = System.currentTimeMillis() - startTime
             logger.d("publishFact, take time: $takenTime ms")
         }
