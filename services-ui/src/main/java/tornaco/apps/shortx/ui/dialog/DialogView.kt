@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.proto.common.DialogUiStyleSettings
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.BaseComposeView
 import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
 
@@ -25,7 +26,8 @@ abstract class DialogView(
     override fun ComposeContent() {
         val platformRadius = kotlin.runCatching {
             context.getDialogCornerRadius()
-        }.getOrNull()
+        }.getOrNull()?.takeIf { it > 10f }
+        Logger.nameless.w("platformRadius: $platformRadius")
         ShortXServiceUITheme {
             Surface(
                 modifier = Modifier.fillMaxWidth(),
