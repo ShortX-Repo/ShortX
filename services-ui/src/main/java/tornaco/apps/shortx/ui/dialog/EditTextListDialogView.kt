@@ -58,7 +58,7 @@ class EditTextListDialogView(
             ) {
                 stickyHeader {
                     Text(
-                        title, style = MaterialTheme.typography.headlineMedium.copy(
+                        title, style = MaterialTheme.typography.headlineSmall.copy(
                             fontWeight = FontWeight.W500
                         ).applyStyle(style),
                         modifier = Modifier.padding(vertical = 16.dp)
