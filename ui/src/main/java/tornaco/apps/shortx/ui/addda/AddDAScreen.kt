@@ -7,6 +7,7 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +28,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,6 +69,8 @@ import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalShortXProps
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.SECTION_BAR_CORNER_SIZE
+import tornaco.apps.shortx.ui.base.SECTION_BAR_H_PADDING
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.ShortXTextField
@@ -247,8 +253,17 @@ fun AddDirectActionScreen(
                 }
 
                 is LoadState.Success -> {
-                    LazyColumn {
+                    val lazyListState = rememberLazyListState()
+                    // 监听第一个可见项的索引
+                    val currentStickyHeaderIndex by remember {
+                        derivedStateOf {
+                            // 判断当前 sticky header 的索引（可能是第一个可见项）
+                            lazyListState.firstVisibleItemIndex
+                        }
+                    }
+                    LazyColumn(state = lazyListState) {
                         daContent(
+                            currentStickyHeaderIndex = currentStickyHeaderIndex,
                             addDirectActionState = addDirectActionState,
                             vm = vm,
                             readOnly = readOnly,
@@ -269,6 +284,7 @@ fun AddDirectActionScreen(
 }
 
 private fun LazyListScope.daContent(
+    currentStickyHeaderIndex: Int,
     addDirectActionState: AddDirectActionState,
     vm: AddDirectActionViewModel,
     readOnly: Boolean,
@@ -281,6 +297,7 @@ private fun LazyListScope.daContent(
     quitActionState: ActionContentState,
     quitActionHandler: ActionContentStateHandler,
 ) {
+    // 0
     itemWithPadding {
         AnimatedVisibility(visible = !addDirectActionState.securityCheckRes) {
             Column {
@@ -296,6 +313,7 @@ private fun LazyListScope.daContent(
         }
     }
 
+    // 1
     itemWithPadding {
         AnimatedVisibility(visible = addDirectActionState.hasSMSAction) {
             Column {
@@ -319,11 +337,13 @@ private fun LazyListScope.daContent(
         }
     }
 
+    // 2
     itemWithPadding {
         TitleAndDescription(state = addDirectActionState, vm = vm, readOnly = readOnly)
         Spacer(modifier = Modifier.size(24.dp))
     }
 
+    // 3
     itemWithPadding {
         ActionContent(
             srcId = addDirectActionState.id,
@@ -338,21 +358,35 @@ private fun LazyListScope.daContent(
         SectionSpacer()
     }
 
+    // 4
     itemWithPadding {
         EvaRecordSetting(id = addDirectActionState.id)
         SectionSpacer()
     }
 
     // Adv START
+    // 5
     stickyHeader {
+        val cornerDp by animateDpAsState(
+            if (currentStickyHeaderIndex >= 5) 0.dp else SECTION_BAR_CORNER_SIZE.dp,
+            label = "Dp"
+        )
+        val paddingDp by animateDpAsState(
+            if (currentStickyHeaderIndex >= 5) 0.dp else SECTION_BAR_H_PADDING.dp,
+            label = "Dp"
+        )
         ExpandableSectionBar(
             isExpand = addDirectActionState.showAdvancedOptions,
             text = LocalI18N.current["ui.advanced.options"],
-            iconName = Remix.System.star_fill
+            iconName = Remix.System.star_fill,
+            shape = RoundedCornerShape(cornerDp),
+            modifier = Modifier.padding(horizontal = paddingDp)
         ) {
             vm.setShowAdvancedOptions(!addDirectActionState.showAdvancedOptions)
         }
+        StandardSpacer()
     }
+    // 6
     itemWithPadding {
         AnimatedVisibility(visible = addDirectActionState.showAdvancedOptions) {
             Column {
@@ -377,14 +411,26 @@ private fun LazyListScope.daContent(
     }
 
     // Quit START
+    // 7
     stickyHeader {
+        val cornerDp by animateDpAsState(
+            if (currentStickyHeaderIndex >= 7) 0.dp else SECTION_BAR_CORNER_SIZE.dp,
+            label = "Dp"
+        )
+        val paddingDp by animateDpAsState(
+            if (currentStickyHeaderIndex >= 7) 0.dp else SECTION_BAR_H_PADDING.dp,
+            label = "Dp"
+        )
         ExpandableSectionBar(
             isExpand = addDirectActionState.isQuitEnabled,
             text = LocalI18N.current["ui.rule.quit.title"],
             iconName = Remix.System.logout_circle_fill,
+            shape = RoundedCornerShape(cornerDp),
+            modifier = Modifier.padding(horizontal = paddingDp)
         ) {
             vm.toggleQuitEnable()
         }
+        StandardSpacer()
     }
     itemWithPadding {
         AnimatedVisibility(visible = addDirectActionState.isQuitEnabled) {

@@ -75,6 +75,8 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalShortXProps
 import tornaco.apps.shortx.ui.base.MediumTitleWithTip
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.SECTION_BAR_CORNER_SIZE
+import tornaco.apps.shortx.ui.base.SECTION_BAR_H_PADDING
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.ShortXTextField
@@ -458,14 +460,19 @@ private fun LazyListScope.ruleContent(
     // 8
     stickyHeader {
         val cornerDp by animateDpAsState(
-            if (currentStickyHeaderIndex >= 8) 0.dp else 32.dp,
+            if (currentStickyHeaderIndex >= 8) 0.dp else SECTION_BAR_CORNER_SIZE.dp,
+            label = "Dp"
+        )
+        val paddingDp by animateDpAsState(
+            if (currentStickyHeaderIndex >= 8) 0.dp else SECTION_BAR_H_PADDING.dp,
             label = "Dp"
         )
         ExpandableSectionBar(
             isExpand = addRuleState.showAdvancedOptions,
             text = LocalI18N.current["ui.advanced.options"],
             iconName = Remix.System.star_fill,
-            shape = RoundedCornerShape(cornerDp)
+            shape = RoundedCornerShape(cornerDp),
+            modifier = Modifier.padding(horizontal = paddingDp)
         ) {
             vm.setShowAdvancedOptions(!addRuleState.showAdvancedOptions)
         }
@@ -534,7 +541,11 @@ private fun LazyListScope.ruleContent(
     // 10
     stickyHeader {
         val cornerDp by animateDpAsState(
-            if (currentStickyHeaderIndex >= 10) 0.dp else 32.dp,
+            if (currentStickyHeaderIndex >= 10) 0.dp else SECTION_BAR_CORNER_SIZE.dp,
+            label = "Dp"
+        )
+        val paddingDp by animateDpAsState(
+            if (currentStickyHeaderIndex >= 10) 0.dp else SECTION_BAR_H_PADDING.dp,
             label = "Dp"
         )
         SwitchBar(
@@ -542,6 +553,7 @@ private fun LazyListScope.ruleContent(
             text = LocalI18N.current["ui.rule.quit.title"],
             iconName = Remix.System.logout_circle_fill,
             cornerSize = cornerDp,
+            modifier = Modifier.padding(horizontal = paddingDp),
             onCheckChange = {
                 vm.toggleQuitEnable()
             }
@@ -617,7 +629,11 @@ private fun LazyListScope.ruleContent(
     // 12
     stickyHeader {
         val cornerDp by animateDpAsState(
-            if (currentStickyHeaderIndex >= 12) 0.dp else 32.dp,
+            if (currentStickyHeaderIndex >= 12) 0.dp else SECTION_BAR_CORNER_SIZE.dp,
+            label = "Dp"
+        )
+        val paddingDp by animateDpAsState(
+            if (currentStickyHeaderIndex >= 12) 0.dp else SECTION_BAR_H_PADDING.dp,
             label = "Dp"
         )
         // Hooks
@@ -625,7 +641,8 @@ private fun LazyListScope.ruleContent(
             isExpand = addRuleState.expandHooks,
             text = "Hooks",
             iconName = Remix.Document.file_list_fill,
-            shape = RoundedCornerShape(cornerDp)
+            shape = RoundedCornerShape(cornerDp),
+            modifier = Modifier.padding(horizontal = paddingDp)
         ) {
             vm.setExpandHooks(!addRuleState.expandHooks)
         }
@@ -699,7 +716,8 @@ private fun LazyListScope.ruleContent(
         ExpandableSectionBar(
             isExpand = addRuleState.showGeeksOptions,
             text = LocalI18N.current["ui.geeks.options"],
-            iconName = Remix.UserAndFaces.aliens_fill
+            iconName = Remix.UserAndFaces.aliens_fill,
+            modifier = Modifier.padding(horizontal = SECTION_BAR_H_PADDING.dp)
         ) {
             vm.setShowGeeksOptions(!addRuleState.showGeeksOptions)
         }
