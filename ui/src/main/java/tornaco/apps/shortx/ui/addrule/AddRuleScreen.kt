@@ -7,6 +7,7 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
@@ -26,6 +29,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -278,8 +282,17 @@ fun AddRuleScreen(
             }
 
             is LoadState.Success -> {
-                LazyColumn {
+                val lazyListState = rememberLazyListState()
+                // 监听第一个可见项的索引
+                val currentStickyHeaderIndex by remember {
+                    derivedStateOf {
+                        // 判断当前 sticky header 的索引（可能是第一个可见项）
+                        lazyListState.firstVisibleItemIndex
+                    }
+                }
+                LazyColumn(state = lazyListState) {
                     ruleContent(
+                        currentStickyHeaderIndex = currentStickyHeaderIndex,
                         addRuleState = addRuleState,
                         vm = vm,
                         readOnly = readOnly,
@@ -309,6 +322,7 @@ fun AddRuleScreen(
 }
 
 private fun LazyListScope.ruleContent(
+    currentStickyHeaderIndex: Int,
     addRuleState: AddRuleState,
     vm: AddRuleViewModel,
     readOnly: Boolean,
@@ -331,6 +345,7 @@ private fun LazyListScope.ruleContent(
     actionOnDeletedState: ActionContentState,
     actionOnDeletedHandler: ActionContentStateHandler
 ) {
+    // 0
     itemWithPadding {
         AnimatedVisibility(visible = !addRuleState.securityCheckRes) {
             Column {
@@ -346,6 +361,7 @@ private fun LazyListScope.ruleContent(
         }
     }
 
+    // 1
     itemWithPadding {
         AnimatedVisibility(visible = addRuleState.hasSMSAction) {
             Column {
@@ -369,11 +385,13 @@ private fun LazyListScope.ruleContent(
         }
     }
 
+    // 2
     itemWithPadding {
         TitleAndDescription(state = addRuleState, vm = vm, readOnly = readOnly)
         SectionSpacer()
     }
 
+    // 3
     itemWithPadding {
         FactSelectors(
             state = factContentState,
@@ -383,6 +401,7 @@ private fun LazyListScope.ruleContent(
         SectionSpacer()
     }
 
+    // 4
     itemWithPadding {
         ConditionContent(
             state = conditionContentState,
@@ -392,6 +411,7 @@ private fun LazyListScope.ruleContent(
         SectionSpacer()
     }
 
+    // 5
     itemWithPadding {
         ActionContent(
             srcId = addRuleState.id,
@@ -406,11 +426,13 @@ private fun LazyListScope.ruleContent(
         SectionSpacer()
     }
 
+    // 6
     itemWithPadding {
         EvaRecordSetting(id = addRuleState.id)
         SectionSpacer()
     }
 
+    // 7
     itemWithPadding {
         AnimatedVisibility(
             addRuleState.parameters.isNotEmpty()
@@ -433,15 +455,23 @@ private fun LazyListScope.ruleContent(
 
 
     // Adv
+    // 8
     stickyHeader {
+        val cornerDp by animateDpAsState(
+            if (currentStickyHeaderIndex >= 8) 0.dp else 32.dp,
+            label = "Dp"
+        )
         ExpandableSectionBar(
             isExpand = addRuleState.showAdvancedOptions,
             text = LocalI18N.current["ui.advanced.options"],
-            iconName = Remix.System.star_fill
+            iconName = Remix.System.star_fill,
+            shape = RoundedCornerShape(cornerDp)
         ) {
             vm.setShowAdvancedOptions(!addRuleState.showAdvancedOptions)
         }
+        StandardSpacer()
     }
+    // 9
     itemWithPadding {
         AnimatedVisibility(visible = addRuleState.showAdvancedOptions) {
             Column {
@@ -501,17 +531,24 @@ private fun LazyListScope.ruleContent(
     }
 
     // Quit START
+    // 10
     stickyHeader {
+        val cornerDp by animateDpAsState(
+            if (currentStickyHeaderIndex >= 10) 0.dp else 32.dp,
+            label = "Dp"
+        )
         SwitchBar(
             isChecked = addRuleState.isQuitEnabled,
             text = LocalI18N.current["ui.rule.quit.title"],
             iconName = Remix.System.logout_circle_fill,
-            withRoundCorner = false,
+            cornerSize = cornerDp,
             onCheckChange = {
                 vm.toggleQuitEnable()
             }
         )
+        StandardSpacer()
     }
+    // 11
     itemWithPadding {
         AnimatedVisibility(visible = addRuleState.isQuitEnabled) {
             Column {
@@ -577,16 +614,24 @@ private fun LazyListScope.ruleContent(
     // Quit END
 
     // Hooks START
+    // 12
     stickyHeader {
+        val cornerDp by animateDpAsState(
+            if (currentStickyHeaderIndex >= 12) 0.dp else 32.dp,
+            label = "Dp"
+        )
         // Hooks
         ExpandableSectionBar(
             isExpand = addRuleState.expandHooks,
             text = "Hooks",
-            iconName = Remix.Document.file_list_fill
+            iconName = Remix.Document.file_list_fill,
+            shape = RoundedCornerShape(cornerDp)
         ) {
             vm.setExpandHooks(!addRuleState.expandHooks)
         }
+        StandardSpacer()
     }
+    // 13
     itemWithPadding {
         AnimatedVisibility(addRuleState.expandHooks) {
             Column {
@@ -649,6 +694,7 @@ private fun LazyListScope.ruleContent(
     // Hooks END
 
     // GEEKS START
+    // 14
     stickyHeader {
         ExpandableSectionBar(
             isExpand = addRuleState.showGeeksOptions,

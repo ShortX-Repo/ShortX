@@ -75,7 +75,9 @@ class AlertDialogView(
                 }
             }
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 if (neutralText != null) {
@@ -93,8 +95,7 @@ class AlertDialogView(
 
                 Row(
                     modifier = Modifier
-                        .weight(1f, fill = false)
-                        .padding(top = 16.dp),
+                        .weight(1f, fill = false),
                     horizontalArrangement = Arrangement.End
                 ) {
                     negativeText?.let {
