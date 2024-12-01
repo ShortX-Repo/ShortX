@@ -240,7 +240,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         RuleEngineFactory.newRuleEngine(
             shortXContext = shortXContext,
             androidContext = context,
-            androidUiContext = context,
+            androidUiContext = uiContext,
             handler = handler,
             onJobStarted = { id ->
                 systemServiceScope.launchSafety("onJobStarted") {
