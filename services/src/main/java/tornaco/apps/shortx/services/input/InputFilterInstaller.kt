@@ -30,18 +30,18 @@ class InputFilterInstaller(private val root: ShortXService) {
                     "setInputFilter",
                     InputFilterImpl
                 )
-                logger.i("installInputFilter, InputFilter installed.")
+                logger.w("installInputFilter, InputFilter installed.")
                 Reflections.setObjectField(
                     ServiceHolder.inputManagerService,
                     "mInputFilter",
                     null
                 )
-                logger.i("installInputFilter, InputFilter removed.")
+                logger.w("installInputFilter, InputFilter removed.")
             }
         } else {
             logger.w("Drop inputFilter set up since hasDisableGestureFlag is true")
         }
-        logger.i("installInputFilter, finish.")
+        logger.w("installInputFilter, finish.")
     }
 }
 

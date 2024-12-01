@@ -52,6 +52,7 @@ object HookStub {
         BackNavHooks.hookStartNav(lpparam)
         BackNavHooks.hookOnNavDone(lpparam)
         InputManagerHook.hookInputManager(lpparam)
+        InputManagerHook.debugHooks(lpparam)
         AppWidgetServiceHook.hookAppWidgetService(lpparam)
         NotificationUsageStatsHook.hookNotificationUsageStats(lpparam)
         ActivityTaskSupervisorHook.hookActivityTaskSupervisor(lpparam)

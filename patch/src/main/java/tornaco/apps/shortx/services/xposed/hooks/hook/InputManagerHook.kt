@@ -36,13 +36,14 @@ object InputManagerHook {
                 // debugHooks(lpparam)
             }
         }
+
     }.onFailure {
         logger.e(it, "hookInputManager")
     }
 
-    private fun debugHooks(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
+    fun debugHooks(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
         afterMethod(lpparam.classLoader.inputManagerService(), "setInputFilter") { param ->
-            logger.d(
+            logger.w(
                 "setInputFilter: ${param.args.map { it }} ${
                     Log.getStackTraceString(
                         Throwable()
@@ -76,7 +77,7 @@ object InputManagerHook {
             ),
             "setInputFilterEnabled"
         ) { param ->
-            logger.d(
+            logger.w(
                 "setInputFilterEnabled: ${param.args.map { it }} ${
                     Log.getStackTraceString(
                         Throwable()
