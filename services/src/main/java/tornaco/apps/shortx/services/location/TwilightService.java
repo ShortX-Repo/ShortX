@@ -47,6 +47,7 @@ import java.util.TimeZone;
 
 import tornaco.apps.shortx.core.BuildPropInternal;
 import tornaco.apps.shortx.core.util.DateUtils;
+import tornaco.apps.shortx.core.util.OsUtils;
 import tornaco.apps.shortx.services.ShortXContext;
 import tornaco.apps.shortx.services.SystemService;
 import tornaco.apps.shortx.services.util.CalendarAstronomer;
@@ -126,7 +127,11 @@ public final class TwilightService
 
     @Override
     public void start(@NotNull Context context) {
-        super.start(context.createAttributionContext(getServiceName()));
+        if (OsUtils.isROrAbove()) {
+            super.start(context.createAttributionContext(getServiceName()));
+        } else {
+            super.start(context);
+        }
     }
 
     @Override
