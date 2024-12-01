@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.rule.actor.impl
 
 import android.app.Dialog
 import android.content.Context
+import android.content.ContextWrapper
 import com.google.gson.Gson
 import com.google.protobuf.Message
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +22,7 @@ import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
@@ -28,6 +30,7 @@ import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.ui.widget.showInSystemServer
 import tornaco.apps.shortx.ui.dialog.ListDialogView
 import tornaco.apps.shortx.ui.dialog.ListItem
+import java.io.File
 
 object ShowListDialog : Actor {
     private val gson by lazy { Gson() }
@@ -36,12 +39,28 @@ object ShowListDialog : Actor {
         return ShowListDialog::class.java
     }
 
+    class ServiceGlideContextWrapper(
+        private val dataDir: File,
+        context: Context
+    ) : ContextWrapper(context) {
+        override fun getDataDir(): File {
+            logger.d("Call getDataDir")
+            return dataDir
+        }
+
+        override fun getCacheDir(): File {
+            logger.d("Call getCacheDir")
+            return dataDir
+        }
+    }
+
     override suspend fun handle(
         params: HandleParams
     ) = with(params) {
         val d = action unpack_ ShowListDialog::class.java
+
         evaluateShowDialogAction(
-            context = androidUiContext,
+            context = ServiceGlideContextWrapper(Dirs.picassoCacheDir(), androidContext),
             shortXContext = shortXContext,
             d = d,
             contextData = contextData,

@@ -4,9 +4,7 @@ package tornaco.apps.shortx.ui.dialog
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Bitmap
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,22 +26,19 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.I18N
+import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.DialogUiStyleSettings
-import tornaco.apps.shortx.core.util.ApkUtils
-import tornaco.apps.shortx.core.util.BitmapUtils
-import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
+import tornaco.apps.shortx.ui.theme.SystemServerAppIcon
 
 data class ListItem(
     val id: Int,
@@ -68,7 +63,6 @@ class ListDialogView(
     @Composable
     override fun DialogContent() {
         val selectedIdList = remember { mutableStateListOf(*defaultSelectedItems.toTypedArray()) }
-        val context = LocalContext.current
 
         Column(
             modifier = Modifier.padding(16.dp),
@@ -157,23 +151,11 @@ class ListDialogView(
                                 // app://com.tencent.mm
                                 if (iconName.startsWith("app://")) {
                                     val pkgName = iconName.removePrefix("app://")
-                                    val iconBitmap: Bitmap? = remember(iconName) {
-                                        runCatching {
-                                            val drawable =
-                                                ApkUtils.loadIconByPkgName(context, pkgName)
-                                            BitmapUtils.getBitmap(context, drawable)
-                                        }
-                                    }.getOrElse {
-                                        Logger.nameless.e(it, "Get app icon")
-                                        null
-                                    }
-                                    iconBitmap?.let {
-                                        Image(
-                                            it.asImageBitmap(),
-                                            "App",
-                                            modifier = Modifier.size(32.dp)
-                                        )
-                                    }
+
+                                    SystemServerAppIcon(
+                                        Modifier.size(32.dp),
+                                        AppPkg.newBuilder().setPkgName(pkgName).build()
+                                    )
                                 } else {
                                     RemixIcon(iconName)
                                 }

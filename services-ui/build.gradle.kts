@@ -50,4 +50,8 @@ dependencies {
     implementation(libs.shortx.ext.dateformatter)
     // Color picker
     implementation(libs.rang.vikalp)
+
+    implementation(libs.glide.landscapist)
+    implementation(libs.glide)
+    ksp(libs.glide.compiler)
 }
