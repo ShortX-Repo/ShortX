@@ -15,6 +15,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.GenericContextData
 import tornaco.apps.shortx.core.localvar.LocalVars
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
@@ -128,7 +129,7 @@ class DefaultRuleEngine(
                 checkCondition = checkCondition
             )
         }.also {
-            logger.d("shouldFire check taken: ${System.currentTimeMillis() - startTimeMillis}ms")
+            logger.logOnDebug { ("shouldFire check taken: ${System.currentTimeMillis() - startTimeMillis}ms") }
         }
     }
 
@@ -218,14 +219,14 @@ class DefaultRuleEngine(
             return false
         }
 
-        logger.d("fire: ${fact.javaClass}")
+        logger.logOnDebug { ("fire: ${fact.javaClass}") }
         var anyMatch = false
         rules.filterInvalid().forEach { rule ->
             // Try fire for Rule.
             val factMatcherResult = factMatcher.match(fact, rule.factsList)
-            logger.d("factMatcherResult: $factMatcherResult")
+            logger.logOnDebug { ("factMatcherResult: $factMatcherResult") }
             if (factMatcherResult.isMatch) {
-                logger.d("fire, rule matched: ${fact.javaClass} ${rule.title}")
+                logger.logOnDebug { ("fire, rule matched: ${fact.javaClass} ${rule.title}") }
                 anyMatch = true
 
                 // Prepare initial context data
@@ -244,11 +245,11 @@ class DefaultRuleEngine(
                             RuleInstanceIdGenerator_Static.newBuilder().setInsId(rule.id).build()
                                 .pack_()
                         })
-                logger.d("ruleInsIdGen: $ruleInsIdGen")
+                logger.logOnDebug { ("ruleInsIdGen: $ruleInsIdGen") }
                 val ruleInstanceId = with(RuleInstanceIdGenerator) {
                     ruleInsIdGen.generate(androidContext, shortXContext, contextData)
                 } ?: "FALLBACK_${rule.id}"
-                logger.d("ruleInstanceId: $ruleInstanceId")
+                logger.logOnDebug { ("ruleInstanceId: $ruleInstanceId") }
 
 
                 // **************** Check ConflictStrategy start ******************
@@ -257,10 +258,10 @@ class DefaultRuleEngine(
                     synchronized(jobs) { jobs.any { it.srcId == rule.id && it.instanceId == ruleInstanceId } }
                 if (isThisRuleAlreadyRunning) {
                     synchronized(jobs) {
-                        logger.d("isThisRuleAlreadyRunning is true, jobs: ${jobs.joinToString()}")
+                        logger.logOnDebug { ("isThisRuleAlreadyRunning is true, jobs: ${jobs.joinToString()}") }
                     }
                 }
-                logger.d("${rule.title} conflictStrategy: $conflictStrategy, isThisRuleAlreadyRunning: $isThisRuleAlreadyRunning")
+                logger.logOnDebug { ("${rule.title} conflictStrategy: $conflictStrategy, isThisRuleAlreadyRunning: $isThisRuleAlreadyRunning") }
                 var shouldExecuteActions = true
                 if (isThisRuleAlreadyRunning) {
                     shouldExecuteActions = when (conflictStrategy) {
@@ -274,12 +275,12 @@ class DefaultRuleEngine(
                         }
 
                         ConflictStrategy.ConflictStrategy_SkipNew -> {
-                            logger.d("Skip this rule actions since ConflictStrategy_SkipNew")
+                            logger.logOnDebug { ("Skip this rule actions since ConflictStrategy_SkipNew") }
                             false
                         }
                     }
                 }
-                logger.d("shouldExecuteActions for rule ${rule.title} $shouldExecuteActions")
+                logger.logOnDebug { ("shouldExecuteActions for rule ${rule.title} $shouldExecuteActions") }
                 // ****************** Check ConflictStrategy end ***************************
 
                 if (shouldExecuteActions) {
@@ -299,7 +300,7 @@ class DefaultRuleEngine(
                         withContext(Dispatchers.IO) {
                             // Match condition
                             val conditionRes: Boolean = if (rule.conditionsList.isEmpty()) {
-                                logger.d("this rule: ${rule.title} has no condition, assume match!")
+                                logger.logOnDebug { ("this rule: ${rule.title} has no condition, assume match!") }
                                 true
                             } else {
                                 conditionEvaluator.evaluate(
@@ -314,7 +315,7 @@ class DefaultRuleEngine(
                                 )
                             }
 
-                            logger.d("conditionRes for  ${fact.javaClass} ${rule.title} is: $conditionRes")
+                            logger.logOnDebug { ("conditionRes for  ${fact.javaClass} ${rule.title} is: $conditionRes") }
 
                             if (conditionRes) {
                                 // Update TheXXTimeToday state.
@@ -334,13 +335,13 @@ class DefaultRuleEngine(
                                     actionAsyncMode = rule.actionAsyncMode
                                 )
                             } else {
-                                logger.d("Won't runActions since condition not match.")
+                                logger.logOnDebug { ("Won't runActions since condition not match.") }
                             }
                         }
                         // Launch END.
                     }
 
-                    logger.d("Created job(ins: $ruleInstanceId): $job for rule: ${rule.title}")
+                    logger.logOnDebug { ("Created job(ins: $ruleInstanceId): $job for rule: ${rule.title}") }
                     synchronized(jobs) {
                         jobs.add(
                             JobRecord(
@@ -353,7 +354,7 @@ class DefaultRuleEngine(
                     }
                     onJobStarted(rule.id)
                     job.invokeOnCompletion {
-                        logger.d("job(ins: $ruleInstanceId) for rule: ${rule.title} complete, err: $it")
+                        logger.logOnDebug { ("job(ins: $ruleInstanceId) for rule: ${rule.title} complete, err: $it") }
                         synchronized(jobs) {
                             jobs.remove(
                                 JobRecord(
@@ -370,7 +371,7 @@ class DefaultRuleEngine(
                 }
 
             } else {
-                logger.d("fire, not match for rule it self: ${fact.javaClass} ${rule.title}, will check it's quit.")
+                logger.logOnDebug { ("fire, not match for rule it self: ${fact.javaClass} ${rule.title}, will check it's quit.") }
 
                 val quit = rule.quit
                 if (quit.isEnabled && checkQuitEvaluatePolicyForRule(
@@ -379,9 +380,9 @@ class DefaultRuleEngine(
                     ) { activeJobs().map { it.srcId } }
                 ) {
                     val quitFactMatcherResult = factMatcher.match(fact, quit.factsList)
-                    logger.d("quitFactMatcherResult: $quitFactMatcherResult")
+                    logger.logOnDebug { ("quitFactMatcherResult: $quitFactMatcherResult") }
                     if (quitFactMatcherResult.isMatch) {
-                        logger.d("$LOG_TAG_RULE_QUIT fire, rule-quit matched: ${fact.javaClass} ${rule.title}")
+                        logger.logOnDebug { ("$LOG_TAG_RULE_QUIT fire, rule-quit matched: ${fact.javaClass} ${rule.title}") }
                         anyMatch = true
 
                         val contextData = ContextData.obtain(initialContextDataLazy())
@@ -407,11 +408,11 @@ class DefaultRuleEngine(
                                         .build()
                                         .pack_()
                                 })
-                        logger.d("quit, ruleInsIdGen: $ruleInsIdGen")
+                        logger.logOnDebug { ("quit, ruleInsIdGen: $ruleInsIdGen") }
                         val ruleInstanceId = with(RuleInstanceIdGenerator) {
                             ruleInsIdGen.generate(androidContext, shortXContext, contextData)
                         } ?: "FALLBACK_${rule.id}"
-                        logger.d("quit, ruleInstanceId: $ruleInstanceId")
+                        logger.logOnDebug { ("quit, ruleInstanceId: $ruleInstanceId") }
 
                         coroutineScope.launchSafety("fire-Nick") {
                             // Launch start
@@ -419,7 +420,7 @@ class DefaultRuleEngine(
                                 val parameterInputs =
                                     rule.parametersList.map { it.asDefaultInput() }
                                 val conditionRes = if (quit.conditionsList.isEmpty()) {
-                                    logger.d("$LOG_TAG_RULE_QUIT quit for rule: ${rule.title} has no condition, assume match!")
+                                    logger.logOnDebug { ("$LOG_TAG_RULE_QUIT quit for rule: ${rule.title} has no condition, assume match!") }
                                     true
                                 } else {
                                     conditionEvaluator.evaluate(
@@ -433,9 +434,9 @@ class DefaultRuleEngine(
                                         parameterInputs = parameterInputs
                                     )
                                 }
-                                logger.d("$LOG_TAG_RULE_QUIT conditionRes for  ${fact.javaClass} ${rule.title} is: $conditionRes")
+                                logger.logOnDebug { ("$LOG_TAG_RULE_QUIT conditionRes for  ${fact.javaClass} ${rule.title} is: $conditionRes") }
                                 if (conditionRes) {
-                                    logger.d("$LOG_TAG_RULE_QUIT about to quit ${rule.title}")
+                                    logger.logOnDebug { ("$LOG_TAG_RULE_QUIT about to quit ${rule.title}") }
 
                                     // DO NOT cancel ourself...
                                     cancelJobs("Rule quit(退出指令)") {
@@ -471,15 +472,15 @@ class DefaultRuleEngine(
         das.filterHasQuit()
             .filterDirectActionQuitEvaluatePolicy()
             .forEach { da ->
-                logger.d("fire, check da quit: ${fact.javaClass} ${da.title}")
+                logger.logOnDebug { ("fire, check da quit: ${fact.javaClass} ${da.title}") }
 
                 val quit = da.quit
 
                 if (quit.isEnabled) {
                     val quitFactMatcherResult = factMatcher.match(fact, quit.factsList)
-                    logger.d("quitFactMatcherResult: $quitFactMatcherResult")
+                    logger.logOnDebug { ("quitFactMatcherResult: $quitFactMatcherResult") }
                     if (quitFactMatcherResult.isMatch) {
-                        logger.d("$LOG_TAG_RULE_QUIT fire, da-quit matched: ${fact.javaClass} ${da.title}")
+                        logger.logOnDebug { ("$LOG_TAG_RULE_QUIT fire, da-quit matched: ${fact.javaClass} ${da.title}") }
                         anyMatch = true
 
                         val contextData = ContextData.obtain(initialContextDataLazy())
@@ -502,11 +503,11 @@ class DefaultRuleEngine(
                             RuleInstanceIdGenerator_Static.newBuilder().setInsId(da.id)
                                 .build()
                                 .pack_()
-                        logger.d("quit, ruleInsIdGen: $ruleInsIdGen")
+                        logger.logOnDebug { ("quit, ruleInsIdGen: $ruleInsIdGen") }
                         val ruleInstanceId = with(RuleInstanceIdGenerator) {
                             ruleInsIdGen.generate(androidContext, shortXContext, contextData)
                         } ?: "FALLBACK_${da.id}"
-                        logger.d("quit, ruleInstanceId: $ruleInstanceId")
+                        logger.logOnDebug { ("quit, ruleInstanceId: $ruleInstanceId") }
 
                         coroutineScope.launchSafety("fire-Tornaco") {
                             // Launch start
@@ -514,7 +515,7 @@ class DefaultRuleEngine(
                                 val parameterInputs =
                                     da.parametersList.map { it.asDefaultInput() }
                                 val conditionRes = if (quit.conditionsList.isEmpty()) {
-                                    logger.d("$LOG_TAG_RULE_QUIT quit for da: ${da.title} has no condition, assume match!")
+                                    logger.logOnDebug { ("$LOG_TAG_RULE_QUIT quit for da: ${da.title} has no condition, assume match!") }
                                     true
                                 } else {
                                     conditionEvaluator.evaluate(
@@ -528,9 +529,9 @@ class DefaultRuleEngine(
                                         parameterInputs = parameterInputs
                                     )
                                 }
-                                logger.d("$LOG_TAG_RULE_QUIT conditionRes for  ${fact.javaClass} ${da.title} is: $conditionRes")
+                                logger.logOnDebug { ("$LOG_TAG_RULE_QUIT conditionRes for  ${fact.javaClass} ${da.title} is: $conditionRes") }
                                 if (conditionRes) {
-                                    logger.d("$LOG_TAG_RULE_QUIT about to quit ${da.title}")
+                                    logger.logOnDebug { ("$LOG_TAG_RULE_QUIT about to quit ${da.title}") }
 
                                     // DO NOT cancel ourself...
                                     cancelJobs("Rule quit(退出指令)") {
@@ -552,7 +553,7 @@ class DefaultRuleEngine(
                                         actionAsyncMode = quit.actionAsyncMode
                                     )
 
-                                    logger.d("Remove from canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce: ${evaluateContext.srcId}")
+                                    logger.logOnDebug { ("Remove from canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce: ${evaluateContext.srcId}") }
 
                                     withQuitEvaPolicyOO {
                                         remove(evaluateContext.srcId)
@@ -582,7 +583,7 @@ class DefaultRuleEngine(
         parameterInputs: List<FuncParameterInput>
     ) {
         // By default, execute action in IO
-        logger.d("job for rule: $ruleTitleForLog start. ($reason)")
+        logger.logOnDebug { ("job for rule: $ruleTitleForLog start. ($reason)") }
         val runActions: suspend () -> Unit = {
             realRunActions(
                 actionsToRun = actionsToRun,
@@ -597,19 +598,19 @@ class DefaultRuleEngine(
 
         when (asyncMode) {
             AsyncMode.AsyncMode_Async, AsyncMode.UNRECOGNIZED -> {
-                logger.d("Run actions with Async")
+                logger.logOnDebug { ("Run actions with Async") }
                 runActions()
             }
 
             AsyncMode.AsyncMode_Sync_InRule -> {
-                logger.d("Run actions with Sync_InRule: $muteX")
+                logger.logOnDebug { ("Run actions with Sync_InRule: $muteX") }
                 muteX.withLock {
                     runActions()
                 }
             }
 
             else -> {
-                logger.d("Run actions with globalMuteX")
+                logger.logOnDebug { ("Run actions with globalMuteX") }
                 globalMuteX.withLock {
                     runActions()
                 }
@@ -629,7 +630,7 @@ class DefaultRuleEngine(
     ) {
         val contextData = ContextData.obtain(initialContextData)
         val isAlreadyRunning = synchronized(jobs) { jobs.any { it.srcId == context.srcId } }
-        logger.d("evaluateActions, ${context.srcTitle} conflictStrategy: $conflictStrategy, isAlreadyRunning: $isAlreadyRunning")
+        logger.logOnDebug { ("evaluateActions, ${context.srcTitle} conflictStrategy: $conflictStrategy, isAlreadyRunning: $isAlreadyRunning") }
 
         if (isAlreadyRunning) {
             when (conflictStrategy) {
@@ -642,18 +643,18 @@ class DefaultRuleEngine(
                 }
 
                 ConflictStrategy.ConflictStrategy_SkipNew -> {
-                    logger.d("Skip this rule actions since ConflictStrategy_SkipNew")
+                    logger.logOnDebug { ("Skip this rule actions since ConflictStrategy_SkipNew") }
                     onComplete()
                     return
                 }
             }
         }
-        logger.d("Add to canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce: ${context.srcId}")
+        logger.logOnDebug { ("Add to canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce: ${context.srcId}") }
         withQuitEvaPolicyOO { add(context.srcId) }
 
         val job = coroutineScope.launchSafety("EvaluateActions.Wend") {
             withContext(Dispatchers.IO) {
-                logger.d("evaluateActions, job for id: ${context.srcId} start.")
+                logger.logOnDebug { ("evaluateActions, job for id: ${context.srcId} start.") }
                 realRunActions(
                     actionsToRun = actions,
                     ruleTitleForLog = context.srcTitle,
@@ -679,7 +680,7 @@ class DefaultRuleEngine(
         }
         onJobStarted(context.srcId)
         job.invokeOnCompletion {
-            logger.d("job for id: ${context.srcId} complete.")
+            logger.logOnDebug { ("job for id: ${context.srcId} complete.") }
             synchronized(jobs) {
                 jobs.removeIf {
                     it.job == job
@@ -733,11 +734,11 @@ class DefaultRuleEngine(
         localVars: LocalVars,
         parameterInputs: List<FuncParameterInput>
     ) {
-        logger.d("realRunActionsInAsyncMode, about to execute ${actionsToRun.size} actions for $ruleTitleForLog")
+        logger.logOnDebug { ("realRunActionsInAsyncMode, about to execute ${actionsToRun.size} actions for $ruleTitleForLog") }
         coroutineScope {
             actionsToRun.map {
                 async {
-                    logger.d("realRunActionsInAsyncMode, about to execute action: ${it.typeUrl}")
+                    logger.logOnDebug { ("realRunActionsInAsyncMode, about to execute action: ${it.typeUrl}") }
                     val evaRes = actionEvaluator.evaluate(
                         evaluateContext = evaluateContext,
                         action = it,
@@ -745,10 +746,10 @@ class DefaultRuleEngine(
                         localVars = localVars,
                         parameterInputs = parameterInputs
                     )
-                    logger.d("realRunActionsInAsyncMode, action evaluate res: $evaRes")
+                    logger.logOnDebug { ("realRunActionsInAsyncMode, action evaluate res: $evaRes") }
                 }
             }.awaitAll()
-            logger.d("realRunActionsInAsyncMode, all complete.")
+            logger.logOnDebug { ("realRunActionsInAsyncMode, all complete.") }
         }
     }
 
@@ -761,9 +762,9 @@ class DefaultRuleEngine(
         parameterInputs: List<FuncParameterInput>
     ) {
         kotlin.run loop@{
-            logger.d("realRunActionsInSyncMode, about to execute ${actionsToRun.size} actions for $ruleTitleForLog")
+            logger.logOnDebug { ("realRunActionsInSyncMode, about to execute ${actionsToRun.size} actions for $ruleTitleForLog") }
             actionsToRun.forEach {
-                logger.d("realRunActionsInSyncMode, about to execute action: ${it.typeUrl}")
+                logger.logOnDebug { ("realRunActionsInSyncMode, about to execute action: ${it.typeUrl}") }
                 val evaRes = actionEvaluator.evaluate(
                     evaluateContext = evaluateContext,
                     action = it,
@@ -771,11 +772,11 @@ class DefaultRuleEngine(
                     localVars = localVars,
                     parameterInputs = parameterInputs
                 )
-                logger.d("realRunActionsInSyncMode, action evaluate res: $evaRes")
+                logger.logOnDebug { ("realRunActionsInSyncMode, action evaluate res: $evaRes") }
                 if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
                     logger.e(evaRes.error, "realRunActionsInSyncMode, evaluate fail")
                     if (evaRes.shouldContinue) {
-                        logger.d("realRunActionsInSyncMode, action on error is continue execute.")
+                        logger.logOnDebug { ("realRunActionsInSyncMode, action on error is continue execute.") }
                     } else {
                         return@loop
                     }
@@ -783,7 +784,7 @@ class DefaultRuleEngine(
                     logger.w("realRunActionsInSyncMode, evaluate break!")
                     return@loop
                 } else if (evaRes is ActionEvaluator.EvaluateResult.Disabled) {
-                    logger.d("realRunActionsInSyncMode, action is disabled: ${evaRes.action.typeUrl}")
+                    logger.logOnDebug { ("realRunActionsInSyncMode, action is disabled: ${evaRes.action.typeUrl}") }
                 }
             }
         }
@@ -814,9 +815,9 @@ class DefaultRuleEngine(
     override fun cancelJobs(reason: String, filter: (JobRecord) -> Boolean) {
         synchronized(jobs) {
             val canceled = jobs.filter(filter).onEach {
-                logger.d("cancel job: $it, reason: $reason")
+                logger.logOnDebug { ("cancel job: $it, reason: $reason") }
                 it.job.cancel(CancellationException(reason))
-                logger.d("After call cancel, job isCanceled: ${it.job.isCancelled}, job isActive: ${it.job.isActive}")
+                logger.logOnDebug { ("After call cancel, job isCanceled: ${it.job.isCancelled}, job isActive: ${it.job.isActive}") }
                 onJobCancelled(it.srcId)
             }
             jobs.removeAll(canceled)
@@ -842,12 +843,12 @@ class DefaultRuleEngine(
         srcId: String,
         jobIdProvider: () -> List<String>
     ): Boolean {
-        logger.d("checkQuitEvaluatePolicyForDA: srcId $srcId")
-        withQuitEvaPolicyOO { logger.d("checkQuitEvaluatePolicyForDA: can...OnlyOnce $this") }
+        logger.logOnDebug { ("checkQuitEvaluatePolicyForDA: srcId $srcId") }
+        withQuitEvaPolicyOO { logger.logOnDebug { ("checkQuitEvaluatePolicyForDA: can...OnlyOnce $this") } }
         return when (policy) {
             Quit_EvaluatePolicy.Quit_EvaluatePolicy_Only_When_Is_Running, Quit_EvaluatePolicy.UNRECOGNIZED -> {
                 val jobs = jobIdProvider()
-                logger.d("checkQuitEvaluatePolicyForDA: jobs $jobs")
+                logger.logOnDebug { ("checkQuitEvaluatePolicyForDA: jobs $jobs") }
                 jobs.contains(srcId)
             }
 
@@ -866,14 +867,14 @@ class DefaultRuleEngine(
         srcId: String,
         jobIdProvider: () -> List<String>
     ): Boolean {
-        logger.d("checkQuitEvaluatePolicyForRule: srcId $srcId")
+        logger.logOnDebug { ("checkQuitEvaluatePolicyForRule: srcId $srcId") }
         withQuitEvaPolicyOO {
-            logger.d("checkQuitEvaluatePolicyForRule: can...OnlyOnce $this")
+            logger.logOnDebug { ("checkQuitEvaluatePolicyForRule: can...OnlyOnce $this") }
         }
         return when (policy) {
             Quit_EvaluatePolicy.Quit_EvaluatePolicy_Only_When_Is_Running -> {
                 val jobs = jobIdProvider()
-                logger.d("checkQuitEvaluatePolicyForRule: jobs $jobs")
+                logger.logOnDebug { ("checkQuitEvaluatePolicyForRule: jobs $jobs") }
                 jobs.contains(srcId)
             }
 
