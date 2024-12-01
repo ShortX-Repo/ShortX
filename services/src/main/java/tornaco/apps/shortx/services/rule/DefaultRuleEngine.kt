@@ -283,6 +283,8 @@ class DefaultRuleEngine(
                 // ****************** Check ConflictStrategy end ***************************
 
                 if (shouldExecuteActions) {
+                    withQuitEvaPolicyOO { add(rule.id) }
+
                     val evaluateContext = EvaluateContext.newBuilder()
                         .setSrcId(rule.id)
                         .setSrcEvent(ContextSrcEvent.ContextSrc_Rule)
@@ -455,11 +457,7 @@ class DefaultRuleEngine(
                                         actionAsyncMode = quit.actionAsyncMode
                                     )
 
-                                    withQuitEvaPolicyOO {
-                                        remove(
-                                            evaluateContext.srcId
-                                        )
-                                    }
+                                    withQuitEvaPolicyOO { remove(evaluateContext.srcId) }
                                 }
                                 // Launch End
                             }
@@ -555,10 +553,9 @@ class DefaultRuleEngine(
                                     )
 
                                     logger.d("Remove from canEvaluateQuitDAInsWhenQuitPolicyIsEvaluateOnlyOnce: ${evaluateContext.srcId}")
+
                                     withQuitEvaPolicyOO {
-                                        remove(
-                                            evaluateContext.srcId
-                                        )
+                                        remove(evaluateContext.srcId)
                                     }
                                 }
                                 // Launch End
