@@ -60,6 +60,7 @@ import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.ErrorCard
+import tornaco.apps.shortx.ui.base.LargeTitle
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumTitle
@@ -95,7 +96,7 @@ class ConditionHandler(
 fun ConditionContent(
     isOptional: Boolean = true,
     header: @Composable ColumnScope.() -> Unit = {
-        MediumTitle(
+        LargeTitle(
             LocalI18N.current[isOptional.select(
                 "ui.conditions.title.optional",
                 "ui.conditions.title"

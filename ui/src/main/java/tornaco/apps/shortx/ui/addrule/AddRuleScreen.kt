@@ -62,6 +62,8 @@ import tornaco.apps.shortx.ui.base.ExpandableSectionBar
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.FieldTitleWithTip
 import tornaco.apps.shortx.ui.base.LargeSpacer
+import tornaco.apps.shortx.ui.base.LargeTitle
+import tornaco.apps.shortx.ui.base.LargeTitleWithTip
 import tornaco.apps.shortx.ui.base.LoadError
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.Loading
@@ -480,14 +482,14 @@ private fun RuleContent(
                 })
             SplitLines(modifier = Modifier.padding(vertical = 30.dp))
 
-            SectionSpacer()
+            LargeSpacer()
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                MediumTitleWithTip(
+                LargeTitleWithTip(
                     LocalI18N.current["ui.rule.quit.title"],
                     LocalI18N.current["ui.rule.quit.description"]
                 )
@@ -555,7 +557,7 @@ private fun RuleContent(
 
             SplitLines(modifier = Modifier.padding(vertical = 30.dp))
 
-            MediumTitle(text = "Hooks")
+            LargeTitle(text = "Hooks")
             SmallSpacer()
             ActionContent(
                 header = {

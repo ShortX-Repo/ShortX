@@ -51,6 +51,7 @@ import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.InputValidateResult
+import tornaco.apps.shortx.ui.base.LargeTitle
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MD3Badge
@@ -88,7 +89,7 @@ class FactHandler(
 @Composable
 fun FactSelectors(
     header: @Composable ColumnScope.() -> Unit = {
-        MediumTitle(LocalI18N.current["ui.fact.title"])
+        LargeTitle(LocalI18N.current["ui.fact.title"])
     },
     state: FactContentState,
     handler: FactHandler,

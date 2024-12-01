@@ -76,6 +76,7 @@ import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.ErrorCard
 import tornaco.apps.shortx.ui.base.InputValidateResult
+import tornaco.apps.shortx.ui.base.LargeTitle
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalUiStore
@@ -106,7 +107,7 @@ import kotlin.reflect.KClass
 @Composable
 fun ActionContent(
     header: @Composable (() -> Unit) = {
-        MediumTitle(LocalI18N.current["ui.actions.title"])
+        LargeTitle(LocalI18N.current["ui.actions.title"])
     },
     summary: @Composable ColumnScope.() -> Unit = {},
     // Rule Or DA id.
