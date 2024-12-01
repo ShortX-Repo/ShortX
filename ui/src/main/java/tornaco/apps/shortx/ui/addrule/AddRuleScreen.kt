@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package tornaco.apps.shortx.ui.addrule
 
 import android.content.Context
@@ -5,15 +7,16 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
@@ -53,7 +56,6 @@ import tornaco.apps.shortx.ui.addrule.fact.FactContentStateHandler
 import tornaco.apps.shortx.ui.addrule.fact.FactSelectors
 import tornaco.apps.shortx.ui.addrule.fact.asFactHandler
 import tornaco.apps.shortx.ui.base.BaseActivity
-import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
 import tornaco.apps.shortx.ui.base.ConfirmDialog
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
@@ -62,26 +64,23 @@ import tornaco.apps.shortx.ui.base.ExpandableSectionBar
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.FieldTitleWithTip
 import tornaco.apps.shortx.ui.base.LargeSpacer
-import tornaco.apps.shortx.ui.base.LargeTitle
-import tornaco.apps.shortx.ui.base.LargeTitleWithTip
 import tornaco.apps.shortx.ui.base.LoadError
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalShortXProps
-import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.MediumTitleWithTip
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
-import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
-import tornaco.apps.shortx.ui.base.SplitLines
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.SwitchBar
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.WarningCard
 import tornaco.apps.shortx.ui.base.handleSideEffect
+import tornaco.apps.shortx.ui.base.itemWithPadding
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.record.EvaRecordSetting
@@ -264,58 +263,52 @@ fun AddRuleScreen(
                 RemixIcon(remixName = saveIconName)
             }
         },
-        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+        verticalScroll = false
     ) {
-        ClickOutsideClearFocusBox {
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .animateContentSize()
-            ) {
-                when (addRuleState.onlineDALoadState) {
-                    is LoadState.Error -> {
-                        LoadError(modifier = Modifier.fillMaxSize()) {
-                            vm.initFromUrl(url)
-                        }
-                    }
+        when (addRuleState.onlineDALoadState) {
+            is LoadState.Error -> {
+                LoadError(modifier = Modifier.fillMaxSize()) {
+                    vm.initFromUrl(url)
+                }
+            }
 
-                    LoadState.Loading -> {
-                        Loading(modifier = Modifier.fillMaxSize())
-                    }
+            LoadState.Loading -> {
+                Loading(modifier = Modifier.fillMaxSize())
+            }
 
-                    is LoadState.Success -> {
-                        RuleContent(
-                            addRuleState = addRuleState,
-                            vm = vm,
-                            readOnly = readOnly,
-                            factContentState = factContentState,
-                            factHandler = factHandler,
-                            conditionContentState = conditionContentState,
-                            conditionHandler = conditionHandler,
-                            actionContentState = actionContentState,
-                            actionHandler = actionHandler,
-                            quitFactContentState = quitFactContentState,
-                            quitFactHandler = quitFactHandler,
-                            quitConditionContentState = quitConditionContentState,
-                            quitConditionHandler = quitConditionHandler,
-                            quitActionState = quitActionState,
-                            quitActionHandler = quitActionHandler,
-                            actionOnEnabledState = actionOnEnabledState,
-                            actionOnEnabledHandler = actionOnEnabledHandler,
-                            actionOnDisabledState = actionOnDisabledState,
-                            actionOnDisabledHandler = actionOnDisabledHandler,
-                            actionOnDeletedState = actionOnDeletedState,
-                            actionOnDeletedHandler = actionOnDeletedHandler
-                        )
-                    }
+            is LoadState.Success -> {
+                LazyColumn {
+                    ruleContent(
+                        addRuleState = addRuleState,
+                        vm = vm,
+                        readOnly = readOnly,
+                        factContentState = factContentState,
+                        factHandler = factHandler,
+                        conditionContentState = conditionContentState,
+                        conditionHandler = conditionHandler,
+                        actionContentState = actionContentState,
+                        actionHandler = actionHandler,
+                        quitFactContentState = quitFactContentState,
+                        quitFactHandler = quitFactHandler,
+                        quitConditionContentState = quitConditionContentState,
+                        quitConditionHandler = quitConditionHandler,
+                        quitActionState = quitActionState,
+                        quitActionHandler = quitActionHandler,
+                        actionOnEnabledState = actionOnEnabledState,
+                        actionOnEnabledHandler = actionOnEnabledHandler,
+                        actionOnDisabledState = actionOnDisabledState,
+                        actionOnDisabledHandler = actionOnDisabledHandler,
+                        actionOnDeletedState = actionOnDeletedState,
+                        actionOnDeletedHandler = actionOnDeletedHandler
+                    )
                 }
             }
         }
     }
 }
 
-@Composable
-private fun RuleContent(
+private fun LazyListScope.ruleContent(
     addRuleState: AddRuleState,
     vm: AddRuleViewModel,
     readOnly: Boolean,
@@ -338,302 +331,349 @@ private fun RuleContent(
     actionOnDeletedState: ActionContentState,
     actionOnDeletedHandler: ActionContentStateHandler
 ) {
-    AnimatedVisibility(visible = !addRuleState.securityCheckRes) {
-        Column {
-            ErrorCard(
-                modifier = Modifier
-                    .padding(vertical = 16.dp),
-                iconName = Remix.UserAndFaces.skull_2_fill,
-                title = LocalI18N.current["ui.rule.action.secure.warning.title"],
-                warnings = listOf(LocalI18N.current["ui.rule.action.secure.warning.message"])
-            )
-            LargeSpacer()
-        }
-    }
-
-    AnimatedVisibility(visible = addRuleState.hasSMSAction) {
-        Column {
-            WarningCard(
-                modifier = Modifier
-                    .padding(vertical = 16.dp)
-            ) {
-                Column(
+    itemWithPadding {
+        AnimatedVisibility(visible = !addRuleState.securityCheckRes) {
+            Column {
+                ErrorCard(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = LocalI18N.current["ui.rule.contains.send.sms.message"],
-                        style = MaterialTheme.typography.titleSmall
-                    )
-                }
-            }
-            LargeSpacer()
-        }
-    }
-
-    TitleAndDescription(state = addRuleState, vm = vm, readOnly = readOnly)
-    SectionSpacer()
-
-    FactSelectors(
-        state = factContentState,
-        handler = factHandler.asFactHandler(),
-        readOnly = readOnly
-    )
-    SectionSpacer()
-
-    ConditionContent(
-        state = conditionContentState,
-        readOnly = readOnly,
-        handler = conditionHandler.asConditionHandler()
-    )
-    SectionSpacer()
-
-    ActionContent(
-        srcId = addRuleState.id,
-        actions = actionContentState.actions,
-        actionAsyncMode = actionContentState.asyncMode,
-        canSelectActionAsyncMode = true,
-        evaluatingActions = addRuleState.evaluatingActions,
-        handler = actionHandler.asActionHandler(),
-        readOnly = readOnly,
-        warnings = actionContentState.actionWarningMessages
-    )
-    SectionSpacer()
-
-    EvaRecordSetting(id = addRuleState.id)
-    SectionSpacer()
-
-
-    AnimatedVisibility(addRuleState.parameters.isNotEmpty() && !addRuleState.showAdvancedOptions) {
-        Column {
-            FuncParamList(
-                params = addRuleState.parameters,
-                add = { param, override ->
-                    vm.addParameter(param, override)
-                },
-                remove = {
-                    vm.removeParameter(it)
-                })
-            SectionSpacer()
-        }
-    }
-
-    StandardSpacer()
-
-    ExpandableSectionBar(
-        isExpand = addRuleState.showAdvancedOptions,
-        text = LocalI18N.current["ui.advanced.options"],
-        iconName = Remix.Media.equalizer_fill
-    ) {
-        vm.setShowAdvancedOptions(!addRuleState.showAdvancedOptions)
-    }
-    StandardSpacer()
-    AnimatedVisibility(visible = addRuleState.showAdvancedOptions) {
-        Column {
-            // Async Mode
-            MediumTitleWithTip(
-                text = LocalI18N.current["ui.rule.async.mode"],
-                tipText = LocalI18N.current["ui.rule.async.mode.description"]
-            )
-            SmallSpacer()
-
-            val asyncModeDropdownState = rememberDropdownSelectorState()
-            Box(modifier = Modifier.fillMaxWidth()) {
-                FilledTonalButton(onClick = {
-                    asyncModeDropdownState.open()
-                }) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = LocalI18N.current[addRuleState.asyncMode.labelKey()])
-                        StandardSpacer()
-                        RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
-                    }
-                }
-                DropdownSelector(
-                    state = asyncModeDropdownState,
-                    items = AsyncMode.entries
-                        .filterNot { it == AsyncMode.UNRECOGNIZED }.map {
-                            DropdownItem(
-                                labelLines = listOf(
-                                    LocalI18N.current[it.labelKey()]
-                                ),
-                                data = it
-                            )
-                        },
-                    onSelect = {
-                        vm.setAsyncMode(it.data)
-                    })
-            }
-            SplitLines(modifier = Modifier.padding(vertical = 30.dp))
-
-            // Conflict
-            ConflictStrategy(addRuleState.conflictStrategy) {
-                vm.setConflictStrategy(it)
-            }
-            SplitLines(modifier = Modifier.padding(vertical = 30.dp))
-
-            FuncParamList(
-                params = addRuleState.parameters,
-                add = { param, override ->
-                    vm.addParameter(param, override)
-                },
-                remove = {
-                    vm.removeParameter(it)
-                })
-            SplitLines(modifier = Modifier.padding(vertical = 30.dp))
-
-            LargeSpacer()
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                LargeTitleWithTip(
-                    LocalI18N.current["ui.rule.quit.title"],
-                    LocalI18N.current["ui.rule.quit.description"]
+                        .padding(vertical = 16.dp),
+                    iconName = Remix.UserAndFaces.skull_2_fill,
+                    title = LocalI18N.current["ui.rule.action.secure.warning.title"],
+                    warnings = listOf(LocalI18N.current["ui.rule.action.secure.warning.message"])
                 )
-                ShortXSwitch(checked = addRuleState.isQuitEnabled, onCheckedChange = {
-                    vm.toggleQuitEnable()
-                })
+                LargeSpacer()
             }
-            AnimatedVisibility(visible = addRuleState.isQuitEnabled) {
-                Column {
-                    // Policy
-                    QuitEvaluatePolicy(addRuleState.quitEvaluatePolicy) {
-                        vm.setQuitEvaluatePolicy(it)
+        }
+    }
+
+    itemWithPadding {
+        AnimatedVisibility(visible = addRuleState.hasSMSAction) {
+            Column {
+                WarningCard(
+                    modifier = Modifier
+                        .padding(vertical = 16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            text = LocalI18N.current["ui.rule.contains.send.sms.message"],
+                            style = MaterialTheme.typography.titleSmall
+                        )
                     }
+                }
+                StandardSpacer()
+            }
+        }
+    }
 
-                    StandardSpacer()
-                    FactSelectors(
-                        header = {
-                            FieldTitle(
-                                modifier = Modifier.padding(bottom = 12.dp),
-                                text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.fact.title"]}"
-                            )
-                        },
-                        state = quitFactContentState,
-                        handler = quitFactHandler.asFactHandler(),
-                        readOnly = readOnly
-                    )
-                    SectionSpacer()
+    itemWithPadding {
+        TitleAndDescription(state = addRuleState, vm = vm, readOnly = readOnly)
+        SectionSpacer()
+    }
 
-                    ConditionContent(
-                        header = {
-                            FieldTitle(
-                                modifier = Modifier.padding(bottom = 12.dp),
-                                text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.conditions.title"]}"
-                            )
-                        },
-                        state = quitConditionContentState,
-                        readOnly = readOnly,
-                        handler = quitConditionHandler.asConditionHandler()
-                    )
+    itemWithPadding {
+        FactSelectors(
+            state = factContentState,
+            handler = factHandler.asFactHandler(),
+            readOnly = readOnly
+        )
+        SectionSpacer()
+    }
 
-                    SectionSpacer()
+    itemWithPadding {
+        ConditionContent(
+            state = conditionContentState,
+            readOnly = readOnly,
+            handler = conditionHandler.asConditionHandler()
+        )
+        SectionSpacer()
+    }
 
-                    ActionContent(
-                        header = {
-                            FieldTitle(
-                                modifier = Modifier.padding(bottom = 6.dp),
-                                text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.actions.title"]}"
-                            )
-                        },
-                        summary = {
-                            TipBody(text = LocalI18N.current["ui.rule.quit.action.description"])
-                        },
-                        srcId = addRuleState.id,
-                        actions = quitActionState.actions,
-                        actionAsyncMode = quitActionState.asyncMode,
-                        canSelectActionAsyncMode = true,
-                        evaluatingActions = addRuleState.evaluatingActions,
-                        warnings = emptyMap(),
-                        handler = quitActionHandler.asActionHandler()
-                    )
+    itemWithPadding {
+        ActionContent(
+            srcId = addRuleState.id,
+            actions = actionContentState.actions,
+            actionAsyncMode = actionContentState.asyncMode,
+            canSelectActionAsyncMode = true,
+            evaluatingActions = addRuleState.evaluatingActions,
+            handler = actionHandler.asActionHandler(),
+            readOnly = readOnly,
+            warnings = actionContentState.actionWarningMessages
+        )
+        SectionSpacer()
+    }
 
-                    SectionSpacer()
+    itemWithPadding {
+        EvaRecordSetting(id = addRuleState.id)
+        SectionSpacer()
+    }
+
+    itemWithPadding {
+        AnimatedVisibility(
+            addRuleState.parameters.isNotEmpty()
+                    && !addRuleState.showAdvancedOptions
+        ) {
+            Column {
+                FuncParamList(
+                    params = addRuleState.parameters,
+                    add = { param, override ->
+                        vm.addParameter(param, override)
+                    },
+                    remove = {
+                        vm.removeParameter(it)
+                    })
+                SectionSpacer()
+            }
+        }
+        StandardSpacer()
+    }
+
+
+    // Adv
+    stickyHeader {
+        ExpandableSectionBar(
+            isExpand = addRuleState.showAdvancedOptions,
+            text = LocalI18N.current["ui.advanced.options"],
+            iconName = Remix.System.star_fill
+        ) {
+            vm.setShowAdvancedOptions(!addRuleState.showAdvancedOptions)
+        }
+    }
+    itemWithPadding {
+        AnimatedVisibility(visible = addRuleState.showAdvancedOptions) {
+            Column {
+                // Async Mode
+                MediumTitleWithTip(
+                    text = LocalI18N.current["ui.rule.async.mode"],
+                    tipText = LocalI18N.current["ui.rule.async.mode.description"]
+                )
+                SmallSpacer()
+
+                // AsyncMode
+                val asyncModeDropdownState = rememberDropdownSelectorState()
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    FilledTonalButton(onClick = {
+                        asyncModeDropdownState.open()
+                    }) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(text = LocalI18N.current[addRuleState.asyncMode.labelKey()])
+                            StandardSpacer()
+                            RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
+                        }
+                    }
+                    DropdownSelector(
+                        state = asyncModeDropdownState,
+                        items = AsyncMode.entries
+                            .filterNot { it == AsyncMode.UNRECOGNIZED }.map {
+                                DropdownItem(
+                                    labelLines = listOf(
+                                        LocalI18N.current[it.labelKey()]
+                                    ),
+                                    data = it
+                                )
+                            },
+                        onSelect = {
+                            vm.setAsyncMode(it.data)
+                        })
+                }
+                StandardSpacer()
+
+                // Conflict
+                ConflictStrategy(addRuleState.conflictStrategy) {
+                    vm.setConflictStrategy(it)
+                }
+                StandardSpacer()
+
+                FuncParamList(
+                    params = addRuleState.parameters,
+                    add = { param, override ->
+                        vm.addParameter(param, override)
+                    },
+                    remove = {
+                        vm.removeParameter(it)
+                    })
+                SectionSpacer()
+            }
+        }
+    }
+
+    // Quit START
+    stickyHeader {
+        SwitchBar(
+            isChecked = addRuleState.isQuitEnabled,
+            text = LocalI18N.current["ui.rule.quit.title"],
+            iconName = Remix.System.logout_circle_fill,
+            withRoundCorner = false,
+            onCheckChange = {
+                vm.toggleQuitEnable()
+            }
+        )
+    }
+    itemWithPadding {
+        AnimatedVisibility(visible = addRuleState.isQuitEnabled) {
+            Column {
+                StandardSpacer()
+                TipBody(LocalI18N.current["ui.rule.quit.description"])
+                StandardSpacer()
+                // Policy
+                QuitEvaluatePolicy(addRuleState.quitEvaluatePolicy) {
+                    vm.setQuitEvaluatePolicy(it)
+                }
+
+                StandardSpacer()
+                FactSelectors(
+                    header = {
+                        FieldTitle(
+                            modifier = Modifier.padding(bottom = 12.dp),
+                            text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.fact.title"]}"
+                        )
+                    },
+                    state = quitFactContentState,
+                    handler = quitFactHandler.asFactHandler(),
+                    readOnly = readOnly
+                )
+                SectionSpacer()
+
+                ConditionContent(
+                    header = {
+                        FieldTitle(
+                            modifier = Modifier.padding(bottom = 12.dp),
+                            text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.conditions.title"]}"
+                        )
+                    },
+                    state = quitConditionContentState,
+                    readOnly = readOnly,
+                    handler = quitConditionHandler.asConditionHandler()
+                )
+
+                SectionSpacer()
+
+                ActionContent(
+                    header = {
+                        FieldTitle(
+                            modifier = Modifier.padding(bottom = 6.dp),
+                            text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.actions.title"]}"
+                        )
+                    },
+                    summary = {
+                        TipBody(text = LocalI18N.current["ui.rule.quit.action.description"])
+                    },
+                    srcId = addRuleState.id,
+                    actions = quitActionState.actions,
+                    actionAsyncMode = quitActionState.asyncMode,
+                    canSelectActionAsyncMode = true,
+                    evaluatingActions = addRuleState.evaluatingActions,
+                    warnings = emptyMap(),
+                    handler = quitActionHandler.asActionHandler()
+                )
+
+                SectionSpacer()
+            }
+        }
+    }
+    // Quit END
+
+    // Hooks START
+    stickyHeader {
+        // Hooks
+        ExpandableSectionBar(
+            isExpand = addRuleState.expandHooks,
+            text = "Hooks",
+            iconName = Remix.Document.file_list_fill
+        ) {
+            vm.setExpandHooks(!addRuleState.expandHooks)
+        }
+    }
+    itemWithPadding {
+        AnimatedVisibility(addRuleState.expandHooks) {
+            Column {
+                ActionContent(
+                    header = {
+                        FieldTitleWithTip(
+                            LocalI18N.current["ui.actions.hook.on.enabled.title"],
+                            LocalI18N.current["ui.actions.hook.on.enabled.description"]
+                        )
+                    },
+                    srcId = addRuleState.id,
+                    actions = actionOnEnabledState.actions,
+                    actionAsyncMode = actionOnEnabledState.asyncMode,
+                    canSelectActionAsyncMode = true,
+                    evaluatingActions = addRuleState.evaluatingActions,
+                    handler = actionOnEnabledHandler.asActionHandler(),
+                    readOnly = readOnly,
+                    warnings = actionOnEnabledState.actionWarningMessages
+                )
+                SectionSpacer()
+
+                ActionContent(
+                    header = {
+                        FieldTitleWithTip(
+                            LocalI18N.current["ui.actions.hook.on.disabled.title"],
+                            LocalI18N.current["ui.actions.hook.on.disabled.description"]
+                        )
+                    },
+                    srcId = addRuleState.id,
+                    actions = actionOnDisabledState.actions,
+                    actionAsyncMode = actionOnDisabledState.asyncMode,
+                    canSelectActionAsyncMode = true,
+                    evaluatingActions = addRuleState.evaluatingActions,
+                    handler = actionOnDisabledHandler.asActionHandler(),
+                    readOnly = readOnly,
+                    warnings = actionOnDisabledState.actionWarningMessages
+                )
+                SectionSpacer()
+
+                ActionContent(
+                    header = {
+                        FieldTitleWithTip(
+                            LocalI18N.current["ui.actions.hook.on.deleted.title"],
+                            LocalI18N.current["ui.actions.hook.on.deleted.description"]
+                        )
+                    },
+                    srcId = addRuleState.id,
+                    actions = actionOnDeletedState.actions,
+                    actionAsyncMode = actionOnDeletedState.asyncMode,
+                    canSelectActionAsyncMode = true,
+                    evaluatingActions = addRuleState.evaluatingActions,
+                    handler = actionOnDeletedHandler.asActionHandler(),
+                    readOnly = readOnly,
+                    warnings = actionOnDeletedState.actionWarningMessages
+                )
+                SectionSpacer()
+            }
+        }
+    }
+    // Hooks END
+
+    // GEEKS START
+    stickyHeader {
+        ExpandableSectionBar(
+            isExpand = addRuleState.showGeeksOptions,
+            text = LocalI18N.current["ui.geeks.options"],
+            iconName = Remix.UserAndFaces.aliens_fill
+        ) {
+            vm.setShowGeeksOptions(!addRuleState.showGeeksOptions)
+        }
+        StandardSpacer()
+    }
+    itemWithPadding {
+        AnimatedVisibility(visible = addRuleState.showGeeksOptions) {
+            Column {
+                RuleInstanceIdGenSelector(addRuleState.instanceIdGen, readOnly) {
+                    vm.setInsGen(it)
                 }
             }
-
-            SplitLines(modifier = Modifier.padding(vertical = 30.dp))
-
-            LargeTitle(text = "Hooks")
-            SmallSpacer()
-            ActionContent(
-                header = {
-                    FieldTitleWithTip(
-                        LocalI18N.current["ui.actions.hook.on.enabled.title"],
-                        LocalI18N.current["ui.actions.hook.on.enabled.description"]
-                    )
-                },
-                srcId = addRuleState.id,
-                actions = actionOnEnabledState.actions,
-                actionAsyncMode = actionOnEnabledState.asyncMode,
-                canSelectActionAsyncMode = true,
-                evaluatingActions = addRuleState.evaluatingActions,
-                handler = actionOnEnabledHandler.asActionHandler(),
-                readOnly = readOnly,
-                warnings = actionOnEnabledState.actionWarningMessages
-            )
-            SectionSpacer()
-
-            ActionContent(
-                header = {
-                    FieldTitleWithTip(
-                        LocalI18N.current["ui.actions.hook.on.disabled.title"],
-                        LocalI18N.current["ui.actions.hook.on.disabled.description"]
-                    )
-                },
-                srcId = addRuleState.id,
-                actions = actionOnDisabledState.actions,
-                actionAsyncMode = actionOnDisabledState.asyncMode,
-                canSelectActionAsyncMode = true,
-                evaluatingActions = addRuleState.evaluatingActions,
-                handler = actionOnDisabledHandler.asActionHandler(),
-                readOnly = readOnly,
-                warnings = actionOnDisabledState.actionWarningMessages
-            )
-            SectionSpacer()
-
-            ActionContent(
-                header = {
-                    FieldTitleWithTip(
-                        LocalI18N.current["ui.actions.hook.on.deleted.title"],
-                        LocalI18N.current["ui.actions.hook.on.deleted.description"]
-                    )
-                },
-                srcId = addRuleState.id,
-                actions = actionOnDeletedState.actions,
-                actionAsyncMode = actionOnDeletedState.asyncMode,
-                canSelectActionAsyncMode = true,
-                evaluatingActions = addRuleState.evaluatingActions,
-                handler = actionOnDeletedHandler.asActionHandler(),
-                readOnly = readOnly,
-                warnings = actionOnDeletedState.actionWarningMessages
-            )
-            SectionSpacer()
         }
     }
-    SectionSpacer()
+    // GEEKS END
 
-    ExpandableSectionBar(
-        isExpand = addRuleState.showGeeksOptions,
-        text = LocalI18N.current["ui.geeks.options"],
-        iconName = Remix.UserAndFaces.aliens_fill
-    ) {
-        vm.setShowGeeksOptions(!addRuleState.showGeeksOptions)
+    itemWithPadding {
+        SectionSpacer()
+        SuggestedNavEntry()
     }
-    StandardSpacer()
-    AnimatedVisibility(visible = addRuleState.showGeeksOptions) {
-        Column {
-            RuleInstanceIdGenSelector(addRuleState.instanceIdGen, readOnly) {
-                vm.setInsGen(it)
-            }
-        }
-    }
-
-    SectionSpacer()
-    SuggestedNavEntry()
 }
 
 @Composable
@@ -680,7 +720,7 @@ fun QuitEvaluatePolicy(
     policy: Quit_EvaluatePolicy,
     setPolicy: (Quit_EvaluatePolicy) -> Unit
 ) {
-    MediumTitle(text = LocalI18N.current["ui.rule.quit.eva.policy"])
+    FieldTitle(text = LocalI18N.current["ui.rule.quit.eva.policy"])
     SmallSpacer()
 
     val dropState = rememberDropdownSelectorState()

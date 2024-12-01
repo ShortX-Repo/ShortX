@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package tornaco.apps.shortx.ui.addda
 
 import android.content.Context
@@ -5,16 +7,16 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -27,7 +29,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
@@ -58,23 +59,20 @@ import tornaco.apps.shortx.ui.base.ErrorCard
 import tornaco.apps.shortx.ui.base.ExpandableSectionBar
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
-import tornaco.apps.shortx.ui.base.LargeTitleWithTip
 import tornaco.apps.shortx.ui.base.LoadError
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalShortXProps
-import tornaco.apps.shortx.ui.base.MediumTitleWithTip
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
-import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.ShortXTextField
-import tornaco.apps.shortx.ui.base.SplitLines
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.WarningCard
 import tornaco.apps.shortx.ui.base.handleSideEffect
+import tornaco.apps.shortx.ui.base.itemWithPadding
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.record.EvaRecordSetting
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
@@ -231,31 +229,26 @@ fun AddDirectActionScreen(
                 RemixIcon(saveIconName)
             }
         },
-        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+        verticalScroll = false
     ) {
         ClickOutsideClearFocusBox(
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp)
-                    .animateContentSize()
-            ) {
-                when (addDirectActionState.onlineDALoadState) {
-                    is LoadState.Error -> {
-                        LoadError(modifier = Modifier.fillMaxSize()) {
-                            vm.initFromUrl(url)
-                        }
+            when (addDirectActionState.onlineDALoadState) {
+                is LoadState.Error -> {
+                    LoadError(modifier = Modifier.fillMaxSize()) {
+                        vm.initFromUrl(url)
                     }
+                }
 
-                    LoadState.Loading -> {
-                        Loading(modifier = Modifier.fillMaxSize())
-                    }
+                LoadState.Loading -> {
+                    Loading(modifier = Modifier.fillMaxSize())
+                }
 
-                    is LoadState.Success -> {
-                        DAContent(
+                is LoadState.Success -> {
+                    LazyColumn {
+                        daContent(
                             addDirectActionState = addDirectActionState,
                             vm = vm,
                             readOnly = readOnly,
@@ -275,8 +268,7 @@ fun AddDirectActionScreen(
     }
 }
 
-@Composable
-private fun DAContent(
+private fun LazyListScope.daContent(
     addDirectActionState: AddDirectActionState,
     vm: AddDirectActionViewModel,
     readOnly: Boolean,
@@ -289,161 +281,179 @@ private fun DAContent(
     quitActionState: ActionContentState,
     quitActionHandler: ActionContentStateHandler,
 ) {
-    AnimatedVisibility(visible = !addDirectActionState.securityCheckRes) {
-        Column {
-            ErrorCard(
-                modifier = Modifier
-                    .padding(vertical = 16.dp),
-                iconName = Remix.UserAndFaces.skull_2_fill,
-                title = LocalI18N.current["ui.rule.action.secure.warning.title"],
-                warnings = listOf(LocalI18N.current["ui.rule.action.secure.warning.message"])
-            )
-            LargeSpacer()
-        }
-    }
-
-    AnimatedVisibility(visible = addDirectActionState.hasSMSAction) {
-        Column {
-            WarningCard(
-                modifier = Modifier
-                    .padding(vertical = 16.dp)
-            ) {
-                Column(
+    itemWithPadding {
+        AnimatedVisibility(visible = !addDirectActionState.securityCheckRes) {
+            Column {
+                ErrorCard(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = LocalI18N.current["ui.rule.contains.send.sms.message"],
-                        style = MaterialTheme.typography.titleSmall
-                    )
-                }
-            }
-            LargeSpacer()
-        }
-    }
-
-    TitleAndDescription(state = addDirectActionState, vm = vm, readOnly = readOnly)
-    Spacer(modifier = Modifier.size(24.dp))
-
-    ActionContent(
-        srcId = addDirectActionState.id,
-        actions = actionContentState.actions,
-        actionAsyncMode = actionContentState.asyncMode,
-        canSelectActionAsyncMode = true,
-        evaluatingActions = addDirectActionState.evaluatingActions,
-        handler = actionContentStateHandler.asActionHandler(),
-        readOnly = readOnly,
-        warnings = actionContentState.actionWarningMessages
-    )
-    SectionSpacer()
-
-    EvaRecordSetting(id = addDirectActionState.id)
-
-    SectionSpacer()
-    StandardSpacer()
-
-    ExpandableSectionBar(
-        isExpand = addDirectActionState.showAdvancedOptions,
-        text = LocalI18N.current["ui.advanced.options"],
-        iconName = Remix.Media.equalizer_fill
-    ) {
-        vm.setShowAdvancedOptions(!addDirectActionState.showAdvancedOptions)
-    }
-    StandardSpacer()
-    AnimatedVisibility(visible = addDirectActionState.showAdvancedOptions) {
-        Column {
-            ConflictStrategy(
-                conflictStrategy = addDirectActionState.conflictStrategy,
-                setConflictStrategy = {
-                    vm.setConflictStrategy(it)
-                })
-
-            SectionSpacer()
-
-            FuncParamList(addDirectActionState.parameters,
-                add = { param, override ->
-                    vm.addParameter(param, override)
-                },
-                remove = { vm.removeParameter(it) })
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                LargeTitleWithTip(
-                    LocalI18N.current["ui.rule.quit.title"],
-                    LocalI18N.current["ui.rule.quit.description"]
+                        .padding(vertical = 16.dp),
+                    iconName = Remix.UserAndFaces.skull_2_fill,
+                    title = LocalI18N.current["ui.rule.action.secure.warning.title"],
+                    warnings = listOf(LocalI18N.current["ui.rule.action.secure.warning.message"])
                 )
-                ShortXSwitch(checked = addDirectActionState.isQuitEnabled, onCheckedChange = {
-                    vm.toggleQuitEnable()
-                })
+                LargeSpacer()
             }
-            AnimatedVisibility(visible = addDirectActionState.isQuitEnabled) {
-                Column {
-                    // Policy
-                    QuitEvaluatePolicy(addDirectActionState.quitEvaluatePolicy) {
-                        vm.setQuitEvaluatePolicy(it)
-                    }
-
-                    StandardSpacer()
-                    FactSelectors(
-                        header = {
-                            FieldTitle(
-                                modifier = Modifier.padding(bottom = 12.dp),
-                                text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.fact.title"]}"
-                            )
-                        },
-                        state = quitFactContentState,
-                        handler = quitFactHandler.asFactHandler(),
-                        readOnly = readOnly
-                    )
-                    SectionSpacer()
-
-                    ConditionContent(
-                        header = {
-                            FieldTitle(
-                                modifier = Modifier.padding(bottom = 12.dp),
-                                text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.conditions.title"]}"
-                            )
-                        },
-                        state = quitConditionContentState,
-                        readOnly = readOnly,
-                        handler = quitConditionHandler.asConditionHandler()
-                    )
-
-                    SectionSpacer()
-
-                    ActionContent(
-                        header = {
-                            FieldTitle(
-                                modifier = Modifier.padding(bottom = 6.dp),
-                                text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.actions.title"]}"
-                            )
-                        },
-                        summary = {
-                            TipBody(text = LocalI18N.current["ui.rule.quit.action.description"])
-                        },
-                        srcId = addDirectActionState.id,
-                        actions = quitActionState.actions,
-                        actionAsyncMode = quitActionState.asyncMode,
-                        canSelectActionAsyncMode = true,
-                        evaluatingActions = addDirectActionState.evaluatingActions,
-                        warnings = emptyMap(),
-                        handler = quitActionHandler.asActionHandler()
-                    )
-
-                    SectionSpacer()
-                }
-            }
-
-            SplitLines(modifier = Modifier.padding(vertical = 30.dp))
         }
     }
 
-    SectionSpacer()
-    SuggestedNavEntry()
+    itemWithPadding {
+        AnimatedVisibility(visible = addDirectActionState.hasSMSAction) {
+            Column {
+                WarningCard(
+                    modifier = Modifier
+                        .padding(vertical = 16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            text = LocalI18N.current["ui.rule.contains.send.sms.message"],
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                    }
+                }
+                StandardSpacer()
+            }
+        }
+    }
+
+    itemWithPadding {
+        TitleAndDescription(state = addDirectActionState, vm = vm, readOnly = readOnly)
+        Spacer(modifier = Modifier.size(24.dp))
+    }
+
+    itemWithPadding {
+        ActionContent(
+            srcId = addDirectActionState.id,
+            actions = actionContentState.actions,
+            actionAsyncMode = actionContentState.asyncMode,
+            canSelectActionAsyncMode = true,
+            evaluatingActions = addDirectActionState.evaluatingActions,
+            handler = actionContentStateHandler.asActionHandler(),
+            readOnly = readOnly,
+            warnings = actionContentState.actionWarningMessages
+        )
+        SectionSpacer()
+    }
+
+    itemWithPadding {
+        EvaRecordSetting(id = addDirectActionState.id)
+        SectionSpacer()
+    }
+
+    // Adv START
+    stickyHeader {
+        ExpandableSectionBar(
+            isExpand = addDirectActionState.showAdvancedOptions,
+            text = LocalI18N.current["ui.advanced.options"],
+            iconName = Remix.System.star_fill
+        ) {
+            vm.setShowAdvancedOptions(!addDirectActionState.showAdvancedOptions)
+        }
+    }
+    itemWithPadding {
+        AnimatedVisibility(visible = addDirectActionState.showAdvancedOptions) {
+            Column {
+                // Conflict
+                ConflictStrategy(
+                    conflictStrategy = addDirectActionState.conflictStrategy,
+                    setConflictStrategy = {
+                        vm.setConflictStrategy(it)
+                    })
+                StandardSpacer()
+
+                // Params
+                FuncParamList(addDirectActionState.parameters,
+                    add = { param, override ->
+                        vm.addParameter(param, override)
+                    },
+                    remove = { vm.removeParameter(it) }
+                )
+                StandardSpacer()
+            }
+        }
+    }
+
+    // Quit START
+    stickyHeader {
+        ExpandableSectionBar(
+            isExpand = addDirectActionState.isQuitEnabled,
+            text = LocalI18N.current["ui.rule.quit.title"],
+            iconName = Remix.System.logout_circle_fill,
+        ) {
+            vm.toggleQuitEnable()
+        }
+    }
+    itemWithPadding {
+        AnimatedVisibility(visible = addDirectActionState.isQuitEnabled) {
+            Column {
+                StandardSpacer()
+                TipBody(LocalI18N.current["ui.rule.quit.description"])
+                StandardSpacer()
+                // Policy
+                QuitEvaluatePolicy(addDirectActionState.quitEvaluatePolicy) {
+                    vm.setQuitEvaluatePolicy(it)
+                }
+
+                StandardSpacer()
+                FactSelectors(
+                    header = {
+                        FieldTitle(
+                            modifier = Modifier.padding(bottom = 12.dp),
+                            text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.fact.title"]}"
+                        )
+                    },
+                    state = quitFactContentState,
+                    handler = quitFactHandler.asFactHandler(),
+                    readOnly = readOnly
+                )
+                SectionSpacer()
+
+                ConditionContent(
+                    header = {
+                        FieldTitle(
+                            modifier = Modifier.padding(bottom = 12.dp),
+                            text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.conditions.title"]}"
+                        )
+                    },
+                    state = quitConditionContentState,
+                    readOnly = readOnly,
+                    handler = quitConditionHandler.asConditionHandler()
+                )
+
+                SectionSpacer()
+
+                ActionContent(
+                    header = {
+                        FieldTitle(
+                            modifier = Modifier.padding(bottom = 6.dp),
+                            text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.actions.title"]}"
+                        )
+                    },
+                    summary = {
+                        TipBody(text = LocalI18N.current["ui.rule.quit.action.description"])
+                    },
+                    srcId = addDirectActionState.id,
+                    actions = quitActionState.actions,
+                    actionAsyncMode = quitActionState.asyncMode,
+                    canSelectActionAsyncMode = true,
+                    evaluatingActions = addDirectActionState.evaluatingActions,
+                    warnings = emptyMap(),
+                    handler = quitActionHandler.asActionHandler()
+                )
+
+                SectionSpacer()
+            }
+        }
+    }
+    // Quit END
+
+    itemWithPadding {
+        SectionSpacer()
+        SuggestedNavEntry()
+    }
 }
 
 @Composable
