@@ -62,6 +62,7 @@ data class AddRuleState(
     val ruleChanged: Boolean = false,
     val isEnabled: Boolean = false,
     val showAdvancedOptions: Boolean = false,
+    val expandHooks: Boolean = false,
     val showGeeksOptions: Boolean = false,
     val isQuitEnabled: Boolean = false,
     val quitEvaluatePolicy: Quit_EvaluatePolicy = Quit_EvaluatePolicy.Quit_EvaluatePolicy_Always,
@@ -166,6 +167,10 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
 
     fun setShowAdvancedOptions(show: Boolean) {
         updateState { copy(showAdvancedOptions = show) }
+    }
+
+    fun setExpandHooks(show: Boolean) {
+        updateState { copy(expandHooks = show) }
     }
 
     fun setShowGeeksOptions(show: Boolean) {
@@ -441,6 +446,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         createTime = r.createTime,
                         isEnabled = r.isEnabled,
                         showAdvancedOptions = hasAnyHookActions,
+                        expandHooks = hasAnyHookActions,
                         showGeeksOptions = hasAnyGeeksOptions,
                         instanceIdGen = r.ruleInstanceIdGenerator.toRuleInstanceIdGen(),
                         isQuitEnabled = r.quit.isEnabled,
