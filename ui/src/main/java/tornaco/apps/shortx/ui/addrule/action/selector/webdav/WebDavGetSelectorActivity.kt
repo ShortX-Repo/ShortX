@@ -1,3 +1,4 @@
+
 package tornaco.apps.shortx.ui.addrule.action.selector.webdav
 
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.settings.dav.DavProfileSelectorDialog
 import tornaco.apps.shortx.ui.settings.dav.DavSettingsActivity
 import tornaco.apps.shortx.ui.settings.dav.rememberDavProfileSelectorState
@@ -79,6 +81,8 @@ private fun BaseSelectorActivity<Action.WebDavGet>.Selector(currentAction: Actio
                 .padding(16.dp)
         ) {
             FieldTitle(text = "Url")
+            SmallSpacer()
+            TipBody("e.g. https://dav.jianguoyun.com/dav/1.pdf")
             SmallSpacer()
             ShortXTextField(
                 modifier = Modifier.fillMaxWidth(),
