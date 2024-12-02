@@ -27,7 +27,7 @@ object WebDavPut : Actor {
             val cv = RuleContextAndVars(params)
             withContext(Dispatchers.IO) {
                 val url = data.url.compileContextAndVars(cv)
-                val localFilePath = data.url.compileContextAndVars(cv)
+                val localFilePath = data.localFilePath.compileContextAndVars(cv)
                 val contentType = data.contentType.compileContextAndVars(cv)
                 logger.d("Put $localFilePath $contentType")
                 val profile = shortXContext.rule.getAllWebDavProfiles()
@@ -43,9 +43,10 @@ object WebDavPut : Actor {
                 }
                 logger.d("tmpFile: $tmpFile")
                 CopyFile.copyFile(
-                    shortXContext,
-                    File(localFilePath),
-                    tmpFile,
+                    shortXContext = shortXContext,
+                    srcFile = File(localFilePath),
+                    destFile = tmpFile,
+                    owner = "1000.1000"
                 )
 
                 sardine.put(url, tmpFile, contentType, false)

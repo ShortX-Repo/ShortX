@@ -72,6 +72,8 @@
 -keep class org.joni** {*;}
 
 -keep class tornaco.apps.shortx.services.util.http.persistentcookiejar** {*;}
+-keep class com.thegrizzlylabs.sardineandroid** {*;}
+-keep class org.simpleframework** {*;}
 
 # Retain generic signatures of TypeToken and its subclasses with R8 version 3.0 and higher.
 -keep,allowobfuscation,allowshrinking class com.google.gson.reflect.TypeToken

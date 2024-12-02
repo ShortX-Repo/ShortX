@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
+import android.annotation.SuppressLint
 import com.google.protobuf.Message
 import com.thegrizzlylabs.sardineandroid.Sardine
 import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine
@@ -22,6 +23,7 @@ object WebDavGet : Actor {
         return tornaco.apps.shortx.core.proto.action.WebDavGet::class.java
     }
 
+    @SuppressLint("SdCardPath")
     override suspend fun handle(
         params: HandleParams
     ) {
@@ -52,7 +54,14 @@ object WebDavGet : Actor {
                 }
                 logger.d("Write success")
 
-                val destFile = File(data.destPath.compileContextAndVars(cv)).apply {
+
+                val destPath = data.destPath.compileContextAndVars(cv)
+                require("/sdcard/" != destPath) { "You need to set a file path, not a dir." }
+                require("/sdcard" != destPath) { "You need to set a file path, not a dir." }
+                require("/data/" != destPath) { "You need to set a file path, not a dir." }
+                require("/data" != destPath) { "You need to set a file path, not a dir." }
+
+                val destFile = File(destPath).apply {
                     parentFile?.mkdirs()
                 }
                 logger.d("destFile: $destFile")
