@@ -51,6 +51,7 @@ object WebDavPut : Actor {
 
                 sardine.put(url, tmpFile, contentType, false)
                 logger.d("Put success.")
+                runCatching { tmpFile.deleteRecursively() }
             }
         }
     }
