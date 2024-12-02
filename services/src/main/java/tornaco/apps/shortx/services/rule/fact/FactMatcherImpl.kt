@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.rule.fact
 
+import android.annotation.SuppressLint
 import com.google.protobuf.Descriptors
 import tornaco.apps.shortx.core.PrebuiltStablePkgSetLabel
 import tornaco.apps.shortx.core.logOnDebug
@@ -119,6 +120,7 @@ internal class Matcher(
 
 private val logger = Logger("FactMatcher")
 
+@SuppressLint("SdCardPath")
 class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : FactMatcher {
     private val factValueMatchers: MutableMap<Class<*>, Matcher> =
         mutableMapOf()
@@ -462,7 +464,15 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
         register(MediaStoreInsert::class.java) { actual, rule ->
             val actualN = (actual as MediaStoreInsert)
             val ruleN = (rule as MediaStoreInsert)
-            emptyOrRegexMatch(ruleN.filterPath, actualN.path, ruleN.options)
+            emptyOrRegexMatch(
+                ruleField = ruleN.filterPath,
+                actualField = actualN.path,
+                options = ruleN.options
+            ) || emptyOrRegexMatch(
+                ruleField = ruleN.filterPath.replace("/sdcard", "/storage/emulated/0"),
+                actualField = actualN.path,
+                options = ruleN.options
+            )
         }
 
         register(OnStartOp::class.java) { actual, rule ->
