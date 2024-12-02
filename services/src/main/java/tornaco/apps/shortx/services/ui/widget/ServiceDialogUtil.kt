@@ -13,7 +13,7 @@ fun Dialog.showInSystemServer(view: View, cancelable: Boolean = true, onDismiss:
     setCancelable(cancelable)
     setOnDismissListener { onDismiss() }
     window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG)
-
+    window.setBackgroundDrawable(null)
     val screenSize = context.screenSize().x
     window.setLayout((screenSize * 0.9f).roundToInt(), WindowManager.LayoutParams.WRAP_CONTENT)
 
