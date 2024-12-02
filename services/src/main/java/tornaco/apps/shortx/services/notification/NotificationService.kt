@@ -104,6 +104,9 @@ class NotificationService(shortXContext: ShortXContext) :
 
     fun setPostNByAppEnabled(enable: Boolean) {
         store.write(Settings.BoolSettings.PostNByApp, enable)
+        if (enable) {
+
+        }
     }
 
     fun isPostNByAppEnabled(): Boolean {
