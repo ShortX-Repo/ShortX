@@ -38,6 +38,7 @@ abstract class DialogView(
                         platformRadius
                     )
                 },
+                tonalElevation = 4.dp,
             ) {
                 DialogContent()
             }

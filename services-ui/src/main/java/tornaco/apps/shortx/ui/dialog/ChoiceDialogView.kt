@@ -63,26 +63,23 @@ class ChoiceDialogView(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    title, style = MaterialTheme.typography.headlineSmall.copy(
+                        fontWeight = FontWeight.W500
+                    ).applyStyle(style)
+                )
+            }
             LazyColumn(
                 modifier = Modifier
                     .weight(1f, fill = false)
                     .fillMaxWidth()
                     .heightIn(max = 800.dp),
             ) {
-                stickyHeader {
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ) {
-                        Text(
-                            title, style = MaterialTheme.typography.headlineSmall.copy(
-                                fontWeight = FontWeight.W500
-                            ).applyStyle(style)
-                        )
-                    }
-                }
-
                 itemsIndexed(
                     items = choices,
                     key = { index, item -> "$index-${item.id}" }) { _, choiceItem ->

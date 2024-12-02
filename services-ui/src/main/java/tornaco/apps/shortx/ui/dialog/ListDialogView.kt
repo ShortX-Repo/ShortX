@@ -63,14 +63,36 @@ class ListDialogView(
     @Composable
     override fun DialogContent() {
         val selectedIdList = remember { mutableStateListOf(*defaultSelectedItems.toTypedArray()) }
-
+        val searchBarState = rememberSearchBarState()
+        val listState = rememberLazyListState()
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            val searchBarState = rememberSearchBarState()
-            val listState = rememberLazyListState()
             val scope = rememberCoroutineScope()
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Column {
+                    TextButton(onClick = {
+                        scope.launch { listState.scrollToItem(0) }
+                    }) {
+                        Text(
+                            title, style = MaterialTheme.typography.headlineSmall.copy(
+                                fontWeight = FontWeight.W500
+                            ).applyStyle(style)
+                        )
+                    }
+                    SmallSpacer()
+                    SearchBar(
+                        searchBarState = searchBarState,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp)
+                    )
+                }
+            }
             LazyColumn(
                 state = listState,
                 modifier = Modifier
@@ -78,32 +100,6 @@ class ListDialogView(
                     .fillMaxWidth()
                     .heightIn(max = 800.dp),
             ) {
-                stickyHeader {
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        Column {
-                            TextButton(onClick = {
-                                scope.launch { listState.scrollToItem(0) }
-                            }) {
-                                Text(
-                                    title, style = MaterialTheme.typography.headlineSmall.copy(
-                                        fontWeight = FontWeight.W500
-                                    ).applyStyle(style)
-                                )
-                            }
-                            SmallSpacer()
-                            SearchBar(
-                                searchBarState = searchBarState,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 16.dp)
-                            )
-                        }
-                    }
-                }
-
                 items(listItems.filter { listItem ->
                     searchBarState.keyword.isBlank() || listItem.lines.any {
                         it.contains(

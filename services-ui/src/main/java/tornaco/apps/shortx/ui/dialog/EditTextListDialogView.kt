@@ -50,20 +50,19 @@ class EditTextListDialogView(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    fontWeight = FontWeight.W500
+                ).applyStyle(style),
+                modifier = Modifier.padding(vertical = 16.dp)
+            )
             LazyColumn(
                 modifier = Modifier
                     .weight(1f, fill = false)
                     .fillMaxWidth()
                     .heightIn(max = 800.dp),
             ) {
-                stickyHeader {
-                    Text(
-                        title, style = MaterialTheme.typography.headlineSmall.copy(
-                            fontWeight = FontWeight.W500
-                        ).applyStyle(style),
-                        modifier = Modifier.padding(vertical = 16.dp)
-                    )
-                }
                 items(items) { editTextItem ->
                     var valueState by remember { mutableStateOf(editTextItem.value) }
                     ShortXTextField(
