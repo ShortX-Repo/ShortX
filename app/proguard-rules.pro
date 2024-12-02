@@ -232,3 +232,6 @@
 
 -dontwarn android.location.LastLocationRequest$Builder
 -dontwarn android.location.LastLocationRequest
+
+-dontwarn com.android.internal.statusbar.StatusBarIcon$Type
+-dontwarn com.android.internal.statusbar.StatusBarIcon
