@@ -144,6 +144,8 @@ private fun ColumnScope.Content(
     }
 
     StandardSpacer()
+    FieldTitle(text = LocalI18N.current["ui.action.show.float.window.panel.radius.scale"])
+    SmallSpacer()
     Text(text = "${state.panelRadiusScale.takeIf { it > 0 } ?: 1f} x")
     Slider(
         valueRange = 0.2f..5f,
