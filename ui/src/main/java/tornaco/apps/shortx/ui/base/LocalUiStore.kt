@@ -6,6 +6,8 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 
 class UiStore {
     val ActionContent_CurrentAction: AtomicReference<Action?> = AtomicReference(null)
+    val ShowOverlayButtonSelectorActivity_SelectButtonIcon_Index: AtomicReference<Int> =
+        AtomicReference(0)
 }
 
 val LocalUiStore = staticCompositionLocalOf<UiStore> {

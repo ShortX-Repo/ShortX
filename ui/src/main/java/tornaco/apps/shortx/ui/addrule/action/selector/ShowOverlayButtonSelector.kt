@@ -48,6 +48,7 @@ import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorR
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.LocalUiStore
 import tornaco.apps.shortx.ui.base.MDIcon
 import tornaco.apps.shortx.ui.base.MDIconSelectorActivity
 import tornaco.apps.shortx.ui.base.MediumTitle
@@ -160,6 +161,19 @@ private fun Content(
         SmallSpacer()
         AnimatedVisibility(visible = state.isButtonListExpanded) {
             Column {
+                val context = LocalContext.current
+                val localUiStore = LocalUiStore.current
+                val iconLauncher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.StartActivityForResult(),
+                    onResult = { result ->
+                        val icon = result.popupSelectorResult<MDIcon>()
+                        val buttonIndex =
+                            localUiStore.ShowOverlayButtonSelectorActivity_SelectButtonIcon_Index.get()
+                        icon?.let {
+                            vm.updateIcon(buttonIndex, it.iconNameOrBase64)
+                        }
+                    }
+                )
                 state.buttons.forEachIndexed { index, button ->
                     ButtonListItem(
                         index = index,
@@ -170,6 +184,18 @@ private fun Content(
                         },
                         updateIcon = { i: Int, s: String ->
                             vm.updateIcon(i, s)
+                        },
+                        selectIcon = {
+                            localUiStore.ShowOverlayButtonSelectorActivity_SelectButtonIcon_Index.set(
+                                it
+                            )
+                            iconLauncher.launch(
+                                BaseSelectorActivity.newIntent(
+                                    context,
+                                    null,
+                                    MDIconSelectorActivity::class.java
+                                )
+                            )
                         },
                         removeButton = {
                             vm.removeButton(it)
@@ -349,18 +375,9 @@ private fun ButtonListItem(
     evaluatingActions: List<String>,
     updateLabel: (Int, String) -> Unit,
     updateIcon: (Int, String) -> Unit,
+    selectIcon: (Int) -> Unit,
     removeButton: (Int) -> Unit,
 ) {
-    val iconLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = { result ->
-            val icon = result.popupSelectorResult<MDIcon>()
-            icon?.let {
-                updateIcon(index, it.iconNameOrBase64)
-            }
-        }
-    )
-
     ShortXCard(modifier = Modifier.padding(top = 16.dp)) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -406,28 +423,15 @@ private fun ButtonListItem(
                         )
                     }
                 }
-                val context = LocalContext.current
                 if (button.icon.isBlank()) {
                     TextButton(onClick = {
-                        iconLauncher.launch(
-                            BaseSelectorActivity.newIntent(
-                                context,
-                                null,
-                                MDIconSelectorActivity::class.java
-                            )
-                        )
+                        selectIcon(index)
                     }) {
                         Text(text = "No icon")
                     }
                 } else {
                     IconButton(onClick = {
-                        iconLauncher.launch(
-                            BaseSelectorActivity.newIntent(
-                                context,
-                                null,
-                                MDIconSelectorActivity::class.java
-                            )
-                        )
+                        selectIcon(index)
                     }) {
                         RemixIcon(button.icon)
                     }
