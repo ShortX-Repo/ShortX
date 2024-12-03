@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -141,6 +142,16 @@ private fun ColumnScope.Content(
             }
         }
     }
+
+    StandardSpacer()
+    Text(text = "${state.panelRadiusScale.takeIf { it > 0 } ?: 1f} x")
+    Slider(
+        valueRange = 0.2f..5f,
+        value = state.panelRadiusScale.takeIf { it > 0 } ?: 1f,
+        onValueChange = {
+            vm.setRadiusScale(it)
+        }
+    )
 
     SectionSpacer()
     SectionSpacer()

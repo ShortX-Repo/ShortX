@@ -71,6 +71,7 @@ class FloatPanelWindowController(
         panelContainerLayout.layoutParams = rootParams
 
         floatControlPanelView = ControlPanelView(context)
+        floatControlPanelView.setPanelRadiusScale(action.panelRadiusScale)
         val panelParams = FrameLayout.LayoutParams(
             ScreenUtil.dip2px(context, 150f),
             ScreenUtil.dip2px(context, 300f)

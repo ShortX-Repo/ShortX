@@ -18,6 +18,7 @@ data class FloatWindowSelectorState(
     val id: String = defaultNewActionId(),
     val evaluatingActions: List<String> = emptyList(),
 
+    val panelRadiusScale: Float = 1f,
     val isButtonListExpanded: Boolean = true
 )
 
@@ -25,6 +26,7 @@ fun FloatWindowSelectorState.toAction(): Action.ShowFloatWindow {
     return Action.ShowFloatWindow(
         id = this.id,
         tag = this.tag,
+        panelRadiusScale = this.panelRadiusScale,
         settings = this.buttons.map { it.toOverlayButtonSetting() }
     )
 }
@@ -64,6 +66,7 @@ class ShowFloatWindowSelectorViewModel @Inject constructor(@ApplicationContext c
                 id = settings.id,
                 buttons = settings.settings.map { it.toButton() },
                 tag = settings.tag,
+                panelRadiusScale = settings.panelRadiusScale,
                 evaluatingActions = shortXManager.getEvaluatingActions()
             )
         }
@@ -86,6 +89,10 @@ class ShowFloatWindowSelectorViewModel @Inject constructor(@ApplicationContext c
                 tag = tag
             )
         }
+    }
+
+    fun setRadiusScale(scale: Float) {
+        updateState { copy(panelRadiusScale = scale) }
     }
 
     fun addButton() {

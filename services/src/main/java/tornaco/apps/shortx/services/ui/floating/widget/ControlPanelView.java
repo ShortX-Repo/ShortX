@@ -24,6 +24,7 @@ public class ControlPanelView extends FrameLayout {
      * 半圆的原心位置到子控件之间的距离
      */
     int mRadius;
+    float mRadiusScale = 1f;
     /**
      * 子控件的半径
      */
@@ -91,6 +92,10 @@ public class ControlPanelView extends FrameLayout {
         }
     }
 
+    public void setPanelRadiusScale(float scale) {
+        mRadiusScale = scale;
+    }
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
@@ -116,7 +121,7 @@ public class ControlPanelView extends FrameLayout {
         }
         //计算出半圆的圆心心到子控件圆心的距离，就是我们半圆的半径
         //基本是高的一半减去子控件的2倍半径
-        mRadius = Math.max(widthSize, heightSize) / 2 - (mChildRadius * 2);
+        mRadius = (int) (mChildRadius * 2.5 * mRadiusScale);
         //计算按钮的位置，左、右的中间
         if (isLeft) {
             mButtonCenterX = mOffset;
