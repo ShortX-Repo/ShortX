@@ -124,6 +124,9 @@ class OverlayService(shortXContext: ShortXContext) :
                     parameterInputs = parameters,
                     actionAsyncMode = ActionAsyncMode.ActionAsyncMode_Sync
                 )
+                if (action.closeOnAction) {
+                    postHideOverlay(listOf(action.tag))
+                }
             },
             onButtonLongClick = { button: OverlayButtonSetting ->
                 shortXContext.rule.executeActions(
@@ -134,6 +137,9 @@ class OverlayService(shortXContext: ShortXContext) :
                     parameterInputs = parameters,
                     actionAsyncMode = ActionAsyncMode.ActionAsyncMode_Sync
                 )
+                if (action.closeOnAction) {
+                    postHideOverlay(listOf(action.tag))
+                }
             },
             onTouchOutside = {
                 logger.d("onTouchOutside: ${action.tag}")

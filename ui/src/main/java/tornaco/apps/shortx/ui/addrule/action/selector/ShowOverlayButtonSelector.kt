@@ -20,10 +20,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -65,7 +63,6 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.overlay.OverlayContent
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
-import tornaco.apps.shortx.ui.theme.ShortXTheme
 import kotlin.math.roundToInt
 
 @AndroidEntryPoint
@@ -89,38 +86,31 @@ private fun BaseSelectorActivity<Action.ShowOverlay>.ShowOverlayButtonSelector(c
     }
     val selectorState by vm.state.collectAsState()
 
-    ShortXTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
-        ) {
-            Scaffold(modifier = Modifier,
-                topBar = {
-                    ShortXTopAppBar(
-                        modifier = Modifier,
-                        title = { Text(LocalI18N.current["ui.action.show.overlay"]) },
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                cancelAndFinish()
-                            }) {
-                                RemixIcon(remixName = Remix.System.close_line)
-                            }
-                        },
-                        actions = {
-                            IconButton(onClick = {
-                                val action = selectorState.toAction()
-                                setResultAndFinish(action)
-                            }) {
-                                RemixIcon(remixName = Remix.System.check_line)
-                            }
+    Scaffold(modifier = Modifier,
+        topBar = {
+            ShortXTopAppBar(
+                modifier = Modifier,
+                title = { Text(LocalI18N.current["ui.action.show.overlay"]) },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        cancelAndFinish()
+                    }) {
+                        RemixIcon(remixName = Remix.System.close_line)
+                    }
+                },
+                actions = {
+                    IconButton(onClick = {
+                        val action = selectorState.toAction()
+                        setResultAndFinish(action)
+                    }) {
+                        RemixIcon(remixName = Remix.System.check_line)
+                    }
 
-                        },
-                    )
-                }) {
-                Content(paddingValues = it, vm = vm)
-            }
-        }
+                },
+            )
+        }) {
+        Content(paddingValues = it, vm = vm)
     }
-
 }
 
 @Composable
@@ -243,6 +233,18 @@ private fun Content(
             SmallSpacer()
             ShortXSwitch(checked = state.closeOnTouchOutside, onCheckedChange = {
                 vm.setCloseOnTouchOutside(it)
+            })
+        }
+
+        StandardSpacer()
+        Column(verticalArrangement = Arrangement.Center) {
+            FieldTitle(
+                modifier = Modifier.padding(vertical = 12.dp),
+                text = LocalI18N.current["ui.action.close.on.action"]
+            )
+            SmallSpacer()
+            ShortXSwitch(checked = state.closeOnAction, onCheckedChange = {
+                vm.setCloseOnAction(it)
             })
         }
 

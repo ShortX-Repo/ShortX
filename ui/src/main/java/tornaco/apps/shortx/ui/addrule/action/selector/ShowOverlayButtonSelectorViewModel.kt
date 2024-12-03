@@ -36,6 +36,7 @@ data class OverlayButtonSelectorState(
     val enableGlobalDrag: Boolean = true,
     val enableAutoEdge: Boolean = false,
     val closeOnTouchOutside: Boolean = false,
+    val closeOnAction: Boolean = false,
     val id: String = defaultNewActionId(),
     val evaluatingActions: List<String> = emptyList(),
 
@@ -99,7 +100,8 @@ fun OverlayButtonSelectorState.toAction(): Action.ShowOverlay {
         overlayPaddingV = this.overlayPaddingV,
         overlayPaddingH = this.overlayPaddingH,
         disableAutoEdge = !this.enableAutoEdge,
-        closeOnTouchOutside = this.closeOnTouchOutside
+        closeOnTouchOutside = this.closeOnTouchOutside,
+        closeOnAction = this.closeOnAction,
     )
 }
 
@@ -149,6 +151,7 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
                 overlayPaddingV = settings.overlayPaddingV,
                 enableAutoEdge = !settings.disableAutoEdge,
                 closeOnTouchOutside = settings.closeOnTouchOutside,
+                closeOnAction = settings.closeOnAction,
                 evaluatingActions = shortXManager.getEvaluatingActions()
             )
         }
@@ -222,6 +225,10 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
 
     fun setCloseOnTouchOutside(closeOnTouchOutside: Boolean) {
         updateState { copy(closeOnTouchOutside = closeOnTouchOutside) }
+    }
+
+    fun setCloseOnAction(closeOnAction: Boolean) {
+        updateState { copy(closeOnAction = closeOnAction) }
     }
 
     fun addButton() {
