@@ -397,7 +397,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
         val discoverStartTimeMillis = System.currentTimeMillis()
         var result = false
         if (root != null) {
-            result = hasFoundViewNode(root, check)
+            result = hasFoundViewNodeIterative(root, check)
             root.recycle()
         }
         logger.d("hasFoundNodeOnScreen take ${System.currentTimeMillis() - discoverStartTimeMillis}ms")
@@ -776,6 +776,23 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
     }
 
+    @Deprecated("Stackoverflow sometimes")
+    // java.lang.StackOverflowError: stack size 1039KB
+    //	at android.os.Parcel.obtain(Parcel.java:461)
+    //	at android.os.BaseBundle.copyInternal(BaseBundle.java:437)
+    //	at android.os.BaseBundle.<init>(BaseBundle.java:174)
+    //	at android.os.Bundle.<init>(Bundle.java:150)
+    //	at android.view.accessibility.AccessibilityNodeInfo.init(AccessibilityNodeInfo.java:4031)
+    //	at android.view.accessibility.AccessibilityNodeInfo.<init>(AccessibilityNodeInfo.java:870)
+    //	at android.view.accessibility.AccessibilityCache.getNode(AccessibilityCache.java:283)
+    //	at android.view.accessibility.AccessibilityInteractionClient.findAccessibilityNodeInfoByAccessibilityId(AccessibilityInteractionClient.java:468)
+    //	at android.view.accessibility.AccessibilityNodeInfo.getChild(AccessibilityNodeInfo.java:1121)
+    //	at onkdpk.iyzwaza.hs3.w(Unknown Source:39)
+    //	at onkdpk.iyzwaza.hs3.w(Unknown Source:51)
+    //	at onkdpk.iyzwaza.hs3.w(Unknown Source:51)
+    //	at onkdpk.iyzwaza.hs3.w(Unknown Source:51)
+    //	at onkdpk.iyzwaza.hs3.w(Unknown Source:51)
+    //	at onkdpk.iyzwaza.hs3.w(Unknown Source:51)
     private fun hasFoundViewNode(
         root: AccessibilityNodeInfo,
         check: (ViewNode) -> Boolean
@@ -791,9 +808,57 @@ class WindowManagerService(shortXContext: ShortXContext) :
             for (i in 0 until root.childCount) {
                 val child = root.getChild(i)
                 if (child != null && child != root) {
-                    if (hasFoundViewNode(child, check)) {
+                    if (hasFoundViewNodeIterative(child, check)) {
                         return true
                     }
+                }
+            }
+        }
+        return false
+    }
+
+    private fun hasFoundViewNodeIterative(
+        root: AccessibilityNodeInfo,
+        check: (ViewNode) -> Boolean,
+        maxChecks: Int = 200 // 限制最大检查次数
+    ): Boolean {
+        val stack = ArrayDeque<AccessibilityNodeInfo>()
+        val visitedNodes = mutableSetOf<AccessibilityNodeInfo>()
+        var checkCount = 0
+
+        stack.addFirst(root)
+
+        while (stack.isNotEmpty()) {
+            val current = stack.removeFirst()
+
+            // 检查是否已经达到最大次数
+            if (checkCount >= maxChecks) {
+                logger.w("Check limit of $maxChecks reached, stopping early.") // 可根据需要改为日志
+                return false
+            }
+
+            // 防止重复访问同一个节点
+            if (current in visitedNodes) {
+                continue
+            }
+            visitedNodes.add(current)
+
+            if (!current.isVisibleToUser) {
+                continue
+            }
+
+            val node = current.toBasicViewNode()
+            checkCount++ // 增加检查计数
+
+            logger.logOnDebug { "hasFoundViewNodeIterative check node: $node" }
+            if (check(node)) {
+                return true
+            }
+
+            for (i in 0 until current.childCount) {
+                val child = current.getChild(i)
+                if (child != null) {
+                    stack.addFirst(child)
                 }
             }
         }
