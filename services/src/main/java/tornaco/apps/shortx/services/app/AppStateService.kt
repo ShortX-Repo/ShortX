@@ -24,6 +24,7 @@ import github.tornaco.android.thanos.core.app.ThanosManagerNative
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.annotations.DoNotStrip
@@ -607,46 +608,48 @@ class AppStateService(shortXContext: ShortXContext) :
 
     @Synchronized
     fun onProcessRemoved(process: ProcessRecord) {
-        logger.d("onProcessRemoved: ${process.owner.pkgName} - ${process.owner.userId} - ${process.processName}")
+        systemServiceScope.launch {
+            logger.d("onProcessRemoved: ${process.owner.pkgName} - ${process.owner.userId} - ${process.processName}")
 
-        if (isSystemReady) {
-            shortXContext.rule.publishFactChecked(AppProcessRemoved.getDefaultInstance()) {
-                FactPublishData(
-                    reason = "onProcessRemoved",
-                    fact = AppProcessRemoved.newBuilder().addAllProcessName(
-                        listOf(
-                            ProcessName.newBuilder().setUserId(process.owner.userId)
-                                .setProcessName(process.processName).build()
+            if (isSystemReady) {
+                shortXContext.rule.publishFactChecked(AppProcessRemoved.getDefaultInstance()) {
+                    FactPublishData(
+                        reason = "onProcessRemoved",
+                        fact = AppProcessRemoved.newBuilder().addAllProcessName(
+                            listOf(
+                                ProcessName.newBuilder().setUserId(process.owner.userId)
+                                    .setProcessName(process.processName).build()
+                            )
                         )
+                            .build(),
+                        initialContextDataLazy = {
+                            mapOf(
+                                ContextDataMapping.AppProcessRemoved.processName.name to process.processName,
+                                ContextDataMapping.AppProcessRemoved.appLabel.name to (pkgToApp(process.owner)?.label.fallbackOnEmpty(
+                                    ""
+                                )),
+                                ContextDataMapping.AppProcessRemoved.userId.name to process.owner.userId,
+                                ContextDataMapping.AppProcessRemoved.pkgName.name to process.owner.pkgName,
+                            )
+                        }
                     )
-                        .build(),
-                    initialContextDataLazy = {
-                        mapOf(
-                            ContextDataMapping.AppProcessRemoved.processName.name to process.processName,
-                            ContextDataMapping.AppProcessRemoved.appLabel.name to (pkgToApp(process.owner)?.label.fallbackOnEmpty(
-                                ""
-                            )),
-                            ContextDataMapping.AppProcessRemoved.userId.name to process.owner.userId,
-                            ContextDataMapping.AppProcessRemoved.pkgName.name to process.owner.pkgName,
-                        )
-                    }
-                )
+                }
             }
-        }
 
-        val isPkgStillRunning = process.owner.isRunning()
-        if (isPkgStillRunning) {
-            logger.d("${process.owner} is still running.")
-        } else {
-            val alreadyBroadcastStopEvent =
-                System.currentTimeMillis() - (pkgStopRunningEvents[process.owner] ?: 0L) <= 600L
-
-            if (!alreadyBroadcastStopEvent) {
-                onPkgStopRunning(process.owner)
-                // Cache to prevent call on stop more that 1 time with a second.
-                pkgStopRunningEvents[process.owner] = System.currentTimeMillis()
+            val isPkgStillRunning = process.owner.isRunning()
+            if (isPkgStillRunning) {
+                logger.d("${process.owner} is still running.")
             } else {
-                logger.i("alreadyBroadcastStopEvent skip.")
+                val alreadyBroadcastStopEvent =
+                    System.currentTimeMillis() - (pkgStopRunningEvents[process.owner] ?: 0L) <= 600L
+
+                if (!alreadyBroadcastStopEvent) {
+                    onPkgStopRunning(process.owner)
+                    // Cache to prevent call on stop more that 1 time with a second.
+                    pkgStopRunningEvents[process.owner] = System.currentTimeMillis()
+                } else {
+                    logger.i("alreadyBroadcastStopEvent skip.")
+                }
             }
         }
     }
