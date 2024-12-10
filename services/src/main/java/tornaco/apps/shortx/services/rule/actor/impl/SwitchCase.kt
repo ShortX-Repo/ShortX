@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.proto.rule.ActionAsyncMode
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
@@ -24,8 +25,11 @@ object SwitchCase : Actor {
 
         var isBreakCalled = false
 
-        suspend fun executeActions(actionList: List<com.google.protobuf.Any>?) {
-            actionList?.let { runSubActions(it) }
+        suspend fun executeActions(
+            actionList: List<com.google.protobuf.Any>?,
+            asyncMode: ActionAsyncMode
+        ) {
+            actionList?.let { runSubActions(it, asyncMode) }
         }
 
         cases.filter { !it.isDisabled }.forEach { case ->
@@ -49,7 +53,7 @@ object SwitchCase : Actor {
                     }
                     logger.i("Execute case branch actions.")
                     updateTheXXTimeToday(shortXContext, case.caseList)
-                    executeActions(case.actionList)
+                    executeActions(case.actionList, case.actionAsyncMode)
                 }
             }
         }
@@ -60,7 +64,7 @@ object SwitchCase : Actor {
                 logger.i("Execute default branch actions.")
                 val deft = d.deft
                 updateTheXXTimeToday(shortXContext, deft.defaultActionList)
-                executeActions(deft.defaultActionList)
+                executeActions(deft.defaultActionList, ActionAsyncMode.ActionAsyncMode_Sync)
             }
         }
 

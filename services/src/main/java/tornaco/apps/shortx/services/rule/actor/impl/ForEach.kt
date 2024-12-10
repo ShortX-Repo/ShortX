@@ -32,9 +32,13 @@ object ForEach : Actor {
                     contextData.add(ContextDataMapping.ForEach.foreachIndex.name, index)
                     contextData.add(ContextDataMapping.ForEach.foreachData.name, string)
 
-                    runSubActions(actionList = d.actionsList, beforeExecute = {
-                        logger.d("runSubActions about to execute action: $index $string -- ${it.typeUrl}")
-                    })
+                    runSubActions(
+                        actionList = d.actionsList,
+                        beforeExecute = {
+                            logger.d("runSubActions about to execute action: $index $string -- ${it.typeUrl}")
+                        },
+                        asyncMode = d.actionAsyncMode
+                    )
                 }
             }
             logger.d("ForEach complete")

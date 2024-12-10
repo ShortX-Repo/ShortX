@@ -34,11 +34,11 @@ object IfThenElse : Actor {
             updateTheXXTimeToday(shortXContext, d.ifList)
 
             if (d.ifActionsList.isNullOrEmpty().not()) {
-                runSubActions(d.ifActionsList)
+                runSubActions(d.ifActionsList, d.ifActionAsyncMode)
             }
         } else {
             if (d.elseActionsList.isNullOrEmpty().not()) {
-                runSubActions(d.elseActionsList)
+                runSubActions(d.elseActionsList, d.elseActionAsyncMode)
             }
         }
     }

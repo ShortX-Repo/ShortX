@@ -29,7 +29,9 @@ abstract class BaseActivity : AppCompatActivity() {
             ) {
                 ShortXProps {
                     ShortXTheme {
-                        Content()
+                        ClickOutsideClearFocusBox {
+                            Content()
+                        }
                     }
                 }
             }

@@ -100,7 +100,10 @@ class ForEachSelectorViewModel : StateViewModel<ForEachSelectorDialogDialogState
                 )
             }
 
-            actionHandler.init(currentSettings.actions)
+            actionHandler.init(
+                actions = currentSettings.actions,
+                actionAsyncMode = currentSettings.actionAsyncMode
+            )
         }
     }
 
@@ -154,7 +157,8 @@ private fun BaseSelectorActivity<Action.ForEach>.ForEachSelectorDialogSelector(c
                             Action.ForEach(
                                 actions = actionState.actions,
                                 data = dialogState.data,
-                                delimiters = dialogState.delimiters
+                                delimiters = dialogState.delimiters,
+                                actionAsyncMode = actionState.asyncMode
                             )
                         )
                     }) {
@@ -198,31 +202,36 @@ private fun BaseSelectorActivity<Action.ForEach>.ForEachSelectorDialogSelector(c
                         modifier = Modifier.padding(vertical = 12.dp),
                         text = LocalI18N.current["ui.action.for.each.action"]
                     )
-                    SmallSpacer()
-                    TextButton(onClick = {
-                        ClipboardUtils.copyToClipboard(
-                            context,
-                            "key",
-                            ContextDataMapping.ForEach.foreachIndex.name.asContextDataKey()
-                        )
-                    }) {
-                        Text(text = LocalI18N.current["ui.action.for.each.action.context.data.loop.index"])
-                    }
-                    SmallSpacer()
-                    TextButton(onClick = {
-                        ClipboardUtils.copyToClipboard(
-                            context,
-                            "key",
-                            ContextDataMapping.ForEach.foreachData.name.asContextDataKey()
-                        )
-                    }) {
-                        Text(text = LocalI18N.current["ui.action.for.each.action.context.data.loop.data"])
+                },
+                summary = {
+                    Column {
+                        TextButton(onClick = {
+                            ClipboardUtils.copyToClipboard(
+                                context,
+                                "key",
+                                ContextDataMapping.ForEach.foreachIndex.name.asContextDataKey()
+                            )
+                        }) {
+                            Text(text = LocalI18N.current["ui.action.for.each.action.context.data.loop.index"])
+                        }
+                        SmallSpacer()
+                        TextButton(onClick = {
+                            ClipboardUtils.copyToClipboard(
+                                context,
+                                "key",
+                                ContextDataMapping.ForEach.foreachData.name.asContextDataKey()
+                            )
+                        }) {
+                            Text(text = LocalI18N.current["ui.action.for.each.action.context.data.loop.data"])
+                        }
                     }
                 },
                 actions = actionState.actions,
                 evaluatingActions = dialogState.evaluatingActions,
                 handler = actionHandler.asActionHandler(),
-                warnings = actionState.actionWarningMessages
+                warnings = actionState.actionWarningMessages,
+                canSelectActionAsyncMode = true,
+                actionAsyncMode = actionState.asyncMode
             )
             Spacer(modifier = Modifier.size(24.dp))
 

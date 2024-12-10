@@ -41,7 +41,7 @@ object WhileLoop : Actor {
                     ))
                 ) {
                     logger.d("WhileLoop inside: $index")
-                    runSubActions(d.actionsList)
+                    runSubActions(d.actionsList, d.actionAsyncMode)
                     delay(delay)
                     index += 1
                 }

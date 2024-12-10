@@ -146,7 +146,7 @@ data class SwitchCaseSelectorDialogDialogState(
             id = this.id,
             note = this.note,
             cases = this.cases,
-            deft = this.deft
+            deft = this.deft,
         )
     }
 }

@@ -41,7 +41,6 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StateViewModel
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
-import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 
 @AndroidEntryPoint
@@ -95,8 +94,8 @@ class IfThenElseSelectorViewModel : StateViewModel<IfThenElseSelectorDialogDialo
                 currentSettings.ifConditions,
                 currentSettings.ifConditionOp
             )
-            ifActionHandler.init(currentSettings.ifActions)
-            elseActionHandler.init(currentSettings.elseActions)
+            ifActionHandler.init(currentSettings.ifActions, currentSettings.ifActionAsyncMode)
+            elseActionHandler.init(currentSettings.elseActions, currentSettings.elseActionAsyncMode)
         }
     }
 }
@@ -124,80 +123,84 @@ private fun BaseSelectorActivity<Action.IfThenElse>.IfThenElseSelectorDialogSele
     val condHandler = remember(vm) { vm.conditionHandler }
     val conditionState by condHandler.state.collectAsState()
 
-    ShortXTheme {
-        Scaffold(modifier = Modifier,
-            topBar = {
-                ShortXTopAppBar(
-                    modifier = Modifier,
-                    title = { Text(LocalI18N.current["ui.action.if.then.else"]) },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            cancelAndFinish()
-                        }) {
-                            RemixIcon(remixName = Remix.System.close_line)
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = {
-                            setResultAndFinish(
-                                Action.IfThenElse(
-                                    id = dialogState.id,
-                                    note = dialogState.note,
+    Scaffold(modifier = Modifier,
+        topBar = {
+            ShortXTopAppBar(
+                modifier = Modifier,
+                title = { Text(LocalI18N.current["ui.action.if.then.else"]) },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        cancelAndFinish()
+                    }) {
+                        RemixIcon(remixName = Remix.System.close_line)
+                    }
+                },
+                actions = {
+                    IconButton(onClick = {
+                        setResultAndFinish(
+                            Action.IfThenElse(
+                                id = dialogState.id,
+                                note = dialogState.note,
 
-                                    ifConditionOp = conditionState.conditionOp,
-                                    ifConditions = conditionState.conditions,
-                                    ifActions = ifActionState.actions,
-                                    elseActions = elseActionState.actions
-                                )
+                                ifConditionOp = conditionState.conditionOp,
+                                ifConditions = conditionState.conditions,
+                                ifActions = ifActionState.actions,
+                                elseActions = elseActionState.actions,
+                                ifActionAsyncMode = ifActionState.asyncMode,
+                                elseActionAsyncMode = elseActionState.asyncMode
                             )
-                        }) {
-                            RemixIcon(remixName = Remix.System.check_line)
-                        }
+                        )
+                    }) {
+                        RemixIcon(remixName = Remix.System.check_line)
+                    }
 
-                    },
-                )
-            }) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-                    .padding(paddingValues)
-                    .animateContentSize()
-                    .verticalScroll(rememberScrollState())
-            ) {
-                ConditionContent(
-                    header = {
-                        MediumTitle(LocalI18N.current["ui.action.if"])
-                    },
-                    state = conditionState,
-                    handler = condHandler.asConditionHandler()
-                )
-                Spacer(modifier = Modifier.size(24.dp))
+                },
+            )
+        }) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .padding(paddingValues)
+                .animateContentSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+            ConditionContent(
+                header = {
+                    MediumTitle(LocalI18N.current["ui.action.if"])
+                },
+                state = conditionState,
+                handler = condHandler.asConditionHandler()
+            )
+            Spacer(modifier = Modifier.size(24.dp))
 
-                tornaco.apps.shortx.ui.addrule.action.ActionContent(
-                    header = {
-                        MediumTitle(LocalI18N.current["ui.action.then"])
-                    },
-                    actions = ifActionState.actions,
-                    evaluatingActions = dialogState.evaluatingActions,
-                    handler = ifHandler.asActionHandler(),
-                    warnings = ifActionState.actionWarningMessages
-                )
-                Spacer(modifier = Modifier.size(24.dp))
+            tornaco.apps.shortx.ui.addrule.action.ActionContent(
+                header = {
+                    MediumTitle(LocalI18N.current["ui.action.then"])
+                },
+                actions = ifActionState.actions,
+                evaluatingActions = dialogState.evaluatingActions,
+                handler = ifHandler.asActionHandler(),
+                warnings = ifActionState.actionWarningMessages,
+                canSelectActionAsyncMode = true,
+                actionAsyncMode = ifActionState.asyncMode
+            )
+            Spacer(modifier = Modifier.size(24.dp))
 
-                tornaco.apps.shortx.ui.addrule.action.ActionContent(
-                    header = {
-                        MediumTitle(LocalI18N.current["ui.action.else"])
-                    },
-                    actions = elseActionState.actions,
-                    evaluatingActions = dialogState.evaluatingActions,
-                    handler = elseHandler.asActionHandler(),
-                    warnings = elseActionState.actionWarningMessages
-                )
-                Spacer(modifier = Modifier.size(24.dp))
+            tornaco.apps.shortx.ui.addrule.action.ActionContent(
+                header = {
+                    MediumTitle(LocalI18N.current["ui.action.else"])
+                },
+                actions = elseActionState.actions,
+                evaluatingActions = dialogState.evaluatingActions,
+                handler = elseHandler.asActionHandler(),
+                warnings = elseActionState.actionWarningMessages,
+                canSelectActionAsyncMode = true,
+                actionAsyncMode = elseActionState.asyncMode
+            )
+            Spacer(modifier = Modifier.size(24.dp))
 
-                SuggestedNavEntry()
-            }
+            SuggestedNavEntry()
         }
     }
 }

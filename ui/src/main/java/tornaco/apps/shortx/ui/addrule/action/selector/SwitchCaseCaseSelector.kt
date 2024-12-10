@@ -10,9 +10,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -45,7 +43,6 @@ import tornaco.apps.shortx.ui.base.StateViewModel
 import tornaco.apps.shortx.ui.base.SwitchItem
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
-import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 
 @AndroidEntryPoint
@@ -106,7 +103,7 @@ class SwitchCaseCaseSelectorViewModel :
                 currentSettings.conditions,
                 currentSettings.conditionOp
             )
-            actionHandler.init(currentSettings.actions)
+            actionHandler.init(currentSettings.actions, currentSettings.actionAsyncMode)
         }
     }
 
@@ -153,97 +150,95 @@ private fun BaseSelectorActivity<Action.SwitchCase.Case>.SwitchCaseCaseSelectorD
     val condHandler = remember(vm) { vm.conditionHandler }
     val conditionState by condHandler.state.collectAsState()
 
-    ShortXTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
-        ) {
-            Scaffold(modifier = Modifier,
-                topBar = {
-                    ShortXTopAppBar(
-                        modifier = Modifier,
-                        title = {
-                            Text(
-                                LocalI18N.current.get(
-                                    key = "ui.action.switch.case.case",
-                                    fallback = "Case"
-                                )
-                            )
-                        },
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                cancelAndFinish()
-                            }) {
-                                RemixIcon(remixName = Remix.System.close_line)
-                            }
-                        },
-                        actions = {
-                            IconButton(onClick = {
-                                setResultAndFinish(
-                                    Action.SwitchCase.Case(
-                                        id = dialogState.id,
-                                        description = dialogState.description,
-                                        isBreak = dialogState.isBreak,
-                                        isDisabled = dialogState.isDisabled,
-                                        conditionOp = conditionState.conditionOp,
-                                        conditions = conditionState.conditions,
-                                        actions = actionContentState.actions,
-                                    )
-                                )
-                            }) {
-                                RemixIcon(remixName = Remix.System.check_line)
-                            }
 
-                        },
-                    )
-                }) { paddingValues ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                        .animateContentSize()
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    StandardSpacer()
-                    SwitchItem(
-                        title = LocalI18N.current["ui.action.switch.case.break"],
-                        summary = LocalI18N.current["ui.action.switch.case.break.summary"],
-                        isChecked = dialogState.isBreak,
-                        onCheckChange = {
-                            vm.setIsBreak(it)
-                        }
-                    )
-                    StandardSpacer()
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 16.dp)
-                    ) {
-                        SmallTitle(text = LocalI18N.current["ui.action.switch.case.description"])
-                        TinySpacer()
-                        ShortXTextField(
-                            value = dialogState.description,
-                            onValueChange = { vm.setDescription(it) })
-                        LargeSpacer()
-
-                        ConditionContent(
-                            isOptional = false,
-                            state = conditionState,
-                            handler = condHandler.asConditionHandler()
+    Scaffold(modifier = Modifier,
+        topBar = {
+            ShortXTopAppBar(
+                modifier = Modifier,
+                title = {
+                    Text(
+                        LocalI18N.current.get(
+                            key = "ui.action.switch.case.case",
+                            fallback = "Case"
                         )
-                        LargeSpacer()
-
-                        tornaco.apps.shortx.ui.addrule.action.ActionContent(
-                            actions = actionContentState.actions,
-                            evaluatingActions = dialogState.evaluatingActions,
-                            handler = actionContentStateHandler.asActionHandler(),
-                            warnings = actionContentState.actionWarningMessages
-                        )
-                        LargeSpacer()
-
-                        SuggestedNavEntry()
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        cancelAndFinish()
+                    }) {
+                        RemixIcon(remixName = Remix.System.close_line)
                     }
+                },
+                actions = {
+                    IconButton(onClick = {
+                        setResultAndFinish(
+                            Action.SwitchCase.Case(
+                                id = dialogState.id,
+                                description = dialogState.description,
+                                isBreak = dialogState.isBreak,
+                                isDisabled = dialogState.isDisabled,
+                                conditionOp = conditionState.conditionOp,
+                                conditions = conditionState.conditions,
+                                actions = actionContentState.actions,
+                                actionAsyncMode = actionContentState.asyncMode
+                            )
+                        )
+                    }) {
+                        RemixIcon(remixName = Remix.System.check_line)
+                    }
+
+                },
+            )
+        }) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .animateContentSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+            StandardSpacer()
+            SwitchItem(
+                title = LocalI18N.current["ui.action.switch.case.break"],
+                summary = LocalI18N.current["ui.action.switch.case.break.summary"],
+                isChecked = dialogState.isBreak,
+                onCheckChange = {
+                    vm.setIsBreak(it)
                 }
+            )
+            StandardSpacer()
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp)
+            ) {
+                SmallTitle(text = LocalI18N.current["ui.action.switch.case.description"])
+                TinySpacer()
+                ShortXTextField(
+                    value = dialogState.description,
+                    onValueChange = { vm.setDescription(it) })
+                LargeSpacer()
+
+                ConditionContent(
+                    isOptional = false,
+                    state = conditionState,
+                    handler = condHandler.asConditionHandler()
+                )
+                LargeSpacer()
+
+                tornaco.apps.shortx.ui.addrule.action.ActionContent(
+                    actions = actionContentState.actions,
+                    evaluatingActions = dialogState.evaluatingActions,
+                    handler = actionContentStateHandler.asActionHandler(),
+                    warnings = actionContentState.actionWarningMessages,
+                    canSelectActionAsyncMode = true,
+                    actionAsyncMode = actionContentState.asyncMode
+                )
+                LargeSpacer()
+
+                SuggestedNavEntry()
             }
         }
     }

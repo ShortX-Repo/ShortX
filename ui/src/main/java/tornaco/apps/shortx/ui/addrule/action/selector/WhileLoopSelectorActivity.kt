@@ -48,7 +48,6 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.StateViewModel
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
-import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
 class WhileLoopSelectorActivity : BaseSelectorActivity<Action.WhileLoop>() {
@@ -105,7 +104,10 @@ class WhileLoopSelectorViewModel : StateViewModel<WhileLoopSelectorDialogDialogS
                 currentSettings.conditions,
                 currentSettings.op
             )
-            actionHandler.init(currentSettings.actions)
+            actionHandler.init(
+                actions = currentSettings.actions,
+                actionAsyncMode = currentSettings.actionAsyncMode
+            )
         }
     }
 
@@ -144,108 +146,109 @@ private fun BaseSelectorActivity<Action.WhileLoop>.WhileLoopSelectorDialogSelect
     val condHandler = remember(vm) { vm.conditionHandler }
     val conditionState by condHandler.state.collectAsState()
 
-    ShortXTheme {
-        Scaffold(modifier = Modifier,
-            topBar = {
-                ShortXTopAppBar(
-                    modifier = Modifier,
-                    title = { Text(LocalI18N.current["ui.action.while.loop"]) },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            cancelAndFinish()
-                        }) {
-                            RemixIcon(remixName = Remix.System.close_line)
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = {
-                            setResultAndFinish(
-                                Action.WhileLoop(
-                                    conditions = conditionState.conditions,
-                                    op = conditionState.conditionOp,
-                                    actions = actionState.actions,
-                                    repeat = dialogState.repeat,
-                                    delay = dialogState.delay
-                                )
+    Scaffold(modifier = Modifier,
+        topBar = {
+            ShortXTopAppBar(
+                modifier = Modifier,
+                title = { Text(LocalI18N.current["ui.action.while.loop"]) },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        cancelAndFinish()
+                    }) {
+                        RemixIcon(remixName = Remix.System.close_line)
+                    }
+                },
+                actions = {
+                    IconButton(onClick = {
+                        setResultAndFinish(
+                            Action.WhileLoop(
+                                conditions = conditionState.conditions,
+                                op = conditionState.conditionOp,
+                                actions = actionState.actions,
+                                repeat = dialogState.repeat,
+                                delay = dialogState.delay,
+                                actionAsyncMode = actionState.asyncMode
                             )
-                        }) {
-                            RemixIcon(remixName = Remix.System.check_line)
-                        }
-                    },
-                )
-            }) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-                    .padding(paddingValues)
-                    .animateContentSize()
-                    .verticalScroll(rememberScrollState())
-            ) {
-                SmallTitle(
-                    modifier = Modifier.padding(vertical = 12.dp),
-                    text = LocalI18N.current["ui.action.while.loop.repeat"]
-                )
-                ShortXTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = dialogState.repeat.toString(),
-                    label = {
-                        Text(LocalI18N.current["ui.action.while.loop.repeat.message"])
-                    },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    showSymbolButton = false,
-                    onValueChange = {
-                        vm.setRepeat(it.toIntOrNull() ?: 0)
-                    })
-                StandardSpacer()
-
-                SmallTitle(
-                    modifier = Modifier.padding(vertical = 12.dp),
-                    text = LocalI18N.current["ui.action.while.loop.delay"]
-                )
-                ShortXTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = dialogState.delay.toString(),
-                    label = {
-                        Text(LocalI18N.current["ui.action.while.loop.delay.message"])
-                    },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    showSymbolButton = false,
-                    onValueChange = {
-                        vm.setDelay(it.toLongOrNull() ?: 0L)
-                    })
-                StandardSpacer()
-
-                ConditionContent(
-                    header = {
-                        SmallTitle(
-                            modifier = Modifier.padding(vertical = 12.dp),
-                            LocalI18N.current["ui.action.while.loop.condition.title"]
                         )
-                        TipRow(text = LocalI18N.current["ui.action.while.loop.condition.message"])
-                        MediumSpacer()
-                    },
-                    state = conditionState,
-                    handler = condHandler.asConditionHandler()
-                )
-                Spacer(modifier = Modifier.size(24.dp))
+                    }) {
+                        RemixIcon(remixName = Remix.System.check_line)
+                    }
+                },
+            )
+        }) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .padding(paddingValues)
+                .animateContentSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+            SmallTitle(
+                modifier = Modifier.padding(vertical = 12.dp),
+                text = LocalI18N.current["ui.action.while.loop.repeat"]
+            )
+            ShortXTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = dialogState.repeat.toString(),
+                label = {
+                    Text(LocalI18N.current["ui.action.while.loop.repeat.message"])
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                showSymbolButton = false,
+                onValueChange = {
+                    vm.setRepeat(it.toIntOrNull() ?: 0)
+                })
+            StandardSpacer()
 
-                tornaco.apps.shortx.ui.addrule.action.ActionContent(
-                    header = {
-                        SmallTitle(
-                            modifier = Modifier.padding(vertical = 12.dp),
-                            LocalI18N.current["ui.action.while.loop.action.message"]
-                        )
-                    },
-                    actions = actionState.actions,
-                    evaluatingActions = dialogState.evaluatingActions,
-                    handler = actionHandler.asActionHandler(),
-                    warnings = actionState.actionWarningMessages
-                )
-                Spacer(modifier = Modifier.size(24.dp))
+            SmallTitle(
+                modifier = Modifier.padding(vertical = 12.dp),
+                text = LocalI18N.current["ui.action.while.loop.delay"]
+            )
+            ShortXTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = dialogState.delay.toString(),
+                label = {
+                    Text(LocalI18N.current["ui.action.while.loop.delay.message"])
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                showSymbolButton = false,
+                onValueChange = {
+                    vm.setDelay(it.toLongOrNull() ?: 0L)
+                })
+            StandardSpacer()
 
-                SuggestedNavEntry()
-            }
+            ConditionContent(
+                header = {
+                    SmallTitle(
+                        modifier = Modifier.padding(vertical = 12.dp),
+                        LocalI18N.current["ui.action.while.loop.condition.title"]
+                    )
+                    TipRow(text = LocalI18N.current["ui.action.while.loop.condition.message"])
+                    MediumSpacer()
+                },
+                state = conditionState,
+                handler = condHandler.asConditionHandler()
+            )
+            Spacer(modifier = Modifier.size(24.dp))
+
+            tornaco.apps.shortx.ui.addrule.action.ActionContent(
+                header = {
+                    SmallTitle(
+                        modifier = Modifier.padding(vertical = 12.dp),
+                        LocalI18N.current["ui.action.while.loop.action.message"]
+                    )
+                },
+                actions = actionState.actions,
+                evaluatingActions = dialogState.evaluatingActions,
+                handler = actionHandler.asActionHandler(),
+                warnings = actionState.actionWarningMessages,
+                canSelectActionAsyncMode = true,
+                actionAsyncMode = actionState.asyncMode
+            )
+            Spacer(modifier = Modifier.size(24.dp))
+
+            SuggestedNavEntry()
         }
     }
 }
