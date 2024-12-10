@@ -126,7 +126,7 @@ class CreateShortcutActivity : BaseActivity() {
                                         selectDASetFilter = { daListViewModel.selectDASetFilter(it) },
                                     )
                                     DirectActionListContent(
-                                        isShowDetailedDAItem = daListState.isShowDetailedDAItem,
+                                        isShowDetailedDAItem = true,
                                         das = (daList as LoadState.Success<DAList>).data.das,
                                         showOverflowMenu = false,
                                         colorfulCard = false,
