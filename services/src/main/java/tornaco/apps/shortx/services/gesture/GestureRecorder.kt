@@ -6,10 +6,10 @@ import android.view.MotionEvent
 import com.google.protobuf.ByteString
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.ScreenOrientation
+import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.ParcelableUtil
 import tornaco.apps.shortx.core.util.select
-import tornaco.apps.shortx.services.ui.i18NIns
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -50,7 +50,7 @@ class GestureRecorder(
         val record = GestureRecord
             .newBuilder()
             .setId(UUID.randomUUID().toString())
-            .setLabel(i18NIns["ui.settings.gesture.record"])
+            .setLabel(DateUtils.formatForFileName(System.currentTimeMillis()))
             .setRecordingTimeMillis(System.currentTimeMillis())
             .setDuration(duration)
             .setScreenOrientation(
