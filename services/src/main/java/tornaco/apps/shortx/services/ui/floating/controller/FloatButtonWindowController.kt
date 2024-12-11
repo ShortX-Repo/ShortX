@@ -57,6 +57,17 @@ class FloatButtonWindowController(
         idleAnimatorSet!!.start()
     }
 
+    private var lastMoveALittleUpTime = 0
+    private val MOVE_DELAY = 10 * 60 * 1000L
+    private val moveRunnable = object : Runnable {
+        override fun run() {
+            if (!view.isAttachedToWindow) return
+            logger.d("moveRunnable.moveALittle run")
+            moveALittle()
+            mainHandler.postDelayed(this, MOVE_DELAY)
+        }
+    }
+
     init {
         init()
     }
@@ -74,6 +85,7 @@ class FloatButtonWindowController(
         initListener()
         attachFloatWindow()
         mainHandler.postDelayed(idleRunnable, IDLE_DELAY)
+        mainHandler.postDelayed(moveRunnable, MOVE_DELAY)
     }
 
     private fun initListener() {
@@ -351,6 +363,25 @@ class FloatButtonWindowController(
 
     fun setOnStatusChangeListener(listener: OnStatusChangeListener?) {
         this.statusChangeListener = listener
+    }
+
+    fun moveALittle() {
+        if (isOpen) return
+        with(floatWindow) {
+            Log.d(
+                "TORNACO",
+                "moveALittle: $y, lastMoveALittleUpTime:$lastMoveALittleUpTime"
+            )
+            var newY: Int = y
+            if (lastMoveALittleUpTime % 3 == 0) {
+                lastMoveALittleUpTime += 1
+                newY -= 16
+            } else {
+                newY += 4
+            }
+            Log.d("TORNACO", "moveALittle: --> $newY")
+            updateY(newY)
+        }
     }
 
     companion object {

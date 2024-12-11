@@ -7,7 +7,7 @@ import android.content.res.Resources
 import android.widget.FrameLayout
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -211,14 +212,24 @@ class StatusBarClipView(
                     )
                     .widthIn(max = (clipState.settings.maxLength.takeIf { it > 0 } ?: 100).dp)
                     .clip(ShortXCardRoundedCornerShapeXL)
-                    .combinedClickable(
-                        onLongClick = {
-                            ShortXManagerNative.shortX?.onStatusBarClipLongClick(clipState.id)
-                        },
-                        onClick = {
-                            ShortXManagerNative.shortX?.onStatusBarClipClick(clipState.id)
-                        }
-                    )
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onTap = { offset ->
+                                logger.d("onTap")
+                                // 单击事件
+                                ShortXManagerNative.shortX?.onStatusBarClipClick(clipState.id)
+                            },
+                            onDoubleTap = { offset ->
+                                logger.d("onDoubleTap")
+                                // 双击事件
+                            },
+                            onLongPress = { offset ->
+                                logger.d("onLongPress")
+                                // 长按事件
+                                ShortXManagerNative.shortX?.onStatusBarClipLongClick(clipState.id)
+                            }
+                        )
+                    }
                     .background(backgroundColor),
                 contentAlignment = Alignment.Center
             ) {
