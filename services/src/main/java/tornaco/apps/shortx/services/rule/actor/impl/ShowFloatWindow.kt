@@ -18,16 +18,17 @@ object ShowFloatWindow : Actor {
     ) = with(params) {
         withContext(Dispatchers.Main) {
             val d = action unpack_ tornaco.apps.shortx.core.proto.action.ShowFloatWindow::class.java
-            shortXContext.overlay.postShowFloatWindow(
+            shortXContext.overlay.postShowSideBar(
                 evaluateContext,
                 localVars,
                 parameterInputs,
-                tornaco.apps.shortx.core.proto.action.ShowFloatWindow.newBuilder(d).apply {
-                    if (d.tag.isBlank()) {
-                        logger.i("Use action id as float window tag: ${d.id}")
-                        tag = d.id
-                    }
-                }.build()
+                tornaco.apps.shortx.core.proto.action.ShowSideBar.newBuilder()
+                    .apply {
+                        if (d.tag.isBlank()) {
+                            logger.i("Use action id as float window tag: ${d.id}")
+                            tag = d.id
+                        }
+                    }.build()
             )
         }
         Actor.Res.EMPTY

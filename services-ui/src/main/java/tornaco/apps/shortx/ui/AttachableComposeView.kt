@@ -27,11 +27,14 @@ abstract class AttachableComposeView(
 
     open var enableLayoutAnim = true
 
+    val lp by lazy {
+        createLayoutParams()
+    }
+
     fun attach() {
         initView()
 
-        val lp = createLayoutParams()
-        lp.title = "DrawBoardView"
+        lp.title = "ShortX"
         windowManager.addView(this, lp)
 
         isAttached = true
@@ -47,7 +50,7 @@ abstract class AttachableComposeView(
         }
     }
 
-    private fun createLayoutParams(): WindowManager.LayoutParams {
+    open fun createLayoutParams(): WindowManager.LayoutParams {
         val lp = WindowManager.LayoutParams()
         lp.gravity = Gravity.START or Gravity.TOP
         lp.width = ViewGroup.LayoutParams.MATCH_PARENT

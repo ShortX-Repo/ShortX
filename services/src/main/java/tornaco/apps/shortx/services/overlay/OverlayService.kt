@@ -11,6 +11,7 @@ import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.action.ShowFloatWindow
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
+import tornaco.apps.shortx.core.proto.action.ShowSideBar
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.rule.ActionAsyncMode
@@ -29,9 +30,12 @@ import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.floating.FloatApi
 import tornaco.apps.shortx.services.ui.floating.ScreenUtil
 import tornaco.apps.shortx.services.ui.floating.controller.FloatButtonWindowController
+import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
+import tornaco.apps.shortx.ui.AttachableComposeView
 import tornaco.apps.shortx.ui.overlay.ComposeOverlay
+import tornaco.apps.shortx.ui.sidebar.SideBarView
 
 internal data class ShowingOverlay(
     val token: ComposeOverlay,
@@ -45,6 +49,12 @@ internal data class ShowingFloats(
     val tag: String
 )
 
+internal data class ShowingSideBar(
+    val token: AttachableComposeView,
+    val settings: List<OverlayButtonSetting>,
+    val tag: String
+)
+
 class OverlayService(shortXContext: ShortXContext) :
     SystemService(shortXContext, "OverlayService") {
     private val mainHandler by lazy {
@@ -53,6 +63,7 @@ class OverlayService(shortXContext: ShortXContext) :
 
     private var showingOverlays: MutableList<ShowingOverlay> = mutableListOf()
     private var showingFloats: MutableList<ShowingFloats> = mutableListOf()
+    private var showingSideBars: MutableList<ShowingSideBar> = mutableListOf()
 
     private val screenFlash: ScreenFlash by lazy { ScreenFlash(context) }
 
@@ -220,6 +231,39 @@ class OverlayService(shortXContext: ShortXContext) :
             })
     }
 
+    fun postShowSideBar(
+        evaluateContext: EvaluateContext,
+        localVars: LocalVars,
+        parameters: List<FuncParameterInput>,
+        action: ShowSideBar
+    ) = mainHandler.postSafety("postShowSideBar") {
+        logger.d("postShowSideBar: ${action.tag}, current showing: ${showingSideBars.map { it.tag }}")
+        logger.logOnDebug("local vars: ${localVars.all.joinToString { it.name }}")
+        logger.logOnDebug("parameters: ${parameters.joinToString { it.toLogString() }}")
+
+        if (showingSideBars.any {
+                it.tag == action.tag
+            }) {
+            logger.d("postShowSideBar skip since has showing for same owner.")
+            return@postSafety
+        }
+
+        val sidebar = SideBarView(
+            context,
+            i18NIns,
+            {}
+        )
+
+        showingSideBars.add(
+            ShowingSideBar(
+                token = sidebar,
+                settings = action.buttonSettingsList,
+                tag = action.tag
+            ).apply {
+                token.attach()
+            })
+    }
+
     fun postHideAllOverlay() = mainHandler.postSafety("postHideAllOverlay") {
         logger.d("postHideAllOverlay")
         showingOverlays.forEach {
@@ -254,6 +298,14 @@ class OverlayService(shortXContext: ShortXContext) :
                 it.token.removeFloatWindow()
             }
         }
+    }
+
+    fun postHideAllSideBar() = mainHandler.postSafety("postHideAllSideBar") {
+        logger.d("postHideAllSideBar")
+        showingSideBars.forEach {
+            it.token.detach()
+        }
+        showingSideBars.clear()
     }
 
     private fun writeFloatWindowPos(tag: String, x: Int, y: Int) {
