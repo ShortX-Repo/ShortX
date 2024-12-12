@@ -18,7 +18,7 @@ object MapNav : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val d = action unpack_ MapNav::class.java
         val app = d.app
         val type = d.navType
@@ -56,5 +56,6 @@ object MapNav : Actor {
             }
 
         }
+        Actor.Res.EMPTY
     }
 }

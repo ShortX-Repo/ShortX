@@ -14,7 +14,7 @@ object LaunchAppByPkg : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val d =
             action unpack_ tornaco.apps.shortx.core.proto.action.LaunchAppByPkg::class.java
 
@@ -23,5 +23,6 @@ object LaunchAppByPkg : Actor {
             delay(600)
             shortXContext.appState.launchApp(it)
         }
+        Actor.Res.EMPTY
     }
 }

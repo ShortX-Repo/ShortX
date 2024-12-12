@@ -77,5 +77,6 @@ object ShowStatusBarChip : Actor {
             )
             actionRef.set(params)
         }
+        Actor.Res.EMPTY
     }
 }

@@ -21,5 +21,6 @@ object SetAppSuspendByPkg : Actor {
             suspend = d.suspend,
             reason = "Action Eva- SetAppSuspendByPkg"
         )
+        Actor.Res.EMPTY
     }
 }

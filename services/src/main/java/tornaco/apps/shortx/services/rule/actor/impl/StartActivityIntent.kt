@@ -56,6 +56,6 @@ object StartActivityIntent : Actor {
             }
         }
 
-        Unit
+        Actor.Res.EMPTY
     }
 }

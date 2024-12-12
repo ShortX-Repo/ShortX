@@ -18,7 +18,7 @@ object SwitchMobileDataSlot : Actor {
     @SuppressLint("MissingPermission")
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         val data =
             action unpack_ tornaco.apps.shortx.core.proto.action.SwitchMobileDataSlot::class.java
         val targetSubInfo =
@@ -34,6 +34,7 @@ object SwitchMobileDataSlot : Actor {
             SubscriptionManager.from(androidContext)
                 .setDefaultDataSubId(targetSubInfo.subscriptionId)
         }
+        Actor.Res.EMPTY
     }
 
     // MIUI 14

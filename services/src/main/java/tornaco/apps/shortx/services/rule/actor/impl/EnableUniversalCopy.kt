@@ -12,9 +12,10 @@ object EnableUniversalCopy : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ):  Actor.Res = with(params) {
         shortXContext.wm.withUiAutomation("enableUniversalCopy") {
             it.enableUniversalCopy()
         }
+        Actor.Res.EMPTY
     }
 }

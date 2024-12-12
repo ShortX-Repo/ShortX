@@ -15,11 +15,12 @@ object WakeupScreen : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         androidContext.powerManager.wakeUp(
             SystemClock.uptimeMillis(),
             PowerManager.WAKE_REASON_POWER_BUTTON, "Wakeup"
         )
+        Actor.Res.EMPTY
     }
 
 }

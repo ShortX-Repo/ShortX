@@ -1,7 +1,6 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
 import com.google.protobuf.Message
-import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 
@@ -13,8 +12,8 @@ object StopAudioRecording : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
-        val d = action unpack_ tornaco.apps.shortx.core.proto.action.StopAudioRecording::class.java
+    ) = with(params) {
         shortXContext.audio.stopRecording()
+        Actor.Res.EMPTY
     }
 }

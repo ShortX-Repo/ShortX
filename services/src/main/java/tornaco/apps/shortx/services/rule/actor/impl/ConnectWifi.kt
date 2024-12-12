@@ -52,7 +52,7 @@ object ConnectWifi : Actor {
     @ExperimentalCoroutinesApi
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.ConnectWifi::class.java
         logger.d("connect wifi: ${d.ssid.maskAll()}")
         val config = shortXContext.network.getPrivilegedConfiguredNetworks().firstOrNull {
@@ -86,6 +86,8 @@ object ConnectWifi : Actor {
         require(isSuccessToReason.first) {
             "Fail to connect wifi, reason: ${isSuccessToReason.second.toFailReason()}"
         }
+
+        Actor.Res.EMPTY
     }
 
     private fun Int.toFailReason(): String {

@@ -23,5 +23,6 @@ object StartAppProcess : Actor {
             d.appPkgList
         }
         shortXContext.appState.startAppProcess(pkgs, "Action Eva- StartAppProcess")
+        Actor.Res.EMPTY
     }
 }

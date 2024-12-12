@@ -26,5 +26,6 @@ object SetStatusBarIcon : Actor {
         withContext(Dispatchers.Main) {
             shortXContext.statusbar.setStatusBarIcon(slot, iconName)
         }
+        Actor.Res.EMPTY
     }
 }

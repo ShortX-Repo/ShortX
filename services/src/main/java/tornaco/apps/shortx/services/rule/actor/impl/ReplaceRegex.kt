@@ -20,7 +20,7 @@ object ReplaceRegex : Actor {
     @ExperimentalCoroutinesApi
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         val data =
             action unpack_ tornaco.apps.shortx.core.proto.action.ReplaceRegex::class.java
         val cv = RuleContextAndVars(params)
@@ -31,5 +31,6 @@ object ReplaceRegex : Actor {
             data.customContextDataKey.forKey(ContextDataMapping.ReplaceRegex.replaceResult.name)
                 .fallbackOnEmpty(ContextDataMapping.ReplaceRegex.replaceResult.name), result
         )
+        Actor.Res(result)
     }
 }

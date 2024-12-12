@@ -20,7 +20,7 @@ object SetSensorsOffEnabled : Actor {
     @SuppressLint("MissingPermission")
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         val data =
             action unpack_ tornaco.apps.shortx.core.proto.action.SetSensorsOffEnabled::class.java
         val enable = data.enable
@@ -36,5 +36,6 @@ object SetSensorsOffEnabled : Actor {
                 androidContext.getSystemService(Context.SENSOR_PRIVACY_SERVICE) as SensorPrivacyManager
             sensorPriv.setAllSensorPrivacy(enable)
         }
+        Actor.Res.EMPTY
     }
 }

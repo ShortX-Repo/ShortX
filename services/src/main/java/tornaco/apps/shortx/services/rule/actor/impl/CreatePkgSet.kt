@@ -15,7 +15,7 @@ object CreatePkgSet : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val d = action unpack_ CreatePkgSet::class.java
         require(shortXContext.pkgSet.getPkgSetByLabel(d.label) == null) {
             "Pkg set: ${d.label} already exists."
@@ -23,5 +23,6 @@ object CreatePkgSet : Actor {
         shortXContext.pkgSet.addPkgSet(
             PkgSet.newBuilder().setLabel(d.label).setDescription(d.description).build()
         )
+        Actor.Res.EMPTY
     }
 }

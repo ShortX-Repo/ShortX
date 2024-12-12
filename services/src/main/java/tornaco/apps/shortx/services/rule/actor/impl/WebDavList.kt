@@ -21,8 +21,8 @@ object WebDavList : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ) {
-        with(params) {
+    ): Actor.Res {
+        return with(params) {
             val data =
                 action unpack_ tornaco.apps.shortx.core.proto.action.WebDavList::class.java
             val cv = RuleContextAndVars(params)
@@ -53,6 +53,8 @@ object WebDavList : Actor {
                         .fallbackOnEmpty(ContextDataMapping.WebDavList.webdavNames.name),
                     names
                 )
+
+                Actor.Res(paths.joinToString())
             }
         }
     }

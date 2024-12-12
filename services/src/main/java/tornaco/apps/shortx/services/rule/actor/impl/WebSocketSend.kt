@@ -16,8 +16,8 @@ object WebSocketSend : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ) {
-        with(params) {
+    ): Actor.Res {
+        return with(params) {
             val data =
                 action unpack_ tornaco.apps.shortx.core.proto.action.WebSocketSend::class.java
             val cv = RuleContextAndVars(params)
@@ -33,6 +33,7 @@ object WebSocketSend : Actor {
                     "Send message fail."
                 }
             }
+            Actor.Res.EMPTY
         }
     }
 }

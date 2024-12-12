@@ -14,7 +14,8 @@ object StopAllActions : Actor {
     @ExperimentalCoroutinesApi
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         shortXContext.rule.cancelAllJobs("Action")
+        Actor.Res.EMPTY
     }
 }

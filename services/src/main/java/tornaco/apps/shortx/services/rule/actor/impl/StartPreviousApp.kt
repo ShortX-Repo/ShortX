@@ -12,7 +12,8 @@ object StartPreviousApp : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
+        Actor.Res.EMPTY
     }
 
 }

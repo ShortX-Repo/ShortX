@@ -12,7 +12,7 @@ object AddToGlobalVar : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
-
+    ): Actor.Res = with(params) {
+        Actor.Res.EMPTY
     }
 }

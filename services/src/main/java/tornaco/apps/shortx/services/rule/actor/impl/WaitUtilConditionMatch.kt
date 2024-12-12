@@ -25,6 +25,7 @@ object WaitUtilConditionMatch : Actor {
         params: HandleParams
     ) = with(params) {
         handleInternal(this)
+        Actor.Res.EMPTY
     }
 
     private suspend fun handleInternal(

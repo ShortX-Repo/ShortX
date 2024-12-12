@@ -14,10 +14,11 @@ object SleepScreen : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         androidContext.powerManager.goToSleep(
             SystemClock.uptimeMillis()
         )
+        Actor.Res.EMPTY
     }
 
 }

@@ -17,7 +17,7 @@ object InputText : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ) {
+    ): Actor.Res {
         val ac = params.action unpack_ InputText::class.java
         require(params.androidContext.powerManager.isInteractive) {
             "Can not InputText when device is not interactive"
@@ -26,5 +26,6 @@ object InputText : Actor {
             ac.text.compileContextAndVars(RuleContextAndVars(params)).apply {
                 logger.logOnDebug("Input text: $this")
             })
+        return Actor.Res.EMPTY
     }
 }

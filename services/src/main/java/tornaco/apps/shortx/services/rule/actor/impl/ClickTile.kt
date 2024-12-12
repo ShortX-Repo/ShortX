@@ -24,5 +24,6 @@ object ClickTile : Actor {
         } else {
             shortXContext.ui.clickTile(d.tile.tileSpec.compileContextAndVars(cv))
         }
+        Actor.Res.EMPTY
     }
 }

@@ -22,6 +22,7 @@ object StopAppByPkg : Actor {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.StopAppByPkg::class.java
         val realAppPkgs = d.pkgAndUsersList.toRealApps(params)
         shortXContext.appState.forceStopApp(realAppPkgs, "Action Eva- StopAppByPkg")
+        Actor.Res.EMPTY
     }
 }
 

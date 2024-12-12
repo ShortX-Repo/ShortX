@@ -13,7 +13,7 @@ object SetAutoBrightness : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         val data =
             action unpack_ tornaco.apps.shortx.core.proto.action.SetAutoBrightness::class.java
         val mode = if (data.enable) {
@@ -26,5 +26,6 @@ object SetAutoBrightness : Actor {
             android.provider.Settings.System.SCREEN_BRIGHTNESS_MODE,
             mode
         )
+        Actor.Res.EMPTY
     }
 }

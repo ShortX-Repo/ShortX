@@ -35,8 +35,8 @@ object WebSocketConnect : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ) {
-        with(params) {
+    ): Actor.Res {
+        return with(params) {
             val data =
                 params.action unpack_ tornaco.apps.shortx.core.proto.action.WebSocketConnect::class.java
             val cv = RuleContextAndVars(params)
@@ -125,6 +125,7 @@ object WebSocketConnect : Actor {
                     throw it
                 }
             }
+            Actor.Res.EMPTY
         }
     }
 

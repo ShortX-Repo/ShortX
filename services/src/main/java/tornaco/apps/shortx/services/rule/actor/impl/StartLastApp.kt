@@ -12,8 +12,9 @@ object StartLastApp : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         shortXContext.appState.startLastApp()
+        Actor.Res.EMPTY
     }
 
 }

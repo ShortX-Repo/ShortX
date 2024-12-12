@@ -49,7 +49,7 @@ object SendSMS : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         require(Interceptors.checkSendSMS(params.shortXContext, params.androidContext))
 
         val t = action unpack_ tornaco.apps.shortx.core.proto.action.SendSMS::class.java
@@ -78,5 +78,6 @@ object SendSMS : Actor {
         )
 
         smsForSub.sendTextMessage(phoneNumber, null, message, sentIntent, null)
+        Actor.Res.EMPTY
     }
 }

@@ -23,10 +23,9 @@ object BiometricVerify : Actor {
         return tornaco.apps.shortx.core.proto.action.BiometricVerify::class.java
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.BiometricVerify::class.java
 
         val actionRequestCode = RequestCodeFactory.getNext()
@@ -79,5 +78,7 @@ object BiometricVerify : Actor {
                 runSubActions(d.denyActionsList)
             }
         }
+
+        Actor.Res.EMPTY
     }
 }

@@ -42,6 +42,7 @@ object ForEach : Actor {
                 }
             }
             logger.d("ForEach complete")
+            Actor.Res.EMPTY
         }
     }
 }

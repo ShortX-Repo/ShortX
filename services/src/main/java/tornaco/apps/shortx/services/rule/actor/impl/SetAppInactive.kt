@@ -23,5 +23,6 @@ object SetAppInactive : Actor {
             d.appPkgList
         }
         shortXContext.appState.setAppInactive(pkgs)
+        Actor.Res.EMPTY
     }
 }

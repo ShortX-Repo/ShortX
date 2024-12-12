@@ -15,9 +15,10 @@ object SetBTEnabled : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         val hw = HwImpl(androidContext, shortXContext)
         val d = action unpack_ SetBTEnabled::class.java
         if (d.enable) hw.enableBT() else hw.disableBT()
+        Actor.Res.EMPTY
     }
 }

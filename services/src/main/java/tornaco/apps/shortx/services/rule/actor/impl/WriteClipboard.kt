@@ -17,8 +17,8 @@ object WriteClipboard : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ) {
-        with(params) {
+    ): Actor.Res {
+        return with(params) {
             val cv = RuleContextAndVars(params)
             val data =
                 action unpack_ tornaco.apps.shortx.core.proto.action.WriteClipboard::class.java
@@ -28,6 +28,7 @@ object WriteClipboard : Actor {
                     data.text.compileContextAndVars(cv)
                 )
             )
+            Actor.Res.EMPTY
         }
     }
 }

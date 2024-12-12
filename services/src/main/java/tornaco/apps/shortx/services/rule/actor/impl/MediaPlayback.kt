@@ -5,7 +5,6 @@ import android.view.KeyEvent
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.proto.action.MediaPlaybackAction
 import tornaco.apps.shortx.core.rule.unpack_
-import tornaco.apps.shortx.services.ctrl.Device
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 
@@ -18,7 +17,7 @@ object MediaPlayback : Actor {
     @SuppressLint("MissingPermission")
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.MediaPlayback::class.java
         logger.d("MediaPlayback: ${d.action}")
         val action: MediaPlaybackAction = d.action
@@ -59,5 +58,6 @@ object MediaPlayback : Actor {
 
         logger.d("MediaPlaybackAction -> keyCode: $keyCode")
         InjectKeyCode.injectKey(keyCode)
+        Actor.Res.EMPTY
     }
 }

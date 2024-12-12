@@ -19,7 +19,7 @@ object SetFlashLightEnabled : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         synchronized(SetFlashLightEnabled) {
             if (hw == null) {
                 hw = HwImpl(androidContext, shortXContext)
@@ -27,5 +27,6 @@ object SetFlashLightEnabled : Actor {
         }
         val d = action unpack_ SetFlashLightEnabled::class.java
         if (d.enable) hw?.enabledFlashlight() else hw?.disableFlashlight()
+        Actor.Res.EMPTY
     }
 }

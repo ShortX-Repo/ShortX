@@ -18,7 +18,7 @@ class FactPublishRecorder {
     fun add(record: FactPublishRecord) {
         _records.add(record)
         if (_records.size > MAX_ENTRY_SIZE) {
-            _records.removeFirst()
+            _records.removeAt(0)
         }
     }
 

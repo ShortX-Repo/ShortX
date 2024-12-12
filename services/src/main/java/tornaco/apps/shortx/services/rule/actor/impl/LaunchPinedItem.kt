@@ -16,7 +16,7 @@ object LaunchPinedItem : Actor {
     @SuppressLint("MissingPermission")
     override suspend fun handle(
         params: HandleParams
-    ) {
+    ): Actor.Res {
         with(params) {
             val data =
                 action unpack_ tornaco.apps.shortx.core.proto.action.LaunchPinedItem::class.java
@@ -25,5 +25,6 @@ object LaunchPinedItem : Actor {
                 UserHandleUtils.userIdToUserHandle(data.userId)
             )
         }
+        return Actor.Res.EMPTY
     }
 }

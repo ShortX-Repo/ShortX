@@ -23,7 +23,7 @@ object GetTextFromScreenNode : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val d =
             action unpack_ tornaco.apps.shortx.core.proto.action.GetTextFromScreenNode::class.java
         val cv = RuleContextAndVars(params)
@@ -38,6 +38,7 @@ object GetTextFromScreenNode : Actor {
                 .fallbackOnEmpty { ContextDataMapping.GetTextFromScreenNode.textOfTheView.name },
             text
         )
+        Actor.Res(text)
     }
 
 }

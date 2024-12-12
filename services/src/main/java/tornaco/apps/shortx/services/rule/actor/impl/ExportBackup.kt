@@ -23,7 +23,7 @@ object ExportBackup : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ) {
+    ): Actor.Res {
         with(params) {
             val cv = RuleContextAndVars(params)
             val data =
@@ -67,5 +67,6 @@ object ExportBackup : Actor {
                 )
             }
         }
+        return Actor.Res.EMPTY
     }
 }

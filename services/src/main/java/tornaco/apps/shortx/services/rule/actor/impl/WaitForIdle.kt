@@ -14,8 +14,9 @@ object WaitForIdle : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
-        if (!androidContext.powerManager.isInteractive) return@with
+    ) = with(params) {
+        if (!androidContext.powerManager.isInteractive) return@with Actor.Res.EMPTY
         delay(3000)
+        Actor.Res.EMPTY
     }
 }

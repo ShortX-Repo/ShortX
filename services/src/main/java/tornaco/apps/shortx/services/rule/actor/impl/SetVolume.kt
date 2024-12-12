@@ -18,7 +18,7 @@ object SetVolume : Actor {
     @SuppressLint("NewApi")
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.SetVolume::class.java
 
         val min = OsUtils.isPOrAbove().select(
@@ -38,6 +38,7 @@ object SetVolume : Actor {
             d.index,
             0
         )
+        Actor.Res.EMPTY
     }
 
 }

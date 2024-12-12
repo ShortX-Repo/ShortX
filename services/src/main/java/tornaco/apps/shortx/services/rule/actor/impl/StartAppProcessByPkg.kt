@@ -18,5 +18,6 @@ object StartAppProcessByPkg : Actor {
             action unpack_ tornaco.apps.shortx.core.proto.action.StartAppProcessByPkg::class.java
         val realAppPkgs = d.pkgAndUsersList.toRealApps(params)
         shortXContext.appState.startAppProcess(realAppPkgs, "Action Eva- StartAppProcessByPkg")
+        Actor.Res.EMPTY
     }
 }

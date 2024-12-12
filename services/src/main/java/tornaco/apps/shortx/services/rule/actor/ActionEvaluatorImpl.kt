@@ -98,7 +98,7 @@ class ActionEvaluatorImpl(
             val startTimeMills = System.currentTimeMillis()
             logger.d("Action start evaluate [$actor]")
 
-            actor.handle(
+            val actorRes = actor.handle(
                 HandleParams(
                     androidContext = context,
                     androidUiContext = uiContext,
@@ -117,7 +117,12 @@ class ActionEvaluatorImpl(
             val timeTaken = System.currentTimeMillis() - startTimeMills
             logger.d("Action evaluated in ${timeTaken}ms [$actor]")
 
-            ActionEvaluator.EvaluateResult.Success(actionId, action, evaluateContext)
+            ActionEvaluator.EvaluateResult.Success(
+                actionId = actionId,
+                action = action,
+                log = actorRes.log,
+                evaluateContext = evaluateContext
+            )
         }.getOrElse { throwable ->
             // Clean up registered listeners for Actor usage...
             attrs?.let { shortXContext.rule.unregisterInternalFactListener(it.id) }

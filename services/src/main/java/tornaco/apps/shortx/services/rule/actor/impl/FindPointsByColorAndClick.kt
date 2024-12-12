@@ -13,7 +13,7 @@ object FindPointsByColorAndClick : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val d =
             action unpack_ tornaco.apps.shortx.core.proto.action.FindPointsByColorAndClick::class.java
         val points = handleAction(
@@ -32,5 +32,7 @@ object FindPointsByColorAndClick : Actor {
         shortXContext.wm.withUiAutomation("FindPointsByColorAndClick") {
             it.click(firstPoint.x, firstPoint.y)
         }
+
+        Actor.Res.EMPTY
     }
 }

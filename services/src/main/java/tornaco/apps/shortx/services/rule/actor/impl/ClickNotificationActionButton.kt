@@ -33,6 +33,7 @@ object ClickNotificationActionButton : Actor {
                 .setLabel(d.button.label.compileContextAndVars(cv))
                 .build()
             shortXContext.notification.clickNotificationButton(n, btn)
+            Actor.Res.EMPTY
         }
     }
 }

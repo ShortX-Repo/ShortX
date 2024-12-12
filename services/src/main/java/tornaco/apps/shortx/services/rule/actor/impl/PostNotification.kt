@@ -98,6 +98,8 @@ object PostNotification : Actor {
                     )
                     .build()
             shortXContext.notification.post(inflatedN)
+
+            Actor.Res.EMPTY
         }
     }
 

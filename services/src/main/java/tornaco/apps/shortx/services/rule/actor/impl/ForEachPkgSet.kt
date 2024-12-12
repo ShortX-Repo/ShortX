@@ -17,7 +17,7 @@ object ForEachPkgSet : Actor {
     @ExperimentalCoroutinesApi
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.ForEachPkgSet::class.java
         val pkgSet = shortXContext.pkgSet.getPkgSetByLabel(d.pkgSet)
         requireNotNull(pkgSet) {
@@ -37,5 +37,6 @@ object ForEachPkgSet : Actor {
             contextData.override(ContextDataMapping.ForEachPkgSet.loopAppUserId.name, appPkg.userId)
             runSubActions(actions)
         }
+        Actor.Res.EMPTY
     }
 }

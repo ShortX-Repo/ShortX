@@ -12,12 +12,13 @@ object ToggleGestureRecording : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         val isRecording = shortXContext.gesture.isGestureRecording()
         if (isRecording) {
             shortXContext.gesture.stopGestureRecording(true)
         } else {
             shortXContext.gesture.startGestureRecording()
         }
+        Actor.Res.EMPTY
     }
 }

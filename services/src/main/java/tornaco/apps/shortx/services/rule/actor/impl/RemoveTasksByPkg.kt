@@ -13,11 +13,12 @@ object RemoveTasksByPkg : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         val d =
             action unpack_ tornaco.apps.shortx.core.proto.action.RemoveTasksByPkg::class.java
 
         val realAppPkgs = d.pkgAndUsersList.toRealApps(params)
         shortXContext.appState.removeTasksForPackage(realAppPkgs)
+        Actor.Res.EMPTY
     }
 }

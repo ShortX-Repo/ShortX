@@ -18,5 +18,6 @@ object SetAppInactiveByPkg : Actor {
             action unpack_ tornaco.apps.shortx.core.proto.action.SetAppInactiveByPkg::class.java
         val realAppPkgs = d.pkgAndUsersList.toRealApps(params)
         shortXContext.appState.setAppInactive(realAppPkgs)
+        Actor.Res.EMPTY
     }
 }

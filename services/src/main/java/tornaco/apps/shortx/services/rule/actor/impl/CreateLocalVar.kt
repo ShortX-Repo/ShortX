@@ -13,9 +13,10 @@ object CreateLocalVar : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val data = action unpack_ tornaco.apps.shortx.core.proto.action.CreateLocalVar::class.java
         logger.d("CreateLocalVar: ${data.localVar}")
         localVars.add(data.localVar)
+        Actor.Res.EMPTY
     }
 }

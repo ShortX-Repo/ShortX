@@ -35,7 +35,7 @@ object OcrDetect : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         androidContext.requireExt()
 
         val data =
@@ -53,6 +53,7 @@ object OcrDetect : Actor {
         )
 
         logger.d("ocrResult: $ocrResultString")
+        Actor.Res(ocrResultString)
     }
 
     suspend fun recognizeText(params: HandleParams, src: ProtoAny): Array<out String> {

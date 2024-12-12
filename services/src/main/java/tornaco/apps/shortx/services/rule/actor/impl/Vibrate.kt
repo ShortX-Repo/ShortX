@@ -35,7 +35,7 @@ object Vibrate : Actor {
     @SuppressLint("MissingPermission")
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.Vibrate::class.java
 
         val customVibPattern = longArrayOf(
@@ -52,6 +52,8 @@ object Vibrate : Actor {
             SEVEN_ELEMENTS_VIBRATION_AMPLITUDE, -1
         )
         androidContext.vibrate.vibrate(effect, VIBRATION_ATTRIBUTES)
+
+        Actor.Res.EMPTY
     }
 
 }

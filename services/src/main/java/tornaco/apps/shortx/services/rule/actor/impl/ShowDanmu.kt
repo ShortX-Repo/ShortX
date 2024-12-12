@@ -31,5 +31,6 @@ object ShowDanmu : Actor {
                 text = d.text.compileContextAndVars(cv)
             )
         }
+        Actor.Res.EMPTY
     }
 }

@@ -48,5 +48,6 @@ object WhileLoop : Actor {
             }
             logger.d("WhileLoop complete")
         }
+        Actor.Res.EMPTY
     }
 }

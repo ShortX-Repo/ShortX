@@ -23,5 +23,6 @@ object StopApp : Actor {
             d.appPkgList
         }
         shortXContext.appState.forceStopApp(pkgs, "Action Eva- StopApp")
+        Actor.Res.EMPTY
     }
 }

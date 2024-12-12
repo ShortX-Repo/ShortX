@@ -25,6 +25,7 @@ interface ActionEvaluator {
         data class Success(
             override val actionId: String,
             override val action: ProtoAny,
+            val log: String,
             override val evaluateContext: EvaluateContext
         ) : EvaluateResult
 

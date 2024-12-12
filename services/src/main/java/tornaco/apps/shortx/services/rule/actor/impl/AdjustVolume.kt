@@ -15,7 +15,7 @@ object AdjustVolume : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.AdjustVolume::class.java
 
         androidContext.audioManager.adjustVolume(
@@ -24,6 +24,7 @@ object AdjustVolume : Actor {
             },
             if (d.showUI) AudioManager.FLAG_SHOW_UI else 0
         )
+        Actor.Res.EMPTY
     }
 
 }

@@ -16,7 +16,7 @@ object MapQueryBus : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.MapQueryBus::class.java
         val app = d.app
         require(app == MapApp.Gaode) {
@@ -29,5 +29,6 @@ object MapQueryBus : Actor {
             busName = d.bus,
             city = d.city
         )
+        Actor.Res.EMPTY
     }
 }

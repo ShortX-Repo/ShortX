@@ -32,5 +32,6 @@ object StartActivityUrlSchema : Actor {
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
             UserHandleUtils.userIdToUserHandle(userId)
         )
+        Actor.Res.EMPTY
     }
 }

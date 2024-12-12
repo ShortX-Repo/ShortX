@@ -17,7 +17,7 @@ object ReadClipboard : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ) {
+    ): Actor.Res {
         with(params) {
             val d =
                 params.action unpack_ tornaco.apps.shortx.core.proto.action.ReadClipboard::class.java
@@ -33,6 +33,7 @@ object ReadClipboard : Actor {
                         it
                     )
                 }
+            return Actor.Res.EMPTY
         }
     }
 }

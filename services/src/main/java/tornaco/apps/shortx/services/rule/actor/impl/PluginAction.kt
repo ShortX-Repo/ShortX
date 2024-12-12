@@ -18,7 +18,7 @@ object PluginAction : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.PluginAction::class.java
         logger.i("execute plugin action: ${d.action}")
         val paramsData = d.params.toParamsData()
@@ -39,6 +39,7 @@ object PluginAction : Actor {
                 paramsData
             )
         )
+        Actor.Res.EMPTY
     }
 }
 

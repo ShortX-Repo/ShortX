@@ -3,7 +3,6 @@ package tornaco.apps.shortx.services.rule.actor.impl
 import android.content.Context
 import android.graphics.Rect
 import com.google.protobuf.Message
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.forKey
@@ -14,7 +13,6 @@ import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 
-@OptIn(ExperimentalCoroutinesApi::class)
 object SelectScreenArea : Actor {
     override fun actionsCanHandle(): Class<out Message> {
         return tornaco.apps.shortx.core.proto.action.SelectScreenArea::class.java
@@ -22,7 +20,7 @@ object SelectScreenArea : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         val d =
             action unpack_ tornaco.apps.shortx.core.proto.action.SelectScreenArea::class.java
 
@@ -57,6 +55,8 @@ object SelectScreenArea : Actor {
                 .fallbackOnEmpty { ContextDataMapping.Rect.rectFlattenToString.name },
             rect.flattenToString(),
         )
+
+        Actor.Res(rect.flattenToString())
     }
 
     suspend fun startSelectScreenArea(shortXContext: ShortXContext): AreaSelection? {

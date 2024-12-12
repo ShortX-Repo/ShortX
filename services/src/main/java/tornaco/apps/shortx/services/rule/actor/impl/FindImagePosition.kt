@@ -31,7 +31,7 @@ object FindImagePosition : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         androidContext.requireExt()
 
         val d =
@@ -72,6 +72,7 @@ object FindImagePosition : Actor {
                 point.y.toString()
             )
         }
+        Actor.Res.EMPTY
     }
 }
 

@@ -13,7 +13,7 @@ object ScrollViewTo : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.ScrollViewTo::class.java
         val location: ScrollViewToLocation = d.location
         logger.d("location = $location")
@@ -55,5 +55,6 @@ object ScrollViewTo : Actor {
                 shortXContext.wm.viewScroller.scrollToForce(vS = -100000f)
             }
         }
+        Actor.Res.EMPTY
     }
 }

@@ -17,7 +17,7 @@ object GetScreenOnTime : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val d =
             action unpack_ tornaco.apps.shortx.core.proto.action.GetScreenOnTime::class.java
         val timeInSec: Long =
@@ -31,5 +31,6 @@ object GetScreenOnTime : Actor {
                 .fallbackOnEmpty { ContextDataMapping.GetScreenOnTime.screenOnTime.name },
             timeInSec
         )
+        Actor.Res(timeInSec.toString())
     }
 }

@@ -38,6 +38,7 @@ object ShowTextFieldDialog : Actor {
             contextData = contextData,
             localVars = localVars
         )
+        Actor.Res.EMPTY
     }
 
     private suspend fun evaluateShowDialogAction(

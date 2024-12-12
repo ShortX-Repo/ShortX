@@ -12,10 +12,11 @@ object StartGestureRecording : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         if (!shortXContext.gesture.isGestureRecording()) {
             logger.w("startGestureRecording ignored while it is already started")
             shortXContext.gesture.startGestureRecording()
         }
+        Actor.Res.EMPTY
     }
 }

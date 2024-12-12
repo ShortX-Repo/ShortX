@@ -14,12 +14,13 @@ object StopService : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         val data =
             action unpack_ tornaco.apps.shortx.core.proto.action.StopService::class.java
 
         val services = data.servicesList
         logger.d("stop service: ${services.map { it.appComponentToString() }}")
         shortXContext.appState.stopServices(services)
+        Actor.Res.EMPTY
     }
 }

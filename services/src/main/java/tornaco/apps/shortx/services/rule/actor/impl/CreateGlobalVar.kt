@@ -17,7 +17,7 @@ object CreateGlobalVar : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val d = action unpack_ CreateGlobalVar::class.java
         val srcId = params.evaluateContext.srcId
         logger.d("CreateGlobalVar: ${d.globalVar}, srcId: $srcId")
@@ -30,5 +30,6 @@ object CreateGlobalVar : Actor {
                     .build()
             )
         }
+        Actor.Res.EMPTY
     }
 }

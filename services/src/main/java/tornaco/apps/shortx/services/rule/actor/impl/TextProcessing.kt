@@ -25,12 +25,13 @@ object TextProcessing : Actor {
     @ExperimentalCoroutinesApi
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         val data =
             action unpack_ tornaco.apps.shortx.core.proto.action.TextProcessing::class.java
         val cv = RuleContextAndVars(params)
         val result = process(data.processorsList, data.text, cv)
         contextData.add(ContextDataMapping.TextProcessing.textProcessResult.name, result)
+        Actor.Res.EMPTY
     }
 
     fun process(processors: List<ProtoAny>, rawText: String, cv: RuleContextAndVars): String {

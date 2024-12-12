@@ -16,7 +16,7 @@ object WriteLocalVar : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.WriteLocalVar::class.java
         val localVar = requireNotNull(localVars.getByName(d.varName)) {
             "Local var: ${d.varName} not exists. pls create first.\nCurrent local vars: ${localVars.all.joinToString { it.name }}"
@@ -25,5 +25,6 @@ object WriteLocalVar : Actor {
         val newValue =
             d.valueAsString.compileContextAndVars(cv)
         localVars.update(localVar.addOrUpdateValue(listOf(newValue)))
+        Actor.Res.EMPTY
     }
 }

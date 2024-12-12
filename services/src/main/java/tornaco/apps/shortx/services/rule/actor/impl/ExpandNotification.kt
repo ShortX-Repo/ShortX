@@ -13,8 +13,9 @@ object ExpandNotification : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ) {
+    ): Actor.Res {
         // TODO API
         params.androidContext.statusBarManager.expandNotificationsPanel()
+        return Actor.Res.EMPTY
     }
 }

@@ -21,5 +21,6 @@ object SetRuleEnabled : Actor {
             "Rule not exists: ${d.ruleId}"
         }
         shortXContext.rule.setRuleEnabled(d.ruleId, d.isEnable)
+        Actor.Res.EMPTY
     }
 }

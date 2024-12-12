@@ -32,5 +32,6 @@ object ShowOverlayButton : Actor {
                 }.build()
             )
         }
+        Actor.Res.EMPTY
     }
 }

@@ -21,25 +21,26 @@ object MatchRegex : Actor {
     @ExperimentalCoroutinesApi
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val data =
             action unpack_ tornaco.apps.shortx.core.proto.action.MatchRegex::class.java
 
         val cv = RuleContextAndVars(params)
 
-        emptyOrRegexMatchAndResults(
+        val matchRes = emptyOrRegexMatchAndResults(
             data.regex.compileContextAndVars(cv),
             data.string.compileContextAndVars(cv),
             data.matchOptions
-        ).apply {
-            contextData.add(
-                data.customContextDataKey.forKey(ContextDataMapping.MatchRegex.isMatch.name)
-                    .fallbackOnEmpty(ContextDataMapping.MatchRegex.isMatch.name), first
-            )
-            contextData.add(
-                data.customContextDataKey.forKey(ContextDataMapping.MatchRegex.matchResult.name)
-                    .fallbackOnEmpty(ContextDataMapping.MatchRegex.matchResult.name), second
-            )
-        }
+        )
+        contextData.add(
+            data.customContextDataKey.forKey(ContextDataMapping.MatchRegex.isMatch.name)
+                .fallbackOnEmpty(ContextDataMapping.MatchRegex.isMatch.name), matchRes.first
+        )
+        contextData.add(
+            data.customContextDataKey.forKey(ContextDataMapping.MatchRegex.matchResult.name)
+                .fallbackOnEmpty(ContextDataMapping.MatchRegex.matchResult.name), matchRes.second
+        )
+
+        Actor.Res(matchRes.first.toString() + System.lineSeparator() + matchRes.second)
     }
 }

@@ -15,7 +15,7 @@ object AudioRecording : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         runCatching {
             val d = action unpack_ tornaco.apps.shortx.core.proto.action.AudioRecording::class.java
             if (shortXContext.audio.isRecording) {
@@ -39,5 +39,7 @@ object AudioRecording : Actor {
                 throw it
             }
         }
+
+        Actor.Res.EMPTY
     }
 }

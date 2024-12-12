@@ -100,6 +100,7 @@ object ShowAlertDialog : Actor {
                 }
             }
         }
+        Actor.Res.EMPTY
     }
 
 

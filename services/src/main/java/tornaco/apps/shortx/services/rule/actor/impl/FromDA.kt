@@ -46,5 +46,6 @@ object FromDA : Actor {
         logger.logOnDebug("allParameters: ${allParameters.map { it.toLogString() }}")
 
         runSubActions(da.actionsList)
+        Actor.Res.EMPTY
     }
 }

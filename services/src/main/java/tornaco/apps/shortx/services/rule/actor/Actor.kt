@@ -38,7 +38,7 @@ data class HandleParams(
 
 interface Actor {
     fun actionsCanHandle(): Class<out Message>
-    suspend fun handle(params: HandleParams)
+    suspend fun handle(params: HandleParams): Res
 
     fun init(androidContext: Context, shortXContext: ShortXContext) {
         logger.i("Actor $this init")
@@ -47,6 +47,12 @@ interface Actor {
     val withWakelock: Boolean get() = false
 
     val logger get() = LoggerCache.getLogger("Actor-${actionsCanHandle().simpleName}")
+
+    data class Res(val log: String) {
+        companion object {
+            val EMPTY = Res("")
+        }
+    }
 }
 
 interface ActorProvider {

@@ -31,6 +31,7 @@ object SetScreenRotate : Actor {
             // freezeRotation(int rotation)
             wm.freezeRotation(degree.degreeToRotation())
         }
+        Actor.Res.EMPTY
     }
 }
 

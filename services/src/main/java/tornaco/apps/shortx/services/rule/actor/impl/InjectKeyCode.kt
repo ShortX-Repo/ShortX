@@ -15,11 +15,12 @@ object InjectKeyCode : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val data =
             action unpack_ tornaco.apps.shortx.core.proto.action.InjectKeyCode::class.java
         val keyCode = data.keyCode
         injectKey(keyCode, data.longpress, data.doublepress)
+        Actor.Res.EMPTY
     }
 
     fun injectKey(keyCode: Int, longpress: Boolean = false, doublepress: Boolean = false) {

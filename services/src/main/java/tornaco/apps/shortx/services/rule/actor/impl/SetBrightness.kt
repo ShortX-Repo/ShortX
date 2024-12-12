@@ -13,7 +13,7 @@ object SetBrightness : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         val data = action unpack_ tornaco.apps.shortx.core.proto.action.SetBrightness::class.java
         android.provider.Settings.System.putInt(
             androidContext.contentResolver,
@@ -22,5 +22,6 @@ object SetBrightness : Actor {
                 logger.d("set brightness to: $this")
             }
         )
+        Actor.Res.EMPTY
     }
 }

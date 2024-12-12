@@ -14,9 +14,10 @@ object SetLocationEnabled : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         val hw = HwImpl(androidContext, shortXContext)
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.SetLocationEnabled::class.java
         if (d.enable) hw.enableLocation() else hw.disableLocation()
+        Actor.Res.EMPTY
     }
 }

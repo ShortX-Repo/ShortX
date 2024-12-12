@@ -12,9 +12,10 @@ object EnableViewIdViewer : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         shortXContext.wm.withUiAutomation("enableIdViewer") {
             it.enableIdViewer()
         }
+        Actor.Res.EMPTY
     }
 }

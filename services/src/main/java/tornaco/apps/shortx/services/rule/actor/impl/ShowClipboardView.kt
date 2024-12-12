@@ -12,7 +12,8 @@ object ShowClipboardView : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         shortXContext.wm.showClipboard()
+        Actor.Res.EMPTY
     }
 }

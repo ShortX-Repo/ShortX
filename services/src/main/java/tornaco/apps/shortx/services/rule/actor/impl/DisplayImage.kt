@@ -3,7 +3,6 @@ package tornaco.apps.shortx.services.rule.actor.impl
 import android.os.Bundle
 import com.google.protobuf.Message
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.action.DisplayImage
@@ -17,7 +16,6 @@ import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.ui.media.DisplayImageActivityStarter
 
-@OptIn(ExperimentalCoroutinesApi::class)
 object DisplayImage : Actor {
     override fun actionsCanHandle(): Class<out Message> {
         return tornaco.apps.shortx.core.proto.action.DisplayImage::class.java
@@ -56,6 +54,7 @@ object DisplayImage : Actor {
                         .build()
                 )
             }
+            Actor.Res.EMPTY
         }
     }
 }

@@ -12,7 +12,8 @@ object StopGestureRecording : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         shortXContext.gesture.stopGestureRecording(true)
+        Actor.Res.EMPTY
     }
 }

@@ -24,7 +24,7 @@ object Toggle5G : Actor {
     @SuppressLint("MissingPermission")
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         val data = action unpack_ tornaco.apps.shortx.core.proto.action.Toggle5G::class.java
         val onOff: OnOffToggle = data.onOff
         val slotId = data.slotId
@@ -50,6 +50,7 @@ object Toggle5G : Actor {
                 throw Error("UNRECOGNIZED")
             }
         }
+        Actor.Res.EMPTY
     }
 
     private fun getFiveGSwitcher(): FiveGSwitcher {

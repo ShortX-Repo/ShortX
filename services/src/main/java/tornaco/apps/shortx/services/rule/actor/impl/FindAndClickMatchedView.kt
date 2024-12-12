@@ -16,7 +16,7 @@ object FindAndClickMatchedView : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val d =
             action unpack_ tornaco.apps.shortx.core.proto.action.FindAndClickMatchedView::class.java
         require(androidContext.powerManager.isInteractive) {
@@ -32,5 +32,6 @@ object FindAndClickMatchedView : Actor {
                 AccessibilityNodeInfo.ACTION_CLICK
             )
         }
+        Actor.Res.EMPTY
     }
 }

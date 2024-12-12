@@ -26,8 +26,8 @@ object WebDavGet : Actor {
     @SuppressLint("SdCardPath")
     override suspend fun handle(
         params: HandleParams
-    ) {
-        with(params) {
+    ): Actor.Res {
+        return with(params) {
             val data =
                 action unpack_ tornaco.apps.shortx.core.proto.action.WebDavGet::class.java
             val cv = RuleContextAndVars(params)
@@ -77,6 +77,8 @@ object WebDavGet : Actor {
                         .fallbackOnEmpty(ContextDataMapping.WebDavGet.webdavGetPath.name),
                     destFile
                 )
+
+                Actor.Res(destFile.toString())
             }
         }
     }

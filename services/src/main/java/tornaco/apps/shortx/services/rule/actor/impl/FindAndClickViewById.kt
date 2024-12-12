@@ -16,7 +16,7 @@ object FindAndClickViewById : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val d =
             action unpack_ tornaco.apps.shortx.core.proto.action.FindAndClickViewById::class.java
         require(androidContext.powerManager.isInteractive) {
@@ -30,5 +30,6 @@ object FindAndClickViewById : Actor {
                 timeout = maxOf(d.timeout, 1000L)
             )
         }
+        Actor.Res.EMPTY
     }
 }

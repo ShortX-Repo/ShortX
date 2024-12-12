@@ -30,5 +30,6 @@ object ShowFloatWindow : Actor {
                 }.build()
             )
         }
+        Actor.Res.EMPTY
     }
 }

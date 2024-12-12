@@ -23,5 +23,6 @@ object SetDataEnabled : Actor {
         } else {
             data.isDataEnabled = d.enable
         }
+        Actor.Res.EMPTY
     }
 }

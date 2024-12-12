@@ -19,5 +19,6 @@ object SetDarkModeEnabled : Actor {
         val settings = SettingsImpl(androidContext)
         val d = action unpack_ SetDarkModeEnabled::class.java
         if (d.enable) settings.enableDarkMode() else settings.disableDarkMode()
+        Actor.Res.EMPTY
     }
 }

@@ -53,7 +53,7 @@ class ConditionEvaluateRecorder {
     fun add(record: ConditionEvaluateRecord) {
         _conditionEvaluateRecords.add(record)
         if (_conditionEvaluateRecords.size > MAX_ENTRY_SIZE) {
-            _conditionEvaluateRecords.removeFirst()
+            _conditionEvaluateRecords.removeAt(0)
         }
     }
 

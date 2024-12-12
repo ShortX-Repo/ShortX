@@ -23,5 +23,6 @@ object StartActivity : Actor {
             Intent().addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 .setComponent(ComponentName.unflattenFromString(startActivity.componentNameAsString))
         )
+        Actor.Res.EMPTY
     }
 }

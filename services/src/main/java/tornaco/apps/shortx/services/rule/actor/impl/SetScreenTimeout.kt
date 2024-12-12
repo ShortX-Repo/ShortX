@@ -18,5 +18,6 @@ object SetScreenTimeout : Actor {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.SetScreenTimeout::class.java
         val timeout: Long = d.timeoutMillis
         shortXContext.systemSettings.setScreenOffTimeout(timeout)
+        Actor.Res.EMPTY
     }
 }

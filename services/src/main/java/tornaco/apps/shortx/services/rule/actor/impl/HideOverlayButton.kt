@@ -16,7 +16,7 @@ object HideOverlayButton : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ) {
+    ): Actor.Res {
         val d = params.action unpack_ HideOverlayButton::class.java
         withContext(Dispatchers.Main) {
             if (d.overlayTagsList.isNullOrEmpty()) {
@@ -25,5 +25,6 @@ object HideOverlayButton : Actor {
                 params.shortXContext.overlay.postHideOverlay(d.overlayTagsList)
             }
         }
+        return Actor.Res.EMPTY
     }
 }

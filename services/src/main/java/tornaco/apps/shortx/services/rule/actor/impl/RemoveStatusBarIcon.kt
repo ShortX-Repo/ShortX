@@ -25,5 +25,6 @@ object RemoveStatusBarIcon : Actor {
         withContext(Dispatchers.Main) {
             shortXContext.statusbar.removeStatusBarIcon(slot)
         }
+        Actor.Res.EMPTY
     }
 }

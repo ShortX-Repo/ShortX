@@ -448,6 +448,7 @@ private fun ActionRecordItem(
                 1,
                 actionLabel.size
             ) else emptyList(),
+            log = it.record.message,
             event = "${it.record.context.srcEvent.displayLabel(i18N)}   ${it.record.context.srcTitle}",
             canViewSrc = it.canViewSrc,
             onLinkClick = {
@@ -586,6 +587,7 @@ private fun CommonRecordListItem(
     icon: (@Composable () -> Unit),
     title: String,
     messages: List<String> = emptyList(),
+    log: String? = null,
     event: String? = null,
     canViewSrc: Boolean,
     overflow: @Composable ColumnScope.() -> Unit = {},
@@ -643,6 +645,10 @@ private fun CommonRecordListItem(
                 }
 
                 TipBody(text = messages.joinToString(System.lineSeparator()), maxLines = 12)
+                log?.takeIf { it.isNotEmpty() }?.let {
+                    StandardSpacer()
+                    TipBody(text = "--> $it")
+                }
             }
         }
 

@@ -30,6 +30,7 @@ object RemoveNotification : Actor {
                 .build()
 
             shortXContext.notification.removeNotification(compiledNotification)
+            Actor.Res.EMPTY
         }
     }
 }

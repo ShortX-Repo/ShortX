@@ -18,5 +18,6 @@ object RemoveNotificationForPackageByPkg : Actor {
             action unpack_ tornaco.apps.shortx.core.proto.action.RemoveNotificationForPackageByPkg::class.java
         val realAppPkgs = d.pkgAndUsersList.toRealApps(params)
         shortXContext.notification.removeNotificationForPackage(realAppPkgs)
+        Actor.Res.EMPTY
     }
 }

@@ -14,11 +14,12 @@ object AppShortcut : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.AppShortcut::class.java
         val intent = Intent.parseUri(d.intentUri, Intent.URI_INTENT_SCHEME)
         logger.d("intent: $intent")
         androidContext.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        Actor.Res.EMPTY
     }
 
 }

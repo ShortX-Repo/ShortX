@@ -19,10 +19,10 @@ object ExecuteMVEL : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ) {
+    ): Actor.Res {
         require(Interceptors.checkExecuteMVEL(params.shortXContext, params.androidContext))
         val d = params.action unpack_ ExecuteMVEL::class.java
-        MVELExecutor(
+        val ret = MVELExecutor(
             context = params.androidContext,
             shortXContext = params.shortXContext,
             expression = d.expression.inflateContextMap(params.contextData.map.mapValues { entry ->
@@ -44,5 +44,6 @@ object ExecuteMVEL : Actor {
                 this
             )
         }
+        return Actor.Res(ret.toString())
     }
 }

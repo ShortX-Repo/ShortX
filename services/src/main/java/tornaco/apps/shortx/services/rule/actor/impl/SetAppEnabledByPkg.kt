@@ -21,5 +21,6 @@ object SetAppEnabledByPkg : Actor {
             enable = d.enable,
             reason = "Action Eva- SetAppEnabledByPkg"
         )
+        Actor.Res.EMPTY
     }
 }

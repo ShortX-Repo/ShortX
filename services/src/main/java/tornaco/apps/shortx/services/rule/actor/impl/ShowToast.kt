@@ -29,5 +29,6 @@ object ShowToast : Actor {
                 Toast.LENGTH_SHORT
             ).show()
         }
+        Actor.Res.EMPTY
     }
 }

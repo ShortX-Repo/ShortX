@@ -43,7 +43,7 @@ object ExecuteJS : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ) {
+    ): Actor.Res {
         require(Interceptors.checkExecuteMVEL(params.shortXContext, params.androidContext))
         val d = params.action unpack_ tornaco.apps.shortx.core.proto.action.ExecuteJS::class.java
 
@@ -84,6 +84,8 @@ object ExecuteJS : Actor {
                 .fallbackOnEmpty(ContextDataMapping.ExecuteJS.jsRet.name),
             res
         )
+
+        return Actor.Res(res)
     }
 
     fun executeJS(

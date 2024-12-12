@@ -30,7 +30,7 @@ object AreaScreenshot : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.AreaScreenshot::class.java
         val area = startSelectScreenArea(shortXContext)
         logger.d("area: $area")
@@ -112,5 +112,7 @@ object AreaScreenshot : Actor {
                 Toast.LENGTH_SHORT
             ).show()
         }
+
+        Actor.Res(fileAndUri.first + System.lineSeparator() + fileAndUri.second)
     }
 }

@@ -26,7 +26,7 @@ object WriteGlobalVar : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         val d = action unpack_ WriteGlobalVar::class.java
         val globalVar = requireNotNull(shortXContext.rule.getGlobalVarByName(d.varName)) {
             "Global var: ${d.varName} not exists. pls create first."
@@ -42,6 +42,7 @@ object WriteGlobalVar : Actor {
         val newGlobalVar = handleGVOp(globalVar, op, stringValueToWrite)
 
         shortXContext.rule.addGlobalVar(newGlobalVar)
+        Actor.Res.EMPTY
     }
 
     @VisibleForTesting

@@ -80,7 +80,7 @@ object HttpRequest : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val data =
             action unpack_ tornaco.apps.shortx.core.proto.action.HttpRequest::class.java
         val cv = RuleContextAndVars(params)
@@ -116,6 +116,7 @@ object HttpRequest : Actor {
                 )
             }
         }
+        Actor.Res.EMPTY
     }
 
     private suspend fun executeHttpRequest(

@@ -19,5 +19,6 @@ object HideStatusBarClip : Actor {
         withContext(Dispatchers.Main) {
             shortXContext.statusbar.hideStatusBarClip()
         }
+        Actor.Res.EMPTY
     }
 }

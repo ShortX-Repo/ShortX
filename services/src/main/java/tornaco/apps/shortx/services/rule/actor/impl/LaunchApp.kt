@@ -14,8 +14,9 @@ object LaunchApp : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ) {
+    ): Actor.Res {
         val app = params.action unpack_ LaunchApp::class.java
         params.shortXContext.appState.launchApp(app.appPkg)
+        return Actor.Res.EMPTY
     }
 }

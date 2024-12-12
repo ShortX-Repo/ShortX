@@ -29,7 +29,7 @@ fun ActionEvaluator.EvaluateResult.toActionEvaluateRecord(): ActionEvaluateRecor
             ActionEvaluateRecord.newBuilder()
                 .setActionId(this.actionId)
                 .setIsSuccess(true)
-                .setMessage("Success")
+                .setMessage(this.log)
                 .setContext(this.evaluateContext)
                 .setAction(action)
                 .setTimeStamp(System.currentTimeMillis()).build()
@@ -65,7 +65,7 @@ class ActionEvaluateRecorder {
     fun addResult(record: ActionEvaluateRecord) {
         _actionEvaluateRecords.add(record)
         if (_actionEvaluateRecords.size > MAX_ENTRY_SIZE) {
-            _actionEvaluateRecords.removeFirst()
+            _actionEvaluateRecords.removeAt(0)
         }
     }
 

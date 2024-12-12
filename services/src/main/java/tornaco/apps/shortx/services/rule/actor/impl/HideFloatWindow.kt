@@ -15,7 +15,7 @@ object HideFloatWindow : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ) {
+    ): Actor.Res {
         val d =
             params.action unpack_ tornaco.apps.shortx.core.proto.action.HideFloatWindow::class.java
         withContext(Dispatchers.Main) {
@@ -25,5 +25,6 @@ object HideFloatWindow : Actor {
                 params.shortXContext.overlay.postHideFloatWindow(d.overlayTagsList)
             }
         }
+        return Actor.Res.EMPTY
     }
 }

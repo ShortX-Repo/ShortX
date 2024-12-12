@@ -54,6 +54,8 @@ object ToggleSlot : Actor {
         logger.i("ToggleSlotForSlot, isToEnable: $isToEnable")
         SubscriptionManager.from(androidContext)
             .setUiccApplicationsEnabled(subId, isToEnable)
+
+        Actor.Res.EMPTY
     }
 
     @SuppressLint("MissingPermission")

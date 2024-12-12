@@ -44,7 +44,7 @@ object Delay : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ) {
+    ): Actor.Res {
         val d = params.action unpack_ Delay::class.java
         val cv = RuleContextAndVars(params)
 
@@ -73,6 +73,7 @@ object Delay : Actor {
         } else {
             delay(maxOf(0, timeLong))
         }
+        return Actor.Res.EMPTY
     }
 
 }

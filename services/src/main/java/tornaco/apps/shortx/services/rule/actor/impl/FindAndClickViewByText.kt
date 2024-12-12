@@ -28,7 +28,7 @@ object FindAndClickViewByText : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val d = action unpack_ FindAndClickViewByText::class.java
         require(androidContext.powerManager.isInteractive) {
             "Can not FindAndClickViewByText when device is not interactive"
@@ -55,6 +55,7 @@ object FindAndClickViewByText : Actor {
                 }
             }
         }
+        Actor.Res.EMPTY
     }
 
     private suspend fun HandleParams.clickTextByUIAuto(

@@ -23,5 +23,6 @@ object SetAppEnabled : Actor {
             d.appPkgList
         }
         shortXContext.appState.setAppEnabled(pkgs, d.enable, "Action Eva- SetAppEnabled")
+        Actor.Res.EMPTY
     }
 }

@@ -93,6 +93,8 @@ object SetWallpaper : Actor {
             wallpaperBitmap.recycle()
             rawBitmap.recycle()
         }
+
+        Actor.Res.EMPTY
     }
 
     private fun cropBitmapToSize(bitmap: Bitmap, targetWidth: Int, targetHeight: Int): Bitmap {

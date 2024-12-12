@@ -69,5 +69,6 @@ object SwitchCase : Actor {
         }
 
         logger.i("end.")
+        Actor.Res.EMPTY
     }
 }

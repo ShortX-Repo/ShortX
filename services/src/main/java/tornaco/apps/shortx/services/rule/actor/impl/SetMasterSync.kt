@@ -15,7 +15,7 @@ object SetMasterSync : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         val d =
             action unpack_ tornaco.apps.shortx.core.proto.action.SetMasterSync::class.java
         val sync: OnOffToggle = d.sync
@@ -39,5 +39,6 @@ object SetMasterSync : Actor {
         }
         logger.d("isToSync: $isToSync")
         ContentResolver.setMasterSyncAutomatically(isToSync)
+        Actor.Res.EMPTY
     }
 }

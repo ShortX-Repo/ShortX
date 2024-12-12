@@ -16,7 +16,7 @@ object InjectCombineKeyCode : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val data =
             action unpack_ tornaco.apps.shortx.core.proto.action.InjectCombineKeyCode::class.java
         val keyCodes = data.keyCodeList
@@ -35,6 +35,7 @@ object InjectCombineKeyCode : Actor {
                 INJECT_MODE_ASYNC
             )
         }
+        Actor.Res.EMPTY
     }
 
 }

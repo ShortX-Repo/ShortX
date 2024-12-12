@@ -17,7 +17,7 @@ object ShowHideInsets : Actor {
     @SuppressLint("MissingPermission", "NewApi")
     override suspend fun handle(
         params: HandleParams
-    ) {
+    ): Actor.Res {
         require(OsUtils.isROrAbove()) {
             "This Action only support Android 11+"
         }
@@ -41,5 +41,6 @@ object ShowHideInsets : Actor {
             }
             shortXContext.statusbar.hideOrShowInsets(types, d.isHide)
         }
+        return Actor.Res.EMPTY
     }
 }

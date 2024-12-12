@@ -14,13 +14,14 @@ object PerformContextMenuAction : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ) {
+    ): Actor.Res {
         val ac =
             params.action unpack_ tornaco.apps.shortx.core.proto.action.PerformContextMenuAction::class.java
         require(params.androidContext.powerManager.isInteractive) {
             "Can not PerformContextMenuAction when device is not interactive"
         }
         params.shortXContext.input.performContextMenuAction(ac.action.toAndroidContextMenuActionId())
+        return Actor.Res.EMPTY
     }
 
     private fun ContextMenuAction.toAndroidContextMenuActionId(): Int {

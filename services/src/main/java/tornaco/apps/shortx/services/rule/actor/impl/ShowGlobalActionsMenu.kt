@@ -13,7 +13,8 @@ object ShowGlobalActionsMenu : Actor {
     @SuppressLint("MissingPermission")
     override suspend fun handle(
         params: HandleParams
-    ) {
+    ): Actor.Res {
         params.shortXContext.statusbar.showGlobalActionsMenu()
+        return Actor.Res.EMPTY
     }
 }

@@ -23,5 +23,6 @@ object SetAppSuspend : Actor {
             d.appPkgList
         }
         shortXContext.appState.setAppSuspend(pkgs, d.suspend, "Action Eva- SetAppSuspend")
+        Actor.Res.EMPTY
     }
 }

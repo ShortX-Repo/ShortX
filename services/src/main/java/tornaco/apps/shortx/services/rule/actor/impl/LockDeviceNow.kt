@@ -13,7 +13,8 @@ object LockDeviceNow : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         WMSFunc.lockDeviceNow()
+        Actor.Res.EMPTY
     }
 }

@@ -17,7 +17,7 @@ object StartService : Actor {
     @SuppressLint("MissingPermission")
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         val data =
             action unpack_ tornaco.apps.shortx.core.proto.action.StartService::class.java
         val intent =
@@ -37,5 +37,6 @@ object StartService : Actor {
             logger.d("start service, intent: ${data.intent} $userId")
             androidContext.startServiceAsUser(intent, UserHandleUtils.userIdToUserHandle(userId))
         }
+        Actor.Res.EMPTY
     }
 }

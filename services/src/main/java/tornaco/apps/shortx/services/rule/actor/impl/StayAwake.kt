@@ -20,11 +20,11 @@ object StayAwake : Actor {
         return tornaco.apps.shortx.core.proto.action.StayAwake::class.java
     }
 
-    @SuppressLint("WakelockTimeout")
+    @SuppressLint("WakelockTimeout", "Wakelock")
     @ExperimentalCoroutinesApi
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.StayAwake::class.java
         logger.d("stay? ${d.isStay}")
         val stay: OnOffToggle = d.isStay
@@ -42,6 +42,7 @@ object StayAwake : Actor {
 
         if (isToStay) {
             wakeLock?.release()
+            wakeLock = null
             wakeLock = androidContext.powerManager.newWakeLock(
                 SCREEN_BRIGHT_WAKE_LOCK,
                 BuildPropInternal.APP_PACKAGE_NAME + ":wakelock"
@@ -55,5 +56,6 @@ object StayAwake : Actor {
             wakeLock?.release()
             wakeLock = null
         }
+        Actor.Res.EMPTY
     }
 }

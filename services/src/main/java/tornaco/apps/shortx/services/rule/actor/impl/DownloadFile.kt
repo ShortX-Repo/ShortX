@@ -17,7 +17,7 @@ object DownloadFile : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val t = action unpack_ tornaco.apps.shortx.core.proto.action.DownloadFile::class.java
         val cv = RuleContextAndVars(params)
 
@@ -58,5 +58,6 @@ object DownloadFile : Actor {
             }
         }
         logger.d("Download complete.")
+        Actor.Res.EMPTY
     }
 }

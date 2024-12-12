@@ -20,5 +20,6 @@ object SetAPMModeEnabled : Actor {
         val enableAPM = d.isEnable
         logger.w("Enable APM? $enableAPM")
         androidContext.connectivityManager.setAirplaneMode(enableAPM)
+        Actor.Res.EMPTY
     }
 }

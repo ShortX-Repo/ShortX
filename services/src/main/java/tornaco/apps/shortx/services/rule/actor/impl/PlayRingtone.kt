@@ -13,8 +13,9 @@ object PlayRingtone : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.PlayRingtone::class.java
         shortXContext.audio.playRingtone(d.ringtone)
+        Actor.Res.EMPTY
     }
 }

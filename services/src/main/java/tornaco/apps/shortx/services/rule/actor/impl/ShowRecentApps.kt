@@ -16,11 +16,11 @@ object ShowRecentApps : Actor {
     @SuppressLint("MissingPermission")
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         val data = action unpack_ tornaco.apps.shortx.core.proto.action.ShowRecentApps::class.java
         val onOff: OnOffToggle = data.state
         logger.d("onOff: $onOff")
         shortXContext.statusbar.showRecentApps(onOff == OnOffToggle.OnOffToggle_On)
-
+        Actor.Res.EMPTY
     }
 }

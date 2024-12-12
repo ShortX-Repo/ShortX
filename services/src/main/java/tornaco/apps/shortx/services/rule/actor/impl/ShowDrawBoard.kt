@@ -12,7 +12,8 @@ object ShowDrawBoard : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ) = with(params) {
         shortXContext.wm.enableDrawBoard()
+        Actor.Res.EMPTY
     }
 }

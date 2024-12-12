@@ -12,7 +12,7 @@ object BreakActionExecute : Actor {
         return tornaco.apps.shortx.core.proto.action.BreakActionExecute::class.java
     }
 
-    override suspend fun handle(params: HandleParams) {
+    override suspend fun handle(params: HandleParams): Actor.Res {
         val d =
             params.action.unpack(tornaco.apps.shortx.core.proto.action.BreakActionExecute::class.java)
         throw BreakActionException("BreakActionExecute action", scope = d.scope)

@@ -55,6 +55,8 @@ object TTS : Actor {
                 "Speak fail at second time, result is: $speakRes2"
             }
         }
+
+        Actor.Res.EMPTY
     }
 
     private suspend fun initTTS(context: Context) {

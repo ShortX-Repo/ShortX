@@ -28,5 +28,6 @@ object SetDNDEnabled : Actor {
         } else {
             notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
         }
+        Actor.Res.EMPTY
     }
 }

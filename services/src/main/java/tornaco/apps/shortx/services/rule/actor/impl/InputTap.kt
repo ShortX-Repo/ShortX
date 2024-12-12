@@ -16,7 +16,7 @@ object InputTap : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val data = action unpack_ tornaco.apps.shortx.core.proto.action.InputTap::class.java
         require(androidContext.powerManager.isInteractive) {
             "Can not InputTap when device is not interactive"
@@ -34,5 +34,6 @@ object InputTap : Actor {
                 it.click(x, y)
             }
         }
+        Actor.Res.EMPTY
     }
 }

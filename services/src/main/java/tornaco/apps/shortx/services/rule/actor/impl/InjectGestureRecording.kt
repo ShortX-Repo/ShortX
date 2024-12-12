@@ -18,7 +18,7 @@ object InjectGestureRecording : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val isRecording = shortXContext.gesture.isGestureRecording()
         require(!isRecording) {
             "WTF? Trying to inject gesture while recording!"
@@ -28,12 +28,18 @@ object InjectGestureRecording : Actor {
             action unpack_ tornaco.apps.shortx.core.proto.action.InjectGestureRecording::class.java
         logger.d("InjectGestureRecording start.")
         val receiver = SynchronousResultReceiver.get()
-        shortXContext.gesture.injectGestureRecord(data.gestureId, data.speed,data.showGesturePathView, receiver)
+        shortXContext.gesture.injectGestureRecord(
+            data.gestureId,
+            data.speed,
+            data.showGesturePathView,
+            receiver
+        )
 
         withContext(Dispatchers.IO) {
             receiver.awaitResultNoInterrupt(Duration.ofDays(1)).getValue(emptyByteArrayWrapper)
         }
 
         logger.d("InjectGestureRecording complete.")
+        Actor.Res.EMPTY
     }
 }

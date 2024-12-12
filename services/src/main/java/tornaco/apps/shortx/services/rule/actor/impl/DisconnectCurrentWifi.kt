@@ -15,7 +15,8 @@ object DisconnectCurrentWifi : Actor {
     @ExperimentalCoroutinesApi
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         androidContext.wifiManager.disconnect()
+        Actor.Res.EMPTY
     }
 }

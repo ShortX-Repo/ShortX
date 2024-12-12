@@ -16,7 +16,7 @@ object InputSwipe : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val data = action unpack_ tornaco.apps.shortx.core.proto.action.InputSwipe::class.java
 
         require(androidContext.powerManager.isInteractive) {
@@ -46,5 +46,6 @@ object InputSwipe : Actor {
                 it.swipe(startX, startY, endX, endY, swipeTime)
             }
         }
+        Actor.Res.EMPTY
     }
 }

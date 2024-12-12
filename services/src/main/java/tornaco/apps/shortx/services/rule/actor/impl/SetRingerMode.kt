@@ -17,5 +17,6 @@ object SetRingerMode : Actor {
     ) = with(params) {
         val data = action unpack_ tornaco.apps.shortx.core.proto.action.SetRingerMode::class.java
         androidContext.audioManager.ringerModeInternal = data.mode.number
+        Actor.Res.EMPTY
     }
 }

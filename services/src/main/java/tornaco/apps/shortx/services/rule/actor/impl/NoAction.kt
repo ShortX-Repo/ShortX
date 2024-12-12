@@ -13,5 +13,6 @@ object NoAction : Actor {
     override suspend fun handle(
         params: HandleParams
     ) = with(params) {
+        Actor.Res.EMPTY
     }
 }

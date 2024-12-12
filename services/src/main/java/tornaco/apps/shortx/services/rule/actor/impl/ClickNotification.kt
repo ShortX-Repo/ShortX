@@ -29,6 +29,8 @@ object ClickNotification : Actor {
                 .setTag(d.notification.tag.compileContextAndVars(cv))
                 .build()
             shortXContext.notification.clickNotification(n)
+
+            Actor.Res.EMPTY
         }
     }
 }

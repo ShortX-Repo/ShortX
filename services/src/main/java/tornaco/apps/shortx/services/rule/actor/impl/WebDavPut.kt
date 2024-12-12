@@ -20,8 +20,8 @@ object WebDavPut : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ) {
-        with(params) {
+    ): Actor.Res {
+        return with(params) {
             val data =
                 action unpack_ tornaco.apps.shortx.core.proto.action.WebDavPut::class.java
             val cv = RuleContextAndVars(params)
@@ -53,6 +53,8 @@ object WebDavPut : Actor {
                 logger.d("Put success.")
                 runCatching { tmpFile.deleteRecursively() }
             }
+
+            Actor.Res.EMPTY
         }
     }
 }

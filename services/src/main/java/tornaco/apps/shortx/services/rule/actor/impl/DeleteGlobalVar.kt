@@ -14,11 +14,12 @@ object DeleteGlobalVar : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val d = action unpack_ DeleteGlobalVar::class.java
         logger.d("DeleteGlobalVar: ${d.varName}")
         d.varName?.let {
             shortXContext.rule.deleteGlobalVar(it)
         }
+        Actor.Res.EMPTY
     }
 }

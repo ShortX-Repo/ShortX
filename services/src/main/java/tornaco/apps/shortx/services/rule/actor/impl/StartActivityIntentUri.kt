@@ -28,5 +28,6 @@ object StartActivityIntentUri : Actor {
         )
         logger.d("intent: $intent")
         androidContext.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        Actor.Res.EMPTY
     }
 }

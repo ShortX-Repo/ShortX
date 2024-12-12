@@ -24,7 +24,7 @@ object ShowMenuDialog : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ) {
+    ): Actor.Res {
         with(params) {
             val d = action unpack_ tornaco.apps.shortx.core.proto.action.ShowMenuDialog::class.java
 
@@ -77,6 +77,7 @@ object ShowMenuDialog : Actor {
                     actions?.let { runSubActions(it) }
                 }
             }
+            return Actor.Res.EMPTY
         }
     }
 }

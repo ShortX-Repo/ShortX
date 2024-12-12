@@ -41,5 +41,6 @@ object IfThenElse : Actor {
                 runSubActions(d.elseActionsList, d.elseActionAsyncMode)
             }
         }
+        Actor.Res.EMPTY
     }
 }

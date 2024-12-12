@@ -13,7 +13,7 @@ object RemoveNotificationForPackage : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ): Unit = with(params) {
+    ): Actor.Res = with(params) {
         val data =
             action unpack_ tornaco.apps.shortx.core.proto.action.RemoveNotificationForPackage::class.java
         val requiredPkgList = if (data.pkgSetsList.isNotEmpty()) {
@@ -25,5 +25,6 @@ object RemoveNotificationForPackage : Actor {
         }
 
         shortXContext.notification.removeNotificationForPackage(requiredPkgList)
+        Actor.Res.EMPTY
     }
 }

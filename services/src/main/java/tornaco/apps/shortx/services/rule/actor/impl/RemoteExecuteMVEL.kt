@@ -17,11 +17,11 @@ object RemoteExecuteMVEL : Actor {
 
     override suspend fun handle(
         params: HandleParams
-    ) {
+    ): Actor.Res {
         require(Interceptors.checkExecuteMVEL(params.shortXContext, params.androidContext))
         val d =
             params.action unpack_ tornaco.apps.shortx.core.proto.action.RemoteExecuteMVEL::class.java
-        MVELExecutor(
+        val ret = MVELExecutor(
             params.androidContext,
             params.shortXContext,
             d.expression
@@ -29,13 +29,13 @@ object RemoteExecuteMVEL : Actor {
             vars = params.contextData.map,
             localVars = params.localVars,
             parameterInputs = params.parameterInputs
-        )
-            .apply {
-                params.contextData.add(
-                    d.customContextDataKey.forKey(ContextDataMapping.ExecuteMVEL.mvelRet.name)
-                        .fallbackOnEmpty { ContextDataMapping.ExecuteMVEL.mvelRet.name },
-                    this
-                )
-            }
+        ).apply {
+            params.contextData.add(
+                d.customContextDataKey.forKey(ContextDataMapping.ExecuteMVEL.mvelRet.name)
+                    .fallbackOnEmpty { ContextDataMapping.ExecuteMVEL.mvelRet.name },
+                this
+            )
+        }
+        return Actor.Res(ret.toString())
     }
 }
