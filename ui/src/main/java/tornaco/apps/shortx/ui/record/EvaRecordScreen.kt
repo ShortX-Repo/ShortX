@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,7 +41,9 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -81,6 +84,7 @@ import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.SplitLines
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextDisplayActivity
 import tornaco.apps.shortx.ui.base.TipBody
@@ -646,8 +650,35 @@ private fun CommonRecordListItem(
 
                 TipBody(text = messages.joinToString(System.lineSeparator()), maxLines = 12)
                 log?.takeIf { it.isNotEmpty() }?.let {
-                    StandardSpacer()
-                    TipBody(text = "--> $it")
+                    SplitLines(
+                        Modifier
+                            .fillMaxWidth()
+                    )
+                    val outputTitle = remember {
+                        movableContentOf {
+                            Text(text = "Action output", style = MaterialTheme.typography.bodySmall)
+                        }
+                    }
+                    if (it.length > 100) {
+                        var isLogExpanded by remember { mutableStateOf(false) }
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            outputTitle()
+                            IconButton(onClick = {
+                                isLogExpanded = !isLogExpanded
+                            }) {
+                                RemixIcon(Remix.Arrows.arrow_drop_down_fill)
+                            }
+                        }
+                        AnimatedVisibility(!isLogExpanded) {
+                            TipBody(text = it, maxLines = 3)
+                        }
+                        AnimatedVisibility(isLogExpanded) {
+                            TipBody(text = it, maxLines = 1000)
+                        }
+                    } else {
+                        outputTitle()
+                        TipBody(text = it)
+                    }
                 }
             }
         }
