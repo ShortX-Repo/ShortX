@@ -1,10 +1,12 @@
 package tornaco.apps.shortx.services.overlay
 
 import android.annotation.ColorInt
+import android.app.Dialog
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Handler
 import android.os.Looper
+import android.view.Gravity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.localvar.LocalVars
@@ -18,6 +20,7 @@ import tornaco.apps.shortx.core.proto.rule.ActionAsyncMode
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.rule.toLogString
+import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext
@@ -30,10 +33,15 @@ import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.floating.FloatApi
 import tornaco.apps.shortx.services.ui.floating.ScreenUtil
 import tornaco.apps.shortx.services.ui.floating.controller.FloatButtonWindowController
+import tornaco.apps.shortx.services.ui.i18NIns
+import tornaco.apps.shortx.services.ui.widget.showInSystemServer
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
 import tornaco.apps.shortx.ui.overlay.ComposeOverlay
-import tornaco.apps.shortx.ui.sidebar.SideBarView
+import tornaco.apps.shortx.ui.sidebar.SideBarDialogView
+
+private const val SIDE_BAR_WIDTH = 70
+private const val SIDE_BAR_PADDING_H = 16
 
 internal data class ShowingOverlay(
     val token: ComposeOverlay,
@@ -47,12 +55,6 @@ internal data class ShowingFloats(
     val tag: String
 )
 
-internal data class ShowingSideBar(
-    val token: SideBarView,
-    val settings: List<OverlayButtonSetting>,
-    val tag: String
-)
-
 class OverlayService(shortXContext: ShortXContext) :
     SystemService(shortXContext, "OverlayService") {
     private val mainHandler by lazy {
@@ -61,9 +63,10 @@ class OverlayService(shortXContext: ShortXContext) :
 
     private var showingOverlays: MutableList<ShowingOverlay> = mutableListOf()
     private var showingFloats: MutableList<ShowingFloats> = mutableListOf()
-    private var showingSideBars: MutableList<ShowingSideBar> = mutableListOf()
 
     private val screenFlash: ScreenFlash by lazy { ScreenFlash(context) }
+
+    private var sideBarDialog: Dialog? = null
 
     override fun start(context: Context) {
         super.start(context)
@@ -236,27 +239,23 @@ class OverlayService(shortXContext: ShortXContext) :
         parameters: List<FuncParameterInput>,
         action: ShowSideBar
     ) = mainHandler.postSafety("postShowSideBar") {
-        logger.d("postShowSideBar: ${action.tag}, current showing: ${showingSideBars.map { it.tag }}")
+        logger.d("postShowSideBar: ${action.tag}, current showing: $")
         logger.logOnDebug("local vars: ${localVars.all.joinToString { it.name }}")
         logger.logOnDebug("parameters: ${parameters.joinToString { it.toLogString() }}")
 
-        if (showingSideBars.any {
-                it.tag == action.tag
-            }) {
-            logger.d("postShowSideBar skip since has showing for same owner.")
+        val currentShowingSideBarDialog = sideBarDialog
+        if (currentShowingSideBarDialog != null && currentShowingSideBarDialog.isShowing) {
+            logger.d("postShowSideBar skip since has showing.")
             return@postSafety
         }
 
-        val overlayIns = SideBarView(
+        val dialogView = SideBarDialogView(
             context = context,
+            i18N = i18NIns,
             action = action,
             localVars = localVars,
             contextData = contextData,
             parameters = parameters,
-            initialPos = 80 to 888,
-            onPosChange = { x, y ->
-
-            },
             onButtonClick = { button: OverlayButtonSetting ->
                 shortXContext.rule.executeActions(
                     context = evaluateContext,
@@ -279,14 +278,21 @@ class OverlayService(shortXContext: ShortXContext) :
             }
         )
 
-        showingSideBars.add(
-            ShowingSideBar(
-                token = overlayIns,
-                settings = action.buttonSettingsList,
-                tag = action.tag
-            ).apply {
-                token.show()
+        val androidDialog = Dialog(uiContext)
+        dialogView.initView()
+
+        androidDialog.showInSystemServer(view = dialogView,
+            cancelable = true,
+            gravity = Gravity.START or Gravity.CENTER_VERTICAL,
+            width = { SIDE_BAR_WIDTH._dp },
+            onWindow = {
+                val params = attributes
+                params.x = SIDE_BAR_PADDING_H._dp
+                params.windowAnimations = android.R.style.Animation_Activity
+                attributes = params
             })
+
+        sideBarDialog = androidDialog
     }
 
     fun postHideAllOverlay() = mainHandler.postSafety("postHideAllOverlay") {
@@ -327,10 +333,8 @@ class OverlayService(shortXContext: ShortXContext) :
 
     fun postHideAllSideBar() = mainHandler.postSafety("postHideAllSideBar") {
         logger.d("postHideAllSideBar")
-        showingSideBars.forEach {
-            it.token.dismiss()
-        }
-        showingSideBars.clear()
+        sideBarDialog?.dismiss()
+        sideBarDialog = null
     }
 
     private fun writeFloatWindowPos(tag: String, x: Int, y: Int) {

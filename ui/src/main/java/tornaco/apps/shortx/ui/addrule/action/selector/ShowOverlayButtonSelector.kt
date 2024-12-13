@@ -201,16 +201,17 @@ private fun Content(
                             vm.removeButton(it)
                         })
                 }
-                StandardSpacer()
-                // Add icon
-                Button(
-                    modifier = Modifier.fillMaxSize(),
-                    onClick = {
-                        vm.addButton()
-                    }) {
-                    Text(text = LocalI18N.current["ui.action.show.add.button"])
-                }
             }
+        }
+
+        StandardSpacer()
+        // Add icon
+        Button(
+            modifier = Modifier.fillMaxSize(),
+            onClick = {
+                vm.addButton()
+            }) {
+            Text(text = LocalI18N.current["ui.action.show.add.button"])
         }
 
         LargeSpacer()
