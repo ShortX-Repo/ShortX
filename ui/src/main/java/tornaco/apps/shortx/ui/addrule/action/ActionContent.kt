@@ -80,7 +80,6 @@ import tornaco.apps.shortx.ui.base.LargeTitle
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalUiStore
-import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.NoteRow
@@ -161,12 +160,13 @@ private fun Actions(
             menuItems = listOf(
                 MenuDialogItem(
                     id = ActionAsyncMode.ActionAsyncMode_Sync.name,
-                    title = LocalI18N.current["ui.rule.async.mode.sync"],
+                    title = LocalI18N.current["ui.action.async.mode.sync"],
+                    summary = LocalI18N.current["ui.action.async.mode.sync.summary"],
                 ),
                 MenuDialogItem(
                     id = ActionAsyncMode.ActionAsyncMode_Async.name,
-                    title = LocalI18N.current["ui.rule.async.mode.async"],
-                    summary = LocalI18N.current["ui.common.experimental"]
+                    title = LocalI18N.current["ui.action.async.mode.async"],
+                    summary = LocalI18N.current["ui.action.async.mode.async.summary"]
                 )
             ), onItemSelected = { _, id ->
                 val mode = ActionAsyncMode.valueOf(id)
