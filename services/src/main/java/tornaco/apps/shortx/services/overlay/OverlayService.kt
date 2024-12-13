@@ -42,10 +42,14 @@ import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
 import tornaco.apps.shortx.ui.overlay.ComposeOverlay
 import tornaco.apps.shortx.ui.sidebar.SideBarDialogView
+import tornaco.apps.shortx.ui.sidebar.SideBarDragHandleView
+import kotlin.math.roundToInt
 
 
 private const val SIDE_BAR_WIDTH_DP = 70
 private const val SIDE_BAR_X_DP = 8
+private const val SIDE_BAR_DRAG_HANDLE_X_DP = 8
+private const val SIDE_BAR_DRAG_HANDLE_Y_SCREEN_HEIGHT_FACTOR = 0.52f
 
 internal data class ShowingOverlay(
     val token: ComposeOverlay,
@@ -71,6 +75,7 @@ class OverlayService(shortXContext: ShortXContext) :
     private val screenFlash: ScreenFlash by lazy { ScreenFlash(context) }
 
     private var sideBarDialog: Dialog? = null
+    private var sideBarDragHandle: SideBarDragHandleView? = null
 
     override fun start(context: Context) {
         super.start(context)
@@ -243,14 +248,57 @@ class OverlayService(shortXContext: ShortXContext) :
         parameters: List<FuncParameterInput>,
         action: ShowSideBar
     ) = mainHandler.postSafety("postShowSideBar") {
-        logger.d("postShowSideBar: ${action.tag}, current showing: $")
         logger.logOnDebug("local vars: ${localVars.all.joinToString { it.name }}")
         logger.logOnDebug("parameters: ${parameters.joinToString { it.toLogString() }}")
 
         val currentShowingSideBarDialog = sideBarDialog
         if (currentShowingSideBarDialog != null && currentShowingSideBarDialog.isShowing) {
-            logger.d("postShowSideBar skip since has showing.")
+            logger.d("postShowSideBar skip since has sideBarDialog showing.")
             return@postSafety
+        }
+
+        val currentDragHandle = sideBarDragHandle
+        if (currentDragHandle != null && currentDragHandle.isShow()) {
+            logger.d("postShowSideBar skip since has currentDragHandle showing.")
+            return@postSafety
+        }
+
+        val screenSize = context.screenSize()
+
+        val handleView = SideBarDragHandleView(
+            context = context,
+            initialPos = SIDE_BAR_DRAG_HANDLE_X_DP._dp
+                    to screenSize.y * SIDE_BAR_DRAG_HANDLE_Y_SCREEN_HEIGHT_FACTOR.roundToInt(),
+            onPosChange = { x, y ->
+
+            },
+            showBar = {
+                showSideBarDialog(
+                    evaluateContext = evaluateContext,
+                    contextData = contextData,
+                    localVars = localVars,
+                    parameters = parameters,
+                    action = action
+                )
+            }
+        ).apply {
+            show()
+        }
+
+        sideBarDragHandle = handleView
+    }
+
+    private fun showSideBarDialog(
+        evaluateContext: EvaluateContext,
+        contextData: Map<String, String>,
+        localVars: LocalVars,
+        parameters: List<FuncParameterInput>,
+        action: ShowSideBar,
+    ) {
+        val currentShowingSideBarDialog = sideBarDialog
+        if (currentShowingSideBarDialog != null && currentShowingSideBarDialog.isShowing) {
+            logger.d("showSideBarDialog skip since has sideBarDialog showing.")
+            return
         }
 
         val dialogView = SideBarDialogView(
@@ -303,7 +351,8 @@ class OverlayService(shortXContext: ShortXContext) :
                 .start()
         }
 
-        androidDialog.showInSystemServer(view = dialogView,
+        androidDialog.showInSystemServer(
+            view = dialogView,
             cancelable = true,
             gravity = Gravity.START or Gravity.CENTER_VERTICAL,
             width = { SIDE_BAR_WIDTH_DP._dp },
@@ -330,7 +379,12 @@ class OverlayService(shortXContext: ShortXContext) :
                 params.x = SIDE_BAR_X_DP._dp
 
                 attributes = params
-            })
+            },
+            onDismiss = {
+                sideBarDragHandle?.showDragHandle()
+                sideBarDialog = null
+            }
+        )
 
 
         sideBarDialog = androidDialog

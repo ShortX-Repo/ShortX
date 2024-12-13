@@ -2,7 +2,6 @@ package tornaco.apps.shortx.ui.sidebar
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -47,12 +46,10 @@ class SideBarDragHandleView(
     override fun ComposeContent() {
         ShortXServiceUITheme {
             val isExpanded by expandState.collectAsState()
-            AnimatedVisibility(isExpanded) {
-                DragHandle(onDrag = {
-                    showBar()
-                    expandState.value = true
-                })
-            }
+            DragHandle(onDrag = {
+                showBar()
+                expandState.value = true
+            })
         }
     }
 
@@ -74,6 +71,9 @@ private fun DragHandle(
             .padding(horizontal = DRAG_HANDLE_H_PADDING.dp)
             .pointerInput(Unit) {
                 detectDragGestures(
+                    onDragStart = {
+                        onDrag()
+                    },
                     onDrag = { change, dragAmount ->
                         val (dx, dy) = dragAmount
                         when {
@@ -82,7 +82,6 @@ private fun DragHandle(
                             dy > 0 -> println("Dragging down by $dy")
                             dy < 0 -> println("Dragging up by ${-dy}")
                         }
-                        onDrag()
                         change.consume()
                     }
                 )
