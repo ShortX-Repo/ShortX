@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.services.overlay;
+package tornaco.apps.shortx.services.overlay.sidebar;
 
 import android.animation.TimeInterpolator;
 
