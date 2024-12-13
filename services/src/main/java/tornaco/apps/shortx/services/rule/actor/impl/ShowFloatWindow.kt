@@ -20,6 +20,7 @@ object ShowFloatWindow : Actor {
             val d = action unpack_ tornaco.apps.shortx.core.proto.action.ShowFloatWindow::class.java
             shortXContext.overlay.postShowSideBar(
                 evaluateContext,
+                contextData.map.mapValues { it.value.toString() },
                 localVars,
                 parameterInputs,
                 tornaco.apps.shortx.core.proto.action.ShowSideBar.newBuilder()

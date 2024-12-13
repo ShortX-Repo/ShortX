@@ -2,12 +2,15 @@ package tornaco.apps.shortx.ui.sidebar
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.PixelFormat
-import android.view.Gravity
-import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
@@ -18,87 +21,100 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import tornaco.apps.shortx.core.I18N
+import kotlinx.coroutines.flow.MutableStateFlow
+import tornaco.apps.shortx.core.localvar.LocalVars
+import tornaco.apps.shortx.core.proto.action.ShowSideBar
+import tornaco.apps.shortx.core.proto.func.FuncParameterInput
+import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util._dp
-import tornaco.apps.shortx.core.util.windowManager
-import tornaco.apps.shortx.ui.AttachableComposeView
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShapeXL
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.overlay.AbstractComposeOverlay
+import tornaco.apps.shortx.ui.theme.NoteTextColor
 import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
 
-private const val DRAG_HANDLE_W = 6
-private const val DRAG_HANDLE_H = 72
+private const val DRAG_HANDLE_W = 4
+private const val DRAG_HANDLE_H = 64
 private const val DRAG_HANDLE_H_PADDING = 12
 
-private const val BAR_W = 72
-private const val BAR_H = 200
+private const val BAR_W = 68
+private const val BAR_H = 320
 
 @SuppressLint("ViewConstructor")
 class SideBarView(
+    private val action: ShowSideBar,
+    private val contextData: Map<String, String>,
+    private val localVars: LocalVars,
+    private val parameters: List<FuncParameterInput>,
+    private val onButtonClick: (OverlayButtonSetting) -> Unit,
+    private val onButtonLongClick: (OverlayButtonSetting) -> Unit,
+    private val expandState: MutableStateFlow<Boolean> = MutableStateFlow(false),
     context: Context,
-    i18N: I18N,
-    onDetach: (AttachableComposeView) -> Unit,
-) : AttachableComposeView(context, i18N, onDetach) {
-    override var enableLayoutAnim = false
+    initialPos: Pair<Int, Int>,
+    onPosChange: (Int, Int) -> Unit,
+) : AbstractComposeOverlay(
+    context = context,
+    tag = "SideBar",
+    autoEdge = false,
+    enableGestureMoving = false,
+    initialPos = initialPos,
+    onPosChange = onPosChange,
+    onTouchOutside = {
+        expandState.value = false
+        true
+    }) {
 
     @Composable
     override fun ComposeContent() {
         ShortXServiceUITheme {
-            var isExpanded by remember {
-                mutableStateOf(false)
-            }
-            AnimatedContent(isExpanded) {
+            val isExpanded by expandState.collectAsState()
+            AnimatedContent(isExpanded,
+                transitionSpec = {
+                    fadeIn(animationSpec = tween(150, 150)) togetherWith
+                            fadeOut(animationSpec = tween(150)) using
+                            SizeTransform { initialSize, targetSize ->
+                                if (targetState) {
+                                    keyframes {
+                                        // Expand horizontally first.
+                                        IntSize(targetSize.width, initialSize.height) at 150
+                                        durationMillis = 300
+                                    }
+                                } else {
+                                    keyframes {
+                                        // Shrink vertically first.
+                                        IntSize(initialSize.width, targetSize.height) at 150
+                                        durationMillis = 300
+                                    }
+                                }
+                            }
+                }) {
                 if (it) {
                     Bar(onDrag = {
                         updateSize(DRAG_HANDLE_W._dp + 2 * (DRAG_HANDLE_H_PADDING._dp) to DRAG_HANDLE_H._dp)
-                        isExpanded = false
+                        expandState.value = false
                     })
                 } else {
                     DragHandle(onDrag = {
-                        updateSize(BAR_W._dp to . _dp)
-                        isExpanded = true
+                        updateSize(BAR_W._dp to BAR_H._dp)
+                        expandState.value = true
                     })
                 }
             }
         }
-    }
-
-    fun updateSize(size: Pair<Int, Int>) {
-        post {
-            lp.width = size.first
-            lp.height = size.second
-            context.windowManager.updateViewLayout(this, lp)
-        }
-    }
-
-    override fun createLayoutParams(): WindowManager.LayoutParams {
-        val lp = WindowManager.LayoutParams()
-        lp.x = 80
-        lp.y = 800
-        lp.gravity = Gravity.START or Gravity.TOP
-        lp.width = ViewGroup.LayoutParams.WRAP_CONTENT
-        lp.height = ViewGroup.LayoutParams.WRAP_CONTENT
-        lp.format = PixelFormat.RGBA_8888
-        lp.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-        lp.flags =
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
-        lp.packageName = context.packageName
-        lp.windowAnimations = android.R.style.Animation_Dialog
-        return lp
     }
 }
 
@@ -119,15 +135,6 @@ private fun Bar(onDrag: () -> Unit) {
             )
             .pointerInput(Unit) {
                 detectDragGestures(
-                    onDragStart = { offset ->
-                        println("Drag started at $offset")
-                    },
-                    onDragEnd = {
-                        println("Drag ended")
-                    },
-                    onDragCancel = {
-                        println("Drag cancelled")
-                    },
                     onDrag = { change, dragAmount ->
                         val (dx, dy) = dragAmount
                         when {
@@ -142,7 +149,11 @@ private fun Bar(onDrag: () -> Unit) {
                 )
             }
     ) {
-        LazyColumn(contentPadding = PaddingValues(vertical = 16.dp)) {
+        LazyColumn(
+            contentPadding = PaddingValues(vertical = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
+        ) {
             items(20) {
                 ColoredIcon {
                     RemixIcon(Remix.System.settings_fill)
@@ -158,22 +169,13 @@ private fun DragHandle(
     onDrag: () -> Unit,
     modifier: Modifier = Modifier,
     shape: Shape = MaterialTheme.shapes.extraLarge,
-    color: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    color: Color = NoteTextColor.copy(alpha = 0.8f),
 ) {
     Surface(
         modifier = modifier
             .padding(horizontal = 12.dp)
             .pointerInput(Unit) {
                 detectDragGestures(
-                    onDragStart = { offset ->
-                        println("Drag started at $offset")
-                    },
-                    onDragEnd = {
-                        println("Drag ended")
-                    },
-                    onDragCancel = {
-                        println("Drag cancelled")
-                    },
                     onDrag = { change, dragAmount ->
                         val (dx, dy) = dragAmount
                         when {

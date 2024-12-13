@@ -30,10 +30,8 @@ import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.floating.FloatApi
 import tornaco.apps.shortx.services.ui.floating.ScreenUtil
 import tornaco.apps.shortx.services.ui.floating.controller.FloatButtonWindowController
-import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
-import tornaco.apps.shortx.ui.AttachableComposeView
 import tornaco.apps.shortx.ui.overlay.ComposeOverlay
 import tornaco.apps.shortx.ui.sidebar.SideBarView
 
@@ -50,7 +48,7 @@ internal data class ShowingFloats(
 )
 
 internal data class ShowingSideBar(
-    val token: AttachableComposeView,
+    val token: SideBarView,
     val settings: List<OverlayButtonSetting>,
     val tag: String
 )
@@ -233,6 +231,7 @@ class OverlayService(shortXContext: ShortXContext) :
 
     fun postShowSideBar(
         evaluateContext: EvaluateContext,
+        contextData: Map<String, String>,
         localVars: LocalVars,
         parameters: List<FuncParameterInput>,
         action: ShowSideBar
@@ -248,19 +247,45 @@ class OverlayService(shortXContext: ShortXContext) :
             return@postSafety
         }
 
-        val sidebar = SideBarView(
-            context,
-            i18NIns,
-            {}
+        val overlayIns = SideBarView(
+            context = context,
+            action = action,
+            localVars = localVars,
+            contextData = contextData,
+            parameters = parameters,
+            initialPos = 80 to 888,
+            onPosChange = { x, y ->
+
+            },
+            onButtonClick = { button: OverlayButtonSetting ->
+                shortXContext.rule.executeActions(
+                    context = evaluateContext,
+                    actions = button.actionsList,
+                    conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
+                    localVars = localVars,
+                    parameterInputs = parameters,
+                    actionAsyncMode = ActionAsyncMode.ActionAsyncMode_Sync
+                )
+            },
+            onButtonLongClick = { button: OverlayButtonSetting ->
+                shortXContext.rule.executeActions(
+                    context = evaluateContext,
+                    actions = button.longClickActionsList,
+                    conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
+                    localVars = localVars,
+                    parameterInputs = parameters,
+                    actionAsyncMode = ActionAsyncMode.ActionAsyncMode_Sync
+                )
+            }
         )
 
         showingSideBars.add(
             ShowingSideBar(
-                token = sidebar,
+                token = overlayIns,
                 settings = action.buttonSettingsList,
                 tag = action.tag
             ).apply {
-                token.attach()
+                token.show()
             })
     }
 
@@ -303,7 +328,7 @@ class OverlayService(shortXContext: ShortXContext) :
     fun postHideAllSideBar() = mainHandler.postSafety("postHideAllSideBar") {
         logger.d("postHideAllSideBar")
         showingSideBars.forEach {
-            it.token.detach()
+            it.token.dismiss()
         }
         showingSideBars.clear()
     }
