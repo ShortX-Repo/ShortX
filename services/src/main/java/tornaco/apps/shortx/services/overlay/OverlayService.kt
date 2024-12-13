@@ -44,7 +44,8 @@ import tornaco.apps.shortx.ui.overlay.ComposeOverlay
 import tornaco.apps.shortx.ui.sidebar.SideBarDialogView
 
 
-private const val SIDE_BAR_WIDTH = 70
+private const val SIDE_BAR_WIDTH_DP = 70
+private const val SIDE_BAR_X_DP = 8
 
 internal data class ShowingOverlay(
     val token: ComposeOverlay,
@@ -296,7 +297,7 @@ class OverlayService(shortXContext: ShortXContext) :
 
             dialogView.animate()
                 .alpha(1f)
-                .translationX(16._dp.toFloat())
+                .translationX(0f)
                 .setDuration(466)
                 .setInterpolator(LogDecelerateInterpolator())
                 .start()
@@ -305,7 +306,7 @@ class OverlayService(shortXContext: ShortXContext) :
         androidDialog.showInSystemServer(view = dialogView,
             cancelable = true,
             gravity = Gravity.START or Gravity.CENTER_VERTICAL,
-            width = { SIDE_BAR_WIDTH._dp },
+            width = { SIDE_BAR_WIDTH_DP._dp },
             onWindow = {
                 val params = attributes
 
@@ -326,6 +327,7 @@ class OverlayService(shortXContext: ShortXContext) :
                 params.format = PixelFormat.TRANSLUCENT
                 params.title = "ShortX-SideBar"
                 params.windowAnimations = -1
+                params.x = SIDE_BAR_X_DP._dp
 
                 attributes = params
             })
