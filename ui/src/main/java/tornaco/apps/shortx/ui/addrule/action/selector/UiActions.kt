@@ -7,6 +7,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.action.ContextMenuAction
 import tornaco.apps.shortx.core.proto.action.ScrollViewToLocation
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
@@ -560,7 +561,7 @@ fun UiActions(
 ) {
     val i18N = LocalI18N.current
 
-    val uiActionItems = listOf(
+    val uiActionItems = listOfNotNull(
         Action.TakeScreenshot::class,
         Action.AreaScreenshot::class,
         Action.SelectScreenArea::class,
@@ -575,8 +576,8 @@ fun UiActions(
         Action.HideAllOverlay::class,
         Action.ShowFloatWindow::class,
         Action.HideFloatWindow::class,
-        Action.ShowSideBar::class,
-        Action.HideSideBar::class,
+        if (BuildPropInternal.APP_IS_DEBUG) Action.ShowSideBar::class else null,
+        if (BuildPropInternal.APP_IS_DEBUG) Action.HideSideBar::class else null,
         Action.ShowAlertDialog::class,
         Action.ShowMenuDialog::class,
         Action.ShowTextFieldDialog::class,
