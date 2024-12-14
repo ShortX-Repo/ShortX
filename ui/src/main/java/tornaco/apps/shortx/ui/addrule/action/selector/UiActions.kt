@@ -184,6 +184,16 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
         }
     )
 
+    val showSideBarLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action.ShowSideBar>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
     val getNodeTextSelectorState = rememberTextInputState(
         title = LocalI18N.current["ui.action.get.text.from.node"],
         message = LocalI18N.current["ui.action.get.text.from.node.tip.get.all"],
@@ -293,6 +303,11 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                 true
             }
 
+            Action.HideSideBar::class -> {
+                addAction(Action.HideSideBar(tags = emptyList()))
+                true
+            }
+
             Action.ShowOverlay::class -> {
                 showOverlayLauncher.launch(
                     newIntent(
@@ -310,6 +325,17 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                         context = context,
                         currentData = source.getActionAs<Action.ShowFloatWindow>(),
                         clazz = ShowFloatWindowSelectorActivity::class.java
+                    )
+                )
+                true
+            }
+
+            Action.ShowSideBar::class -> {
+                showSideBarLauncher.launch(
+                    newIntent(
+                        context = context,
+                        currentData = source.getActionAs<Action.ShowSideBar>(),
+                        clazz = ShowSideBarSelectorActivity::class.java
                     )
                 )
                 true
@@ -549,6 +575,8 @@ fun UiActions(
         Action.HideAllOverlay::class,
         Action.ShowFloatWindow::class,
         Action.HideFloatWindow::class,
+        Action.ShowSideBar::class,
+        Action.HideSideBar::class,
         Action.ShowAlertDialog::class,
         Action.ShowMenuDialog::class,
         Action.ShowTextFieldDialog::class,

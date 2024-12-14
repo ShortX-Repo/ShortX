@@ -216,9 +216,11 @@ class SideBarManager(
         )
     }
 
-    fun postHideAllSideBar() = mainHandler.postSafety("postHideAllSideBar") {
-        logger.d("postHideAllSideBar")
+    fun postHideSideBar() = mainHandler.postSafety("postHideSideBar") {
+        logger.d("postHideSideBar")
         sideBarDialog?.dismiss()
         sideBarDialog = null
+        sideBarDragHandle?.dismiss()
+        sideBarDragHandle = null
     }
 }
