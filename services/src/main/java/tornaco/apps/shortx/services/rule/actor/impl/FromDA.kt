@@ -45,7 +45,7 @@ object FromDA : Actor {
         } + parameterInputs
         logger.logOnDebug("allParameters: ${allParameters.map { it.toLogString() }}")
 
-        runSubActions(da.actionsList)
+        copy(parameterInputs = allParameters).runSubActions(da.actionsList)
         Actor.Res.EMPTY
     }
 }
