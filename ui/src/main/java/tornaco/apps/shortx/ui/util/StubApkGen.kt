@@ -89,7 +89,10 @@ object StubApkGen {
             inputStream.close()
             outputStream.close()
         } catch (e: IOException) {
-            throw IOException("Fail to download file: $fileUrl", e)
+            throw IOException(
+                "Fail to download file: $fileUrl （首次初始化需要联网下载github上的签名文件，需要科学网络）",
+                e
+            )
         }
     }
 }
