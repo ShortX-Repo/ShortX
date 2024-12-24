@@ -8,8 +8,11 @@ import android.view.Surface
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
+import tornaco.apps.shortx.services34.wm.WindowManagerV34
+import tornaco.apps.shortx.services35.wm.WindowManagerV35
 
 object SetScreenRotate : Actor {
     override fun actionsCanHandle(): Class<out Message> {
@@ -25,7 +28,15 @@ object SetScreenRotate : Actor {
         logger.d("degree" + degree.name)
         val wm = IWindowManager.Stub.asInterface(ServiceManager.getService(Context.WINDOW_SERVICE))
         if (degree == ScreenRotateDegree.ScreenRotateDegree_Any) {
-            wm.thawRotation()
+            if (OsUtils.isVOrAbove()) {
+                with(WindowManagerV35) {
+                    wm.doThawRotation()
+                }
+            } else {
+                with(WindowManagerV34) {
+                    wm.doThawRotation()
+                }
+            }
         } else {
             // http://aospxref.com/android-8.0.0_r36/xref/frameworks/base/services/core/java/com/android/server/wm/WindowManagerService.java
             // freezeRotation(int rotation)

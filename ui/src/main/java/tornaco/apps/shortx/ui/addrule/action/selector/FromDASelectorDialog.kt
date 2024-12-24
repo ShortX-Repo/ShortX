@@ -33,6 +33,7 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.FieldTitleWithTip
+import tornaco.apps.shortx.ui.base.InputValidateResult
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -161,9 +162,12 @@ private fun DAFunctionParams(
     fromDA.parameterInputs.forEach { input ->
         val param = fromDA.parameters.firstOrNull { it.name == input.name }
 
-        val editValueDialogState = rememberTextInputState(title = input.name, message = null) {
-            updateParamInput(FuncParameterInput.newBuilder(input).setValue(it).build())
-        }
+        val editValueDialogState =
+            rememberTextInputState(title = input.name, message = null, inputValidator = {
+                InputValidateResult.OK
+            }) {
+                updateParamInput(FuncParameterInput.newBuilder(input).setValue(it).build())
+            }
         TextInputDialog(state = editValueDialogState)
 
         ListItem(
