@@ -53,6 +53,7 @@ data class SettingsState(
     val isForceDisableShortXByKeyPress: Boolean = false,
     val dynamicColor: Boolean = true,
     val colorfulCard: Boolean = true,
+    val customSUPath: String? = null,
     val sensorUsages: List<SensorUsage> = emptyList(),
     val extApp: App? = null
 )
@@ -129,6 +130,7 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 hasAudioRecord = shortXManager.getAllAudioRecordFiles().isNotEmpty(),
                 ruleFeatureEnabled = shortXManager.isRuleFeatureEnabled(),
                 isPostNByApp = shortXManager.isPostNByAppEnabled(),
+                customSUPath = shortXManager.getCustomSU(),
                 isForceDisableShortXByKeyPress = shortXManager.isForceDisableShortXByKeyPressEnabled(),
                 sensorUsages = shortXManager.querySensorUsage()
             )
@@ -380,6 +382,13 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
         viewModelScope.launch {
             shortXManager.setRuleFeatureEnabled(enable)
             updateState { copy(ruleFeatureEnabled = shortXManager.isRuleFeatureEnabled()) }
+        }
+    }
+
+    fun setCustomSUPath(path: String?) {
+        viewModelScope.launch {
+            shortXManager.setCustomSU(path)
+            updateState { copy(customSUPath = shortXManager.getCustomSU()) }
         }
     }
 }

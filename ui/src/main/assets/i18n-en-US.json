@@ -1144,6 +1144,8 @@
     "ui.settings.http:chucker.description": "To show detailed Http request and response record with Notifications. Please grant ShortX Notification permission",
     "ui.settings.injected.shell": "Shell in SystemUI",
     "ui.settings.injected.shell.description": "By default, the Shell command in the action will be executed in ShortX, but this requires that the ShortX background self-start is enabled; after this option is enabled, the Shell command will be executed in the System UI without the ShortX self-start. Note: this function requires select the scope of the System UI in the Xposed manager, and grant Root permission to System UI",
+    "ui.settings.custom.su.path": "Custom su",
+    "ui.settings.custom.su.path.description": "Set custom su path, current value: {path}",
     "ui.settings.data.backup.title": "Backup data",
     "ui.settings.data.backup.input.file.name": "Input backup file name",
     "ui.settings.data.backup.summary": "Save your data to external Download folder",

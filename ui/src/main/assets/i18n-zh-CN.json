@@ -1143,6 +1143,8 @@
     "ui.settings.http:chucker.description": "在通知栏展示详细的Http请求和响应的记录，请授予ShortX通知权限",
     "ui.settings.injected.shell": "Shell in SystemUI",
     "ui.settings.injected.shell.description": "默认情况下，动作中的Shell命令将会在ShortX中执行，但是这要求开启ShortX后台自启动；开启此选项后，Shell命令将会在System UI中执行，无需ShortX自启动，注意：此功能需要在Xposed管理器中开启System UI程序的作用域后重启设备，另外务必授予System UI Root权限",
+    "ui.settings.custom.su.path": "自定义su",
+    "ui.settings.custom.su.path.description": "设置自定义su路径，当前为 {path}",
     "ui.settings.data.backup.title": "备份",
     "ui.settings.data.backup.input.file.name": "请输入备份文件名",
     "ui.settings.data.backup.summary": "将现有数据备份到Download文件夹下",

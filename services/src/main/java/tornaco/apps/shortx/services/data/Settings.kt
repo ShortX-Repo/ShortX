@@ -8,6 +8,9 @@ import tornaco.apps.shortx.core.settings.DANMU_DEFAULT_DURATION
 import tornaco.apps.shortx.core.settings.DANMU_DEFAULT_TEXT_SIZE
 
 sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
+    companion object{
+        const val DEFAULT_SU_PATH = "su --mount-master"
+    }
 
     sealed class BoolSettings(key: String, defaultValue: (Context) -> Boolean) :
         Settings<Boolean>(key, defaultValue) {
@@ -57,6 +60,9 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
         // Unique ID for Service ins, usually used for data enc.
         data object ServiceIns :
             StringSettings(key = "ServiceIns", defaultValue = { null })
+
+        data object ShellCustomSUPath :
+            StringSettings(key = "ShellCustomSUPath", defaultValue = { DEFAULT_SU_PATH })
     }
 
     sealed class IntSettings(key: String, defaultValue: (Context) -> Int) :

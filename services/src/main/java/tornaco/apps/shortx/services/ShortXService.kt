@@ -1437,6 +1437,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }
         }
 
+        override fun setCustomSU(path: String?) {
+            shortXContext.shell.setCustomSU(path)
+        }
+
+        override fun getCustomSU(): String? {
+            return shortXContext.shell.getCustomSU()
+        }
+
         override fun addToggle(toggle: ByteArrayWrapper) {
             enforceCallingPermissions()
             v(context) {

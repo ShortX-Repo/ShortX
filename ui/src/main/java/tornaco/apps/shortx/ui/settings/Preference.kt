@@ -8,7 +8,7 @@ sealed interface Preference {
     val icon: String?
     val badge: String?
 
-    object Divider : Preference {
+    data object Divider : Preference {
         override val title: String = "Divider"
         override val summary: String? = null
         override val hasLongSummary: Boolean
