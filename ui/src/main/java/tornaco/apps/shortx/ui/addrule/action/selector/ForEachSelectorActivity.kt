@@ -212,7 +212,11 @@ private fun BaseSelectorActivity<Action.ForEach>.ForEachSelectorDialogSelector(c
                                 ContextDataMapping.ForEach.foreachIndex.name.asContextDataKey()
                             )
                         }) {
-                            Text(text = LocalI18N.current["ui.action.for.each.action.context.data.loop.index"])
+                            Text(
+                                text = LocalI18N.current["ui.action.for.each.action.context.data.loop.index", mapOf(
+                                    "index" to "{${ContextDataMapping.ForEach.foreachIndex.name}}"
+                                )]
+                            )
                         }
                         SmallSpacer()
                         TextButton(onClick = {
@@ -222,7 +226,12 @@ private fun BaseSelectorActivity<Action.ForEach>.ForEachSelectorDialogSelector(c
                                 ContextDataMapping.ForEach.foreachData.name.asContextDataKey()
                             )
                         }) {
-                            Text(text = LocalI18N.current["ui.action.for.each.action.context.data.loop.data"])
+                            Text(
+                                text = LocalI18N.current["ui.action.for.each.action.context.data.loop.data",
+                                    mapOf(
+                                        "data" to "{${ContextDataMapping.ForEach.foreachData.name}}"
+                                    )]
+                            )
                         }
                     }
                 },

@@ -27,7 +27,7 @@ object ForEach : Actor {
                 val delimiters = d.delimiterList.map {
                     it.compileContextAndVars(cv)
                 }.toTypedArray()
-                val dataArray = d.data.split(*delimiters)
+                val dataArray = d.data.compileContextAndVars(cv).split(*delimiters)
                 dataArray.forEachIndexed { index, string ->
                     contextData.add(ContextDataMapping.ForEach.foreachIndex.name, index)
                     contextData.add(ContextDataMapping.ForEach.foreachData.name, string)
