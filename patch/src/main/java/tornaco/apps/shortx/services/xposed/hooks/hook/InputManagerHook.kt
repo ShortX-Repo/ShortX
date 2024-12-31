@@ -3,11 +3,9 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 import android.util.Log
 import android.view.InputEvent
 import de.robv.android.xposed.callbacks.XC_LoadPackage
-import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.platform.Classes.inputManagerService
 import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXService
 import tornaco.apps.shortx.services.android.ServiceHolder
 import util.Reflections
@@ -31,12 +29,23 @@ object InputManagerHook {
             }
         }
 
-        if (BuildPropInternal.APP_IS_DEBUG) {
-            if (OsUtils.isTOrAbove()) {
-                // debugHooks(lpparam)
-            }
+        afterMethod(
+            Reflections.findClass(
+                "com.android.server.input.NativeInputManagerService\$NativeImpl",
+                lpparam.classLoader
+            ),
+            "setInputFilterEnabled"
+        ) { param ->
+            logger.w(
+                "setInputFilterEnabled: ${param.args.map { it }} ${
+                    Log.getStackTraceString(
+                        Throwable()
+                    )
+                }"
+            )
+            val isEnabled = param.args[0] as Boolean
+            ShortXService.shortXContext.input.onInputFilterStateChanged(isEnabled)
         }
-
     }.onFailure {
         logger.e(it, "hookInputManager")
     }
@@ -68,22 +77,6 @@ object InputManagerHook {
             ), "injectInputEvent"
         ) { param ->
             logger.d("injectInputEvent: ${param.args.map { it }} ${Log.getStackTraceString(Throwable())}")
-        }
-
-        afterMethod(
-            Reflections.findClass(
-                "com.android.server.input.NativeInputManagerService\$NativeImpl",
-                lpparam.classLoader
-            ),
-            "setInputFilterEnabled"
-        ) { param ->
-            logger.w(
-                "setInputFilterEnabled: ${param.args.map { it }} ${
-                    Log.getStackTraceString(
-                        Throwable()
-                    )
-                }"
-            )
         }
 
     }.onFailure {

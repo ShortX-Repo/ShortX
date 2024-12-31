@@ -34,7 +34,8 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     private val _onClipboardListener = mutableListOf<(String) -> Unit>()
 
     private val isIMEShown = AtomicBoolean(false)
-    private var hasEverReceivedInputFilterCallback = false
+    private var hasEverReceivedInputFilterCallbackBeforeInstallIF = false
+    private var isInputFilterInstallCalled = false
 
     private val inputFilterInstaller by lazy {
         InputFilterInstaller(ShortXService)
@@ -87,19 +88,66 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         if (isFirstTime) {
             systemServiceScope.launchSafety("InputService.userPresent") {
                 delay(2000)
-                if (!hasEverReceivedInputFilterCallback) {
-                    inputFilterInstaller.installInputFilter()
-                } else {
-                    logger.w("Won't install InputFilter since hasEverReceivedInputFilterCallback is true")
-                }
+                checkInstallInputFilter()
             }
         }
     }
 
+    fun onInputFilterStateChanged(isEnabled: Boolean) {
+        logger.w("onInputFilterStateChanged: $isEnabled")
+        // Some how, input filter was disabled....
+        // 2024-12-22 08:37:43.350 W/ShortX-Core: ShortXHook.InputManagerHook [main] setInputFilterEnabled: [false] java.lang.Throwable
+        //	at tornaco.apps.shortx.services.xposed.hooks.hook.InputManagerHook.debugHooks_IoAF18A$lambda$13$lambda$12(Unknown Source:62)
+        //	at tornaco.apps.shortx.services.xposed.hooks.hook.InputManagerHook.d(Unknown Source:0)
+        //	at fxewqk.bzpmjm.nwagnr.kY0.m(Unknown Source:2)
+        //	at tornaco.apps.shortx.services.xposed.hooks.hook.HooksKt$afterMethod$1.afterHookedMethod(Unknown Source:11)
+        //	at de.robv.android.xposed.XposedBridge$LegacyApiSupport.handleAfter(Unknown Source:33)
+        //	at org.lsposed.lspd.impl.LSPosedBridge$NativeHooker.callback(Unknown Source:279)
+        //	at LSPHooker_.setInputFilterEnabled(Unknown Source:15)
+        //	at com.android.server.input.InputManagerService.setInputFilter(InputManagerService.java:884)
+        //	at java.lang.reflect.Method.invoke(Native Method)
+        //	at org.lsposed.lspd.nativebridge.HookBridge.invokeOriginalMethod(Native Method)
+        //	at org.lsposed.lspd.impl.LSPosedBridge$NativeHooker.callback(Unknown Source:187)
+        //	at LSPHooker_.setInputFilter(Unknown Source:11)
+        //	at com.android.server.wm.WindowManagerService$LocalService.setInputFilter(WindowManagerService.java:8762)
+        //	at com.android.server.accessibility.AccessibilityManagerService.updateInputFilter(AccessibilityManagerService.java:3023)
+        //	at com.android.server.accessibility.AccessibilityManagerService.$r8$lambda$c2sb4fePdTUn6QD12AOuX4CLSEw(Unknown Source:0)
+        //	at com.android.server.accessibility.AccessibilityManagerService$$ExternalSyntheticLambda76.accept(D8$$SyntheticClass:0)
+        //	at com.android.internal.util.function.pooled.PooledLambdaImpl.doInvoke(PooledLambdaImpl.java:281)
+        //	at com.android.internal.util.function.pooled.PooledLambdaImpl.invoke(PooledLambdaImpl.java:204)
+        //	at com.android.internal.util.function.pooled.OmniFunction.run(OmniFunction.java:87)
+        //	at android.os.Handler.handleCallback(Handler.java:959)
+        //	at android.os.Handler.dispatchMessage(Handler.java:100)
+        //	at android.os.Looper.loopOnce(Looper.java:249)
+        //	at android.os.Looper.loop(Looper.java:337)
+        //	at com.android.server.SystemServer.run(SystemServer.java:1081)
+        //	at com.android.server.SystemServer.main(SystemServer.java:727)
+        //	at java.lang.reflect.Method.invoke(Native Method)
+        //	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593)
+        //	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:913)
+
+        if (!isEnabled) {
+            systemServiceScope.launchSafety("onInputFilterStateChanged") {
+                checkInstallInputFilter()
+            }
+        }
+    }
+
+    private fun checkInstallInputFilter() {
+        logger.w("checkInstallInputFilter: hasEverReceivedInputFilterCallbackBeforeInstallIF = $hasEverReceivedInputFilterCallbackBeforeInstallIF")
+        logger.w("checkInstallInputFilter: isInputFilterInstallCalled = $isInputFilterInstallCalled")
+        if (!hasEverReceivedInputFilterCallbackBeforeInstallIF) {
+            inputFilterInstaller.installInputFilter()
+            isInputFilterInstallCalled = true
+        } else {
+            logger.w("Won't install InputFilter since hasEverReceivedInputFilterCallback is true")
+        }
+    }
+
     fun setHasReceivedInputFilterCallback() {
-        if (!hasEverReceivedInputFilterCallback) {
-            logger.i("setHasReceivedInputFilterCallback")
-            hasEverReceivedInputFilterCallback = true
+        if (!isInputFilterInstallCalled && !hasEverReceivedInputFilterCallbackBeforeInstallIF) {
+            logger.w("setHasReceivedInputFilterCallback")
+            hasEverReceivedInputFilterCallbackBeforeInstallIF = true
         }
     }
 
