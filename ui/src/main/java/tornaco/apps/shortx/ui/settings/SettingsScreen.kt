@@ -941,6 +941,12 @@ private fun engineSettings(
     ) { _: Boolean ->
     }
 
+    val customSUDialogState =
+        rememberTextInputState(title = i18N["ui.settings.custom.su.path"], message = null) {
+            vm.setCustomSUPath(it)
+        }
+    TextInputDialog(customSUDialogState)
+
     return mutableListOf(
         Preference.Category(i18N["ui.settings.engine"]),
 
@@ -972,6 +978,19 @@ private fun engineSettings(
                     } else {
                         subscribeDialogState.show()
                     }
+                }
+            ),
+            null
+        ),
+        state.shellEngineEnabled.select(
+            Preference.TextPreference(
+                icon = Remix.Editor.hashtag,
+                title = i18N["ui.settings.custom.su.path"],
+                summary = i18N["ui.settings.custom.su.path.description", mapOf("path" to state.customSUPath.orEmpty())],
+                hasLongSummary = false,
+                badge = badge,
+                onClick = {
+                    customSUDialogState.show(state.customSUPath)
                 }
             ),
             null

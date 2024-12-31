@@ -19,6 +19,7 @@ import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.Settings
+import tornaco.apps.shortx.services.data.Settings.Companion.DEFAULT_SU_PATH
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.enforceCallingPermissions
@@ -52,6 +53,17 @@ class ShellService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     fun setInjectedShellEnabled(enable: Boolean) {
         enforceCallingPermissions()
         store.write(Settings.BoolSettings.EnableInjectedShell, enable)
+    }
+
+    fun setCustomSU(path: String?) {
+        store.write(
+            Settings.StringSettings.ShellCustomSUPath,
+            path?.takeIf { it.isNotBlank() } ?: DEFAULT_SU_PATH
+        )
+    }
+
+    fun getCustomSU(): String? {
+        return store.read(Settings.StringSettings.ShellCustomSUPath)
     }
 
     suspend fun executeCommand(command: String, singleShot: Boolean): ShellRes {
