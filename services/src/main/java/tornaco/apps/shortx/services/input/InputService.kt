@@ -93,6 +93,7 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         }
     }
 
+    private var onInputFilterStateChangedHandleTimes = 0
     fun onInputFilterStateChanged(isEnabled: Boolean) {
         logger.w("onInputFilterStateChanged: $isEnabled")
         // Some how, input filter was disabled....
@@ -127,6 +128,15 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         //	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:913)
 
         if (!isEnabled) {
+            if (onInputFilterStateChangedHandleTimes > 100) {
+                shortXContext.watchDog.onFatalError(
+                    Throwable(),
+                    "Too many times: onInputFilterStateChangedHandleTimes"
+                )
+                return
+            }
+            onInputFilterStateChangedHandleTimes += 1
+            logger.w("onInputFilterStateChangedHandleTimes: $onInputFilterStateChangedHandleTimes")
             systemServiceScope.launchSafety("onInputFilterStateChanged") {
                 checkInstallInputFilter()
             }
