@@ -130,6 +130,7 @@ class NotificationService(shortXContext: ShortXContext) :
     }
 
     fun post(postNotification: PostNotification) {
+        if (!isSystemReady) return
         if (isPostNByAppEnabled()) {
             logger.d("post by app.")
             AppNotificationServiceProxy.post(context, postNotification, systemServiceScope)

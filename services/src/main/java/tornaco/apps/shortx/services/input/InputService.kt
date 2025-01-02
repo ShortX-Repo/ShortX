@@ -96,6 +96,10 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     private var onInputFilterStateChangedHandleTimes = 0
     fun onInputFilterStateChanged(isEnabled: Boolean) {
         logger.w("onInputFilterStateChanged: $isEnabled")
+        if (!isSystemReady) {
+            logger.w("onInputFilterStateChanged, system is not ready.")
+            return
+        }
         // Some how, input filter was disabled....
         // 2024-12-22 08:37:43.350 W/ShortX-Core: ShortXHook.InputManagerHook [main] setInputFilterEnabled: [false] java.lang.Throwable
         //	at tornaco.apps.shortx.services.xposed.hooks.hook.InputManagerHook.debugHooks_IoAF18A$lambda$13$lambda$12(Unknown Source:62)

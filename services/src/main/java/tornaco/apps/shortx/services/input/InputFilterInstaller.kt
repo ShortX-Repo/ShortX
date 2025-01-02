@@ -20,6 +20,9 @@ class InputFilterInstaller(private val root: ShortXService) {
         if (!hasDisableGestureFlag) {
             val ims = ServiceHolder.inputManagerService
             logger.w("installInputFilter, ims: $ims")
+            if (ims == null) {
+                return
+            }
             val inputFilter = Reflections.getObjectField(ims, "mInputFilter")
             logger.w("installInputFilter, inputFilter: $inputFilter")
 
