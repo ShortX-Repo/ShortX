@@ -126,7 +126,7 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         //	at java.lang.reflect.Method.invoke(Native Method)
         //	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593)
         //	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:913)
-
+        logger.w("onInputFilterStateChangedHandleTimes: $onInputFilterStateChangedHandleTimes")
         if (!isEnabled) {
             if (onInputFilterStateChangedHandleTimes > 100) {
                 shortXContext.watchDog.onFatalError(
@@ -136,7 +136,6 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
                 return
             }
             onInputFilterStateChangedHandleTimes += 1
-            logger.w("onInputFilterStateChangedHandleTimes: $onInputFilterStateChangedHandleTimes")
             systemServiceScope.launchSafety("onInputFilterStateChanged") {
                 checkInstallInputFilter()
             }
