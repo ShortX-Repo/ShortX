@@ -35,12 +35,12 @@ class KeyCombinationTrigger(
     private fun updateKeyCombineManagerRules() {
         keyCombinationManager.clearRules()
 
-        val cks = mutableListOf<Pair<Int, Int>>()
+        val cks = mutableListOf<StubTwoKeysCombinationRule>()
         shortXContext.rule.forEachEnabledFacts { _, it ->
             if (it is_ CombineKeyEvent::class.java) {
                 val ck = it unpack_ CombineKeyEvent::class.java
                 if (!ck.isDisabled) {
-                    cks.add(ck.keyCode1 to ck.keyCode2)
+                    cks.add(StubTwoKeysCombinationRule(ck.keyCode1, ck.keyCode2))
                 }
             }
         }
@@ -51,8 +51,8 @@ class KeyCombinationTrigger(
         disCks.forEach {
             keyCombinationManager
                 .addRule(object : KeyCombinationManager.TwoKeysCombinationRule(
-                    it.first,
-                    it.second
+                    it.code1,
+                    it.code2
                 ) {
                     override fun execute() {
                         super.execute()
@@ -62,8 +62,8 @@ class KeyCombinationTrigger(
                             FactPublishData(
                                 reason = "Combine key",
                                 fact = CombineKeyEvent.newBuilder()
-                                    .setKeyCode1(it.first)
-                                    .setKeyCode2(it.second)
+                                    .setKeyCode1(it.code1)
+                                    .setKeyCode2(it.code2)
                                     .build()
                             )
                         }
@@ -83,4 +83,9 @@ class KeyCombinationTrigger(
     fun reset() {
         keyCombinationManager.reset()
     }
+
+    class StubTwoKeysCombinationRule(
+        val code1: Int,
+        val code2: Int
+    ) : KeyCombinationManager.TwoKeysCombinationRule(code1, code2)
 }
