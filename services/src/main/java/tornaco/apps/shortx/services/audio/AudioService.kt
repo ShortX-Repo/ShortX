@@ -63,6 +63,8 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext, 
 
     val isRecording: Boolean get() = synchronized(recorderSync) { currentRecorder != null }
 
+    private val playingRingtones = mutableListOf<android.media.Ringtone>()
+
     override fun systemReady() {
         super.systemReady()
         registerListener()
@@ -375,11 +377,19 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     }
 
     fun playRingtone(ringtone: Ringtone) {
-        val androidRingtone = RingtoneManager.getRingtone(context, Uri.parse(ringtone.uri))
-        requireNotNull(androidRingtone) {
-            "Ringtone not exists: ${ringtone.title}"
+        synchronized(playingRingtones) {
+            playingRingtones.removeAll {
+                it.stop()
+                true
+            }
+
+            val androidRingtone = RingtoneManager.getRingtone(context, Uri.parse(ringtone.uri))
+            requireNotNull(androidRingtone) {
+                "Ringtone not exists: ${ringtone.title}"
+            }
+            androidRingtone.play()
+            playingRingtones.add(androidRingtone)
         }
-        androidRingtone.play()
     }
 }
 
