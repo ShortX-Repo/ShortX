@@ -10,12 +10,14 @@ import tornaco.apps.shortx.core.backup.BackupSettings
 import tornaco.apps.shortx.core.backup.CoreBackupAgent
 import tornaco.apps.shortx.core.backup.DA_FILE_NAME
 import tornaco.apps.shortx.core.backup.DA_SET_FILE_NAME
+import tornaco.apps.shortx.core.backup.GESTURE_RECORD_FILE_NAME
 import tornaco.apps.shortx.core.backup.GV_FILE_NAME
 import tornaco.apps.shortx.core.backup.META_FILE_NAME
 import tornaco.apps.shortx.core.backup.PKGSET_FILE_NAME
 import tornaco.apps.shortx.core.backup.RULE_FILE_NAME
 import tornaco.apps.shortx.core.backup.RULE_SET_FILE_NAME
 import tornaco.apps.shortx.core.backup.TOGGLE_FILE_NAME
+import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
@@ -28,6 +30,7 @@ import tornaco.apps.shortx.core.proto.toggles.Toggle
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.store.BaseDirectActionSetsStore
 import tornaco.apps.shortx.core.store.BaseDirectActionSettingsStore
+import tornaco.apps.shortx.core.store.BaseGestureRecordsStore
 import tornaco.apps.shortx.core.store.BaseGlobalVarStore
 import tornaco.apps.shortx.core.store.BasePkgSetsStore
 import tornaco.apps.shortx.core.store.BaseRuleSetsStore
@@ -52,6 +55,7 @@ class BackupAgent(private val context: Context) : CoreBackupAgent(
     }
 ) {
     private val logger = Logger("AppBackupAgent")
+    private val shortX by lazy { shortXManager }
 
     suspend fun restore(uri: Uri, token: String?) {
         logger.d("restore, uri: $uri")
@@ -75,7 +79,7 @@ class BackupAgent(private val context: Context) : CoreBackupAgent(
             content.rules.forEach {
                 logger.d("restore, add rule: ${it.title}")
                 // Disable this rule.
-                shortXManager.addRule(
+                shortX.addRule(
                     Rule.newBuilder(it).setIsEnabled(false)
                         .addAllExtras(mutableListOf<StringPair>().apply {
                             if (!token.isNullOrEmpty()) {
@@ -87,7 +91,7 @@ class BackupAgent(private val context: Context) : CoreBackupAgent(
             }
             content.das.forEach {
                 logger.d("restore, add da: ${it.title}")
-                shortXManager.addDirectAction(
+                shortX.addDirectAction(
                     DirectAction.newBuilder(it)
                         .addAllExtras(mutableListOf<StringPair>().apply {
                             if (!token.isNullOrEmpty()) {
@@ -99,7 +103,7 @@ class BackupAgent(private val context: Context) : CoreBackupAgent(
             }
             content.toggles.forEach {
                 logger.d("restore, add toggle: ${it.title}")
-                shortXManager.addToggle(
+                shortX.addToggle(
                     Toggle.newBuilder(it)
                         .addAllExtras(mutableListOf<StringPair>().apply {
                             if (!token.isNullOrEmpty()) {
@@ -111,19 +115,23 @@ class BackupAgent(private val context: Context) : CoreBackupAgent(
             }
             content.pkgSets.forEach {
                 logger.d("restore, add pkgset: ${it.label}")
-                shortXManager.addPkgSet(it)
+                shortX.addPkgSet(it)
             }
             content.gvs.forEach {
                 logger.d("restore, add gv: ${it.name}")
-                shortXManager.addGlobalVar(it)
+                shortX.addGlobalVar(it)
             }
             content.daSets.forEach {
                 logger.d("restore, add daSet: ${it.title}")
-                shortXManager.addOrUpdateDASet(it)
+                shortX.addOrUpdateDASet(it)
             }
             content.ruleSets.forEach {
                 logger.d("restore, add ruleSets: ${it.title}")
-                shortXManager.addOrUpdateRuleSet(it)
+                shortX.addOrUpdateRuleSet(it)
+            }
+            content.gestures.forEach {
+                logger.d("restore, add gesture: ${it.label}")
+                shortX.addGestureRecord(it)
             }
         }
     }
@@ -195,6 +203,12 @@ class BackupAgent(private val context: Context) : CoreBackupAgent(
             ruleSetsStore.read()
             val ruleSets = ruleSetsStore.getAllRuleSets()
 
+            // Gestures
+            val gesturesPb = File(tmpExtractedFile, GESTURE_RECORD_FILE_NAME)
+            val gesturesStore = BaseGestureRecordsStore(this, gesturesPb)
+            gesturesStore.read()
+            val gestures = gesturesStore.getAllGestureRecords()
+
             // Clean up.
             tmpExtractedFile.deleteRecursively()
             tmpZipFile.deleteRecursively()
@@ -206,7 +220,8 @@ class BackupAgent(private val context: Context) : CoreBackupAgent(
                 pkgSets = pkgSets,
                 gvs = gvs,
                 daSets = daSets,
-                ruleSets = ruleSets
+                ruleSets = ruleSets,
+                gestures = gestures
             )
         }
     }
@@ -235,4 +250,5 @@ data class BackupPackageContent(
     val gvs: List<GlobalVar>,
     val daSets: List<DirectActionSet>,
     val ruleSets: List<RuleSet>,
+    val gestures: List<GestureRecord>,
 )
