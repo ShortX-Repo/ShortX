@@ -6,4 +6,8 @@ object WindowManagerV34 {
     fun IWindowManager.doThawRotation() {
         thawRotation()
     }
+
+    fun IWindowManager.doFreezeRotation(rotation: Int) {
+        freezeRotation(rotation)
+    }
 }

@@ -40,7 +40,20 @@ object SetScreenRotate : Actor {
         } else {
             // http://aospxref.com/android-8.0.0_r36/xref/frameworks/base/services/core/java/com/android/server/wm/WindowManagerService.java
             // freezeRotation(int rotation)
-            wm.freezeRotation(degree.degreeToRotation())
+
+            // Android 15
+            // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/view/IWindowManager.aidl;l=339?q=thawRotation&start=11
+            // freezeRotation(int rotation, String caller);
+
+            if (OsUtils.isVOrAbove()) {
+                with(WindowManagerV35) {
+                    wm.doFreezeRotation(degree.degreeToRotation())
+                }
+            } else {
+                with(WindowManagerV34) {
+                    wm.doFreezeRotation(degree.degreeToRotation())
+                }
+            }
         }
         Actor.Res.EMPTY
     }

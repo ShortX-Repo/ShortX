@@ -6,4 +6,8 @@ object WindowManagerV35 {
     fun IWindowManager.doThawRotation() {
         thawRotation("ShortX")
     }
+
+    fun IWindowManager.doFreezeRotation(rotation: Int) {
+        freezeRotation(rotation, "ShortX")
+    }
 }
