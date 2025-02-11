@@ -93,7 +93,9 @@ class AccessibilityNodeOnScreenTrigger(
                             fact.detectTimeout
                         )
                         logger.d("brief: $brief")
-                        nodeMatchers[brief] = it
+                        synchronized(nodeMatchers) {
+                            nodeMatchers[brief] = it
+                        }
                     }
                 }
             }
@@ -130,10 +132,12 @@ class AccessibilityNodeOnScreenTrigger(
                         // Ignore some packages.
                         if (rootPkgName != "android") {
                             val matcherForThisPackage =
-                                nodeMatchers
-                                    .filterKeys { it.packageName == rootPkgName || it.packageName.isEmpty() || it.packageName == "*" }
-                                    .filterKeys { it.componentName == null || it.componentName.className == currentClassName }
-                                    .filterKeys { it.timeout < 0 || it.timeout >= timePassed }
+                                synchronized(nodeMatchers) {
+                                    nodeMatchers
+                                        .filterKeys { it.packageName == rootPkgName || it.packageName.isEmpty() || it.packageName == "*" }
+                                        .filterKeys { it.componentName == null || it.componentName.className == currentClassName }
+                                        .filterKeys { it.timeout < 0 || it.timeout >= timePassed }
+                                }
 
                             val shouldCheckEvent = matcherForThisPackage.isNotEmpty()
                             if (shouldCheckEvent) {
