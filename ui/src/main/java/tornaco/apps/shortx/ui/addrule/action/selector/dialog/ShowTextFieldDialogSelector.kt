@@ -148,7 +148,7 @@ private fun ShowTextFieldDialogSelector(dialogState: ShowTextFieldDialogSettings
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(LocalI18N.current["ui.action.show.menu.dialog"]) },
+                        title = { Text(LocalI18N.current["ui.action.show.text.field.dialog"]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()

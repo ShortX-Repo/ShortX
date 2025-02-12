@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,9 +19,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,8 +48,8 @@ import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
-import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
@@ -91,27 +90,13 @@ private fun SingleAppPkgSelector(state: SingleAppPkgSelectorState) {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
-            Scaffold(modifier = Modifier,
-                topBar = {
-                    ShortXTopAppBar(
-                        modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.dialog.title.select.app"]) },
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                state.dismiss()
-                            }) {
-                                RemixIcon(remixName = Remix.System.close_line)
-                            }
-                        },
-                    )
-                }) { paddingValues ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                ) {
-                    AppListContent(state)
+            ShortXAppBarScaffold(
+                title = LocalI18N.current["ui.dialog.title.select.app"],
+                onBackPressed = {
+                    state.dismiss()
                 }
+            ) {
+                AppListContent(state)
             }
         }
     }
@@ -128,6 +113,8 @@ private fun AppListContent(selectorState: SingleAppPkgSelectorState) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
+            .heightIn(max = 1000.dp),
+        contentPadding = PaddingValues(bottom = 100.dp)
     ) {
         stickyHeader {
             SearchBar(
@@ -163,7 +150,10 @@ private fun AppListContent(selectorState: SingleAppPkgSelectorState) {
                     widthFraction = 0.6f,
                     state = dropdownState,
                     items = allPkgSets.map {
-                        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.app.${it.label.lowercase()}", emptyMap(), it.label]), data = it.label)
+                        DropdownItem(
+                            labelLines = listOf(LocalI18N.current["ui.common.app.${it.label.lowercase()}", emptyMap(), it.label]),
+                            data = it.label
+                        )
                     },
                     onSelect = {
                         selectorState.selectedAppFilterPkgSetLabel = it.data

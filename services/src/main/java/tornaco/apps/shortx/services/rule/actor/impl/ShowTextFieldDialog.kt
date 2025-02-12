@@ -55,7 +55,7 @@ object ShowTextFieldDialog : Actor {
             d.textFieldsList.forEachIndexed { index, textFieldProp ->
                 val key =
                     ContextDataMapping.ShowTextFieldDialog.textFieldInput.name + (index + 1)
-                val value = ""
+                val value = textFieldProp.value.orEmpty()
                 put(key, value)
             }
         }

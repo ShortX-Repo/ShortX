@@ -7,9 +7,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,7 +19,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,8 +48,8 @@ import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
-import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberTextInputState
@@ -106,24 +107,14 @@ fun ContextDataInfoDialog(state: ContextDataInfoDialogState) {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
-                    Scaffold(modifier = Modifier,
-                        topBar = {
-                            ShortXTopAppBar(
-                                modifier = Modifier,
-                                title = { Text(text = LocalI18N.current["ui.context.data.title"]) },
-                                navigationIcon = {
-                                    IconButton(onClick = {
-                                        state.dismiss()
-                                    }) {
-                                        RemixIcon(remixName = Remix.System.close_line)
-                                    }
-                                },
-                                actions = {
-
-                                }
-                            )
-                        }) { paddingValues ->
-                        LazyColumn(contentPadding = paddingValues) {
+                    ShortXAppBarScaffold(
+                        title = LocalI18N.current["ui.context.data.title"],
+                        onBackPressed = { state.dismiss() },
+                    ) {
+                        LazyColumn(
+                            contentPadding = PaddingValues(bottom = 120.dp),
+                            modifier = Modifier.heightIn(max = 1000.dp)
+                        ) {
                             item {
                                 Box(modifier = Modifier.padding(16.dp)) {
                                     DialogMessage(

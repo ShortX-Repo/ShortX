@@ -2,7 +2,6 @@
 
 package tornaco.apps.shortx.ui.addrule.action.selector
 
-import android.R
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -76,7 +75,7 @@ fun SinglePkgAndUserSelectorDialog(state: SinglePkgAndUserDialogState) {
                             state.dismiss()
                         }
                     }) {
-                    Text(text = stringResource(id = R.string.ok))
+                    Text(text = stringResource(id = android.R.string.ok))
                 }
             },
             onDismissRequest = { state.dismiss() }) {

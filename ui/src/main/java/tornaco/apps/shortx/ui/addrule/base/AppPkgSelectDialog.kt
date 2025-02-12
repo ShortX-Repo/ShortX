@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,11 +21,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -56,6 +55,7 @@ import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
@@ -161,64 +161,51 @@ private fun AppPkgSelector(state: AppPkgSelectorDialogState) {
         var selectedTabIndex by remember {
             mutableIntStateOf(0)
         }
-        Scaffold(modifier = Modifier,
-            topBar = {
-                TopAppBar(
-                    modifier = Modifier,
-                    title = { Text(text = LocalI18N.current["ui.dialog.title.select.app"]) },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            state.dismiss()
-                        }) {
-                            RemixIcon(remixName = Remix.System.close_line)
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = {
-                            if (selectedTabIndex == 0) {
-                                state.onAppListSelected(state.selectedApps)
-                            } else {
-                                state.onPkgSetSelected?.invoke(state.selectedPkgSets.filter {
-                                    shortXManager.getPkgSetByLabel(it.label) != null
-                                })
-                            }
-                            state.dismiss()
+        ShortXAppBarScaffold(
+            title = LocalI18N.current["ui.dialog.title.select.app"],
+            onBackPressed = {
+                state.dismiss()
+            },
+            actions = {
+                IconButton(onClick = {
+                    if (selectedTabIndex == 0) {
+                        state.onAppListSelected(state.selectedApps)
+                    } else {
+                        state.onPkgSetSelected?.invoke(state.selectedPkgSets.filter {
+                            shortXManager.getPkgSetByLabel(it.label) != null
+                        })
+                    }
+                    state.dismiss()
 
-                        }) {
-                            RemixIcon(remixName = Remix.System.check_line)
-                        }
-                    }
-                )
-            }) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-            ) {
-                TabRow(selectedTabIndex = selectedTabIndex) {
-                    val titles = mutableListOf(
-                        LocalI18N.current["ui.dialog.title.select.app"],
-                    ).apply {
-                        if (state.onPkgSetSelected != null) {
-                            add(LocalI18N.current["ui.pkg.set.title"])
-                        }
-                    }
-                    titles.forEachIndexed { index, title ->
-                        Tab(selected = selectedTabIndex == index,
-                            onClick = { selectedTabIndex = index },
-                            text = {
-                                Text(
-                                    text = title, maxLines = 2, overflow = TextOverflow.Ellipsis
-                                )
-                            })
+                }) {
+                    RemixIcon(remixName = Remix.System.check_line)
+                }
+            },
+        ) {
+
+            TabRow(selectedTabIndex = selectedTabIndex) {
+                val titles = mutableListOf(
+                    LocalI18N.current["ui.dialog.title.select.app"],
+                ).apply {
+                    if (state.onPkgSetSelected != null) {
+                        add(LocalI18N.current["ui.pkg.set.title"])
                     }
                 }
-
-                if (selectedTabIndex == 0) {
-                    AppListContent(state)
-                } else {
-                    PkgSetContent(state)
+                titles.forEachIndexed { index, title ->
+                    Tab(selected = selectedTabIndex == index,
+                        onClick = { selectedTabIndex = index },
+                        text = {
+                            Text(
+                                text = title, maxLines = 2, overflow = TextOverflow.Ellipsis
+                            )
+                        })
                 }
+            }
+
+            if (selectedTabIndex == 0) {
+                AppListContent(state)
+            } else {
+                PkgSetContent(state)
             }
         }
     }
@@ -239,6 +226,8 @@ fun PkgSetContent(selectorState: BaseAppPkgSelectorDialogState) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .heightIn(max = 1000.dp),
+            contentPadding = PaddingValues(bottom = 100.dp)
         ) {
             items(state.pkgSets) {
                 ListItem(
@@ -278,6 +267,8 @@ fun AppListContent(dialogState: BaseAppPkgSelectorDialogState) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
+            .heightIn(max = 1000.dp),
+        contentPadding = PaddingValues(bottom = 100.dp)
     ) {
         item {
             SearchBar(
