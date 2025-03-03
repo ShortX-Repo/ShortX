@@ -12,6 +12,7 @@ object SystemUIHook {
             hookApp(lpparam)
             hookTile(lpparam)
             hookQS(lpparam)
+            hookTileQuery(lpparam)
             hookView(lpparam)
             hookDarkIcon(lpparam)
         }

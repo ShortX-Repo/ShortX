@@ -76,7 +76,7 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         context.clipboardManager.apply {
             addPrimaryClipChangedListener {
                 val text = primaryClip?.getItemAt(0)?.text?.toString().orEmpty()
-                logger.d("ClipChangedListener, onPrimaryClipChanged, text: $text")
+                // logger.d("ClipChangedListener, onPrimaryClipChanged, text: $text")
                 onClipboardChange(text)
             }
         }

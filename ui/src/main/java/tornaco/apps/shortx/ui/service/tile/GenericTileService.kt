@@ -4,6 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
+import android.util.Log
 import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
@@ -52,7 +53,7 @@ abstract class GenericTileService : TileService() {
 
     override fun onStartListening() {
         super.onStartListening()
-        logger.d("onStartListening")
+        logger.d("onStartListening- ${Log.getStackTraceString(Throwable())}")
         updateTile()
 
         shortXManager.updateQSTileActiveState(tileIndex.number)

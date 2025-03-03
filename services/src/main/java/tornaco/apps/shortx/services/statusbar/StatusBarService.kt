@@ -70,7 +70,7 @@ class StatusBarService(shortXContext: ShortXContext) :
             BuildPropInternal.APP_PACKAGE_NAME
         )
     }
-    private val appContext by lazy { appRes.appContext }
+    val appContext by lazy { appRes.appContext }
 
     override fun start(context: Context) {
         super.start(context)

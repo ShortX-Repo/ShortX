@@ -18,7 +18,7 @@ class ClipboardTrigger(override val context: Context, override val shortXContext
 
     override fun register() {
         shortXContext.input.addOnClipboardListener { clipText ->
-            logger.logOnDebug("Clipboard change: $clipText")
+            // logger.logOnDebug("Clipboard change: $clipText")
 
             if (System.currentTimeMillis() - lastTriggerTime.get() >= 1000
                 || lastText.get() != clipText
