@@ -237,3 +237,5 @@
 
 -dontwarn com.android.internal.statusbar.StatusBarIcon$Type
 -dontwarn com.android.internal.statusbar.StatusBarIcon
+
+-dontwarn github.tornaco.shortx.android.service.patch.StringFog
