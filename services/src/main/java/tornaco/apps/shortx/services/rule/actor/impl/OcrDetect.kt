@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Rect
+import android.os.ParcelFileDescriptor
 import com.google.protobuf.Message
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.BuildPropInternal
@@ -27,6 +28,7 @@ import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import java.io.File
 import java.io.IOException
+
 
 object OcrDetect : Actor {
     override fun actionsCanHandle(): Class<out Message> {
@@ -56,7 +58,7 @@ object OcrDetect : Actor {
         Actor.Res(ocrResultString)
     }
 
-    suspend fun recognizeText(params: HandleParams, src: ProtoAny): Array<out String> {
+    private suspend fun recognizeText(params: HandleParams, src: ProtoAny): Array<out String> {
         return with(params) {
             val ocrResult: Array<String> = withSrcBitmap(
                 src,
@@ -74,11 +76,16 @@ object OcrDetect : Actor {
                         )
                     }
                 }
-                shortXContext.ocr.requireOCR().recognizeText(
-                    bitmap,
-                    4,
-                    false
-                )
+
+                requireNotNull(
+                    bitmap.useSharedPFD {
+                        shortXContext.ocr.requireOCR().recognizeTextPFD(
+                            it,
+                            4,
+                            false
+                        )
+                    }
+                ) { "Unable to recognizeText." }
             }
             logger.logOnDebug("recognizeText, ocrResult: $ocrResult")
             ocrResult
@@ -103,18 +110,24 @@ object OcrDetect : Actor {
                         )
                     }
                 }
-                shortXContext.ocr.requireOCR().detect(
-                    bitmap,
-                    4,
-                    false
-                )
+
+                val detectRes = bitmap.useSharedPFD {
+                    shortXContext.ocr.requireOCR().detectPFD(
+                        it,
+                        4,
+                        false
+                    )
+                }
+                requireNotNull(detectRes) {
+                    "Unable to detect."
+                }
             }.mapNotNull { OcrResult.parseFrom(it.byteData) }
             logger.logOnDebug("detect, ocrResult: $ocrResult")
             ocrResult
         }
     }
 
-    suspend fun <T> withSrcBitmap(
+    private suspend fun <T> withSrcBitmap(
         src: ProtoAny,
         androidContext: Context,
         evaluateContext: EvaluateContext,
@@ -209,5 +222,18 @@ object OcrDetect : Actor {
         logger.d("getBitmapFromPath bitmap: $bitmap")
         return bitmap
     }
-}
 
+    private fun <T> Bitmap.useSharedPFD(action: (ParcelFileDescriptor) -> T): T {
+        val tmpFile = saveScreenBitmapToFile(this, Dirs.baseServerCacheDir(), "ocr-share-pfd")
+        logger.d("useSharedPFD, tmpFile: $tmpFile")
+        val pdf = ParcelFileDescriptor.open(
+            tmpFile,
+            ParcelFileDescriptor.MODE_READ_ONLY
+        )
+        val res = pdf.use {
+            action(it)
+        }
+        runCatching { tmpFile.deleteRecursively() }
+        return res
+    }
+}
