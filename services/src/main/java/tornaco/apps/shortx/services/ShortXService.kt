@@ -90,6 +90,7 @@ import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.UserHandleUtils.userIdToUserHandle
 import tornaco.apps.shortx.core.util.powerManager
 import tornaco.apps.shortx.core.util.wifiManager
+import tornaco.apps.shortx.services.abtesting.ABTesting
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.handleResponseBody
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequestLogging
@@ -142,6 +143,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         val testRes = i18NIns["ui.common.delete"]
         logger.d("testRes: $testRes")
         shortXContext.serviceLifecycle.systemReady()
+        ABTesting.dump()
     }
 
     private fun newBinderProxy(orig: Binder): tornaco.apps.shortx.services.util.BinderProxy {

@@ -23,6 +23,7 @@ import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.abtesting.ABTesting
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
@@ -78,9 +79,17 @@ object OcrDetect : Actor {
                 }
 
                 requireNotNull(
-                    bitmap.useSharedPFD {
-                        shortXContext.ocr.requireOCR().recognizeTextPFD(
-                            it,
+                    if (ABTesting.test.isOCRDetectPFDEnabled) {
+                        bitmap.useSharedPFD {
+                            shortXContext.ocr.requireOCR().recognizeTextPFD(
+                                it,
+                                4,
+                                false
+                            )
+                        }
+                    } else {
+                        shortXContext.ocr.requireOCR().recognizeText(
+                            bitmap,
                             4,
                             false
                         )
@@ -111,9 +120,17 @@ object OcrDetect : Actor {
                     }
                 }
 
-                val detectRes = bitmap.useSharedPFD {
-                    shortXContext.ocr.requireOCR().detectPFD(
-                        it,
+                val detectRes = if (ABTesting.test.isOCRDetectPFDEnabled) {
+                    bitmap.useSharedPFD {
+                        shortXContext.ocr.requireOCR().detectPFD(
+                            it,
+                            4,
+                            false
+                        )
+                    }
+                } else {
+                    shortXContext.ocr.requireOCR().detect(
+                        bitmap,
                         4,
                         false
                     )
