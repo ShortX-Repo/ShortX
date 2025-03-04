@@ -41,11 +41,11 @@ fun SystemUIHook.hookApp(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runC
         logger.i("installCV success.")
     }
 
-    fun installORC(shortx: IShortX, context: Context) {
-        logger.d("installORC")
+    fun installOCR(shortx: IShortX, context: Context) {
+        logger.d("installOCR")
         val orc = OCRImpl(context)
         shortx.attachOCR(orc)
-        logger.i("installORC success.")
+        logger.i("installOCR success.")
     }
 
     fun installNotificationPoster(shortx: IShortX, context: Context) {
@@ -127,7 +127,7 @@ fun SystemUIHook.hookApp(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runC
             installShellImpl(shortx)
             installNotificationPoster(shortx, app)
             installCV(shortx, app)
-            installORC(shortx, app)
+            installOCR(shortx, app)
 
             CustomHook.hookApp(
                 lpparam.classLoader,
