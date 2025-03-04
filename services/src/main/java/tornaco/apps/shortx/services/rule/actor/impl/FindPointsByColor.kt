@@ -74,12 +74,18 @@ object FindPointsByColor : Actor {
 
         val cv = shortXContext.cv.requireCV()
         logger.d("cv: $cv")
-        val points = cv.findPointsByColor(
-            image,
-            config.color,
-            config.threshold,
-            config.rect.takeIf { it != Rect.getDefaultInstance() }?.toAndroidRect()
-        )
+
+        val points: List<Point> = with(OcrDetect) {
+            image.useSharedPFD { imagePFD ->
+                cv.findPointsByColorPFD(
+                    imagePFD,
+                    config.color,
+                    config.threshold,
+                    config.rect.takeIf { it != Rect.getDefaultInstance() }?.toAndroidRect()
+                )
+            }
+        }
+
         logger.d("$log points: $points")
         return points
     }

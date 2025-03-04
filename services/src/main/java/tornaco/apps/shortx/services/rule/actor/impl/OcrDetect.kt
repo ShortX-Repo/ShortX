@@ -240,7 +240,7 @@ object OcrDetect : Actor {
         return bitmap
     }
 
-    private fun <T> Bitmap.useSharedPFD(action: (ParcelFileDescriptor) -> T): T {
+    fun <T> Bitmap.useSharedPFD(action: (ParcelFileDescriptor) -> T): T {
         val tmpFile = saveScreenBitmapToFile(this, Dirs.baseServerCacheDir(), "ocr-share-pfd")
         logger.d("useSharedPFD, tmpFile: $tmpFile")
         val pdf = ParcelFileDescriptor.open(

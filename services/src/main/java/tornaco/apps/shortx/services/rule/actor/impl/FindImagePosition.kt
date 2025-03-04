@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.rule.actor.impl
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Point
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.forKey
@@ -52,7 +53,13 @@ object FindImagePosition : Actor {
 
         val cv = shortXContext.cv.requireCV()
         logger.d("cv: $cv")
-        val point = cv.findImage(image, template)
+        val point: Point? = with(OcrDetect) {
+            image.useSharedPFD { imagePFD ->
+                template.useSharedPFD { templatePFD ->
+                    cv.findImagePFD(imagePFD, templatePFD)
+                }
+            }
+        }
         logger.d("point: $point")
 
         params.contextData.add(
