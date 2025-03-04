@@ -2,12 +2,15 @@ package tornaco.apps.shortx.services.xposed.hooks.hook.systemui
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.graphics.Rect
+import android.os.ParcelFileDescriptor
 import tornaco.apps.shortx.core.cv.ICV
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.util.ExtAppClassHelper
 import util.Reflections
+import java.io.FileDescriptor
 
 // TODO Report error.
 // java.lang.NoSuchMethodError:
@@ -60,5 +63,32 @@ class CVImpl(private val context: Context) : ICV.Stub() {
             logger.e(it, "findPointsByColor")
             emptyList()
         }
+    }
+
+    override fun findImagePFD(
+        imagePFD: ParcelFileDescriptor,
+        templatePFD: ParcelFileDescriptor
+    ): Point? {
+        val image = BitmapFactory.decodeFileDescriptor(imagePFD.fileDescriptor)
+        val template = BitmapFactory.decodeFileDescriptor(templatePFD.fileDescriptor)
+        logger.d("findImagePFD, image: $image, template: $template")
+        val res = findImage(image, template)
+        runCatching { image.recycle() }
+        runCatching { template.recycle() }
+        return res
+    }
+
+    override fun findPointsByColorPFD(
+        pfd: ParcelFileDescriptor,
+        color: Int,
+        threshold: Int,
+        rect: Rect?
+    ): List<Point> {
+        val fd: FileDescriptor = pfd.fileDescriptor
+        val bitmap = BitmapFactory.decodeFileDescriptor(fd)
+        logger.d("findPointsByColorPFD, bitmap: $bitmap")
+        val res = findPointsByColor(bitmap, color, threshold, rect)
+        runCatching { bitmap.recycle() }
+        return res
     }
 }
