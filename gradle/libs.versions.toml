@@ -1,7 +1,7 @@
 [versions]
 accompanist = "0.36.0"
 activity-compose = "1.10.1"
-agp = "8.7.3"
+agp = "8.9.0"
 apksig = "8.7.3"
 app-update = "2.1.0"
 biometric = "1.4.0-alpha02"
