@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+    <ManuallySuppressedIssues>
+        <ID>LongMethod:SystemFactSelectHandler.kt$@Composable fun systemFactSelectHandler</ID>
+    </ManuallySuppressedIssues>
+    <CurrentIssues>
+        <!-- 这里是自动生成的当前存在的问题 -->
+        <ID>LongMethod:SystemFactSelectHandler.kt$@Composable fun systemFactSelectHandler(addFact:
+            (Fact) -> Unit): (FactSelectSource) -> Boolean
+        </ID>
+        <ID>ComplexMethod:SystemFactSelectHandler.kt$@Composable fun
+            systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolean
+        </ID>
+        <ID>TooManyFunctions:FactSelectHandler.kt$FactSelectHandler.kt</ID>
+        <!-- 更多问题... -->
+    </CurrentIssues>
+</SmellBaseline> 

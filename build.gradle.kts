@@ -35,6 +35,7 @@ plugins {
     alias(libs.plugins.kover) apply false
 
     alias(libs.plugins.compose.compiler) apply false
+    alias(libs.plugins.detekt)
 
     id("com.google.gms.google-services") version "4.4.2" apply false
     id("com.google.firebase.crashlytics") version "3.0.2" apply false
@@ -115,6 +116,20 @@ subprojects {
             sourceCompatibility = androidSourceCompatibility
             targetCompatibility = androidTargetCompatibility
         }
+    }
+
+    apply(plugin = rootProject.libs.plugins.detekt.get().pluginId)
+    detekt {
+        buildUponDefaultConfig = true // 在默认配置基础上自定义
+        allRules = false // 不启用所有规则
+        config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+        baseline = file("$rootDir/config/detekt/baseline.xml")
+    }
+
+    dependencies {
+        detektPlugins(rootProject.libs.detekt.formatting)
+        // 添加Compose规则集
+        detektPlugins(rootProject.libs.detekt.compose)
     }
 
     project.afterEvaluate {
