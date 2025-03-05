@@ -10,6 +10,7 @@ import tornaco.apps.shortx.ui.addrule.fact.mapper.imageVectorForFact
 import tornaco.apps.shortx.ui.addrule.fact.mapper.labelAndDescriptionForFactSelector
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.systemFactSelectHandler
+import tornaco.apps.shortx.ui.addrule.fact.systemFactSelectHandler2
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
@@ -98,12 +99,14 @@ fun SystemFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: 
         FactCategoryTitle(FactCategory.System)
     }
 
-    val itemSelected = systemFactSelectHandler(setFact)
+    val itemSelected1 = systemFactSelectHandler(setFact)
+    val itemSelected2 = systemFactSelectHandler2(setFact)
 
     SelectorList(
         items = items,
-        itemSelected = { it ->
-            itemSelected(FactSelectSource.FromClass(it))
+        itemSelected = {
+            val src = FactSelectSource.FromClass(it)
+            itemSelected1(src) || itemSelected2(src)
         }
     )
 }

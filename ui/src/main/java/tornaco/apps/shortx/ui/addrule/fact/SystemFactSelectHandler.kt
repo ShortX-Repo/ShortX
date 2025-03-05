@@ -8,43 +8,30 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.core.text.isDigitsOnly
 import tornaco.apps.shortx.core.alarm.toLocalTime
-import tornaco.apps.shortx.core.platform.PackageNames
-import tornaco.apps.shortx.core.proto.common.CallState
-import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.fact.SunRise
 import tornaco.apps.shortx.core.shortXManager
-import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.fact.mapper.factLabelKey
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.selector.AdvancedKeyEventSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.AlarmSelector
-import tornaco.apps.shortx.ui.addrule.fact.selector.AppOpSelectorData
-import tornaco.apps.shortx.ui.addrule.fact.selector.AppOpSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.BTDeviceSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.CombineKeyEventSelectorActivity
 import tornaco.apps.shortx.ui.addrule.fact.selector.EdgeGestureSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.FixedPeriodSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
-import tornaco.apps.shortx.ui.addrule.fact.selector.NFCTagSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.OnOffAnyStateSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.PeriodSelector
-import tornaco.apps.shortx.ui.addrule.fact.selector.ScreenOnTimeSelectorDialog
-import tornaco.apps.shortx.ui.addrule.fact.selector.SystemSettingsUrlSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.WifiSSIDSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAdvancedKeyEventSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAlarmSelectorState
-import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAppOpSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberBTDeviceSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberEdgeGestureSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberFixedInPeriodSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberKeyEventSelectorState
-import tornaco.apps.shortx.ui.addrule.fact.selector.rememberNFCTagSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberOnOffAnyStateSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberRandomInPeriodSelectorState
-import tornaco.apps.shortx.ui.addrule.fact.selector.rememberScreenOnTimeSelectorState
-import tornaco.apps.shortx.ui.addrule.fact.selector.rememberSystemSettingsUrlSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberWifiSSIDSelectorState
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
@@ -52,10 +39,8 @@ import tornaco.apps.shortx.ui.base.InputValidateResult
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
-import tornaco.apps.shortx.ui.base.RegexTextInputDialog
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
-import tornaco.apps.shortx.ui.base.rememberRegexTextInputState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import java.time.LocalTime
 
@@ -258,224 +243,6 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     )
     TextInputDialog(state = batteryLevelSelectorState)
 
-    val batteryTempSelectorState = rememberTextInputState(
-        title = LocalI18N.current["ui.fact.battery.temp.changed"],
-        message = LocalI18N.current["ui.fact.battery.temp.changed.temp"],
-        inputValidator = {
-            (it.isNotEmpty() && ((it.toFloatOrNull() ?: 0f) <= 100f)).select(
-                InputValidateResult.OK,
-                InputValidateResult.Error("")
-            )
-        },
-        showSymbolButton = false,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        onSelected = { levelString ->
-            val level = levelString.toFloatOrNull()
-            level?.let {
-                addFact(Fact.BatteryTemperatureChanged(temp = it))
-            }
-        }
-    )
-    TextInputDialog(state = batteryTempSelectorState)
-
-    val broadcastSelectorState = rememberTextInputState(
-        title = LocalI18N.current["ui.fact.broadcast"],
-        message = LocalI18N.current["ui.common.action"],
-        showSymbolButton = false,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-        onSelected = { actionString ->
-            addFact(Fact.Broadcast(actions = listOf(actionString)))
-        }
-    )
-    TextInputDialog(state = broadcastSelectorState)
-
-
-    val mediaInsertSelectorState = rememberRegexTextInputState(
-        title = LocalI18N.current["ui.fact.media.insert"],
-        message = "${LocalI18N.current["ui.fact.media.insert.summary", mapOf("mediaPkgName" to PackageNames.mediaProvider)]} \n\n ${LocalI18N.current["ui.fact.media.insert.input.path"]}",
-        showSymbolButton = false,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-        onSelected = { pathString, options ->
-            addFact(
-                Fact.MediaStoreInsert(
-                    filterPathRegex = pathString.fallbackOnEmpty(".*"),
-                    matchOptions = options
-                )
-            )
-        }
-    )
-    RegexTextInputDialog(state = mediaInsertSelectorState)
-
-    val mediaDeleteSelectorState = rememberRegexTextInputState(
-        title = LocalI18N.current["ui.fact.media.delete"],
-        message = "${LocalI18N.current["ui.fact.media.delete.summary", mapOf("mediaPkgName" to PackageNames.mediaProvider)]} \n\n ${LocalI18N.current["ui.fact.media.delete.input.path"]}",
-        showSymbolButton = false,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-        onSelected = { pathString, options ->
-            addFact(
-                Fact.MediaStoreDelete(
-                    filterPathRegex = pathString.fallbackOnEmpty(".*"),
-                    matchOptions = options
-                )
-            )
-        }
-    )
-    RegexTextInputDialog(state = mediaDeleteSelectorState)
-
-    val usbDeviceAttachState = rememberRegexTextInputState(
-        title = LocalI18N.current["ui.fact.usb.device.attached"],
-        message = LocalI18N.current["ui.fact.usb.device.name"],
-        showSymbolButton = false,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-        onSelected = { pathString, options ->
-            addFact(
-                Fact.UsbDeviceAttached(
-                    deviceName = pathString.fallbackOnEmpty(".*"),
-                    deviceNameRegexMatchOptions = options
-                )
-            )
-        }
-    )
-    RegexTextInputDialog(state = usbDeviceAttachState)
-
-    val usbDeviceDetachState = rememberRegexTextInputState(
-        title = LocalI18N.current["ui.fact.usb.device.detached"],
-        message = LocalI18N.current["ui.fact.usb.device.name"],
-        showSymbolButton = false,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-        onSelected = { pathString, options ->
-            addFact(
-                Fact.UsbDeviceDetached(
-                    deviceName = pathString.fallbackOnEmpty(".*"),
-                    deviceNameRegexMatchOptions = options
-                )
-            )
-        }
-    )
-    RegexTextInputDialog(state = usbDeviceDetachState)
-
-    val onStartOpSelectorState = rememberAppOpSelectorState(
-        title = LocalI18N.current["ui.fact.op.start"],
-        message = null,
-        onSelected = {
-            addFact(Fact.OnStartOp(apps = it.appList, pkgSets = it.pkgSetList, codes = it.opCodes))
-        })
-    AppOpSelectorDialog(state = onStartOpSelectorState)
-
-    val onFinishOpSelectorState = rememberAppOpSelectorState(
-        title = LocalI18N.current["ui.fact.op.finish"],
-        message = null,
-        onSelected = {
-            addFact(Fact.OnFinishOp(apps = it.appList, pkgSets = it.pkgSetList, codes = it.opCodes))
-        })
-    AppOpSelectorDialog(state = onFinishOpSelectorState)
-
-    val systemSettingsChangeDialogState = rememberSystemSettingsUrlSelectorState(onSelected = {
-        addFact(it)
-    })
-    SystemSettingsUrlSelectorDialog(state = systemSettingsChangeDialogState)
-
-    val callStateSelectState =
-        rememberMenuDialogState<String>(
-            title = LocalI18N.current["ui.fact.call.state.changed"],
-            menuItems =
-                CallState.entries.filterNot { it == CallState.UNRECOGNIZED }.map {
-                    MenuDialogItem(
-                        it.name,
-                        LocalI18N.current["ui.fact.call.state.${it.name.lowercase()}"],
-                    )
-                }, onItemSelected = { _, id ->
-                addFact(Fact.CallStateChanged(callState = CallState.valueOf(id)))
-            }
-        )
-    MenuDialog(state = callStateSelectState)
-
-    val clipboardRegexDialogState = rememberRegexTextInputState(
-        title = LocalI18N.current["ui.fact.clipboard.content.changed"],
-        message = LocalI18N.current["ui.fact.clipboard.content.changed.regex"],
-        inputValidator = {
-            InputValidateResult.OK
-        },
-        onSelected = { text, options ->
-            addFact(Fact.ClipboardContentChanged(content = text, options = options))
-        }
-    )
-    RegexTextInputDialog(state = clipboardRegexDialogState)
-
-    val screenRotateSelectorState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.fact.screen.rotate"],
-        menuItems = ScreenRotateDegree.entries.filterNot { it == ScreenRotateDegree.UNRECOGNIZED }
-            .map {
-                MenuDialogItem(it.name, title = LocalI18N.current[it.factLabelKey()])
-            },
-        onItemSelected = { data, id ->
-            val degree = ScreenRotateDegree.valueOf(id)
-            addFact(Fact.ScreenRotate(degree = degree))
-        }
-    )
-    MenuDialog(state = screenRotateSelectorState)
-
-    val screenOnTimeState = rememberScreenOnTimeSelectorState {
-        addFact(it)
-    }
-    ScreenOnTimeSelectorDialog(screenOnTimeState)
-
-    val windowRotateSelectorState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.fact.window.rotate"],
-        menuItems = ScreenRotateDegree.entries.filterNot { it == ScreenRotateDegree.UNRECOGNIZED }
-            .map {
-                MenuDialogItem(it.name, title = LocalI18N.current[it.factLabelKey()])
-            },
-        onItemSelected = { data, id ->
-            val degree = ScreenRotateDegree.valueOf(id)
-            addFact(Fact.WindowRotationChange(degree = degree))
-        }
-    )
-    MenuDialog(state = windowRotateSelectorState)
-
-
-    val imeVisibilitySelectorState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.fact.ime.visibility.change"],
-        menuItems = listOf(
-            MenuDialogItem(
-                id = true.toString(),
-                title = LocalI18N.current["ui.fact.ime.visibility.show"],
-            ),
-            MenuDialogItem(
-                id = false.toString(),
-                title = LocalI18N.current["ui.fact.ime.visibility.hide"],
-            ),
-        ),
-        onItemSelected = { data, id ->
-            val isShow = id.toBoolean()
-            addFact(Fact.IMEVisibilityChange(isShown = isShow))
-        }
-    )
-    MenuDialog(state = imeVisibilitySelectorState)
-
-    val connectedWifiSignalState = rememberTextInputState(
-        title = LocalI18N.current["ui.fact.wifi.signal.changed"],
-        message = LocalI18N.current["ui.fact.wifi.signal.changed.message", mapOf(
-            "max" to shortXManager.getMaxSignalLevel().toString()
-        )]
-    ) {
-        addFact(Fact.ConnectedWifiSignalLevelChanged(level = it.toIntOrNull() ?: 0, rssi = 0))
-    }
-    TextInputDialog(state = connectedWifiSignalState)
-
-    val nfcTagSelectorDialogState = rememberNFCTagSelectorState {
-        addFact(Fact.NFCTagDiscover(uid = it))
-    }
-    NFCTagSelectorDialog(state = nfcTagSelectorDialogState)
-
-    val logcatRegexDialogState = rememberRegexTextInputState(
-        title = LocalI18N.current["ui.fact.logcat"],
-        message = null
-    ) { str, op ->
-        addFact(Fact.Logcat(regex = str, regexMatchOptions = op))
-    }
-    RegexTextInputDialog(state = logcatRegexDialogState)
-
     return { source ->
         when (source.clazz) {
             Fact.CombineKeyEvent::class -> {
@@ -520,11 +287,6 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
             Fact.ScreenOn::class -> {
                 addFact(Fact.ScreenOn())
-                true
-            }
-
-            Fact.ScreenOnTime::class -> {
-                screenOnTimeState.show(source.getFactAs())
                 true
             }
 
@@ -578,11 +340,6 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
                 wifiDisconnectedFromSelectorState.show(source.getFactAs<Fact.WifiDisconnectedFrom>()?.ssidList?.let {
                     if (it.isEmpty()) null else it[0]
                 })
-                true
-            }
-
-            Fact.ConnectedWifiSignalLevelChanged::class -> {
-                connectedWifiSignalState.show(source.getFactAs<Fact.ConnectedWifiSignalLevelChanged>()?.level?.toString())
                 true
             }
 
@@ -650,11 +407,6 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
                 true
             }
 
-            Fact.BatteryTemperatureChanged::class -> {
-                batteryTempSelectorState.show(source.getFactAs<Fact.BatteryTemperatureChanged>()?.temp?.toString())
-                true
-            }
-
             Fact.ChargerPlug::class -> {
                 addFact(Fact.ChargerPlug())
                 true
@@ -662,13 +414,6 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
             Fact.ChargerUnplug::class -> {
                 addFact(Fact.ChargerUnplug())
-                true
-            }
-
-            Fact.Broadcast::class -> {
-                broadcastSelectorState.show(source.getFactAs<Fact.Broadcast>()?.actions?.let {
-                    if (it.isEmpty()) null else it[0]
-                })
                 true
             }
 
@@ -682,110 +427,9 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
                 true
             }
 
-            Fact.MediaStoreInsert::class -> {
-                mediaInsertSelectorState.show(
-                    initialValue = source.getFactAs<Fact.MediaStoreInsert>()?.filterPathRegex,
-                    options = source.getFactAs<Fact.MediaStoreInsert>()?.matchOptions
-                )
-                true
-            }
-
-            Fact.MediaStoreDelete::class -> {
-                mediaDeleteSelectorState.show(
-                    initialValue = source.getFactAs<Fact.MediaStoreDelete>()?.filterPathRegex,
-                    options = source.getFactAs<Fact.MediaStoreDelete>()?.matchOptions
-                )
-                true
-            }
-
-            Fact.OnStartOp::class -> {
-                onStartOpSelectorState.show(
-                    AppOpSelectorData(
-                        source.getFactAs<Fact.OnStartOp>()?.apps ?: emptyList(),
-                        source.getFactAs<Fact.OnStartOp>()?.pkgSets ?: emptyList(),
-                        source.getFactAs<Fact.OnStartOp>()?.codes ?: emptyList(),
-                    )
-                )
-                true
-            }
-
-            Fact.OnFinishOp::class -> {
-                onFinishOpSelectorState.show(
-                    AppOpSelectorData(
-                        source.getFactAs<Fact.OnFinishOp>()?.apps ?: emptyList(),
-                        source.getFactAs<Fact.OnFinishOp>()?.pkgSets ?: emptyList(),
-                        source.getFactAs<Fact.OnFinishOp>()?.codes ?: emptyList(),
-                    )
-                )
-                true
-            }
-
-            Fact.SystemSettingsChanged::class -> {
-                systemSettingsChangeDialogState.show(
-                    source.getFactAs()
-                )
-                true
-            }
-
-            Fact.CallStateChanged::class -> {
-                callStateSelectState.show()
-                true
-            }
-
-            Fact.ClipboardContentChanged::class -> {
-                clipboardRegexDialogState.show(
-                    initialValue = source.getFactAs<Fact.ClipboardContentChanged>()?.content ?: "",
-                    options = source.getFactAs<Fact.ClipboardContentChanged>()?.options
-                )
-                true
-            }
 
             Fact.HeadsetPlug::class -> {
                 headsetPlugMenuState.show()
-                true
-            }
-
-            Fact.ScreenRotate::class -> {
-                screenRotateSelectorState.show()
-                true
-            }
-
-            Fact.WindowRotationChange::class -> {
-                windowRotateSelectorState.show()
-                true
-            }
-
-            Fact.IMEVisibilityChange::class -> {
-                imeVisibilitySelectorState.show()
-                true
-            }
-
-            Fact.NFCTagDiscover::class -> {
-                nfcTagSelectorDialogState.show()
-                true
-            }
-
-            Fact.Logcat::class -> {
-                logcatRegexDialogState.show(
-                    initialValue = source.getFactAs<Fact.Logcat>()?.regex ?: "",
-                    options = source.getFactAs<Fact.Logcat>()?.regexMatchOptions
-                )
-                true
-            }
-
-            Fact.UsbDeviceAttached::class -> {
-                usbDeviceAttachState.show(
-                    initialValue = source.getFactAs<Fact.UsbDeviceAttached>()?.deviceName ?: "",
-                    options = source.getFactAs<Fact.UsbDeviceAttached>()?.deviceNameRegexMatchOptions
-                )
-                true
-            }
-
-            Fact.UsbDeviceDetached::class -> {
-                usbDeviceDetachState.show(
-                    initialValue = source.getFactAs<Fact.UsbDeviceDetached>()?.deviceName ?: "",
-                    options = source.getFactAs<Fact.UsbDeviceDetached>()?.deviceNameRegexMatchOptions
-                )
                 true
             }
 

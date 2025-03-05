@@ -55,7 +55,6 @@ import tornaco.apps.shortx.ui.base.LargeTitle
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MD3Badge
-import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.NoteRow
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
@@ -179,6 +178,19 @@ private fun FactItem(
                     composeLogger.d("systemFactSelectHandler: $this")
                 })
         },
+        systemFactSelectHandler2 { newFact ->
+            composeLogger.d("systemFactSelectHandler2: $newFact")
+            handler.addFact(
+                newFact.clone(
+                    id = currentFact.id,
+                    note = currentFact.note,
+                    tag = currentFact.tag,
+                    isDisabled = currentFact.isDisabled,
+                    customContextDataKey = currentFact.customContextDataKey
+                ).apply {
+                    composeLogger.d("systemFactSelectHandler2: $this")
+                })
+        },
         sensorFactSelectHandler { newFact ->
             composeLogger.d("sensorFactSelectHandler: $newFact")
             handler.addFact(
@@ -277,12 +289,13 @@ private fun FactItem(
                         )]]
                     )
                 TipDialog(state = factTagContextDataDialogState)
-                MD3Badge(modifier = Modifier
-                    .padding(start = 68.dp, end = 16.dp)
-                    .clip(ShortXCardRoundedCornerShape)
-                    .clickable {
-                        factTagContextDataDialogState.show()
-                    },
+                MD3Badge(
+                    modifier = Modifier
+                        .padding(start = 68.dp, end = 16.dp)
+                        .clip(ShortXCardRoundedCornerShape)
+                        .clickable {
+                            factTagContextDataDialogState.show()
+                        },
                     text = {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             RemixIcon(
