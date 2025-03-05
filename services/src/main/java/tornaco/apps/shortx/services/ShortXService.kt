@@ -484,7 +484,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.media.onMediaStoreInsert(uri, path)
         }
 
-        override fun onMediaStoreDelete(uri: Uri, path: String) {
+        override fun onMediaStoreDelete(uri: Uri, path: String?) {
             shortXContext.media.onMediaStoreDelete(uri, path)
         }
 

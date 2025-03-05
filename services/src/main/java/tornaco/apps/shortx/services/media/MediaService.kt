@@ -44,7 +44,7 @@ class MediaService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         }
     }
 
-    fun onMediaStoreDelete(uri: Uri, path: String) {
+    fun onMediaStoreDelete(uri: Uri, path: String?) {
         kotlin.runCatching {
             logger.logOnDebug("onMediaStoreDelete: $uri -- $path")
 
@@ -62,7 +62,7 @@ class MediaService(shortXContext: ShortXContext) : SystemService(shortXContext, 
                     ) {
                         mapOf(
                             ContextDataMapping.MediaStoreDelete.mediaUri.name to uri.toString(),
-                            ContextDataMapping.MediaStoreDelete.mediaFilePath.name to path
+                            ContextDataMapping.MediaStoreDelete.mediaFilePath.name to path.orEmpty()
                         )
                     }
                 }

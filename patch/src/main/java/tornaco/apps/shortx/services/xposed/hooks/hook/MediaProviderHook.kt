@@ -37,8 +37,8 @@ object MediaProviderHook {
             beforeMethod(
                 lpparam.classLoader.mediaDocumentProviderClass(), onMediaStoreDelete
             ) { param ->
-                val mediaUri = getUriFromParams(param)
-                val path = FileHelper.getRealPathFromURI(param.args[0] as Context, mediaUri)
+                val mediaUri: Uri? = getUriFromParams(param)
+                val path: String? = FileHelper.getRealPathFromURI(param.args[0] as Context, mediaUri)
                 logger.logOnDebug("onMediaStoreDelete: $mediaUri --- $path")
                 mediaUri?.let {
                     ShortXManagerNative.shortX?.onMediaStoreDelete(mediaUri, path)
