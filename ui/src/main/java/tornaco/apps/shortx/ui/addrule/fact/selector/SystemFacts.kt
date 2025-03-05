@@ -71,6 +71,7 @@ fun SystemFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: 
         Fact.VPNDisconnected::class,
 
         Fact.MediaStoreInsert::class,
+        Fact.MediaStoreDelete::class,
         Fact.OnStartOp::class,
         Fact.OnFinishOp::class,
         Fact.SystemSettingsChanged::class,

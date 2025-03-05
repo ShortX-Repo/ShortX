@@ -306,6 +306,22 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     )
     RegexTextInputDialog(state = mediaInsertSelectorState)
 
+    val mediaDeleteSelectorState = rememberRegexTextInputState(
+        title = LocalI18N.current["ui.fact.media.delete"],
+        message = "${LocalI18N.current["ui.fact.media.delete.summary", mapOf("mediaPkgName" to PackageNames.mediaProvider)]} \n\n ${LocalI18N.current["ui.fact.media.delete.input.path"]}",
+        showSymbolButton = false,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+        onSelected = { pathString, options ->
+            addFact(
+                Fact.MediaStoreDelete(
+                    filterPathRegex = pathString.fallbackOnEmpty(".*"),
+                    matchOptions = options
+                )
+            )
+        }
+    )
+    RegexTextInputDialog(state = mediaDeleteSelectorState)
+
     val usbDeviceAttachState = rememberRegexTextInputState(
         title = LocalI18N.current["ui.fact.usb.device.attached"],
         message = LocalI18N.current["ui.fact.usb.device.name"],
@@ -360,14 +376,15 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     SystemSettingsUrlSelectorDialog(state = systemSettingsChangeDialogState)
 
     val callStateSelectState =
-        rememberMenuDialogState<String>(title = LocalI18N.current["ui.fact.call.state.changed"],
+        rememberMenuDialogState<String>(
+            title = LocalI18N.current["ui.fact.call.state.changed"],
             menuItems =
-            CallState.entries.filterNot { it == CallState.UNRECOGNIZED }.map {
-                MenuDialogItem(
-                    it.name,
-                    LocalI18N.current["ui.fact.call.state.${it.name.lowercase()}"],
-                )
-            }, onItemSelected = { _, id ->
+                CallState.entries.filterNot { it == CallState.UNRECOGNIZED }.map {
+                    MenuDialogItem(
+                        it.name,
+                        LocalI18N.current["ui.fact.call.state.${it.name.lowercase()}"],
+                    )
+                }, onItemSelected = { _, id ->
                 addFact(Fact.CallStateChanged(callState = CallState.valueOf(id)))
             }
         )
@@ -669,6 +686,14 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
                 mediaInsertSelectorState.show(
                     initialValue = source.getFactAs<Fact.MediaStoreInsert>()?.filterPathRegex,
                     options = source.getFactAs<Fact.MediaStoreInsert>()?.matchOptions
+                )
+                true
+            }
+
+            Fact.MediaStoreDelete::class -> {
+                mediaDeleteSelectorState.show(
+                    initialValue = source.getFactAs<Fact.MediaStoreDelete>()?.filterPathRegex,
+                    options = source.getFactAs<Fact.MediaStoreDelete>()?.matchOptions
                 )
                 true
             }
