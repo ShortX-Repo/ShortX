@@ -36,6 +36,7 @@ import tornaco.apps.shortx.core.http.toHttpRequestBody
 import tornaco.apps.shortx.core.http.toHttpResponseData
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.logOnDebug
+import tornaco.apps.shortx.core.media.FileRow
 import tornaco.apps.shortx.core.notification.INotificationPoster
 import tornaco.apps.shortx.core.ocr.IOCR
 import tornaco.apps.shortx.core.os.ICancellationSignal
@@ -147,7 +148,8 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
     }
 
     private fun newBinderProxy(orig: Binder): tornaco.apps.shortx.services.util.BinderProxy {
-        return tornaco.apps.shortx.services.util.BinderProxy(orig,
+        return tornaco.apps.shortx.services.util.BinderProxy(
+            orig,
             object : tornaco.apps.shortx.services.util.BinderProxy.InvocationHandler {
                 override fun onTransact(
                     code: Int,
@@ -480,12 +482,12 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             )
         }
 
-        override fun onMediaStoreInsert(uri: Uri, path: String) {
-            shortXContext.media.onMediaStoreInsert(uri, path)
+        override fun onMediaStoreInsert(row: FileRow) {
+            shortXContext.media.onMediaStoreInsert(row)
         }
 
-        override fun onMediaStoreDelete(uri: Uri, path: String?) {
-            shortXContext.media.onMediaStoreDelete(uri, path)
+        override fun onMediaStoreDelete(row: FileRow) {
+            shortXContext.media.onMediaStoreDelete(row)
         }
 
         override fun executeShellCommand(

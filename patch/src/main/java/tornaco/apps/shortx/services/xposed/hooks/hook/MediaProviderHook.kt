@@ -1,19 +1,20 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import android.content.ContentUris
-import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
-import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.ShortXManagerNative
-import tornaco.apps.shortx.core.logOnDebug
-import tornaco.apps.shortx.core.platform.Classes.mediaDocumentProviderClass
-import tornaco.apps.shortx.core.platform.Methods.onMediaStoreDelete
-import tornaco.apps.shortx.core.platform.Methods.onMediaStoreInsert
+import tornaco.apps.shortx.core.media.FileRow
+import tornaco.apps.shortx.core.platform.Classes.mediaProviderClass
+import tornaco.apps.shortx.core.platform.Methods.onCreate
+import tornaco.apps.shortx.core.platform.Methods.onDelete
+import tornaco.apps.shortx.core.platform.Methods.onInsert
 import tornaco.apps.shortx.core.platform.PackageNames.mediaProvider
-import tornaco.apps.shortx.core.util.FileHelper
 import tornaco.apps.shortx.core.util.Logger
+import util.Reflections
+import java.lang.reflect.Method
+import java.lang.reflect.Proxy
 
 // Happen on Media provider process
 object MediaProviderHook {
@@ -21,38 +22,111 @@ object MediaProviderHook {
 
     fun hook(lpparam: XC_LoadPackage.LoadPackageParam) {
         if (lpparam.packageName == mediaProvider) {
-            // static void onMediaStoreInsert(Context context, String volumeName, int type, long id)
-            afterMethod(
-                lpparam.classLoader.mediaDocumentProviderClass(), onMediaStoreInsert
-            ) { param ->
-                val mediaUri = getUriFromParams(param)
-                val path = FileHelper.getRealPathFromURI(param.args[0] as Context, mediaUri)
-                logger.logOnDebug("onMediaStoreInsert: $mediaUri --- $path")
-                mediaUri?.let {
-                    logger.d("onMediaStoreInsert, shortx: ${ShortXManagerNative.shortX}")
-                    ShortXManagerNative.shortX?.onMediaStoreInsert(mediaUri, path)
-                }
-            }
-
             beforeMethod(
-                lpparam.classLoader.mediaDocumentProviderClass(), onMediaStoreDelete
+                lpparam.classLoader.mediaProviderClass(), onCreate
             ) { param ->
-                val mediaUri: Uri? = getUriFromParams(param)
-                val path: String? = FileHelper.getRealPathFromURI(param.args[0] as Context, mediaUri)
-                logger.logOnDebug("onMediaStoreDelete: $mediaUri --- $path")
-                mediaUri?.let {
-                    ShortXManagerNative.shortX?.onMediaStoreDelete(mediaUri, path)
+                logger.w("onCreate.")
+                // import com.android.providers.media.DatabaseHelper
+                //import com.android.providers.media.DatabaseHelper.OnFilesChangeListener
+                //import com.android.providers.media.dao.FileRow
+                val mFilesListener = Reflections.getObjectField(
+                    param.thisObject,
+                    "mFilesListener"
+                )
+                logger.w("mFilesListener: $mFilesListener")
+
+                val onFilesChangeListenerClass = Reflections.findClass(
+                    "com.android.providers.media.DatabaseHelper.OnFilesChangeListener",
+                    lpparam.classLoader
+                )
+                val stubListener: Any? = Proxy.newProxyInstance(
+                    lpparam.classLoader,
+                    arrayOf(onFilesChangeListenerClass)
+                ) { _: Any?, method: Method, args: Array<Any?>? ->
+                    return@newProxyInstance if ("toString" == method.name) {
+                        "StubOnFilesChangeListener"
+                    } else {
+                        logger.d("Method called: $method (${args?.map { it }})")
+                        if (onDelete == method.name) {
+                            handleOnDelete(args)
+                        }
+                        if (onInsert == method.name) {
+                            handleOnInsert(args)
+                        }
+                        if (args != null) {
+                            Reflections.callMethod(
+                                mFilesListener,
+                                method.name,
+                                *args
+                            )
+                        } else {
+                            Reflections.callMethod(
+                                mFilesListener,
+                                method.name
+                            )
+                        }
+                    }
                 }
+                logger.w("stubListener: $stubListener")
+
+                // Install.
+                Reflections.setObjectField(param.thisObject, "mFilesListener", stubListener)
+                logger.w("StubOnFilesChangeListener installed")
             }
         }
     }
 
+    private fun handleOnInsert(args: Array<Any?>?) {
+        runCatching {
+            val fileRow = mapToFileRow(args)
+            fileRow?.let {
+                logger.d("handleOnInsert, shortx: ${ShortXManagerNative.shortX}")
+                ShortXManagerNative.shortX?.onMediaStoreInsert(it)
+            }
+        }.onFailure {
+            logger.e(it, "handleOnInsert")
+        }
+    }
 
-    private fun getUriFromParams(param: XC_MethodHook.MethodHookParam): Uri? = runCatching {
-        val volumeName = param.args[1] as String
-        val type = param.args[2] as Int
-        val id = param.args[3] as Long
+    private fun handleOnDelete(args: Array<Any?>?) {
+        runCatching {
+            val fileRow = mapToFileRow(args)
+            fileRow?.let {
+                logger.d("handleOnDelete, shortx: ${ShortXManagerNative.shortX}")
+                ShortXManagerNative.shortX?.onMediaStoreDelete(it)
+            }
+        }.onFailure {
+            logger.e(it, "handleOnDelete")
+        }
+    }
 
+    private fun mapToFileRow(args: Array<Any?>?): FileRow? {
+        return runCatching {
+            if (args == null) return null
+            // @NonNull FileRow deletedRow
+            val deletedRow = args[1]
+            val id = Reflections.callMethod(deletedRow, "getId") as Long
+            val type = Reflections.callMethod(deletedRow, "getMediaType") as Int
+            val volumeName = Reflections.callMethod(deletedRow, "getVolumeName") as String?
+            val ownerPackageName =
+                Reflections.callMethod(deletedRow, "getOwnerPackageName") as String?
+            val path = Reflections.callMethod(deletedRow, "getPath") as String?
+            val mediaUri: String? = getUriFrom(volumeName, type, id)?.toString()
+            FileRow(
+                id,
+                volumeName.orEmpty(),
+                type,
+                ownerPackageName.orEmpty(),
+                path.orEmpty(),
+                mediaUri
+            )
+        }.getOrElse {
+            logger.e(it, "handleOnDelete")
+            null
+        }
+    }
+
+    private fun getUriFrom(volumeName: String?, type: Int, id: Long): Uri? = runCatching {
         if (MediaStore.VOLUME_INTERNAL == volumeName) return null
 
         val mediaType = when (type) {
@@ -79,7 +153,7 @@ object MediaProviderHook {
         }
         return mediaUri
     }.getOrElse {
-        logger.e(it, "getUriFromParams")
+        logger.e(it, "getUriFrom")
         null
     }
 
