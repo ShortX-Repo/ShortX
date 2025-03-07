@@ -135,7 +135,9 @@ public class KeyCombinationManager {
 
     public void addRule(TwoKeysCombinationRule rule) {
         if (mRules.contains(rule)) {
-            throw new IllegalArgumentException("Rule : " + rule + " already exists.");
+            // throw new IllegalArgumentException("Rule : " + rule + " already exists.");
+            Log.w(TAG, "Rule : " + rule + " already exists.");
+            return;
         }
         mRules.add(rule);
     }

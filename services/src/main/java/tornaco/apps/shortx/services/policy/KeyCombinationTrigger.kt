@@ -46,7 +46,7 @@ class KeyCombinationTrigger(
         }
 
         val disCks = cks.distinct()
-        logger.d("disCks: $disCks")
+        logger.w("disCks: $disCks")
 
         disCks.forEach {
             keyCombinationManager
