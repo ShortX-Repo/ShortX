@@ -94,25 +94,7 @@ object LogInit {
             )
             initLogFile.parentFile?.mkdirs()
 
-            initLogFile.appendText(System.lineSeparator())
-            initLogFile.appendText(System.lineSeparator())
-            initLogFile.appendText("-------------------")
-            initLogFile.appendText(System.lineSeparator())
-            initLogFile.appendText("DEVICE: ${Build.DEVICE}")
-            initLogFile.appendText(System.lineSeparator())
-            initLogFile.appendText("MANUFACTURER: ${Build.MANUFACTURER}")
-            initLogFile.appendText(System.lineSeparator())
-            initLogFile.appendText("ID: ${Build.ID}")
-            initLogFile.appendText(System.lineSeparator())
-            initLogFile.appendText("BRAND: ${Build.BRAND}")
-            initLogFile.appendText(System.lineSeparator())
-            initLogFile.appendText("MODEL: ${Build.MODEL}")
-            initLogFile.appendText(System.lineSeparator())
-            initLogFile.appendText("SDK: ${Build.VERSION.SDK_INT}")
-            initLogFile.appendText(System.lineSeparator())
-            initLogFile.appendText("SHORTX: ${BuildPropInternal.APP_VERSION_NAME} ${BuildPropInternal.APP_VERSION_CODE}")
-            initLogFile.appendText(System.lineSeparator())
-            initLogFile.appendText("-------------------")
+            initLogFile.appendDebugLogHeader()
 
             INIT_LOG_BUFFER.forEach {
                 initLogFile.appendText(it)
@@ -147,4 +129,28 @@ object LogInit {
 
         logger.d("Write success")
     }
+}
+
+fun File.appendDebugLogHeader() {
+    appendText(System.lineSeparator())
+    appendText(System.lineSeparator())
+    appendText("-------------------")
+    appendText(System.lineSeparator())
+    appendText("DEVICE: ${Build.DEVICE}")
+    appendText(System.lineSeparator())
+    appendText("MANUFACTURER: ${Build.MANUFACTURER}")
+    appendText(System.lineSeparator())
+    appendText("ID: ${Build.ID}")
+    appendText(System.lineSeparator())
+    appendText("BRAND: ${Build.BRAND}")
+    appendText(System.lineSeparator())
+    appendText("MODEL: ${Build.MODEL}")
+    appendText(System.lineSeparator())
+    appendText("SDK: ${Build.VERSION.SDK_INT}")
+    appendText(System.lineSeparator())
+    appendText("SHORTX: ${BuildPropInternal.APP_VERSION_NAME} ${BuildPropInternal.APP_VERSION_CODE}")
+    appendText(System.lineSeparator())
+    appendText("-------------------")
+    appendText(System.lineSeparator())
+    appendText(System.lineSeparator())
 }

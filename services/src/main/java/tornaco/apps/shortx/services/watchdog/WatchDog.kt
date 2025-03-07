@@ -19,6 +19,7 @@ import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.ShortXService.shortXContext
 import tornaco.apps.shortx.services.SystemService
+import tornaco.apps.shortx.services.appendDebugLogHeader
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
@@ -89,7 +90,8 @@ class WatchDogService(shortXContext: ShortXContext) :
                 "$method-${DateUtils.formatForFileName(System.currentTimeMillis())}.log"
             )
             logFile.parentFile.mkdirs()
-            logFile.writeText(error.stackTraceToString())
+            logFile.appendDebugLogHeader()
+            logFile.appendText(error.stackTraceToString())
         }.onFailure {
             // Noop...
         }
