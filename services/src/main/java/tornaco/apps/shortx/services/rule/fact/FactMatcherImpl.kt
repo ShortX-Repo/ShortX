@@ -59,6 +59,7 @@ import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.fact.LightSensor
 import tornaco.apps.shortx.core.proto.fact.LocationStatusChanged
 import tornaco.apps.shortx.core.proto.fact.Logcat
+import tornaco.apps.shortx.core.proto.fact.MediaStoreDelete
 import tornaco.apps.shortx.core.proto.fact.MediaStoreInsert
 import tornaco.apps.shortx.core.proto.fact.MethodHook
 import tornaco.apps.shortx.core.proto.fact.MobileDataStatusChanged
@@ -464,6 +465,20 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
         register(MediaStoreInsert::class.java) { actual, rule ->
             val actualN = (actual as MediaStoreInsert)
             val ruleN = (rule as MediaStoreInsert)
+            emptyOrRegexMatch(
+                ruleField = ruleN.filterPath,
+                actualField = actualN.path,
+                options = ruleN.options
+            ) || emptyOrRegexMatch(
+                ruleField = ruleN.filterPath.replace("/sdcard", "/storage/emulated/0"),
+                actualField = actualN.path,
+                options = ruleN.options
+            )
+        }
+
+        register(MediaStoreDelete::class.java) { actual, rule ->
+            val actualN = (actual as MediaStoreDelete)
+            val ruleN = (rule as MediaStoreDelete)
             emptyOrRegexMatch(
                 ruleField = ruleN.filterPath,
                 actualField = actualN.path,
