@@ -37,6 +37,7 @@ object HookStub {
         RuntimeInitHook.hookUncaughtException()
         ContextImplHook.onPackageLoaded()
         // ActivityClientHooks.hook()
+        SystemUIHook.onPackageLoaded()
         CustomHook.hookApp(
             null,
             null,

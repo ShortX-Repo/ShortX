@@ -5,23 +5,18 @@ import android.content.pm.ServiceInfo
 import de.robv.android.xposed.XposedHelpers
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.BuildPropInternal
-import tornaco.apps.shortx.core.ShortXManagerNative
-import tornaco.apps.shortx.core.platform.Classes.statusBarManagerServiceClass
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
-import tornaco.apps.shortx.core.res.AppResources
-import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.res.remixResId
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXService
-import tornaco.apps.shortx.services.android.ServiceHolder
-import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.SystemUIHook
 
 object ComputerEngineHook {
     private val logger = Logger("ShortXHook.ComputerEngineHook")
 
     fun hook(lpparam: XC_LoadPackage.LoadPackageParam) {
-        hookGetServiceInfo(lpparam)
+        // Replaced by TileHook.
+        // hookGetServiceInfo(lpparam)
     }
 
     private fun hookGetServiceInfo(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {

@@ -47,6 +47,7 @@ abstract class GenericTileService : TileService() {
             val resName = Remix.allFlat[it.iconName]
             qsTile.icon = appRes.getIcon(resName)
             qsTile.state = it.isActive.select(Tile.STATE_ACTIVE, Tile.STATE_INACTIVE)
+            qsTile.contentDescription = tileIndex.number.toString()
             qsTile.updateTile()
         }
     }

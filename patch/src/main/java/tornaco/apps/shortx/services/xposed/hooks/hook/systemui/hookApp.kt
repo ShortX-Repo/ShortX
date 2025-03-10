@@ -118,6 +118,8 @@ fun SystemUIHook.hookApp(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runC
             val app: Context = param.thisObject as Context
             logger.d("After onCreate: $app")
 
+            initShortXAppContext(app)
+
             PicassoInitializer.install(
                 app,
                 app.cacheDir,
