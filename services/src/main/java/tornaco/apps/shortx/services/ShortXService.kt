@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.pm.ShortcutInfo
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import android.os.Binder
 import android.os.Bundle
 import android.os.Parcel
@@ -1447,6 +1446,22 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun getCustomSU(): String? {
             return shortXContext.shell.getCustomSU()
+        }
+
+        override fun registerLightBarTransitionsListener(callback: ICallback) {
+            shortXContext.statusbar.registerLightBarTransitionsListener(callback)
+        }
+
+        override fun unregisterLightBarTransitionsListener(callback: ICallback) {
+            shortXContext.statusbar.unregisterLightBarTransitionsListener(callback)
+        }
+
+        override fun setLightBarTransitionsIconsDark(isDark: Boolean) {
+            shortXContext.statusbar.setLightBarTransitionsIconsDark(isDark)
+        }
+
+        override fun isLightBarTransitionsIconsDark(): Boolean {
+            return shortXContext.statusbar.isLightBarTransitionsIconsDark()
         }
 
         override fun addToggle(toggle: ByteArrayWrapper) {

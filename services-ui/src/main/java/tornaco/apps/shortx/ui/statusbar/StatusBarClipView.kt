@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.res.Resources
 import android.widget.FrameLayout
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -32,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.isVisible
 import androidx.lifecycle.AtomicReference
+import com.google.protobuf.BoolValue
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import tornaco.apps.shortx.core.BuildPropInternal
@@ -64,19 +64,22 @@ data class StatusBarChipUiState(
     val id: String = "",
     val text: String = "",
     val icon: String = "",
-    val settings: StatusBarClipUiSettings = StatusBarClipUiSettings.getDefaultInstance()
+    val settings: StatusBarClipUiSettings = StatusBarClipUiSettings.getDefaultInstance(),
+    val isDarkBar: Boolean = false
 )
+
+private val shortx by lazy { shortXManager }
 
 fun StatusBarClipState.toUiState() = StatusBarChipUiState(
     id = id,
     text = text.replaceFuncParameterInputs(funcParameterInputsList)
-        .replaceGlobalVarValues { shortXManager.getAllGlobalVars() }
+        .replaceGlobalVarValues { shortx.getAllGlobalVars() }
         .replaceLocalVarValues(LocalVars.obtain().apply { localVarList.forEach { add(it) } }),
     icon = icon,
-    settings = shortXManager.getStatusbarClipSettings()
+    settings = shortx.getStatusbarClipSettings(),
+    isDarkBar = shortx.isLightBarTransitionsIconsDark()
 )
 
-@OptIn(ExperimentalFoundationApi::class)
 @SuppressLint("ViewConstructor")
 class StatusBarClipView(
     context: Context,
@@ -91,6 +94,16 @@ class StatusBarClipView(
             val settings = StatusBarClipUiSettings.parseFrom(data.byteData)
             uiState.update {
                 it.copy(settings = settings)
+            }
+        }
+    }
+
+    private val barTransListener = object : ICallback.Stub() {
+        override fun receive(data: ByteArrayWrapper) {
+            val isDark = BoolValue.parseFrom(data.byteData).value
+            logger.d("barTransListener, isDark: $isDark")
+            uiState.update {
+                it.copy(isDarkBar = isDark)
             }
         }
     }
@@ -184,6 +197,7 @@ class StatusBarClipView(
         ShortXManagerNative.shortX?.registerStatusbarClipStateListener(clipListener)
         ShortXManagerNative.shortX?.registerStatusbarClipSettingsListener(clipSettingsListener)
         ShortXManagerNative.shortX?.registerGlobalVarObs(globalVarObs)
+        ShortXManagerNative.shortX?.registerLightBarTransitionsListener(barTransListener)
     }
 
     override fun onDetachedFromWindow() {
@@ -191,6 +205,7 @@ class StatusBarClipView(
         ShortXManagerNative.shortX?.unregisterStatusbarClipStateListener(clipListener)
         ShortXManagerNative.shortX?.unregisterStatusbarClipSettingsListener(clipListener)
         ShortXManagerNative.shortX?.unregisterGlobalVarObs(globalVarObs)
+        ShortXManagerNative.shortX?.unregisterLightBarTransitionsListener(barTransListener)
     }
 
     @Composable
@@ -247,13 +262,22 @@ class StatusBarClipView(
                         } else {
                             RemixIcon(
                                 remixName = clipState.icon.removePrefix("remix://"),
-                                modifier = iconModifier
+                                modifier = iconModifier,
+                                tint = if (clipState.isDarkBar) {
+                                    Color.Black
+                                } else {
+                                    Color.White
+                                }
                             )
                         }
                     }
                     if (clipState.text.isNotEmpty()) {
                         val textColor = if (clipState.settings.textColor == DANMU_COLOR_AUTO) {
-                            Color.Unspecified
+                            if (clipState.isDarkBar) {
+                                Color.Black
+                            } else {
+                                Color.White
+                            }
                         } else {
                             clipState.settings.textColor.toComposeColor()
                         }

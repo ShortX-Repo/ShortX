@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.RemoteCallbackList
 import android.view.WindowInsets
+import com.google.protobuf.BoolValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -56,6 +57,9 @@ class StatusBarService(shortXContext: ShortXContext) :
 
     private val statusBarClipStateListeners = RemoteCallbackList<ICallback>()
     private val statusBarClipSettingsListeners = RemoteCallbackList<ICallback>()
+    private val lightBarTransitionsListeners = RemoteCallbackList<ICallback>()
+
+    private var isLightBarTransitionsIconsDark: Boolean = false
 
     private val statusBarClipState = MutableStateFlow(StatusBarClipState.getDefaultInstance())
     private val statusBarClipSettings =
@@ -274,6 +278,28 @@ class StatusBarService(shortXContext: ShortXContext) :
         )
     }
 
+    fun registerLightBarTransitionsListener(callback: ICallback) {
+        synchronized(lightBarTransitionsListeners) {
+            lightBarTransitionsListeners.register(callback)
+        }
+    }
+
+    fun unregisterLightBarTransitionsListener(callback: ICallback) {
+        synchronized(lightBarTransitionsListeners) {
+            lightBarTransitionsListeners.unregister(callback)
+        }
+    }
+
+    fun setLightBarTransitionsIconsDark(isDark: Boolean) {
+        logger.d("setLightBarTransitionsIconsDark: $isDark")
+        this.isLightBarTransitionsIconsDark = isDark
+        notifyLightBarTransitionsChanged(isDark)
+    }
+
+    fun isLightBarTransitionsIconsDark(): Boolean {
+        return isLightBarTransitionsIconsDark
+    }
+
     fun onStatusBarClipClick(id: String) {
         logger.d("onStatusBarClipClick: $id")
         systemServiceScope.launchSafety("onStatusBarClipClick") {
@@ -354,6 +380,21 @@ class StatusBarService(shortXContext: ShortXContext) :
             statusBarClipSettingsListeners.broadcast {
                 runCatching { it.receive(settings.toByteArray().wrap()) }.onFailure {
                     logger.e(it, "notifyStatusBarClipSettingsChanged")
+                }
+            }
+        }
+    }
+
+    private fun notifyLightBarTransitionsChanged(isDark: Boolean) {
+        logger.logOnDebug("notifyLightBarTransitionsChanged: $isDark")
+        synchronized(lightBarTransitionsListeners) {
+            lightBarTransitionsListeners.broadcast {
+                runCatching {
+                    it.receive(
+                        BoolValue.newBuilder().setValue(isDark).build().toByteArray().wrap()
+                    )
+                }.onFailure {
+                    logger.e(it, "notifyLightBarTransitionsChanged")
                 }
             }
         }

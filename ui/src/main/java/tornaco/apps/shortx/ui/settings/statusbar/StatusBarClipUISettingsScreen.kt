@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
@@ -35,6 +36,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -223,7 +225,12 @@ private fun StatusBarClipUISettingsScreen(back: () -> Unit) {
                 }
                 ColorPickerDialog(state = bgColorPickerState)
                 ItemCard(itemLabel = "Background color") {
-                    FilledTonalButton(onClick = { bgColorPickerState.show() }) {}
+                    FilledTonalButton(
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = Color(
+                                state.settings.backgroundColor
+                            )
+                        ), onClick = { bgColorPickerState.show() }) {}
                 }
                 StandardSpacer()
 
@@ -242,7 +249,9 @@ private fun StatusBarClipUISettingsScreen(back: () -> Unit) {
                 }
                 ColorPickerDialog(state = textColorPickerState)
                 ItemCard(itemLabel = "Text color") {
-                    FilledTonalButton(onClick = { textColorPickerState.show() }) {}
+                    FilledTonalButton(
+                        colors = ButtonDefaults.filledTonalButtonColors(containerColor = Color(state.settings.textColor)),
+                        onClick = { textColorPickerState.show() }) {}
                 }
                 StandardSpacer()
             }
