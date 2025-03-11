@@ -12,26 +12,32 @@ import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.os.ScreenCap
+import tornaco.apps.shortx.core.os.SynchronousResultReceiver
+import tornaco.apps.shortx.core.proto.common.ByteArrayList
 import tornaco.apps.shortx.core.proto.common.OcrResult
 import tornaco.apps.shortx.core.proto.common.RectSourcePath
 import tornaco.apps.shortx.core.proto.common.RectSourceRect
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.toAndroidRect
 import tornaco.apps.shortx.core.rule.ProtoAny
+import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.ShortXContext
-import tornaco.apps.shortx.services.abtesting.ABTesting
 import tornaco.apps.shortx.services.data.Dirs
+import tornaco.apps.shortx.services.proto.StringList
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import java.io.File
 import java.io.IOException
+import java.time.Duration
 
 
 object OcrDetect : Actor {
+    private const val DETECT_TIMEOUT_S = 10L
+
     override fun actionsCanHandle(): Class<out Message> {
         return tornaco.apps.shortx.core.proto.action.OcrDetect::class.java
     }
@@ -59,9 +65,9 @@ object OcrDetect : Actor {
         Actor.Res(ocrResultString)
     }
 
-    private suspend fun recognizeText(params: HandleParams, src: ProtoAny): Array<out String> {
+    private suspend fun recognizeText(params: HandleParams, src: ProtoAny): List<String> {
         return with(params) {
-            val ocrResult: Array<String> = withSrcBitmap(
+            val ocrResult: List<String> = withSrcBitmap(
                 src,
                 androidContext,
                 evaluateContext,
@@ -77,24 +83,20 @@ object OcrDetect : Actor {
                         )
                     }
                 }
-
-                requireNotNull(
-                    if (ABTesting.test.isOCRDetectPFDEnabled) {
-                        bitmap.useSharedPFD {
-                            shortXContext.ocr.requireOCR().recognizeTextPFD(
-                                it,
-                                4,
-                                false
-                            )
-                        }
-                    } else {
-                        shortXContext.ocr.requireOCR().recognizeText(
-                            bitmap,
-                            4,
-                            false
-                        )
-                    }
-                ) { "Unable to recognizeText." }
+                val receiver = SynchronousResultReceiver.get()
+                bitmap.useSharedPFD {
+                    shortXContext.ocr.requireOCR().recognizeTextPFD(
+                        it,
+                        4,
+                        false,
+                        receiver
+                    )
+                }
+                val receiverRes =
+                    receiver.awaitResultNoInterrupt(Duration.ofSeconds(DETECT_TIMEOUT_S))
+                val byteRes: ByteArrayWrapper? = receiverRes.getValue(null)
+                val stringList: StringList? = byteRes?.let { StringList.parseFrom(it.byteData) }
+                requireNotNull(stringList?.stringsList?.toList()) { "Unable to recognizeText." }
             }
             logger.logOnDebug("recognizeText, ocrResult: $ocrResult")
             ocrResult
@@ -119,26 +121,23 @@ object OcrDetect : Actor {
                         )
                     }
                 }
-
-                val detectRes = if (ABTesting.test.isOCRDetectPFDEnabled) {
-                    bitmap.useSharedPFD {
-                        shortXContext.ocr.requireOCR().detectPFD(
-                            it,
-                            4,
-                            false
-                        )
-                    }
-                } else {
-                    shortXContext.ocr.requireOCR().detect(
-                        bitmap,
+                val receiver = SynchronousResultReceiver.get()
+                bitmap.useSharedPFD {
+                    shortXContext.ocr.requireOCR().detectPFD(
+                        it,
                         4,
-                        false
+                        false,
+                        receiver
                     )
                 }
-                requireNotNull(detectRes) {
-                    "Unable to detect."
-                }
-            }.mapNotNull { OcrResult.parseFrom(it.byteData) }
+                val receiverRes =
+                    receiver.awaitResultNoInterrupt(Duration.ofSeconds(DETECT_TIMEOUT_S))
+                val byteRes: ByteArrayWrapper? = receiverRes.getValue(null)
+                val byteList: ByteArrayList? = byteRes?.let { ByteArrayList.parseFrom(it.byteData) }
+                requireNotNull(byteList?.dataList?.toList()?.mapNotNull {
+                    OcrResult.parseFrom(it)
+                }) { "Unable to detect." }
+            }
             logger.logOnDebug("detect, ocrResult: $ocrResult")
             ocrResult
         }
@@ -149,7 +148,7 @@ object OcrDetect : Actor {
         androidContext: Context,
         evaluateContext: EvaluateContext,
         shortXContext: ShortXContext,
-        action: (Bitmap) -> T
+        action: suspend (Bitmap) -> T
     ): T {
         val bitmapToRecycle: MutableList<Bitmap> = mutableListOf()
 

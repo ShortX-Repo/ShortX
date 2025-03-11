@@ -105,7 +105,7 @@ fun SystemUIHook.hookApp(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runC
         ) { param ->
             val shortx = ShortXManagerNative.shortX
             if (shortx == null) {
-                XposedBridge.log("systemUI hook. ERROR, shortX is null")
+                XposedBridge.log("SystemUIHook. ERROR, shortX is null")
                 return@afterMethod
             }
             logger.i("ShortX: $shortx")

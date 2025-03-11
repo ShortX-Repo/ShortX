@@ -1,15 +1,11 @@
 package tornaco.apps.shortx.services.abtesting
 
-import android.os.Build
-import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.util.Logger
 
 object ABTesting {
     private val logger = Logger("ABTesting")
 
-    val test = Test(
-        isOCRDetectPFDEnabled = BuildPropInternal.APP_IS_DEBUG || Build.MODEL == "23127PN0CC" || Build.MODEL == "Android SDK built for arm64"
-    )
+    val test = Test(false)
 
     fun dump() {
         logger.w("Test: $test")
@@ -17,5 +13,5 @@ object ABTesting {
 }
 
 data class Test(
-    val isOCRDetectPFDEnabled: Boolean
+    val dummy: Boolean
 )
