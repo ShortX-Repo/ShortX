@@ -5,6 +5,7 @@ import tornaco.apps.shortx.core.proto.fact.GlobalVarChanged
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.FactPublishData
 
 class GlobalVarTrigger(
     override val context: Context,
@@ -19,12 +20,16 @@ class GlobalVarTrigger(
                 override fun onAddOrUpdate(id: String) {
                     logger.d("Var changed: $id")
 
-                    shortXContext.rule.publishFact(
-                        "Global changed",
-                        GlobalVarChanged.newBuilder()
-                            .setGvId(id)
-                            .build()
-                    )
+                    shortXContext.rule.publishFactChecked(
+                        GlobalVarChanged.getDefaultInstance()
+                    ) {
+                        FactPublishData(
+                            "Global changed",
+                            GlobalVarChanged.newBuilder()
+                                .setGvId(id)
+                                .build()
+                        )
+                    }
                 }
 
                 override fun onDelete(id: String?) {

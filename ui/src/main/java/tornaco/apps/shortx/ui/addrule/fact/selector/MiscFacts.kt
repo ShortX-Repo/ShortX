@@ -23,7 +23,6 @@ fun MiscFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: (F
         Fact.GlobalVarChanged::class,
         Fact.BackNavStart::class,
         Fact.BackNavDone::class,
-        Fact.GlobalVarChanged::class,
         Fact.MethodHook::class,
     ).apply {
         add(Fact.AnyFact::class)

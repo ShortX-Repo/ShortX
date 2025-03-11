@@ -17,9 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -58,7 +56,6 @@ import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.copy
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
-import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
 class GlobalVarDetailActivity : BaseActivity() {
@@ -92,179 +89,175 @@ fun GlobalVarDetailScreen(name: String, back: () -> Unit) {
         vm.loadState(name)
     }
 
-    ShortXTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
-        ) {
-            val valueInputState = rememberTextInputState(
-                title = LocalI18N.current["ui.global.var.input.value"],
-                message = null,
-                onSelected = {
-                    vm.addOrUpdateValue(listOf(it))
-                }
+
+    val valueInputState = rememberTextInputState(
+        title = LocalI18N.current["ui.global.var.input.value"],
+        message = null,
+        onSelected = {
+            vm.addOrUpdateValue(listOf(it))
+        }
+    )
+    TextInputDialog(state = valueInputState)
+
+    val nameInputState = rememberTextInputState(
+        title = LocalI18N.current["ui.global.var.name"],
+        message = null,
+        onSelected = {
+            vm.updateName(it)
+        }
+    )
+    TextInputDialog(state = nameInputState)
+
+    val noteInputState = rememberTextInputState(
+        title = LocalI18N.current["ui.common.note"],
+        message = null,
+        onSelected = {
+            vm.updateNote(it)
+        }
+    )
+    TextInputDialog(state = noteInputState)
+
+    val appComponentSelectorState = rememberAppComponentSelectorState(
+        types = ComponentType.values().toList(),
+        onAppComponentSelected = { infoList ->
+            vm.addOrUpdateValue(infoList.map {
+                it.component.toComponentName().flattenToShortString()
+            })
+        }
+    )
+    AppComponentSelectorDialog(state = appComponentSelectorState)
+
+    val singleAppSelectorState = rememberSingleAppPkgSelectorState { app ->
+        appComponentSelectorState.show(app.pkg, state.valueItems.mapNotNull {
+            if (it.hint is TextHint.AppComponent) {
+                ComponentName.unflattenFromString(it.value)?.toAppComponent(USER_MASK_ANY)
+            } else null
+        })
+    }
+    SingleAppSelectorDialog(state = singleAppSelectorState)
+
+    val addMenuState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.common.add"],
+        menuItems = listOf(
+            MenuDialogItem(
+                id = "input",
+                title = LocalI18N.current["ui.common.manually.input"],
+            ),
+            MenuDialogItem(
+                id = "select",
+                title = LocalI18N.current["ui.title.select.component"],
             )
-            TextInputDialog(state = valueInputState)
-
-            val nameInputState = rememberTextInputState(
-                title = LocalI18N.current["ui.global.var.name"],
-                message = null,
-                onSelected = {
-                    vm.updateName(it)
-                }
-            )
-            TextInputDialog(state = nameInputState)
-
-            val noteInputState = rememberTextInputState(
-                title = LocalI18N.current["ui.common.note"],
-                message = null,
-                onSelected = {
-                    vm.updateNote(it)
-                }
-            )
-            TextInputDialog(state = noteInputState)
-
-            val appComponentSelectorState = rememberAppComponentSelectorState(
-                types = ComponentType.values().toList(),
-                onAppComponentSelected = { infoList ->
-                    vm.addOrUpdateValue(infoList.map {
-                        it.component.toComponentName().flattenToShortString()
-                    })
-                }
-            )
-            AppComponentSelectorDialog(state = appComponentSelectorState)
-
-            val singleAppSelectorState = rememberSingleAppPkgSelectorState { app ->
-                appComponentSelectorState.show(app.pkg, state.valueItems.mapNotNull {
-                    if (it.hint is TextHint.AppComponent) {
-                        ComponentName.unflattenFromString(it.value)?.toAppComponent(USER_MASK_ANY)
-                    } else null
-                })
-            }
-            SingleAppSelectorDialog(state = singleAppSelectorState)
-
-            val addMenuState = rememberMenuDialogState<String>(
-                title = LocalI18N.current["ui.common.add"],
-                menuItems = listOf(
-                    MenuDialogItem(
-                        id = "input",
-                        title = LocalI18N.current["ui.common.manually.input"],
-                    ),
-                    MenuDialogItem(
-                        id = "select",
-                        title = LocalI18N.current["ui.title.select.component"],
-                    )
-                ),
-                onItemSelected = { _, id ->
-                    if (id == "input") {
-                        valueInputState.show()
-                    } else {
-                        singleAppSelectorState.show()
-                    }
-                }
-            )
-            MenuDialog(state = addMenuState)
-
-            val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-            Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                topBar = {
-                    ShortXMediumTopAppBar(
-                        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                        title = {
-                            Text(
-                                text = (state.globalVar?.type?.toType()?.label()
-                                    .fallbackOnEmpty("N/A"))
-                            )
-                        },
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                back()
-                            }) {
-                                RemixIcon(remixName = Remix.System.close_line)
-                            }
-                        },
-                        scrollBehavior = scrollBehavior
-                    )
-                },
-                floatingActionButton = {
-                    if (state.isList) {
-                        FloatingActionButton(onClick = {
-                            addMenuState.show()
-                        }) {
-                            Icon(imageVector = Icons.Filled.Add, contentDescription = "add")
-                        }
-                    }
-                }) { paddingValues ->
-
-                val globalVar = state.globalVar
-                if (globalVar == null) {
-                    LoadError()
-                } else {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 16.dp),
-                        contentPadding = paddingValues.copy(
-                            bottom = { it + 120.dp }
-                        )
-                    ) {
-
-                        stickyHeader {
-                            StandardSpacer()
-                            CategoryTitle(title = LocalI18N.current["ui.global.var.name"])
-                        }
-
-                        stickyHeader {
-                            ListItem(title = globalVar.name, onClick = {
-                                nameInputState.show()
-                            })
-                        }
-
-                        stickyHeader {
-                            StandardSpacer()
-                            CategoryTitle(title = LocalI18N.current["ui.common.note"])
-                        }
-
-                        stickyHeader {
-                            ListItem(title = globalVar.note, onClick = {
-                                noteInputState.show()
-                            })
-                        }
-
-                        stickyHeader {
-                            StandardSpacer()
-                            CategoryTitle(title = LocalI18N.current["ui.global.var.value"])
-                            StandardSpacer()
-                        }
-
-                        itemsIndexed(state.valueItems) { index, it ->
-                            ListItem(
-                                title = if (globalVar.isSecret) "****" else it.value,
-                                icon = {
-                                    val hint = it.hint
-                                    if (hint is TextHint.AppComponent) {
-                                        AppIcon(modifier = Modifier.size(24.dp), pkg = hint.appPkg)
-                                    } else {
-                                        RemixIcon(remixName = Remix.Development.code_line)
-                                    }
-                                },
-                                action1 = {
-                                    if (state.isList) {
-                                        IconButton(onClick = {
-                                            vm.removeAtForList(index)
-                                        }) {
-                                            RemixIcon(remixName = Remix.System.close_line)
-                                        }
-                                    }
-                                }) {
-                                if (!state.isList) {
-                                    valueInputState.show()
-                                }
-                            }
-                        }
-                    }
-                }
-
+        ),
+        onItemSelected = { _, id ->
+            if (id == "input") {
+                valueInputState.show()
+            } else {
+                singleAppSelectorState.show()
             }
         }
+    )
+    MenuDialog(state = addMenuState)
+
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            ShortXMediumTopAppBar(
+                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                title = {
+                    Text(
+                        text = (state.globalVar?.type?.toType()?.label()
+                            .fallbackOnEmpty("N/A"))
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        back()
+                    }) {
+                        RemixIcon(remixName = Remix.System.close_line)
+                    }
+                },
+                scrollBehavior = scrollBehavior
+            )
+        },
+        floatingActionButton = {
+            if (state.isList) {
+                FloatingActionButton(onClick = {
+                    addMenuState.show()
+                }) {
+                    Icon(imageVector = Icons.Filled.Add, contentDescription = "add")
+                }
+            }
+        }) { paddingValues ->
+
+        val globalVar = state.globalVar
+        if (globalVar == null) {
+            LoadError()
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                contentPadding = paddingValues.copy(
+                    bottom = { it + 120.dp }
+                )
+            ) {
+
+                stickyHeader {
+                    StandardSpacer()
+                    CategoryTitle(title = LocalI18N.current["ui.global.var.name"])
+                }
+
+                stickyHeader {
+                    ListItem(title = globalVar.name, onClick = {
+                        nameInputState.show()
+                    })
+                }
+
+                stickyHeader {
+                    StandardSpacer()
+                    CategoryTitle(title = LocalI18N.current["ui.common.note"])
+                }
+
+                stickyHeader {
+                    ListItem(title = globalVar.note, onClick = {
+                        noteInputState.show()
+                    })
+                }
+
+                stickyHeader {
+                    StandardSpacer()
+                    CategoryTitle(title = LocalI18N.current["ui.global.var.value"])
+                    StandardSpacer()
+                }
+
+                itemsIndexed(state.valueItems) { index, it ->
+                    ListItem(
+                        title = if (globalVar.isSecret) "****" else it.value,
+                        icon = {
+                            val hint = it.hint
+                            if (hint is TextHint.AppComponent) {
+                                AppIcon(modifier = Modifier.size(24.dp), pkg = hint.appPkg)
+                            } else {
+                                RemixIcon(remixName = Remix.Development.code_line)
+                            }
+                        },
+                        action1 = {
+                            if (state.isList) {
+                                IconButton(onClick = {
+                                    vm.removeAtForList(index)
+                                }) {
+                                    RemixIcon(remixName = Remix.System.close_line)
+                                }
+                            }
+                        },
+                        onClick = {
+                            if (!state.isList) {
+                                valueInputState.show(it.value)
+                            }
+                        })
+                }
+            }
+        }
+
     }
 }

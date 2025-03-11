@@ -15,6 +15,7 @@ class GlobalVarStore(
     encKey
 ) {
     override fun addGlobalVar(globalVar: GlobalVar) {
+        if (getGlobalVarByName(globalVar.name) == globalVar) return
         super.addGlobalVar(globalVar)
         onAddOrUpdate(globalVar)
     }
