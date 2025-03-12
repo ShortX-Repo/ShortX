@@ -3,23 +3,20 @@ package tornaco.apps.shortx.ui.util
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
-import android.text.TextUtils
 import android.util.Base64
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
-import top.zibin.luban.Luban
-import top.zibin.luban.OnCompressListener
+import me.shaohui.advancedluban.Luban
+import me.shaohui.advancedluban.OnCompressListener
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.ResUtils
 import java.io.File
 import java.io.FileOutputStream
-import java.util.Locale
 import kotlin.coroutines.resumeWithException
 
 
@@ -29,7 +26,7 @@ object Compressor {
     suspend fun compressAndToBase64(
         context: Context,
         uri: Uri,
-        sizeInKB: Int = 10
+        sizeInKB: Int = 12
     ): String {
         val base64 = context.contentResolver.openInputStream(uri)?.use { rawStream ->
             val tmpImageFile =
@@ -69,7 +66,6 @@ object Compressor {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun callExternalCompressor(
         context: Context,
         file: File,
@@ -77,15 +73,11 @@ object Compressor {
     ): File {
         logger.d("callExternalCompressor: $file current size: ${getFileSizeInKB(file)}")
         return suspendCancellableCoroutine { con ->
-            Luban.with(context)
-                .load(file)
-                .ignoreBy(sizeInKB)
-                .setTargetDir(context.cacheDir.absolutePath)
-                .filter { path ->
-                    !(TextUtils.isEmpty(path) || path.lowercase(Locale.getDefault())
-                        .endsWith(".gif"))
-                }
-                .setCompressListener(object : OnCompressListener {
+
+            Luban.compress(context, file)
+                .setMaxSize(sizeInKB)                // limit the final image size（unit：Kb）
+                .putGear(Luban.CUSTOM_GEAR)     // use CUSTOM GEAR compression mode
+                .launch(object : OnCompressListener {
                     override fun onStart() {
                         logger.d("onStart")
                     }
@@ -98,7 +90,7 @@ object Compressor {
                     override fun onError(e: Throwable) {
                         con.resumeWithException(e)
                     }
-                }).launch()
+                })
         }
     }
 
