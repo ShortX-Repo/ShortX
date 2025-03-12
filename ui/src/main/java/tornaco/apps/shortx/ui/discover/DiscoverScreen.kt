@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -32,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -44,6 +46,7 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.action.selector.initialPageIndex
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.EmptyList
+import tornaco.apps.shortx.ui.base.LinkText
 import tornaco.apps.shortx.ui.base.LoadError
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -64,6 +67,7 @@ import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.discover.contribute.ContributorActivity
 import tornaco.apps.shortx.ui.main.MainScaffold
 import tornaco.apps.shortx.ui.main.MainViewModel
 import tornaco.apps.shortx.ui.main.da.DAViewerDialog
@@ -112,6 +116,23 @@ fun DiscoverScreen() {
     FeatureAccessDialog(subscribeDialogState)
 
     val globalSubscribeState by LVLStateHolder.collectAsState()
+
+    @Composable
+    fun getRepoTitle(discoverState: DiscoverState): String {
+        return when (val repo = discoverState.discoverRepo) {
+            is DiscoverRepo.CustomOnline -> {
+                discoverState.customRepos.firstOrNull { it.url == repo.indexUrl }?.alias.orEmpty()
+            }
+
+            DiscoverRepo.OfficialOnline -> {
+                "ShortX-Repo"
+            }
+
+            DiscoverRepo.PrebuiltLocal -> {
+                LocalI18N.current["ui.discover.source.prebuilt"]
+            }
+        }
+    }
 
     val repoSelectState = rememberMenuDialogState<String>(
         key1 = discoverState.customRepos,
@@ -175,9 +196,15 @@ fun DiscoverScreen() {
         state = mainState,
         subscribeState = globalSubscribeState,
         appBarTitle = {
-            Text(
-                text = LocalI18N.current["ui.feat.label.discover"]
-            )
+            Column {
+                Text(
+                    text = LocalI18N.current["ui.feat.label.discover"]
+                )
+                Text(
+                    text = getRepoTitle(discoverState),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         },
         enableMask = false,
         appBarActions = {
@@ -228,14 +255,22 @@ fun DiscoverScreen() {
             ) { index ->
                 when (index) {
                     DiscoverTabItem.DA.ordinal -> {
-                        DiscoverDA(discoverState) {
+                        DiscoverDA(discoverState = discoverState, refresh = {
                             discoverModel.loadDiscoverData()
+                        }) {
+                            if (discoverState.discoverRepo == DiscoverRepo.OfficialOnline) {
+                                ContributorFooter()
+                            }
                         }
                     }
 
                     DiscoverTabItem.Rule.ordinal -> {
-                        DiscoverRule(discoverState) {
+                        DiscoverRule(discoverState = discoverState, refresh = {
                             discoverModel.loadDiscoverData()
+                        }) {
+                            if (discoverState.discoverRepo == DiscoverRepo.OfficialOnline) {
+                                ContributorFooter()
+                            }
                         }
                     }
                 }
@@ -245,7 +280,24 @@ fun DiscoverScreen() {
 }
 
 @Composable
-private fun DiscoverRule(discoverState: DiscoverState, refresh: () -> Unit) {
+private fun ContributorFooter() {
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        val context = LocalContext.current
+        LinkText("View Contributors") { ContributorActivity.start(context) }
+    }
+}
+
+@Composable
+private fun DiscoverRule(
+    discoverState: DiscoverState,
+    refresh: () -> Unit,
+    footer: @Composable () -> Unit
+) {
     val refreshing = discoverState.data.isLoading()
     val refreshState = rememberPullRefreshState(refreshing, onRefresh = {
         refresh()
@@ -284,12 +336,13 @@ private fun DiscoverRule(discoverState: DiscoverState, refresh: () -> Unit) {
                                     .animateItem()
                                     .padding(horizontal = 16.dp, vertical = 8.dp)
                             ) {
-                                Column(modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clip(ShortXCardRoundedCornerShape)
-                                    .clickable { ruleViewerState.show() }
-                                    .padding(horizontal = 12.dp)
-                                    .padding(top = 12.dp)) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(ShortXCardRoundedCornerShape)
+                                        .clickable { ruleViewerState.show() }
+                                        .padding(horizontal = 12.dp)
+                                        .padding(top = 12.dp)) {
 
                                     Row(
                                         modifier = Modifier
@@ -347,7 +400,8 @@ private fun DiscoverRule(discoverState: DiscoverState, refresh: () -> Unit) {
                                         )
 
                                         StandardSpacer()
-                                        TipRow(text = rule.author,
+                                        TipRow(
+                                            text = rule.author,
                                             icon = {
                                                 RemixIcon(
                                                     modifier = Modifier.size(12.dp),
@@ -357,6 +411,9 @@ private fun DiscoverRule(discoverState: DiscoverState, refresh: () -> Unit) {
                                     }
                                 }
                             }
+                        }
+                        item(span = StaggeredGridItemSpan.FullLine) {
+                            footer()
                         }
                     }
                 }
@@ -388,7 +445,11 @@ private fun DiscoverRule(discoverState: DiscoverState, refresh: () -> Unit) {
 }
 
 @Composable
-private fun DiscoverDA(discoverState: DiscoverState, refresh: () -> Unit) {
+private fun DiscoverDA(
+    discoverState: DiscoverState,
+    refresh: () -> Unit,
+    footer: @Composable () -> Unit
+) {
     val refreshing = discoverState.data.isLoading()
     val refreshState = rememberPullRefreshState(refreshing, onRefresh = {
         refresh()
@@ -423,12 +484,13 @@ private fun DiscoverDA(discoverState: DiscoverState, refresh: () -> Unit) {
                                 modifier = Modifier
                                     .padding(horizontal = 16.dp, vertical = 8.dp)
                             ) {
-                                Column(modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clip(ShortXCardRoundedCornerShape)
-                                    .clickable { daViewerState.show() }
-                                    .padding(horizontal = 12.dp)
-                                    .padding(top = 12.dp)) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(ShortXCardRoundedCornerShape)
+                                        .clickable { daViewerState.show() }
+                                        .padding(horizontal = 12.dp)
+                                        .padding(top = 12.dp)) {
 
                                     Row(
                                         modifier = Modifier
@@ -484,7 +546,8 @@ private fun DiscoverDA(discoverState: DiscoverState, refresh: () -> Unit) {
                                         )
 
                                         StandardSpacer()
-                                        TipRow(text = it.author,
+                                        TipRow(
+                                            text = it.author,
                                             icon = {
                                                 RemixIcon(
                                                     modifier = Modifier.size(12.dp),
@@ -495,6 +558,10 @@ private fun DiscoverDA(discoverState: DiscoverState, refresh: () -> Unit) {
 
                                 }
                             }
+                        }
+
+                        item(span = StaggeredGridItemSpan.FullLine) {
+                            footer()
                         }
                     }
                 }
