@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.xposed.hooks.hook.systemui
 import android.content.Context
 import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import tornaco.apps.shortx.core.AppGlobals
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IShortX
 import tornaco.apps.shortx.core.ShortXManager
@@ -118,6 +119,7 @@ fun SystemUIHook.hookApp(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runC
             val app: Context = param.thisObject as Context
             logger.d("After onCreate: $app")
 
+            AppGlobals.setContext(app)
             initShortXAppContext(app)
 
             PicassoInitializer.install(

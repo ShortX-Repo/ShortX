@@ -6,6 +6,7 @@ import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.lsposed.hiddenapibypass.HiddenApiBypass
+import tornaco.apps.shortx.core.AppGlobals
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.EntryPoint
@@ -20,6 +21,7 @@ class ShortXApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        AppGlobals.setContext(applicationContext)
         initLogger(this)
         logger.d("onCreate.")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {

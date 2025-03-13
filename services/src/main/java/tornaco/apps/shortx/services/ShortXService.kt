@@ -17,6 +17,7 @@ import android.telephony.SubscriptionManager
 import android.util.Log
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import tornaco.apps.shortx.core.AppGlobals
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IActionEvaluateListener
 import tornaco.apps.shortx.core.IAudioRecordingListener
@@ -129,6 +130,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
     override fun start(context: Context) {
         super.start(context)
+        AppGlobals.setContext(context)
         LogInit.initStartedLogging()
         shortXContext.serviceLifecycle.start(context)
     }
