@@ -26,29 +26,31 @@ class ComposeDemoActivity : ComponentActivity() {
             ) {
                 val context = LocalContext.current
 
-                FlashingBorderBox {
-                    RectangleCaptureScreen(
-                        onSelectFullScreen = {
-                            Toast
-                                .makeText(context, "onSelectFullScreen", Toast.LENGTH_SHORT)
-                                .show()
-                        },
-                        onSelected = {
-                            Toast
-                                .makeText(context, "Selected Rect: $it", Toast.LENGTH_SHORT)
-                                .show()
+//                FlashingBorderBox {
+//                    RectangleCaptureScreen(
+//                        onSelectFullScreen = {
+//                            Toast
+//                                .makeText(context, "onSelectFullScreen", Toast.LENGTH_SHORT)
+//                                .show()
+//                        },
+//                        onSelected = {
+//                            Toast
+//                                .makeText(context, "Selected Rect: $it", Toast.LENGTH_SHORT)
+//                                .show()
+//
+//                            ClipboardUtils.copyToClipboard(
+//                                context, "rect", Rect(
+//                                    it.left.toInt(),
+//                                    it.top.toInt(),
+//                                    it.right.toInt(),
+//                                    it.bottom.toInt()
+//                                ).flattenToString()
+//                            )
+//                        }
+//                    )
+//                }
 
-                            ClipboardUtils.copyToClipboard(
-                                context, "rect", Rect(
-                                    it.left.toInt(),
-                                    it.top.toInt(),
-                                    it.right.toInt(),
-                                    it.bottom.toInt()
-                                ).flattenToString()
-                            )
-                        }
-                    )
-                }
+                DynamicIslandDemo()
             }
         }
     }
