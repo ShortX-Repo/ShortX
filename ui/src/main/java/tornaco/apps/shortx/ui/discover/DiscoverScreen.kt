@@ -78,6 +78,7 @@ import tornaco.apps.shortx.ui.main.rule.rememberRuleViewerState
 import tornaco.apps.shortx.ui.settings.pref.DiscoveryRepoSetting
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
+import tornaco.apps.shortx.ui.util.BrowserUtils
 
 enum class DiscoverTabItem(val titleKey: String, val iconName: String) {
     DA("ui.feat.label.da", Remix.Development.command_line),
@@ -191,7 +192,7 @@ fun DiscoverScreen() {
         })
     MenuDialog(state = repoSelectState)
 
-
+    val context = LocalContext.current
     MainScaffold(
         state = mainState,
         subscribeState = globalSubscribeState,
@@ -200,10 +201,16 @@ fun DiscoverScreen() {
                 Text(
                     text = LocalI18N.current["ui.feat.label.discover"]
                 )
-                Text(
-                    text = getRepoTitle(discoverState),
-                    style = MaterialTheme.typography.bodySmall
-                )
+                if (discoverState.discoverRepo == DiscoverRepo.PrebuiltLocal) {
+                    Text(
+                        text = getRepoTitle(discoverState),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                } else {
+                    LinkText(text = getRepoTitle(discoverState)) {
+                        BrowserUtils.launch(context, discoverState.discoverRepo.repoIndexUrl)
+                    }
+                }
             }
         },
         enableMask = false,
