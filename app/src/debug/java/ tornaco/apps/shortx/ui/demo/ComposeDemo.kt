@@ -50,7 +50,7 @@ class ComposeDemoActivity : ComponentActivity() {
 //                    )
 //                }
 
-                DynamicIslandDemo()
+                NotificationDemo2()
             }
         }
     }
