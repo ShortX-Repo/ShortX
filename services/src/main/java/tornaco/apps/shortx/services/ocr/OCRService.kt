@@ -1,9 +1,7 @@
 package tornaco.apps.shortx.services.ocr
 
-import android.graphics.BitmapFactory
 import android.os.RemoteCallbackList
 import tornaco.apps.shortx.core.ocr.IOCR
-import tornaco.apps.shortx.core.proto.common.OcrResult
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 
@@ -21,20 +19,11 @@ class OCRService(shortXContext: ShortXContext) :
     fun requireOCR(): IOCR {
         val itemCount = ocrStubs.registeredCallbackCount
         require(itemCount > 0) {
-            "requireOCR, no registered ocr."
+            "requireOCR, no registered ocr.\n" +
+                    "Did you select SystemUI in Xposed?\n" +
+                    "请确保已在Xposed中勾选SystemUI"
         }
         val first = ocrStubs.getRegisteredCallbackItem(0)
         return first
-    }
-
-    fun IOCR.runWorkaround() {
-        val appContext = shortXContext.statusbar.appContext
-        appContext.assets.open("ocr/shortx.png").use { stream ->
-            val bitmap = BitmapFactory.decodeStream(stream)
-            val detectRes = detect(bitmap, 4, false).mapNotNull {
-                OcrResult.parseFrom(it.byteData)
-            }
-            logger.d("detectRes: $detectRes")
-        }
     }
 }

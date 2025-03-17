@@ -5,7 +5,7 @@ import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.util.PkgUtils
 
-fun Context.requireExt(minVersion: Int = 2) {
+fun Context.requireExt(minVersion: Int = 5) {
     val extPkgInfo = PkgUtils.getPackageInfoAsUser(
         this,
         BuildPropInternal.SHORTX_EXT_APP_PKG_NAME,

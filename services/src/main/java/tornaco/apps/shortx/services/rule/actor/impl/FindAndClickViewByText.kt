@@ -4,10 +4,8 @@ import com.google.protobuf.Message
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.action.FindAndClickViewByText
 import tornaco.apps.shortx.core.proto.common.FindTextMethod
-import tornaco.apps.shortx.core.proto.common.OcrResult
 import tornaco.apps.shortx.core.proto.common.Rect
 import tornaco.apps.shortx.core.proto.common.RectSourceRect
-import tornaco.apps.shortx.core.proto.common.RegexMatchOptions
 import tornaco.apps.shortx.core.proto.toAndroidRect
 import tornaco.apps.shortx.core.proto.toProtoRect
 import tornaco.apps.shortx.core.rule.compileContextAndVars
@@ -18,7 +16,6 @@ import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
-import tornaco.apps.shortx.services.rule.fact.emptyOrRegexMatch
 
 
 object FindAndClickViewByText : Actor {
@@ -87,22 +84,11 @@ object FindAndClickViewByText : Actor {
         }
         logger.d("clickTextByOCR, src: $src")
 
-        val result: List<OcrResult> = OcrDetect.detect(params, src)
+        val result: List<Rect> = OcrDetect.findAllContinuousTextPositions(params, src, d.text)
 
-        val resultContainsText: OcrResult? = result.firstOrNull {
-            if (d.isRegex) {
-                it.label.orEmpty().contains(d.text)
-            } else {
-                emptyOrRegexMatch(
-                    d.text,
-                    it.label.orEmpty(),
-                    RegexMatchOptions.RegexMatchOptions_ContainsMatchIn
-                )
-            }
-        }
-        logger.logOnDebug("clickTextByOCR, resultContainsText: $resultContainsText")
+        logger.logOnDebug("clickTextByOCR, result: $result")
 
-        val centerXY = resultContainsText?.bounds?.toAndroidRect()?.let {
+        val centerXY = result.firstOrNull()?.toAndroidRect()?.let {
             it.centerX() to it.centerY()
         }
 

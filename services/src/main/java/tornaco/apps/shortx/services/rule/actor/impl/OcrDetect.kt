@@ -14,7 +14,6 @@ import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.os.ScreenCap
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.ByteArrayList
-import tornaco.apps.shortx.core.proto.common.OcrResult
 import tornaco.apps.shortx.core.proto.common.RectSourcePath
 import tornaco.apps.shortx.core.proto.common.RectSourceRect
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
@@ -87,8 +86,6 @@ object OcrDetect : Actor {
                 bitmap.useSharedPFD {
                     shortXContext.ocr.requireOCR().recognizeTextPFD(
                         it,
-                        4,
-                        false,
                         receiver
                     )
                 }
@@ -103,15 +100,19 @@ object OcrDetect : Actor {
         }
     }
 
-    suspend fun detect(params: HandleParams, src: ProtoAny): List<OcrResult> {
+    suspend fun findAllContinuousTextPositions(
+        params: HandleParams,
+        src: ProtoAny,
+        text: String
+    ): List<tornaco.apps.shortx.core.proto.common.Rect> {
         return with(params) {
-            val ocrResult: List<OcrResult> = withSrcBitmap(
+            val ocrResult: List<tornaco.apps.shortx.core.proto.common.Rect> = withSrcBitmap(
                 src,
                 androidContext,
                 evaluateContext,
                 shortXContext
             ) { bitmap ->
-                logger.d("detect, bitmap: $bitmap")
+                logger.d("findAllContinuousTextPositions, bitmap: $bitmap")
                 if (BuildPropInternal.APP_IS_DEBUG) {
                     runCatching {
                         saveScreenBitmapToFile(
@@ -123,10 +124,9 @@ object OcrDetect : Actor {
                 }
                 val receiver = SynchronousResultReceiver.get()
                 bitmap.useSharedPFD {
-                    shortXContext.ocr.requireOCR().detectPFD(
+                    shortXContext.ocr.requireOCR().findAllContinuousTextPositionsPFD(
                         it,
-                        4,
-                        false,
+                        text,
                         receiver
                     )
                 }
@@ -135,10 +135,10 @@ object OcrDetect : Actor {
                 val byteRes: ByteArrayWrapper? = receiverRes.getValue(null)
                 val byteList: ByteArrayList? = byteRes?.let { ByteArrayList.parseFrom(it.byteData) }
                 requireNotNull(byteList?.dataList?.toList()?.mapNotNull {
-                    OcrResult.parseFrom(it)
-                }) { "Unable to detect." }
+                    tornaco.apps.shortx.core.proto.common.Rect.parseFrom(it)
+                }) { "Unable to findAllContinuousTextPositions." }
             }
-            logger.logOnDebug("detect, ocrResult: $ocrResult")
+            logger.logOnDebug("findAllContinuousTextPositions result: $ocrResult")
             ocrResult
         }
     }

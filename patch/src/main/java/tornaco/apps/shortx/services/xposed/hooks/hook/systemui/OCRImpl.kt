@@ -5,12 +5,12 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.ParcelFileDescriptor
 import com.google.protobuf.ByteString
+import com.google.protobuf.StringValue
 import tornaco.apps.shortx.core.ocr.IOCR
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.ByteArrayList
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.services.proto.StringList
 import tornaco.apps.shortx.services.util.ExtAppClassHelper
 import util.Reflections
 import java.io.FileDescriptor
@@ -21,62 +21,54 @@ class OCRImpl(private val context: Context) : IOCR.Stub() {
     private val apiIns by lazy {
         ExtAppClassHelper.newInstance(
             context,
-            "tornaco.apps.shortx.ext.api.ocr.ShortXPaddleApi"
+            "tornaco.apps.shortx.ext.api.ocr.ShortXTessApi"
         )
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun detect(
+    override fun findAllContinuousTextPositions(
         bitmap: Bitmap,
-        numThread: Int,
-        useSlim: Boolean
+        text: String
     ): List<ByteArrayWrapper> {
-        logger.d("detect apiIns: $apiIns")
+        logger.d("findAllContinuousTextPositions apiIns: $apiIns")
         val result = (Reflections.callMethod(
             apiIns,
-            "detect",
+            "findAllContinuousTextPositions",
             bitmap,
-            numThread,
-            useSlim
+            text
         ) as List<ByteArray>).map {
             ByteArrayWrapper(it)
         }
-        logger.d("detect result: $result")
+        logger.d("findAllContinuousTextPositions result: $result")
         return result
     }
 
-    @Suppress("UNCHECKED_CAST")
     override fun recognizeText(
         bitmap: Bitmap,
-        numThread: Int,
-        useSlim: Boolean
-    ): Array<String> {
+    ): String {
         logger.d("recognizeText apiIns: $apiIns")
         val result = (Reflections.callMethod(
             apiIns,
             "recognizeText",
-            bitmap,
-            numThread,
-            useSlim
-        ) as Array<String>)
+            bitmap
+        ) as String?)
         logger.d("recognizeText result: $result")
-        return result
+        return result.orEmpty()
     }
 
-    override fun detectPFD(
+    override fun findAllContinuousTextPositionsPFD(
         pfd: ParcelFileDescriptor,
-        numThread: Int,
-        useSlim: Boolean,
+        text: String,
         receiver: SynchronousResultReceiver
     ) {
         val res: List<ByteArray> = kotlin.runCatching {
             val fd: FileDescriptor = pfd.fileDescriptor
             val bitmap = BitmapFactory.decodeFileDescriptor(fd)
-            logger.d("detectPFD, bitmap: $bitmap")
+            logger.d("findAllContinuousTextPositionsPFD, bitmap: $bitmap")
             val result = kotlin.runCatching {
-                detect(bitmap, numThread, useSlim)
+                findAllContinuousTextPositions(bitmap, text)
             }.getOrElse {
-                logger.e(it, "detectPFD")
+                logger.e(it, "findAllContinuousTextPositionsPFD")
                 emptyList()
             }.map {
                 it.byteData
@@ -84,7 +76,7 @@ class OCRImpl(private val context: Context) : IOCR.Stub() {
             bitmap.recycle()
             result
         }.getOrElse {
-            logger.e(it, "detectPFD")
+            logger.e(it, "findAllContinuousTextPositionsPFD")
             emptyList()
         }
         receiver.send(
@@ -98,24 +90,23 @@ class OCRImpl(private val context: Context) : IOCR.Stub() {
 
     override fun recognizeTextPFD(
         pfd: ParcelFileDescriptor,
-        numThread: Int,
-        useSlim: Boolean,
         receiver: SynchronousResultReceiver
     ) {
         var bitmap: Bitmap? = null
-        val result: Array<String> = kotlin.runCatching {
+        val result: String = kotlin.runCatching {
             val fd: FileDescriptor = pfd.fileDescriptor
             bitmap = BitmapFactory.decodeFileDescriptor(fd)
             logger.d("recognizeTextPFD, bitmap: $bitmap")
-            recognizeText(requireNotNull(bitmap) { "bitmap is null." }, numThread, useSlim)
+            recognizeText(requireNotNull(bitmap) { "bitmap is null." })
         }.getOrElse {
             logger.e(it, "recognizeTextPFD")
-            emptyArray()
+            runCatching { bitmap?.recycle() }
+            throw it
         }
         runCatching { bitmap?.recycle() }
         receiver.send(
             ByteArrayWrapper(
-                StringList.newBuilder().addAllStrings(result.toList()).build().toByteArray()
+                StringValue.newBuilder().setValue(result).build().toByteArray()
             )
         )
     }
