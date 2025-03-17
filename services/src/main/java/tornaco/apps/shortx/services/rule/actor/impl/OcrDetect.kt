@@ -14,6 +14,7 @@ import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.os.ScreenCap
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.ByteArrayList
+import tornaco.apps.shortx.core.proto.common.OCREngine
 import tornaco.apps.shortx.core.proto.common.RectSourcePath
 import tornaco.apps.shortx.core.proto.common.RectSourceRect
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
@@ -51,7 +52,7 @@ object OcrDetect : Actor {
 
         val src = data.rectSrc
 
-        val ocrResult = recognizeText(this, src)
+        val ocrResult = recognizeText(this, src, shortXContext.ocr.getOCREngine())
         val ocrResultString = ocrResult.joinToString(data.separator)
 
         params.contextData.add(
@@ -64,7 +65,11 @@ object OcrDetect : Actor {
         Actor.Res(ocrResultString)
     }
 
-    private suspend fun recognizeText(params: HandleParams, src: ProtoAny): List<String> {
+    private suspend fun recognizeText(
+        params: HandleParams,
+        src: ProtoAny,
+        engine: OCREngine
+    ): List<String> {
         return with(params) {
             val ocrResult: List<String> = withSrcBitmap(
                 src,
@@ -85,6 +90,7 @@ object OcrDetect : Actor {
                 val receiver = SynchronousResultReceiver.get()
                 bitmap.useSharedPFD {
                     shortXContext.ocr.requireOCR().recognizeTextPFD(
+                        engine.number,
                         it,
                         receiver
                     )
@@ -103,7 +109,8 @@ object OcrDetect : Actor {
     suspend fun findAllContinuousTextPositions(
         params: HandleParams,
         src: ProtoAny,
-        text: String
+        text: String,
+        engine: OCREngine
     ): List<tornaco.apps.shortx.core.proto.common.Rect> {
         return with(params) {
             val ocrResult: List<tornaco.apps.shortx.core.proto.common.Rect> = withSrcBitmap(
@@ -125,6 +132,7 @@ object OcrDetect : Actor {
                 val receiver = SynchronousResultReceiver.get()
                 bitmap.useSharedPFD {
                     shortXContext.ocr.requireOCR().findAllContinuousTextPositionsPFD(
+                        engine.number,
                         it,
                         text,
                         receiver

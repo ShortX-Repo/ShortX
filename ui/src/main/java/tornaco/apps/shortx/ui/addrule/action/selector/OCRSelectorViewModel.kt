@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 data class OCRSelectorState(
     val id: String = defaultNewActionId(),
-    val src: Action.OcrDetect.RectSrc = Action.OcrDetect.RectSrc.SelectScreenArea
+    val src: Action.OcrDetect.RectSrc = Action.OcrDetect.RectSrc.SelectScreenArea,
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -30,7 +30,7 @@ class OCRSelectorViewModel @Inject constructor(@ApplicationContext context: Cont
             updateState {
                 copy(
                     id = it.id,
-                    src = it.src
+                    src = it.src,
                 )
             }
         }
@@ -43,6 +43,9 @@ class OCRSelectorViewModel @Inject constructor(@ApplicationContext context: Cont
     }
 
     fun getAction(): Action.OcrDetect {
-        return Action.OcrDetect(src = state.value.src, id = state.value.id)
+        return Action.OcrDetect(
+            src = state.value.src,
+            id = state.value.id,
+        )
     }
 }

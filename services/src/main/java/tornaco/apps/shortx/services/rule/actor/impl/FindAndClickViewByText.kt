@@ -4,6 +4,7 @@ import com.google.protobuf.Message
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.action.FindAndClickViewByText
 import tornaco.apps.shortx.core.proto.common.FindTextMethod
+import tornaco.apps.shortx.core.proto.common.OCREngine
 import tornaco.apps.shortx.core.proto.common.Rect
 import tornaco.apps.shortx.core.proto.common.RectSourceRect
 import tornaco.apps.shortx.core.proto.toAndroidRect
@@ -84,7 +85,12 @@ object FindAndClickViewByText : Actor {
         }
         logger.d("clickTextByOCR, src: $src")
 
-        val result: List<Rect> = OcrDetect.findAllContinuousTextPositions(params, src, d.text)
+        val result: List<Rect> = OcrDetect.findAllContinuousTextPositions(
+            params,
+            src,
+            d.text,
+           shortXContext.ocr.getOCREngine()
+        )
 
         logger.logOnDebug("clickTextByOCR, result: $result")
 

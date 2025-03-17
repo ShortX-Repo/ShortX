@@ -54,11 +54,13 @@ import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.backup.autoGenBackupFileName
 import tornaco.apps.shortx.core.proto.common.Author
+import tornaco.apps.shortx.core.proto.common.OCREngine
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.TestData
+import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
 import tornaco.apps.shortx.ui.base.ConfirmDialog
 import tornaco.apps.shortx.ui.base.ErrorCard
 import tornaco.apps.shortx.ui.base.LinkText
@@ -394,15 +396,16 @@ fun SettingsScreen(
                                 goToFeatToggle = goToFeatToggle
                             )
                         )
-                        addAll(dataSettings(
-                            state = state,
-                            mainState = subscribeState,
-                            vm = vm,
-                            pickRestoreFile = {
-                                pickFileLauncher.launch("application/zip")
-                            }, resetData = {
-                                deleteDialogState.show()
-                            })
+                        addAll(
+                            dataSettings(
+                                state = state,
+                                mainState = subscribeState,
+                                vm = vm,
+                                pickRestoreFile = {
+                                    pickFileLauncher.launch("application/zip")
+                                }, resetData = {
+                                    deleteDialogState.show()
+                                })
                         )
                         addAll(shareSettings(state = state, vm = vm))
                         addAll(devSettings(state = state, vm = vm))
@@ -468,7 +471,8 @@ private fun generalSettings(
     return listOf(
         Preference.Category(LocalI18N.current["ui.settings.general"]),
 
-        Preference.TextPreference(icon = Remix.System.apps_fill,
+        Preference.TextPreference(
+            icon = Remix.System.apps_fill,
             title = LocalI18N.current["ui.pkg.set.title"],
             summary = LocalI18N.current["ui.pkg.set.desc"],
             onClick = {
@@ -476,7 +480,8 @@ private fun generalSettings(
             }
         ),
 
-        Preference.TextPreference(icon = Remix.Document.file_list_fill,
+        Preference.TextPreference(
+            icon = Remix.Document.file_list_fill,
             title = LocalI18N.current["ui.global.var.title"],
             summary = LocalI18N.current["ui.global.var.desc"],
             onClick = {
@@ -484,27 +489,32 @@ private fun generalSettings(
             }
         ),
 
-        Preference.TextPreference(icon = Remix.Communication.message_fill,
+        Preference.TextPreference(
+            icon = Remix.Communication.message_fill,
             title = LocalI18N.current["ui.settings.danmu"],
             summary = LocalI18N.current["ui.settings.danmu.summary"],
             badge = badge,
             onClick = {
-                mainState.isSubscribed.select({ goToDanmuUISettings() },
+                mainState.isSubscribed.select(
+                    { goToDanmuUISettings() },
                     { subscribeDialogState.show() })
             }
         ),
 
-        Preference.TextPreference(icon = Remix.Communication.message_fill,
+        Preference.TextPreference(
+            icon = Remix.Communication.message_fill,
             title = LocalI18N.current["ui.settings.statusbar.chip"],
             summary = LocalI18N.current["ui.settings.statusbar.chip.summary"],
             badge = badge,
             onClick = {
-                mainState.isSubscribed.select({ goToStatusBarClipUISettings() },
+                mainState.isSubscribed.select(
+                    { goToStatusBarClipUISettings() },
                     { subscribeDialogState.show() })
             }
         ),
 
-        Preference.TextPreference(icon = Remix.Editor.sketching,
+        Preference.TextPreference(
+            icon = Remix.Editor.sketching,
             title = LocalI18N.current["ui.settings.key.and.gesture"],
             summary = LocalI18N.current["ui.settings.key.and.gesture.summary"],
             onClick = {
@@ -541,14 +551,16 @@ private fun miscSettings(
 
     return listOf(
         Preference.Category(LocalI18N.current["ui.action.misc"]),
-        Preference.TextPreference(icon = Remix.Design.magic_fill,
+        Preference.TextPreference(
+            icon = Remix.Design.magic_fill,
             title = LocalI18N.current["ui.settings.feat.toggle"],
             summary = LocalI18N.current["ui.settings.feat.toggle.summary"],
             onClick = {
                 goToFeatToggle()
             }
         ),
-        Preference.SwitchPreference(icon = Remix.Design.palette_fill,
+        Preference.SwitchPreference(
+            icon = Remix.Design.palette_fill,
             title = LocalI18N.current["ui.settings.theme.dynamic.color"],
             summary = LocalI18N.current["ui.settings.theme.dynamic.color.summary"],
             value = state.dynamicColor,
@@ -556,7 +568,8 @@ private fun miscSettings(
                 vm.setDynamicColor(!state.dynamicColor)
             }
         ),
-        Preference.SwitchPreference(icon = Remix.Design.pantone_fill,
+        Preference.SwitchPreference(
+            icon = Remix.Design.pantone_fill,
             title = LocalI18N.current["ui.settings.colorful.card"],
             summary = LocalI18N.current["ui.settings.colorful.card.summary"],
             value = state.colorfulCard,
@@ -592,7 +605,8 @@ private fun recordSettings(
     return listOfNotNull(
         Preference.Category(LocalI18N.current["ui.settings.record"]),
 
-        Preference.TextPreference(icon = Remix.System.history_fill,
+        Preference.TextPreference(
+            icon = Remix.System.history_fill,
             title = LocalI18N.current["ui.settings.eva.record"],
             summary = LocalI18N.current["ui.settings.eva.record.summary"],
             onClick = {
@@ -606,7 +620,8 @@ private fun recordSettings(
             summary = LocalI18N.current["ui.settings.audio.record.summary"],
             badge = badge,
             onClick = {
-                mainState.isSubscribed.select({ goToAudioRecord() },
+                mainState.isSubscribed.select(
+                    { goToAudioRecord() },
                     { subscribeDialogState.show() })
             }
         ),
@@ -616,7 +631,8 @@ private fun recordSettings(
             summary = LocalI18N.current["ui.settings.gesture.record.summary"],
             badge = badge,
             onClick = {
-                mainState.isSubscribed.select({ goToGestureRecord() },
+                mainState.isSubscribed.select(
+                    { goToGestureRecord() },
                     { subscribeDialogState.show() })
             }
         )
@@ -728,7 +744,8 @@ private fun devSettings(
     return mutableListOf(
         Preference.Category(LocalI18N.current["ui.settings.dev"]),
 
-        Preference.SwitchPreference(icon = Remix.Document.article_fill,
+        Preference.SwitchPreference(
+            icon = Remix.Document.article_fill,
             title = LocalI18N.current["ui.settings.enable.debug.log"],
             summary = LocalI18N.current["ui.settings.enable.debug.log.description", mapOf("dir" to state.logDir)],
             value = state.isDebugLogEnabled,
@@ -772,73 +789,80 @@ private fun devSettings(
                     title = "Dev options",
                     summary = "Tools settings for developer",
                     preferences = mutableListOf<Preference>().apply {
-                        add(Preference.SwitchPreference(
-                            icon = Remix.Business.global_fill,
-                            title = LocalI18N.current["ui.settings.http:chucker"],
-                            summary = LocalI18N.current["ui.settings.http:chucker.description"],
-                            value = state.enableHttpChucker,
-                            onCheckChanged = { enable ->
-                                vm.setEnableHttpChucker(enable)
-                                if (enable && OsUtils.isTOrAbove()) {
-                                    permissionRequester.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        add(
+                            Preference.SwitchPreference(
+                                icon = Remix.Business.global_fill,
+                                title = LocalI18N.current["ui.settings.http:chucker"],
+                                summary = LocalI18N.current["ui.settings.http:chucker.description"],
+                                value = state.enableHttpChucker,
+                                onCheckChanged = { enable ->
+                                    vm.setEnableHttpChucker(enable)
+                                    if (enable && OsUtils.isTOrAbove()) {
+                                        permissionRequester.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                    }
                                 }
-                            }
-                        ))
-                        add(Preference.TextPreference(
-                            icon = Remix.System.download_fill,
-                            title = "Import prebuilt data",
-                            summary = "Include prebuilt direct actions and rules.",
-                            onClick = {
-                                vm.importPrebuilts(props.firstOrNull())
-                            }
-                        ))
+                            ))
+                        add(
+                            Preference.TextPreference(
+                                icon = Remix.System.download_fill,
+                                title = "Import prebuilt data",
+                                summary = "Include prebuilt direct actions and rules.",
+                                onClick = {
+                                    vm.importPrebuilts(props.firstOrNull())
+                                }
+                            ))
 
-                        add(Preference.SwitchPreference(
-                            icon = Remix.Device.install_fill,
-                            title = "Install fake service",
-                            summary = "For debug purpose, restart app to take effect",
-                            value = state.installFakeService,
-                            onCheckChanged = { enable ->
-                                vm.setInstallFakeService(enable)
-                            }
-                        ))
+                        add(
+                            Preference.SwitchPreference(
+                                icon = Remix.Device.install_fill,
+                                title = "Install fake service",
+                                summary = "For debug purpose, restart app to take effect",
+                                value = state.installFakeService,
+                                onCheckChanged = { enable ->
+                                    vm.setInstallFakeService(enable)
+                                }
+                            ))
 
-                        add(Preference.SwitchPreference(
-                            icon = Remix.Device.install_fill,
-                            title = "Ignore framework update",
-                            summary = "Do not show framework updated tips on main screen",
-                            value = state.isIgnoreFrameworkUpdate,
-                            onCheckChanged = { enable ->
-                                vm.setIgnoreFrameworkUpdate(enable)
-                            }
-                        ))
+                        add(
+                            Preference.SwitchPreference(
+                                icon = Remix.Device.install_fill,
+                                title = "Ignore framework update",
+                                summary = "Do not show framework updated tips on main screen",
+                                value = state.isIgnoreFrameworkUpdate,
+                                onCheckChanged = { enable ->
+                                    vm.setIgnoreFrameworkUpdate(enable)
+                                }
+                            ))
 
-                        add(Preference.TextPreference(
-                            icon = Remix.System.loader_2_line,
-                            title = "Insert DA",
-                            summary = "Insert 100 da test data",
-                            onClick = {
-                                TestData.insertDATestData()
-                            }
-                        ))
+                        add(
+                            Preference.TextPreference(
+                                icon = Remix.System.loader_2_line,
+                                title = "Insert DA",
+                                summary = "Insert 100 da test data",
+                                onClick = {
+                                    TestData.insertDATestData()
+                                }
+                            ))
 
-                        add(Preference.TextPreference(
-                            icon = Remix.System.loader_2_line,
-                            title = "Insert Rule",
-                            summary = "Insert 100 rule test data",
-                            onClick = {
-                                TestData.insertRuleTestData()
-                            }
-                        ))
+                        add(
+                            Preference.TextPreference(
+                                icon = Remix.System.loader_2_line,
+                                title = "Insert Rule",
+                                summary = "Insert 100 rule test data",
+                                onClick = {
+                                    TestData.insertRuleTestData()
+                                }
+                            ))
 
-                        add(Preference.TextPreference(
-                            icon = Remix.Animals.cat,
-                            title = "Crash",
-                            summary = "Crash app now",
-                            onClick = {
-                                throw Error("Test app crash")
-                            }
-                        ))
+                        add(
+                            Preference.TextPreference(
+                                icon = Remix.Animals.cat,
+                                title = "Crash",
+                                summary = "Crash app now",
+                                onClick = {
+                                    throw Error("Test app crash")
+                                }
+                            ))
                     },
                 ),
             )
@@ -947,6 +971,24 @@ private fun engineSettings(
         }
     TextInputDialog(customSUDialogState)
 
+    val ocrEngineMenuState = rememberMenuDialogState<String>(
+        title = i18N["ORC Engine"],
+        menuItems = listOf(
+            OCREngine.OCREngine_Paddle,
+            OCREngine.OCREngine_Tesseract
+        ).map {
+            MenuDialogItem(
+                id = it.name,
+                title = i18N[it.labelKey()]
+            )
+        },
+        onItemSelected = { _, id ->
+            val engine = OCREngine.valueOf(id)
+            vm.setOCREngine(engine)
+        }
+    )
+    MenuDialog(state = ocrEngineMenuState)
+
     return mutableListOf(
         Preference.Category(i18N["ui.settings.engine"]),
 
@@ -1023,6 +1065,16 @@ private fun engineSettings(
                 } else {
                     vm.setSMSEngineEnable(false)
                 }
+            }
+        ),
+
+        Preference.TextPreference(
+            icon = Remix.Communication.chat_smile_fill,
+            title = i18N["OCR engine"],
+            summary = i18N[state.ocrEngine.labelKey()],
+            hasLongSummary = false,
+            onClick = {
+                ocrEngineMenuState.show()
             }
         ),
 
@@ -1109,7 +1161,8 @@ private fun aboutSettings(
             title = i18N["ui.settings.app.info"],
             summary = "${BuildPropInternal.APP_VERSION_NAME}\n${BuildPropInternal.APP_VERSION_CODE}",
             preferences = listOf(
-                Preference.TextPreference(icon = Remix.Device.instance_fill,
+                Preference.TextPreference(
+                    icon = Remix.Device.instance_fill,
                     title = i18N["ui.settings.core.info"],
                     summary = if (state.isActivated) {
                         "${state.coreVersion.name}\n${state.coreVersion.code}"
@@ -1122,14 +1175,16 @@ private fun aboutSettings(
             ),
         ),
 
-        Preference.TextPreference(icon = Remix.Logos.telegram_fill,
+        Preference.TextPreference(
+            icon = Remix.Logos.telegram_fill,
             title = i18N["ui.settings.tg"],
             summary = i18N["ui.settings.tg.summary"],
             onClick = {
                 BrowserUtils.launch(context, BuildProp.TG_GROUP)
             }
         ),
-        Preference.TextPreference(icon = Remix.Logos.qq_fill,
+        Preference.TextPreference(
+            icon = Remix.Logos.qq_fill,
             title = "QQ",
             summary = qqGroups.joinToString(System.lineSeparator()),
             onClick = {
@@ -1145,13 +1200,15 @@ private fun aboutSettings(
                 ).show()
             }
         ),
-        Preference.TextPreference(icon = Remix.Logos.open_source_fill,
+        Preference.TextPreference(
+            icon = Remix.Logos.open_source_fill,
             title = i18N["ui.settings.open.source.license"],
             onClick = {
                 viewOpenSourceLicense()
             }
         ),
-        Preference.TextPreference(icon = Remix.Document.sticky_note_2_fill,
+        Preference.TextPreference(
+            icon = Remix.Document.sticky_note_2_fill,
             title = i18N["ui.settings.privacy.statement"],
             onClick = {
                 viewPrivacyStatement()

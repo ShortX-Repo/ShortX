@@ -8,7 +8,7 @@ import tornaco.apps.shortx.core.settings.DANMU_DEFAULT_DURATION
 import tornaco.apps.shortx.core.settings.DANMU_DEFAULT_TEXT_SIZE
 
 sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
-    companion object{
+    companion object {
         const val DEFAULT_SU_PATH = "su --mount-master"
     }
 
@@ -136,6 +136,11 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
 
         data object StatusBarChipMaxLength :
             IntSettings(key = "StatusBarChipMaxLength", defaultValue = { 100 })
+
+        data object OCREngine :
+            IntSettings(
+                key = "OCREngine",
+                defaultValue = { tornaco.apps.shortx.core.proto.common.OCREngine.OCREngine_Paddle_VALUE })
     }
 
     sealed class FloatSettings(key: String, defaultValue: (Context) -> Float) :

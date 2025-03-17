@@ -20,6 +20,7 @@ import tornaco.apps.shortx.core.Version
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.Author
+import tornaco.apps.shortx.core.proto.common.OCREngine
 import tornaco.apps.shortx.core.proto.common.SensorUsage
 import tornaco.apps.shortx.ui.backup.BackupAgent
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
@@ -55,6 +56,7 @@ data class SettingsState(
     val colorfulCard: Boolean = true,
     val customSUPath: String? = null,
     val sensorUsages: List<SensorUsage> = emptyList(),
+    val ocrEngine: OCREngine = OCREngine.OCREngine_Paddle,
     val extApp: App? = null
 )
 
@@ -132,7 +134,8 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 isPostNByApp = shortXManager.isPostNByAppEnabled(),
                 customSUPath = shortXManager.getCustomSU(),
                 isForceDisableShortXByKeyPress = shortXManager.isForceDisableShortXByKeyPressEnabled(),
-                sensorUsages = shortXManager.querySensorUsage()
+                sensorUsages = shortXManager.querySensorUsage(),
+                ocrEngine = shortXManager.getOCREngine()
             )
         }
 
@@ -389,6 +392,13 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
         viewModelScope.launch {
             shortXManager.setCustomSU(path)
             updateState { copy(customSUPath = shortXManager.getCustomSU()) }
+        }
+    }
+
+    fun setOCREngine(ocrEngine: OCREngine) {
+        viewModelScope.launch {
+            shortXManager.setOCREngine(ocrEngine)
+            updateState { copy(ocrEngine = shortXManager.getOCREngine()) }
         }
     }
 }

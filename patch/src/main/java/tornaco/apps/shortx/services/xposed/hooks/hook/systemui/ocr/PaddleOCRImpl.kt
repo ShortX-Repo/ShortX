@@ -1,8 +1,9 @@
-package tornaco.apps.shortx.services.xposed.hooks.hook.systemui
+package tornaco.apps.shortx.services.xposed.hooks.hook.systemui.ocr
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.AsyncTask
 import android.os.ParcelFileDescriptor
 import com.google.protobuf.ByteString
 import com.google.protobuf.StringValue
@@ -16,34 +17,45 @@ import util.Reflections
 import java.io.FileDescriptor
 
 
-class OCRImpl(private val context: Context) : IOCR.Stub() {
+class PaddleOCRImpl(private val context: Context) : IOCR.Stub() {
     private val logger = Logger("OCRImpl")
     private val apiIns by lazy {
         ExtAppClassHelper.newInstance(
             context,
-            "tornaco.apps.shortx.ext.api.ocr.ShortXTessApi"
+            "tornaco.apps.shortx.ext.api.ocr.ShortXPaddleApi"
         )
+    }
+
+    fun init() {
+        AsyncTask.execute {
+            Reflections.callMethod(
+                apiIns,
+                "initPaddle",
+            )
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun findAllContinuousTextPositions(
+        engine: Int,
         bitmap: Bitmap,
         text: String
     ): List<ByteArrayWrapper> {
-        logger.d("findAllContinuousTextPositions apiIns: $apiIns")
+        logger.d("detect apiIns: $apiIns")
         val result = (Reflections.callMethod(
             apiIns,
-            "findAllContinuousTextPositions",
+            "detect",
             bitmap,
             text
         ) as List<ByteArray>).map {
             ByteArrayWrapper(it)
         }
-        logger.d("findAllContinuousTextPositions result: $result")
+        logger.d("detect result: $result")
         return result
     }
 
     override fun recognizeText(
+        engine: Int,
         bitmap: Bitmap,
     ): String {
         logger.d("recognizeText apiIns: $apiIns")
@@ -57,6 +69,7 @@ class OCRImpl(private val context: Context) : IOCR.Stub() {
     }
 
     override fun findAllContinuousTextPositionsPFD(
+        engine: Int,
         pfd: ParcelFileDescriptor,
         text: String,
         receiver: SynchronousResultReceiver
@@ -64,11 +77,11 @@ class OCRImpl(private val context: Context) : IOCR.Stub() {
         val res: List<ByteArray> = kotlin.runCatching {
             val fd: FileDescriptor = pfd.fileDescriptor
             val bitmap = BitmapFactory.decodeFileDescriptor(fd)
-            logger.d("findAllContinuousTextPositionsPFD, bitmap: $bitmap")
+            logger.d("detectPFD, bitmap: $bitmap")
             val result = kotlin.runCatching {
-                findAllContinuousTextPositions(bitmap, text)
+                findAllContinuousTextPositions(engine, bitmap, text)
             }.getOrElse {
-                logger.e(it, "findAllContinuousTextPositionsPFD")
+                logger.e(it, "detectPFD")
                 emptyList()
             }.map {
                 it.byteData
@@ -76,7 +89,7 @@ class OCRImpl(private val context: Context) : IOCR.Stub() {
             bitmap.recycle()
             result
         }.getOrElse {
-            logger.e(it, "findAllContinuousTextPositionsPFD")
+            logger.e(it, "detectPFD")
             emptyList()
         }
         receiver.send(
@@ -89,6 +102,7 @@ class OCRImpl(private val context: Context) : IOCR.Stub() {
     }
 
     override fun recognizeTextPFD(
+        engine: Int,
         pfd: ParcelFileDescriptor,
         receiver: SynchronousResultReceiver
     ) {
@@ -97,7 +111,7 @@ class OCRImpl(private val context: Context) : IOCR.Stub() {
             val fd: FileDescriptor = pfd.fileDescriptor
             bitmap = BitmapFactory.decodeFileDescriptor(fd)
             logger.d("recognizeTextPFD, bitmap: $bitmap")
-            recognizeText(requireNotNull(bitmap) { "bitmap is null." })
+            recognizeText(engine, requireNotNull(bitmap) { "bitmap is null." })
         }.getOrElse {
             logger.e(it, "recognizeTextPFD")
             runCatching { bitmap?.recycle() }

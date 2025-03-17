@@ -1466,6 +1466,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             return shortXContext.statusbar.isLightBarTransitionsIconsDark()
         }
 
+        override fun setOCREngine(engine: Int) {
+            shortXContext.ocr.setOCREngine(engine)
+        }
+
+        override fun getOCREngine(): Int {
+            return shortXContext.ocr.getOCREngine().number
+        }
+
         override fun addToggle(toggle: ByteArrayWrapper) {
             enforceCallingPermissions()
             v(context) {
