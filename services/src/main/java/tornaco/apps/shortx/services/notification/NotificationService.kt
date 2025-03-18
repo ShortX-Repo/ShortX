@@ -90,7 +90,8 @@ class NotificationService(shortXContext: ShortXContext) :
             nls.registerAsSystemService(
                 context,
                 ComponentName(
-                    OsUtils.isSOrAbove().select({ nls.javaClass.packageName },
+                    OsUtils.isSOrAbove().select(
+                        { nls.javaClass.packageName },
                         { "tornaco.apps.shortx.services.notification" }),
                     nls.javaClass.name
                 ),
@@ -142,10 +143,16 @@ class NotificationService(shortXContext: ShortXContext) :
         }
     }
 
-    private fun cancelShortXN(tag: String) {
+    fun postByFallback(postNotification: PostNotification) {
+        if (!isSystemReady) return
+        fallbackNotificationPoster.invoke(postNotification)
+    }
+
+    fun cancelShortXN(tag: String) {
         logger.i("cancelShortXN: $tag")
         AppNotificationServiceProxy.cancel(context, tag, systemServiceScope)
         cancelByAttached(tag)
+        kotlin.runCatching { fallbackNotificationPoster.cancelNotification(tag) }
     }
 
     private fun postByAttached(postNotification: PostNotification): Boolean {

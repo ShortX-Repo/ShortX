@@ -8,6 +8,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Binder
 import android.os.Bundle
+import android.os.IBinder
 import android.os.Parcel
 import android.os.ParcelFileDescriptor
 import android.os.ShellCommand
@@ -43,6 +44,7 @@ import tornaco.apps.shortx.core.os.ICancellationSignal
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.phone.ISMSProvider
 import tornaco.apps.shortx.core.proto.action.HttpRequest
+import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AudioRecordFile
 import tornaco.apps.shortx.core.proto.common.Author
@@ -70,6 +72,7 @@ import tornaco.apps.shortx.core.proto.rule.RuleSet
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
 import tornaco.apps.shortx.core.proto.toggles.Toggle
 import tornaco.apps.shortx.core.res.AppResources
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.IDAObserver
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.rule.IPkgSetObserver
@@ -123,6 +126,8 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         )
     )
 
+    private var systemUIClient: IBinder? = null
+
     fun main() {
         LogInit.initEarlyLogging()
         ShortXManagerNative.attachLocalService(serviceBinder)
@@ -146,6 +151,21 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         logger.d("testRes: $testRes")
         shortXContext.serviceLifecycle.systemReady()
         ABTesting.dump()
+        waitForSystemUIClient()
+    }
+
+    private fun waitForSystemUIClient() {
+        if (systemUIClient == null) {
+            shortXContext.notification.postByFallback(
+                PostNotification.newBuilder()
+                    .setTag("WaitSystemUI")
+                    .setTitle("Waiting for SystemUI")
+                    .setMessage("Waiting for SystemUI hooks, please enable SystemUI app in Xposed Manager")
+                    .setId("WaitSystemUI")
+                    .setSmallIcon(Remix.System.error_warning_line)
+                    .build()
+            )
+        }
     }
 
     private fun newBinderProxy(orig: Binder): tornaco.apps.shortx.services.util.BinderProxy {
@@ -1472,6 +1492,12 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun getOCREngine(): Int {
             return shortXContext.ocr.getOCREngine().number
+        }
+
+        override fun attachSystemUIClient(token: IBinder) {
+            systemUIClient = token
+            logger.w("attachSystemUIClient: $token")
+            shortXContext.notification.cancelShortXN("WaitSystemUI")
         }
 
         override fun addToggle(toggle: ByteArrayWrapper) {

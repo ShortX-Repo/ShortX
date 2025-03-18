@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook.systemui
 
 import android.content.Context
+import android.os.Binder
 import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.AppGlobals
@@ -133,6 +134,9 @@ fun SystemUIHook.hookApp(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runC
             installNotificationPoster(shortx, app)
             installCV(shortx, app)
             installOCR(shortx, app)
+
+            // Attach client, let Service known SystemUI is up.
+            shortx.attachSystemUIClient(Binder())
 
             CustomHook.hookApp(
                 lpparam.classLoader,
