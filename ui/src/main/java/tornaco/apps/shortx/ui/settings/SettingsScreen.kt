@@ -1069,7 +1069,7 @@ private fun engineSettings(
         ),
 
         Preference.TextPreference(
-            icon = Remix.Communication.chat_smile_fill,
+            icon = Remix.Office.text_recognition,
             title = i18N["OCR engine"],
             summary = i18N[state.ocrEngine.labelKey()],
             hasLongSummary = false,
