@@ -92,6 +92,7 @@ class StatusBarClipView(
     private val clipSettingsListener = object : ICallback.Stub() {
         override fun receive(data: ByteArrayWrapper) {
             val settings = StatusBarClipUiSettings.parseFrom(data.byteData)
+            logger.d("clipSettingsListener: $settings")
             uiState.update {
                 it.copy(settings = settings)
             }
@@ -113,10 +114,12 @@ class StatusBarClipView(
             post {
                 runCatching {
                     val clipData = StatusBarClipState.parseFrom(data.byteData)
+                    logger.d("clipListener, clipData: $clipData")
                     clipProto.set(clipData)
                     uiState.update { clipData.toUiState() }
 
                     val shouldBeVisible = clipData.text.isNotEmpty() || clipData.icon.isNotEmpty()
+                    logger.d("shouldBeVisible: $shouldBeVisible")
                     val isVisible = isVisible
                     if (shouldBeVisible != isVisible) {
                         if (shouldBeVisible) {
