@@ -17,7 +17,7 @@ object RequireBTDeviceFound : Cond {
     private val scanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult?) {
             super.onScanResult(callbackType, result)
-            logger.logOnDebug("onScanResult: $result")
+            logger.w("onScanResult: $result")
             result?.device?.let {
                 val dev = BTHelper.btDeviceToProtoDevice(it)
                 scanResults.add(dev)
@@ -26,7 +26,7 @@ object RequireBTDeviceFound : Cond {
 
         override fun onBatchScanResults(results: MutableList<ScanResult>?) {
             super.onBatchScanResults(results)
-            logger.logOnDebug("onBatchScanResults: $results")
+            logger.w("onBatchScanResults: $results")
             results?.mapNotNull { it.device }?.forEach {
                 val dev = BTHelper.btDeviceToProtoDevice(it)
                 scanResults.add(dev)
@@ -54,16 +54,17 @@ object RequireBTDeviceFound : Cond {
 
             delay(data.timeout.toLongOrNull() ?: 5000)
 
-            logger.logOnDebug("scanResults: $scanResults")
+            logger.w("scanResults: $scanResults")
 
             val hasFound = scanResults.any {
                 it.alias == data.device && (data.address.isNullOrEmpty() || data.address == it.address)
             }
-            logger.d("Has found target device? $hasFound")
+            logger.w("Has found target device? $hasFound")
             scanner.stopScan(scanCallback)
 
             val reason =
-                scanResults.joinToString(System.lineSeparator()) { "${it.alias}-${it.address}" }
+                "scanResults:\n" +
+                        scanResults.joinToString(System.lineSeparator()) { "${it.alias}-${it.address}" }
 
             val res = hasFound
             if (data.isInvert) {

@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 import android.content.ContentUris
 import android.net.Uri
 import android.provider.MediaStore
+import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.media.FileRow
@@ -12,6 +13,7 @@ import tornaco.apps.shortx.core.platform.Methods.onDelete
 import tornaco.apps.shortx.core.platform.Methods.onInsert
 import tornaco.apps.shortx.core.platform.PackageNames.mediaProvider
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.logAdapter
 import util.Reflections
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
@@ -22,56 +24,65 @@ object MediaProviderHook {
 
     fun hook(lpparam: XC_LoadPackage.LoadPackageParam) {
         if (lpparam.packageName == mediaProvider) {
+            // Install log
+            logAdapter = { _: Int, tag: String, msg: String ->
+                XposedBridge.log(tag + "\t" + msg)
+            }
+
             beforeMethod(
                 lpparam.classLoader.mediaProviderClass(), onCreate
             ) { param ->
-                logger.w("onCreate.")
-                // import com.android.providers.media.DatabaseHelper
-                //import com.android.providers.media.DatabaseHelper.OnFilesChangeListener
-                //import com.android.providers.media.dao.FileRow
-                val mFilesListener = Reflections.getObjectField(
-                    param.thisObject,
-                    "mFilesListener"
-                )
-                logger.w("mFilesListener: $mFilesListener")
+                runCatching {
+                    logger.w("onCreate.")
+                    // import com.android.providers.media.DatabaseHelper
+                    //import com.android.providers.media.DatabaseHelper.OnFilesChangeListener
+                    //import com.android.providers.media.dao.FileRow
+                    val mFilesListener = Reflections.getObjectField(
+                        param.thisObject,
+                        "mFilesListener"
+                    )
+                    logger.w("mFilesListener: $mFilesListener")
 
-                val onFilesChangeListenerClass = Reflections.findClass(
-                    "com.android.providers.media.DatabaseHelper.OnFilesChangeListener",
-                    lpparam.classLoader
-                )
-                val stubListener: Any? = Proxy.newProxyInstance(
-                    lpparam.classLoader,
-                    arrayOf(onFilesChangeListenerClass)
-                ) { _: Any?, method: Method, args: Array<Any?>? ->
-                    return@newProxyInstance if ("toString" == method.name) {
-                        "StubOnFilesChangeListener"
-                    } else {
-                        logger.d("Method called: $method (${args?.map { it }})")
-                        if (onDelete == method.name) {
-                            handleOnDelete(args)
-                        }
-                        if (onInsert == method.name) {
-                            handleOnInsert(args)
-                        }
-                        if (args != null) {
-                            Reflections.callMethod(
-                                mFilesListener,
-                                method.name,
-                                *args
-                            )
+                    val onFilesChangeListenerClass = Reflections.findClass(
+                        "com.android.providers.media.DatabaseHelper.OnFilesChangeListener",
+                        lpparam.classLoader
+                    )
+                    val stubListener: Any? = Proxy.newProxyInstance(
+                        lpparam.classLoader,
+                        arrayOf(onFilesChangeListenerClass)
+                    ) { _: Any?, method: Method, args: Array<Any?>? ->
+                        return@newProxyInstance if ("toString" == method.name) {
+                            "StubOnFilesChangeListener"
                         } else {
-                            Reflections.callMethod(
-                                mFilesListener,
-                                method.name
-                            )
+                            logger.d("Method called: $method (${args?.map { it }})")
+                            if (onDelete == method.name) {
+                                handleOnDelete(args)
+                            }
+                            if (onInsert == method.name) {
+                                handleOnInsert(args)
+                            }
+                            if (args != null) {
+                                Reflections.callMethod(
+                                    mFilesListener,
+                                    method.name,
+                                    *args
+                                )
+                            } else {
+                                Reflections.callMethod(
+                                    mFilesListener,
+                                    method.name
+                                )
+                            }
                         }
                     }
-                }
-                logger.w("stubListener: $stubListener")
+                    logger.w("stubListener: $stubListener")
 
-                // Install.
-                Reflections.setObjectField(param.thisObject, "mFilesListener", stubListener)
-                logger.w("StubOnFilesChangeListener installed")
+                    // Install.
+                    Reflections.setObjectField(param.thisObject, "mFilesListener", stubListener)
+                    logger.w("StubOnFilesChangeListener installed")
+                }.onFailure {
+                    logger.e(it, "Handle onCreate.")
+                }
             }
         }
     }
@@ -113,15 +124,15 @@ object MediaProviderHook {
             val path = Reflections.callMethod(deletedRow, "getPath") as String?
             val mediaUri: String? = getUriFrom(volumeName, type, id)?.toString()
             FileRow(
-                id,
-                volumeName.orEmpty(),
-                type,
-                ownerPackageName.orEmpty(),
-                path.orEmpty(),
-                mediaUri
+                id = id,
+                volumeName = volumeName.orEmpty(),
+                mediaType = type,
+                ownerPackageName = ownerPackageName.orEmpty(),
+                path = path.orEmpty(),
+                mediaUri = mediaUri
             )
         }.getOrElse {
-            logger.e(it, "handleOnDelete")
+            logger.e(it, "mapToFileRow")
             null
         }
     }
