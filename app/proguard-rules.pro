@@ -97,6 +97,28 @@
 # Plugin
 -keep class shortx.plugin.** { *; }
 
+# Play version
+#  Failed to load class tornaco.apps.shortx.services.xposed.hooks.hook.XposedEntry
+  #java.lang.NoClassDefFoundError: Failed resolution of: Lgithub/tornaco/shortx/android/service/patch/StringFog;
+  #	at tornaco.apps.shortx.services.xposed.hooks.hook.XposedEntry.initZygote(Unknown Source:14)
+  #	at de.robv.android.xposed.XposedInit.initModule(Unknown Source:80)
+  #	at de.robv.android.xposed.XposedInit.loadModule(Unknown Source:249)
+  #	at de.robv.android.xposed.XposedInit.lambda$loadModules$0(Unknown Source:11)
+  #	at de.robv.android.xposed.XposedInit.a(Unknown Source:0)
+  #	at j0.accept(Unknown Source:8)
+  #	at java.util.ArrayList.forEach(ArrayList.java:1262)
+  #	at de.robv.android.xposed.XposedInit.loadModules(Unknown Source:12)
+  #	at org.lsposed.lspd.core.Main.forkCommon(Unknown Source:231)
+  #	at com.android.internal.os.Zygote.nativeForkAndSpecialize(Native Method)
+  #	at com.android.internal.os.Zygote.forkAndSpecialize(Zygote.java:241)
+  #	at com.android.internal.os.ZygoteConnection.processOneCommand(ZygoteConnection.java:267)
+  #	at com.android.internal.os.ZygoteServer.runSelectLoop(ZygoteServer.java:456)
+  #	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:917)
+-keep class **.*StringFog {
+    public <methods>;
+    public <fields>;
+}
+
 # Please add these rules to your existing keep rules in order to suppress warnings.
 # This is generated automatically by the Android Gradle plugin.
 -dontwarn android.accessibilityservice.IAccessibilityServiceClient$Stub
@@ -237,5 +259,3 @@
 
 -dontwarn com.android.internal.statusbar.StatusBarIcon$Type
 -dontwarn com.android.internal.statusbar.StatusBarIcon
-
--dontwarn github.tornaco.shortx.android.service.patch.StringFog
