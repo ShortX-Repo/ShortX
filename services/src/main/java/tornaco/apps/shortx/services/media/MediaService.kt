@@ -18,30 +18,26 @@ class MediaService(shortXContext: ShortXContext) : SystemService(shortXContext, 
 
     fun onMediaStoreInsert(row: FileRow) {
         with(row) {
-            kotlin.runCatching {
-                logger.logOnDebug("onMediaStoreInsert: $this")
-                handler.postSafety("onMediaStoreInsert") {
-                    shortXContext.rule.publishFactChecked(
-                        MediaStoreInsert.getDefaultInstance()
+            logger.w("onMediaStoreInsert: ${this.id}")
+            handler.postSafety("onMediaStoreInsert") {
+                logger.w("About to publishFactChecked: MediaStoreInsert.")
+                shortXContext.rule.publishFactChecked(
+                    MediaStoreInsert.getDefaultInstance()
+                ) {
+                    FactPublishData(
+                        reason = "onMediaStoreInsert",
+                        fact = MediaStoreInsert.newBuilder()
+                            .setPath(path)
+                            .setUriString(mediaUri.orEmpty())
+                            .setFilterPath(path)
+                            .build()
                     ) {
-                        FactPublishData(
-                            reason = "onMediaStoreInsert",
-                            fact = MediaStoreInsert.newBuilder()
-                                .setPath(path)
-                                .setUriString(mediaUri.orEmpty())
-                                .setFilterPath(path)
-                                .build()
-                        ) {
-                            mapOf(
-                                ContextDataMapping.MediaStoreInsert.mediaUri.name to mediaUri.orEmpty(),
-                                ContextDataMapping.MediaStoreInsert.mediaFilePath.name to path
-                            )
-                        }
+                        mapOf(
+                            ContextDataMapping.MediaStoreInsert.mediaUri.name to mediaUri.orEmpty(),
+                            ContextDataMapping.MediaStoreInsert.mediaFilePath.name to path
+                        )
                     }
                 }
-
-            }.onFailure {
-                logger.e(it)
             }
         }
     }

@@ -508,6 +508,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         }
 
         override fun onMediaStoreInsert(row: FileRow) {
+            logger.w("onMediaStoreInsert. ${row.id} ${row.mediaUri}")
             shortXContext.media.onMediaStoreInsert(row)
         }
 

@@ -49,7 +49,7 @@ abstract class DialogView(
     abstract fun DialogContent()
 }
 
-private fun Context.getDialogCornerRadius(): Float {
+fun Context.getDialogCornerRadius(): Float {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         val typedValue = TypedValue()
         theme.resolveAttribute(android.R.attr.dialogCornerRadius, typedValue, true)

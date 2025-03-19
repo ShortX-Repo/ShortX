@@ -73,7 +73,7 @@ class PPNManager(
 
         androidDialog.setOnShowListener {
             logger.d("androidDialog.setOnShowListener")
-            dialogView.translationY = (-1) * dialogView.height / 2.0f
+            dialogView.translationY = -(50._dp.toFloat())
 
             dialogView.setAlpha(0f)
 
