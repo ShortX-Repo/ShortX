@@ -135,7 +135,7 @@ class FactPublishInterceptor(
         logger.i("buildCache.")
 
         val enabledRules =
-            shortXContext.rule.getAllEnabledRules().map { it.findTypeUrls() }.flatten()
+            shortXContext.rule.getAllRules().map { it.findTypeUrls() }.flatten()
         logger.d("rules: ${enabledRules.joinToString(System.lineSeparator())}")
 
         val allDAs = shortXContext.rule.getAllDirectAction().map { it.findTypeUrls() }.flatten()
