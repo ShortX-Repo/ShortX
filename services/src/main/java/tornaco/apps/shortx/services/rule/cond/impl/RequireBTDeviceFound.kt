@@ -62,12 +62,15 @@ object RequireBTDeviceFound : Cond {
             logger.d("Has found target device? $hasFound")
             scanner.stopScan(scanCallback)
 
+            val reason =
+                scanResults.joinToString(System.lineSeparator()) { "${it.alias}-${it.address}" }
+
             val res = hasFound
             if (data.isInvert) {
                 !res
             } else {
                 res
-            }.toResult()
+            }.toResult(reason)
         }
     }
 }
