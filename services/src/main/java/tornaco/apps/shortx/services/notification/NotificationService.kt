@@ -14,6 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.notification.INotificationPoster
 import tornaco.apps.shortx.core.notification.NotificationPoster
@@ -25,6 +26,7 @@ import tornaco.apps.shortx.core.proto.fact.Notification
 import tornaco.apps.shortx.core.proto.fact.NotificationPosted
 import tornaco.apps.shortx.core.proto.fact.NotificationRemoved
 import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
+import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
@@ -82,6 +84,8 @@ class NotificationService(shortXContext: ShortXContext) :
 
     private val internalNotificationListeners = mutableListOf<() -> Unit>()
 
+    private val ppnManager by lazy { PPNManager(context, shortXContext, systemServiceScope) }
+
     @SuppressLint("MissingPermission", "NewApi")
     override fun systemReady() {
         super.systemReady()
@@ -132,6 +136,17 @@ class NotificationService(shortXContext: ShortXContext) :
 
     fun post(postNotification: PostNotification) {
         if (!isSystemReady) return
+
+        // TODO Test
+        if (BuildPropInternal.APP_IS_DEBUG) {
+            ppnManager.postShowPPNView(
+                EvaluateContext.getDefaultInstance(),
+                emptyMap(),
+                LocalVars.obtain(),
+                emptyList(),
+            )
+        }
+
         if (isPostNByAppEnabled()) {
             logger.d("post by app.")
             AppNotificationServiceProxy.post(context, postNotification, systemServiceScope)
