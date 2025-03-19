@@ -529,7 +529,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             val data = dataProvider()
             publishFact(data.reason, data.fact, data.initialContextDataLazy)
         } else {
-            logger.i("publishFact ${factDefaultInstance.getTypeUrl()}, Skip intercepted.")
+            logger.w("publishFact ${factDefaultInstance.getTypeUrl()}, Skip intercepted.")
         }
     }
 
