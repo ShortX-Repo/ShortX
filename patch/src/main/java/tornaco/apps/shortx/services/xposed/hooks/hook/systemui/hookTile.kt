@@ -11,6 +11,8 @@ import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.services.xposed.hooks.hook.afterMethod
 import util.Reflections
 
+var sAutoHideControllerImpl: Any? = null
+
 fun SystemUIHook.hookTile(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
     if (PackageNames.systemUI == lpparam.packageName) {
         afterMethod(
@@ -35,6 +37,9 @@ fun SystemUIHook.hookTile(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.run
                         logger.d("handleClick: $name, tile: $tile")
                         it.onTileClick(tile.number)
                         param.result = null
+
+                        Reflections.callMethod(sAutoHideControllerImpl, "touchAutoHide")
+                        logger.d("touchAutoHide done")
                     }
                 }
             }

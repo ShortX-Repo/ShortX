@@ -3,9 +3,11 @@ package tornaco.apps.shortx.services.xposed.hooks.hook.systemui
 import android.content.res.Resources
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.platform.PackageNames
+import tornaco.apps.shortx.services.xposed.hooks.hook.afterConstruct
 import tornaco.apps.shortx.services.xposed.hooks.hook.afterMethod
 import tornaco.apps.shortx.ui.statusbar.StatusBarClipView
 import util.Reflections
@@ -72,6 +74,16 @@ fun SystemUIHook.hookView(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.run
                     }
                 }
             }
+        }
+
+        afterConstruct(
+            clazz = Reflections.findClass(
+                "com.android.systemui.statusbar.phone.AutoHideControllerImpl",
+                lpparam.classLoader
+            ),
+        ) { param ->
+            logger.d("AutoHideControllerImpl: ${param.thisObject}")
+            sAutoHideControllerImpl = param.thisObject
         }
     }
 }.onFailure {

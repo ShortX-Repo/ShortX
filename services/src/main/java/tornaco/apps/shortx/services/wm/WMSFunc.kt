@@ -8,6 +8,6 @@ object WMSFunc {
         requireNotNull(ServiceHolder.windowManagerService) {
             "windowManagerService is null."
         }
-        Reflections.callMethod(ServiceHolder.windowManagerService, "lockDeviceNow")
+        Reflections.callMethod(ServiceHolder.windowManagerService, "hideTransientBars", 0)
     }
 }

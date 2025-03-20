@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -14,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.proto.common.DialogUiStyleSettings
@@ -68,14 +70,15 @@ abstract class ShadowDialogView(
 @Composable
 fun ShadowBox3(
     modifier: Modifier = Modifier,
+    elevation: Dp = 12.dp,
+    shape: Shape = CardDefaults.shape,
     shadowColor: Color = Color.Black.copy(alpha = 0.5f),
-    shape: Shape,
     content: @Composable () -> Unit
 ) {
     Box(
         modifier = modifier
             .shadow(
-                elevation = 12.dp,
+                elevation = elevation,
                 shape = shape,
                 spotColor = shadowColor,
                 ambientColor = shadowColor,
