@@ -7,9 +7,10 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,27 +35,30 @@ class PPNotificationView(
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
     override fun DialogContent() {
-        Surface {
-            Row(
-                modifier = Modifier
-                    .combinedClickable(onClick = {
-                        onClick(showPPN)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .combinedClickable(onClick = {
+                    onClick(showPPN)
 
-                    }, onLongClick = {
-                        onLongClick(showPPN)
-                    })
-                    .padding(12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                AnimatedVisibility(showPPN.smallIcon.isNotEmpty()) {
-                    ColoredIcon(modifier = Modifier.padding(end = 16.dp)) {
-                        RemixIcon(showPPN.smallIcon)
-                    }
+                }, onLongClick = {
+                    onLongClick(showPPN)
+                })
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            AnimatedVisibility(showPPN.smallIcon.isNotEmpty()) {
+                ColoredIcon(
+                    modifier = Modifier.padding(end = 16.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                    size = 48.dp
+                ) {
+                    RemixIcon(remixName = showPPN.smallIcon, modifier = Modifier.size(24.dp))
                 }
-                Column {
-                    Text(showPPN.title)
-                    Text(showPPN.message, style = MaterialTheme.typography.bodySmall)
-                }
+            }
+            Column {
+                Text(showPPN.title)
+                Text(showPPN.message, style = MaterialTheme.typography.bodySmall)
             }
         }
     }
