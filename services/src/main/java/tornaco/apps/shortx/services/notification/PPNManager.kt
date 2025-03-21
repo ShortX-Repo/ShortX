@@ -8,13 +8,12 @@ import android.view.WindowManager
 import com.android.internal.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import tornaco.apps.shortx.core.localvar.LocalVars
-import tornaco.apps.shortx.core.logOnDebug
-import tornaco.apps.shortx.core.proto.func.FuncParameterInput
-import tornaco.apps.shortx.core.proto.rule.EvaluateContext
-import tornaco.apps.shortx.core.rule.toLogString
+import tornaco.apps.shortx.core.proto.action.ShowPPN
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.services.ShortXContext
@@ -32,34 +31,33 @@ class PPNManager(
 
     private val logger = Logger("PPNManager")
 
-    fun postShowPPNView(
-        evaluateContext: EvaluateContext,
-        contextData: Map<String, String>,
-        localVars: LocalVars,
-        parameters: List<FuncParameterInput>,
-    ) = scope.launchSafety("postShowPPNView") {
-        withContext(Dispatchers.Main) {
-            logger.logOnDebug("local vars: ${localVars.all.joinToString { it.name }}")
-            logger.logOnDebug("parameters: ${parameters.joinToString { it.toLogString() }}")
+    private val messageQueue = Channel<ShowPPN>(capacity = Channel.UNLIMITED)
+    private var processingJob: Job? = null
 
-            showPPNDialog(
-                evaluateContext = evaluateContext,
-                contextData = contextData,
-                localVars = localVars,
-                parameters = parameters,
-            )
+    fun enqueueMessage(message: ShowPPN) {
+        scope.launch {
+            messageQueue.send(message) // 添加到队列
+        }
+        startProcessing()
+    }
+
+    private fun startProcessing() {
+        if (processingJob?.isActive == true) return // 避免重复启动
+
+        processingJob = scope.launchSafety("startProcessing") {
+            for (message in messageQueue) {
+                withContext(Dispatchers.Main) {
+                    showPPNDialog(message)
+                }
+            }
         }
     }
 
-    private suspend fun showPPNDialog(
-        evaluateContext: EvaluateContext,
-        contextData: Map<String, String>,
-        localVars: LocalVars,
-        parameters: List<FuncParameterInput>,
-    ) {
+    private suspend fun showPPNDialog(ppn: ShowPPN) {
         val dialogView = PPNotificationView(
             context = context,
             i18N = i18NIns,
+            showPPN = ppn,
             onDismissRequest = {},
             onClick = {},
             onLongClick = {}
@@ -71,16 +69,19 @@ class PPNManager(
         dialogView.initView()
         dialogView.setAlpha(0f)
 
+        val initialTranslationY = (50._dp.toFloat())
+        val animDuration = 466L
+
         androidDialog.setOnShowListener {
             logger.d("androidDialog.setOnShowListener")
-            dialogView.translationY = -(50._dp.toFloat())
+            dialogView.translationY = initialTranslationY
 
             dialogView.setAlpha(0f)
 
             dialogView.animate()
                 .alpha(1f)
                 .translationY(0f)
-                .setDuration(466)
+                .setDuration(animDuration)
                 .setInterpolator(LogDecelerateInterpolator())
                 .start()
         }
@@ -88,7 +89,7 @@ class PPNManager(
         androidDialog.showInSystemServer(
             view = dialogView,
             cancelable = true,
-            gravity = Gravity.TOP or Gravity.CENTER_VERTICAL,
+            gravity = Gravity.BOTTOM or Gravity.CENTER_VERTICAL,
             onWindow = {
                 val params = attributes
 
@@ -107,15 +108,23 @@ class PPNManager(
                 params.format = PixelFormat.TRANSLUCENT
                 params.title = "ShortX-PPN"
                 params.windowAnimations = -1
-                params.y = 120._dp
+                params.verticalMargin = 100._dp.toFloat()
                 attributes = params
             },
             onDismiss = {
             }
         )
 
-        delay(5000)
-        androidDialog.dismiss()
+        delay(6000)
+        dialogView.animate()
+            .alpha(0f)
+            .translationY(initialTranslationY)
+            .setDuration(animDuration)
+            .setInterpolator(LogDecelerateInterpolator())
+            .withEndAction {
+                androidDialog.dismiss()
+            }
+            .start()
     }
 
 }

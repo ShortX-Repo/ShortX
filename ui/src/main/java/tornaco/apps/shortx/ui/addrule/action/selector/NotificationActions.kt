@@ -59,6 +59,17 @@ fun notificationActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectS
         }
     )
 
+
+    val showPPNLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action.ShowPPN>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
     val removeNotificationState =
         rememberNotificationAppAndMatcherSelectorState(LocalI18N.current["ui.action.remove.notification"]) { it, _ ->
             addAction(Action.RemoveNotification(n = it))
@@ -113,6 +124,18 @@ fun notificationActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectS
                 true
             }
 
+
+            Action.ShowPPN::class -> {
+                showPPNLauncher.launch(
+                    BaseSelectorActivity.newIntent(
+                        context,
+                        source.getActionAs<Action.ShowPPN>(),
+                        ShowPPNSelectorActivity::class.java
+                    )
+                )
+                true
+            }
+
             Action.RemoveNotification::class -> {
                 removeNotificationState.show(source.getActionAs<Action.RemoveNotification>()?.n)
                 true
@@ -152,6 +175,7 @@ fun NotificationActions(
         Action.ClickNotificationActionButton::class,
         Action.RemoveNotificationForPackage::class,
         Action.RemoveNotificationForPackageByPkg::class,
+        Action.ShowPPN::class,
     ).map {
         SelectorItem(
             type = it,

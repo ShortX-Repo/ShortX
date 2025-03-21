@@ -2,41 +2,60 @@ package tornaco.apps.shortx.ui.notification
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.I18N
+import tornaco.apps.shortx.core.proto.action.ShowPPN
 import tornaco.apps.shortx.core.proto.common.DialogUiStyleSettings
+import tornaco.apps.shortx.ui.base.ColoredIcon
+import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.dialog.ShadowDialogView
 
 @SuppressLint("ViewConstructor")
 class PPNotificationView(
     context: Context,
     i18N: I18N,
-    private val onDismissRequest: () -> Unit,
-    private val onClick: () -> Unit,
-    private val onLongClick: () -> Unit,
+    private val showPPN: ShowPPN,
+    private val onDismissRequest: (ShowPPN) -> Unit,
+    private val onClick: (ShowPPN) -> Unit,
+    private val onLongClick: (ShowPPN) -> Unit,
 ) : ShadowDialogView(context, i18N, DialogUiStyleSettings.getDefaultInstance()) {
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
     override fun DialogContent() {
-        Column(
-            modifier = Modifier
-                .combinedClickable(onClick = {
-                    onClick()
+        Surface {
+            Row(
+                modifier = Modifier
+                    .combinedClickable(onClick = {
+                        onClick(showPPN)
 
-                }, onLongClick = {
-                    onLongClick()
-                })
-                .padding(16.dp)
-        ) {
-            Text("Hello there.")
-            Text("How is it going?")
+                    }, onLongClick = {
+                        onLongClick(showPPN)
+                    })
+                    .padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AnimatedVisibility(showPPN.smallIcon.isNotEmpty()) {
+                    ColoredIcon(modifier = Modifier.padding(end = 16.dp)) {
+                        RemixIcon(showPPN.smallIcon)
+                    }
+                }
+                Column {
+                    Text(showPPN.title)
+                    Text(showPPN.message, style = MaterialTheme.typography.bodySmall)
+                }
+            }
         }
     }
 }

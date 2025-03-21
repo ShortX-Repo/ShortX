@@ -333,6 +333,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.ClickNotificationActionButton
     },
+    ShowPPN {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ShowPPN
+    },
     FromDA {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.FromDA
