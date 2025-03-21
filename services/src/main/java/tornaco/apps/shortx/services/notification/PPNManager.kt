@@ -16,6 +16,7 @@ import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.action.ShowPPN
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util._dp
+import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.overlay.sidebar.LogDecelerateInterpolator
 import tornaco.apps.shortx.services.ui.i18NIns
@@ -71,6 +72,7 @@ class PPNManager(
 
         val initialTranslationY = (50._dp.toFloat())
         val animDuration = 466L
+        val screenSize = context.screenSize()
 
         androidDialog.setOnShowListener {
             logger.d("androidDialog.setOnShowListener")
@@ -89,7 +91,7 @@ class PPNManager(
         androidDialog.showInSystemServer(
             view = dialogView,
             cancelable = true,
-            gravity = Gravity.BOTTOM or Gravity.CENTER_VERTICAL,
+            gravity = Gravity.TOP or Gravity.CENTER_VERTICAL,
             onWindow = {
                 val params = attributes
 
@@ -97,18 +99,27 @@ class PPNManager(
                     WindowManager.LayoutParams.FLAG_DIM_BEHIND
                             or WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR
                 )
-                addFlags(
-                    (WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                            or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-                            or WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED)
-                )
+                if (ppn.clickActionList.isEmpty()) {
+                    addFlags(
+                        (WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                                or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                                or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                                or WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED)
+                    )
+                } else {
+                    addFlags(
+                        (WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                                or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                                or WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED)
+                    )
+                }
                 addPrivateFlags(WindowManager.LayoutParams.PRIVATE_FLAG_TRUSTED_OVERLAY)
                 setType(WindowManager.LayoutParams.TYPE_VOLUME_OVERLAY)
                 setWindowAnimations(R.style.Animation_Toast)
                 params.format = PixelFormat.TRANSLUCENT
                 params.title = "ShortX-PPN"
                 params.windowAnimations = -1
-                params.verticalMargin = 100._dp.toFloat()
+                params.y = (screenSize.y * 0.76f).toInt()
                 attributes = params
             },
             onDismiss = {

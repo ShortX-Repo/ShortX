@@ -35,11 +35,19 @@ abstract class ShadowDialogView(
             context.getDialogCornerRadius()
         }.getOrNull()?.takeIf { it > 10f }
         Logger.nameless.w("platformRadius: $platformRadius")
+        val shape = if (platformRadius == null) {
+            RoundedCornerShape(24.dp)
+        } else {
+            RoundedCornerShape(
+                platformRadius
+            )
+        }
         ShortXServiceUITheme {
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 tonalElevation = 4.dp,
-                color = Color.Transparent
+                color = Color.Transparent,
+                shape = shape
             ) {
                 Box(
                     Modifier
@@ -48,13 +56,7 @@ abstract class ShadowDialogView(
                 ) {
                     ShadowBox3(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = if (platformRadius == null) {
-                            RoundedCornerShape(24.dp)
-                        } else {
-                            RoundedCornerShape(
-                                platformRadius
-                            )
-                        },
+                        shape = shape,
                     ) {
                         DialogContent()
                     }
@@ -70,7 +72,7 @@ abstract class ShadowDialogView(
 @Composable
 fun ShadowBox3(
     modifier: Modifier = Modifier,
-    elevation: Dp = 12.dp,
+    elevation: Dp = 4.dp,
     shape: Shape = CardDefaults.shape,
     shadowColor: Color = Color.Black.copy(alpha = 0.5f),
     content: @Composable () -> Unit
