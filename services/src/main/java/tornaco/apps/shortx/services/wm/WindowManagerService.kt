@@ -16,6 +16,8 @@ import androidx.test.uiautomator.imp.UiSelector
 import androidx.test.uiautomator.imp.adapter.InstrumentationAdapter
 import github.tornaco.android.thanos.core.app.ThanosManagerNative
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.common.AppPkg
@@ -59,6 +61,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
 
     private val uiAutoLock = "UiAutoLock"
 
+    private val overlayLock = Mutex()
     private val showingUCHints: MutableSet<UniversalCopyView> = mutableSetOf()
     private val showingIVHints: MutableSet<IdViewerView> = mutableSetOf()
     private val showingDrawerBoard: MutableSet<DrawBoardView> = mutableSetOf()
@@ -691,7 +694,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
             showingClipboard.clear()
 
             systemServiceScope.launchSafety("disableAllOverlay") {
-                action()
+                overlayLock.withLock { action() }
             }
         }
     }
