@@ -6,6 +6,7 @@ import android.database.ContentObserver
 import android.net.Uri
 import android.provider.Settings
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.fact.SystemSettingsChanged
 import tornaco.apps.shortx.core.proto.rule.Rule
@@ -16,7 +17,6 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.rule.valueList
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.newHandlerOfNewThread
 import tornaco.apps.shortx.services.ShortXContext
 import util.Reflections
@@ -119,11 +119,15 @@ class SystemSettingsTrigger(
         logger.d("register for new urls: $urls")
         if (urls.isNotEmpty()) {
             urls.forEach {
-                context.contentResolver.registerContentObserver(
-                    Uri.parse(it),
-                    true,
-                    contentObs
-                )
+                runCatching {
+                    context.contentResolver.registerContentObserver(
+                        Uri.parse(it),
+                        true,
+                        contentObs
+                    )
+                }.onFailure {
+                    logger.e(it, "registerContentObserver: $it")
+                }
             }
         }
 
