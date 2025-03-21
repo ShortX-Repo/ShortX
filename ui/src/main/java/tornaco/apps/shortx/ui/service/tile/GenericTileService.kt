@@ -42,13 +42,14 @@ abstract class GenericTileService : TileService() {
     private fun updateTile() {
         shortXManager.getStatusBarTileSettingsByNumber(tileIndex.number)?.let {
             logger.d("updateTile: $it")
-
-            qsTile.label = it.label
-            val resName = Remix.allFlat[it.iconName]
-            qsTile.icon = appRes.getIcon(resName)
-            qsTile.state = it.isActive.select(Tile.STATE_ACTIVE, Tile.STATE_INACTIVE)
-            qsTile.contentDescription = tileIndex.number.toString()
-            qsTile.updateTile()
+            if (qsTile != null) {
+                qsTile.label = it.label
+                val resName = Remix.allFlat[it.iconName]
+                qsTile.icon = appRes.getIcon(resName)
+                qsTile.state = it.isActive.select(Tile.STATE_ACTIVE, Tile.STATE_INACTIVE)
+                qsTile.contentDescription = tileIndex.number.toString()
+                qsTile.updateTile()
+            }
         }
     }
 
