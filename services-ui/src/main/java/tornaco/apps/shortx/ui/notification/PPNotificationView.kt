@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -50,10 +51,13 @@ class PPNotificationView(
             AnimatedVisibility(showPPN.smallIcon.isNotEmpty()) {
                 ColoredIcon(
                     modifier = Modifier.padding(end = 16.dp),
-                    color = MaterialTheme.colorScheme.primary,
+                    color = ButtonDefaults.filledTonalButtonColors().containerColor,
                     size = 48.dp
                 ) {
-                    RemixIcon(remixName = showPPN.smallIcon, modifier = Modifier.size(24.dp))
+                    RemixIcon(
+                        remixName = showPPN.smallIcon, modifier = Modifier.size(24.dp),
+                        tint = ButtonDefaults.filledTonalButtonColors().contentColor
+                    )
                 }
             }
             Column {
