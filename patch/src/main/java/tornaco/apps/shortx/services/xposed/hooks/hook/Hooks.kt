@@ -63,7 +63,7 @@ fun beforeMethod(
         require(this.size > 0) {
             "beforeMethod, unable to hook this method: $clazz#$methodName"
         }
-        logger.w("beforeMethod, unhooks: $this for method: $clazz#$methodName")
+        logger.d("beforeMethod, unhooks: $this for method: $clazz#$methodName")
     }
 }
 
@@ -87,7 +87,7 @@ fun afterMethod(
         require(this.size > 0) {
             "afterMethod, unable to hook this method: $clazz#$methodName"
         }
-        logger.w("afterMethod, unhooks: $this for method: $clazz#$methodName")
+        logger.d("afterMethod, unhooks: $this for method: $clazz#$methodName")
     }
 }
 
@@ -110,5 +110,5 @@ fun afterMethod(
     require(unHook != null) {
         "afterMethod, unable to hook this method: $method"
     }
-    logger.w("afterMethod, unhook: $unHook for method: $method")
+    logger.d("afterMethod, unhook: $unHook for method: $method")
 }
