@@ -20,12 +20,35 @@ object ATMSFuncs {
         val top = Reflections.callMethod(atmsInt, "getTopVisibleActivities") as List<Any>
         // ActivityAssistInfo or IBinder
 
-        return top.mapNotNull {
+        return top.mapNotNull { arOrActivityAssistInfo ->
             // ActivityRecord
-            val ar = if (it is IBinder) {
-                ActivityRecordUtils.forTokenLocked(it, atmsInt.javaClass.classLoader)
+            val ar = if (arOrActivityAssistInfo is IBinder) {
+                ActivityRecordUtils.forTokenLocked(
+                    arOrActivityAssistInfo,
+                    atmsInt.javaClass.classLoader
+                )
             } else {
-                val ib = Reflections.callMethod(it, "getActivityToken") as IBinder
+                val ib = kotlin.runCatching {
+                    Reflections.callMethod(arOrActivityAssistInfo, "getActivityToken") as IBinder
+                }.getOrElse {
+                    // One UI 7 has no getter method
+                    // public final class ActivityAssistInfo {
+                    //    public final IBinder mActivityToken;
+                    //    public final IBinder mAssistToken;
+                    //    public final ComponentName mComponentName;
+                    //    public final int mTaskId;
+                    //    public final int mUserId;
+                    //
+                    //    public ActivityAssistInfo(ActivityRecord activityRecord) {
+                    //        this.mActivityToken = activityRecord.token;
+                    //        this.mAssistToken = activityRecord.assistToken;
+                    //        this.mTaskId = activityRecord.task.mTaskId;
+                    //        this.mComponentName = activityRecord.mActivityComponent;
+                    //        this.mUserId = activityRecord.mUserId;
+                    //    }
+                    //}
+                    Reflections.getObjectField(it, "mActivityToken") as IBinder
+                }
                 ActivityRecordUtils.forTokenLocked(ib, atmsInt.javaClass.classLoader)
             }
             val uid = ActivityRecordUtils.getUid(ar)
