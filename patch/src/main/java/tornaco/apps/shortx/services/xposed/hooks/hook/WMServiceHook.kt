@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.platform.Classes.windowManagerServiceClass
+import tornaco.apps.shortx.core.platform.Classes.windowStateClass
 import tornaco.apps.shortx.core.platform.Methods.systemReady
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXService
@@ -52,6 +53,32 @@ object WMServiceHook {
             }
         }.onFailure {
             logger.e(it, "hookNotifyFocusChanged")
+            // Alt hook.
+            hookReportFocusChangedSerialized(lpparam)
+        }
+
+    // WindowState.
+    // For OneUI 7, no WMS.notifyFocusChanged method...
+    private fun hookReportFocusChangedSerialized(lpparam: XC_LoadPackage.LoadPackageParam) =
+        kotlin.runCatching {
+            afterMethod(
+                lpparam.classLoader.windowStateClass(),
+                "reportFocusChangedSerialized"
+            ) { param ->
+                logger.d("reportFocusChangedSerialized: ${param.args.map { it }}")
+                val wms = Reflections.getObjectField(param.thisObject, "mWmService")
+                val focused = GetFocusedWindowMethodCall.call(wms)
+                logger.d("reportFocusChangedSerialized: $focused")
+                if (focused != null) {
+                    val ownerUid = Reflections.getIntField(focused, "mOwnerUid")
+                    val windowTag =
+                        Reflections.callMethod(focused, "getWindowTag")?.toString().orEmpty()
+                    logger.d("reportFocusChangedSerialized: $focused, owner: $ownerUid, tag: $windowTag")
+                    ShortXService.shortXContext.wm.onWindowFocusChanged(ownerUid, windowTag)
+                }
+            }
+        }.onFailure {
+            logger.e(it, "hookReportFocusChangedSerialized")
         }
 }
 
