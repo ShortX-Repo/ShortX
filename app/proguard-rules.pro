@@ -118,6 +118,9 @@
     public <methods>;
     public <fields>;
 }
+# Missing class github.tornaco.shortx.android.service.patch.StringFog
+# (referenced from: void tornaco.apps.shortx.services.xposed.hooks.hook.AMSHook.<clinit>() and 298 other contexts)
+-dontwarn github.tornaco.shortx.android.service.patch.StringFog
 
 # Please add these rules to your existing keep rules in order to suppress warnings.
 # This is generated automatically by the Android Gradle plugin.
