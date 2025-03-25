@@ -47,7 +47,7 @@ object ATMSFuncs {
                     //        this.mUserId = activityRecord.mUserId;
                     //    }
                     //}
-                    Reflections.getObjectField(it, "mActivityToken") as IBinder
+                    Reflections.getObjectField(arOrActivityAssistInfo, "mActivityToken") as IBinder
                 }
                 ActivityRecordUtils.forTokenLocked(ib, atmsInt.javaClass.classLoader)
             }
@@ -60,7 +60,7 @@ object ATMSFuncs {
                 logger.e("getTopVisibleActivities, uid or intent is null.")
                 null
             } else {
-                intent.component.toAppComponent(UserHandle.getUserId(uid)).inDisplay(displayId)
+                intent.component?.toAppComponent(UserHandle.getUserId(uid))?.inDisplay(displayId)
             }
         }
     }
