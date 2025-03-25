@@ -113,20 +113,22 @@ private fun Content(paddingValues: PaddingValues, vm: ShowPPNSelectorViewModel) 
             .verticalScroll(rememberScrollState())
     ) {
 
-        StandardSpacer()
-        Column(verticalArrangement = Arrangement.Center) {
-            FieldTitle(
-                modifier = Modifier,
-                LocalI18N.current["ui.action.post.notification.tag"]
-            )
-            TipBody(LocalI18N.current["ui.action.post.notification.tag.description"])
-            MediumSpacer()
-            ShortXTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = state.tag,
-                onValueChange = {
-                    vm.updateTag(it)
-                })
+        if (false) {
+            StandardSpacer()
+            Column(verticalArrangement = Arrangement.Center) {
+                FieldTitle(
+                    modifier = Modifier,
+                    LocalI18N.current["ui.action.post.notification.tag"]
+                )
+                TipBody(LocalI18N.current["ui.action.post.notification.tag.description"])
+                MediumSpacer()
+                ShortXTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = state.tag,
+                    onValueChange = {
+                        vm.updateTag(it)
+                    })
+            }
         }
 
         StandardSpacer()
@@ -172,7 +174,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowPPNSelectorViewModel) 
                 onResult = { result ->
                     val icon = result.popupSelectorResult<MDIcon>()
                     icon?.let {
-                        vm.updateSmallIcon(it.iconNameOrBase64)
+                        vm.updateIcon(it.iconNameOrBase64)
                     }
                 }
             )
@@ -186,38 +188,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowPPNSelectorViewModel) 
                     )
                 )
             }) {
-                RemixIcon(state.smallIcon)
-            }
-        }
-
-        StandardSpacer()
-        Column(verticalArrangement = Arrangement.Center) {
-            FieldTitle(text = LocalI18N.current["ui.action.post.notification.large.icon"])
-
-            MediumSpacer()
-
-            val largeIconLauncher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.StartActivityForResult(),
-                onResult = { result ->
-                    val icon = result.popupSelectorResult<MDIcon>()
-                    icon?.let {
-                        vm.updateLargeIcon(it.iconNameOrBase64)
-                    }
-                }
-            )
-            val context = LocalContext.current
-            TextButton(onClick = {
-                largeIconLauncher.launch(
-                    BaseSelectorActivity.newIntent(
-                        context,
-                        null,
-                        MDIconSelectorActivity::class.java
-                    )
-                )
-            }) {
-                if (state.largeIcon.isNotEmpty()) {
-                    RemixIcon(state.largeIcon)
-                }
+                RemixIcon(state.icon)
             }
         }
 

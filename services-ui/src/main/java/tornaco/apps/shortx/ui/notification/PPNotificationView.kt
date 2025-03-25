@@ -48,14 +48,14 @@ class PPNotificationView(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            AnimatedVisibility(showPPN.smallIcon.isNotEmpty()) {
+            AnimatedVisibility(showPPN.icon.isNotEmpty()) {
                 ColoredIcon(
                     modifier = Modifier.padding(end = 16.dp),
                     color = ButtonDefaults.filledTonalButtonColors().containerColor,
                     size = 48.dp
                 ) {
                     RemixIcon(
-                        remixName = showPPN.smallIcon, modifier = Modifier.size(24.dp),
+                        remixName = showPPN.icon, modifier = Modifier.size(24.dp),
                         tint = ButtonDefaults.filledTonalButtonColors().contentColor
                     )
                 }

@@ -6,7 +6,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import tornaco.apps.shortx.core.IActionEvaluateListener
 import tornaco.apps.shortx.core.proto.action.NotificationButton
-import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
@@ -22,8 +21,7 @@ data class ShowPPNSelectorState(
     val tag: String,
     val title: String,
     val message: String,
-    val largeIcon: String,
-    val smallIcon: String,
+    val icon: String,
     val vibrate: Boolean,
     val sound: Boolean,
     val buttonAndHandlers: List<NotificationButtonAndHandler>,
@@ -37,8 +35,7 @@ fun ShowPPNSelectorState.toAction(): Action.ShowPPN {
         tag = this.tag,
         title = this.title,
         message = this.message,
-        largeIcon = this.largeIcon,
-        smallIcon = this.smallIcon,
+        icon = this.icon,
         vibrate = this.vibrate,
         sound = this.sound,
         buttons = this.buttonAndHandlers.map { buttonAndHandler ->
@@ -48,7 +45,8 @@ fun ShowPPNSelectorState.toAction(): Action.ShowPPN {
                 .addAllAction(buttonAndHandler.handler.actions.map { it.toProtoAction().pack_() })
                 .build()
         },
-        onClickActions = this.onClickHandler.actions
+        onClickActions = this.onClickHandler.actions,
+        displayTimeSeconds = 9
     )
 }
 
@@ -61,8 +59,7 @@ class ShowPPNSelectorViewModel @Inject constructor(@ApplicationContext context: 
                 tag = "tag-${System.currentTimeMillis()}",
                 title = "",
                 message = "",
-                largeIcon = "",
-                smallIcon = Remix.Communication.chat_2_line,
+                icon = "",
                 vibrate = false,
                 sound = false,
                 buttonAndHandlers = emptyList(),
@@ -100,8 +97,7 @@ class ShowPPNSelectorViewModel @Inject constructor(@ApplicationContext context: 
                 tag = settings.tag,
                 title = settings.title,
                 message = settings.message,
-                largeIcon = settings.largeIcon,
-                smallIcon = settings.smallIcon,
+                icon = settings.icon,
                 vibrate = settings.vibrate,
                 sound = settings.sound,
                 evaluatingActions = shortXManager.getEvaluatingActions(),
@@ -173,12 +169,8 @@ class ShowPPNSelectorViewModel @Inject constructor(@ApplicationContext context: 
         updateState { copy(sound = it) }
     }
 
-    fun updateSmallIcon(it: String) {
-        updateState { copy(smallIcon = it) }
-    }
-
-    fun updateLargeIcon(it: String) {
-        updateState { copy(largeIcon = it) }
+    fun updateIcon(it: String) {
+        updateState { copy(icon = it) }
     }
 
     fun updateLabel(index: Int, it: String) {
