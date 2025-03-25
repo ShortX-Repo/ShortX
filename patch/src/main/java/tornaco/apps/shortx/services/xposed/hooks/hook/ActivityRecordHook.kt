@@ -15,7 +15,6 @@ import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXService
-import util.Reflections
 
 object ActivityRecordHook {
     private val logger = Logger("ShortXHook.ActivityRecordHook")
@@ -153,7 +152,7 @@ object ActivityRecordHook {
             val state = State.valueOf(param.args[0].toString())
             logger.d("SetState, state: $state")
             val getState: Any =
-                Reflections.callMethod(param.thisObject, "getState") ?: return@beforeMethod
+                ActivityRecordUtils.getState(param.thisObject) ?: return@beforeMethod
             val currentState = State.valueOf(getState.toString())
             logger.d("SetState, currentState: $state")
 

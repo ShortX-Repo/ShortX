@@ -67,7 +67,7 @@ object InputManagerHook {
                 lpparam.classLoader
             ), "sendInputEvent"
         ) { param ->
-            logger.d("sendInputEvent: ${param.args.map { it }} ${Log.getStackTraceString(Throwable())}")
+            logger.v("sendInputEvent: ${param.args.map { it }} ${Log.getStackTraceString(Throwable())}")
         }
 
         afterMethod(
@@ -76,7 +76,7 @@ object InputManagerHook {
                 lpparam.classLoader
             ), "injectInputEvent"
         ) { param ->
-            logger.d("injectInputEvent: ${param.args.map { it }} ${Log.getStackTraceString(Throwable())}")
+            logger.v("injectInputEvent: ${param.args.map { it }} ${Log.getStackTraceString(Throwable())}")
         }
 
     }.onFailure {
