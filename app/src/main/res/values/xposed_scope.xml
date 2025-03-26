@@ -5,6 +5,7 @@
         <item>com.android.systemui</item>
         <item>com.android.nfc</item>
         <item>com.android.providers.media.module</item>
+        <item>com.google.android.providers.media.module</item>
         <item>com.android.providers.media</item>
     </string-array>
 </resources>

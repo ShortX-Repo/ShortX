@@ -69,7 +69,7 @@ fun systemFactSelectHandler2(addFact: (Fact) -> Unit): (FactSelectSource) -> Boo
 
     val mediaInsertSelectorState = rememberRegexTextInputState(
         title = LocalI18N.current["ui.fact.media.insert"],
-        message = "${LocalI18N.current["ui.fact.media.insert.summary", mapOf("mediaPkgName" to PackageNames.mediaProvider)]} \n\n ${LocalI18N.current["ui.fact.media.insert.input.path"]}",
+        message = "${LocalI18N.current["ui.fact.media.insert.summary", mapOf("mediaPkgName" to PackageNames.mediaProviderPackages.joinToString())]} \n\n ${LocalI18N.current["ui.fact.media.insert.input.path"]}",
         showSymbolButton = false,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         onSelected = { pathString, options ->
@@ -85,7 +85,7 @@ fun systemFactSelectHandler2(addFact: (Fact) -> Unit): (FactSelectSource) -> Boo
 
     val mediaDeleteSelectorState = rememberRegexTextInputState(
         title = LocalI18N.current["ui.fact.media.delete"],
-        message = "${LocalI18N.current["ui.fact.media.delete.summary", mapOf("mediaPkgName" to PackageNames.mediaProvider)]} \n\n ${LocalI18N.current["ui.fact.media.delete.input.path"]}",
+        message = "${LocalI18N.current["ui.fact.media.delete.summary", mapOf("mediaPkgName" to PackageNames.mediaProviderPackages.joinToString())]} \n\n ${LocalI18N.current["ui.fact.media.delete.input.path"]}",
         showSymbolButton = false,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         onSelected = { pathString, options ->
