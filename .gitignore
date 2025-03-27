@@ -15,3 +15,7 @@
 .kotlin/
 out/
 /github.properties
+# Common build directories
+**/build/
+**/bin/
+**/out/
