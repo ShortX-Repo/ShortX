@@ -6,21 +6,11 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import tornaco.apps.shortx.core.media.FileRow
-import tornaco.apps.shortx.core.util.FileHelper
 import tornaco.apps.shortx.core.util.Logger
 import util.Reflections
 
 object MediaProviderUtil {
     private val logger = Logger("ShortXHook.MediaProviderHook")
-
-    fun mapToFileRowOnInsert(args: Array<Any?>?, context: Context): FileRow? {
-        // Android12.1 == 32
-        return if (Build.VERSION.SDK_INT >= 32) {
-            mapToFileRow121AndAbove(args)
-        } else {
-            mapToFileRow12OrBelowOnInsert(args, context)
-        }
-    }
 
     fun mapToFileRowOnDelete(args: Array<Any?>?, context: Context): FileRow? {
         return if (Build.VERSION.SDK_INT >= 32) {
@@ -86,42 +76,6 @@ object MediaProviderUtil {
             )
         }.getOrElse {
             logger.e(it, "mapToFileRow12OrBelowOnDelete")
-            null
-        }
-    }
-
-    private fun mapToFileRow12OrBelowOnInsert(args: Array<Any?>?, context: Context): FileRow? {
-        // Android 12
-        //  public interface OnFilesChangeListener {
-        //        public void onInsert(@NonNull DatabaseHelper helper, @NonNull String volumeName, long id,
-        //                int mediaType, boolean isDownload);
-        //        public void onUpdate(@NonNull DatabaseHelper helper, @NonNull String volumeName,
-        //                long oldId, int oldMediaType, boolean oldIsDownload,
-        //                long newId, int newMediaType, boolean newIsDownload,
-        //                String oldOwnerPackage, String newOwnerPackage, String oldPath);
-        //        public void onDelete(@NonNull DatabaseHelper helper, @NonNull String volumeName, long id,
-        //                int mediaType, boolean isDownload, String ownerPackage, String path);
-        //    }
-        return runCatching {
-            if (args == null) return null
-            val id = args[2] as Long
-            val type = args[3] as Int
-            val volumeName = args[1] as String?
-            val ownerPackageName = ""
-            val mediaUri: Uri? = getUriFrom(volumeName, type, id)
-            val path = mediaUri?.let {
-                FileHelper.getRealPathFromURI(context, it)
-            }
-            FileRow(
-                id = id,
-                volumeName = volumeName.orEmpty(),
-                mediaType = type,
-                ownerPackageName = ownerPackageName.orEmpty(),
-                path = path.orEmpty(),
-                mediaUri = mediaUri?.toString()
-            )
-        }.getOrElse {
-            logger.e(it, "mapToFileRow12OrBelowOnInsert")
             null
         }
     }
