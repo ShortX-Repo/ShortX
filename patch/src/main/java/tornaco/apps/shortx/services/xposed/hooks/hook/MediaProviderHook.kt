@@ -68,11 +68,11 @@ object MediaProviderHook {
             lpparam.classLoader.mediaDocumentProviderClass(), onMediaStoreInsert
         ) { param ->
             val mediaUri = getUriFromParams(param)
-            val path = FileHelper.getRealPathFromURI(param.args[0] as Context, mediaUri)
+            val path: String? = FileHelper.getRealPathFromURI(param.args[0] as Context, mediaUri)
             logger.logOnDebug("onMediaStoreInsert: $mediaUri --- $path")
             mediaUri?.let {
                 logger.d("onMediaStoreInsert, shortx: ${ShortXManagerNative.shortX}")
-                val fileRow = FileRow(0, "", 0, "", path, mediaUri.toString())
+                val fileRow = FileRow(0, "", 0, "", path.orEmpty(), mediaUri.toString())
                 ShortXManagerNative.shortX?.onMediaStoreInsert(fileRow)
             }
         }
