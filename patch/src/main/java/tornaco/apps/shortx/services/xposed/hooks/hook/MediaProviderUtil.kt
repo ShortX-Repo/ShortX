@@ -126,7 +126,7 @@ object MediaProviderUtil {
         }
     }
 
-    private fun getUriFrom(volumeName: String?, type: Int, id: Long): Uri? = runCatching {
+    fun getUriFrom(volumeName: String?, type: Int, id: Long): Uri? = runCatching {
         if (MediaStore.VOLUME_INTERNAL == volumeName) return null
 
         val mediaType = when (type) {

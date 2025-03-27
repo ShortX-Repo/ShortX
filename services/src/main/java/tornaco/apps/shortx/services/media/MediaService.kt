@@ -12,13 +12,9 @@ import tornaco.apps.shortx.services.watchdog.postSafety
 
 
 class MediaService(shortXContext: ShortXContext) : SystemService(shortXContext, "MediaService") {
-    override fun systemReady() {
-        super.systemReady()
-    }
-
     fun onMediaStoreInsert(row: FileRow) {
         with(row) {
-            logger.w("onMediaStoreInsert: ${this.id}")
+            logger.w("onMediaStoreInsert: $this")
             handler.postSafety("onMediaStoreInsert") {
                 logger.w("About to publishFactChecked: MediaStoreInsert.")
                 shortXContext.rule.publishFactChecked(
