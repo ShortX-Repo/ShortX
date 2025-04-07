@@ -583,6 +583,7 @@
     "ui.action.biometric.verify.subtitle": "子標題",
     "ui.action.shortcut": "程式快捷方式",
     "ui.action.show.toast": "顯示Toast",
+    "ui.action.show.ppn": "顯示提醒",
     "ui.action.launch.pined.item": "固定的快捷方式",
     "ui.action.launch.pined.item.tip": "你需要先在桌面添加目标应用的快捷方式，随后该快捷方式就会被记录在这个列表中供你选择",
     "ui.action.screen.flash": "屏幕闪光",

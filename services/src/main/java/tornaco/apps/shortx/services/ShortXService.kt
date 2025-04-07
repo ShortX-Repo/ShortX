@@ -9,7 +9,6 @@ import android.graphics.drawable.Drawable
 import android.os.Binder
 import android.os.Bundle
 import android.os.IBinder
-import android.os.Parcel
 import android.os.ParcelFileDescriptor
 import android.os.ShellCommand
 import android.os.UserHandle
@@ -25,7 +24,6 @@ import tornaco.apps.shortx.core.IAudioRecordingListener
 import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.INFCTagEndpointListener
-import tornaco.apps.shortx.core.IPC_CODE
 import tornaco.apps.shortx.core.ISensorUsageListener
 import tornaco.apps.shortx.core.IShortX
 import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener
@@ -170,28 +168,6 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                 }
             }
         }
-    }
-
-    private fun newBinderProxy(orig: Binder): tornaco.apps.shortx.services.util.BinderProxy {
-        return tornaco.apps.shortx.services.util.BinderProxy(
-            orig,
-            object : tornaco.apps.shortx.services.util.BinderProxy.InvocationHandler {
-                override fun onTransact(
-                    code: Int,
-                    data: Parcel?,
-                    reply: Parcel,
-                    flags: Int,
-                ): Boolean? {
-                    logger.d("BinderProxy, onTransact: $code")
-                    if (code == IPC_CODE) {
-                        data!!.enforceInterface(IShortX::class.java.name)
-                        val service = serviceBinder
-                        reply.writeStrongBinder(service.asBinder())
-                        return true
-                    }
-                    return null
-                }
-            })
     }
 
     fun onCommand(shellCommand: ShellCommand): Int {

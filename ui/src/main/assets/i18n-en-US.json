@@ -563,6 +563,7 @@
     "ui.action.biometric.verify.subtitle": "Subtitle",
     "ui.action.shortcut": "Shortcut",
     "ui.action.show.toast": "Show toast",
+    "ui.action.show.ppn": "Show alert message",
     "ui.action.launch.pined.item": "Pined shortcut",
     "ui.action.launch.pined.item.tip": "You need to first add the target app shortcut to the Launcher. Once added, the shortcut will be recorded in this list for you to select",
     "ui.action.screen.flash": "Screen flash",

@@ -5,12 +5,11 @@ import android.content.Intent
 import android.os.Bundle
 import com.elvishew.xlog.XLog
 import de.robv.android.xposed.callbacks.XC_LoadPackage
-import tornaco.apps.shortx.core.BuildPropInternal
+import tornaco.apps.shortx.core.CLIPBOARD_SERVICE_BINDER_CALL_PKG_NAME
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.platform.Classes.clipboardServiceClass
 import tornaco.apps.shortx.core.platform.Classes.clipboardServiceImplClass
 import tornaco.apps.shortx.core.platform.Methods.getPrimaryClip
-import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.util.Logger
 
 object ClipboardServiceHook {
@@ -48,7 +47,7 @@ object ClipboardServiceHook {
             var originRes: ClipData? = param.result as ClipData?
             logger.d("getPrimaryClip " + param.args.contentToString() + ", originRes: " + originRes)
             val pkg = param.args[0] as String
-            if (pkg.startsWith(BuildPropInternal.APP_PACKAGE_NAME) || pkg == PackageNames.systemUI) {
+            if (pkg == CLIPBOARD_SERVICE_BINDER_CALL_PKG_NAME) {
                 XLog.w("Inject binder for ClipboardService.getPrimaryClip")
                 val service = ShortXManagerNative.shortX ?: return@afterMethod
                 val bundle = Bundle()

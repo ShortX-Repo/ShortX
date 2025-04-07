@@ -263,3 +263,6 @@
 
 -dontwarn com.android.internal.statusbar.StatusBarIcon$Type
 -dontwarn com.android.internal.statusbar.StatusBarIcon
+
+-dontwarn android.content.IClipboard$Stub
+-dontwarn android.content.IClipboard
