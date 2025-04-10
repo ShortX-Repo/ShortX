@@ -1,5 +1,4 @@
 import com.android.build.gradle.api.AndroidBasePlugin
-import com.github.megatronking.stringfog.plugin.StringFogExtension
 import tornaco.project.android.shortx.Configs.outDir
 import tornaco.project.android.shortx.Configs.sxVersionCode
 import tornaco.project.android.shortx.Configs.sxVersionName
@@ -12,8 +11,6 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath(libs.stringfog.plugin)
-        classpath(libs.stringfog.xor)
     }
 }
 
@@ -135,30 +132,6 @@ subprojects {
     project.afterEvaluate {
         val hasAndroidPlugin = project.plugins.hasPlugin(AndroidBasePlugin::class)
         log("Check publishing subproject: ${project.name}, hasAndroidPlugin: $hasAndroidPlugin")
-        val fogModules = listOf(
-            "patch",
-            "ui"
-        )
-        if (fogModules.contains(project.name)) {
-            log("Fogging: ${project.name}")
-            project.plugins.apply("stringfog")
-
-            project.configure<StringFogExtension> {
-                // 必要：加解密库的实现类路径，需和上面配置的加解密算法库一致。
-                implementation = "com.github.megatronking.stringfog.xor.StringFogImpl"
-                // 可选：加密开关，默认开启。
-                enable = true
-                // 可选：指定需加密的代码包路径，可配置多个，未指定将默认全部加密。
-                // fogPackages = arrayOf("com.xxx.xxx")
-                kg = com.github.megatronking.stringfog.plugin.kg.RandomKeyGenerator()
-                // base64或者bytes
-                mode = com.github.megatronking.stringfog.plugin.StringFogMode.bytes
-            }
-            project.dependencies {
-                add("implementation", libs.stringfog.xor)
-            }
-        }
-
     }
 
     configurations.all {
