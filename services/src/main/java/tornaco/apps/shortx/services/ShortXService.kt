@@ -48,6 +48,7 @@ import tornaco.apps.shortx.core.proto.common.AudioRecordFile
 import tornaco.apps.shortx.core.proto.common.Author
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.common.CoroutineContext
+import tornaco.apps.shortx.core.proto.common.CustomContextMenuSetting
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.RemoteRuleContextAndVars
 import tornaco.apps.shortx.core.proto.common.StatusBarClipUiSettings
@@ -1479,6 +1480,30 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             systemUIClient = token
             logger.w("attachSystemUIClient: $token")
             shortXContext.notification.cancelShortXN("WaitSystemUI")
+        }
+
+        override fun getAllContextMenuSettings(): List<ByteArrayWrapper> {
+            return shortXContext.systemSettings.getAllContextMenuSettings().map {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun getContextMenuSettingsByMenuNumber(number: Int): ByteArrayWrapper? {
+            return shortXContext.systemSettings.getContextMenuSettingsByMenuNumber(number)?.let {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun updateContextMenuSetting(setting: ByteArrayWrapper) {
+            shortXContext.systemSettings.updateContextMenuSetting(
+                CustomContextMenuSetting.parseFrom(
+                    setting.byteData
+                )
+            )
+        }
+
+        override fun onMenuActionTrigger(number: Int, text: String) {
+            shortXContext.systemSettings.onMenuActionTrigger(number, text)
         }
 
         override fun addToggle(toggle: ByteArrayWrapper) {

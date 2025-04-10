@@ -529,6 +529,8 @@
     "ui.fact.audio.focus.gain": "程式獲得音訊焦點",
     "ui.fact.audio.focus.lost": "程式失去音訊焦點",
     "ui.fact.audio.focus.changed": "音訊焦點發生變化",
+    "ui.fact.custom.menu.action.trigger": "上下文菜单",
+    "ui.fact.custom.menu.action.trigger.tip": "当你在输入框长按时系统会弹出上下文菜单，你可以选择自定义的菜单作为触发器，当用户选择文本并点击菜单时触发器触发",
     "ui.title.edit.da": "編輯一鍵指令",
     "ui.title.add.da": "建立一鍵指令",
     "ui.da.title": "標題",

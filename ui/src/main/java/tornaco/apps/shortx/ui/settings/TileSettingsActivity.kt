@@ -103,7 +103,7 @@ class TileSettingsActivity : BaseActivity() {
 }
 
 @Composable
-fun TileSettings(back: () -> Unit, onTileClick: (StatusBarTile) -> Unit) {
+private fun TileSettings(back: () -> Unit, onTileClick: (StatusBarTile) -> Unit) {
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background

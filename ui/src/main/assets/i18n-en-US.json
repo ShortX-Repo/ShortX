@@ -529,6 +529,8 @@
     "ui.fact.audio.focus.gain": "App get audio focus",
     "ui.fact.audio.focus.lost": "App lose audio focus",
     "ui.fact.audio.focus.changed": "Audio focus changed",
+    "ui.fact.custom.menu.action.trigger": "Context menu action",
+    "ui.fact.custom.menu.action.trigger.tip": "When you long press in the text field, the system will pop up a context menu. You can select a custom menu, which is triggered when the user selects text and clicks",
     "ui.title.edit.da": "Edit Direct Action",
     "ui.title.add.da": "New Direct Action",
     "ui.da.title": "Title",

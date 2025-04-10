@@ -92,14 +92,14 @@ class TileSettingsViewModel @Inject constructor(@ApplicationContext context: Con
     }
 
     fun rename(tile: StatusBarTile, newName: String) {
-        shortXManager.getStatusBarTileSettingsByNumber(tile.number)?.let {
+        shortXManager.getStatusBarTileSettingsByNumber(tile.number).let {
             val updated = StatusBarTileSetting.newBuilder(it).setLabel(newName).build()
             shortXManager.updateStatusBarTileSetting(updated)
         }
     }
 
     fun setIcon(tile: StatusBarTile, icon: String) {
-        shortXManager.getStatusBarTileSettingsByNumber(tile.number)?.let {
+        shortXManager.getStatusBarTileSettingsByNumber(tile.number).let {
             val updated = StatusBarTileSetting.newBuilder(it).setIconName(icon).build()
             shortXManager.updateStatusBarTileSetting(updated)
         }

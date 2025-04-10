@@ -5,6 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import tornaco.apps.shortx.core.proto.common.CustomContextMenu
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.selector.GVSelectorDialog
@@ -15,6 +16,7 @@ import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorR
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.contextmenu.CustomContextMenuSettingsActivity
 import tornaco.apps.shortx.ui.settings.TileSettingsActivity
 
 @Composable
@@ -28,6 +30,22 @@ fun miscFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolea
             if (it.resultCode == Activity.RESULT_OK) {
                 val tileNum = it.data?.getIntExtra("tile", 0) ?: 0
                 addFact(Fact.OnQSTileClick(tile = StatusBarTile.forNumber(tileNum)))
+            }
+        }
+    )
+
+
+    val customContextMenuSelectState = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = {
+            if (it.resultCode == Activity.RESULT_OK) {
+                val num = it.data?.getIntExtra("menu", 0) ?: 0
+                addFact(
+                    Fact.OnMenuActionTrigger(
+                        menu = CustomContextMenu.forNumber(num),
+                        text = ""
+                    )
+                )
             }
         }
     )
@@ -81,6 +99,16 @@ fun miscFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolea
 
             Fact.OnQSTileClick::class -> {
                 qsTileSelectState.launch(TileSettingsActivity.intent(context, true))
+                true
+            }
+
+            Fact.OnMenuActionTrigger::class -> {
+                customContextMenuSelectState.launch(
+                    CustomContextMenuSettingsActivity.intent(
+                        context,
+                        true
+                    )
+                )
                 true
             }
 

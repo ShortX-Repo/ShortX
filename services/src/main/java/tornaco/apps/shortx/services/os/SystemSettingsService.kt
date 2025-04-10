@@ -10,9 +10,13 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.compat.ContextCompat
+import tornaco.apps.shortx.core.proto.common.CustomContextMenu
+import tornaco.apps.shortx.core.proto.common.CustomContextMenuSetting
 import tornaco.apps.shortx.core.proto.common.SystemSettingsAccessRecord
+import tornaco.apps.shortx.core.settings.defaultCustomContextMenuSetting
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
+import tornaco.apps.shortx.services.data.ContextMenuSettingsStore
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.runClearCallingIdentity
@@ -23,6 +27,9 @@ class SystemSettingsService(shortXContext: ShortXContext) :
     SystemService(shortXContext, "SystemSettingsService") {
     private val recorder by lazy {
         SystemSettingsAccessRecorder()
+    }
+    private val contextMenuSettingsStore by lazy {
+        ContextMenuSettingsStore(systemServiceScope)
     }
 
     private val configurationChangeReceiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -43,6 +50,18 @@ class SystemSettingsService(shortXContext: ShortXContext) :
 
     override fun systemReady() {
         super.systemReady()
+        contextMenuSettingsStore.readBlocking()
+        // Init default settings.
+        CustomContextMenu.entries.filterNot { it == CustomContextMenu.UNRECOGNIZED }.forEach {
+            val setting = getContextMenuSettingsByMenuNumber(it.number)
+            logger.d("CustomContextMenu: $it, setting: $setting")
+            if (setting == null) {
+                logger.i("Init default settings for CustomContextMenu: $it")
+                updateContextMenuSetting(defaultCustomContextMenuSetting(it))
+            }
+        }
+
+
         // For better performance.
         setSettingsCatcherEnabled(false)
 
@@ -138,5 +157,21 @@ class SystemSettingsService(shortXContext: ShortXContext) :
             Settings.System.SCREEN_OFF_TIMEOUT,
             checkedOut
         )
+    }
+
+    fun getAllContextMenuSettings(): List<CustomContextMenuSetting> {
+        return contextMenuSettingsStore.getAllSettings()
+    }
+
+    fun getContextMenuSettingsByMenuNumber(number: Int): CustomContextMenuSetting? {
+        return contextMenuSettingsStore.getSettingByMenu(CustomContextMenu.forNumber(number))
+    }
+
+    fun updateContextMenuSetting(setting: CustomContextMenuSetting) {
+        contextMenuSettingsStore.addSetting(setting)
+    }
+
+    fun onMenuActionTrigger(number: Int, text: String) {
+        logger.w("onMenuActionTrigger: $number ${text.map { "*" }.take(4)}")
     }
 }
