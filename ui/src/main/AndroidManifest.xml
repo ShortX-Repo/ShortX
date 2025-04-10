@@ -380,6 +380,7 @@
             android:exported="false" />
         <activity
             android:name="tornaco.apps.shortx.ui.contextmenu.CustomContextMenuActivity1"
+            android:enabled="false"
             android:excludeFromRecents="true"
             android:exported="true"
             android:label="Shortx action1"
@@ -394,6 +395,7 @@
         </activity>
         <activity
             android:name="tornaco.apps.shortx.ui.contextmenu.CustomContextMenuActivity2"
+            android:enabled="false"
             android:excludeFromRecents="true"
             android:exported="true"
             android:label="Shortx action2"
@@ -408,6 +410,7 @@
         </activity>
         <activity
             android:name="tornaco.apps.shortx.ui.contextmenu.CustomContextMenuActivity3"
+            android:enabled="false"
             android:excludeFromRecents="true"
             android:exported="true"
             android:label="Shortx action3"
@@ -422,6 +425,7 @@
         </activity>
         <activity
             android:name="tornaco.apps.shortx.ui.contextmenu.CustomContextMenuActivity4"
+            android:enabled="false"
             android:excludeFromRecents="true"
             android:exported="true"
             android:label="Shortx action4"
