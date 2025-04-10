@@ -4,21 +4,31 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.provider.Settings
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.runBlocking
+import tornaco.apps.shortx.core.AppComponent
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.compat.ContextCompat
+import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.os.myUserId
+import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.CustomContextMenu
 import tornaco.apps.shortx.core.proto.common.CustomContextMenuSetting
 import tornaco.apps.shortx.core.proto.common.SystemSettingsAccessRecord
+import tornaco.apps.shortx.core.proto.fact.OnMenuActionTrigger
+import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.settings.defaultCustomContextMenuSetting
+import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.ContextMenuSettingsStore
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
+import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.runClearCallingIdentity
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.watchdog.launchSafety
@@ -67,6 +77,8 @@ class SystemSettingsService(shortXContext: ShortXContext) :
 
         getMinScreenOffTimeout()
         registerReceivers()
+
+        updateContextMenuActivitySettings()
     }
 
     private fun registerReceivers() {
@@ -169,9 +181,60 @@ class SystemSettingsService(shortXContext: ShortXContext) :
 
     fun updateContextMenuSetting(setting: CustomContextMenuSetting) {
         contextMenuSettingsStore.addSetting(setting)
+        updateContextMenuActivitySettings()
+    }
+
+    private fun updateContextMenuActivitySettings() {
+        systemServiceScope.launchSafety("updateContextMenuActivitySettings") {
+            contextMenuSettingsStore.getAllSettings().forEach { menuSetting ->
+                menuSetting.menu.enableComponent(false)
+                shortXContext.rule.getAllEnabledRules().forEach { rule ->
+                    val menuFacts =
+                        rule.factsList.filter { it is_ OnMenuActionTrigger::class.java }
+                    if (menuFacts.isNotEmpty()) {
+                        menuSetting.menu.enableComponent(true)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun CustomContextMenu.toActivityClassName(): String {
+        return BuildPropInternal.CUSTOM_CONTEXT_MENU_CLASSNAME_BASE + (number + 1).toString()
+    }
+
+    private fun CustomContextMenu.enableComponent(enabled: Boolean) {
+        val className = toActivityClassName()
+        logger.w("Enable: $enabled $this $className")
+
+        shortXContext.appState.setComponentEnabledSetting(
+            AppComponent(
+                AppPkg.newBuilder().setUserId(myUserId)
+                    .setPkgName(BuildPropInternal.APP_PACKAGE_NAME).build(),
+                className
+            ),
+            enabled.select(
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+            ),
+            PackageManager.DONT_KILL_APP
+        )
     }
 
     fun onMenuActionTrigger(number: Int, text: String) {
         logger.w("onMenuActionTrigger: $number ${text.map { "*" }.take(4)}")
+        shortXContext.rule.publishFactChecked(
+            OnMenuActionTrigger.getDefaultInstance()
+        ) {
+            FactPublishData(
+                "",
+                OnMenuActionTrigger.newBuilder()
+                    .setText(text)
+                    .setMenuNumber(number)
+                    .build(),
+            ) {
+                mapOf(ContextDataMapping.CustomContextMenu.selectedText.name to text)
+            }
+        }
     }
 }

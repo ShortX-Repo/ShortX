@@ -70,6 +70,7 @@ import tornaco.apps.shortx.core.proto.fact.NotificationPosted
 import tornaco.apps.shortx.core.proto.fact.NotificationRemoved
 import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
 import tornaco.apps.shortx.core.proto.fact.OnFinishOp
+import tornaco.apps.shortx.core.proto.fact.OnMenuActionTrigger
 import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
 import tornaco.apps.shortx.core.proto.fact.OnStartOp
 import tornaco.apps.shortx.core.proto.fact.PkgStartRunning
@@ -517,6 +518,13 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
             val ruleN = (rule as OnQSTileClick)
 
             actualN.tileNumber == ruleN.tileNumber
+        }
+
+        register(OnMenuActionTrigger::class.java) { actual, rule ->
+            val actualN = (actual as OnMenuActionTrigger)
+            val ruleN = (rule as OnMenuActionTrigger)
+
+            actualN.menuNumber == ruleN.menuNumber
         }
 
         register(SystemSettingsChanged::class.java) { actual, rule ->

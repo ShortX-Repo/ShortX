@@ -29,6 +29,8 @@ buildConfig {
 
     buildConfigField("String", "SHORTX_EXT_APP_PKG_NAME", "\"tornaco.apps.shortx.ext\"")
 
+    buildConfigField("String", "CUSTOM_CONTEXT_MENU_CLASSNAME_BASE", "\"tornaco.apps.shortx.ui.contextmenu.CustomContextMenuActivity\"")
+
     buildConfigField(
         "String",
         "SHORTCUT_STUB_KEYSTORE_URL",

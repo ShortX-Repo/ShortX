@@ -77,5 +77,6 @@ class CustomContextMenuSettingsViewModel @Inject constructor(@ApplicationContext
             val updated = CustomContextMenuSetting.newBuilder(it).setLabel(newName).build()
             shortXManager.updateContextMenuSetting(updated)
         }
+        loadState()
     }
 }
