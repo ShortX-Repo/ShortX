@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.ServiceManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.runClearCallingIdentity
+import util.Reflections
 
 object PMSFuncs {
     private val logger = Logger("PMSFuncs")
@@ -37,7 +38,22 @@ object PMSFuncs {
             }",
         )
         runClearCallingIdentity {
-            pm.setComponentEnabledSetting(componentName, newState, flags, userId)
+            // Android 14? 15.
+            //     /**
+            //     * As per {@link android.content.pm.PackageManager#setComponentEnabledSetting}.
+            //     */
+            //    @UnsupportedAppUsage
+            //    void setComponentEnabledSetting(in ComponentName componentName,
+            //            in int newState, in int flags, int userId, String callingPackage);
+            runCatching {
+                Reflections.callMethod(
+                    pm, "setComponentEnabledSetting",
+                    componentName, newState, flags, userId, "android"
+                )
+            }.onFailure {
+                logger.w("setComponentEnabledSetting(callingPackage) fail, try legacy one.")
+                pm.setComponentEnabledSetting(componentName, newState, flags, userId)
+            }
             val stateChecked = pm.getComponentEnabledSetting(componentName, userId)
             if (stateChecked != newState) {
                 logger.w("trySetComponentEnabledSetting, stateChecked is not expected: $stateChecked")

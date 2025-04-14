@@ -20,8 +20,11 @@ import tornaco.apps.shortx.core.proto.common.CustomContextMenu
 import tornaco.apps.shortx.core.proto.common.CustomContextMenuSetting
 import tornaco.apps.shortx.core.proto.common.SystemSettingsAccessRecord
 import tornaco.apps.shortx.core.proto.fact.OnMenuActionTrigger
+import tornaco.apps.shortx.core.rule.RuleObserver
 import tornaco.apps.shortx.core.rule.is_
+import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.settings.defaultCustomContextMenuSetting
+import tornaco.apps.shortx.core.toActivityClassName
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -79,6 +82,13 @@ class SystemSettingsService(shortXContext: ShortXContext) :
         registerReceivers()
 
         updateContextMenuActivitySettings()
+
+        shortXContext.rule.registerRuleObs(object : RuleObserver() {
+            override fun onRuleChanged(id: String) {
+                super.onRuleChanged(id)
+                updateContextMenuActivitySettings()
+            }
+        })
     }
 
     private fun registerReceivers() {
@@ -186,21 +196,21 @@ class SystemSettingsService(shortXContext: ShortXContext) :
 
     private fun updateContextMenuActivitySettings() {
         systemServiceScope.launchSafety("updateContextMenuActivitySettings") {
-            contextMenuSettingsStore.getAllSettings().forEach { menuSetting ->
-                menuSetting.menu.enableComponent(false)
-                shortXContext.rule.getAllEnabledRules().forEach { rule ->
-                    val menuFacts =
-                        rule.factsList.filter { it is_ OnMenuActionTrigger::class.java }
-                    if (menuFacts.isNotEmpty()) {
-                        menuSetting.menu.enableComponent(true)
+            contextMenuSettingsStore.getAllSettings().forEach {
+                it.menu.enableComponent(false)
+            }
+            shortXContext.rule.getAllEnabledRules().forEach { rule ->
+                val menuFacts =
+                    rule.factsList.filter { it is_ OnMenuActionTrigger::class.java }
+                menuFacts.forEach {
+                    val factModel = it unpack_ OnMenuActionTrigger::class.java
+                    if (!factModel.isDisabled) {
+                        logger.d("updateContextMenuActivitySettings, enable for rule: ${rule.title} ${factModel.menuNumber}")
+                        CustomContextMenu.forNumber(factModel.menuNumber)?.enableComponent(true)
                     }
                 }
             }
         }
-    }
-
-    private fun CustomContextMenu.toActivityClassName(): String {
-        return BuildPropInternal.CUSTOM_CONTEXT_MENU_CLASSNAME_BASE + (number + 1).toString()
     }
 
     private fun CustomContextMenu.enableComponent(enabled: Boolean) {

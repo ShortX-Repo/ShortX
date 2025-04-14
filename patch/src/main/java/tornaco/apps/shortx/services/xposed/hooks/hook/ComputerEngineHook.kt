@@ -7,6 +7,7 @@ import android.content.pm.ServiceInfo
 import de.robv.android.xposed.XposedHelpers
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.BuildPropInternal
+import tornaco.apps.shortx.core.classNameToCustomContextMenu
 import tornaco.apps.shortx.core.platform.Classes.pmComputerEngineClass
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.core.res.remixResId
@@ -87,10 +88,23 @@ object ComputerEngineHook {
                                 resolveInfo.resolvePackageName + "-" + resolveInfo.activityInfo.name + "-" + resolveInfo.nonLocalizedLabel
                             }
                         }")
-                    param.result = result.map {
-                        val resolveInfo = it as ResolveInfo
-                        if (resolveInfo.resolvePackageName == BuildPropInternal.APP_PACKAGE_NAME) {
-                            resolveInfo.nonLocalizedLabel = "ShortX-Hooked"
+                    param.result = result.map { resultItem ->
+                        val resolveInfo = resultItem as ResolveInfo
+                        val name: String? = resolveInfo.activityInfo.name
+                        if (name?.startsWith(BuildPropInternal.CUSTOM_CONTEXT_MENU_CLASSNAME_BASE) == true) {
+                            logger.w("queryIntentActivities, name: $name")
+                            val menu = name.classNameToCustomContextMenu()
+                            logger.w("queryIntentActivities, menu: $menu")
+                            if (menu != null) {
+                                val label =
+                                    ShortXService.shortXContext.systemSettings.getContextMenuSettingsByMenuNumber(
+                                        menu.number
+                                    )?.label
+                                logger.w("queryIntentActivities, label: $label")
+                                label?.takeIf { it.isNotBlank() }?.let {
+                                    resolveInfo.nonLocalizedLabel = it
+                                }
+                            }
                         }
                         resolveInfo
                     }
