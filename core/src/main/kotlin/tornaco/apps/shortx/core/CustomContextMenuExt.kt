@@ -9,6 +9,6 @@ fun CustomContextMenu.toActivityClassName(): String {
 fun String.classNameToCustomContextMenu(): CustomContextMenu? {
     return kotlin.runCatching { substringAfter(BuildPropInternal.CUSTOM_CONTEXT_MENU_CLASSNAME_BASE).toIntOrNull() }
         .getOrNull()?.let {
-        CustomContextMenu.forNumber(it)
-    }
+            CustomContextMenu.forNumber(it - 1)
+        }
 }

@@ -199,18 +199,28 @@ class SystemSettingsService(shortXContext: ShortXContext) :
             contextMenuSettingsStore.getAllSettings().forEach {
                 it.menu.enableComponent(false)
             }
-            shortXContext.rule.getAllEnabledRules().forEach { rule ->
-                val menuFacts =
-                    rule.factsList.filter { it is_ OnMenuActionTrigger::class.java }
-                menuFacts.forEach {
-                    val factModel = it unpack_ OnMenuActionTrigger::class.java
-                    if (!factModel.isDisabled) {
-                        logger.d("updateContextMenuActivitySettings, enable for rule: ${rule.title} ${factModel.menuNumber}")
-                        CustomContextMenu.forNumber(factModel.menuNumber)?.enableComponent(true)
+            getMenuActionActivitiesShouldEnable().forEach {
+                it.enableComponent(true)
+            }
+        }
+    }
+
+    fun getMenuActionActivitiesShouldEnable(): Set<CustomContextMenu> {
+        val res = mutableSetOf<CustomContextMenu>()
+        shortXContext.rule.getAllEnabledRules().forEach { rule ->
+            val menuFacts =
+                rule.factsList.filter { it is_ OnMenuActionTrigger::class.java }
+            menuFacts.forEach { fact ->
+                val factModel = fact unpack_ OnMenuActionTrigger::class.java
+                if (!factModel.isDisabled) {
+                    logger.d("getMenuActionActivitiesShouldEnable, add for rule: ${rule.title} ${factModel.menuNumber}")
+                    CustomContextMenu.forNumber(factModel.menuNumber)?.let {
+                        res.add(it)
                     }
                 }
             }
         }
+        return res
     }
 
     private fun CustomContextMenu.enableComponent(enabled: Boolean) {
@@ -237,7 +247,7 @@ class SystemSettingsService(shortXContext: ShortXContext) :
             OnMenuActionTrigger.getDefaultInstance()
         ) {
             FactPublishData(
-                "",
+                "onMenuActionTrigger",
                 OnMenuActionTrigger.newBuilder()
                     .setText(text)
                     .setMenuNumber(number)
