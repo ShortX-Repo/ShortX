@@ -26,6 +26,7 @@ import tornaco.apps.shortx.core.su.LibShKtShellImpl
 import tornaco.apps.shortx.core.util.logAdapter
 import tornaco.apps.shortx.services.xposed.hooks.hook.CustomHook
 import tornaco.apps.shortx.services.xposed.hooks.hook.afterMethod
+import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.input.opls.installInputMonitor
 import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.ocr.OCRImpl
 import util.Reflections
 
@@ -134,6 +135,7 @@ fun SystemUIHook.hookApp(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runC
             installNotificationPoster(shortx, app)
             installCV(shortx, app)
             installOCR(shortx, app)
+            installInputMonitor(app)
 
             // Attach client, let Service known SystemUI is up.
             shortx.attachSystemUIClient(Binder())
