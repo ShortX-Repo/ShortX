@@ -1,27 +1,7 @@
 plugins {
-    alias(libs.plugins.agp.lib)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.kotlin.jvm)
 }
 
-android {
-    namespace = "github.tornaco.shortx.android.service.patch"
-
-    defaultConfig {
-        consumerProguardFiles("consumer-rules.pro")
-    }
-
-    buildFeatures {
-        compose = false
-        buildConfig = false
-        aidl = false
-        renderScript = false
-        resValues = false
-        shaders = false
-        viewBinding = false
-        dataBinding = false
-    }
-}
 dependencies {
     compileOnly(files("${rootProject.rootDir.path}/android-sdk/31/android-31.jar"))
     compileOnly(files("${rootProject.rootDir.path}/services-ui/jar/classes.jar"))
