@@ -337,6 +337,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.ShowPPN
     },
+    RemovePPN {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.RemovePPN
+    },
     FromDA {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.FromDA
