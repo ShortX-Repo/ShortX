@@ -19,7 +19,7 @@ object SystemUIHook {
         if (PackageNames.systemUI == lpparam.packageName) {
             // Install log
             logAdapter = { _: Int, tag: String, msg: String ->
-                XposedBridge.log("$tag - $msg")
+                XposedBridge.log("ShortXSystemUi $tag - $msg")
             }
             hookApp(lpparam)
             hookTile(lpparam)

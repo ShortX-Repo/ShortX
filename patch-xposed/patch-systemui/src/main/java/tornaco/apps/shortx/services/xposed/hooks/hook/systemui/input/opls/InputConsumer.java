@@ -31,7 +31,13 @@ public class InputConsumer {
             if (inputChannel == null) {
                 LOGGER.e("Has no input channel in InputMonitor, init OplusInputConsumer failed");
             } else {
-                client.copyTo(inputChannel);
+                try {
+                    client.copyTo(inputChannel);
+                } catch (Throwable e) {
+                    // Low android
+                    // void transferTo(InputChannel outParameter)
+                    Reflections.callMethod(client, "transferTo", inputChannel);
+                }
             }
         } finally {
             Binder.restoreCallingIdentity(ident);
