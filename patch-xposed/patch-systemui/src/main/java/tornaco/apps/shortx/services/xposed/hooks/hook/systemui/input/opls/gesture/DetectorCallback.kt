@@ -80,6 +80,7 @@ class DetectorCallbackImpl : DetectorCallback {
         })
 
         readAllSettings()
+        readGestureFireState()
     }
 
     private fun readGestureFireState() {
@@ -143,18 +144,20 @@ class DetectorCallbackImpl : DetectorCallback {
     }
 
     private fun onGestureEvent(pair: Pair<Edge, Gesture>): Boolean {
-        synchronized(fireableEdgeGestures) {
-            if (fireableEdgeGestures.contains(
-                    EdgeGesture.newBuilder()
-                        .setEdge(pair.first)
-                        .setGesture(pair.second)
-                        .build()
-                )
-            ) {
-                logger.w("Should fire: $pair")
-                return true
-            }
-            return false
+        val gesture = EdgeGesture.newBuilder()
+            .setEdge(pair.first)
+            .setGesture(pair.second)
+            .build()
+        if (shouldFireGesture(gesture)) {
+            logger.w("Let's fire: $pair")
+            shortx.fireEdgeGesture(gesture)
+            return true
+        } else return false
+    }
+
+    private fun shouldFireGesture(gesture: EdgeGesture): Boolean {
+        return synchronized(fireableEdgeGestures) {
+            fireableEdgeGestures.contains(gesture)
         }
     }
 }

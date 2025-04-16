@@ -23,7 +23,7 @@ class Detector(
         const val LOGV = BuildPropInternal.APP_IS_DEBUG
     }
 
-    private val logger = Logger("Detector")
+    private val logger = Logger("GestureDetector")
 
     private var screenSize: Point = context.screenSize().apply {
         logger.w("Init screenSize: $this")
@@ -119,8 +119,8 @@ class Detector(
                 areaSize = service.getGestureAreaWidthDp()._dp.toFloat(),
                 areaLengthScale = service.getGestureLengthScale()
             )
-            if (LOGV) logger.d("rect: $rect (downX: $downX downY: $downY)")
             val res = rect.contains(downX, downY)
+            if (LOGV) logger.d("$it, rect: $rect (downX: $downX downY: $downY) contains: $res")
             res
         }
         if (LOGV) logger.d("detectArea, $downX $downY return: $area (screen info: $screenSize)")
