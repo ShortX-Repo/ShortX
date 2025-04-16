@@ -154,19 +154,17 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
     }
 
     private fun waitForSystemUIClient() {
-        if (BuildPropInternal.APP_IS_DEBUG) {
-            shortXContext.serviceLifecycle.registerLifecycleSystemReadyCallback {
-                if (systemUIClient == null) {
-                    shortXContext.notification.postByFallback(
-                        PostNotification.newBuilder()
-                            .setTag("WaitSystemUI")
-                            .setTitle("Waiting for SystemUI")
-                            .setMessage("Waiting for SystemUI hooks, please enable SystemUI app in Xposed Manager")
-                            .setId("WaitSystemUI")
-                            .setSmallIcon(Remix.System.error_warning_line)
-                            .build()
-                    )
-                }
+        shortXContext.serviceLifecycle.registerLifecycleSystemReadyCallback {
+            if (systemUIClient == null) {
+                shortXContext.notification.postByFallback(
+                    PostNotification.newBuilder()
+                        .setTag("WaitSystemUI")
+                        .setTitle("Waiting for SystemUI")
+                        .setMessage("Waiting for SystemUI hooks, please enable SystemUI app in Xposed Manager")
+                        .setId("WaitSystemUI")
+                        .setSmallIcon(Remix.System.error_warning_line)
+                        .build()
+                )
             }
         }
     }
