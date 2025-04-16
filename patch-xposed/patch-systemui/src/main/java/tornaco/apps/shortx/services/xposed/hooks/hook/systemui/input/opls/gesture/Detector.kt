@@ -17,7 +17,7 @@ import java.io.PrintWriter
 class Detector(
     private val context: Context,
     handler: Handler,
-    private val service: DetectorCallback
+    private val service: DetectorService
 ) {
     companion object {
         const val LOGV = BuildPropInternal.APP_IS_DEBUG

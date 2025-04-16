@@ -12,7 +12,7 @@ import android.view.InputEventReceiver;
 public class OplusInputMonitorHelper {
     public static final String TAG = "SHORTX_INPUT_OIM_Helper";
     private static volatile OplusInputMonitorHelper sInstance;
-    public static final String OPLUS_EX_CHANNEL_NAME = "ShortX_OplusExInputReceiver";
+    public static final String OPLUS_EX_CHANNEL_NAME = "ShortXInputReceiver";
     public static String sExChannelName = OPLUS_EX_CHANNEL_NAME;
     private int mChannelNameIndex = 1;
     private ColorExInputEventReceiver mExInputEventReceiver = null;

@@ -1,9 +1,6 @@
 package tornaco.apps.shortx.services.gesture
 
-import android.content.res.Configuration
-import android.graphics.RectF
 import android.os.RemoteCallbackList
-import android.os.SystemClock
 import android.view.InputEvent
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -18,11 +15,8 @@ import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.fact.Edge
-import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.action.emptyByteArrayWrapper
-import tornaco.apps.shortx.core.rule.is_
-import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -30,7 +24,6 @@ import tornaco.apps.shortx.services.data.GestureRecordsStore
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
-import tornaco.apps.shortx.services.input.IMSFunc
 import tornaco.apps.shortx.services.policy.SingleKeyGestureDetector
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.GuideLineView
@@ -56,15 +49,11 @@ class GestureService(shortXContext: ShortXContext) :
     private val gestureRecorder by lazy { GestureRecorder(context) }
     private val gesturePlayer by lazy { GesturePlayer(context) }
 
-    private val interceptMotionPortRects = mutableListOf<RectF>()
-    private val interceptMotionLandRects = mutableListOf<RectF>()
-
     private val gestureSettingsListeners = RemoteCallbackList<ICallback>()
 
     override fun systemReady() {
         super.systemReady()
         gestureRecordStore.readBlocking()
-        updateShouldInterceptMotionEventRect()
     }
 
     fun showEdgeHint(edgeNumber: List<Int>) {
@@ -107,7 +96,7 @@ class GestureService(shortXContext: ShortXContext) :
             if (gestureRecorder.isRecording) {
                 runBlocking { gestureRecorder.onPointerEvent(input) }
             }
-            return filterMotionEvent(input)
+            return null
         }
         if (input is KeyEvent) {
             // Below code is handle by PhoneWindowManager.
@@ -121,48 +110,6 @@ class GestureService(shortXContext: ShortXContext) :
             }
         }
         return null
-    }
-
-    private fun filterMotionEvent(input: MotionEvent): Boolean? {
-        // TODO Check anyIntercept?
-        val nonNullGestureDetector = null
-        if (nonNullGestureDetector == null) {
-            logger.e("gestureDetector is null.")
-            return null
-        }
-
-        // Call nonNullGestureDetector first.
-        val gestureInterceptRes = false
-
-        // Check if intercept.
-        val startTimeMillis = SystemClock.elapsedRealtimeNanos()
-        val currentOrientation = context.resources.configuration.orientation
-        val checkRects = if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
-            interceptMotionPortRects
-        } else {
-            interceptMotionLandRects
-        }
-        // onDebugBuild { logger.d("filterMotionEvent, checkRects: $checkRects") }
-        val anyIntercept = checkRects.any { it.contains(input.x, input.y) }
-        val timeTaken = SystemClock.elapsedRealtimeNanos() - startTimeMillis
-        // logger.d("filterMotionEvent, check take time: $timeTaken(nano)")
-        if (anyIntercept) {
-            logger.logOnDebug("filterMotionEvent, intercept MotionEvent: $input")
-            return false
-        }
-
-        if (gestureInterceptRes != null) {
-            // False, means block this event
-            if (!gestureInterceptRes) {
-                logger.w("Send ACTION_CANCEL since we interceptEvent!")
-                val eventTime = SystemClock.uptimeMillis()
-                val cancel =
-                    MotionEvent.obtain(eventTime, eventTime, MotionEvent.ACTION_CANCEL, 0f, 0f, 0)
-                IMSFunc.injectInputEvent(cancel)
-            }
-        }
-
-        return gestureInterceptRes
     }
 
     fun handleKeyEvent(event: KeyEvent): Boolean? {
@@ -194,7 +141,6 @@ class GestureService(shortXContext: ShortXContext) :
 
     fun setGestureLengthScale(scale: Float) {
         store.write(Settings.FloatSettings.GestureAreaLengthScale, minOf(1f, abs(scale)))
-        updateShouldInterceptMotionEventRect()
         notifyGestureSettingsChanged()
     }
 
@@ -203,7 +149,6 @@ class GestureService(shortXContext: ShortXContext) :
 
     fun setGestureAreaWidthDp(dp: Int) {
         store.write(Settings.IntSettings.GestureAreaWidthDp, dp)
-        updateShouldInterceptMotionEventRect()
         notifyGestureSettingsChanged()
     }
 
@@ -300,10 +245,6 @@ class GestureService(shortXContext: ShortXContext) :
         return gestureRecorder.isRecording
     }
 
-    fun onRuleChanged() {
-        updateShouldInterceptMotionEventRect()
-    }
-
     fun registerGestureSettingsListener(listener: ICallback) {
         synchronized(gestureSettingsListeners) {
             gestureSettingsListeners.register(listener)
@@ -329,48 +270,5 @@ class GestureService(shortXContext: ShortXContext) :
         }
     }
 
-    private fun updateShouldInterceptMotionEventRect() {
-        val screenSize = shortXContext.wm.screenSize
-        logger.i("updateShouldInterceptMotionEventRect, screenSize: $screenSize")
-        val portRects = mutableListOf<RectF>()
-        val landRects = mutableListOf<RectF>()
 
-        shortXContext.rule.getAllEnabledRules().forEach {
-            it.factsList.forEach { protoFact ->
-                val isEG = protoFact is_ EdgeGesture::class.java
-                if (isEG) {
-                    val eg = protoFact unpack_ EdgeGesture::class.java
-                    if (eg.isIntercept) {
-                        portRects.add(
-                            eg.edge.getRect(
-                                isPortrait = true,
-                                screenWidth = screenSize.x.toFloat(),
-                                screenHeight = screenSize.y.toFloat(),
-                                areaSize = getGestureAreaWidthDp()._dp.toFloat(),
-                                areaLengthScale = getGestureLengthScale()
-                            )
-                        )
-                        landRects.add(
-                            eg.edge.getRect(
-                                isPortrait = false,
-                                screenWidth = screenSize.x.toFloat(),
-                                screenHeight = screenSize.y.toFloat(),
-                                areaSize = getGestureAreaWidthDp()._dp.toFloat(),
-                                areaLengthScale = getGestureLengthScale()
-                            )
-                        )
-                    }
-                }
-            }
-        }
-
-        logger.d("updateShouldInterceptMotionEventRect, portRects: $portRects")
-        logger.d("updateShouldInterceptMotionEventRect, landRects: $landRects")
-
-        this.interceptMotionLandRects.clear()
-        this.interceptMotionLandRects.addAll(landRects)
-
-        this.interceptMotionPortRects.clear()
-        this.interceptMotionPortRects.addAll(portRects)
-    }
 }

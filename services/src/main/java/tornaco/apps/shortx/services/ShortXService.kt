@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
 import android.content.pm.ShortcutInfo
 import android.graphics.Bitmap
+import android.graphics.Point
 import android.graphics.drawable.Drawable
 import android.os.Binder
 import android.os.Bundle
@@ -1529,6 +1530,10 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun unregisterConfigurationChangedListener(listener: ICallback) {
             shortXContext.systemSettings.unregisterConfigurationChangedListener(listener)
+        }
+
+        override fun getScreenSize(): Point {
+            return shortXContext.wm.screenSize
         }
 
         override fun addToggle(toggle: ByteArrayWrapper) {

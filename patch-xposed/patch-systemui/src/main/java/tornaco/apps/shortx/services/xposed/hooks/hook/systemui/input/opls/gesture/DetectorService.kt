@@ -1,16 +1,25 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook.systemui.input.opls.gesture
 
+import android.content.Context
+import android.content.res.Configuration
+import android.graphics.RectF
+import android.os.SystemClock
+import android.view.MotionEvent
 import tornaco.apps.shortx.core.ICallback
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.rule.DAObserver
 import tornaco.apps.shortx.core.rule.RuleObserver
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
+import tornaco.apps.shortx.core.rule.is_
+import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util._dp
 
-interface DetectorCallback {
+interface DetectorService {
     fun handleGestureEvent(area: Array<Edge>, gestureEvent: Gesture): Boolean
     fun getSwipeDistanceThresholdDp(): Int
     fun getGestureAreaWidthDp(): Int
@@ -20,9 +29,9 @@ interface DetectorCallback {
     fun obsConfigChanged(obs: () -> Unit)
 }
 
-class DetectorCallbackImpl : DetectorCallback {
+class DetectorServiceImpl(private val context: Context) : DetectorService {
     private val shortx by lazy { shortXManager }
-    private val logger = Logger("DetectorCallbackImpl")
+    private val logger = Logger("DetectorService")
 
     private var swipeDistanceThresholdDp: Int = 24
     private var gestureAreaWidthDp: Int = 28
@@ -46,11 +55,15 @@ class DetectorCallbackImpl : DetectorCallback {
 
     private val fireableEdgeGestures = mutableSetOf<EdgeGesture>()
 
+    private val interceptMotionPortRects = mutableListOf<RectF>()
+    private val interceptMotionLandRects = mutableListOf<RectF>()
+
     init {
         shortx.registerGestureSettingsListener(object : ICallback.Stub() {
             override fun receive(data: ByteArrayWrapper?) {
                 logger.w("GestureSettings changed.")
                 readAllSettings()
+                updateShouldInterceptMotionEventRect()
                 afterGestureSettingsChangedObs()
             }
         })
@@ -58,39 +71,31 @@ class DetectorCallbackImpl : DetectorCallback {
         shortx.registerRuleObs(object : RuleObserver() {
             override fun onRuleChanged(id: String) {
                 super.onRuleChanged(id)
-                readGestureFireState()
-            }
-
-            override fun onRuleSetChanged(id: String) {
-                super.onRuleSetChanged(id)
-                readGestureFireState()
+                readGestureFireState("Rule changed")
+                updateShouldInterceptMotionEventRect()
             }
         })
 
         shortx.registerDAObs(object : DAObserver() {
             override fun onDAChanged(id: String) {
                 super.onDAChanged(id)
-                readGestureFireState()
-            }
-
-            override fun onDASetChanged(id: String) {
-                super.onDASetChanged(id)
-                readGestureFireState()
+                readGestureFireState("DA changed")
+                updateShouldInterceptMotionEventRect()
             }
         })
 
         readAllSettings()
-        readGestureFireState()
+        readGestureFireState("Init")
+        updateShouldInterceptMotionEventRect()
     }
 
-    private fun readGestureFireState() {
+    private fun readGestureFireState(reason: String) {
+        logger.d("readGestureFireState, reason: $reason")
         synchronized(fireableEdgeGestures) {
             fireableEdgeGestures.clear()
             fireableEdgeGestures.addAll(
                 allEdgeGestures.filter { gesture ->
-                    shortx.shouldFireEdgeGesture(gesture).also {
-                        logger.d("shouldFireEdgeGesture? $gesture $it")
-                    }
+                    shortx.shouldFireEdgeGesture(gesture)
                 }
             )
             logger.w(
@@ -159,5 +164,70 @@ class DetectorCallbackImpl : DetectorCallback {
         return synchronized(fireableEdgeGestures) {
             fireableEdgeGestures.contains(gesture)
         }
+    }
+
+    fun shouldStealMotionEvent(input: MotionEvent): Boolean {
+        // Check if intercept.
+        val startTimeMillis = SystemClock.elapsedRealtimeNanos()
+        val currentOrientation = context.resources.configuration.orientation
+        val checkRects = if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
+            interceptMotionPortRects
+        } else {
+            interceptMotionLandRects
+        }
+        // onDebugBuild { logger.d("filterMotionEvent, checkRects: $checkRects") }
+        val anyContains = checkRects.any { it.contains(input.x, input.y) }
+        val timeTaken = SystemClock.elapsedRealtimeNanos() - startTimeMillis
+        // logger.d("filterMotionEvent, check take time: $timeTaken(nano)")
+        if (anyContains) {
+            logger.logOnDebug("shouldStealMotionEvent, steal MotionEvent: $input")
+            return true
+        }
+        return false
+    }
+
+    private fun updateShouldInterceptMotionEventRect() {
+        val screenSize = shortx.getScreenSize()
+        logger.i("updateShouldInterceptMotionEventRect, screenSize: $screenSize")
+        val portRects = mutableListOf<RectF>()
+        val landRects = mutableListOf<RectF>()
+
+        shortx.getAllRules().filter { it.isEnabled }.forEach {
+            it.factsList.forEach { protoFact ->
+                val isEG = protoFact is_ EdgeGesture::class.java
+                if (isEG) {
+                    val eg = protoFact unpack_ EdgeGesture::class.java
+                    if (!eg.isDisabled && eg.isIntercept) {
+                        portRects.add(
+                            eg.edge.getRect(
+                                isPortrait = true,
+                                screenWidth = screenSize.x.toFloat(),
+                                screenHeight = screenSize.y.toFloat(),
+                                areaSize = getGestureAreaWidthDp()._dp.toFloat(),
+                                areaLengthScale = getGestureLengthScale()
+                            )
+                        )
+                        landRects.add(
+                            eg.edge.getRect(
+                                isPortrait = false,
+                                screenWidth = screenSize.x.toFloat(),
+                                screenHeight = screenSize.y.toFloat(),
+                                areaSize = getGestureAreaWidthDp()._dp.toFloat(),
+                                areaLengthScale = getGestureLengthScale()
+                            )
+                        )
+                    }
+                }
+            }
+        }
+
+        logger.d("updateShouldInterceptMotionEventRect, portRects: $portRects")
+        logger.d("updateShouldInterceptMotionEventRect, landRects: $landRects")
+
+        this.interceptMotionLandRects.clear()
+        this.interceptMotionLandRects.addAll(landRects)
+
+        this.interceptMotionPortRects.clear()
+        this.interceptMotionPortRects.addAll(portRects)
     }
 }

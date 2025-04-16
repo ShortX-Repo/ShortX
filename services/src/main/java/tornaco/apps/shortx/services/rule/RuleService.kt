@@ -42,7 +42,6 @@ import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionList
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
-import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
@@ -656,8 +655,6 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             kotlin.runCatching { it.onAddOrUpdate(rule.id) }
                 .onFailure { logger.e("Call onAddOrUpdate") }
         }
-
-        shortXContext.gesture.onRuleChanged()
     }
 
     fun deleteRule(ruleId: String) {
@@ -675,8 +672,6 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             kotlin.runCatching { it.onDelete(ruleId) }
                 .onFailure { logger.e("Call onDelete") }
         }
-
-        shortXContext.gesture.onRuleChanged()
     }
 
     fun getRuleById(id: String): Rule? {
@@ -700,8 +695,6 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 if (enable) it.onRuleEnabled(ruleId) else it.onRuleDisabled(ruleId)
             }
         }
-
-        shortXContext.gesture.onRuleChanged()
 
         // Stop tasks
         handler.postSafety("cancelJobs") {
