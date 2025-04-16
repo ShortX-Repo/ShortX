@@ -145,7 +145,7 @@ dependencies {
 
     implementation(project(":ui"))
     implementation(project(":services"))
-    implementation(project(":patch"))
+    implementation(project(":patch-xposed:patch-main"))
     implementation(project(":core"))
 
     implementation(libs.shortx.ext.codeditor)
