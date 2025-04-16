@@ -181,7 +181,7 @@ private class SingleKeyRuleImpl(
             .build()
         val enabledRules = ruleService.getAllEnabledRules()
         val das = ruleService.getAllDirectAction()
-        val shouldFire = ruleService.shouldFire(enabledRules, das, fact, false)
+        val shouldFire = ruleService.shouldFire(fact, false, enabledRules, das)
         logger.d("shouldFire: $shouldFire")
         if (shouldFire) {
             ruleService.publishFact(

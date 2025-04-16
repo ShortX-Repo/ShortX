@@ -462,23 +462,6 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             return@onKeyEvent null
         }
 
-        shortXContext.gesture.onGestureEvent {
-            logger.d("onGestureEvent: $it")
-            val fact = EdgeGesture.newBuilder().setEdge(it.first).setGesture(it.second).build()
-            if (shouldFire(
-                    rules = getAllEnabledRules(),
-                    das = getAllDirectAction(),
-                    fact = fact,
-                    checkCondition = false
-                )
-            ) {
-                logger.d("hasAnyRuleMatchFact for onGestureEvent: $it")
-                publishFact("Gesture", fact) { emptyMap() }
-                return@onGestureEvent true
-            }
-            false
-        }
-
         allTriggers.forEach { trigger ->
             kotlin.runCatching {
                 logger.d("Register trigger: $trigger")
@@ -495,10 +478,10 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     // Quick check.
     fun shouldFire(
-        rules: List<Rule>,
-        das: List<DirectAction>,
         fact: ProtoMessage,
-        checkCondition: Boolean
+        checkCondition: Boolean = false,
+        rules: List<Rule> = getAllEnabledRules(),
+        das: List<DirectAction> = getAllDirectAction()
     ): Boolean {
         return engine.shouldFire(
             rules = rules,

@@ -16,7 +16,8 @@ import java.io.PrintWriter
 
 class Detector(
     private val context: Context,
-    private val handler: Handler,
+    handler: Handler,
+    private val service: DetectorCallback
 ) {
     companion object {
         const val LOGV = BuildPropInternal.APP_IS_DEBUG
@@ -66,10 +67,19 @@ class Detector(
                     return handleEvent(x.toFloat(), y.toFloat(), Gesture.SwipeFromTop)
                 }
             },
-            30._dp
+            service.getSwipeDistanceThresholdDp()._dp
         )
 
-    fun onConfigurationChanged() {
+    init {
+        service.obsGestureSettingsChanged {
+            setSwipeDistanceThresholdDp(service.getSwipeDistanceThresholdDp())
+        }
+        service.obsConfigChanged {
+            onConfigurationChanged()
+        }
+    }
+
+    private fun onConfigurationChanged() {
         screenSize = context.screenSize().apply {
             logger.w("onConfigurationChanged, screenSize: $this")
         }
@@ -88,10 +98,7 @@ class Detector(
     }
 
     private fun handleEvent(area: Array<Edge>, gestureEvent: Gesture): Boolean {
-        logger.d("handleEvent: $area $gestureEvent")
-        // TODO
-        if (gestureEvent == Gesture.SwipeFromBottom) return true
-        return false
+        return service.handleGestureEvent(area, gestureEvent)
     }
 
     private fun detectArea(event: MotionEvent): Array<Edge> {
@@ -109,8 +116,8 @@ class Detector(
                 isPortrait = isPortrait,
                 screenWidth = screenSize.x.toFloat(),
                 screenHeight = screenSize.y.toFloat(),
-                areaSize = 30._dp.toFloat(),
-                areaLengthScale = 1f
+                areaSize = service.getGestureAreaWidthDp()._dp.toFloat(),
+                areaLengthScale = service.getGestureLengthScale()
             )
             if (LOGV) logger.d("rect: $rect (downX: $downX downY: $downY)")
             val res = rect.contains(downX, downY)
@@ -120,13 +127,13 @@ class Detector(
         return area.toTypedArray()
     }
 
-    fun interceptEvent(event: MotionEvent): Boolean? {
+    fun consumeEvent(event: MotionEvent): Boolean? {
         if (event.isTouchEvent) {
             if (gestureDetector.onTouchEvent(event)) {
-                return false
+                return true
             }
             if (pointerEventListener.onPointerEvent(event)) {
-                return false
+                return true
             }
         }
         return null
@@ -136,7 +143,7 @@ class Detector(
         pointerEventListener.dump(PrintWriter(System.err), "")
     }
 
-    fun setSwipeDistanceThresholdDp(dp: Int) {
+    private fun setSwipeDistanceThresholdDp(dp: Int) {
         logger.d("setSwipeDistanceThresholdDp: $dp px: ${dp._dp}")
         pointerEventListener.setSwipeDistanceThresholdPx(dp._dp)
     }
