@@ -15,7 +15,7 @@ fun SystemUIHook.installInputMonitor(context: Context) {
         service = callback
     )
     logger.w("installInputMonitor.")
-    OplusInputMonitorHelper.getInstance().apply {
+    InputMonitorHelper.getInstance().apply {
         init(context)
         enableInputReceiver(
             {

@@ -3,31 +3,32 @@ package tornaco.apps.shortx.services.xposed.hooks.hook.systemui.input.opls;
 import android.content.Context;
 import android.os.HandlerThread;
 import android.os.Looper;
-import android.util.Log;
 import android.view.InputChannel;
 import android.view.InputEvent;
 import android.view.InputEventReceiver;
 
-/* loaded from: classes.dex */
-public class OplusInputMonitorHelper {
-    public static final String TAG = "SHORTX_INPUT_OIM_Helper";
-    private static volatile OplusInputMonitorHelper sInstance;
+import tornaco.apps.shortx.core.util.Logger;
+
+// OplusInputMonitorHelper
+public class InputMonitorHelper {
+    private static volatile InputMonitorHelper sInstance;
     public static final String OPLUS_EX_CHANNEL_NAME = "ShortXInputReceiver";
     public static String sExChannelName = OPLUS_EX_CHANNEL_NAME;
     private int mChannelNameIndex = 1;
     private ColorExInputEventReceiver mExInputEventReceiver = null;
-    private HandlerThread mAsyncThread = new HandlerThread(TAG, -2);
+    private final HandlerThread mAsyncThread = new HandlerThread("ShortXInputMonitorHelper", -2);
+    private final Logger LOGGER = new Logger("InputMonitorHelper");
 
     /* loaded from: classes.dex */
     public interface IExInputEventReceiverCallback {
         boolean onInputEvent(InputEvent inputEvent);
     }
 
-    public static OplusInputMonitorHelper getInstance() {
+    public static InputMonitorHelper getInstance() {
         if (sInstance == null) {
-            synchronized (OplusInputMonitorHelper.class) {
+            synchronized (InputMonitorHelper.class) {
                 if (sInstance == null) {
-                    sInstance = new OplusInputMonitorHelper();
+                    sInstance = new InputMonitorHelper();
                 }
             }
         }
@@ -35,7 +36,7 @@ public class OplusInputMonitorHelper {
     }
 
     public void init(Context context) {
-        OplusInputConsumerManager.getInstance().init(context);
+        InputConsumerManager.getInstance().init(context);
         this.mAsyncThread.start();
     }
 
@@ -43,13 +44,13 @@ public class OplusInputMonitorHelper {
         if (reRegister) {
             updateChannelName();
         }
-        boolean exMoniting = OplusInputConsumerManager.getInstance().moniting(sExChannelName);
-        Log.d(TAG, "enableInputReceiver, receiver=" + this.mExInputEventReceiver + ", moniting=" + exMoniting + " sExChannelName=" + sExChannelName);
+        boolean exMoniting = InputConsumerManager.getInstance().moniting(sExChannelName);
+        LOGGER.d("enableInputReceiver, receiver=" + this.mExInputEventReceiver + ", moniting=" + exMoniting + " sExChannelName=" + sExChannelName);
         if (this.mExInputEventReceiver != null && exMoniting) {
             return false;
         }
         InputChannel exInputChannel = new InputChannel();
-        OplusInputConsumerManager.getInstance().createMonitorInputConsumer(sExChannelName, exInputChannel);
+        InputConsumerManager.getInstance().createMonitorInputConsumer(sExChannelName, exInputChannel);
         ColorExInputEventReceiver colorExInputEventReceiver = new ColorExInputEventReceiver(exInputChannel, this.mAsyncThread.getLooper());
         this.mExInputEventReceiver = colorExInputEventReceiver;
         colorExInputEventReceiver.setCallback(callback);
@@ -65,21 +66,21 @@ public class OplusInputMonitorHelper {
                     this.mExInputEventReceiver.dispose();
                 }
             } catch (Exception e) {
-                Log.e(TAG, "dispose receiver error:" + e);
+                LOGGER.e(e, "dispose receiver error");
             }
-            Log.d(TAG, "disableInputReceiver done!");
+            LOGGER.d("disableInputReceiver done!");
         } finally {
             this.mExInputEventReceiver = null;
-            OplusInputConsumerManager.getInstance().destroyMonitorInputConsumer(sExChannelName);
+            InputConsumerManager.getInstance().destroyMonitorInputConsumer(sExChannelName);
         }
     }
 
     public void pilferPointers() {
-        OplusInputConsumerManager.getInstance().pilferPointers(sExChannelName);
+        InputConsumerManager.getInstance().pilferPointers(sExChannelName);
     }
 
     /* loaded from: classes.dex */
-    private final class ColorExInputEventReceiver extends InputEventReceiver {
+    private static final class ColorExInputEventReceiver extends InputEventReceiver {
         private IExInputEventReceiverCallback mCallback;
 
         public void setCallback(IExInputEventReceiverCallback callback) {
