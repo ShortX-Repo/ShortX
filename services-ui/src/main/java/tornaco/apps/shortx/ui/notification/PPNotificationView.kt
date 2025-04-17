@@ -45,7 +45,7 @@ class PPNotificationView(
                 }, onLongClick = {
                     onLongClick(showPPN)
                 })
-                .padding(12.dp),
+                .padding(vertical = 12.dp, horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             AnimatedVisibility(showPPN.icon.isNotEmpty()) {
