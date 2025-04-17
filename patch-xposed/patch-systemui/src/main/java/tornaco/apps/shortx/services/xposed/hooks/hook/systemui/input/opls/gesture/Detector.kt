@@ -33,17 +33,17 @@ class Detector(
         GestureDetector(context, object : OnGestureListenerAdapter() {
             override fun onDoubleTap(e: MotionEvent): Boolean {
                 logger.d("onDoubleTap")
-                return handleEvent(e, Gesture.DoubleTap)
+                return handleTapEvent(e, Gesture.DoubleTap)
             }
 
             override fun onSingleTapUp(e: MotionEvent): Boolean {
                 logger.d("onSingleTapUp")
-                return handleEvent(e, Gesture.SingleTap)
+                return handleTapEvent(e, Gesture.SingleTap)
             }
 
             override fun onLongPress(e: MotionEvent) {
                 logger.d("onLongPress")
-                handleEvent(e, Gesture.LongTap)
+                handleTapEvent(e, Gesture.LongTap)
             }
         }, handler)
 
@@ -52,19 +52,19 @@ class Detector(
             context,
             object : SystemGesturesPointerEventListener.CallbacksAdapter() {
                 override fun onSwipeFromBottom(x: Int, y: Int): Boolean {
-                    return handleEvent(x.toFloat(), y.toFloat(), Gesture.SwipeFromBottom)
+                    return handleSwipeEvent(x.toFloat(), y.toFloat(), Gesture.SwipeFromBottom)
                 }
 
                 override fun onSwipeFromRight(x: Int, y: Int): Boolean {
-                    return handleEvent(x.toFloat(), y.toFloat(), Gesture.SwipeFromRight)
+                    return handleSwipeEvent(x.toFloat(), y.toFloat(), Gesture.SwipeFromRight)
                 }
 
                 override fun onSwipeFromLeft(x: Int, y: Int): Boolean {
-                    return handleEvent(x.toFloat(), y.toFloat(), Gesture.SwipeFromLeft)
+                    return handleSwipeEvent(x.toFloat(), y.toFloat(), Gesture.SwipeFromLeft)
                 }
 
                 override fun onSwipeFromTop(x: Int, y: Int): Boolean {
-                    return handleEvent(x.toFloat(), y.toFloat(), Gesture.SwipeFromTop)
+                    return handleSwipeEvent(x.toFloat(), y.toFloat(), Gesture.SwipeFromTop)
                 }
             },
             service.getSwipeDistanceThresholdDp()._dp
@@ -85,19 +85,19 @@ class Detector(
         }
     }
 
-    private fun handleEvent(downX: Float, downY: Float, gestureEvent: Gesture): Boolean {
+    private fun handleSwipeEvent(downX: Float, downY: Float, gestureEvent: Gesture): Boolean {
         val area = detectArea(downX, downY)
         if (area.isEmpty()) return false
-        return handleEvent(area, gestureEvent)
+        return handleEdgeGestureEvent(area, gestureEvent)
     }
 
-    private fun handleEvent(motionEvent: MotionEvent, gestureEvent: Gesture): Boolean {
+    private fun handleTapEvent(motionEvent: MotionEvent, gestureEvent: Gesture): Boolean {
         val area = detectArea(motionEvent)
         if (area.isEmpty()) return false
-        return handleEvent(area, gestureEvent)
+        return handleEdgeGestureEvent(area, gestureEvent)
     }
 
-    private fun handleEvent(area: Array<Edge>, gestureEvent: Gesture): Boolean {
+    private fun handleEdgeGestureEvent(area: Array<Edge>, gestureEvent: Gesture): Boolean {
         return service.handleGestureEvent(area, gestureEvent)
     }
 
