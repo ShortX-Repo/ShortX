@@ -6,14 +6,17 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.os.RemoteCallbackList
 import android.provider.Settings
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.AppComponent
 import tornaco.apps.shortx.core.BuildPropInternal
+import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.CustomContextMenu
@@ -21,6 +24,7 @@ import tornaco.apps.shortx.core.proto.common.CustomContextMenuSetting
 import tornaco.apps.shortx.core.proto.common.SystemSettingsAccessRecord
 import tornaco.apps.shortx.core.proto.fact.OnMenuActionTrigger
 import tornaco.apps.shortx.core.rule.RuleObserver
+import tornaco.apps.shortx.core.rule.action.emptyByteArrayWrapper
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.settings.defaultCustomContextMenuSetting
@@ -54,9 +58,12 @@ class SystemSettingsService(shortXContext: ShortXContext) :
                 val newConfig = context.resources.configuration
                 logger.i("configuration change received, new config: $newConfig")
                 _currentConfig.emit(newConfig)
+                notifyConfigChanged()
             }
         }
     }
+
+    private val configChangeListeners = RemoteCallbackList<ICallback>()
 
     private val _currentConfig = MutableSharedFlow<Configuration>()
     val currentConfig = _currentConfig.asSharedFlow()
@@ -254,6 +261,34 @@ class SystemSettingsService(shortXContext: ShortXContext) :
                     .build(),
             ) {
                 mapOf(ContextDataMapping.CustomContextMenu.selectedText.name to text)
+            }
+        }
+    }
+
+    fun registerConfigurationChangedListener(callback: ICallback) {
+        synchronized(configChangeListeners) {
+            configChangeListeners.register(callback)
+        }
+    }
+
+    fun unregisterConfigurationChangedListener(callback: ICallback) {
+        synchronized(configChangeListeners) {
+            configChangeListeners.unregister(callback)
+        }
+    }
+
+    private fun notifyConfigChanged() {
+        val config = uiContext.resources.configuration
+        logger.logOnDebug("notifyConfigChanged: $config")
+        synchronized(configChangeListeners) {
+            configChangeListeners.broadcast {
+                runCatching {
+                    it.receive(
+                        emptyByteArrayWrapper
+                    )
+                }.onFailure {
+                    logger.e(it, "notifyConfigChanged")
+                }
             }
         }
     }

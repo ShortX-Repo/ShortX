@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
 import android.content.pm.ShortcutInfo
 import android.graphics.Bitmap
+import android.graphics.Point
 import android.graphics.drawable.Drawable
 import android.os.Binder
 import android.os.Bundle
@@ -59,6 +60,7 @@ import tornaco.apps.shortx.core.proto.common.WebDavProfile
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.core.proto.fact.DeepLinkCall
+import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.MethodHook
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
@@ -1502,6 +1504,36 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun onMenuActionTrigger(number: Int, text: String) {
             shortXContext.systemSettings.onMenuActionTrigger(number, text)
+        }
+
+        override fun registerGestureSettingsListener(listener: ICallback) {
+            shortXContext.gesture.registerGestureSettingsListener(listener)
+        }
+
+        override fun unregisterGestureSettingsListener(listener: ICallback) {
+            shortXContext.gesture.unregisterGestureSettingsListener(listener)
+        }
+
+        override fun shouldFireEdgeGesture(gesture: ByteArrayWrapper): Boolean {
+            val edgeGesture = EdgeGesture.parseFrom(gesture.byteData)
+            return shortXContext.rule.shouldFire(edgeGesture)
+        }
+
+        override fun fireEdgeGesture(gesture: ByteArrayWrapper) {
+            val edgeGesture = EdgeGesture.parseFrom(gesture.byteData)
+            shortXContext.rule.publishFact("fireEdgeGesture", edgeGesture) { emptyMap() }
+        }
+
+        override fun registerConfigurationChangedListener(listener: ICallback) {
+            shortXContext.systemSettings.registerConfigurationChangedListener(listener)
+        }
+
+        override fun unregisterConfigurationChangedListener(listener: ICallback) {
+            shortXContext.systemSettings.unregisterConfigurationChangedListener(listener)
+        }
+
+        override fun getScreenSize(): Point {
+            return shortXContext.wm.screenSize
         }
 
         override fun addToggle(toggle: ByteArrayWrapper) {

@@ -10,6 +10,15 @@ import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 
+object RemovePPN : Actor {
+    override fun actionsCanHandle(): Class<out Message> {
+        return tornaco.apps.shortx.core.proto.action.RemovePPN::class.java
+    }
+
+    override suspend fun handle(params: HandleParams): Actor.Res {
+        return Actor.Res.EMPTY
+    }
+}
 
 object ShowPPN : Actor {
     override fun actionsCanHandle(): Class<out Message> {

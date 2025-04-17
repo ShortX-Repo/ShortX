@@ -2,27 +2,26 @@ package tornaco.apps.shortx.services.xposed.hooks.hook.systemui.input.opls;
 
 import android.content.Context;
 import android.util.ArrayMap;
-import android.util.Slog;
 import android.view.InputChannel;
 
 import tornaco.apps.shortx.core.BuildPropInternal;
+import tornaco.apps.shortx.core.util.Logger;
 
-/* loaded from: classes.dex */
-class OplusInputConsumerManager {
-    private static final String TAG = "OIM_OplusInputConsumerManager";
-    private static volatile OplusInputConsumerManager sInstance;
+// OplusInputConsumerManager
+class InputConsumerManager {
+    private static volatile InputConsumerManager sInstance;
     private Context mContext;
-    private final ArrayMap<String, OplusInputConsumer> mInputConsumers = new ArrayMap<>();
-    private boolean mDebug = BuildPropInternal.APP_IS_DEBUG;
+    private final ArrayMap<String, InputConsumer> mInputConsumers = new ArrayMap<>();
+    private final Logger LOGGER = new Logger("InputConsumerManager");
 
-    OplusInputConsumerManager() {
+    InputConsumerManager() {
     }
 
-    public static OplusInputConsumerManager getInstance() {
+    public static InputConsumerManager getInstance() {
         if (sInstance == null) {
-            synchronized (OplusInputConsumerManager.class) {
+            synchronized (InputConsumerManager.class) {
                 if (sInstance == null) {
-                    sInstance = new OplusInputConsumerManager();
+                    sInstance = new InputConsumerManager();
                 }
             }
         }
@@ -34,20 +33,20 @@ class OplusInputConsumerManager {
     }
 
     public void createMonitorInputConsumer(String name, InputChannel inputChannel) {
-        Slog.i(TAG, "createMonitorInputConsumer name = " + name);
+        LOGGER.i("createMonitorInputConsumer name = " + name);
         synchronized (this.mInputConsumers) {
             if (this.mInputConsumers.containsKey(name)) {
                 throw new IllegalStateException("Existing input consumer found with name: " + name);
             }
-            OplusInputConsumer consumer = new OplusInputConsumer(this.mContext, name, inputChannel);
+            InputConsumer consumer = new InputConsumer(this.mContext, name, inputChannel);
             this.mInputConsumers.put(name, consumer);
         }
     }
 
     public boolean destroyMonitorInputConsumer(String name) {
-        Slog.i(TAG, "destroyMonitorInputConsumer name = " + name);
+        LOGGER.i("destroyMonitorInputConsumer name = " + name);
         synchronized (this.mInputConsumers) {
-            OplusInputConsumer consumer = this.mInputConsumers.remove(name);
+            InputConsumer consumer = this.mInputConsumers.remove(name);
             if (consumer != null) {
                 consumer.dispose();
                 return true;
@@ -57,26 +56,26 @@ class OplusInputConsumerManager {
     }
 
     public void pilferPointers(String name) {
-        if (this.mDebug) {
-            Slog.i(TAG, "start pilferPointers, consumer name: " + name);
+        if (BuildPropInternal.APP_IS_DEBUG) {
+            LOGGER.i("start pilferPointers, consumer name: " + name);
         }
         synchronized (this.mInputConsumers) {
-            OplusInputConsumer consumer = this.mInputConsumers.getOrDefault(name, null);
+            InputConsumer consumer = this.mInputConsumers.getOrDefault(name, null);
             if (consumer != null) {
                 consumer.pilferPointers();
             } else {
-                Slog.e(TAG, "Uncorrect input monitor name, pilferPointers failed");
+                LOGGER.e("Uncorrect input monitor name, pilferPointers failed");
             }
         }
     }
 
     public boolean moniting(String name) {
         synchronized (this.mInputConsumers) {
-            OplusInputConsumer consumer = this.mInputConsumers.getOrDefault(name, null);
+            InputConsumer consumer = this.mInputConsumers.getOrDefault(name, null);
             if (consumer != null) {
                 return consumer.moniting();
             }
-            Slog.e(TAG, "Uncorrect input monitor name, unknow monitor");
+            LOGGER.e("Uncorrect input monitor name, unknow monitor");
             return false;
         }
     }

@@ -42,7 +42,6 @@ import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionList
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
-import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
@@ -462,23 +461,6 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             return@onKeyEvent null
         }
 
-        shortXContext.gesture.onGestureEvent {
-            logger.d("onGestureEvent: $it")
-            val fact = EdgeGesture.newBuilder().setEdge(it.first).setGesture(it.second).build()
-            if (shouldFire(
-                    rules = getAllEnabledRules(),
-                    das = getAllDirectAction(),
-                    fact = fact,
-                    checkCondition = false
-                )
-            ) {
-                logger.d("hasAnyRuleMatchFact for onGestureEvent: $it")
-                publishFact("Gesture", fact) { emptyMap() }
-                return@onGestureEvent true
-            }
-            false
-        }
-
         allTriggers.forEach { trigger ->
             kotlin.runCatching {
                 logger.d("Register trigger: $trigger")
@@ -495,10 +477,10 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     // Quick check.
     fun shouldFire(
-        rules: List<Rule>,
-        das: List<DirectAction>,
         fact: ProtoMessage,
-        checkCondition: Boolean
+        checkCondition: Boolean = false,
+        rules: List<Rule> = getAllEnabledRules(),
+        das: List<DirectAction> = getAllDirectAction()
     ): Boolean {
         return engine.shouldFire(
             rules = rules,
@@ -673,8 +655,6 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             kotlin.runCatching { it.onAddOrUpdate(rule.id) }
                 .onFailure { logger.e("Call onAddOrUpdate") }
         }
-
-        shortXContext.gesture.onRuleChanged()
     }
 
     fun deleteRule(ruleId: String) {
@@ -692,8 +672,6 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             kotlin.runCatching { it.onDelete(ruleId) }
                 .onFailure { logger.e("Call onDelete") }
         }
-
-        shortXContext.gesture.onRuleChanged()
     }
 
     fun getRuleById(id: String): Rule? {
@@ -717,8 +695,6 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 if (enable) it.onRuleEnabled(ruleId) else it.onRuleDisabled(ruleId)
             }
         }
-
-        shortXContext.gesture.onRuleChanged()
 
         // Stop tasks
         handler.postSafety("cancelJobs") {

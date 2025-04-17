@@ -1,35 +1,43 @@
-package tornaco.apps.shortx.services.input.opls;
+package tornaco.apps.shortx.services.xposed.hooks.hook.systemui.input.opls;
 
 import android.content.Context;
 import android.hardware.input.InputManager;
 import android.os.Binder;
-import android.util.Slog;
 import android.view.InputChannel;
 import android.view.InputMonitor;
 
-/* JADX INFO: Access modifiers changed from: package-private */
-/* loaded from: classes.dex */
-public class OplusInputConsumer {
-    private static final String TAG = "OIM_OplusInputConsumer";
+import tornaco.apps.shortx.core.util.Logger;
+import util.Reflections;
+
+// OplusInputConsumer
+public class InputConsumer {
     private InputManager mInputManager;
     private InputMonitor mInputMonitor;
+    private final Logger LOGGER = new Logger("InputConsumer");
 
-    public OplusInputConsumer(Context context, String name, InputChannel inputChannel) {
+    public InputConsumer(Context context, String name, InputChannel inputChannel) {
         this.mInputManager = null;
         if (context == null) {
-            Slog.e(TAG, "context is null, init OplusInputConsumer failed");
+            LOGGER.e("context is null, init OplusInputConsumer failed");
             return;
         }
         this.mInputManager = (InputManager) context.getSystemService(Context.INPUT_SERVICE);
         long ident = Binder.clearCallingIdentity();
         try {
-            InputMonitor monitorGestureInput = this.mInputManager.monitorGestureInput(name, 0);
+            // this.mInputManager.monitorGestureInput(name, 0);
+            InputMonitor monitorGestureInput = (InputMonitor) Reflections.callMethod(this.mInputManager, "monitorGestureInput", name, 0);
             this.mInputMonitor = monitorGestureInput;
             InputChannel client = monitorGestureInput.getInputChannel();
             if (inputChannel == null) {
-                Slog.e(TAG, "Has no input channel in InputMonitor, init OplusInputConsumer failed");
+                LOGGER.e("Has no input channel in InputMonitor, init OplusInputConsumer failed");
             } else {
-                client.copyTo(inputChannel);
+                try {
+                    client.copyTo(inputChannel);
+                } catch (Throwable e) {
+                    // Low android
+                    // void transferTo(InputChannel outParameter)
+                    Reflections.callMethod(client, "transferTo", inputChannel);
+                }
             }
         } finally {
             Binder.restoreCallingIdentity(ident);
@@ -45,7 +53,7 @@ public class OplusInputConsumer {
         if (inputMonitor != null) {
             inputMonitor.pilferPointers();
         } else {
-            Slog.e(TAG, "Has no input monitor, pilferPointers failed");
+            LOGGER.e("Has no input monitor, pilferPointers failed");
         }
     }
 
@@ -58,7 +66,7 @@ public class OplusInputConsumer {
                     this.mInputMonitor = null;
                 }
             } catch (Exception e) {
-                Slog.e(TAG, "dispose error:" + e);
+                LOGGER.e("dispose error:" + e);
             }
         } finally {
             this.mInputMonitor = null;

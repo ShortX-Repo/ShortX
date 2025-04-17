@@ -23,7 +23,6 @@ import tornaco.apps.shortx.core.res.PicassoInitializer
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.su.LibShKtShellImpl
-import tornaco.apps.shortx.core.util.logAdapter
 import tornaco.apps.shortx.services.xposed.hooks.hook.CustomHookApp
 import tornaco.apps.shortx.services.xposed.hooks.hook.afterMethod
 import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.input.opls.installInputMonitor
@@ -113,12 +112,6 @@ fun SystemUIHook.hookApp(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runC
                 return@afterMethod
             }
             logger.i("ShortX: $shortx")
-
-            // Install log
-            logAdapter = { _: Int, tag: String, msg: String ->
-                shortx.log("$tag - $msg", "")
-            }
-
             val app: Context = param.thisObject as Context
             logger.d("After onCreate: $app")
 
