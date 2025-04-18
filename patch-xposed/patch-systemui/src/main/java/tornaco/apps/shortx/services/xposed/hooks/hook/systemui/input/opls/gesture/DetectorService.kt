@@ -60,6 +60,8 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
     private val interceptMotionPortRects = mutableListOf<RectF>()
     private val interceptMotionLandRects = mutableListOf<RectF>()
 
+    val shouldDetectMotion get() = fireableScreenGestures.isNotEmpty() || fireableEdgeGestures.isNotEmpty()
+
     init {
         shortx.registerGestureSettingsListener(object : ICallback.Stub() {
             override fun receive(data: ByteArrayWrapper?) {

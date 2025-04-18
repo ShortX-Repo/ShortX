@@ -19,6 +19,10 @@ fun SystemUIHook.installInputMonitor(context: Context) {
         init(context)
         enableInputReceiver(
             {
+                if (!service.shouldDetectMotion) {
+                    logger.v("shouldDetectMotion is false.")
+                    return@enableInputReceiver false
+                }
                 if (it is MotionEvent) {
                     val consumed = detector.consumeEvent(it)
                     logger.v("InputMonitor consumed: $consumed $it")
