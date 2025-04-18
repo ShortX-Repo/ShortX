@@ -296,7 +296,7 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
             Fact.ScreenGesture::class -> {
                 screenGestureMenuState.show(
                     currentSelection = listOfNotNull(
-                        source.getFactAs<Fact.EdgeGesture>()?.gesture?.name
+                        source.getFactAs<Fact.ScreenGesture>()?.gesture?.name
                     )
                 )
                 true
