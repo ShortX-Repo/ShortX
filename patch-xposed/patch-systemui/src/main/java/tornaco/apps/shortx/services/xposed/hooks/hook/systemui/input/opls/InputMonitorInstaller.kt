@@ -8,11 +8,11 @@ import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.input.opls.gestur
 import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.input.opls.gesture.DetectorServiceImpl
 
 fun SystemUIHook.installInputMonitor(context: Context) {
-    val callback = DetectorServiceImpl(context)
+    val service = DetectorServiceImpl(context)
     val detector = Detector(
         context = context,
         handler = newHandlerOfNewThread("shortx-detector"),
-        service = callback
+        service = service
     )
     logger.w("installInputMonitor.")
     InputMonitorHelper.getInstance().apply {
@@ -26,7 +26,7 @@ fun SystemUIHook.installInputMonitor(context: Context) {
                         logger.d("pilferPointers. consumed")
                         pilferPointers()
                         return@enableInputReceiver true
-                    } else if (callback.shouldStealMotionEvent(it)) {
+                    } else if (service.shouldStealMotionEvent(it)) {
                         logger.d("pilferPointers. steal.")
                         pilferPointers()
                     }

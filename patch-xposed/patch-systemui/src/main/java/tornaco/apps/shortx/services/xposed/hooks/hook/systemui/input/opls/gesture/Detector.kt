@@ -86,14 +86,14 @@ class Detector(
     }
 
     private fun handleSwipeEvent(downX: Float, downY: Float, gestureEvent: Gesture): Boolean {
-        postHandleScreenGestureEvent(gestureEvent)
+        postHandleScreenGestureEvent(downX, downY, gestureEvent)
         val area = detectArea(downX, downY)
         if (area.isEmpty()) return false
         return handleEdgeGestureEvent(area, gestureEvent)
     }
 
     private fun handleTapEvent(motionEvent: MotionEvent, gestureEvent: Gesture): Boolean {
-        postHandleScreenGestureEvent(gestureEvent)
+        postHandleScreenGestureEvent(motionEvent.x, motionEvent.y, gestureEvent)
         val area = detectArea(motionEvent)
         if (area.isEmpty()) return false
         return handleEdgeGestureEvent(area, gestureEvent)
@@ -103,10 +103,10 @@ class Detector(
         return service.handleEdgeGestureEvent(area, gestureEvent)
     }
 
-    private fun postHandleScreenGestureEvent(gesture: Gesture) {
+    private fun postHandleScreenGestureEvent(downX: Float, downY: Float, gesture: Gesture) {
         handler.post {
             runCatching {
-                service.handleScreenGestureEvent(gesture)
+                service.handleScreenGestureEvent(downX, downY, gesture)
             }.onFailure {
                 logger.e(it, "postHandleScreenGestureEvent")
             }

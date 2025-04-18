@@ -21,7 +21,7 @@ import tornaco.apps.shortx.core.util._dp
 
 interface DetectorService {
     fun handleEdgeGestureEvent(area: Array<Edge>, gestureEvent: Gesture): Boolean
-    fun handleScreenGestureEvent(gestureEvent: Gesture)
+    fun handleScreenGestureEvent(downX: Float, downY: Float, gestureEvent: Gesture)
     fun getSwipeDistanceThresholdDp(): Int
     fun getGestureAreaWidthDp(): Int
     fun getGestureLengthScale(): Float
@@ -107,7 +107,7 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
             fireableScreenGestures.clear()
             fireableScreenGestures.addAll(
                 allScreenGestures.filter { gesture ->
-                    shortx.shouldFireScreenGesture(gesture.number)
+                    shortx.shouldFireScreenGesture(gesture.number, 0, 0)
                 }
             )
             logger.w(
@@ -158,11 +158,11 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         return res
     }
 
-    override fun handleScreenGestureEvent(gestureEvent: Gesture) {
-        logger.v("handleScreenGestureEvent: $gestureEvent")
+    override fun handleScreenGestureEvent(downX: Float, downY: Float, gestureEvent: Gesture) {
+        logger.v("handleScreenGestureEvent: $gestureEvent ($downX, $downY)")
         if (shouldFireScreenGesture(gestureEvent)) {
             logger.d("Let's fire: $gestureEvent")
-            shortx.fireScreenGesture(gestureEvent.number)
+            shortx.fireScreenGesture(gestureEvent.number, downX.toInt(), downY.toInt())
         }
     }
 

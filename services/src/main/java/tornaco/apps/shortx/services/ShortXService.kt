@@ -31,6 +31,7 @@ import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.Version
 import tornaco.apps.shortx.core.context.ContextData
+import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.cv.ICV
 import tornaco.apps.shortx.core.http.toHttpRequestBody
 import tornaco.apps.shortx.core.http.toHttpResponseData
@@ -1538,19 +1539,24 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.rule.publishFact("fireEdgeGesture", edgeGesture) { emptyMap() }
         }
 
-        override fun shouldFireScreenGesture(gesture: Int): Boolean {
+        override fun shouldFireScreenGesture(gesture: Int, x: Int, y: Int): Boolean {
             val gestureE = Gesture.forNumber(gesture) ?: return false
             return shortXContext.rule.shouldFire(
                 ScreenGesture.newBuilder().setGesture(gestureE).build()
             )
         }
 
-        override fun fireScreenGesture(gesture: Int) {
+        override fun fireScreenGesture(gesture: Int, x: Int, y: Int) {
             val gestureE = Gesture.forNumber(gesture) ?: return
             shortXContext.rule.publishFact(
                 "fireScreenGesture",
                 ScreenGesture.newBuilder().setGesture(gestureE).build()
-            ) { emptyMap() }
+            ) {
+                mapOf(
+                    ContextDataMapping.ScreenGesture.eventX.name to x,
+                    ContextDataMapping.ScreenGesture.eventY.name to y,
+                )
+            }
         }
 
         override fun registerConfigurationChangedListener(listener: ICallback) {
