@@ -98,6 +98,7 @@ import tornaco.apps.shortx.core.proto.fact.BTDisconnectedFrom
 import tornaco.apps.shortx.core.proto.fact.BatteryTemperatureChanged
 import tornaco.apps.shortx.core.proto.fact.CombineKeyEvent
 import tornaco.apps.shortx.core.proto.fact.ConnectedWifiSignalLevelChanged
+import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen
 import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
@@ -108,6 +109,7 @@ import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
 import tornaco.apps.shortx.core.proto.fact.PkgStartRunning
 import tornaco.apps.shortx.core.proto.fact.ProximitySensor
 import tornaco.apps.shortx.core.proto.fact.ProximitySensorStateChanged
+import tornaco.apps.shortx.core.proto.fact.ScreenGesture
 import tornaco.apps.shortx.core.proto.fact.ShakeDevice
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
 import tornaco.apps.shortx.core.proto.fact.UsbDeviceAttached
@@ -171,6 +173,8 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         RequireTileState::class,
         HasFoundPointsByColor::class,
         TextFromScreenNodeMatches::class,
+        EdgeGesture::class,
+        ScreenGesture::class,
 
         LaunchAppByPkg::class,
         StopAppByPkg::class,

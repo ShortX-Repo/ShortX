@@ -114,6 +114,8 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Fact.ProximitySensor::class,
     Fact.ProximitySensorStateChanged::class,
     Fact.ShakeDevice::class,
+    Fact.EdgeGesture::class,
+    Fact.ScreenGesture::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 
     Condition.AppHasAudioFocus::class,
