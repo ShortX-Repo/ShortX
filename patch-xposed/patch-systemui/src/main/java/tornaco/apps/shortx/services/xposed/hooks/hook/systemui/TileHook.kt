@@ -21,7 +21,7 @@ fun SystemUIHook.hookTileIcon() {
             }
             val result = param.result
             val tile = param.thisObject as Tile
-            logger.w("Tile: ${tile.label} ${tile.contentDescription} $result")
+            logger.d("Tile: ${tile.label} ${tile.contentDescription} $result")
             val label: CharSequence = tile.label ?: return@afterMethod
             val contentDescription: CharSequence = tile.contentDescription ?: return@afterMethod
             // Tile 1

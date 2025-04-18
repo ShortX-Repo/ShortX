@@ -66,11 +66,12 @@ fun SystemUIHook.hookView(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.run
                 if (id == "app:id/status_bar_contents") {
                     logger.d("status_bar_contents: $child")
                     kotlin.runCatching {
-                        val linearRoot = child as LinearLayout
+                        // Android it's Linear, Oneui6 is Relative.
+                        val linearRoot = child as ViewGroup
                         linearRoot.addView(StatusBarClipView(child.context), 0)
-                        logger.d("Clip added.")
+                        logger.d("Chip added.")
                     }.onFailure {
-                        logger.e(it, "Fail to add clip")
+                        logger.e(it, "Fail to add chip")
                     }
                 }
             }
