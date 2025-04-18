@@ -13,6 +13,7 @@ object HookStub {
 
     fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam) {
         logger.logOnDebug("handleLoadPackage- ${lpparam.packageName}")
+        require(isSupportedAndroidVersion)
         if (PackageNames.android == lpparam.packageName) {
             logger.i("Loading android.")
             androidHooks(lpparam)

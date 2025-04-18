@@ -260,6 +260,7 @@
     "ui.fact.key.gesture.keymultiplepress": "Double Press",
     "ui.fact.key.gesture.keytriplepress": "Triple Press",
     "ui.fact.key.gesture.keylongpress": "Long Press",
+    "ui.fact.screen.gesture": "Screen Gesture",
     "ui.fact.edge.gesture": "Edge Gesture",
     "ui.fact.edge.gesture.position": "Gesture position",
     "ui.fact.edge.gesture.gesture": "Gesture",

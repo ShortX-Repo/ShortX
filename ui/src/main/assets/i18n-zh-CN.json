@@ -260,6 +260,7 @@
     "ui.fact.key.gesture.keymultiplepress": "双击",
     "ui.fact.key.gesture.keytriplepress": "三击",
     "ui.fact.key.gesture.keylongpress": "长按",
+    "ui.fact.screen.gesture": "屏幕手势",
     "ui.fact.edge.gesture": "边缘手势",
     "ui.fact.edge.gesture.position": "手势位置",
     "ui.fact.edge.gesture.gesture": "手势",
