@@ -21,8 +21,8 @@ class ShortXApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        AppGlobals.setContext(applicationContext)
         initLogger(this)
+        AppGlobals.setContext(applicationContext)
         logger.d("onCreate.")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             HiddenApiBypass.addHiddenApiExemptions("")

@@ -17,9 +17,7 @@ import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.DeviceId
-import tornaco.apps.shortx.ui.subscribe.util.hasAChanceToSkipLicenseCheck
 import tornaco.apps.shortx.ui.subscribe.util.setLVLToken
-import tornaco.apps.shortx.ui.subscribe.util.skipLicenseCheckOnce
 
 private val SALT = byteArrayOf(
     -46, 65, 30, -128, -13, -57, 74, -64, 51, 88, -95, -45, 77, -127, -36, -113, -11, 32, -64, 89
@@ -91,13 +89,5 @@ class LVLCheckViewModel : ViewModel() {
             delay(2000)
             checker.checkAccess(checkerCallback)
         }
-    }
-
-    fun canSkip(context: Context): Boolean {
-        return hasAChanceToSkipLicenseCheck()
-    }
-
-    fun onSkip(context: Context) {
-        return skipLicenseCheckOnce()
     }
 }

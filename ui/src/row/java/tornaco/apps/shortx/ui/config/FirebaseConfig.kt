@@ -47,6 +47,8 @@ class FirebaseConfig : Config {
         get() = remoteConfig?.getLong("force_upgrade_version_code") ?: 0
     override val globalNoticeMessage: String
         get() = remoteConfig?.getString("global_notice_message").orEmpty()
+    override val variant: String
+        get() = "google.com"
     override val globalNoticeId: String
         get() = remoteConfig?.getString("global_notice_id").orEmpty()
 }

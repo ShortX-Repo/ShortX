@@ -7,6 +7,9 @@ class PrcConfig : Config {
         get() = 0
     override val globalNoticeMessage: String
         get() = ""
+    // Null means PRC build.
+    override val variant: String?
+        get() = null
     override val globalNoticeId: String
         get() = ""
 }

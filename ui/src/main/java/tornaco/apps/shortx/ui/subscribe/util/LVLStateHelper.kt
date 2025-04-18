@@ -5,18 +5,38 @@ import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.DeviceId
 import tornaco.apps.shortx.ui.MMKVExt
+import tornaco.apps.shortx.ui.config.config
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 
 val lvlLogger = Logger("ShortXApp")
-private var skipTimes = 0
-var isSkipping = false
 
-inline fun String.isGPToken(consumer: () -> Unit = {}) = DeviceId.requireGPToken() == this
+inline fun String.isGPToken(consumer: () -> Unit = {}): Boolean {
+    consumer()
+    return DeviceId.requireGPToken() == this
+}
 
 inline fun getLVLToken(onRes: (String?) -> Unit) {
+    getTokenChecked { token ->
+        lvlLogger.logOnDebug("getLVLToken return: $token")
+        onRes(token)
+    }
+}
+
+inline fun getTokenChecked(onRes: (String?) -> Unit) {
     val token = MMKVExt.encMMKV().decodeString(DeviceId.requireTokenKey())
-    lvlLogger.logOnDebug("getLVLToken return: $token")
-    onRes(token)
+    if (token.isNullOrEmpty()) {
+        lvlLogger.logOnDebug { "getTokenChecked, no token." }
+        onRes(null)
+    } else {
+        // PRC token + Row apk
+        if (!token.isGPToken() && !config.variant.isNullOrEmpty()) {
+            lvlLogger.logOnDebug { "PRC token + Row apk!!! clear." }
+            setLVLToken(null)
+            onRes(null)
+        } else {
+            onRes(token)
+        }
+    }
 }
 
 inline fun getLVLTokenForServer(onRes: (String?) -> Unit) {
@@ -38,12 +58,4 @@ fun setLVLToken(token: String?) {
     } else {
         runBlocking { LVLStateHolder.setNotSubscribed() }
     }
-}
-
-fun skipLicenseCheckOnce() {
-    skipTimes += 1
-}
-
-fun hasAChanceToSkipLicenseCheck(): Boolean {
-    return skipTimes <= 9
 }

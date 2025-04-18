@@ -6,6 +6,8 @@ interface Config {
 
     val globalNoticeId: String
     val globalNoticeMessage: String
+
+    val variant: String?
 }
 
 val config by lazy { Provider().provideConfig() }

@@ -18,7 +18,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,7 +32,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.base.BaseActivity
-import tornaco.apps.shortx.ui.subscribe.util.isSkipping
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
@@ -63,10 +61,6 @@ fun LVLCheckScreen(showSkipButton: Boolean = true, toNav: () -> Unit) {
     LaunchedEffect(Unit) {
         viewModel.check(context)
     }
-
-    val canSkip = remember {
-        viewModel.canSkip(context)
-    }
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -79,12 +73,6 @@ fun LVLCheckScreen(showSkipButton: Boolean = true, toNav: () -> Unit) {
                 onRetry = {
                     viewModel.check(context)
                 },
-                onSkip = {
-                    isSkipping = true
-                    delayToNav(scope = scope, toNav = toNav)
-                    viewModel.onSkip(context)
-                },
-                canSkip = showSkipButton && canSkip,
                 toNav = toNav
             )
         }
@@ -95,8 +83,6 @@ fun LVLCheckScreen(showSkipButton: Boolean = true, toNav: () -> Unit) {
 private fun MainContent(
     uiState: LVLUiState,
     onRetry: () -> Unit,
-    canSkip: Boolean,
-    onSkip: () -> Unit,
     toNav: () -> Unit
 ) {
     when (uiState.checkState) {
@@ -112,8 +98,6 @@ private fun MainContent(
             FailContent(
                 checkState = uiState.checkState,
                 onRetry = onRetry,
-                canSkip = canSkip,
-                onSkip = onSkip
             )
         }
     }
@@ -160,8 +144,6 @@ private fun SuccessContent(toNav: () -> Unit) {
 @Composable
 private fun FailContent(
     checkState: CheckState,
-    canSkip: Boolean,
-    onSkip: () -> Unit,
     onRetry: () -> Unit
 ) {
     Box {
@@ -203,15 +185,6 @@ private fun FailContent(
                 .align(Alignment.BottomEnd)
                 .padding(end = 32.dp, bottom = 24.dp)
         ) {
-            if (canSkip) {
-                HighLightText(
-                    modifier = Modifier.padding(top = 24.dp),
-                    textRes = R.string.lvl_check_skip_for_now
-                ) {
-                    onSkip()
-                }
-            }
-
             HighLightText(
                 modifier = Modifier.padding(top = 24.dp),
                 textRes = R.string.lvl_checking_retry
