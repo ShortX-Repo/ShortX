@@ -16,7 +16,7 @@ import java.io.PrintWriter
 
 class Detector(
     private val context: Context,
-    handler: Handler,
+    private val handler: Handler,
     private val service: DetectorService
 ) {
     companion object {
@@ -86,19 +86,31 @@ class Detector(
     }
 
     private fun handleSwipeEvent(downX: Float, downY: Float, gestureEvent: Gesture): Boolean {
+        postHandleScreenGestureEvent(gestureEvent)
         val area = detectArea(downX, downY)
         if (area.isEmpty()) return false
         return handleEdgeGestureEvent(area, gestureEvent)
     }
 
     private fun handleTapEvent(motionEvent: MotionEvent, gestureEvent: Gesture): Boolean {
+        postHandleScreenGestureEvent(gestureEvent)
         val area = detectArea(motionEvent)
         if (area.isEmpty()) return false
         return handleEdgeGestureEvent(area, gestureEvent)
     }
 
     private fun handleEdgeGestureEvent(area: Array<Edge>, gestureEvent: Gesture): Boolean {
-        return service.handleGestureEvent(area, gestureEvent)
+        return service.handleEdgeGestureEvent(area, gestureEvent)
+    }
+
+    private fun postHandleScreenGestureEvent(gesture: Gesture) {
+        handler.post {
+            runCatching {
+                service.handleScreenGestureEvent(gesture)
+            }.onFailure {
+                logger.e(it, "postHandleScreenGestureEvent")
+            }
+        }
     }
 
     private fun detectArea(event: MotionEvent): Array<Edge> {

@@ -20,7 +20,8 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util._dp
 
 interface DetectorService {
-    fun handleGestureEvent(area: Array<Edge>, gestureEvent: Gesture): Boolean
+    fun handleEdgeGestureEvent(area: Array<Edge>, gestureEvent: Gesture): Boolean
+    fun handleScreenGestureEvent(gestureEvent: Gesture)
     fun getSwipeDistanceThresholdDp(): Int
     fun getGestureAreaWidthDp(): Int
     fun getGestureLengthScale(): Float
@@ -46,14 +47,15 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
             Edge.entries
                 .filter { it != Edge.UNRECOGNIZED }
                 .map { edge ->
-                    EdgeGesture.newBuilder()
-                        .setGesture(gesture)
-                        .setEdge(edge)
-                        .build()
+                    edge to gesture
                 }
         }
 
-    private val fireableEdgeGestures = mutableSetOf<EdgeGesture>()
+    private val allScreenGestures = Gesture.entries
+        .filter { it != Gesture.UNRECOGNIZED }
+
+    private val fireableEdgeGestures = mutableSetOf<Pair<Edge, Gesture>>()
+    private val fireableScreenGestures = mutableSetOf<Gesture>()
 
     private val interceptMotionPortRects = mutableListOf<RectF>()
     private val interceptMotionLandRects = mutableListOf<RectF>()
@@ -94,15 +96,23 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         synchronized(fireableEdgeGestures) {
             fireableEdgeGestures.clear()
             fireableEdgeGestures.addAll(
-                allEdgeGestures.filter { gesture ->
-                    shortx.shouldFireEdgeGesture(gesture)
+                allEdgeGestures.filter { eg ->
+                    shortx.shouldFireEdgeGesture(eg.first.number, eg.second.number)
+                }
+            )
+            logger.w("fireableEdgeGestures: ${fireableEdgeGestures.joinToString()}")
+        }
+
+        synchronized(fireableScreenGestures) {
+            fireableScreenGestures.clear()
+            fireableScreenGestures.addAll(
+                allScreenGestures.filter { gesture ->
+                    shortx.shouldFireScreenGesture(gesture.number)
                 }
             )
             logger.w(
-                "readGestureFireState: ${
-                    fireableEdgeGestures.joinToString {
-                        "${it.edge}-${it.gesture}"
-                    }
+                "fireableScreenGestures: ${
+                    fireableScreenGestures.joinToString { it.name }
                 }"
             )
         }
@@ -139,30 +149,42 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         afterConfigChangedObs = obs
     }
 
-    override fun handleGestureEvent(area: Array<Edge>, gestureEvent: Gesture): Boolean {
+    override fun handleEdgeGestureEvent(area: Array<Edge>, gestureEvent: Gesture): Boolean {
         var res = false
         area.forEach {
-            val handled = onGestureEvent(it to gestureEvent)
+            val handled = onEdgeGestureEvent(it to gestureEvent)
             if (handled) res = true
         }
         return res
     }
 
-    private fun onGestureEvent(pair: Pair<Edge, Gesture>): Boolean {
-        val gesture = EdgeGesture.newBuilder()
-            .setEdge(pair.first)
-            .setGesture(pair.second)
-            .build()
-        if (shouldFireGesture(gesture)) {
-            logger.w("Let's fire: $pair")
-            shortx.fireEdgeGesture(gesture)
+    override fun handleScreenGestureEvent(gestureEvent: Gesture) {
+        logger.v("handleScreenGestureEvent: $gestureEvent")
+        if (shouldFireScreenGesture(gestureEvent)) {
+            logger.d("Let's fire: $gestureEvent")
+            shortx.fireScreenGesture(gestureEvent.number)
+        }
+    }
+
+    private fun onEdgeGestureEvent(pair: Pair<Edge, Gesture>): Boolean {
+        if (shouldFireEdgeGesture(pair)) {
+            logger.d("Let's fire: $pair")
+            shortx.fireEdgeGesture(pair.first.number, pair.second.number)
             return true
         } else return false
     }
 
-    private fun shouldFireGesture(gesture: EdgeGesture): Boolean {
+    private fun shouldFireEdgeGesture(pair: Pair<Edge, Gesture>): Boolean {
         return synchronized(fireableEdgeGestures) {
-            fireableEdgeGestures.contains(gesture)
+            if (fireableEdgeGestures.isEmpty()) return false
+            fireableEdgeGestures.contains(pair)
+        }
+    }
+
+    private fun shouldFireScreenGesture(gesture: Gesture): Boolean {
+        return synchronized(fireableScreenGestures) {
+            if (fireableScreenGestures.isEmpty()) return false
+            fireableScreenGestures.contains(gesture)
         }
     }
 

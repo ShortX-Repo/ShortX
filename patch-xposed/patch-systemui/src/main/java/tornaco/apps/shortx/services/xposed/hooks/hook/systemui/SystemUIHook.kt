@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook.systemui
 
 import android.content.Context
+import android.util.Log
 import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.BuildPropInternal
@@ -18,8 +19,12 @@ object SystemUIHook {
     fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam) {
         if (PackageNames.systemUI == lpparam.packageName) {
             // Install log
-            logAdapter = { _: Int, tag: String, msg: String ->
-                XposedBridge.log("ShortXSystemUi $tag - $msg")
+            logAdapter = { level: Int, tag: String, msg: String ->
+                if (BuildPropInternal.APP_IS_DEBUG || level > Log.INFO) {
+                    XposedBridge.log("ShortXSystemUi $tag - $msg")
+                } else {
+                    Log.println(Log.INFO, "ShortXSystemUi", "$tag - $msg")
+                }
             }
             hookApp(lpparam)
             hookTile(lpparam)

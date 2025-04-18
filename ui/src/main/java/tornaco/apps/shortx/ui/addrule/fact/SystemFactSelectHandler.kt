@@ -8,10 +8,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.core.text.isDigitsOnly
 import tornaco.apps.shortx.core.alarm.toLocalTime
+import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.proto.fact.SunRise
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.fact.mapper.displayNameKey
 import tornaco.apps.shortx.ui.addrule.fact.mapper.factLabelKey
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.selector.AdvancedKeyEventSelector
@@ -83,6 +85,17 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
             shortXManager.showEdgeHint(listOf(it))
         })
     EdgeGestureSelector(edgeGestureSelectorState)
+
+    val screenGestureMenuState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.fact.screen.gesture"],
+        menuItems = Gesture.entries.filter { it != Gesture.UNRECOGNIZED }.map {
+            MenuDialogItem(it.name, title = LocalI18N.current[it.displayNameKey()])
+        },
+        onItemSelected = { _, id ->
+            val gesture = Gesture.valueOf(id)
+            addFact(Fact.ScreenGesture(gesture))
+        })
+    MenuDialog(state = screenGestureMenuState)
 
     val timeOfADaySelector = rememberAlarmSelectorState { alarm ->
         addFact(Fact.Alarm(timeOfADay = alarm.triggerAt, repeatDays = alarm.repeat))
@@ -276,6 +289,15 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
                     edge = source.getFactAs<Fact.EdgeGesture>()?.edge,
                     gesture = source.getFactAs<Fact.EdgeGesture>()?.gesture,
                     isIntercept = source.getFactAs<Fact.EdgeGesture>()?.isIntercept,
+                )
+                true
+            }
+
+            Fact.ScreenGesture::class -> {
+                screenGestureMenuState.show(
+                    currentSelection = listOfNotNull(
+                        source.getFactAs<Fact.EdgeGesture>()?.gesture?.name
+                    )
                 )
                 true
             }

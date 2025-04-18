@@ -60,8 +60,11 @@ import tornaco.apps.shortx.core.proto.common.WebDavProfile
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.core.proto.fact.DeepLinkCall
+import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
+import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.proto.fact.MethodHook
+import tornaco.apps.shortx.core.proto.fact.ScreenGesture
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
@@ -1514,14 +1517,40 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.gesture.unregisterGestureSettingsListener(listener)
         }
 
-        override fun shouldFireEdgeGesture(gesture: ByteArrayWrapper): Boolean {
-            val edgeGesture = EdgeGesture.parseFrom(gesture.byteData)
+        override fun shouldFireEdgeGesture(edge: Int, gesture: Int): Boolean {
+            val edgeE = Edge.forNumber(edge) ?: return false
+            val gestureE = Gesture.forNumber(gesture) ?: return false
+            val edgeGesture = EdgeGesture.newBuilder()
+                .setEdge(edgeE)
+                .setGesture(gestureE)
+                .build()
             return shortXContext.rule.shouldFire(edgeGesture)
         }
 
-        override fun fireEdgeGesture(gesture: ByteArrayWrapper) {
-            val edgeGesture = EdgeGesture.parseFrom(gesture.byteData)
+        override fun fireEdgeGesture(edge: Int, gesture: Int) {
+            logger.w("fireEdgeGesture - $edge $gesture")
+            val edgeE = Edge.forNumber(edge) ?: return
+            val gestureE = Gesture.forNumber(gesture) ?: return
+            val edgeGesture = EdgeGesture.newBuilder()
+                .setEdge(edgeE)
+                .setGesture(gestureE)
+                .build()
             shortXContext.rule.publishFact("fireEdgeGesture", edgeGesture) { emptyMap() }
+        }
+
+        override fun shouldFireScreenGesture(gesture: Int): Boolean {
+            val gestureE = Gesture.forNumber(gesture) ?: return false
+            return shortXContext.rule.shouldFire(
+                ScreenGesture.newBuilder().setGesture(gestureE).build()
+            )
+        }
+
+        override fun fireScreenGesture(gesture: Int) {
+            val gestureE = Gesture.forNumber(gesture) ?: return
+            shortXContext.rule.publishFact(
+                "fireScreenGesture",
+                ScreenGesture.newBuilder().setGesture(gestureE).build()
+            ) { emptyMap() }
         }
 
         override fun registerConfigurationChangedListener(listener: ICallback) {

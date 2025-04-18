@@ -56,9 +56,7 @@ class InputConsumerManager {
     }
 
     public void pilferPointers(String name) {
-        if (BuildPropInternal.APP_IS_DEBUG) {
-            LOGGER.i("start pilferPointers, consumer name: " + name);
-        }
+        LOGGER.i("start pilferPointers, consumer name: " + name);
         synchronized (this.mInputConsumers) {
             InputConsumer consumer = this.mInputConsumers.getOrDefault(name, null);
             if (consumer != null) {
