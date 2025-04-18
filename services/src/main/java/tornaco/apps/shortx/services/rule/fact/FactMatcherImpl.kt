@@ -79,6 +79,7 @@ import tornaco.apps.shortx.core.proto.fact.ProximitySensor
 import tornaco.apps.shortx.core.proto.fact.ProximitySensorState
 import tornaco.apps.shortx.core.proto.fact.ProximitySensorStateChanged
 import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
+import tornaco.apps.shortx.core.proto.fact.ScreenGesture
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
 import tornaco.apps.shortx.core.proto.fact.ScreenOnTime
@@ -421,6 +422,12 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
             val actualN = (actual as EdgeGesture)
             val ruleN = (rule as EdgeGesture)
             actualN.edge == ruleN.edge && actualN.gesture == ruleN.gesture
+        }
+
+        register(ScreenGesture::class.java) { actual, rule ->
+            val actualN = (actual as ScreenGesture)
+            val ruleN = (rule as ScreenGesture)
+            actualN.gesture == ruleN.gesture
         }
 
         register(WifiConnectedTo::class.java) { actual, rule ->
