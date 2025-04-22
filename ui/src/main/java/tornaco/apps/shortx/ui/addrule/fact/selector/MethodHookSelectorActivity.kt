@@ -24,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -33,6 +34,7 @@ import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.fact.MethodHookExpressions
 import tornaco.apps.shortx.core.proto.fact.MethodHookLifecycle
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.DropdownItem
@@ -78,7 +80,8 @@ class MethodHookSelectorActivity : BaseSelectorActivity<Fact.MethodHook>() {
             Surface(
                 modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
             ) {
-                Scaffold(modifier = Modifier,
+                Scaffold(
+                    modifier = Modifier,
                     topBar = {
                         ShortXTopAppBar(
                             modifier = Modifier,
@@ -184,6 +187,45 @@ class MethodHookSelectorActivity : BaseSelectorActivity<Fact.MethodHook>() {
                             modifier = Modifier.fillMaxWidth(),
                             value = state.methodName,
                             onValueChange = { vm.setMethodName(it) })
+                        StandardSpacer()
+
+
+                        FieldTitle(
+                            text = LocalI18N.current["ui.fact.method.hook.method.before.after"]
+                        )
+                        SmallSpacer()
+                        Box {
+                            val isBeforeState = rememberDropdownSelectorState()
+                            fun getBeforeAfterLabel(before: Boolean): String {
+                                return before.select("Before method", "After method")
+                            }
+
+                            DropdownSelector(
+                                state = isBeforeState,
+                                items = listOf(
+                                    DropdownItem(
+                                        labelLines = listOf(getBeforeAfterLabel(true)),
+                                        data = "before"
+                                    ),
+                                    DropdownItem(
+                                        labelLines = listOf(getBeforeAfterLabel(false)),
+                                        data = "after"
+                                    )
+                                )
+                            ) {
+                                vm.setBeforeMethod(it.data == "before")
+                            }
+
+                            FilledTonalButton(onClick = {
+                                isBeforeState.open()
+                            }) {
+                                Row(verticalAlignment = CenterVertically) {
+                                    Text(text = getBeforeAfterLabel(state.beforeMethod))
+                                    StandardSpacer()
+                                    RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
+                                }
+                            }
+                        }
                         StandardSpacer()
 
                         Constraints(

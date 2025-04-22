@@ -15,6 +15,7 @@ data class MethodHookSelectorState(
     val packageName: String = "android",
     val className: String = "",
     val methodName: String = "",
+    val beforeMethod: Boolean = false,
     val lifecycle: MethodHookLifecycle = MethodHookLifecycle.LoadedPackage,
     val expressions: List<MethodHookExpressions> = emptyList(),
     val constraints: List<Fact.MethodHook.Constraint> = emptyList()
@@ -24,7 +25,7 @@ data class MethodHookSelectorState(
             packageName = packageName,
             className = className,
             methodName = methodName,
-            beforeMethod = false,
+            beforeMethod = beforeMethod,
             expressions = expressions,
             lifecycle = lifecycle,
             constraints = constraints
@@ -47,6 +48,7 @@ class MethodHookSelectorViewModel @Inject constructor(@ApplicationContext contex
                     packageName = it.packageName,
                     className = it.className,
                     methodName = it.methodName,
+                    beforeMethod = it.beforeMethod,
                     lifecycle = it.lifecycle,
                     expressions = it.expressions,
                     constraints = it.constraints
@@ -65,6 +67,10 @@ class MethodHookSelectorViewModel @Inject constructor(@ApplicationContext contex
 
     fun setMethodName(it: String) {
         updateState { copy(methodName = it) }
+    }
+
+    fun setBeforeMethod(it: Boolean) {
+        updateState { copy(beforeMethod = it) }
     }
 
     fun setLifecycle(lifecycle: MethodHookLifecycle) {

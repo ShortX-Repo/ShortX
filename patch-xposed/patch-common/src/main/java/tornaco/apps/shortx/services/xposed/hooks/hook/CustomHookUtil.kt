@@ -68,9 +68,17 @@ object CustomHookUtil {
             }
             val firstMethod = methodConstraintsFiltered.first()
             log("Pick first methods match constraints: $firstMethod")
-            afterMethod(firstMethod) {
-                log("----> onMethodCall $className-$methodName")
-                onMethodCall(it, this)
+            log("beforeMethod?: $beforeMethod")
+            if (beforeMethod) {
+                beforeMethod(firstMethod) {
+                    log("----> beforeMethod.onMethodCall $className-$methodName")
+                    onMethodCall(it, this)
+                }
+            } else {
+                afterMethod(firstMethod) {
+                    log("----> afterMethod.onMethodCall $className-$methodName")
+                    onMethodCall(it, this)
+                }
             }
         }.onFailure {
             log(it.stackTraceToString())

@@ -112,3 +112,26 @@ fun afterMethod(
     }
     logger.d("afterMethod, unhook: $unHook for method: $method")
 }
+
+
+fun beforeMethod(
+    method: Method,
+    beforeMethod: (param: XC_MethodHook.MethodHookParam) -> Unit,
+) {
+    val unHook: XC_MethodHook.Unhook? = XposedBridge.hookMethod(method, object : XC_MethodHook() {
+        override fun beforeHookedMethod(param: MethodHookParam?) {
+            super.beforeHookedMethod(param)
+            param?.let {
+                kotlin.runCatching {
+                    beforeMethod(it)
+                }.onFailure {
+                    logger.e(it, "beforeMethod-$method")
+                }
+            }
+        }
+    })
+    require(unHook != null) {
+        "beforeMethod, unable to hook this method: $method"
+    }
+    logger.d("beforeMethod, unhook: $unHook for method: $method")
+}
