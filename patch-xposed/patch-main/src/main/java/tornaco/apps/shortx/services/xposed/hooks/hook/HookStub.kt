@@ -1,7 +1,7 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
+import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.callbacks.XC_LoadPackage
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.proto.fact.MethodHookLifecycle
 import tornaco.apps.shortx.core.util.Logger
@@ -12,7 +12,7 @@ object HookStub {
     private val logger = Logger("ShortXHook.HookStub")
 
     fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam) {
-        logger.logOnDebug("handleLoadPackage- ${lpparam.packageName}")
+        XposedBridge.log("HookStub handleLoadPackage- ${lpparam.packageName}")
         require(isSupportedAndroidVersion)
         if (PackageNames.android == lpparam.packageName) {
             logger.i("Loading android.")

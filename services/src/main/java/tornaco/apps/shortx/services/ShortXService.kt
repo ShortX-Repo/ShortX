@@ -161,16 +161,20 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
     private fun waitForSystemUIClient() {
         shortXContext.serviceLifecycle.registerLifecycleSystemReadyCallback {
-            if (systemUIClient == null) {
-                shortXContext.notification.postByFallback(
-                    PostNotification.newBuilder()
-                        .setTag("WaitSystemUI")
-                        .setTitle("Waiting for SystemUI")
-                        .setMessage("Waiting for SystemUI hooks, please enable SystemUI app in Xposed Manager")
-                        .setId("WaitSystemUI")
-                        .setSmallIcon(Remix.System.error_warning_line)
-                        .build()
-                )
+            systemServiceScope.launchSafety("waitForSystemUIClient") {
+                delay(60 * 1000)
+                logger.w("waitForSystemUIClient after delay, systemUIClient: $systemUIClient")
+                if (systemUIClient == null) {
+                    shortXContext.notification.postByFallback(
+                        PostNotification.newBuilder()
+                            .setTag("WaitSystemUI")
+                            .setTitle("Waiting for SystemUI")
+                            .setMessage("Waiting for SystemUI hooks, please enable SystemUI app in Xposed Manager")
+                            .setId("WaitSystemUI")
+                            .setSmallIcon(Remix.System.error_warning_line)
+                            .build()
+                    )
+                }
             }
         }
     }
@@ -1483,7 +1487,6 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         override fun attachSystemUIClient(token: IBinder) {
             systemUIClient = token
             logger.w("attachSystemUIClient: $token")
-            shortXContext.notification.cancelShortXN("WaitSystemUI")
         }
 
         override fun getAllContextMenuSettings(): List<ByteArrayWrapper> {

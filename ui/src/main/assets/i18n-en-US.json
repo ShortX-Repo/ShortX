@@ -171,6 +171,7 @@
     "ui.fact.method.hook.package": "Package name",
     "ui.fact.method.hook.class": "Class name",
     "ui.fact.method.hook.method": "Method name",
+    "ui.fact.method.hook.method.before.after": "Hook Before/After",
     "ui.fact.method.hook.method.constraints": "Constraints",
     "ui.fact.method.hook.method.constraints.description": "Add constraints to filter the target Method",
     "ui.fact.method.hook.method.constraints.parameter.type": "Parameter types",

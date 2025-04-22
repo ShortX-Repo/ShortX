@@ -171,6 +171,7 @@
     "ui.fact.method.hook.package": "包名",
     "ui.fact.method.hook.class": "类名",
     "ui.fact.method.hook.method": "方法名",
+    "ui.fact.method.hook.method.before.after": "Hook Before/After",
     "ui.fact.method.hook.method.constraints": "限制",
     "ui.fact.method.hook.method.constraints.description": "添加限制来过滤方法",
     "ui.fact.method.hook.method.constraints.parameter.type": "参数类型",
