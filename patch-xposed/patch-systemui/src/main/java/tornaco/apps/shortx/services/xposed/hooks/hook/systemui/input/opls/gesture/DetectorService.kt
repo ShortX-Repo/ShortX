@@ -6,6 +6,7 @@ import android.graphics.RectF
 import android.os.SystemClock
 import android.view.MotionEvent
 import tornaco.apps.shortx.core.ICallback
+import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
@@ -91,6 +92,14 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         readAllSettings()
         readGestureFireState("Init")
         updateShouldInterceptMotionEventRect()
+    }
+
+    fun shouldInstallMonitor(): Boolean {
+        val isEdgeGestureDisabled =
+            shortx.hasHookFlags(ShortXManager.Companion.HookFlags.FLAG_DISABLE_GESTURE_HOOK).also {
+                logger.w("isEdgeGestureDisabled: $it")
+            }
+        return !isEdgeGestureDisabled
     }
 
     private fun readGestureFireState(reason: String) {
