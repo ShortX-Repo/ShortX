@@ -376,74 +376,70 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     }
 
     private fun installListeners() {
-        shortXContext.gesture.onKeyEvent {
-            logger.d("onKeyEvent up for keyCode: ${it.keyCode}")
+        shortXContext.gesture.consumeKeyEvent { event, interactive ->
+            logger.d("onKeyEvent up for keyCode: ${event.keyCode}, interactive :$interactive")
 
-            if (it.action == android.view.KeyEvent.ACTION_UP && isKeyEventPromptEnabled()) {
+            if (event.action == android.view.KeyEvent.ACTION_UP && isKeyEventPromptEnabled()) {
                 handler.postSafety("Toast Key") {
-                    Toast.makeText(context, "Key code: ${it.keyCode}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Key code: ${event.keyCode}", Toast.LENGTH_SHORT).show()
                 }
             }
 
-            if (it.keyCode == KEYCODE_POWER) {
-                if (it.action == android.view.KeyEvent.ACTION_DOWN) {
+            if (event.keyCode == KEYCODE_POWER) {
+                if (event.action == android.view.KeyEvent.ACTION_DOWN) {
                     forceDisableShortXListener.onKeyPressed()
                 }
             } else {
                 forceDisableShortXListener.onOtherKeyPressed()
             }
 
-            // Check if it accessibility service.
-            if ((it.flags and FLAG_SHORTX_INJECTION) != 0) {
+            // Check if event accessibility service.
+            if ((event.flags and FLAG_SHORTX_INJECTION) != 0) {
                 if (BuildPropInternal.APP_IS_DEBUG) {
-                    logger.d("InternalInputFlags.FLAG_SHORTX_INJECTION event: $it")
+                    logger.d("InternalInputFlags.FLAG_SHORTX_INJECTION event: $event")
                 }
-                return@onKeyEvent null
+                return@consumeKeyEvent null
             }
 
-            if ((it.flags and android.view.KeyEvent.FLAG_FALLBACK) == 0) {
-                if (systemKeyCombineDetector.interceptKey(
-                        it,
-                        true
-                    ) || systemKeyCombineDetector.isKeyConsumed(it)
-                ) {
-                    // Check if system has handle combine key.
-                    singleKeyGestureDetector.reset()
-                    keyCombinationTrigger.reset()
-                    return@onKeyEvent null
-                }
+            if (systemKeyCombineDetector.interceptKey(
+                    event,
+                    interactive
+                ) || systemKeyCombineDetector.isKeyConsumed(event)
+            ) {
+                // Check if system has handle combine key.
+                singleKeyGestureDetector.reset()
+                keyCombinationTrigger.reset()
+                return@consumeKeyEvent null
             }
 
-            if ((it.flags and android.view.KeyEvent.FLAG_FALLBACK) == 0) {
-                val interceptKeyRes = keyCombinationTrigger.interceptKey(it)
-                logger.logOnDebug("interceptKeyRes: $interceptKeyRes")
-                if (interceptKeyRes) {
-                    singleKeyGestureDetector.reset()
-                    return@onKeyEvent false
-                }
+            val interceptKeyRes = keyCombinationTrigger.interceptKey(event, interactive)
+            logger.logOnDebug("interceptKeyRes: $interceptKeyRes")
+            if (interceptKeyRes) {
+                singleKeyGestureDetector.reset()
+                return@consumeKeyEvent true
+            }
 
-                val isKeyConsumed = keyCombinationTrigger.isKeyConsumed(it)
-                logger.logOnDebug("isKeyConsumed: $isKeyConsumed")
-                if (isKeyConsumed) {
-                    singleKeyGestureDetector.reset()
-                    return@onKeyEvent false
-                }
+            val isKeyConsumed = keyCombinationTrigger.isKeyConsumed(event)
+            logger.logOnDebug("isKeyConsumed: $isKeyConsumed")
+            if (isKeyConsumed) {
+                singleKeyGestureDetector.reset()
+                return@consumeKeyEvent true
             }
 
             // Check ADV rules.
             if (singleKeyRuleTrigger.hasAny()) {
-                singleKeyGestureDetector.interceptKey(it, false)
-                if (singleKeyRuleTrigger.hasAnyWithInterceptMode(it.keyCode)
+                singleKeyGestureDetector.interceptKey(event, interactive)
+                if (singleKeyRuleTrigger.hasAnyWithInterceptMode(event.keyCode)
                     && singleKeyGestureDetector.isKeyIntercepted(
-                        it.keyCode
+                        event.keyCode
                     )
                 ) {
-                    return@onKeyEvent false
+                    return@consumeKeyEvent true
                 }
             }
 
             // Check Normal Rules.
-            val fact = KeyEvent.newBuilder().setKeyCode(it.keyCode).build()
+            val fact = KeyEvent.newBuilder().setKeyCode(event.keyCode).build()
             if (shouldFire(
                     rules = getAllEnabledRules(),
                     das = getAllDirectAction(),
@@ -451,14 +447,15 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                     checkCondition = false
                 )
             ) {
-                if (it.action == android.view.KeyEvent.ACTION_UP) {
-                    logger.d("hasAnyRuleMatchFact for keyCode: ${it.keyCode}")
+                if (event.action == android.view.KeyEvent.ACTION_UP) {
+                    logger.d("hasAnyRuleMatchFact for keyCode: ${event.keyCode}")
                     publishFact("KeyEvent", fact) { emptyMap() }
                 }
-                // False means consume.
-                return@onKeyEvent false
+                return@consumeKeyEvent true
             }
-            return@onKeyEvent null
+
+            // END. fallback result.
+            return@consumeKeyEvent null
         }
 
         allTriggers.forEach { trigger ->

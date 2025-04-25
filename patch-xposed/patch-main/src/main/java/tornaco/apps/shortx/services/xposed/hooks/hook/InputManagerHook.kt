@@ -1,85 +1,54 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
-import android.util.Log
-import android.view.InputEvent
+import android.view.KeyEvent
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.platform.Classes.inputManagerService
 import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXService
 import tornaco.apps.shortx.services.android.ServiceHolder
-import util.Reflections
 
 object InputManagerHook {
     private val logger = Logger("ShortXHook.InputManagerHook")
 
-    fun hookInputManager(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
-        afterMethod(lpparam.classLoader.inputManagerService(), Methods.start) { param ->
-            logger.d("inputManagerService start.")
-            ServiceHolder.inputManagerService = param.thisObject
-        }
-
-        beforeMethod(lpparam.classLoader.inputManagerService(), Methods.filterInputEvent) { param ->
-            // logger.d("filterInputEvent, event: ${param.args[0]}")
-            val res =
-                ShortXService.shortXContext.gesture.filterInput(param.args[0] as InputEvent)
-            res?.let {
-                logger.d("filterInputEvent, setResult: $it")
-                param.result = it
+    fun hookInputManager(lpparam: XC_LoadPackage.LoadPackageParam) {
+        kotlin.runCatching {
+            afterMethod(lpparam.classLoader.inputManagerService(), Methods.start) { param ->
+                logger.d("inputManagerService start.")
+                ServiceHolder.inputManagerService = param.thisObject
             }
+        }.onFailure {
+            logger.e(it, "inputManagerService")
         }
 
-        afterMethod(
-            Reflections.findClass(
-                "com.android.server.input.NativeInputManagerService\$NativeImpl",
-                lpparam.classLoader
-            ),
-            "setInputFilterEnabled"
-        ) { param ->
-            logger.w(
-                "setInputFilterEnabled: ${param.args.map { it }} ${
-                    Log.getStackTraceString(
-                        Throwable()
+        kotlin.runCatching {
+            // public int interceptKeyBeforeQueueing(KeyEvent event, int policyFlags)
+            beforeMethod(
+                lpparam.classLoader.inputManagerService(),
+                Methods.interceptKeyBeforeQueueing
+            ) { param ->
+                param.logParamsOnDebug()
+                val keyEvent = param.args[0] as KeyEvent
+                val policyFlags = param.args[1] as Int
+                val res =
+                    ShortXService.shortXContext.input.interceptKeyBeforeQueueing(
+                        keyEvent,
+                        policyFlags
                     )
-                }"
-            )
-            val isEnabled = param.args[0] as Boolean
-            ShortXService.shortXContext.input.onInputFilterStateChanged(isEnabled)
-        }
-    }.onFailure {
-        logger.e(it, "hookInputManager")
-    }
-
-    fun debugHooks(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
-        afterMethod(lpparam.classLoader.inputManagerService(), "setInputFilter") { param ->
-            logger.w(
-                "setInputFilter: ${param.args.map { it }} ${
-                    Log.getStackTraceString(
-                        Throwable()
-                    )
-                }"
-            )
+                if (res != null) {
+                    param.result = res
+                }
+            }
+        }.onFailure {
+            logger.e(it, "inputManagerService")
         }
 
-        afterMethod(
-            Reflections.findClass(
-                "com.android.server.input.InputManagerService\$InputFilterHost",
-                lpparam.classLoader
-            ), "sendInputEvent"
+        // public int interceptKeyBeforeDispatching((IBinder focus, KeyEvent event, int policyFlags)
+        beforeMethod(
+            lpparam.classLoader.inputManagerService(),
+            Methods.interceptKeyBeforeDispatching
         ) { param ->
-            logger.v("sendInputEvent: ${param.args.map { it }} ${Log.getStackTraceString(Throwable())}")
+            param.logParamsOnDebug()
         }
-
-        afterMethod(
-            Reflections.findClass(
-                "com.android.server.input.NativeInputManagerService\$NativeImpl",
-                lpparam.classLoader
-            ), "injectInputEvent"
-        ) { param ->
-            logger.v("injectInputEvent: ${param.args.map { it }} ${Log.getStackTraceString(Throwable())}")
-        }
-
-    }.onFailure {
-        logger.e(it, "debugHooks")
     }
 }

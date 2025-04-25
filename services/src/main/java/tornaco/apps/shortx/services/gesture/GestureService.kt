@@ -42,7 +42,7 @@ class GestureService(shortXContext: ShortXContext) :
         GestureRecordsStore(systemServiceScope)
     }
 
-    private var onKeyEvent: ((KeyEvent) -> Boolean?)? = null
+    private var onKeyEvent: ((KeyEvent, Boolean) -> Boolean?)? = null
 
     private val showingHints: MutableSet<GuideLineView> = mutableSetOf()
 
@@ -60,7 +60,7 @@ class GestureService(shortXContext: ShortXContext) :
         showGideLineViewForArea(edgeNumber.mapNotNull { Edge.forNumber(it) })
     }
 
-    fun onKeyEvent(onKeyEvent: (KeyEvent) -> Boolean?) {
+    fun consumeKeyEvent(onKeyEvent: (KeyEvent, Boolean) -> /*consumed: */ Boolean?) {
         this.onKeyEvent = onKeyEvent
     }
 
@@ -89,11 +89,11 @@ class GestureService(shortXContext: ShortXContext) :
     }
 
     fun filterInput(input: InputEvent?): Boolean? {
-        shortXContext.input.setHasReceivedInputFilterCallback()
         if (!isSystemReady) return null
         if (input == null) return null
         if (input is MotionEvent) {
             if (gestureRecorder.isRecording) {
+                // TODO Record????
                 runBlocking { gestureRecorder.onPointerEvent(input) }
             }
             return null
@@ -106,13 +106,13 @@ class GestureService(shortXContext: ShortXContext) :
                     KeyEvent.KEYCODE_POWER,
                 ).contains(input.keyCode)
             ) {
-                return handleKeyEvent(input)
+                return consumeKeyEvent(input, false)
             }
         }
         return null
     }
 
-    fun handleKeyEvent(event: KeyEvent): Boolean? {
+    fun consumeKeyEvent(event: KeyEvent, interactive: Boolean): Boolean? {
         // update last key.
         shortXContext.input.updateLastInputKey(event.keyCode, "handleKeyEvent")
 
@@ -133,7 +133,7 @@ class GestureService(shortXContext: ShortXContext) :
             }
         }
 
-        return onKeyEvent?.invoke(event)
+        return onKeyEvent?.invoke(event, interactive)
     }
 
     fun getGestureLengthScale(): Float =

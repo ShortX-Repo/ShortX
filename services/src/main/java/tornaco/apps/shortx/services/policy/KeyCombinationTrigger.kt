@@ -72,8 +72,8 @@ class KeyCombinationTrigger(
         }
     }
 
-    fun interceptKey(keyEvent: KeyEvent): Boolean {
-        return keyCombinationManager.interceptKey(keyEvent, true)
+    fun interceptKey(keyEvent: KeyEvent, interactive: Boolean): Boolean {
+        return keyCombinationManager.interceptKey(keyEvent, interactive)
     }
 
     fun isKeyConsumed(keyEvent: KeyEvent): Boolean {

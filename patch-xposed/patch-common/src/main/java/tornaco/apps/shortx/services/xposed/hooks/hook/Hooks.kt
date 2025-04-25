@@ -1,7 +1,9 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import de.robv.android.xposed.XC_MethodHook
+import de.robv.android.xposed.XC_MethodHook.MethodHookParam
 import de.robv.android.xposed.XposedBridge
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.Logger
 import java.lang.reflect.Method
 
@@ -134,4 +136,9 @@ fun beforeMethod(
         "beforeMethod, unable to hook this method: $method"
     }
     logger.d("beforeMethod, unhook: $unHook for method: $method")
+}
+
+
+fun MethodHookParam.logParamsOnDebug() {
+    logger.logOnDebug { "${method.name} - ${this.args.map { it }.joinToString()}" }
 }
