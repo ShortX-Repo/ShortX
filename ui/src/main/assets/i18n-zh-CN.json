@@ -1343,5 +1343,7 @@
     "ui.system.env.front.app.label": "前台应用名称",
     "ui.system.env.front.app.pkg.name": "前台应用包名",
     "ui.system.env.uuid": "UUID",
-    "ui.system.env.random.int": "随机数字"
+    "ui.system.env.random.int": "随机数字",
+    "ui.n.wait.for.systemui.title": "等待SystemUI",
+    "ui.n.wait.for.systemui.message": "SystemUI客户端没有连接到ShortX系统服务上，请确保你在Xposed中勾选了SystemUI作用域并重启尝试"
 }

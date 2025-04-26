@@ -1344,5 +1344,7 @@
     "ui.system.env.front.app.label": "Front app label",
     "ui.system.env.front.app.pkg.name": "Front app package name",
     "ui.system.env.uuid": "UUID",
-    "ui.system.env.random.int": "Random number"
+    "ui.system.env.random.int": "Random number",
+    "ui.n.wait.for.systemui.title": "Waiting for SystemUI",
+    "ui.n.wait.for.systemui.message": "Waiting for SystemUI hooks, please enable SystemUI app in Xposed Manager"
 }

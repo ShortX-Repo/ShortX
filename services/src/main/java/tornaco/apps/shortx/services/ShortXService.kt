@@ -169,10 +169,12 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                     shortXContext.notification.postByFallback(
                         PostNotification.newBuilder()
                             .setTag("WaitSystemUI")
-                            .setTitle("Waiting for SystemUI")
-                            .setMessage("Waiting for SystemUI hooks, please enable SystemUI app in Xposed Manager")
+                            .setTitle(i18NIns["ui.n.wait.for.systemui.title"])
+                            .setMessage(i18NIns["ui.n.wait.for.systemui.message"])
                             .setId("WaitSystemUI")
                             .setSmallIcon(Remix.System.error_warning_line)
+                            .setIsImportant(true)
+                            .setVibrate(true)
                             .build()
                     )
                 }
