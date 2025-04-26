@@ -42,6 +42,7 @@ import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionList
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
+import tornaco.apps.shortx.core.proto.fact.AnyFact
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
@@ -477,13 +478,15 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         fact: ProtoMessage,
         checkCondition: Boolean = false,
         rules: List<Rule> = getAllEnabledRules(),
-        das: List<DirectAction> = getAllDirectAction()
+        das: List<DirectAction> = getAllDirectAction(),
+        excludeFacts: Set<String> = setOf(AnyFact.getDefaultInstance().pack_().typeUrl)
     ): Boolean {
         return engine.shouldFire(
             rules = rules,
             das = das,
             fact = fact,
-            checkCondition = checkCondition
+            checkCondition = checkCondition,
+            excludeFacts = excludeFacts
         )
     }
 

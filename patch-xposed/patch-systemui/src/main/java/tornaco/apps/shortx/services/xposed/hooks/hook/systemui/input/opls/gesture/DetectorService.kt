@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.graphics.RectF
 import android.os.SystemClock
+import android.view.InputEvent
 import android.view.MotionEvent
 import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.ShortXManager
@@ -39,6 +40,9 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
     private var gestureAreaWidthDp: Int = 28
     private var gestureLengthScale: Float = 1f
 
+    var isGestureRecording: Boolean = false
+        private set
+
     private var afterGestureSettingsChangedObs: () -> Unit = {}
     private var afterConfigChangedObs: () -> Unit = {}
 
@@ -70,6 +74,14 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
                 readAllSettings()
                 updateShouldInterceptMotionEventRect()
                 afterGestureSettingsChangedObs()
+            }
+        })
+
+        shortx.registerRecorderStateListener(object : ICallback.Stub() {
+            override fun receive(data: ByteArrayWrapper?) {
+                logger.w("RecorderState changed.")
+                isGestureRecording = shortx.isGestureRecording()
+                logger.w("RecorderState isGestureRecording: $isGestureRecording")
             }
         })
 
@@ -133,10 +145,12 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         swipeDistanceThresholdDp = shortx.getSwipeDistanceThresholdDp()
         gestureAreaWidthDp = shortx.getGestureAreaSize()
         gestureLengthScale = shortx.getSwipeLengthScale()
+        isGestureRecording = shortx.isGestureRecording()
 
         logger.w("swipeDistanceThresholdDp: $swipeDistanceThresholdDp")
         logger.w("gestureAreaWidthDp: $gestureAreaWidthDp")
         logger.w("gestureLengthScale: $gestureLengthScale")
+        logger.w("isGestureRecording: $isGestureRecording")
     }
 
     override fun getSwipeDistanceThresholdDp(): Int {
@@ -262,5 +276,11 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
 
         this.interceptMotionPortRects.clear()
         this.interceptMotionPortRects.addAll(portRects)
+    }
+
+    fun reportEvent(event: InputEvent) {
+        if (isGestureRecording && event is MotionEvent) {
+            shortx.onMotionEvent(event)
+        }
     }
 }

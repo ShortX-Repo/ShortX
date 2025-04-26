@@ -16,6 +16,7 @@ import android.os.UserHandle
 import android.telephony.SubscriptionInfo
 import android.telephony.SubscriptionManager
 import android.util.Log
+import android.view.MotionEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.AppGlobals
@@ -1572,6 +1573,18 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun getScreenSize(): Point {
             return shortXContext.wm.screenSize
+        }
+
+        override fun registerRecorderStateListener(listener: ICallback) {
+            shortXContext.gesture.registerRecorderStateListener(listener)
+        }
+
+        override fun unregisterRecorderStateListener(listener: ICallback) {
+            shortXContext.gesture.unregisterRecorderStateListener(listener)
+        }
+
+        override fun onMotionEvent(event: MotionEvent) {
+            shortXContext.gesture.reportMotionEvent(event)
         }
 
         override fun addToggle(toggle: ByteArrayWrapper) {

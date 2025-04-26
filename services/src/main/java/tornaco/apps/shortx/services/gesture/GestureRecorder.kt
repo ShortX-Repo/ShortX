@@ -2,10 +2,14 @@ package tornaco.apps.shortx.services.gesture
 
 import android.content.Context
 import android.content.res.Configuration
+import android.os.RemoteCallbackList
 import android.view.MotionEvent
 import com.google.protobuf.ByteString
+import tornaco.apps.shortx.core.ICallback
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.ScreenOrientation
+import tornaco.apps.shortx.core.rule.action.emptyByteArrayWrapper
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.ParcelableUtil
@@ -19,6 +23,7 @@ class GestureRecorder(
     private val logger = Logger("GestureRecorder")
     private val isStart = AtomicBoolean(false)
     private val eventCache = mutableListOf<ByteArray>()
+    private val recorderStateListeners = RemoteCallbackList<ICallback>()
 
     val isRecording get() = isStart.get()
 
@@ -30,6 +35,7 @@ class GestureRecorder(
         eventCache.clear()
         isStart.set(true)
         enablePointerLocation()
+        notifyRecorderStateChanged()
     }
 
     fun add(motionEvent: MotionEvent) {
@@ -39,6 +45,7 @@ class GestureRecorder(
     suspend fun stop(): GestureRecord? {
         isStart.set(false)
         disablePointerLocation()
+        notifyRecorderStateChanged()
 
         if (eventCache.isEmpty()) {
             return null
@@ -68,10 +75,35 @@ class GestureRecorder(
         return record
     }
 
-    suspend fun onPointerEvent(input: MotionEvent) {
+    suspend fun onMotionEvent(input: MotionEvent) {
         if (isRecording) {
             injectOnPointerEvent(input)
             add(input)
+        }
+    }
+
+    fun registerRecorderStateListener(listener: ICallback) {
+        synchronized(recorderStateListeners) {
+            recorderStateListeners.register(listener)
+        }
+    }
+
+    fun unregisterRecorderStateListener(listener: ICallback) {
+        synchronized(recorderStateListeners) {
+            recorderStateListeners.unregister(listener)
+        }
+    }
+
+    private fun notifyRecorderStateChanged() {
+        logger.logOnDebug("notifyRecorderStateChanged.")
+        synchronized(recorderStateListeners) {
+            recorderStateListeners.broadcast {
+                runCatching {
+                    it.receive(emptyByteArrayWrapper)
+                }.onFailure {
+                    logger.e(it, "notifyRecorderStateChanged")
+                }
+            }
         }
     }
 }

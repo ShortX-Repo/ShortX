@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 import android.view.KeyEvent
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.ShortXManager
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.platform.Classes.inputManagerService
 import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.core.util.Logger
@@ -43,6 +44,7 @@ object InputManagerHook {
                             policyFlags
                         )
                     if (res != null) {
+                        logger.logOnDebug { "Set interceptKeyBeforeQueueing res: $res" }
                         param.result = res
                     }
                 }

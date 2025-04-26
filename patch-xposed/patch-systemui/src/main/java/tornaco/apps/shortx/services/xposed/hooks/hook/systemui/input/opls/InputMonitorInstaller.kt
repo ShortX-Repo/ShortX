@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.xposed.hooks.hook.systemui.input.opls
 
 import android.content.Context
 import android.view.MotionEvent
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.newHandlerOfNewThread
 import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.SystemUIHook
 import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.input.opls.gesture.Detector
@@ -23,13 +24,14 @@ fun SystemUIHook.installInputMonitor(context: Context) {
         init(context)
         enableInputReceiver(
             {
+                service.reportEvent(it)
                 if (!service.shouldDetectMotion) {
                     logger.v("shouldDetectMotion is false.")
                     return@enableInputReceiver false
                 }
                 if (it is MotionEvent) {
                     val consumed = detector.consumeEvent(it)
-                    logger.v("InputMonitor consumed: $consumed $it")
+                    // logger.logOnDebug { "InputMonitor consumed: $consumed $it" }
                     if (consumed == true) {
                         logger.d("pilferPointers. consumed")
                         pilferPointers()

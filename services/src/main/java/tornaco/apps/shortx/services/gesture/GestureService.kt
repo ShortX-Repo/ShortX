@@ -1,7 +1,6 @@
 package tornaco.apps.shortx.services.gesture
 
 import android.os.RemoteCallbackList
-import android.view.InputEvent
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.widget.Toast
@@ -88,28 +87,12 @@ class GestureService(shortXContext: ShortXContext) :
         }
     }
 
-    fun filterInput(input: InputEvent?): Boolean? {
-        if (!isSystemReady) return null
-        if (input == null) return null
-        if (input is MotionEvent) {
-            if (gestureRecorder.isRecording) {
-                // TODO Record????
-                runBlocking { gestureRecorder.onPointerEvent(input) }
-            }
-            return null
+    fun reportMotionEvent(event: MotionEvent) {
+        logger.logOnDebug { "reportMotionEvent. $event" }
+        if (!isSystemReady) return
+        if (gestureRecorder.isRecording) {
+            runBlocking { gestureRecorder.onMotionEvent(event) }
         }
-        if (input is KeyEvent) {
-            // Below code is handle by PhoneWindowManager.
-            if (!arrayOf(
-                    KeyEvent.KEYCODE_HOME,
-                    KeyEvent.KEYCODE_BACK,
-                    KeyEvent.KEYCODE_POWER,
-                ).contains(input.keyCode)
-            ) {
-                return consumeKeyEvent(input, false)
-            }
-        }
-        return null
     }
 
     fun consumeKeyEvent(event: KeyEvent, interactive: Boolean): Boolean? {
@@ -264,11 +247,17 @@ class GestureService(shortXContext: ShortXContext) :
                 runCatching {
                     it.receive(emptyByteArrayWrapper)
                 }.onFailure {
-                    logger.e(it, "notifyLightBarTransitionsChanged")
+                    logger.e(it, "notifyGestureSettingsChanged")
                 }
             }
         }
     }
 
+    fun registerRecorderStateListener(listener: ICallback) {
+        gestureRecorder.registerRecorderStateListener(listener)
+    }
 
+    fun unregisterRecorderStateListener(listener: ICallback) {
+        gestureRecorder.unregisterRecorderStateListener(listener)
+    }
 }

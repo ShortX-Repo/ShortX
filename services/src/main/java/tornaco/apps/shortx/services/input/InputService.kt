@@ -213,7 +213,7 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         val interactive = (policyFlags and FLAG_INTERACTIVE) != 0
         if ((event.flags and KeyEvent.FLAG_FALLBACK) == 0) {
             val res = ShortXService.shortXContext.gesture.consumeKeyEvent(event, interactive)
-            if (res == true) {
+            if (res == true && event.keyCode != KeyEvent.KEYCODE_POWER) {
                 logger.logOnDebug { "######### block $event" }
                 return 0
             }

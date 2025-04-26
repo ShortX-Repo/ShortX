@@ -105,29 +105,33 @@ class DefaultRuleEngine(
         rules: List<Rule>,
         das: List<DirectAction>,
         fact: ProtoMessage,
-        checkCondition: Boolean
+        checkCondition: Boolean,
+        excludeFacts: Set<String>
     ): Boolean {
         if (!isRuleFeatureEnabled()) return false
         val startTimeMillis = System.currentTimeMillis()
-        return rules.filterInvalid().any {
+        return rules.filterInvalid().any { rule ->
             shouldFireRuleForFact(
                 context = preCheckContext,
                 fact = fact,
-                rule = it,
-                checkCondition = checkCondition
-            ) || shouldFireRuleZQuitForFact(
+                rule = rule,
+                checkCondition = checkCondition,
+                excludeFacts = excludeFacts
+            ).also { logger.d("shouldFireRuleForFact: $fact ${rule.title} $it") } || shouldFireRuleZQuitForFact(
                 context = preCheckContext,
                 fact = fact,
-                rule = it,
-                checkCondition = checkCondition
-            )
-        } || das.any {
+                rule = rule,
+                checkCondition = checkCondition,
+                excludeFacts = excludeFacts
+            ).also { logger.d("shouldFireRuleZQuitForFact: $fact ${rule.title} $it") }
+        } || das.any { da ->
             shouldFireDAZQuitForFact(
                 context = preCheckContext,
                 fact = fact,
-                da = it,
-                checkCondition = checkCondition
-            )
+                da = da,
+                checkCondition = checkCondition,
+                excludeFacts = excludeFacts
+            ).also { logger.d("shouldFireDAZQuitForFact: $fact ${da.title} $it") }
         }.also {
             logger.logOnDebug { ("shouldFire check taken: ${System.currentTimeMillis() - startTimeMillis}ms") }
         }
@@ -137,8 +141,11 @@ class DefaultRuleEngine(
         context: EvaluateContext,
         fact: ProtoMessage,
         rule: Rule,
-        checkCondition: Boolean
-    ) = factMatcher.match(fact, rule.factsList).isMatch && (
+        checkCondition: Boolean,
+        excludeFacts: Set<String>
+    ) = factMatcher.match(fact, rule.factsList.filterNot {
+        excludeFacts.contains(it.typeUrl)
+    }).isMatch && (
             !checkCondition || (
                     runBlocking {
                         withTimeoutOrNull(CONDITION_WAIT_TIMEOUT) {
@@ -159,8 +166,11 @@ class DefaultRuleEngine(
         context: EvaluateContext,
         fact: ProtoMessage,
         rule: Rule,
-        checkCondition: Boolean
-    ) = rule.quit.isEnabled && factMatcher.match(fact, rule.quit.factsList).isMatch && (
+        checkCondition: Boolean,
+        excludeFacts: Set<String>
+    ) = rule.quit.isEnabled && factMatcher.match(fact, rule.quit.factsList.filterNot {
+        excludeFacts.contains(it.typeUrl)
+    }).isMatch && (
             !checkCondition || (
                     runBlocking {
                         withTimeoutOrNull(CONDITION_WAIT_TIMEOUT) {
@@ -181,8 +191,11 @@ class DefaultRuleEngine(
         context: EvaluateContext,
         fact: ProtoMessage,
         da: DirectAction,
-        checkCondition: Boolean
-    ) = da.quit.isEnabled && factMatcher.match(fact, da.quit.factsList).isMatch && (
+        checkCondition: Boolean,
+        excludeFacts: Set<String>
+    ) = da.quit.isEnabled && factMatcher.match(fact, da.quit.factsList.filterNot {
+        excludeFacts.contains(it.typeUrl)
+    }).isMatch && (
             !checkCondition || (
                     runBlocking {
                         withTimeoutOrNull(CONDITION_WAIT_TIMEOUT) {
@@ -240,7 +253,8 @@ class DefaultRuleEngine(
 
                 // Rule Instance ID
                 val ruleInsIdGen: ProtoAny = rule.hasRuleInstanceIdGenerator()
-                    .select({ rule.ruleInstanceIdGenerator },
+                    .select(
+                        { rule.ruleInstanceIdGenerator },
                         {
                             RuleInstanceIdGenerator_Static.newBuilder().setInsId(rule.id).build()
                                 .pack_()
@@ -402,7 +416,8 @@ class DefaultRuleEngine(
 
                         // Rule Instance ID
                         val ruleInsIdGen: ProtoAny = rule.hasRuleInstanceIdGenerator()
-                            .select({ rule.ruleInstanceIdGenerator },
+                            .select(
+                                { rule.ruleInstanceIdGenerator },
                                 {
                                     RuleInstanceIdGenerator_Static.newBuilder().setInsId(rule.id)
                                         .build()

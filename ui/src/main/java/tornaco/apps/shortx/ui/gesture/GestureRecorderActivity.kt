@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import dagger.hilt.android.AndroidEntryPoint
 import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.SmallTitle
@@ -32,6 +33,8 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
 class GestureRecorderActivity : BaseActivity() {
+    private val logger = Logger("GestureRecorderActivity")
+
     companion object {
         @JvmStatic
         fun start(context: Context) {
@@ -79,6 +82,7 @@ class GestureRecorderActivity : BaseActivity() {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        logger.w("onKeyDown: $keyCode $event")
         if (keyCode != KeyEvent.KEYCODE_BACK) {
             shortXManager.stopGestureRecording(true)
             finish()
