@@ -32,9 +32,11 @@ object ExecuteMVEL : Actor {
                 }
             }).apply {
                 logger.d("inflated expression: $this")
-            }
+            },
+            evaluateContext = params.evaluateContext
         ).invoke(
             vars = params.contextData.map,
+            initialContextData = params.contextData.map.mapValues { it.value ?: "" },
             localVars = params.localVars,
             parameterInputs = params.parameterInputs
         ).apply {

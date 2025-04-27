@@ -16,6 +16,7 @@ import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.common.CoroutineContext
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
+import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.FUNC_PARAM_REF_PREFIX
 import tornaco.apps.shortx.core.rule.GLOBAL_VAR_REF_PREFIX
 import tornaco.apps.shortx.core.rule.LOCAL_VAR_REF_PREFIX
@@ -30,6 +31,7 @@ import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.Interceptors
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
+import tornaco.apps.shortx.services.rule.actor.impl.ScriptActionEvaluator
 
 
 object ExecuteJS : Actor {
@@ -70,6 +72,7 @@ object ExecuteJS : Actor {
         logger.d("Choose coroutineContext: $coroutineContext")
         val res = withContext(coroutineContext) {
             executeJS(
+                evaluateContext = params.evaluateContext,
                 androidContext = params.androidContext,
                 shortXContext = params.shortXContext,
                 contextData = params.contextData,
@@ -95,6 +98,7 @@ object ExecuteJS : Actor {
         localVars: LocalVars,
         parameterInputs: List<FuncParameterInput>,
         rawExpression: String,
+        evaluateContext: EvaluateContext? = null,
     ): String {
         val rhinoContext = rhinoAndroidHelper.enterContext()
         rhinoContext.optimizationLevel = 1
@@ -103,6 +107,16 @@ object ExecuteJS : Actor {
         val scope = ImporterTopLevel(rhinoContext)
         val wrappedAndroidContext = Context.javaToJS(androidContext, scope)
         ScriptableObject.putProperty(scope, "context", wrappedAndroidContext)
+
+        val scriptActionEvaluator = ScriptActionEvaluator(
+            shortXContext = shortXContext,
+            evaluateContext = evaluateContext ?: EvaluateContext.getDefaultInstance(),
+            initialContextData = contextData.map.mapValues { it.value ?: "" },
+            localVars = localVars,
+            parameterInputs = parameterInputs
+        )
+        val actionEvaluator = Context.javaToJS(scriptActionEvaluator, scope)
+        ScriptableObject.putProperty(scope, "actionEvaluator", actionEvaluator)
 
         val wrappedConsole = Context.javaToJS(KotlinConsole, scope)
         ScriptableObject.putProperty(scope, "console", wrappedConsole)

@@ -1,6 +1,5 @@
 package tornaco.apps.shortx.services.rule
 
-import android.annotation.TestApi
 import android.content.Context
 import android.os.IBinder
 import android.os.ParcelFileDescriptor
@@ -567,11 +566,12 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         }
     }
 
-    @TestApi
     fun executeActionsBlocking(
         context: EvaluateContext,
         actions: List<ProtoAny>,
-        initialContextData: Map<String, Any> = emptyMap()
+        initialContextData: Map<String, Any> = emptyMap(),
+        localVars: LocalVars = LocalVars.obtain(),
+        parameterInputs: List<FuncParameterInput> = emptyList(),
     ) {
         val latch = CountDownLatch(1)
         val listener = object : IJobStatusListener.Stub() {
@@ -592,6 +592,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             context = context,
             actions = actions,
             initialContextData = initialContextData,
+            localVars = localVars,
+            parameterInputs = parameterInputs,
             conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
             actionAsyncMode = ActionAsyncMode.ActionAsyncMode_Sync
         )

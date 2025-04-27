@@ -21,7 +21,8 @@ fun Dialog.showInSystemServer(
 ) {
     requestWindowFeature(Window.FEATURE_NO_TITLE)
     setContentView(view)
-    setCancelable(cancelable)
+    setCancelable(true)
+    setCanceledOnTouchOutside(cancelable)
     setOnDismissListener { onDismiss() }
     window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG)
     window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
