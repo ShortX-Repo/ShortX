@@ -21,7 +21,6 @@ fun SystemUIHook.hookQS(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCa
             val shortx = ShortXManagerNative.shortX
             logger.i("ShortX: $shortx")
             QSHostAdapter.qsTileHost = param.thisObject
-            shortx?.attachQSTileHost(QSTileHostImpl(shortx))
         }
 
         // Android 15.

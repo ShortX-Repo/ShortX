@@ -1,7 +1,6 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook.systemui
 
 import android.content.Context
-import android.os.Binder
 import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.AppGlobals
@@ -9,6 +8,7 @@ import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IShortX
 import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.ShortXManagerNative
+import tornaco.apps.shortx.core.SystemUIClient
 import tornaco.apps.shortx.core.notification.INotificationPoster
 import tornaco.apps.shortx.core.notification.NotificationPoster
 import tornaco.apps.shortx.core.notification.handleButtonClick
@@ -30,28 +30,7 @@ import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.ocr.OCRImpl
 import util.Reflections
 
 fun SystemUIHook.hookApp(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
-    fun installShellImpl(shortx: IShortX) {
-        logger.d("installShellImpl")
-        val shell = LibShKtShellImpl
-        shortx.attachSUImpl("SystemUI", shell)
-        logger.i("installShellImpl success.")
-    }
-
-    fun installCV(shortx: IShortX, context: Context) {
-        logger.d("installCV")
-        val cv = CVImpl(context)
-        shortx.attachCV(cv)
-        logger.i("installCV success.")
-    }
-
-    fun installOCR(shortx: IShortX, context: Context) {
-        logger.d("installOCR")
-        val orc = OCRImpl(context)
-        shortx.attachOCR(orc)
-        logger.i("installOCR success.")
-    }
-
-    fun installNotificationPoster(shortx: IShortX, context: Context) {
+    fun createNotificationPoster(shortx: IShortX, context: Context): INotificationPoster {
         logger.d("installNotificationPoster")
         val appRes = AppResources(
             context,
@@ -82,7 +61,7 @@ fun SystemUIHook.hookApp(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runC
             )
         }
 
-        val stub = object : INotificationPoster.Stub() {
+        return object : INotificationPoster.Stub() {
             override fun post(data: ByteArrayWrapper) {
                 runCatching {
                     val n = PostNotification.parseFrom(data.byteData)
@@ -96,9 +75,6 @@ fun SystemUIHook.hookApp(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runC
                 }
             }
         }
-
-        shortx.attachNotificationPoster("SystemUI", stub)
-        logger.i("installNotificationPoster success.")
     }
 
     if (PackageNames.systemUI == lpparam.packageName) {
@@ -124,14 +100,18 @@ fun SystemUIHook.hookApp(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runC
                 BuildPropInternal.APP_PACKAGE_NAME
             )
 
-            installShellImpl(shortx)
-            installNotificationPoster(shortx, app)
-            installCV(shortx, app)
-            installOCR(shortx, app)
-            installInputMonitor(app)
-
             // Attach client, let Service known SystemUI is up.
-            shortx.attachSystemUIClient(Binder())
+            shortx.attachSystemUIClient(
+                SystemUIClient(
+                    cv = CVImpl(app),
+                    ocr = OCRImpl(app),
+                    su = LibShKtShellImpl,
+                    poster = createNotificationPoster(shortx, app),
+                    tile = QSTileHostImpl(shortx)
+                )
+            )
+
+            installInputMonitor(app)
 
             CustomHookApp.hookApp(
                 lpparam.classLoader,

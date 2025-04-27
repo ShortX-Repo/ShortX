@@ -9,7 +9,6 @@ import android.graphics.Point
 import android.graphics.drawable.Drawable
 import android.os.Binder
 import android.os.Bundle
-import android.os.IBinder
 import android.os.ParcelFileDescriptor
 import android.os.ShellCommand
 import android.os.UserHandle
@@ -30,6 +29,7 @@ import tornaco.apps.shortx.core.ISensorUsageListener
 import tornaco.apps.shortx.core.IShortX
 import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener
 import tornaco.apps.shortx.core.ShortXManagerNative
+import tornaco.apps.shortx.core.SystemUIClient
 import tornaco.apps.shortx.core.Version
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextDataMapping
@@ -112,6 +112,7 @@ import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.util.ListBatchUtils
 import tornaco.apps.shortx.services.util.ListBatchUtils.Batch
 import tornaco.apps.shortx.services.util.MethodHookLogging
+import tornaco.apps.shortx.services.util.waitUntil
 import tornaco.apps.shortx.services.v.v
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
@@ -132,7 +133,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         )
     )
 
-    private var systemUIClient: IBinder? = null
+    private var systemUIClient: SystemUIClient? = null
 
     fun main() {
         LogInit.initEarlyLogging()
@@ -162,23 +163,37 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
     private fun waitForSystemUIClient() {
         shortXContext.serviceLifecycle.registerLifecycleSystemReadyCallback {
-            systemServiceScope.launchSafety("waitForSystemUIClient") {
-                delay(60 * 1000)
-                logger.w("waitForSystemUIClient after delay, systemUIClient: $systemUIClient")
-                if (systemUIClient == null) {
+            val tag = "waitForSystemUIClient"
+            systemServiceScope.launchSafety(tag) {
+                val hasSystemUIClient = waitUntil(60 * 1000) {
+                    logger.w("Check systemUIClient at the $it time.")
+                    systemUIClient != null
+                }
+                logger.w("waitForSystemUIClient hasSystemUIClient: $hasSystemUIClient")
+                if (!hasSystemUIClient) {
                     shortXContext.notification.postByFallback(
                         PostNotification.newBuilder()
-                            .setTag("WaitSystemUI")
+                            .setTag(tag)
                             .setTitle(i18NIns["ui.n.wait.for.systemui.title"])
                             .setMessage(i18NIns["ui.n.wait.for.systemui.message"])
-                            .setId("WaitSystemUI")
+                            .setId(tag)
                             .setSmallIcon(Remix.System.error_warning_line)
                             .setIsImportant(true)
                             .setVibrate(true)
                             .build()
                     )
                 }
+
+                publishSystemReadyFact()
             }
+        }
+    }
+
+    private fun publishSystemReadyFact() {
+        systemServiceScope.launchSafety("publishSystemReadyFact") {
+            logger.i("About to publishSystemReadyFact")
+            delay(3000)
+            shortXContext.user.publishSystemReady()
         }
     }
 
@@ -641,12 +656,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             TODO("Not yet implemented")
         }
 
+        @Deprecated("Use SystemUIClient", ReplaceWith("SystemUIClient"))
         override fun attachCV(cv: ICV) {
-            shortXContext.cv.attachCV(cv)
+            error("deprecated")
         }
 
+        @Deprecated("Use SystemUIClient", ReplaceWith("SystemUIClient"))
         override fun attachOCR(ocr: IOCR) {
-            shortXContext.ocr.attachOCR(ocr)
+            error("deprecated")
         }
 
         override fun getRequestPinShortcuts(): List<ShortcutInfo> {
@@ -698,25 +715,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.phone.attachSMSProvider(provider)
         }
 
+        @Deprecated("Use SystemUIClient", ReplaceWith("SystemUIClient"))
         override fun attachSUImpl(from: String?, su: ISu?) {
-            shortXContext.shell.attachSUImpl(from, su)
-
-            systemServiceScope.launchSafety("attachSUImpl") {
-                // Sometimes SystemUI attached before system ready called, something has not been initilised...
-                while (!shortXContext.serviceLifecycle.isSystemReadyCalled) {
-                    delay(1000)
-                    logger.w("attachSUImpl, Wait 1s until serviceLifecycle.isSystemReadyCalled.")
-                }
-
-                logger.i("About to publish SystemReady")
-                delay(3000)
-
-                shortXContext.user.publishSystemReady()
-            }
+            error("deprecated")
         }
 
+        @Deprecated("Use SystemUIClient", ReplaceWith("SystemUIClient"))
         override fun attachQSTileHost(host: IQSTileHost) {
-            shortXContext.ui.attachQSTileHost(host)
+            error("deprecated")
         }
 
         override fun getAllQSTiles(): ByteArrayWrapper {
@@ -813,8 +819,9 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             } ?: emptyList()
         }
 
+        @Deprecated("Use SystemUIClient", ReplaceWith("SystemUIClient"))
         override fun attachNotificationPoster(from: String, poster: INotificationPoster) {
-            shortXContext.notification.attachNotificationPoster(from, poster)
+            error("deprecated")
         }
 
         override fun uncaughtException(error: String) {
@@ -1487,9 +1494,17 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             return shortXContext.ocr.getOCREngine().number
         }
 
-        override fun attachSystemUIClient(token: IBinder) {
+        override fun attachSystemUIClient(token: SystemUIClient) {
             systemUIClient = token
             logger.w("attachSystemUIClient: $token")
+
+            with(token) {
+                shortXContext.shell.attachSUImpl("SystemUI", su)
+                shortXContext.notification.attachNotificationPoster("SystemUI", poster)
+                shortXContext.cv.attachCV(cv)
+                shortXContext.ocr.attachOCR(ocr)
+                shortXContext.ui.attachQSTileHost(tile)
+            }
         }
 
         override fun getAllContextMenuSettings(): List<ByteArrayWrapper> {
