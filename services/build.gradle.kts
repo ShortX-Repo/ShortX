@@ -7,6 +7,7 @@ plugins {
 dependencies {
     compileOnly(files("${rootProject.rootDir.path}/android-sdk/31/android-31.jar"))
     compileOnly(files("${rootProject.rootDir.path}/services-ui/jar/classes.jar"))
+    compileOnly(files("${rootProject.rootDir.path}/services-jni/jar/classes.jar"))
 
     implementation(project(":core"))
     implementation(project(":services-28"))

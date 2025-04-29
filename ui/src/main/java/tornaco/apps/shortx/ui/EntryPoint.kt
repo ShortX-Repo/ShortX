@@ -48,6 +48,8 @@ object EntryPoint {
                 StubApkGen.cleanUp(context)
             }
         }
+
+        devTest(context)
     }
 
     private fun checkCB(context: Context) {

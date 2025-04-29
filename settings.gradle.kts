@@ -42,7 +42,7 @@ pluginManagement {
 
 include(":app")
 include(":ui")
-include(":binder-retriever")
+include(":services-jni")
 include(":core")
 include(":services")
 include(":services-29")

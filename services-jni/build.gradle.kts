@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "tornaco.apps.shortx.app.binder.retriever"
+    namespace = "tornaco.apps.shortx.j"
 
     defaultConfig {
         minSdk = Configs.minSdkVersion

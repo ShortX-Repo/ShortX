@@ -106,9 +106,9 @@ dependencies {
 
     implementation(libs.tinypinyin)
 
-    implementation(project(":binder-retriever"))
     implementation(project(":core"))
     implementation(project(":services-ui"))
+    implementation(project(":services-jni"))
     implementation(project(":external:sec_net"))
 
     implementation(libs.shortx.ui.base)

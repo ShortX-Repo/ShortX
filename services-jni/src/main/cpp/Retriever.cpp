@@ -18,7 +18,7 @@ jobject RequestSystemServerBinder(JNIEnv *env) {
 }
 
 extern "C" JNIEXPORT jobject JNICALL
-Java_tornaco_apps_shortx_app_binder_retriever_Retriever_retrieveServiceBinder(
+Java_tornaco_apps_shortx_j_Retriever_retrieveServiceBinder(
         JNIEnv *env,
         jobject /* this */) {
     return RequestSystemServerBinder(env);
