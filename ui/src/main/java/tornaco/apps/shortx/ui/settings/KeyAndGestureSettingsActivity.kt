@@ -53,7 +53,7 @@ import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
-import tornaco.apps.shortx.ui.base.SwitchRow
+import tornaco.apps.shortx.ui.base.SwitchBar
 import java.math.BigDecimal
 import java.math.RoundingMode
 import kotlin.math.roundToInt
@@ -88,7 +88,7 @@ class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@Application
                     gestureAreaSize = shortXManager.getGestureAreaSize(),
                     swipeDistanceThreshold = shortXManager.getSwipeDistanceThresholdDp(),
                     swipeLengthScale = shortXManager.getSwipeLengthScale(),
-                    isEdgeGestureDisabled = !shortXManager.isAppFeatureEnabled(AppFeature.AppFeature_EdgeGesture.number),
+                    isEdgeGestureEnabled = shortXManager.isAppFeatureEnabled(AppFeature.AppFeature_EdgeGesture.number),
                     keyDetectorLongPressTimeoutMS = shortXManager.getKeyDetectorLongPressTimeoutMS()
                 )
             }
@@ -126,9 +126,9 @@ class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@Application
         }
     }
 
-    fun setDisabled(it: Boolean) {
+    fun setGestureFeatureEnabled(enabled: Boolean) {
         viewModelScope.launch {
-            shortXManager.setAppFeatureEnabled(AppFeature.AppFeature_EdgeGesture.number, !it)
+            shortXManager.setAppFeatureEnabled(AppFeature.AppFeature_EdgeGesture.number, enabled)
             loadState()
         }
     }
@@ -145,7 +145,7 @@ data class KeyAndGestureSettings(
     val gestureAreaSize: Int = 0,
     val swipeDistanceThreshold: Int = 0,
     val swipeLengthScale: Float = 0f,
-    val isEdgeGestureDisabled: Boolean = false,
+    val isEdgeGestureEnabled: Boolean = false,
     // Key
     val keyDetectorLongPressTimeoutMS: Long = 0,
 )
@@ -182,6 +182,15 @@ fun KeyAndGestureSettingsActivity.EdgeGestureSettingsSelector() {
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
+            SwitchBar(
+                isChecked = state.isEdgeGestureEnabled,
+                text = LocalI18N.current["ui.settings.edge.gesture"],
+                tip = LocalI18N.current["ui.settings.edge.gesture.disable"],
+                onCheckChange = {
+                    vm.setGestureFeatureEnabled(it)
+                })
+            StandardSpacer()
+
             LargeTitle(text = LocalI18N.current["ui.settings.edge.gesture"])
             StandardSpacer()
 
@@ -253,20 +262,6 @@ fun KeyAndGestureSettingsActivity.EdgeGestureSettingsSelector() {
                 })
 
             SectionSpacer()
-            SwitchRow(
-                text = LocalI18N.current["ui.settings.edge.gesture.disable"],
-                isChecked = state.isEdgeGestureDisabled,
-                onCheckChange = {
-                    vm.setDisabled(it)
-                }
-            )
-            AnimatedVisibility(visible = state.isEdgeGestureDisabled) {
-                ErrorCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    title = LocalI18N.current["ui.settings.edge.gesture.disabled.warn"],
-                    warnings = emptyList()
-                )
-            }
 
             repeat(4) {
                 SectionSpacer()

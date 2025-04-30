@@ -20,7 +20,7 @@ object GlobalSettings {
         logger.w("Init.")
         store.init(
             File(
-                context.cacheDir,
+                context.filesDir,
                 STORE_FILE_NAME
             ).absolutePath.also { logger.d("Path: $it") })
         store.putString("test", "test-value")
