@@ -5,6 +5,7 @@ plugins {
 dependencies {
     compileOnly(files("${rootProject.rootDir.path}/android-sdk/31/android-31.jar"))
     compileOnly(files("${rootProject.rootDir.path}/services-ui/jar/classes.jar"))
+    compileOnly(files("${rootProject.rootDir.path}/services-jni/jar/classes.jar"))
     compileOnly(files("${rootProject.rootDir.path}/patch-xposed/patch-main/libs/api-82.jar"))
 
     implementation(project(":core"))

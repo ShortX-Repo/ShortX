@@ -53,6 +53,9 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
 
         data class EnableToggle(val id: String) :
             BoolSettings(key = "EnableToggle${id}", defaultValue = { false })
+
+        data class EnableFeature(val id: String, val defValue: Boolean = true) :
+            BoolSettings(key = "EnableFeature${id}", defaultValue = { defValue })
     }
 
     sealed class StringSettings(key: String, defaultValue: (Context) -> String?) :

@@ -37,8 +37,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
-import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.fact.Edge
+import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ErrorCard
@@ -88,7 +88,7 @@ class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@Application
                     gestureAreaSize = shortXManager.getGestureAreaSize(),
                     swipeDistanceThreshold = shortXManager.getSwipeDistanceThresholdDp(),
                     swipeLengthScale = shortXManager.getSwipeLengthScale(),
-                    isEdgeGestureDisabled = shortXManager.hasHookFlags(ShortXManager.Companion.HookFlags.FLAG_DISABLE_GESTURE_HOOK),
+                    isEdgeGestureDisabled = !shortXManager.isAppFeatureEnabled(AppFeature.AppFeature_EdgeGesture.number),
                     keyDetectorLongPressTimeoutMS = shortXManager.getKeyDetectorLongPressTimeoutMS()
                 )
             }
@@ -128,11 +128,7 @@ class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@Application
 
     fun setDisabled(it: Boolean) {
         viewModelScope.launch {
-            if (it) {
-                shortXManager.addHookFlags(ShortXManager.Companion.HookFlags.FLAG_DISABLE_GESTURE_HOOK)
-            } else {
-                shortXManager.removeHookFlags(ShortXManager.Companion.HookFlags.FLAG_DISABLE_GESTURE_HOOK)
-            }
+            shortXManager.setAppFeatureEnabled(AppFeature.AppFeature_EdgeGesture.number, !it)
             loadState()
         }
     }

@@ -2,7 +2,6 @@ package tornaco.apps.shortx.services.xposed.hooks.hook.systemui.input.opls
 
 import android.content.Context
 import android.view.MotionEvent
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.newHandlerOfNewThread
 import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.SystemUIHook
 import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.input.opls.gesture.Detector
@@ -10,10 +9,12 @@ import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.input.opls.gestur
 
 fun SystemUIHook.installInputMonitor(context: Context) {
     val service = DetectorServiceImpl(context)
+
     if (!service.shouldInstallMonitor()) {
         logger.w("Should not install monitor.")
         return
     }
+
     val detector = Detector(
         context = context,
         handler = newHandlerOfNewThread("shortx-detector"),

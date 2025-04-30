@@ -25,6 +25,7 @@ import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.su.LibShKtShellImpl
 import tornaco.apps.shortx.services.xposed.hooks.hook.CustomHookApp
 import tornaco.apps.shortx.services.xposed.hooks.hook.afterMethod
+import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.data.GlobalSettings
 import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.input.opls.installInputMonitor
 import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.ocr.OCRImpl
 import util.Reflections
@@ -93,6 +94,7 @@ fun SystemUIHook.hookApp(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runC
 
             AppGlobals.setContext(app)
             initShortXAppContext(app)
+            GlobalSettings.init(app)
 
             PicassoInitializer.install(
                 app,

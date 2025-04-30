@@ -67,6 +67,7 @@ import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.proto.fact.MethodHook
 import tornaco.apps.shortx.core.proto.fact.ScreenGesture
+import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
@@ -102,6 +103,9 @@ import tornaco.apps.shortx.core.util.powerManager
 import tornaco.apps.shortx.core.util.wifiManager
 import tornaco.apps.shortx.services.abtesting.ABTesting
 import tornaco.apps.shortx.services.data.Dirs
+import tornaco.apps.shortx.services.data.Settings
+import tornaco.apps.shortx.services.data.read
+import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.handleResponseBody
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequestLogging
 import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper
@@ -1602,6 +1606,23 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun onMotionEvent(event: MotionEvent) {
             shortXContext.gesture.reportMotionEvent(event)
+        }
+
+        override fun isAppFeatureEnabled(feat: Int): Boolean {
+            if (!isSystemReady) {
+                shortXContext.watchDog.onFatalError(Throwable(), "Check.F.1")
+                return false
+            }
+            return store.read(Settings.BoolSettings.EnableFeature(feat.toString()))
+        }
+
+        override fun setAppFeatureEnabled(feat: Int, enabled: Boolean) {
+            store.write(Settings.BoolSettings.EnableFeature(feat.toString()), enabled)
+            systemServiceScope.launchSafety("H.1") {
+                if (feat == AppFeature.AppFeature_EdgeGesture.number) {
+                    shortXContext.gesture.notifyGestureSettingsChanged()
+                }
+            }
         }
 
         override fun addToggle(toggle: ByteArrayWrapper) {

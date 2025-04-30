@@ -240,7 +240,7 @@ class GestureService(shortXContext: ShortXContext) :
         }
     }
 
-    private fun notifyGestureSettingsChanged() {
+    fun notifyGestureSettingsChanged() {
         logger.logOnDebug("notifyGestureSettingsChanged.")
         synchronized(gestureSettingsListeners) {
             gestureSettingsListeners.broadcast {

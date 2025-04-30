@@ -3,8 +3,8 @@ package tornaco.apps.shortx.ui.gesture
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.common.GestureRecord
+import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.StateViewModel
 
@@ -22,7 +22,7 @@ class GestureRecordListViewModel :
 
             val gestures = shortXManager.getAllGestureRecords(false)
             val isEdgeGestureDisabled =
-                shortXManager.hasHookFlags(ShortXManager.Companion.HookFlags.FLAG_DISABLE_GESTURE_HOOK)
+                !shortXManager.isAppFeatureEnabled(AppFeature.AppFeature_EdgeGesture.number)
             updateState {
                 copy(
                     gestures = gestures,
