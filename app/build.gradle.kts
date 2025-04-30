@@ -58,7 +58,7 @@ android {
             signingConfig = signingConfigs.getByName("release")
 
             ndk {
-                abiFilters.addAll(listOf("arm64-v8a"))
+                abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86_64"))
                 abiFilters.addAll(extraAbiFilter)
             }
         }
@@ -75,7 +75,7 @@ android {
 
             // Also support x86 for emulator test
             ndk {
-                abiFilters.addAll(listOf("arm64-v8a", "x86_64"))
+                abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86_64"))
                 abiFilters.addAll(extraAbiFilter)
             }
         }
