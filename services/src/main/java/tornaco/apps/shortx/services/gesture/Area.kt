@@ -38,12 +38,12 @@ private fun Edge.getRectP(
     return when (this) {
         Edge.BottomAll -> {
             RectF(
-                areaSize, screenHeight - areaSize, screenWidth - areaSize, screenHeight
+                0f, screenHeight - areaSize, screenWidth, screenHeight
             )
         }
 
         Edge.BottomCenter -> {
-            val splitSize = ((screenWidth - 2 * areaSize) / 3)
+            val splitSize = screenWidth / 3
             val length = splitSize * areaLengthScale
             val left = (screenWidth - length) / 2
             val right = left + length
@@ -53,9 +53,9 @@ private fun Edge.getRectP(
         }
 
         Edge.BottomLeft -> {
-            val splitSize = ((screenWidth - 2 * areaSize) / 3)
+            val splitSize = screenWidth / 3
             val length = splitSize * areaLengthScale
-            val left = areaSize + (splitSize - length) / 2
+            val left = (splitSize - length) / 2
             val right = left + length
             val top = screenHeight - areaSize
             val bottom = screenHeight
@@ -63,9 +63,9 @@ private fun Edge.getRectP(
         }
 
         Edge.BottomRight -> {
-            val splitSize = ((screenWidth - 2 * areaSize) / 3)
+            val splitSize = screenWidth / 3
             val length = splitSize * areaLengthScale
-            val left = areaSize + splitSize * 2 + (splitSize - length) / 2
+            val left = splitSize * 2 + (splitSize - length) / 2
             val right = left + length
             val top = screenHeight - areaSize
             val bottom = screenHeight
@@ -136,9 +136,9 @@ private fun Edge.getRectP(
             RectF(left, top, right, bottom)
         }
 
-        Edge.TopAll -> RectF(areaSize, 0f, screenWidth - areaSize, areaSize)
+        Edge.TopAll -> RectF(0f, 0f, screenWidth, areaSize)
         Edge.TopCenter -> {
-            val splitSize = ((screenWidth - 2 * areaSize) / 3)
+            val splitSize = screenWidth / 3
             val length = splitSize * areaLengthScale
             val left = (screenWidth - length) / 2
             val right = left + length
@@ -148,9 +148,9 @@ private fun Edge.getRectP(
         }
 
         Edge.TopLeft -> {
-            val splitSize = ((screenWidth - 2 * areaSize) / 3)
+            val splitSize = screenWidth / 3
             val length = splitSize * areaLengthScale
-            val left = areaSize + (splitSize - length) / 2
+            val left = (splitSize - length) / 2
             val right = left + length
             val top = 0f
             val bottom = areaSize
@@ -158,9 +158,9 @@ private fun Edge.getRectP(
         }
 
         Edge.TopRight -> {
-            val splitSize = ((screenWidth - 2 * areaSize) / 3)
+            val splitSize = screenWidth / 3
             val length = splitSize * areaLengthScale
-            val left = areaSize + splitSize * 2 + (splitSize - length) / 2
+            val left = splitSize * 2 + (splitSize - length) / 2
             val right = left + length
             val top = 0f
             val bottom = areaSize
