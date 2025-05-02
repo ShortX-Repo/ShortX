@@ -29,7 +29,7 @@ mmkv = "2.0.2"
 orbit = "9.0.0"
 androidx-test-runner = "1.6.2"
 # DO NOT UPGRADE
-rhino-runtime = "1.7.15"
+rhino-runtime = "1.7.13"
 uiautomator = "2.3.0"
 espresso-core = "3.6.1"
 androidx-junit = "1.2.1"
