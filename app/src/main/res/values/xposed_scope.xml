@@ -3,9 +3,10 @@
     <string-array name="xposed_scope">
         <item>android</item>
         <item>com.android.systemui</item>
-        <item>com.android.nfc</item>
-        <item>com.android.providers.media.module</item>
-        <item>com.google.android.providers.media.module</item>
-        <item>com.android.providers.media</item>
+        <!--        TODO Auto select scope -->
+        <!--        <item>com.android.nfc</item>-->
+        <!--        <item>com.android.providers.media.module</item>-->
+        <!--        <item>com.google.android.providers.media.module</item>-->
+        <!--        <item>com.android.providers.media</item>-->
     </string-array>
 </resources>
