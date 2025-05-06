@@ -4,6 +4,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
+import github.tornaco.android.thanos.core.pm.Pkg
 import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.proto.common.CallState
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
@@ -30,6 +31,7 @@ import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberRegexTextInputState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.util.XposedScope
 
 @Composable
 fun systemFactSelectHandler2(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolean {
@@ -79,6 +81,10 @@ fun systemFactSelectHandler2(addFact: (Fact) -> Unit): (FactSelectSource) -> Boo
                     matchOptions = options
                 )
             )
+
+            XposedScope.requestScope(Pkg.systemUserPkg("com.android.providers.media.module"))
+            XposedScope.requestScope(Pkg.systemUserPkg("com.google.android.providers.media.module"))
+            XposedScope.requestScope(Pkg.systemUserPkg("com.android.providers.media"))
         }
     )
     RegexTextInputDialog(state = mediaInsertSelectorState)

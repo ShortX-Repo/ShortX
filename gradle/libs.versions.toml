@@ -67,6 +67,8 @@ protobuf-java = "3.25.3"
 retrofit = "2.11.0"
 room = "2.6.1"
 swiperefreshlayout = "1.1.0"
+xposed-api = "100"
+xposed-service = "100-1.0.0"
 
 [plugins]
 agp-lib = { id = "com.android.library", version.ref = "agp" }
@@ -219,3 +221,6 @@ io-noties-markwo-ext-strikethrough = { group = "io.noties.markwon", name = "ext-
 io-noties-markwo-ext-tables = { group = "io.noties.markwon", name = "ext-tables", version.ref = "markwo" }
 io-noties-markwo-html = { group = "io.noties.markwon", name = "html", version.ref = "markwo" }
 io-noties-markwo-linkify = { group = "io.noties.markwon", name = "linkify", version.ref = "markwo" }
+
+libxposed-api = { group = "io.github.libxposed", name = "api", version.ref = "xposed-api" }
+libxposed-service = { group = "io.github.libxposed", name = "service", version.ref = "xposed-service" }

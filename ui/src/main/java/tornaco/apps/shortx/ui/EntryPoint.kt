@@ -20,6 +20,7 @@ import tornaco.apps.shortx.ui.subscribe.util.isGPToken
 import tornaco.apps.shortx.ui.subscribe.util.setLVLToken
 import tornaco.apps.shortx.ui.util.LCRulesAdapter
 import tornaco.apps.shortx.ui.util.StubApkGen
+import tornaco.apps.shortx.ui.util.XposedScope
 import tornaco.apps.shortx.ui.util.verifyOtp
 
 
@@ -49,6 +50,8 @@ object EntryPoint {
             }
         }
 
+        XposedScope.init()
+
         devTest(context)
     }
 
@@ -64,7 +67,8 @@ object EntryPoint {
                         if (it.isSuccess) {
                             S.c(token, it.k)
                             logger.logOnDebug("check CB success")
-                            verifyOtp(token, it.i,
+                            verifyOtp(
+                                token, it.i,
                                 onRes = {
                                     logger.logOnDebug("check OTP success")
                                 },

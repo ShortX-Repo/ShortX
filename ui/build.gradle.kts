@@ -135,6 +135,9 @@ dependencies {
     implementation(libs.androidx.paging.runtime.ktx)
     implementation(libs.androidx.paging.compose)
 
+    compileOnly(libs.libxposed.api)
+    implementation(libs.libxposed.service)
+
     val rowImplementation by configurations
     // This dependency is downloaded from the Google’s Maven repository.
     // So, make sure you also include that repository in your project's build.gradle file.
