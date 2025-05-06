@@ -22,6 +22,7 @@ import tornaco.apps.shortx.core.rule.valueList
 import tornaco.apps.shortx.core.rule.valueString
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.actor.impl.js.ScriptShortXApi
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.Handle
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -54,6 +55,14 @@ class MVELExecutor(
     ): Any? {
         val varsMap: Map<String, Any?> = mutableMapOf<String, Any?>().apply {
             put("context", context)
+            put(
+                "shortx",
+                ScriptShortXApi(
+                    shortXContext = shortXContext,
+                    context = context,
+                    evaluateContext = evaluateContext ?: EvaluateContext.getDefaultInstance()
+                )
+            )
             put(
                 "actionEvaluator", ScriptActionEvaluator(
                     shortXContext = shortXContext,

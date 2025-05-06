@@ -116,7 +116,7 @@ object WriteGlobalVar : Actor {
                 globalVar.throwIfNotList(op)
                 val currentValue = globalVar.valueList()
                 globalVar.setValue(currentValue.toMutableList().apply {
-                    if (this.isNotEmpty()) removeLast()
+                    if (this.isNotEmpty()) removeAt(lastIndex)
                 })
             }
 
@@ -124,7 +124,7 @@ object WriteGlobalVar : Actor {
                 globalVar.throwIfNotList(op)
                 val currentValue = globalVar.valueList()
                 globalVar.setValue(currentValue.toMutableList().apply {
-                    if (this.isNotEmpty()) removeFirst()
+                    if (this.isNotEmpty()) removeAt(0)
                 })
             }
 
