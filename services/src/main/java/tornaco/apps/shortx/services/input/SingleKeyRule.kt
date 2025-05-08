@@ -7,16 +7,18 @@ import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.platform.Classes.singleKeyGestureDetector_SingleKeyRule
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.data.Dirs
+import util.ReflectionsExt
 import java.lang.reflect.Method
 
 object SingleKeyRuleInsMaker {
     private val logger = Logger("SingleKeyRuleInsMaker")
 
-    fun make() {
+    fun make(): Any? {
         val at = ActivityThread.currentActivityThread()
         logger.w("ActivityThread.currentActivityThread()= $at")
         if (at == null) {
-            return
+            logger.e("ActivityThread.currentActivityThread() is null")
+            return null
         }
         val application = at.application
         logger.w("ActivityThread.getApplication()= $application")
@@ -34,6 +36,13 @@ object SingleKeyRuleInsMaker {
             Int::class.javaPrimitiveType,
         )
         constructor.isAccessible = true
+
+        val onPressMethod = ReflectionsExt.findMethodWithMostArgs(ruleClass, "onPress")
+        logger.d("onPressMethod: $onPressMethod")
+        val supportLongPressMethod =
+            ReflectionsExt.findMethodWithMostArgs(ruleClass, "supportLongPress")
+        val onLongPressMethod = ReflectionsExt.findMethodWithMostArgs(ruleClass, "onLongPress")
+
         // 使用 DexMaker ProxyBuilder 创建子类
         val ruleInstance = ProxyBuilder
             .forClass(ruleClass)
@@ -44,14 +53,33 @@ object SingleKeyRuleInsMaker {
             .markTrusted()
             .constructorArgTypes(Int::class.javaPrimitiveType)
             .constructorArgValues(KeyEvent.KEYCODE_VOLUME_UP)
+            .onlyMethods(arrayOf(onPressMethod, supportLongPressMethod, onLongPressMethod))
             .handler { proxy: Any?, method: Method, args: Array<Any> ->
                 val name = method.name
                 logger.logOnDebug("[SingleKeyRule] Called method: $name")
-                if (name == "toString") return@handler "SingleKeyRule-Ins"
-                return@handler method.invoke(proxy, *args) // 默认行为
+                return@handler when (method.name) {
+                    "onPress" -> {
+                        logger.w("onPress called $args")
+                        null
+                    }
+
+                    "supportLongPress" -> {
+                        logger.w("supportLongPress called $args")
+                        true
+                    }
+
+                    "onLongPress" -> {
+                        logger.w("onLongPress called $args")
+                        null
+                    }
+
+                    else -> {
+                        method.invoke(proxy, *args)
+                    }
+                }
             }
             .build()
-        // 用于调试：打印实例类名
         logger.logOnDebug("Created SingleKeyRule instance: $ruleInstance")
+        return ruleInstance
     }
 }
