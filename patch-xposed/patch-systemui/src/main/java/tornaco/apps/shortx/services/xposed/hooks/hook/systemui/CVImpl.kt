@@ -50,14 +50,14 @@ class CVImpl(private val context: Context) : ICV.Stub() {
         rect: Rect?
     ): List<Point> {
         return runCatching {
-            logger.d("findPointsByColor cvApiIns: $cvApiIns")
+            logger.w("findPointsByColor cvApiIns: $cvApiIns")
             val res =
                 Reflections.callMethod(cvApiIns, "findPointsByColor", image, color, threshold, rect)
 
             @Suppress("UNCHECKED_CAST")
             val points = (res as List<Point>)
             // Log too large will cause TransactionTooLarge err.
-            logger.d("findPointsByColor points count: ${res.size}")
+            logger.w("findPointsByColor points count: ${res.size}")
             points.take(1)
         }.getOrElse {
             logger.e(it, "findPointsByColor")
@@ -86,7 +86,7 @@ class CVImpl(private val context: Context) : ICV.Stub() {
     ): List<Point> {
         val fd: FileDescriptor = pfd.fileDescriptor
         val bitmap = BitmapFactory.decodeFileDescriptor(fd)
-        logger.d("findPointsByColorPFD, bitmap: $bitmap")
+        logger.w("findPointsByColorPFD, bitmap: $bitmap")
         val res = findPointsByColor(bitmap, color, threshold, rect)
         runCatching { bitmap.recycle() }
         return res

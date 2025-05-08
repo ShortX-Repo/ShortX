@@ -86,7 +86,7 @@ object FindPointsByColor : Actor {
             }
         }
 
-        logger.d("$log points: $points")
+        logger.w("$log points: $points")
         return points
     }
 }
