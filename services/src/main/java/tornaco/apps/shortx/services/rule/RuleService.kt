@@ -395,9 +395,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
             // Check if event accessibility service.
             if ((event.flags and FLAG_SHORTX_INJECTION) != 0) {
-                if (BuildPropInternal.APP_IS_DEBUG) {
-                    logger.d("InternalInputFlags.FLAG_SHORTX_INJECTION event: $event")
-                }
+                logger.logOnDebug("InternalInputFlags.FLAG_SHORTX_INJECTION event: $event")
                 return@consumeKeyEvent null
             }
 
@@ -409,6 +407,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 // Check if system has handle combine key.
                 singleKeyGestureDetector.reset()
                 keyCombinationTrigger.reset()
+                logger.w("systemKeyCombineDetector will handle this $event")
                 return@consumeKeyEvent null
             }
 
@@ -416,6 +415,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             logger.logOnDebug("interceptKeyRes: $interceptKeyRes")
             if (interceptKeyRes) {
                 singleKeyGestureDetector.reset()
+                logger.w("keyCombinationTrigger interceptKey-consumed: $event")
                 return@consumeKeyEvent true
             }
 
@@ -423,6 +423,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             logger.logOnDebug("isKeyConsumed: $isKeyConsumed")
             if (isKeyConsumed) {
                 singleKeyGestureDetector.reset()
+                logger.w("keyCombinationTrigger isKeyConsumed-consumed: $event")
                 return@consumeKeyEvent true
             }
 
@@ -434,6 +435,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                         event.keyCode
                     )
                 ) {
+                    logger.w("isKeyConsumed singleKeyRuleTrigger-consumed: $event")
                     return@consumeKeyEvent true
                 }
             }
@@ -451,7 +453,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                     logger.d("hasAnyRuleMatchFact for keyCode: ${event.keyCode}")
                     publishFact("KeyEvent", fact) { emptyMap() }
                 }
-                return@consumeKeyEvent true
+                return@consumeKeyEvent false
             }
 
             // END. fallback result.

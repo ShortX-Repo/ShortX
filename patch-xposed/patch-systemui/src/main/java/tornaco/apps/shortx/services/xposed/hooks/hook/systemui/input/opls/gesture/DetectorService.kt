@@ -66,7 +66,9 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
     private val interceptMotionPortRects = mutableListOf<RectF>()
     private val interceptMotionLandRects = mutableListOf<RectF>()
 
-    val shouldDetectMotion get() = fireableScreenGestures.isNotEmpty() || fireableEdgeGestures.isNotEmpty()
+    val shouldDetectMotion get() = isGestureEnabledQuick && fireableScreenGestures.isNotEmpty() || fireableEdgeGestures.isNotEmpty()
+
+    private var isGestureEnabledQuick = false
 
     init {
         shortx.registerGestureSettingsListener(object : ICallback.Stub() {
@@ -144,11 +146,14 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         gestureLengthScale = shortx.getSwipeLengthScale()
         isGestureRecording = shortx.isGestureRecording()
         GlobalSettings.setEdgeGestureEnabled(shortx.isAppFeatureEnabled(AppFeature.AppFeature_EdgeGesture.number))
+        isGestureEnabledQuick = GlobalSettings.isEdgeGestureEnabled
 
         logger.w("swipeDistanceThresholdDp: $swipeDistanceThresholdDp")
         logger.w("gestureAreaWidthDp: $gestureAreaWidthDp")
         logger.w("gestureLengthScale: $gestureLengthScale")
         logger.w("isGestureRecording: $isGestureRecording")
+        logger.logOnDebug("isGestureEnabledQuick: $isGestureEnabledQuick")
+        logger.logOnDebug("isEdgeGestureEnabled: ${GlobalSettings.isEdgeGestureEnabled}")
     }
 
     override fun getSwipeDistanceThresholdDp(): Int {

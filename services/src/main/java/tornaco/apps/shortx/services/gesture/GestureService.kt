@@ -102,7 +102,7 @@ class GestureService(shortXContext: ShortXContext) :
         // Stop play gesture if necessary
         if (event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || event.keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
             if (gesturePlayer.isInjecting) {
-                logger.i("Stop inject gesture since VOL key event.")
+                logger.w("Stop inject gesture since VOL key event.")
                 systemServiceScope.launchSafety("handleKeyEvent") {
                     gesturePlayer.stopInject()
                     withContext(Dispatchers.Main) {

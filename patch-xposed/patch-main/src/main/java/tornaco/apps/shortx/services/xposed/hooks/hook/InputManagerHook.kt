@@ -30,10 +30,10 @@ object InputManagerHook {
                 Methods.interceptKeyBeforeQueueing
             ) { param ->
                 val isEdgeGestureDisabled =
-                    !ShortXService.serviceBinder.isAppFeatureEnabled(AppFeature.AppFeature_EdgeGesture.number)
+                    !(ShortXService.serviceBinder.isAppFeatureEnabled(AppFeature.AppFeature_KeyEvent.number)
                         .also {
-                            logger.w("isEdgeGestureDisabled: $it")
-                        }
+                            logger.d("isAppFeatureEnabled-AppFeature_KeyEvent: $it")
+                        })
                 if (isEdgeGestureDisabled) return@beforeMethod
                 param.logParamsOnDebug()
                 val keyEvent = param.args[0] as KeyEvent

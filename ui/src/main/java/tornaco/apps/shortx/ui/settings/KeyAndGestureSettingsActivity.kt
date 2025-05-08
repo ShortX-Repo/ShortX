@@ -41,7 +41,6 @@ import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.BaseActivity
-import tornaco.apps.shortx.ui.base.ErrorCard
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LargeTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -54,6 +53,7 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.SwitchBar
+import tornaco.apps.shortx.ui.base.TipRow
 import java.math.BigDecimal
 import java.math.RoundingMode
 import kotlin.math.roundToInt
@@ -89,6 +89,7 @@ class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@Application
                     swipeDistanceThreshold = shortXManager.getSwipeDistanceThresholdDp(),
                     swipeLengthScale = shortXManager.getSwipeLengthScale(),
                     isEdgeGestureEnabled = shortXManager.isAppFeatureEnabled(AppFeature.AppFeature_EdgeGesture.number),
+                    isKeyEventEnabled = shortXManager.isAppFeatureEnabled(AppFeature.AppFeature_KeyEvent.number),
                     keyDetectorLongPressTimeoutMS = shortXManager.getKeyDetectorLongPressTimeoutMS()
                 )
             }
@@ -133,6 +134,13 @@ class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@Application
         }
     }
 
+    fun setKeyEventFeatureEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            shortXManager.setAppFeatureEnabled(AppFeature.AppFeature_KeyEvent.number, enabled)
+            loadState()
+        }
+    }
+
     fun setKeyDetectorLongPressTimeoutMS(timeout: Long) {
         viewModelScope.launch {
             shortXManager.setKeyDetectorLongPressTimeoutMS(timeout)
@@ -146,6 +154,7 @@ data class KeyAndGestureSettings(
     val swipeDistanceThreshold: Int = 0,
     val swipeLengthScale: Float = 0f,
     val isEdgeGestureEnabled: Boolean = false,
+    val isKeyEventEnabled: Boolean = false,
     // Key
     val keyDetectorLongPressTimeoutMS: Long = 0,
 )
@@ -185,83 +194,101 @@ fun KeyAndGestureSettingsActivity.EdgeGestureSettingsSelector() {
             SwitchBar(
                 isChecked = state.isEdgeGestureEnabled,
                 text = LocalI18N.current["ui.settings.edge.gesture"],
-                tip = LocalI18N.current["ui.settings.edge.gesture.disable"],
                 onCheckChange = {
                     vm.setGestureFeatureEnabled(it)
                 })
+            MediumSpacer()
+            TipRow(LocalI18N.current["ui.settings.edge.gesture.disable"])
             StandardSpacer()
 
-            LargeTitle(text = LocalI18N.current["ui.settings.edge.gesture"])
-            StandardSpacer()
+            AnimatedVisibility(state.isEdgeGestureEnabled) {
+                Column {
+                    LargeTitle(text = LocalI18N.current["ui.settings.edge.gesture"])
+                    StandardSpacer()
 
-            SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.size"])
-            MediumSpacer()
-            Text(text = state.gestureAreaSize.toString())
-            Slider(
-                valueRange = 1f..150f,
-                value = state.gestureAreaSize.toFloat(),
-                onValueChange = {
-                    vm.setAreaSize(it.roundToInt())
-                })
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(state.gestureAreaSize.dp)
-                    .clip(ShortXCardRoundedCornerShapeXL)
-                    .background(color = MaterialTheme.colorScheme.primary)
-            )
-            LargeSpacer()
+                    SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.size"])
+                    MediumSpacer()
+                    Text(text = state.gestureAreaSize.toString())
+                    Slider(
+                        valueRange = 1f..150f,
+                        value = state.gestureAreaSize.toFloat(),
+                        onValueChange = {
+                            vm.setAreaSize(it.roundToInt())
+                        })
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(state.gestureAreaSize.dp)
+                            .clip(ShortXCardRoundedCornerShapeXL)
+                            .background(color = MaterialTheme.colorScheme.primary)
+                    )
+                    LargeSpacer()
 
-            SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.area.length"])
-            MediumSpacer()
-            Text(text = state.swipeLengthScale.toString())
-            Slider(
-                valueRange = 0f..1f,
-                value = state.swipeLengthScale,
-                onValueChange = {
-                    vm.setSwipeLengthScale(it)
-                })
-            LargeSpacer()
+                    SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.area.length"])
+                    MediumSpacer()
+                    Text(text = state.swipeLengthScale.toString())
+                    Slider(
+                        valueRange = 0f..1f,
+                        value = state.swipeLengthScale,
+                        onValueChange = {
+                            vm.setSwipeLengthScale(it)
+                        })
+                    LargeSpacer()
 
-            SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.swipe.distance"])
-            MediumSpacer()
-            Text(text = state.swipeDistanceThreshold.toString())
-            Slider(
-                valueRange = 1f..300f,
-                value = state.swipeDistanceThreshold.toFloat(),
-                onValueChange = {
-                    vm.setSwipeDistanceThreshold(it.roundToInt())
-                })
+                    SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.swipe.distance"])
+                    MediumSpacer()
+                    Text(text = state.swipeDistanceThreshold.toString())
+                    Slider(
+                        valueRange = 1f..300f,
+                        value = state.swipeDistanceThreshold.toFloat(),
+                        onValueChange = {
+                            vm.setSwipeDistanceThreshold(it.roundToInt())
+                        })
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "\uD83D\uDC46")
-                StandardSpacer()
-                Spacer(
-                    modifier = Modifier
-                        .width(state.swipeDistanceThreshold.dp)
-                        .height(6.dp)
-                        .clip(ShortXCardRoundedCornerShapeXL)
-                        .background(color = MaterialTheme.colorScheme.primary)
-                )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "\uD83D\uDC46")
+                        StandardSpacer()
+                        Spacer(
+                            modifier = Modifier
+                                .width(state.swipeDistanceThreshold.dp)
+                                .height(6.dp)
+                                .clip(ShortXCardRoundedCornerShapeXL)
+                                .background(color = MaterialTheme.colorScheme.primary)
+                        )
+                    }
+                    LargeSpacer()
+
+                    SectionSpacer()
+                    SectionSpacer()
+                }
             }
-            LargeSpacer()
-
-            SectionSpacer()
-            SectionSpacer()
 
             // Keys
-            LargeTitle(text = LocalI18N.current["ui.settings.key"])
-            SmallTitle(text = LocalI18N.current["ui.settings.key.long.press.timeout"])
-            MediumSpacer()
-            Text(text = "${state.keyDetectorLongPressTimeoutMS} ms")
-            Slider(
-                valueRange = 200f..5000f,
-                value = state.keyDetectorLongPressTimeoutMS.toFloat(),
-                onValueChange = {
-                    vm.setKeyDetectorLongPressTimeoutMS(it.roundToLong())
+            SwitchBar(
+                isChecked = state.isKeyEventEnabled,
+                text = LocalI18N.current["ui.settings.keyevent"],
+                onCheckChange = {
+                    vm.setKeyEventFeatureEnabled(it)
                 })
+            MediumSpacer()
+            TipRow(LocalI18N.current["ui.settings.keyevent.disable"])
+            StandardSpacer()
+            AnimatedVisibility(state.isKeyEventEnabled) {
+                Column {
+                    LargeTitle(text = LocalI18N.current["ui.settings.key"])
+                    SmallTitle(text = LocalI18N.current["ui.settings.key.long.press.timeout"])
+                    MediumSpacer()
+                    Text(text = "${state.keyDetectorLongPressTimeoutMS} ms")
+                    Slider(
+                        valueRange = 200f..5000f,
+                        value = state.keyDetectorLongPressTimeoutMS.toFloat(),
+                        onValueChange = {
+                            vm.setKeyDetectorLongPressTimeoutMS(it.roundToLong())
+                        })
 
-            SectionSpacer()
+                    SectionSpacer()
+                }
+            }
 
             repeat(4) {
                 SectionSpacer()

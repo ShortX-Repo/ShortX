@@ -214,7 +214,7 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         if ((event.flags and KeyEvent.FLAG_FALLBACK) == 0) {
             val res = ShortXService.shortXContext.gesture.consumeKeyEvent(event, interactive)
             if (res == true && event.keyCode != KeyEvent.KEYCODE_POWER) {
-                logger.logOnDebug { "######### block $event" }
+                logger.w { "######### block $event" }
                 return 0
             }
         }
