@@ -35,17 +35,6 @@ class MVELExecutor(
 ) {
     companion object {
         private val logger = Logger("MVELExecutor")
-
-        val parserContext by lazy {
-            ParserContext().apply {
-                val allActionNames = OuterActions.getDescriptor().messageTypes.map { it.name }
-                allActionNames.forEach {
-                    val clazz = Class.forName("tornaco.apps.shortx.core.proto.action.$it")
-                    addImport(it, clazz)
-                    logger.logOnDebug { "addImport: $it - $clazz" }
-                }
-            }
-        }
     }
 
     operator fun invoke(
@@ -110,7 +99,14 @@ class MVELExecutor(
         }
         logger.logOnDebug("varsMap: $varsMap")
         logger.d("Execute: $expression")
-
+        val parserContext = ParserContext().apply {
+            val allActionNames = OuterActions.getDescriptor().messageTypes.map { it.name }
+            allActionNames.forEach {
+                val clazz = Class.forName("tornaco.apps.shortx.core.proto.action.$it")
+                addImport(it, clazz)
+                logger.logOnDebug { "addImport: $it - $clazz" }
+            }
+        }
         return MVEL.executeExpression(MVEL.compileExpression(expression, parserContext), varsMap)
     }
 }
