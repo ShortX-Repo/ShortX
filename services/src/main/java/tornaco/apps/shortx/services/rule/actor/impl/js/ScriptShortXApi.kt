@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.rule.actor.impl.js
 
 import android.content.Context
 import kotlinx.coroutines.runBlocking
+import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.proto.action.WriteGlobalVarOp
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.isList
@@ -14,6 +15,7 @@ import tornaco.apps.shortx.services.rule.actor.impl.WriteGlobalVar
 import java.util.UUID
 
 @Suppress("MemberVisibilityCanBePrivate")
+@DoNotStrip
 class ScriptShortXApi(
     private val shortXContext: ShortXContext,
     private val context: Context,

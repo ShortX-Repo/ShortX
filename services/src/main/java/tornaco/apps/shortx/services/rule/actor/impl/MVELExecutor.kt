@@ -5,6 +5,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.mvel2.MVEL
 import org.mvel2.ParserContext
+import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.action.OuterActions
@@ -114,6 +115,7 @@ class MVELExecutor(
     }
 }
 
+@DoNotStrip
 class ScriptActionEvaluator(
     private val shortXContext: ShortXContext,
     private val evaluateContext: EvaluateContext,
