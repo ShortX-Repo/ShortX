@@ -41,8 +41,6 @@ class GestureService(shortXContext: ShortXContext) :
         GestureRecordsStore(systemServiceScope)
     }
 
-    private var onKeyEvent: ((KeyEvent, Boolean) -> Boolean?)? = null
-
     private val showingHints: MutableSet<GuideLineView> = mutableSetOf()
 
     private val gestureRecorder by lazy { GestureRecorder(context) }
@@ -57,10 +55,6 @@ class GestureService(shortXContext: ShortXContext) :
 
     fun showEdgeHint(edgeNumber: List<Int>) {
         showGideLineViewForArea(edgeNumber.mapNotNull { Edge.forNumber(it) })
-    }
-
-    fun consumeKeyEvent(onKeyEvent: (KeyEvent, Boolean) -> /*consumed: */ Boolean?) {
-        this.onKeyEvent = onKeyEvent
     }
 
     private fun showGideLineViewForArea(area: List<Edge>) {
@@ -95,7 +89,8 @@ class GestureService(shortXContext: ShortXContext) :
         }
     }
 
-    fun consumeKeyEvent(event: KeyEvent, interactive: Boolean): Boolean? {
+    // Return true, means consumed, should intercept this event.
+    fun interceptKeyBeforeQueueing(event: KeyEvent, interactive: Boolean): Boolean? {
         // update last key.
         shortXContext.input.updateLastInputKey(event.keyCode, "handleKeyEvent")
 
@@ -115,8 +110,7 @@ class GestureService(shortXContext: ShortXContext) :
                 }
             }
         }
-
-        return onKeyEvent?.invoke(event, interactive)
+        return shortXContext.rule.interceptKeyBeforeQueueing(event, interactive)
     }
 
     fun getGestureLengthScale(): Float =

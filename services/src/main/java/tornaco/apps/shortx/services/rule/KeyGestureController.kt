@@ -31,7 +31,7 @@ class KeyGestureController(
         }
     }
 
-    private val singleKeyGestureDetector: SingleKeyGestureDetector by lazy {
+    val singleKeyGestureDetector: SingleKeyGestureDetector by lazy {
         SingleKeyGestureDetector.get().also {
             SingleKeyGestureDetector.sDefaultLongPressTimeout =
                 shortXContext.gesture.getKeyDetectorLongPressTimeoutMS().toLong().apply {
@@ -68,6 +68,7 @@ class KeyGestureController(
             return false
         }
 
+
         val interceptKeyRes = keyCombinationTrigger.interceptKey(event, interactive)
         logger.logOnDebug("keyCombinationTrigger interceptKeyRes: $interceptKeyRes")
         if (interceptKeyRes) {
@@ -76,25 +77,9 @@ class KeyGestureController(
             return true
         }
 
-        val isKeyConsumed = keyCombinationTrigger.isKeyConsumed(event)
-        logger.logOnDebug("isKeyConsumed: $isKeyConsumed")
-        if (isKeyConsumed) {
-            singleKeyGestureDetector.reset()
-            logger.w("keyCombinationTrigger isKeyConsumed-consumed: $event")
-            return true
-        }
-
         // Check ADV rules.
         if (singleKeyRuleTrigger.hasAny()) {
             singleKeyGestureDetector.interceptKey(event, interactive)
-            if (singleKeyRuleTrigger.hasAnyWithInterceptMode(event.keyCode)
-                && singleKeyGestureDetector.isKeyIntercepted(
-                    event.keyCode
-                )
-            ) {
-                logger.w("isKeyConsumed singleKeyRuleTrigger-consumed: $event")
-                return true
-            }
         }
 
         return false

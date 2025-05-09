@@ -195,7 +195,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     // For internal usage, such as Actor listen to a fact to act.
     private val internalFactListeners: MutableList<InternalFactListener> = mutableListOf()
 
-    private val forceDisableShortXListener = object : KeyPressTimesInIntervalListener(12, 10000) {
+    private val forceDisableShortXListener = object : KeyPressTimesInIntervalListener(12, 5000) {
         override fun keyPressCountHit() {
             if (isForceDisableShortXByKeyPressEnabled()) {
                 logger.e("forceDisableShortXListener - keyPressCountHit.")
@@ -345,10 +345,6 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     }
 
     private fun installListeners() {
-        shortXContext.gesture.consumeKeyEvent { event, interactive ->
-            consumeKeyEvent(event, interactive)
-        }
-
         allTriggers.forEach { trigger ->
             kotlin.runCatching {
                 logger.d("Register trigger: $trigger")
@@ -363,7 +359,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         logger.d("allTriggers registered.(or posted.)")
     }
 
-    private fun consumeKeyEvent(event: AndroidKeyEvent, interactive: Boolean): Boolean? {
+    fun interceptKeyBeforeQueueing(event: AndroidKeyEvent, interactive: Boolean): Boolean? {
         logger.d("onKeyEvent up for keyCode: ${event.keyCode}, interactive :$interactive")
 
         if (event.action == AndroidKeyEvent.ACTION_UP && isKeyEventPromptEnabled()) {

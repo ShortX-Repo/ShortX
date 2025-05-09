@@ -8,7 +8,6 @@ import tornaco.apps.shortx.core.platform.Classes.inputManagerService
 import tornaco.apps.shortx.core.platform.Classes.keyCombinationManager
 import tornaco.apps.shortx.core.platform.Classes.singleKeyGestureDetector
 import tornaco.apps.shortx.core.platform.Methods
-import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXService
 import tornaco.apps.shortx.services.android.ServiceHolder
@@ -60,12 +59,6 @@ object InputManagerHook {
                 lpparam.classLoader.inputManagerService(),
                 Methods.interceptKeyBeforeQueueing
             ) { param ->
-                val isEdgeGestureDisabled =
-                    !(ShortXService.serviceBinder.isAppFeatureEnabled(AppFeature.AppFeature_KeyEvent.number)
-                        .also {
-                            logger.d("isAppFeatureEnabled-AppFeature_KeyEvent: $it")
-                        })
-                if (isEdgeGestureDisabled) return@beforeMethod
                 param.logParamsOnDebug()
                 val keyEvent = param.args[0] as KeyEvent
                 val policyFlags = param.args[1] as Int
@@ -88,13 +81,6 @@ object InputManagerHook {
             lpparam.classLoader.inputManagerService(),
             Methods.interceptKeyBeforeDispatching
         ) { param ->
-            val isEdgeGestureDisabled =
-                !(ShortXService.serviceBinder.isAppFeatureEnabled(AppFeature.AppFeature_KeyEvent.number)
-                    .also {
-                        logger.d("isAppFeatureEnabled-AppFeature_KeyEvent: $it")
-                    })
-            if (isEdgeGestureDisabled) return@beforeMethod
-
             param.logParamsOnDebug()
 
             if (interceptKeyBeforeDispatching_KeyEvent_Index == null) {

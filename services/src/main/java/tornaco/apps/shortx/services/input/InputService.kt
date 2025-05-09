@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.clipboard.ClipboardItem
 import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
+import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.clipboardManager
 import tornaco.apps.shortx.services.ShortXContext
@@ -224,18 +225,37 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
 
     // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/services/core/java/com/android/server/input/InputManagerService.java;l=2504?q=interceptKeyBeforeQueueing&ss=android
     fun interceptKeyBeforeQueueing(event: KeyEvent, policyFlags: Int): Int? {
+        if (!shortXContext.rule.isRuleFeatureEnabled()) return null
+        val isEdgeGestureDisabled =
+            !(ShortXService.serviceBinder.isAppFeatureEnabled(AppFeature.AppFeature_KeyEvent.number)
+                .also {
+                    logger.d("isAppFeatureEnabled-AppFeature_KeyEvent: $it")
+                })
+        if (isEdgeGestureDisabled) return null
+
         val interactive = (policyFlags and FLAG_INTERACTIVE) != 0
         if ((event.flags and KeyEvent.FLAG_FALLBACK) == 0) {
-            val res = ShortXService.shortXContext.gesture.consumeKeyEvent(event, interactive)
+            val res =
+                ShortXService.shortXContext.gesture.interceptKeyBeforeQueueing(event, interactive)
             logger.logOnDebug {
-                "consumeKeyEvent res: $res ${
+                "consumeKeyEvent, interactive: $interactive, res: $res ${
                     KeyCodeUtil.keyEventToCodeAndActionString(
                         event
                     )
                 }"
             }
-            if (res == true && event.keyCode != KeyEvent.KEYCODE_POWER) {
+            val isWakeupKey = !interactive && event.keyCode == KeyEvent.KEYCODE_POWER
+            if (isWakeupKey) {
+                logger.w("isWakeupKey is true.")
+            }
+            if (res == true && !isWakeupKey) {
                 logger.w("XXX block $event")
+                // If key gesture gets triggered, we send the event to policy with KEY_GESTURE flag
+                // indicating, the event is used in triggering a key gesture. We can't block event
+                // like Power or volume keys since policy might still want to handle it to change
+                // certain states.
+                // val policyFlagsNew =
+                //    policyFlags or WindowManagerPolicyConstants.FLAG_KEY_GESTURE_TRIGGERED
                 return 0
             }
         }
@@ -243,6 +263,15 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     }
 
     fun interceptKeyBeforeDispatching(event: KeyEvent): Long? {
+        if (!shortXContext.rule.isRuleFeatureEnabled()) return null
+        val isEdgeGestureDisabled =
+            !(ShortXService.serviceBinder.isAppFeatureEnabled(AppFeature.AppFeature_KeyEvent.number)
+                .also {
+                    logger.d("isAppFeatureEnabled-AppFeature_KeyEvent: $it")
+                })
+        if (isEdgeGestureDisabled) return null
+
+
         val keyCode = event.keyCode
         val flags = event.flags
         val keyConsumed = -1L
@@ -251,6 +280,20 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
             logger.w("keyConsumed is true: $event")
             return keyConsumed
         }
+
+        with(shortXContext.rule.keyGestureController) {
+            if (singleKeyRuleTrigger.hasAnyWithInterceptMode(
+                    event.keyCode
+                )
+                && singleKeyGestureDetector.isKeyIntercepted(
+                    event.keyCode
+                )
+            ) {
+                logger.w("isKeyConsumed singleKeyRuleTrigger-consumed: $event")
+                return keyConsumed
+            }
+        }
+
         if ((flags and KeyEvent.FLAG_FALLBACK) == 0) {
             val now = SystemClock.uptimeMillis()
             val interceptTimeout: Long =

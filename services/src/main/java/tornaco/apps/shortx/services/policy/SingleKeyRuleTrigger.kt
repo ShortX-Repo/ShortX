@@ -16,6 +16,7 @@ import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.input.IMSFunc
 import tornaco.apps.shortx.services.policy.SingleKeyGestureDetector.SingleKeyRule
+import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.rule.RuleService
 import tornaco.apps.shortx.services.rule.actor.impl.InjectKeyCode
 import tornaco.apps.shortx.services.rule.fact.trigger.Trigger
@@ -184,14 +185,19 @@ private class SingleKeyRuleImpl(
         val shouldFire = ruleService.shouldFire(fact, false, enabledRules, das)
         logger.d("shouldFire: $shouldFire")
         if (shouldFire) {
-            ruleService.publishFact(
-                "onPress-$keycode",
-                fact,
-                mapOf(
-                    ContextDataMapping.AdvancedKeyEvent.keyCode.name to keycode,
-                    ContextDataMapping.AdvancedKeyEvent.pressTimes.name to 1
-                )
-            )
+            ruleService.publishFactChecked(
+                AdvancedKeyEvent.getDefaultInstance()
+            ) {
+                FactPublishData(
+                    reason = "onPress-$keycode",
+                    fact = fact
+                ) {
+                    mapOf(
+                        ContextDataMapping.AdvancedKeyEvent.keyCode.name to keycode,
+                        ContextDataMapping.AdvancedKeyEvent.pressTimes.name to 1
+                    )
+                }
+            }
         } else if (interceptMode) {
             InjectKeyCode.injectKey(keycode)
         }
@@ -200,13 +206,15 @@ private class SingleKeyRuleImpl(
     override fun onLongPress(eventTime: Long) {
         super.onLongPress(eventTime)
         logger.d("singleKeyHandler onLongPress")
-        ruleService.publishFact(
-            "onLongPress-$keycode",
-            AdvancedKeyEvent.newBuilder()
-                .setKeyCode(keycode)
-                .setGesture(KeyGesture.KeyLongPress)
-                .build()
-        )
+        ruleService.publishFactChecked(AdvancedKeyEvent.getDefaultInstance()) {
+            FactPublishData(
+                "onLongPress-$keycode",
+                AdvancedKeyEvent.newBuilder()
+                    .setKeyCode(keycode)
+                    .setGesture(KeyGesture.KeyLongPress)
+                    .build()
+            )
+        }
     }
 
     override fun onMultiPress(downTime: Long, count: Int) {
@@ -214,29 +222,39 @@ private class SingleKeyRuleImpl(
         logger.d("singleKeyHandler onMultiPress: $count")
 
         if (count == 2) {
-            ruleService.publishFact(
-                "onMultiPress-2-$keycode",
-                AdvancedKeyEvent.newBuilder()
-                    .setKeyCode(keycode)
-                    .setGesture(KeyGesture.KeyMultiplePress)
-                    .build(),
-                mapOf(
-                    ContextDataMapping.AdvancedKeyEvent.keyCode.name to keycode,
-                    ContextDataMapping.AdvancedKeyEvent.pressTimes.name to 2
-                )
-            )
+            ruleService.publishFactChecked(
+                AdvancedKeyEvent.getDefaultInstance()
+            ) {
+                FactPublishData(
+                    "onMultiPress-2-$keycode",
+                    AdvancedKeyEvent.newBuilder()
+                        .setKeyCode(keycode)
+                        .setGesture(KeyGesture.KeyMultiplePress)
+                        .build()
+                ) {
+                    mapOf(
+                        ContextDataMapping.AdvancedKeyEvent.keyCode.name to keycode,
+                        ContextDataMapping.AdvancedKeyEvent.pressTimes.name to 2
+                    )
+                }
+            }
         } else if (count == 3) {
-            ruleService.publishFact(
-                "onMultiPress-3-$keycode",
-                AdvancedKeyEvent.newBuilder()
-                    .setKeyCode(keycode)
-                    .setGesture(KeyGesture.KeyTriplePress)
-                    .build(),
-                mapOf(
-                    ContextDataMapping.AdvancedKeyEvent.keyCode.name to keycode,
-                    ContextDataMapping.AdvancedKeyEvent.pressTimes.name to 3
-                )
-            )
+            ruleService.publishFactChecked(
+                AdvancedKeyEvent.getDefaultInstance()
+            ) {
+                FactPublishData(
+                    "onMultiPress-3-$keycode",
+                    AdvancedKeyEvent.newBuilder()
+                        .setKeyCode(keycode)
+                        .setGesture(KeyGesture.KeyTriplePress)
+                        .build(),
+                ) {
+                    mapOf(
+                        ContextDataMapping.AdvancedKeyEvent.keyCode.name to keycode,
+                        ContextDataMapping.AdvancedKeyEvent.pressTimes.name to 3
+                    )
+                }
+            }
         }
     }
 
