@@ -6,8 +6,6 @@ import android.os.ParcelFileDescriptor
 import android.os.RemoteCallbackList
 import android.util.Log
 import android.view.KeyEvent.KEYCODE_POWER
-import android.view.KeyEvent.KEYCODE_STEM_PRIMARY
-import android.view.KeyEvent.KEYCODE_VOLUME_DOWN
 import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -90,11 +88,6 @@ import tornaco.apps.shortx.services.data.ToggleSettingsStore
 import tornaco.apps.shortx.services.data.WebDavProfileStore
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
-import tornaco.apps.shortx.services.policy.KeyCombinationManager
-import tornaco.apps.shortx.services.policy.KeyCombinationManager.TwoKeysCombinationRule
-import tornaco.apps.shortx.services.policy.KeyCombinationTrigger
-import tornaco.apps.shortx.services.policy.SingleKeyGestureDetector
-import tornaco.apps.shortx.services.policy.SingleKeyRuleTrigger
 import tornaco.apps.shortx.services.rule.actor.ActionEvaluateRecorder
 import tornaco.apps.shortx.services.rule.actor.PrebuiltActor
 import tornaco.apps.shortx.services.rule.actor.dummyHandlerParamsForAction
@@ -122,6 +115,7 @@ import java.util.concurrent.CancellationException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
+typealias AndroidKeyEvent = android.view.KeyEvent
 
 class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "RuleService") {
     private val ruleSettingsStore: RuleSettingsStore by lazy {
@@ -171,43 +165,18 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             })
     }
 
-    private val singleKeyGestureDetector: SingleKeyGestureDetector by lazy {
-        SingleKeyGestureDetector.get().also {
-            SingleKeyGestureDetector.sDefaultLongPressTimeout =
-                shortXContext.gesture.getKeyDetectorLongPressTimeoutMS().toLong().apply {
-                    logger.i("sDefaultLongPressTimeout: $this")
-                }
-        }
-    }
-    private val singleKeyRuleTrigger by lazy {
-        SingleKeyRuleTrigger(
-            context,
-            shortXContext,
-            singleKeyGestureDetector
-        )
-    }
-
-    private val keyCombinationTrigger by lazy {
-        KeyCombinationTrigger(
-            context,
-            shortXContext
-        )
-    }
-
-    private val systemKeyCombineDetector by lazy {
-        KeyCombinationManager(handler).apply {
-            addRule(object : TwoKeysCombinationRule(KEYCODE_VOLUME_DOWN, KEYCODE_POWER) {
-            })
-            addRule(object : TwoKeysCombinationRule(KEYCODE_POWER, KEYCODE_STEM_PRIMARY) {
-            })
-        }
+    val keyGestureController by lazy {
+        KeyGestureController(context, shortXContext, handler)
     }
 
     private val allTriggers by lazy {
         allTriggers(context, shortXContext).apply {
             // These are internal Triggers.
-            add(singleKeyRuleTrigger)
-            add(keyCombinationTrigger)
+            with(keyGestureController) {
+                add(singleKeyRuleTrigger)
+                add(keyCombinationTrigger)
+                logger.w("allTriggers size: $size")
+            }
         }
     }
 
@@ -377,87 +346,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     private fun installListeners() {
         shortXContext.gesture.consumeKeyEvent { event, interactive ->
-            logger.d("onKeyEvent up for keyCode: ${event.keyCode}, interactive :$interactive")
-
-            if (event.action == android.view.KeyEvent.ACTION_UP && isKeyEventPromptEnabled()) {
-                handler.postSafety("Toast Key") {
-                    Toast.makeText(context, "Key code: ${event.keyCode}", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            if (event.keyCode == KEYCODE_POWER) {
-                if (event.action == android.view.KeyEvent.ACTION_DOWN) {
-                    forceDisableShortXListener.onKeyPressed()
-                }
-            } else {
-                forceDisableShortXListener.onOtherKeyPressed()
-            }
-
-            // Check if event accessibility service.
-            if ((event.flags and FLAG_SHORTX_INJECTION) != 0) {
-                logger.logOnDebug("InternalInputFlags.FLAG_SHORTX_INJECTION event: $event")
-                return@consumeKeyEvent null
-            }
-
-            if (systemKeyCombineDetector.interceptKey(
-                    event,
-                    interactive
-                ) || systemKeyCombineDetector.isKeyConsumed(event)
-            ) {
-                // Check if system has handle combine key.
-                singleKeyGestureDetector.reset()
-                keyCombinationTrigger.reset()
-                logger.w("systemKeyCombineDetector will handle this $event")
-                return@consumeKeyEvent null
-            }
-
-            val interceptKeyRes = keyCombinationTrigger.interceptKey(event, interactive)
-            logger.logOnDebug("interceptKeyRes: $interceptKeyRes")
-            if (interceptKeyRes) {
-                singleKeyGestureDetector.reset()
-                logger.w("keyCombinationTrigger interceptKey-consumed: $event")
-                return@consumeKeyEvent true
-            }
-
-            val isKeyConsumed = keyCombinationTrigger.isKeyConsumed(event)
-            logger.logOnDebug("isKeyConsumed: $isKeyConsumed")
-            if (isKeyConsumed) {
-                singleKeyGestureDetector.reset()
-                logger.w("keyCombinationTrigger isKeyConsumed-consumed: $event")
-                return@consumeKeyEvent true
-            }
-
-            // Check ADV rules.
-            if (singleKeyRuleTrigger.hasAny()) {
-                singleKeyGestureDetector.interceptKey(event, interactive)
-                if (singleKeyRuleTrigger.hasAnyWithInterceptMode(event.keyCode)
-                    && singleKeyGestureDetector.isKeyIntercepted(
-                        event.keyCode
-                    )
-                ) {
-                    logger.w("isKeyConsumed singleKeyRuleTrigger-consumed: $event")
-                    return@consumeKeyEvent true
-                }
-            }
-
-            // Check Normal Rules.
-            val fact = KeyEvent.newBuilder().setKeyCode(event.keyCode).build()
-            if (shouldFire(
-                    rules = getAllEnabledRules(),
-                    das = getAllDirectAction(),
-                    fact = fact,
-                    checkCondition = false
-                )
-            ) {
-                if (event.action == android.view.KeyEvent.ACTION_UP) {
-                    logger.d("hasAnyRuleMatchFact for keyCode: ${event.keyCode}")
-                    publishFact("KeyEvent", fact) { emptyMap() }
-                }
-                return@consumeKeyEvent false
-            }
-
-            // END. fallback result.
-            return@consumeKeyEvent null
+            consumeKeyEvent(event, interactive)
         }
 
         allTriggers.forEach { trigger ->
@@ -472,6 +361,53 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             }
         }
         logger.d("allTriggers registered.(or posted.)")
+    }
+
+    private fun consumeKeyEvent(event: AndroidKeyEvent, interactive: Boolean): Boolean? {
+        logger.d("onKeyEvent up for keyCode: ${event.keyCode}, interactive :$interactive")
+
+        if (event.action == AndroidKeyEvent.ACTION_UP && isKeyEventPromptEnabled()) {
+            handler.postSafety("Toast Key") {
+                Toast.makeText(context, "Key code: ${event.keyCode}", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        if (event.keyCode == KEYCODE_POWER) {
+            if (event.action == AndroidKeyEvent.ACTION_DOWN) {
+                forceDisableShortXListener.onKeyPressed()
+            }
+        } else {
+            forceDisableShortXListener.onOtherKeyPressed()
+        }
+
+        // Check if event accessibility service.
+        if ((event.flags and FLAG_SHORTX_INJECTION) != 0) {
+            logger.logOnDebug("InternalInputFlags.FLAG_SHORTX_INJECTION event: $event")
+            return null
+        }
+
+        if (keyGestureController.consumeKeyEvent(event, interactive)) {
+            return true
+        }
+
+        // Check Normal Rules.
+        val fact = KeyEvent.newBuilder().setKeyCode(event.keyCode).build()
+        if (shouldFire(
+                rules = getAllEnabledRules(),
+                das = getAllDirectAction(),
+                fact = fact,
+                checkCondition = false
+            )
+        ) {
+            if (event.action == AndroidKeyEvent.ACTION_UP) {
+                logger.d("hasAnyRuleMatchFact for keyCode: ${event.keyCode}")
+                publishFact("KeyEvent", fact) { emptyMap() }
+            }
+            return false
+        }
+
+        // END. fallback result.
+        return null
     }
 
     // Quick check.
@@ -512,7 +448,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             val data = dataProvider()
             publishFact(data.reason, data.fact, data.initialContextDataLazy)
         } else {
-            logger.w("publishFact ${factDefaultInstance.getTypeUrl()}, Skip intercepted.")
+            logger.logOnDebug("publishFact ${factDefaultInstance.getTypeUrl()}, Skip intercepted.")
         }
     }
 

@@ -80,6 +80,10 @@ class KeyCombinationTrigger(
         return keyCombinationManager.isKeyConsumed(keyEvent)
     }
 
+    fun getKeyInterceptTimeout(keyCode: Int): Long {
+        return keyCombinationManager.getKeyInterceptTimeout(keyCode)
+    }
+
     fun reset() {
         keyCombinationManager.reset()
     }

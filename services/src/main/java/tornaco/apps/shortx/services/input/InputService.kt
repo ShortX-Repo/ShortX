@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.input
 
+import android.os.SystemClock
 import android.view.KeyEvent
 import android.view.WindowManagerPolicyConstants.FLAG_INTERACTIVE
 import com.android.internal.view.IInputContext
@@ -226,9 +227,39 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         val interactive = (policyFlags and FLAG_INTERACTIVE) != 0
         if ((event.flags and KeyEvent.FLAG_FALLBACK) == 0) {
             val res = ShortXService.shortXContext.gesture.consumeKeyEvent(event, interactive)
+            logger.logOnDebug {
+                "consumeKeyEvent res: $res ${
+                    KeyCodeUtil.keyEventToCodeAndActionString(
+                        event
+                    )
+                }"
+            }
             if (res == true && event.keyCode != KeyEvent.KEYCODE_POWER) {
-                logger.w { "######### block $event" }
+                logger.w("XXX block $event")
                 return 0
+            }
+        }
+        return null
+    }
+
+    fun interceptKeyBeforeDispatching(event: KeyEvent): Long? {
+        val keyCode = event.keyCode
+        val flags = event.flags
+        val keyConsumed = -1L
+        val keyNotConsumed = 0L
+        if (shortXContext.rule.keyGestureController.keyCombinationTrigger.isKeyConsumed(event)) {
+            logger.w("keyConsumed is true: $event")
+            return keyConsumed
+        }
+        if ((flags and KeyEvent.FLAG_FALLBACK) == 0) {
+            val now = SystemClock.uptimeMillis()
+            val interceptTimeout: Long =
+                shortXContext.rule.keyGestureController.keyCombinationTrigger.getKeyInterceptTimeout(
+                    keyCode
+                )
+            if (now < interceptTimeout) {
+                logger.w("now < interceptTimeout is true: $event")
+                return interceptTimeout - now
             }
         }
         return null

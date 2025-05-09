@@ -12,10 +12,14 @@ import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXService
 import tornaco.apps.shortx.services.android.ServiceHolder
+import util.ReflectionsExt
+import java.lang.reflect.Method
 
 
 object InputManagerHook {
     private val logger = Logger("ShortXHook.InputManagerHook")
+
+    private var interceptKeyBeforeDispatching_KeyEvent_Index: Int? = null
 
     @SuppressLint("PrivateApi")
     fun hookInputManager(lpparam: XC_LoadPackage.LoadPackageParam) {
@@ -26,6 +30,28 @@ object InputManagerHook {
             }
         }.onFailure {
             logger.e(it, "inputManagerService")
+        }
+
+        kotlin.runCatching {
+            afterConstruct(lpparam.classLoader.singleKeyGestureDetector()) {
+                logger.logOnDebug("SingleKeyGestureDetector constructed. ${Throwable().stackTraceToString()}")
+                val det = it.thisObject
+                logger.logOnDebug("det- $det")
+                ServiceHolder.singleKeyGestureDetector = det
+            }
+        }.onFailure {
+            logger.e(it)
+        }
+
+        kotlin.runCatching {
+            afterConstruct(lpparam.classLoader.keyCombinationManager()) {
+                logger.logOnDebug("KeyCombinationManager constructed. ${Throwable().stackTraceToString()}")
+                val manager = it.thisObject
+                logger.logOnDebug("manager- $manager")
+                ServiceHolder.keyCombinationManager = manager
+            }
+        }.onFailure {
+            logger.e(it)
         }
 
         kotlin.runCatching {
@@ -62,29 +88,33 @@ object InputManagerHook {
             lpparam.classLoader.inputManagerService(),
             Methods.interceptKeyBeforeDispatching
         ) { param ->
+            val isEdgeGestureDisabled =
+                !(ShortXService.serviceBinder.isAppFeatureEnabled(AppFeature.AppFeature_KeyEvent.number)
+                    .also {
+                        logger.d("isAppFeatureEnabled-AppFeature_KeyEvent: $it")
+                    })
+            if (isEdgeGestureDisabled) return@beforeMethod
+
             param.logParamsOnDebug()
-        }
 
-        kotlin.runCatching {
-            afterConstruct(lpparam.classLoader.singleKeyGestureDetector()) {
-                logger.logOnDebug("SingleKeyGestureDetector constructed. ${Throwable().stackTraceToString()}")
-                val det = it.thisObject
-                logger.logOnDebug("det- $det")
-                ServiceHolder.singleKeyGestureDetector = det
+            if (interceptKeyBeforeDispatching_KeyEvent_Index == null) {
+                interceptKeyBeforeDispatching_KeyEvent_Index =
+                    ReflectionsExt.getFirstArgIndexLikeTypeForMethod(
+                        param.method as Method,
+                        KeyEvent::class.java.name
+                    )
+                logger.w("interceptKeyBeforeDispatching_KeyEvent_Index: $interceptKeyBeforeDispatching_KeyEvent_Index")
             }
-        }.onFailure {
-            logger.e(it)
-        }
 
-        kotlin.runCatching {
-            afterConstruct(lpparam.classLoader.keyCombinationManager()) {
-                logger.logOnDebug("KeyCombinationManager constructed. ${Throwable().stackTraceToString()}")
-                val manager = it.thisObject
-                logger.logOnDebug("manager- $manager")
-                ServiceHolder.keyCombinationManager = manager
+            interceptKeyBeforeDispatching_KeyEvent_Index?.let {
+                val keyEvent = param.args[it] as KeyEvent
+                val res =
+                    ShortXService.shortXContext.input.interceptKeyBeforeDispatching(keyEvent)
+                if (res != null) {
+                    logger.logOnDebug { "Set interceptKeyBeforeDispatching res: $res" }
+                    param.result = res
+                }
             }
-        }.onFailure {
-            logger.e(it)
         }
     }
 }
