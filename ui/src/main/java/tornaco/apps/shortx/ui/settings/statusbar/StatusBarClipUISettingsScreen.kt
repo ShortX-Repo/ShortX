@@ -128,7 +128,7 @@ private fun StatusBarClipUISettingsScreen(back: () -> Unit) {
 
                 ItemCard("Padding Start") {
                     Slider(value = state.settings.paddingStart.toFloat(),
-                        valueRange = 0f..30f,
+                        valueRange = 0f..100f,
                         onValueChange = {
                             viewModel.updateSettings(
                                 settings = StatusBarClipUiSettings.newBuilder(state.settings)
@@ -142,7 +142,7 @@ private fun StatusBarClipUISettingsScreen(back: () -> Unit) {
 
                 ItemCard("Padding End") {
                     Slider(value = state.settings.paddingEnd.toFloat(),
-                        valueRange = 0f..30f,
+                        valueRange = 0f..100f,
                         onValueChange = {
                             viewModel.updateSettings(
                                 settings = StatusBarClipUiSettings.newBuilder(state.settings)
