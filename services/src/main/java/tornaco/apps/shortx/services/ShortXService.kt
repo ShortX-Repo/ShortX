@@ -1610,7 +1610,6 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun isAppFeatureEnabled(feat: Int): Boolean {
             if (!isSystemReady) {
-                shortXContext.watchDog.onFatalError(Throwable(), "Check.F.1")
                 return false
             }
             return store.read(Settings.BoolSettings.EnableFeature(feat.toString()))
