@@ -240,3 +240,4 @@
 
 -dontwarn android.content.IClipboard$Stub
 -dontwarn android.content.IClipboard
+-dontwarn android.app.LoadedApk
