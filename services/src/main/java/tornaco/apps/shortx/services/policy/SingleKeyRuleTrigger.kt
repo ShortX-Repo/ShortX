@@ -69,10 +69,18 @@ class SingleKeyRuleTrigger(
         val longPressKeyCodes = keyEventRules.map { rule ->
             rule.longPressKeyCodeList
         }.flatten().distinct()
+        val doublePressKeyCodes = keyEventRules.map { rule ->
+            rule.doublePressKeyCodeList
+        }.flatten().distinct()
+        val triplePressKeyCodes = keyEventRules.map { rule ->
+            rule.triplePressKeyCodeList
+        }.flatten().distinct()
 
         logger.d("enabledKeycodes: ${this.keycodes}")
         logger.d("enabledInterceptModeKeyCodes: ${this.interceptModeKeyCodes}")
         logger.d("longPressKeyCodes: $longPressKeyCodes")
+        logger.d("doublePressKeyCodes: $doublePressKeyCodes")
+        logger.d("triplePressKeyCodes: $triplePressKeyCodes")
 
         enabledKeycodes.forEach { keyCode ->
             if (!singleKeyGestureDetector.hasRule(keyCode)) {
@@ -81,6 +89,8 @@ class SingleKeyRuleTrigger(
                         keycode = keyCode,
                         ruleService = shortXContext.rule,
                         enableLongPress = longPressKeyCodes.contains(keyCode),
+                        enableDoublePress = doublePressKeyCodes.contains(keyCode),
+                        enableTriplePress = triplePressKeyCodes.contains(keyCode),
                         interceptMode = interceptModeKeyCodes.contains(keyCode)
                     )
                 )
@@ -112,14 +122,35 @@ class SingleKeyRuleTrigger(
         get() = this.factsList.filter { it is_ AdvancedKeyEvent::class.java }
             .mapNotNull {
                 val data = (it unpack_ AdvancedKeyEvent::class.java)
-                data.isInterceptMode.select(data.keyCode, null)
+                (!data.isDisabled && data.isInterceptMode).select(data.keyCode, null)
             }.distinct()
 
     private val Rule.longPressKeyCodeList
         get() = this.factsList.filter { it is_ AdvancedKeyEvent::class.java }
             .mapNotNull {
                 val data = (it unpack_ AdvancedKeyEvent::class.java)
-                (data.gesture == KeyGesture.KeyLongPress).select(data.keyCode, null)
+                (!data.isDisabled && data.gesture == KeyGesture.KeyLongPress).select(
+                    data.keyCode,
+                    null
+                )
+            }.distinct()
+    private val Rule.doublePressKeyCodeList
+        get() = this.factsList.filter { it is_ AdvancedKeyEvent::class.java }
+            .mapNotNull {
+                val data = (it unpack_ AdvancedKeyEvent::class.java)
+                (!data.isDisabled && data.gesture == KeyGesture.KeyMultiplePress).select(
+                    data.keyCode,
+                    null
+                )
+            }.distinct()
+    private val Rule.triplePressKeyCodeList
+        get() = this.factsList.filter { it is_ AdvancedKeyEvent::class.java }
+            .mapNotNull {
+                val data = (it unpack_ AdvancedKeyEvent::class.java)
+                (!data.isDisabled && data.gesture == KeyGesture.KeyTriplePress).select(
+                    data.keyCode,
+                    null
+                )
             }.distinct()
 
 
@@ -167,6 +198,8 @@ private class SingleKeyRuleImpl(
     val keycode: Int,
     val ruleService: RuleService,
     val enableLongPress: Boolean,
+    val enableDoublePress: Boolean,
+    val enableTriplePress: Boolean,
     val interceptMode: Boolean
 ) : SingleKeyRule(
     keycode,
@@ -267,6 +300,8 @@ private class SingleKeyRuleImpl(
     }
 
     override fun getMaxMultiPressCount(): Int {
-        return 3
+        return if (enableTriplePress) 3
+        else if (enableDoublePress) 2
+        else 1
     }
 }
