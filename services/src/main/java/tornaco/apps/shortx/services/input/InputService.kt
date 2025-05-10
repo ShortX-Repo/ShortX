@@ -7,6 +7,7 @@ import com.android.internal.view.IInputContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import tornaco.apps.shortx.core.BuildPropInternal
+import tornaco.apps.shortx.core.input.InternalInputFlags.FLAG_SHORTX_INJECTION
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.clipboard.ClipboardItem
 import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
@@ -267,41 +268,46 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         val isEdgeGestureDisabled =
             !(ShortXService.serviceBinder.isAppFeatureEnabled(AppFeature.AppFeature_KeyEvent.number)
                 .also {
-                    logger.d("isAppFeatureEnabled-AppFeature_KeyEvent: $it")
+                    logger.d("interceptKeyBeforeDispatching isAppFeatureEnabled-AppFeature_KeyEvent: $it")
                 })
         if (isEdgeGestureDisabled) return null
 
+        // Check if event accessibility service.
+        if ((event.flags and FLAG_SHORTX_INJECTION) != 0) {
+            logger.logOnDebug("interceptKeyBeforeDispatching InternalInputFlags.FLAG_SHORTX_INJECTION event: $event")
+            return null
+        }
 
         val keyCode = event.keyCode
         val flags = event.flags
         val keyConsumed = -1L
         val keyNotConsumed = 0L
         if (shortXContext.rule.keyGestureController.keyCombinationTrigger.isKeyConsumed(event)) {
-            logger.w("keyConsumed is true: $event")
+            logger.w("interceptKeyBeforeDispatching keyConsumed is true: $event")
             return keyConsumed
         }
 
-        with(shortXContext.rule.keyGestureController) {
-            if (singleKeyRuleTrigger.hasAnyWithInterceptMode(
-                    event.keyCode
-                )
-                && singleKeyGestureDetector.isKeyIntercepted(
-                    event.keyCode
-                )
-            ) {
-                logger.w("isKeyConsumed singleKeyRuleTrigger-consumed: $event")
-                return keyConsumed
-            }
-        }
-
         if ((flags and KeyEvent.FLAG_FALLBACK) == 0) {
+            with(shortXContext.rule.keyGestureController) {
+                if (singleKeyRuleTrigger.hasAnyWithInterceptMode(
+                        event.keyCode
+                    )
+                    && singleKeyGestureDetector.isKeyIntercepted(
+                        event.keyCode
+                    )
+                ) {
+                    logger.w("interceptKeyBeforeDispatching isKeyConsumed singleKeyRuleTrigger-consumed: $event")
+                    return keyConsumed
+                }
+            }
+
             val now = SystemClock.uptimeMillis()
             val interceptTimeout: Long =
                 shortXContext.rule.keyGestureController.keyCombinationTrigger.getKeyInterceptTimeout(
                     keyCode
                 )
             if (now < interceptTimeout) {
-                logger.w("now < interceptTimeout is true: $event")
+                logger.w("interceptKeyBeforeDispatching now < interceptTimeout is true: $event")
                 return interceptTimeout - now
             }
         }
