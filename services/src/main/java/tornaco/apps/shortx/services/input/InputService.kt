@@ -236,8 +236,9 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
 
         val interactive = (policyFlags and FLAG_INTERACTIVE) != 0
         if ((event.flags and KeyEvent.FLAG_FALLBACK) == 0) {
+            // Pass interactive to true, to prevent un-expected KeyEvent inject issue on screen-off state.
             val res =
-                ShortXService.shortXContext.gesture.interceptKeyBeforeQueueing(event, interactive)
+                ShortXService.shortXContext.gesture.interceptKeyBeforeQueueing(event, true)
             logger.logOnDebug {
                 "consumeKeyEvent, interactive: $interactive, res: $res ${
                     KeyCodeUtil.keyEventToCodeAndActionString(
