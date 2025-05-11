@@ -5,6 +5,7 @@ import android.app.ActivityManager
 import android.app.ActivityTaskManager
 import android.app.AlertDialog
 import android.app.IActivityManager
+import android.app.IApplicationThread
 import android.app.TaskStackListener
 import android.content.ComponentName
 import android.content.Context
@@ -625,7 +626,9 @@ class AppStateService(shortXContext: ShortXContext) :
                         initialContextDataLazy = {
                             mapOf(
                                 ContextDataMapping.AppProcessRemoved.processName.name to process.processName,
-                                ContextDataMapping.AppProcessRemoved.appLabel.name to (pkgToApp(process.owner)?.label.fallbackOnEmpty(
+                                ContextDataMapping.AppProcessRemoved.appLabel.name to (pkgToApp(
+                                    process.owner
+                                )?.label.fallbackOnEmpty(
                                     ""
                                 )),
                                 ContextDataMapping.AppProcessRemoved.userId.name to process.owner.userId,
@@ -901,5 +904,13 @@ class AppStateService(shortXContext: ShortXContext) :
             val pm = context.packageManager
             activityInfo.loadLabel(pm)?.toString().orEmpty()
         }.getOrElse { "" }
+    }
+
+    fun attachApplication(appThread: IApplicationThread): IApplicationThread? {
+        if (BuildPropInternal.APP_IS_DEBUG) {
+            val appThreadProxy = AppThread.make(appThread)
+            return appThreadProxy
+        }
+        return null
     }
 }

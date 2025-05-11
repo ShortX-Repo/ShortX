@@ -1,8 +1,10 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
+import android.app.IApplicationThread
 import android.content.Context
 import android.os.ShellCommand
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.platform.Classes.amsClass
 import tornaco.apps.shortx.core.platform.Classes.amsLifecycleClass
 import tornaco.apps.shortx.core.platform.Classes.amsShellCommandClass
@@ -38,6 +40,20 @@ object AMSHook {
             }
         }.onFailure {
             logger.e(it, "hookAMS.systemReady")
+        }
+
+        if (BuildPropInternal.APP_IS_DEBUG) {
+            runCatching {
+                beforeMethod(lpparam.classLoader.amsClass(), "attachApplication") { param ->
+                    param.logParamsOnDebug()
+                    val appThread = param.args[0] as IApplicationThread
+                    ShortXService.shortXContext.appState.attachApplication(appThread)?.let {
+                        param.args[0] = it
+                    }
+                }
+            }.onFailure {
+                logger.e(it, "hookAMS.attachApplication")
+            }
         }
     }
 
