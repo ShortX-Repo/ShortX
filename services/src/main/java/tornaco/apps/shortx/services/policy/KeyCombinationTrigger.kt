@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.FactPublishData
+import tornaco.apps.shortx.services.rule.actor.impl.TakeScreenshot
 import tornaco.apps.shortx.services.rule.fact.trigger.Trigger
 
 class KeyCombinationTrigger(
@@ -69,6 +70,22 @@ class KeyCombinationTrigger(
                         }
                     }
                 })
+        }
+
+        if (disCks.isNotEmpty()) {
+            // Add Screenshot rule.
+            keyCombinationManager.addRule(
+                object : KeyCombinationManager.TwoKeysCombinationRule(
+                    KeyEvent.KEYCODE_VOLUME_DOWN,
+                    KeyEvent.KEYCODE_POWER,
+                ) {
+                    override fun execute() {
+                        super.execute()
+                        logger.w("Screenshot rule executed.")
+                        TakeScreenshot.takeScreenshot()
+                    }
+                }
+            )
         }
     }
 

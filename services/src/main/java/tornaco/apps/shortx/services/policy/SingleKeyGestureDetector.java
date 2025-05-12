@@ -338,6 +338,7 @@ public final class SingleKeyGestureDetector {
     }
 
     public boolean isKeyIntercepted(int keyCode) {
+        Log.d(TAG, "isKeyIntercepted - " + mActiveRule);
         return mActiveRule != null && mActiveRule.shouldInterceptKey(keyCode);
     }
 

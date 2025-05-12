@@ -13,7 +13,11 @@ object TakeScreenshot : Actor {
     override suspend fun handle(
         params: HandleParams
     ): Actor.Res {
-        InjectKeyCode.injectKey(KeyEvent.KEYCODE_SYSRQ)
+        takeScreenshot()
         return Actor.Res.EMPTY
+    }
+
+    fun takeScreenshot() {
+        InjectKeyCode.injectKey(KeyEvent.KEYCODE_SYSRQ)
     }
 }

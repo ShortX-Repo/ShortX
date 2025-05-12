@@ -240,7 +240,7 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
             val res =
                 ShortXService.shortXContext.gesture.interceptKeyBeforeQueueing(event, true)
             logger.logOnDebug {
-                "consumeKeyEvent, interactive: $interactive, res: $res ${
+                "interceptKeyBeforeQueueing, interactive: $interactive, res: $res ${
                     KeyCodeUtil.keyEventToCodeAndActionString(
                         event
                     )
@@ -283,25 +283,14 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         val flags = event.flags
         val keyConsumed = -1L
         val keyNotConsumed = 0L
-        if (shortXContext.rule.keyGestureController.keyCombinationTrigger.isKeyConsumed(event)) {
-            logger.w("interceptKeyBeforeDispatching keyConsumed is true: $event")
+
+        if (shortXContext.rule.keyGestureController.keyCombinationTrigger.isKeyConsumed(event)
+        ) {
+            logger.w("interceptKeyBeforeDispatching keyCombinationTrigger keyConsumed is true: $event")
             return keyConsumed
         }
 
         if ((flags and KeyEvent.FLAG_FALLBACK) == 0) {
-            with(shortXContext.rule.keyGestureController) {
-                if (singleKeyRuleTrigger.hasAnyWithInterceptMode(
-                        event.keyCode
-                    )
-                    && singleKeyGestureDetector.isKeyIntercepted(
-                        event.keyCode
-                    )
-                ) {
-                    logger.w("interceptKeyBeforeDispatching isKeyConsumed singleKeyRuleTrigger-consumed: $event")
-                    return keyConsumed
-                }
-            }
-
             val now = SystemClock.uptimeMillis()
             val interceptTimeout: Long =
                 shortXContext.rule.keyGestureController.keyCombinationTrigger.getKeyInterceptTimeout(
