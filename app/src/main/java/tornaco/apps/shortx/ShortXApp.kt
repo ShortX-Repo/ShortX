@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import tornaco.apps.shortx.core.AppGlobals
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.EntryPoint
@@ -28,7 +29,7 @@ class ShortXApp : Application() {
             HiddenApiBypass.addHiddenApiExemptions("")
         }
 
-        installFakeService()
+        installFakeServiceForDebug()
 
         val initStartTimeMillis = System.currentTimeMillis()
         EntryPoint.onCreate(this)
@@ -39,13 +40,15 @@ class ShortXApp : Application() {
         logger.w("EntryPoint.onCreate taken ${System.currentTimeMillis() - initStartTimeMillis}ms")
     }
 
-    private fun installFakeService() {
-        runBlocking {
-            val shouldInstall = Pref(applicationContext).installFakeServiceFlow.first()
-            if (shouldInstall) {
-                logger.w("Installing fake service.")
-                FakeServiceInstaller(applicationContext).install().apply {
-                    ShortXManagerNative.attachLocalService(this)
+    private fun installFakeServiceForDebug() {
+        if (BuildPropInternal.APP_IS_DEBUG) {
+            runBlocking {
+                val shouldInstall = Pref(applicationContext).installFakeServiceFlow.first()
+                if (shouldInstall) {
+                    logger.w("Installing fake service.")
+                    FakeServiceInstaller(applicationContext).install().apply {
+                        ShortXManagerNative.attachLocalService(this)
+                    }
                 }
             }
         }

@@ -6,7 +6,6 @@ import android.view.WindowManagerPolicyConstants.FLAG_INTERACTIVE
 import com.android.internal.view.IInputContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.input.InternalInputFlags.FLAG_SHORTX_INJECTION
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.clipboard.ClipboardItem
@@ -17,7 +16,6 @@ import tornaco.apps.shortx.core.util.clipboardManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.ShortXService
 import tornaco.apps.shortx.services.SystemService
-import tornaco.apps.shortx.services.android.ServiceHolder
 import tornaco.apps.shortx.services.android.ServiceRetriever
 import tornaco.apps.shortx.services.data.ClipboardStore
 import tornaco.apps.shortx.services.data.Settings
@@ -76,17 +74,6 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
                 val text = primaryClip?.getItemAt(0)?.text?.toString().orEmpty()
                 // logger.d("ClipChangedListener, onPrimaryClipChanged, text: $text")
                 onClipboardChange(text)
-            }
-        }
-
-        // Test dex maker.
-        BuildPropInternal.APP_IS_DEBUG.apply {
-            if (this) {
-                val ruleIns = SingleKeyRuleInsMaker.make()
-                ruleIns?.let {
-                    Reflections.callMethod(ServiceHolder.singleKeyGestureDetector, "addRule", it)
-                    logger.w("singleKeyGestureDetector rule added.")
-                }
             }
         }
     }

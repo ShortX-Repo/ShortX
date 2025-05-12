@@ -275,7 +275,7 @@ class AppStateService(shortXContext: ShortXContext) :
                 // After all file persisted.
                 delay(WRITE_DELAY + 100L)
 
-                Dirs.baseServerDir().deleteRecursively()
+                Dirs.baseServerDir.deleteRecursively()
                 logger.w("onShortXRemoved, all file deleted!")
                 Toast.makeText(context, i18NIns["ui.shortx.removed.toast"], Toast.LENGTH_LONG)
                     .show()
