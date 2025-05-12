@@ -166,31 +166,34 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
     }
 
     private fun waitForSystemUIClient() {
-        shortXContext.serviceLifecycle.registerLifecycleSystemReadyCallback {
-            val tag = "waitForSystemUIClient"
-            systemServiceScope.launchSafety(tag) {
-                val hasSystemUIClient = waitUntil(60 * 1000) {
-                    logger.w("Check systemUIClient at the $it time.")
-                    systemUIClient != null
-                }
-                logger.w("waitForSystemUIClient hasSystemUIClient: $hasSystemUIClient")
-                if (!hasSystemUIClient) {
-                    shortXContext.notification.postByFallback(
-                        PostNotification.newBuilder()
-                            .setTag(tag)
-                            .setTitle(i18NIns["ui.n.wait.for.systemui.title"])
-                            .setMessage(i18NIns["ui.n.wait.for.systemui.message"])
-                            .setId(tag)
-                            .setSmallIcon(Remix.System.error_warning_line)
-                            .setIsImportant(true)
-                            .setVibrate(true)
-                            .build()
-                    )
-                }
+        shortXContext.serviceLifecycle.registerLifecycleSystemReadyCallback(object :
+            ICallback.Stub() {
+            override fun receive(p0: ByteArrayWrapper?) {
+                val tag = "waitForSystemUIClient"
+                systemServiceScope.launchSafety(tag) {
+                    val hasSystemUIClient = waitUntil(60 * 1000) {
+                        logger.w("Check systemUIClient at the $it time.")
+                        systemUIClient != null
+                    }
+                    logger.w("waitForSystemUIClient hasSystemUIClient: $hasSystemUIClient")
+                    if (!hasSystemUIClient) {
+                        shortXContext.notification.postByFallback(
+                            PostNotification.newBuilder()
+                                .setTag(tag)
+                                .setTitle(i18NIns["ui.n.wait.for.systemui.title"])
+                                .setMessage(i18NIns["ui.n.wait.for.systemui.message"])
+                                .setId(tag)
+                                .setSmallIcon(Remix.System.error_warning_line)
+                                .setIsImportant(true)
+                                .setVibrate(true)
+                                .build()
+                        )
+                    }
 
-                publishSystemReadyFact()
+                    publishSystemReadyFact()
+                }
             }
-        }
+        })
     }
 
     private fun publishSystemReadyFact() {
@@ -1626,6 +1629,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                     shortXContext.gesture.notifyGestureSettingsChanged()
                 }
             }
+        }
+
+        override fun registerSystemReadyListener(callback: ICallback) {
+            shortXContext.serviceLifecycle.registerLifecycleSystemReadyCallback(callback)
+        }
+
+        override fun unRegisterSystemReadyListener(callback: ICallback) {
+            shortXContext.serviceLifecycle.unregisterLifecycleSystemReadyCallback(callback)
         }
 
         override fun addToggle(toggle: ByteArrayWrapper) {

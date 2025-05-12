@@ -1,17 +1,21 @@
 package tornaco.apps.shortx.services
 
 import android.content.Context
+import android.os.RemoteCallbackList
+import tornaco.apps.shortx.core.ICallback
+import tornaco.apps.shortx.core.logOnDebug
+import tornaco.apps.shortx.core.rule.action.emptyByteArrayWrapper
 import tornaco.apps.shortx.core.util.Logger
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicBoolean
 
 class ServiceLifecycle(private val shortXContext: ShortXContext) {
     private val logger = Logger("ServiceLifecycle")
     private val exe = Executors.newSingleThreadExecutor()
 
-    private val lifecycleSystemReadyCallbacks = mutableListOf<() -> Unit>()
+    private val lifecycleSystemReadyCallbacks = RemoteCallbackList<ICallback>()
 
-    var isSystemReadyCalled: Boolean = false
-        private set
+    val isSystemReadyCalled: AtomicBoolean = AtomicBoolean(false)
 
     fun start(context: Context) {
         logger.d("start")
@@ -25,7 +29,6 @@ class ServiceLifecycle(private val shortXContext: ShortXContext) {
         }
     }
 
-    @Synchronized
     fun systemReady() {
         logger.d("systemReady")
         exe.execute {
@@ -35,8 +38,23 @@ class ServiceLifecycle(private val shortXContext: ShortXContext) {
                 val taken = System.currentTimeMillis() - startTime
                 logger.i("systemReady---> $it take $taken(ms)")
             }
-            isSystemReadyCalled = true
-            lifecycleSystemReadyCallbacks.forEach { it.invoke() }
+            isSystemReadyCalled.set(true)
+            notifySystemReadyCallback()
+        }
+    }
+
+    private fun notifySystemReadyCallback() {
+        logger.logOnDebug("notifySystemReadyCallback.")
+        synchronized(lifecycleSystemReadyCallbacks) {
+            lifecycleSystemReadyCallbacks.broadcast {
+                runCatching {
+                    it.receive(
+                        emptyByteArrayWrapper
+                    )
+                }.onFailure {
+                    logger.e(it, "notifySystemReadyCallback")
+                }
+            }
         }
     }
 
@@ -76,12 +94,21 @@ class ServiceLifecycle(private val shortXContext: ShortXContext) {
         }
     }
 
-    @Synchronized
-    fun registerLifecycleSystemReadyCallback(callback: () -> Unit) {
-        if (isSystemReadyCalled) {
-            callback()
+    fun registerLifecycleSystemReadyCallback(callback: ICallback) {
+        if (isSystemReadyCalled.get()) {
+            kotlin.runCatching {
+                callback.receive(emptyByteArrayWrapper)
+            }.onFailure {
+                logger.e(it, "notify LifecycleSystemReadyCallback")
+            }
         } else {
-            lifecycleSystemReadyCallbacks.add(callback)
+            synchronized(lifecycleSystemReadyCallbacks) {
+                lifecycleSystemReadyCallbacks.register(callback)
+            }
         }
+    }
+
+    fun unregisterLifecycleSystemReadyCallback(callback: ICallback) {
+        lifecycleSystemReadyCallbacks.unregister(callback)
     }
 }

@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.fact.AnyFact
 import tornaco.apps.shortx.core.proto.fact.SystemReady
@@ -21,6 +22,7 @@ import tornaco.apps.shortx.core.rule.DAObserver
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.RuleObserver
 import tornaco.apps.shortx.core.rule.ToggleObserver
+import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
 import java.util.concurrent.atomic.AtomicBoolean
@@ -47,7 +49,7 @@ class FactPublishInterceptor(
     private val protoUrlCacheFlow = changeTime
         .debounce(BUILD_CACHE_DELAY_MS)
         .filter {
-            shortXContext.serviceLifecycle.isSystemReadyCalled
+            shortXContext.serviceLifecycle.isSystemReadyCalled.get()
         }
         .map {
             buildCache()
@@ -104,9 +106,12 @@ class FactPublishInterceptor(
             }
         }
 
-        shortXContext.serviceLifecycle.registerLifecycleSystemReadyCallback {
-            postInvalidate()
-        }
+        shortXContext.serviceLifecycle.registerLifecycleSystemReadyCallback(object :
+            ICallback.Stub() {
+            override fun receive(p0: ByteArrayWrapper?) {
+                postInvalidate()
+            }
+        })
     }
 
     // True: block.

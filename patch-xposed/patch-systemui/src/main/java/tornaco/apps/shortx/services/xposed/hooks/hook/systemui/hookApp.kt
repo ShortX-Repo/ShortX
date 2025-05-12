@@ -5,6 +5,7 @@ import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.AppGlobals
 import tornaco.apps.shortx.core.BuildPropInternal
+import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.IShortX
 import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.ShortXManagerNative
@@ -102,24 +103,29 @@ fun SystemUIHook.hookApp(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runC
                 BuildPropInternal.APP_PACKAGE_NAME
             )
 
-            // Attach client, let Service known SystemUI is up.
-            shortx.attachSystemUIClient(
-                SystemUIClient(
-                    cv = CVImpl(app),
-                    ocr = OCRImpl(app),
-                    su = LibShKtShellImpl,
-                    poster = createNotificationPoster(shortx, app),
-                    tile = QSTileHostImpl(shortx)
-                )
-            )
+            shortx.registerSystemReadyListener(object : ICallback.Stub() {
+                override fun receive(p0: ByteArrayWrapper?) {
+                    logger.w("System is ready, GO!!!")
+                    // Attach client, let Service known SystemUI is up.
+                    shortx.attachSystemUIClient(
+                        SystemUIClient(
+                            cv = CVImpl(app),
+                            ocr = OCRImpl(app),
+                            su = LibShKtShellImpl,
+                            poster = createNotificationPoster(shortx, app),
+                            tile = QSTileHostImpl(shortx)
+                        )
+                    )
 
-            installInputMonitor(app)
+                    installInputMonitor(app)
 
-            CustomHookApp.hookApp(
-                lpparam.classLoader,
-                PackageNames.systemUI,
-                MethodHookLifecycle.LoadedPackage
-            )
+                    CustomHookApp.hookApp(
+                        lpparam.classLoader,
+                        PackageNames.systemUI,
+                        MethodHookLifecycle.LoadedPackage
+                    )
+                }
+            })
         }
     }
 }.onFailure {
