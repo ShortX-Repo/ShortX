@@ -1609,8 +1609,12 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         }
 
         override fun isAppFeatureEnabled(feat: Int): Boolean {
-            if (!isSystemReady) {
+            if (!isStarted) {
+                logger.e("Access isAppFeatureEnabled - $feat, while system not started.")
                 return false
+            }
+            if (!isSystemReady) {
+                logger.w("Access isAppFeatureEnabled - $feat, while system not ready.")
             }
             return store.read(Settings.BoolSettings.EnableFeature(feat.toString()))
         }
