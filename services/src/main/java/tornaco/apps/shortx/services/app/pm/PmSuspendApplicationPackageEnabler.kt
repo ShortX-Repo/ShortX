@@ -46,19 +46,6 @@ class PmSuspendApplicationPackageEnabler(val context: Context) : ApplicationPack
     }
 
     private fun setPackageSuspend(pkg: AppPkg, suspend: Boolean) {
-        kotlin.runCatching {
-            logger.i("PmSuspendApplicationPackageEnabler setPackageSuspend: $pkg $suspend")
-            pm.setPackagesSuspendedAsUser(
-                arrayOf(pkg.pkgName),
-                suspend,
-                null,
-                null,
-                null,
-                "android",
-                pkg.userId
-            )
-        }.onFailure {
-            logger.e(it, "setPackageSuspend error")
-        }
+        PMSFuncs.setPackageSuspend(pkg, suspend)
     }
 }
