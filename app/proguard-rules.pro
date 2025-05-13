@@ -11,6 +11,8 @@
 -keep class tornaco.apps.shortx.core.proto** {*;}
 # Exclude protobuf classes
 -keep class com.google.protobuf.** { *; }
+# Script API
+-keep class tornaco.apps.shortx.core.rule.script.api** {*;}
 
 -keep class ** implements android.os.Parcelable { *; }
 -keep class ** implements android.os.IInterface { *; }

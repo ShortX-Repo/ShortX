@@ -10,7 +10,7 @@ import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.isList
 import tornaco.apps.shortx.core.rule.pack_
-import tornaco.apps.shortx.core.rule.script.ScriptShortXApi
+import tornaco.apps.shortx.core.rule.script.api.ScriptShortXApi
 import tornaco.apps.shortx.core.rule.valueList
 import tornaco.apps.shortx.core.rule.valueString
 import tornaco.apps.shortx.services.ShortXContext
