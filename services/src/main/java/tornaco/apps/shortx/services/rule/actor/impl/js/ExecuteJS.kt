@@ -118,7 +118,7 @@ object ExecuteJS : Actor {
         val actionEvaluator = Context.javaToJS(scriptActionEvaluator, scope)
         ScriptableObject.putProperty(scope, "actionEvaluator", actionEvaluator)
 
-        val scriptShortXApi = ScriptShortXApi(
+        val scriptShortXApi = ScriptShortXApiImpl(
             shortXContext = shortXContext,
             context = androidContext,
             evaluateContext = evaluateContext ?: EvaluateContext.getDefaultInstance()

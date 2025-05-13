@@ -23,7 +23,7 @@ import tornaco.apps.shortx.core.rule.valueList
 import tornaco.apps.shortx.core.rule.valueString
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
-import tornaco.apps.shortx.services.rule.actor.impl.js.ScriptShortXApi
+import tornaco.apps.shortx.services.rule.actor.impl.js.ScriptShortXApiImpl
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.Handle
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -47,7 +47,7 @@ class MVELExecutor(
             put("context", context)
             put(
                 "shortx",
-                ScriptShortXApi(
+                ScriptShortXApiImpl(
                     shortXContext = shortXContext,
                     context = context,
                     evaluateContext = evaluateContext ?: EvaluateContext.getDefaultInstance()
