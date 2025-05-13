@@ -118,6 +118,14 @@ object ExecuteJS : Actor {
         val actionEvaluator = Context.javaToJS(scriptActionEvaluator, scope)
         ScriptableObject.putProperty(scope, "actionEvaluator", actionEvaluator)
 
+        val scriptShortXApi = ScriptShortXApi(
+            shortXContext = shortXContext,
+            context = androidContext,
+            evaluateContext = evaluateContext ?: EvaluateContext.getDefaultInstance()
+        )
+        val shortx = Context.javaToJS(scriptShortXApi, scope)
+        ScriptableObject.putProperty(scope, "shortx", shortx)
+
         val wrappedConsole = Context.javaToJS(KotlinConsole, scope)
         ScriptableObject.putProperty(scope, "console", wrappedConsole)
 
