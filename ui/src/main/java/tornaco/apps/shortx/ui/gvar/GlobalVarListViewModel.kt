@@ -28,6 +28,7 @@ import java.nio.charset.Charset
 import javax.inject.Inject
 
 data class GlobalVarUiItem(val globalVar: GlobalVar, val createdBy: CreatedBy)
+data class GlobalVarGroup(val createdBy: CreatedBy, val vars: List<GlobalVarUiItem>)
 
 sealed interface CreatedBy {
     fun getLabel(i18n: I18N): String
@@ -58,13 +59,15 @@ sealed interface CreatedBy {
 }
 
 data class GlobalVarListState(
-    val globalVars: List<GlobalVarUiItem> = emptyList()
+    val globalVars: List<GlobalVarUiItem> = emptyList(),
+    val groups: List<GlobalVarGroup> = emptyList(),
 )
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class GlobalVarListViewModel @Inject constructor(@ApplicationContext context: Context) :
     ShortXContextViewModel<GlobalVarListState>(context, { GlobalVarListState() }) {
+
     private val globalVarObs = object : IGlobalVarObserver.Stub() {
         override fun onAddOrUpdate(id: String?) {
             loadState()
@@ -86,10 +89,12 @@ class GlobalVarListViewModel @Inject constructor(@ApplicationContext context: Co
                 val createdBy: CreatedBy = createdByProto.protoAnyToCreateBy()
                 GlobalVarUiItem(it, createdBy)
             }
-            viewModelScope.launch {
-                updateState {
-                    copy(globalVars = globalVars)
+            val groups = globalVars.groupBy { it.createdBy }
+                .map {
+                    GlobalVarGroup(it.key, it.value)
                 }
+            updateState {
+                copy(globalVars = globalVars, groups = groups)
             }
         }
     }
