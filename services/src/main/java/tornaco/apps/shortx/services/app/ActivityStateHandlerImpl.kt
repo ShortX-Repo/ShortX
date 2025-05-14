@@ -2,16 +2,21 @@ package tornaco.apps.shortx.services.app
 
 import android.content.ComponentName
 import android.content.Context
+import android.os.RemoteCallbackList
 import kotlinx.coroutines.flow.MutableStateFlow
+import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.appComponentToString
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.common.AppPkgList
 import tornaco.apps.shortx.core.proto.fact.ActivityDestroyed
 import tornaco.apps.shortx.core.proto.fact.ActivityStarted
 import tornaco.apps.shortx.core.proto.fact.ActivityStopped
 import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
+import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.toAppComponent
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
@@ -43,6 +48,8 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
             FuncV28(context)
         }
     }
+
+    private val frontAppChangeListeners = RemoteCallbackList<ICallback>()
 
     fun isFront(appPkg: AppPkg): Boolean {
         val topVisibleActivities = func.getTopVisibleActivities()
@@ -266,6 +273,41 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
         }
         logger.i("----> Update _currentResumedActivities to: ${topVisibleActivities.map { it.appComponentToString() }}")
         _currentResumedActivities.value = topVisibleActivities
+
+        // Front changed.
+        if (addedApps.isNotEmpty() || removedApps.isNotEmpty()) {
+            broadcastFrontAppChanged()
+        }
+    }
+
+    fun registerFrontAppChangeListener(callback: ICallback) {
+        synchronized(frontAppChangeListeners) {
+            frontAppChangeListeners.register(callback)
+        }
+    }
+
+    fun unRegisterFrontAppChangeListener(callback: ICallback) {
+        synchronized(frontAppChangeListeners) {
+            frontAppChangeListeners.unregister(callback)
+        }
+    }
+
+    private fun broadcastFrontAppChanged() {
+        val appPkgList = AppPkgList.newBuilder()
+            .addAllAppPkg(currentFrontAppPkgs)
+            .build()
+        logger.logOnDebug {
+            "broadcastFrontAppChanged: $appPkgList"
+        }
+        synchronized(frontAppChangeListeners) {
+            frontAppChangeListeners.broadcast {
+                runCatching {
+                    it.receive(ByteArrayWrapper(appPkgList.toByteArray()))
+                }.onFailure {
+                    logger.e(it, "broadcastFrontAppChanged")
+                }
+            }
+        }
     }
 }
 

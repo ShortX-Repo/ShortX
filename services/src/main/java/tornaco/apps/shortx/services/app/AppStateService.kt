@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildPropInternal
+import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.os.UidObserverCompat
@@ -912,5 +913,13 @@ class AppStateService(shortXContext: ShortXContext) :
             return appThreadProxy
         }
         return null
+    }
+
+    fun registerFrontAppChangeListener(callback: ICallback) {
+        activityState.registerFrontAppChangeListener(callback)
+    }
+
+    fun unRegisterFrontAppChangeListener(callback: ICallback) {
+        activityState.unRegisterFrontAppChangeListener(callback)
     }
 }

@@ -8,6 +8,8 @@ import android.view.InputEvent
 import android.view.MotionEvent
 import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.logOnDebug
+import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.common.AppPkgList
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.Gesture
@@ -66,7 +68,14 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
     private val interceptMotionPortRects = mutableListOf<RectF>()
     private val interceptMotionLandRects = mutableListOf<RectF>()
 
-    val shouldDetectMotion get() = isGestureEnabledQuick && fireableScreenGestures.isNotEmpty() || fireableEdgeGestures.isNotEmpty()
+    private val requiredFrontApps = mutableSetOf<AppPkg>()
+    private var requiredFrontAppAny: Boolean = false
+    private var requiredFrontAppMatchQuick: Boolean = false
+
+    val shouldDetectMotion
+        get() = isGestureEnabledQuick
+                && requiredFrontAppMatchQuick
+                && (fireableScreenGestures.isNotEmpty() || fireableEdgeGestures.isNotEmpty())
 
     private var isGestureEnabledQuick = false
 
@@ -101,6 +110,27 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
                 super.onDAChanged(id)
                 readGestureFireState("DA changed")
                 updateShouldInterceptMotionEventRect()
+            }
+        })
+
+        shortx.registerFrontAppChangeListener(object : ICallback.Stub() {
+            override fun receive(data: ByteArrayWrapper) {
+                logger.w("FrontAppChange.")
+                if (requiredFrontAppAny) {
+                    requiredFrontAppMatchQuick = true
+                } else {
+                    kotlin.runCatching {
+                        val appPkgList = AppPkgList.parseFrom(data.byteData)
+                        logger.logOnDebug("FrontAppChange: $appPkgList")
+                        requiredFrontAppMatchQuick =
+                            appPkgList.appPkgList.isNotEmpty() && requiredFrontApps.any {
+                                appPkgList.appPkgList.contains(it)
+                            }
+                    }.onFailure {
+                        logger.e(it, "FrontAppChange received.")
+                    }
+                }
+                logger.w("requiredFrontAppMatchQuick - $requiredFrontAppMatchQuick")
             }
         })
 
@@ -241,6 +271,7 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         logger.i("updateShouldInterceptMotionEventRect, screenSize: $screenSize")
         val portRects = mutableListOf<RectF>()
         val landRects = mutableListOf<RectF>()
+        val requiredApps = mutableSetOf<AppPkg>()
 
         shortx.getAllRules().filter { it.isEnabled }.forEach {
             it.factsList.forEach { protoFact ->
@@ -267,18 +298,33 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
                             )
                         )
                     }
+
+                    if (!eg.isDisabled) {
+                        // For all.
+                        if (eg.constraintFrontAppsList.isEmpty()) {
+                            requiredFrontAppAny = true
+                            requiredFrontAppMatchQuick = true
+                        } else {
+                            requiredApps.addAll(eg.constraintFrontAppsList)
+                        }
+                    }
                 }
             }
         }
 
         logger.d("updateShouldInterceptMotionEventRect, portRects: $portRects")
         logger.d("updateShouldInterceptMotionEventRect, landRects: $landRects")
+        logger.d("updateShouldInterceptMotionEventRect, requiredFrontAppAny: $requiredFrontAppAny")
+        logger.d("updateShouldInterceptMotionEventRect, requiredApps: $requiredApps")
 
         this.interceptMotionLandRects.clear()
         this.interceptMotionLandRects.addAll(landRects)
 
         this.interceptMotionPortRects.clear()
         this.interceptMotionPortRects.addAll(portRects)
+
+        this.requiredFrontApps.clear()
+        this.requiredFrontApps.addAll(requiredApps)
     }
 
     fun reportEvent(event: InputEvent) {

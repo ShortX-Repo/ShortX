@@ -1639,6 +1639,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.serviceLifecycle.unregisterLifecycleSystemReadyCallback(callback)
         }
 
+        override fun registerFrontAppChangeListener(callback: ICallback) {
+            shortXContext.appState.registerFrontAppChangeListener(callback)
+        }
+
+        override fun unRegisterFrontAppChangeListener(callback: ICallback) {
+            shortXContext.appState.unRegisterFrontAppChangeListener(callback)
+        }
+
         override fun addToggle(toggle: ByteArrayWrapper) {
             enforceCallingPermissions()
             v(context) {
