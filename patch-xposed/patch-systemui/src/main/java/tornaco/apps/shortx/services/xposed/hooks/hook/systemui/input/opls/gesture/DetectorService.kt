@@ -15,6 +15,7 @@ import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.rule.DAObserver
+import tornaco.apps.shortx.core.rule.IPkgSetObserver
 import tornaco.apps.shortx.core.rule.RuleObserver
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.is_
@@ -69,6 +70,7 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
     private val interceptMotionLandRects = mutableListOf<RectF>()
 
     private val requiredFrontApps = mutableSetOf<AppPkg>()
+    private val currentFrontApps = mutableSetOf<AppPkg>()
     private var requiredFrontAppAny: Boolean = false
     private var requiredFrontAppMatchQuick: Boolean = false
 
@@ -84,7 +86,7 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
             override fun receive(data: ByteArrayWrapper?) {
                 logger.w("GestureSettings changed.")
                 readAllSettings()
-                updateShouldInterceptMotionEventRect()
+                updateQuickCheckDataOnRuleChange()
                 afterGestureSettingsChangedObs()
             }
         })
@@ -101,7 +103,7 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
             override fun onRuleChanged(id: String) {
                 super.onRuleChanged(id)
                 readGestureFireState("Rule changed")
-                updateShouldInterceptMotionEventRect()
+                updateQuickCheckDataOnRuleChange()
             }
         })
 
@@ -109,7 +111,19 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
             override fun onDAChanged(id: String) {
                 super.onDAChanged(id)
                 readGestureFireState("DA changed")
-                updateShouldInterceptMotionEventRect()
+                updateQuickCheckDataOnRuleChange()
+            }
+        })
+
+        shortx.registerPkgSetObs(object : IPkgSetObserver.Stub() {
+            override fun onAddOrUpdate(id: String?) {
+                readGestureFireState("PkgSet changed")
+                updateQuickCheckDataOnRuleChange()
+            }
+
+            override fun onDelete(id: String?) {
+                readGestureFireState("PkgSet changed")
+                updateQuickCheckDataOnRuleChange()
             }
         })
 
@@ -121,11 +135,12 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
                 } else {
                     kotlin.runCatching {
                         val appPkgList = AppPkgList.parseFrom(data.byteData)
-                        logger.logOnDebug("FrontAppChange: $appPkgList")
-                        requiredFrontAppMatchQuick =
-                            appPkgList.appPkgList.isNotEmpty() && requiredFrontApps.any {
-                                appPkgList.appPkgList.contains(it)
-                            }
+                        synchronized(currentFrontApps) {
+                            currentFrontApps.clear()
+                            currentFrontApps.addAll(appPkgList.appPkgList)
+                            checkFrontAppPkg("FrontAppChange")
+                        }
+                        logger.logOnDebug("currentFrontApps: $currentFrontApps")
                     }.onFailure {
                         logger.e(it, "FrontAppChange received.")
                     }
@@ -136,7 +151,7 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
 
         readAllSettings()
         readGestureFireState("Init")
-        updateShouldInterceptMotionEventRect()
+        updateQuickCheckDataOnRuleChange()
     }
 
     fun shouldInstallMonitor(): Boolean {
@@ -266,15 +281,17 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         return false
     }
 
-    private fun updateShouldInterceptMotionEventRect() {
+    private fun updateQuickCheckDataOnRuleChange() {
         val screenSize = shortx.getScreenSize()
-        logger.i("updateShouldInterceptMotionEventRect, screenSize: $screenSize")
+        logger.i("updateQuickCheckDataOnRuleChange, screenSize: $screenSize")
         val portRects = mutableListOf<RectF>()
         val landRects = mutableListOf<RectF>()
         val requiredApps = mutableSetOf<AppPkg>()
+        // Reset.
+        requiredFrontAppAny = false
 
-        shortx.getAllRules().filter { it.isEnabled }.forEach {
-            it.factsList.forEach { protoFact ->
+        shortx.getAllRules().filter { it.isEnabled }.forEach { rule ->
+            rule.factsList.forEach { protoFact ->
                 val isEG = protoFact is_ EdgeGesture::class.java
                 if (isEG) {
                     val eg = protoFact unpack_ EdgeGesture::class.java
@@ -301,21 +318,26 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
 
                     if (!eg.isDisabled) {
                         // For all.
-                        if (eg.constraintFrontAppsList.isEmpty()) {
+                        if (eg.appsList.isEmpty() && eg.pkgSetsList.isEmpty()) {
                             requiredFrontAppAny = true
                             requiredFrontAppMatchQuick = true
                         } else {
-                            requiredApps.addAll(eg.constraintFrontAppsList)
+                            requiredApps.addAll(eg.appsList)
+                            val pkgSetApps = eg.pkgSetsList.flatMap {
+                                shortx.getPkgSetByLabel(it)?.appPkgsList ?: emptyList()
+                            }
+                            requiredApps.addAll(pkgSetApps)
                         }
                     }
                 }
             }
         }
 
-        logger.d("updateShouldInterceptMotionEventRect, portRects: $portRects")
-        logger.d("updateShouldInterceptMotionEventRect, landRects: $landRects")
-        logger.d("updateShouldInterceptMotionEventRect, requiredFrontAppAny: $requiredFrontAppAny")
-        logger.d("updateShouldInterceptMotionEventRect, requiredApps: $requiredApps")
+        logger.d("updateQuickCheckDataOnRuleChange, portRects: $portRects")
+        logger.d("updateQuickCheckDataOnRuleChange, landRects: $landRects")
+        logger.d("updateQuickCheckDataOnRuleChange, requiredFrontAppAny: $requiredFrontAppAny")
+        logger.d("updateQuickCheckDataOnRuleChange, requiredFrontAppMatchQuick: $requiredFrontAppMatchQuick")
+        logger.d("updateQuickCheckDataOnRuleChange, requiredApps: $requiredApps")
 
         this.interceptMotionLandRects.clear()
         this.interceptMotionLandRects.addAll(landRects)
@@ -325,6 +347,15 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
 
         this.requiredFrontApps.clear()
         this.requiredFrontApps.addAll(requiredApps)
+        checkFrontAppPkg("updateQuickCheckDataOnRuleChange")
+    }
+
+    private fun checkFrontAppPkg(reason: String) {
+        logger.d("checkFrontAppPkg: $reason")
+        requiredFrontAppMatchQuick =
+            requiredFrontAppAny || (currentFrontApps.isNotEmpty() && requiredFrontApps.any {
+                currentFrontApps.contains(it)
+            })
     }
 
     fun reportEvent(event: InputEvent) {

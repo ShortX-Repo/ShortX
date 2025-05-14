@@ -79,7 +79,7 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
     val edgeGestureSelectorState = rememberEdgeGestureSelectorState(
         selected = { eg ->
-            addFact(Fact.EdgeGesture(eg.first, eg.second, eg.third))
+            addFact(Fact.EdgeGesture(eg.edge, eg.gesture, eg.isIntercept, eg.apps, eg.pkgSet))
         },
         showEdgeHint = {
             shortXManager.showEdgeHint(listOf(it))
@@ -285,11 +285,7 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
             }
 
             Fact.EdgeGesture::class -> {
-                edgeGestureSelectorState.show(
-                    edge = source.getFactAs<Fact.EdgeGesture>()?.edge,
-                    gesture = source.getFactAs<Fact.EdgeGesture>()?.gesture,
-                    isIntercept = source.getFactAs<Fact.EdgeGesture>()?.isIntercept,
-                )
+                edgeGestureSelectorState.show(source.getFactAs())
                 true
             }
 
