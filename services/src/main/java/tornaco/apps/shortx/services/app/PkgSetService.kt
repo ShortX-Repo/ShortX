@@ -40,6 +40,29 @@ class PkgSetService(shortXContext: ShortXContext) : SystemService(shortXContext,
                 addPkgSet(it.getPkgSet(shortXContext))
             }
         }
+
+        shortXContext.appState.onPackageAdded { added ->
+            // Prebuilt.
+            broadcastPkgSetChanged(PrebuiltStablePkgSet.User.label.name)
+            broadcastPkgSetChanged(PrebuiltStablePkgSet.All.label.name)
+            // User set.
+            shortXContext.pkgSet.getAllPkgSets(false).filter {
+                it.appPkgsList.contains(added.pkg)
+            }.forEach {
+                broadcastPkgSetChanged(it.label)
+            }
+        }
+        shortXContext.appState.onPackageRemoved { removed ->
+            // Prebuilt.
+            broadcastPkgSetChanged(PrebuiltStablePkgSet.User.label.name)
+            broadcastPkgSetChanged(PrebuiltStablePkgSet.All.label.name)
+
+            shortXContext.pkgSet.getAllPkgSets(false).filter {
+                it.appPkgsList.contains(removed.pkg)
+            }.forEach {
+                broadcastPkgSetChanged(it.label)
+            }
+        }
     }
 
     fun addPkgSet(set: PkgSet): Boolean {
@@ -49,12 +72,17 @@ class PkgSetService(shortXContext: ShortXContext) : SystemService(shortXContext,
         }
         pkgSetsStore.addPkgSet(set)
 
-        pkgSetObs.broadcast {
-            kotlin.runCatching { it.onAddOrUpdate(set.label) }
-                .onFailure { logger.e(it, "Call onAddOrUpdate") }
-        }
+        broadcastPkgSetChanged(set.label)
 
         return true
+    }
+
+    private fun broadcastPkgSetChanged(label: String) {
+        logger.d("broadcastPkgSetChanged- $label")
+        pkgSetObs.broadcast {
+            kotlin.runCatching { it.onAddOrUpdate(label) }
+                .onFailure { logger.e(it, "Call onAddOrUpdate") }
+        }
     }
 
     fun deletePkgSet(label: String) {
@@ -73,10 +101,12 @@ class PkgSetService(shortXContext: ShortXContext) : SystemService(shortXContext,
             ?: pkgSetsStore.getPkgSet(label)
     }
 
-    fun getAllPkgSets(): List<PkgSet> {
+    fun getAllPkgSets(withPrebuilt: Boolean = true): List<PkgSet> {
         return pkgSetsStore.getAllPkgSets().toMutableList().apply {
-            prebuiltStablePkgSets.forEach {
-                add(it.getPkgSet(shortXContext))
+            if (withPrebuilt) {
+                prebuiltStablePkgSets.forEach {
+                    add(it.getPkgSet(shortXContext))
+                }
             }
         }
     }
