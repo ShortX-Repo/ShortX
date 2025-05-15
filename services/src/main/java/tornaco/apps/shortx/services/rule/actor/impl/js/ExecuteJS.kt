@@ -31,7 +31,6 @@ import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.Interceptors
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
-import tornaco.apps.shortx.services.rule.actor.impl.ScriptActionEvaluator
 
 
 object ExecuteJS : Actor {
@@ -108,20 +107,13 @@ object ExecuteJS : Actor {
         val wrappedAndroidContext = Context.javaToJS(androidContext, scope)
         ScriptableObject.putProperty(scope, "context", wrappedAndroidContext)
 
-        val scriptActionEvaluator = ScriptActionEvaluator(
+        val scriptShortXApi = ScriptShortXApiImpl(
             shortXContext = shortXContext,
+            context = androidContext,
             evaluateContext = evaluateContext ?: EvaluateContext.getDefaultInstance(),
             initialContextData = contextData.map.mapValues { it.value ?: "" },
             localVars = localVars,
             parameterInputs = parameterInputs
-        )
-        val actionEvaluator = Context.javaToJS(scriptActionEvaluator, scope)
-        ScriptableObject.putProperty(scope, "actionEvaluator", actionEvaluator)
-
-        val scriptShortXApi = ScriptShortXApiImpl(
-            shortXContext = shortXContext,
-            context = androidContext,
-            evaluateContext = evaluateContext ?: EvaluateContext.getDefaultInstance()
         )
         val shortx = Context.javaToJS(scriptShortXApi, scope)
         ScriptableObject.putProperty(scope, "shortx", shortx)
