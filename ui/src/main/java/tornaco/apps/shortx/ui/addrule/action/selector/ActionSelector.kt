@@ -1,4 +1,7 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@file:OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class,
+    ExperimentalMaterial3ExpressiveApi::class
+)
 
 package tornaco.apps.shortx.ui.addrule.action.selector
 
@@ -10,7 +13,10 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -28,11 +34,9 @@ import tornaco.apps.shortx.ui.addrule.base.ActionCategory
 import tornaco.apps.shortx.ui.addrule.base.rememberCategoryState
 import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.SearchBar
 import tornaco.apps.shortx.ui.base.SearchBarState
 import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
-import tornaco.apps.shortx.ui.base.ShortXFilterChip
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
@@ -96,16 +100,22 @@ fun ActionSelector(close: () -> Unit, onSelected: (Action) -> Unit) {
                             .padding(horizontal = 8.dp),
                         horizontalArrangement = Arrangement.Start
                     ) {
-                        ActionCategory.entries.forEach {
-                            ShortXFilterChip(
-                                selected = selectedFilter == it,
-                                label = {
-                                    Text(text = LocalI18N.current[it.i18NKey])
+                        ActionCategory.entries.forEachIndexed { index, ac ->
+                            OutlinedToggleButton(
+                                checked = selectedFilter == ac,
+                                onCheckedChange = {
+                                    selectorVM.selectFilterCategory(ac)
                                 },
-                                onClick = {
-                                    selectorVM.selectFilterCategory(it)
-                                })
-                            MediumSpacer()
+                                modifier = Modifier.padding(start = 2.dp),
+                                shapes =
+                                    when (index) {
+                                        0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                                        ActionCategory.entries.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                                        else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                                    }
+                            ) {
+                                Text(text = LocalI18N.current[ac.i18NKey])
+                            }
                         }
                     }
 
