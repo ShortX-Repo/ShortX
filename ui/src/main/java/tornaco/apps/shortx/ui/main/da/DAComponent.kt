@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -321,10 +321,10 @@ fun RunningIndicator(
                 cap = StrokeCap.Round
             )
 
-            CircularWavyProgressIndicator(
+            CircularProgressIndicator(
                 modifier = Modifier.size(Dimens.DAIconSize),
                 color = iconColor,
-                stroke = circularIndicatorStroke,
+                strokeWidth = 6.dp,
                 trackColor = iconColor.copy(alpha = ActionColorBgAlpha)
             )
             IconButton(onClick = {
