@@ -190,7 +190,8 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         gestureAreaWidthDp = shortx.getGestureAreaSize()
         gestureLengthScale = shortx.getSwipeLengthScale()
         isGestureRecording = shortx.isGestureRecording()
-        GlobalSettings.setEdgeGestureEnabled(shortx.isAppFeatureEnabled(AppFeature.AppFeature_EdgeGesture.number))
+        GlobalSettings.isEdgeGestureEnabled =
+            shortx.isAppFeatureEnabled(AppFeature.AppFeature_EdgeGesture.number)
         isGestureEnabledQuick = GlobalSettings.isEdgeGestureEnabled
 
         logger.w("swipeDistanceThresholdDp: $swipeDistanceThresholdDp")
