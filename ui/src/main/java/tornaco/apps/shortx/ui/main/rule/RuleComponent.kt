@@ -124,6 +124,7 @@ private fun RuleItem(
             ShortXSwitch(
                 modifier = Modifier,
                 checked = rule.isEnabled,
+                stock = false,
                 onCheckedChange = {
                     handler.setRuleEnabled(rule, it)
                 },

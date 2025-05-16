@@ -71,6 +71,8 @@ import tornaco.apps.shortx.ui.addrule.base.BatchOpToolbar
 import tornaco.apps.shortx.ui.addrule.base.batchOpSelectedItemHighlightColor
 import tornaco.apps.shortx.ui.addrule.base.rememberBatchOpState
 import tornaco.apps.shortx.ui.addrule.rememberContextDataInfoDialogState
+import tornaco.apps.shortx.ui.base.ClickableBadge
+import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
@@ -194,14 +196,20 @@ private fun Actions(
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (actionAsyncMode == ActionAsyncMode.ActionAsyncMode_Async || canSelectActionAsyncMode) {
-                    MenuButtonLayout(
+                    ClickableBadge(
                         text = if (actionAsyncMode == ActionAsyncMode.ActionAsyncMode_Sync) {
                             LocalI18N.current["ui.rule.async.mode.sync"]
                         } else {
                             LocalI18N.current["ui.rule.async.mode.async"]
                         },
-                        actionAsyncModeMenuDialogState
-                    )
+                        containerColor = ColorDefaults.backgroundSurfaceColor()
+                    ) {
+                        actionAsyncModeMenuDialogState.show(
+                            currentSelection = listOf(
+                                actionAsyncMode.name
+                            )
+                        )
+                    }
                     VerticalDivider(
                         modifier = Modifier
                             .height(18.dp)

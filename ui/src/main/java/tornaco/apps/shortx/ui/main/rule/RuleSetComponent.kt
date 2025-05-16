@@ -86,6 +86,7 @@ fun RuleSetItem(
                 ShortXSwitch(
                     modifier = Modifier,
                     checked = rule.isEnabled,
+                    stock = false,
                     uncheckedTrackColor = if (rule.hasAnyEnabled) {
                         MaterialTheme.colorScheme.primaryContainer
                     } else LocalShortXColorSchema.current.uncheckedTrack,
