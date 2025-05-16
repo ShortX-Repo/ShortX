@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3ExpressiveApi::class)
 
 package tornaco.apps.shortx.ui.addrule
 
@@ -12,7 +12,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -21,7 +20,7 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,7 +33,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
@@ -61,6 +59,7 @@ import tornaco.apps.shortx.ui.addrule.fact.FactSelectors
 import tornaco.apps.shortx.ui.addrule.fact.asFactHandler
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ConfirmDialog
+import tornaco.apps.shortx.ui.base.DropdownButtonLayout
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.ErrorCard
@@ -492,15 +491,10 @@ private fun LazyListScope.ruleContent(
                 // AsyncMode
                 val asyncModeDropdownState = rememberDropdownSelectorState()
                 Box(modifier = Modifier.fillMaxWidth()) {
-                    FilledTonalButton(onClick = {
-                        asyncModeDropdownState.open()
-                    }) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(text = LocalI18N.current[addRuleState.asyncMode.labelKey()])
-                            StandardSpacer()
-                            RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
-                        }
-                    }
+                    DropdownButtonLayout(
+                        LocalI18N.current[addRuleState.asyncMode.labelKey()],
+                        asyncModeDropdownState
+                    )
                     DropdownSelector(
                         state = asyncModeDropdownState,
                         items = AsyncMode.entries
@@ -753,15 +747,10 @@ fun ConflictStrategy(
 
     val conflictStrategyModeDropdownState = rememberDropdownSelectorState()
     Box(modifier = Modifier.fillMaxWidth()) {
-        FilledTonalButton(onClick = {
-            conflictStrategyModeDropdownState.open()
-        }) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = LocalI18N.current[conflictStrategy.labelKey()])
-                StandardSpacer()
-                RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
-            }
-        }
+        DropdownButtonLayout(
+            LocalI18N.current[conflictStrategy.labelKey()],
+            conflictStrategyModeDropdownState
+        )
         DropdownSelector(
             state = conflictStrategyModeDropdownState,
             items = ConflictStrategy.entries
@@ -789,15 +778,10 @@ fun QuitEvaluatePolicy(
 
     val dropState = rememberDropdownSelectorState()
     Box(modifier = Modifier.fillMaxWidth()) {
-        FilledTonalButton(onClick = {
-            dropState.open()
-        }) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = LocalI18N.current["ui.rule.quit.eva.policy.${policy.name.lowercase()}"])
-                StandardSpacer()
-                RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
-            }
-        }
+        DropdownButtonLayout(
+            LocalI18N.current["ui.rule.quit.eva.policy.${policy.name.lowercase()}"],
+            dropState
+        )
         DropdownSelector(
             state = dropState,
             items = Quit_EvaluatePolicy.entries
@@ -848,9 +832,10 @@ private fun TitleAndDescription(
             vm.setTitle(title)
         })
     AnimatedVisibility(visible = showDescription) {
-        ShortXTextField(modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp),
+        ShortXTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
             label = {
                 Text(text = LocalI18N.current["ui.rule.description"])
             },
