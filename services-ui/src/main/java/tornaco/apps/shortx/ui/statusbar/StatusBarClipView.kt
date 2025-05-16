@@ -30,7 +30,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.isVisible
-import androidx.lifecycle.AtomicReference
 import com.google.protobuf.BoolValue
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -87,7 +86,7 @@ class StatusBarClipView(
     private val logger = Logger("StatusBarChipView")
     private val uiState = MutableStateFlow(StatusBarChipUiState())
 
-    private val clipProto = AtomicReference<StatusBarClipState?>(null)
+    private val clipProto = java.util.concurrent.atomic.AtomicReference<StatusBarClipState?>(null)
 
     private val clipSettingsListener = object : ICallback.Stub() {
         override fun receive(data: ByteArrayWrapper) {

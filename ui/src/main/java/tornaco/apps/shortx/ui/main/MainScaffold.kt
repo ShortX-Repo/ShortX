@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 
 package tornaco.apps.shortx.ui.main
 
@@ -26,13 +26,17 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FloatingActionButtonMenu
+import androidx.compose.material3.FloatingActionButtonMenuItem
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -40,9 +44,13 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.ToggleFloatingActionButton
+import androidx.compose.material3.ToggleFloatingActionButtonDefaults.animateIcon
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.animateFloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,10 +60,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectAsState
@@ -74,7 +87,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalSnackbarHostState
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.MultiFabItem
-import tornaco.apps.shortx.ui.base.MultiFloatingActionButton
+import tornaco.apps.shortx.ui.base.MultiFabState
 import tornaco.apps.shortx.ui.base.RebootConfirmDialog
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
@@ -438,14 +451,15 @@ fun MainScaffold(
         }
 
         if (enableMask) {
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background.copy(alpha = 0.4f))
-                .pointerInput(key1 = "MASK") {
-                    detectTapGestures(onTap = {
-                        onMaskClickOutside()
-                    })
-                }) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background.copy(alpha = 0.4f))
+                    .pointerInput(key1 = "MASK") {
+                        detectTapGestures(onTap = {
+                            onMaskClickOutside()
+                        })
+                    }) {
             }
         }
     }
@@ -536,9 +550,10 @@ private fun PrivacyStatementDialog(
 
 @Composable
 private fun AddOptionsFab(
-    fabState: FabState
+    fabState: FabState,
+    fabVisible: Boolean = true
 ) {
-    val expandFbItemList: MutableList<MultiFabItem> = mutableListOf(
+    val items: MutableList<MultiFabItem> = mutableListOf(
         MultiFabItem(
             id = MainScaffoldFabOptions.ImportFile.name,
             icon = Remix.Document.file_line,
@@ -565,13 +580,55 @@ private fun AddOptionsFab(
             label = LocalI18N.current["ui.common.new"]
         ),
     )
-
-    MultiFloatingActionButton(
-        srcIcon = Icons.Outlined.Add,
-        showLabels = true,
-        items = expandFbItemList,
-        state = fabState
-    )
+    val fabMenuExpanded = fabState.currentState.value == MultiFabState.Expanded
+    BackHandler(fabMenuExpanded) { fabState.collapse() }
+    FloatingActionButtonMenu(
+        expanded = fabMenuExpanded,
+        button = {
+            ToggleFloatingActionButton(
+                modifier =
+                    Modifier
+                        .semantics {
+                            traversalIndex = -1f
+                            stateDescription = if (fabMenuExpanded) "Expanded" else "Collapsed"
+                            contentDescription = "Toggle menu"
+                        }
+                        .animateFloatingActionButton(
+                            visible = fabVisible || fabMenuExpanded,
+                            alignment = Alignment.BottomEnd
+                        ),
+                checked = fabMenuExpanded,
+                onCheckedChange = {
+                    fabState.toggle()
+                }
+            ) {
+                val imageVector by remember {
+                    derivedStateOf {
+                        if (checkedProgress > 0.5f) Icons.Filled.Close else Icons.Filled.Add
+                    }
+                }
+                androidx.compose.material3.Icon(
+                    painter = rememberVectorPainter(imageVector),
+                    contentDescription = null,
+                    modifier = Modifier.animateIcon({ checkedProgress })
+                )
+            }
+        }
+    ) {
+        items.forEachIndexed { _, item ->
+            FloatingActionButtonMenuItem(
+                modifier = Modifier,
+                onClick = {
+                    fabState.collapse()
+                    fabState.onFabItemClicked(item)
+                },
+                icon = {
+                    RemixIcon(item.icon)
+                },
+                text = { Text(text = item.label) },
+            )
+        }
+    }
 }
 
 
