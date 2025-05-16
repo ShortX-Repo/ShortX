@@ -1,4 +1,7 @@
-@file:OptIn(ExperimentalLayoutApi::class, ExperimentalMaterialApi::class)
+@file:OptIn(
+    ExperimentalLayoutApi::class, ExperimentalMaterialApi::class,
+    ExperimentalMaterial3ExpressiveApi::class
+)
 
 package tornaco.apps.shortx.ui.main.rule
 
@@ -16,8 +19,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.ButtonGroupDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -43,7 +49,6 @@ import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
-import tornaco.apps.shortx.ui.base.ShortXFilterChip
 import tornaco.apps.shortx.ui.base.TipIds
 import tornaco.apps.shortx.ui.base.UserTip
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
@@ -188,19 +193,27 @@ fun RuleSetFlowRow(
 ) {
     if (ruleSetFilters.any { !it.isStock }) {
         FlowRow(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp),
             horizontalArrangement = Arrangement.Start
         ) {
-            ruleSetFilters.forEach {
-                ShortXFilterChip(
-                    modifier = Modifier.padding(start = 16.dp),
-                    selected = selectedRuleSetFilter == it,
-                    label = {
-                        Text(text = it.title)
+            ruleSetFilters.forEachIndexed { index, rs ->
+                OutlinedToggleButton(
+                    checked = selectedRuleSetFilter == rs,
+                    onCheckedChange = {
+                        selectRuleSetFilter(rs)
                     },
-                    onClick = {
-                        selectRuleSetFilter(it)
-                    })
+                    modifier = Modifier.padding(start = 2.dp),
+                    shapes =
+                        when (index) {
+                            0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                            ruleSetFilters.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                            else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                        }
+                ) {
+                    Text(rs.title)
+                }
             }
         }
     }
