@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3ExpressiveApi::class)
 
 package tornaco.apps.shortx.ui.addrule.action
 
@@ -19,7 +19,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -69,8 +71,6 @@ import tornaco.apps.shortx.ui.addrule.base.BatchOpToolbar
 import tornaco.apps.shortx.ui.addrule.base.batchOpSelectedItemHighlightColor
 import tornaco.apps.shortx.ui.addrule.base.rememberBatchOpState
 import tornaco.apps.shortx.ui.addrule.rememberContextDataInfoDialogState
-import tornaco.apps.shortx.ui.base.ClickableBadge
-import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
@@ -80,6 +80,7 @@ import tornaco.apps.shortx.ui.base.LargeTitle
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalUiStore
+import tornaco.apps.shortx.ui.base.MenuButtonLayout
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.NoteRow
@@ -156,7 +157,8 @@ private fun Actions(
         })
 
     val actionAsyncModeMenuDialogState =
-        rememberMenuDialogState<String>(title = LocalI18N.current["ui.action.async.mode"],
+        rememberMenuDialogState<String>(
+            title = LocalI18N.current["ui.action.async.mode"],
             menuItems = listOf(
                 MenuDialogItem(
                     id = ActionAsyncMode.ActionAsyncMode_Sync.name,
@@ -192,20 +194,14 @@ private fun Actions(
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (actionAsyncMode == ActionAsyncMode.ActionAsyncMode_Async || canSelectActionAsyncMode) {
-                    ClickableBadge(
+                    MenuButtonLayout(
                         text = if (actionAsyncMode == ActionAsyncMode.ActionAsyncMode_Sync) {
                             LocalI18N.current["ui.rule.async.mode.sync"]
                         } else {
                             LocalI18N.current["ui.rule.async.mode.async"]
                         },
-                        containerColor = ColorDefaults.backgroundSurfaceColor()
-                    ) {
-                        actionAsyncModeMenuDialogState.show(
-                            currentSelection = listOf(
-                                actionAsyncMode.name
-                            )
-                        )
-                    }
+                        actionAsyncModeMenuDialogState
+                    )
                     VerticalDivider(
                         modifier = Modifier
                             .height(18.dp)
@@ -217,7 +213,7 @@ private fun Actions(
                 AnimatedVisibility(visible = !readOnly && actions.size > 1) {
                     IconButton(onClick = {
                         actionSortDialogState.show()
-                    }) {
+                    }, shapes = IconButtonDefaults.shapes()) {
                         RemixIcon(Remix.Editor.sort_asc)
                     }
                 }
@@ -226,22 +222,23 @@ private fun Actions(
                 val context = LocalContext.current
                 val moreDropdownState = rememberDropdownSelectorState()
                 val scope = rememberCoroutineScope()
-                DropdownSelector(state = moreDropdownState, items = listOf(
-                    DropdownItem(
-                        labelLines = listOf(i18N["ui.common.execute.actions"]),
-                        data = "exe",
-                    ),
-                    DropdownItem(
-                        labelLines = listOf(i18N["ui.settings.action.record"]),
-                        data = "history",
-                    )
-                ), onSelect = {
-                    if (it.data == "exe") {
-                        scope.launch { handler.executeAll() }
-                    } else if (it.data == "history") {
-                        EvaRecordActivity.start(context = context, pinSrcId = srcId)
-                    }
-                })
+                DropdownSelector(
+                    state = moreDropdownState, items = listOf(
+                        DropdownItem(
+                            labelLines = listOf(i18N["ui.common.execute.actions"]),
+                            data = "exe",
+                        ),
+                        DropdownItem(
+                            labelLines = listOf(i18N["ui.settings.action.record"]),
+                            data = "history",
+                        )
+                    ), onSelect = {
+                        if (it.data == "exe") {
+                            scope.launch { handler.executeAll() }
+                        } else if (it.data == "history") {
+                            EvaRecordActivity.start(context = context, pinSrcId = srcId)
+                        }
+                    })
 
 
                 IconButton(onClick = {
