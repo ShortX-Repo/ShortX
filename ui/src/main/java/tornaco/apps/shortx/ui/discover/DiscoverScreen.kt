@@ -18,7 +18,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.IconButton
@@ -50,6 +49,7 @@ import tornaco.apps.shortx.ui.base.LinkText
 import tornaco.apps.shortx.ui.base.LoadError
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.Md3ExpPullRefreshIndicator
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
@@ -440,7 +440,7 @@ private fun DiscoverRule(
             }
         }
 
-        PullRefreshIndicator(
+        Md3ExpPullRefreshIndicator(
             refreshing,
             refreshState,
             Modifier.align(Alignment.TopCenter),
@@ -588,7 +588,7 @@ private fun DiscoverDA(
             }
         }
 
-        PullRefreshIndicator(
+        Md3ExpPullRefreshIndicator(
             refreshing,
             refreshState,
             Modifier.align(Alignment.TopCenter),

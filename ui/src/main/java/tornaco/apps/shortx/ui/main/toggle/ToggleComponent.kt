@@ -73,15 +73,16 @@ private fun ToggleItem(
     toggle: ToggleUM
 ) {
     val handler = LocalToggleItemHandler.current
-    Column(modifier = modifier
-        .fillMaxWidth()
-        .clip(ShortXCardRoundedCornerShape)
-        .combinedClickable(onLongClick = {
-            popMenuState.open()
-        }) {
-            handler.click(toggle)
-        }
-        .padding(16.dp)
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(ShortXCardRoundedCornerShape)
+            .combinedClickable(onLongClick = {
+                popMenuState.open()
+            }) {
+                handler.click(toggle)
+            }
+            .padding(16.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -97,6 +98,7 @@ private fun ToggleItem(
                     ShortXSwitch(
                         modifier = Modifier,
                         checked = enableState.isEnabled,
+                        stock = false,
                         onCheckedChange = {
                             handler.setToggleEnabled(toggle, it)
                         },
@@ -175,13 +177,15 @@ private fun listItemOverflowMenu(
         widthFraction = menuDropdownFraction,
         state = menuState,
         items = listOf(
-            DropdownItem(labelLines = listOf(i18N["ui.common.dup"]),
+            DropdownItem(
+                labelLines = listOf(i18N["ui.common.dup"]),
                 data = ToggleItemMenuOptions.Dup,
                 badge = badge,
                 icon = {
                     RemixIcon(Remix.Document.file_copy_2_fill)
                 }),
-            DropdownItem(labelLines = listOf(i18N["ui.common.edit"]),
+            DropdownItem(
+                labelLines = listOf(i18N["ui.common.edit"]),
                 data = ToggleItemMenuOptions.Edit,
                 icon = {
                     RemixIcon(Remix.Design.edit_line)
