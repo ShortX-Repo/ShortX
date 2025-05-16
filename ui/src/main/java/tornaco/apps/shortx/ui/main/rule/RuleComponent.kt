@@ -95,17 +95,18 @@ private fun RuleItem(
     runningInsCount: Int,
 ) {
     val handler = LocalRuleItemHandler.current
-    Column(modifier = modifier
-        .fillMaxWidth()
-        .clip(ShortXCardRoundedCornerShape)
-        .combinedClickable(onLongClick = {
-            popMenuState.open()
-        }) {
-            handler.click(rule)
-        }
-        .padding(horizontal = 16.dp)
-        .padding(top = 16.dp)
-        .padding(bottom = 12.dp)
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(ShortXCardRoundedCornerShape)
+            .combinedClickable(onLongClick = {
+                popMenuState.open()
+            }) {
+                handler.click(rule)
+            }
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp)
+            .padding(bottom = 12.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -172,7 +173,7 @@ fun RuleIcon(
 ) {
     val isRunning = runningInsCount > 0
     if (isRunning) {
-        RunningIndicator(runningInsCount, stopAllJobs)
+        RunningIndicator(runningInsCount, stopAllJobs, Color(rule.iconColor))
     } else {
         ColoredIcon(
             onClick = onClick,
@@ -240,18 +241,21 @@ private fun listItemOverflowMenu(
         widthFraction = menuDropdownFraction,
         state = menuState,
         items = listOf(
-            DropdownItem(labelLines = listOf(i18N["ui.common.execute.actions"]),
+            DropdownItem(
+                labelLines = listOf(i18N["ui.common.execute.actions"]),
                 data = RuleItemMenuOptions.Execute,
                 icon = {
                     RemixIcon(Remix.Media.play_fill)
                 }),
-            DropdownItem(labelLines = listOf(i18N["ui.common.dup"]),
+            DropdownItem(
+                labelLines = listOf(i18N["ui.common.dup"]),
                 data = RuleItemMenuOptions.Dup,
                 badge = badge,
                 icon = {
                     RemixIcon(Remix.Document.file_copy_2_fill)
                 }),
-            DropdownItem(labelLines = listOf(i18N["ui.common.edit"]),
+            DropdownItem(
+                labelLines = listOf(i18N["ui.common.edit"]),
                 data = RuleItemMenuOptions.Edit,
                 icon = {
                     RemixIcon(Remix.Design.edit_line)

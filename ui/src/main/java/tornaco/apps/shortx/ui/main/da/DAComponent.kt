@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3ExpressiveApi::class)
 
 package tornaco.apps.shortx.ui.main.da
 
@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.ContainedLoadingIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarResult
@@ -41,7 +43,6 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.base.AnimatedTextContainer
 import tornaco.apps.shortx.ui.base.ClickAnimateContainer
 import tornaco.apps.shortx.ui.base.ColoredIcon
-import tornaco.apps.shortx.ui.base.ColorfulCircularProgressIndicator
 import tornaco.apps.shortx.ui.base.ConfirmDialog
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
@@ -201,14 +202,15 @@ private fun DAListItem(
     onLongClick: () -> Unit,
     stopAllJobs: () -> Unit
 ) {
-    Column(modifier = modifier
-        .fillMaxWidth()
-        .clip(ShortXCardRoundedCornerShape)
-        .longPressZoom(onLongClick = onLongClick) {
-            onClick()
-        }
-        .padding(horizontal = 12.dp)
-        .padding(top = 12.dp)) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(ShortXCardRoundedCornerShape)
+            .longPressZoom(onLongClick = onLongClick) {
+                onClick()
+            }
+            .padding(horizontal = 12.dp)
+            .padding(top = 12.dp)) {
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -217,7 +219,7 @@ private fun DAListItem(
         ) {
             val isRunning = runningInsCount > 0
             if (isRunning) {
-                RunningIndicator(runningInsCount, stopAllJobs)
+                RunningIndicator(runningInsCount, stopAllJobs, iconColor)
             } else {
                 val isImage = icon.isBase64Image()
                 if (colorfulCard) {
@@ -294,8 +296,12 @@ private fun DAListItem(
 }
 
 @Composable
-fun RunningIndicator(runningInsCount: Int, stopAllJobs: () -> Unit) {
-    BadgedBox(modifier = Modifier.size(Dimens.DAIconSize),
+fun RunningIndicator(
+    runningInsCount: Int, stopAllJobs: () -> Unit,
+    iconColor: Color
+) {
+    BadgedBox(
+        modifier = Modifier.size(Dimens.DAIconSize),
         badge = {
             Badge {
                 AnimatedTextContainer(text = runningInsCount.toString()) {
@@ -304,17 +310,15 @@ fun RunningIndicator(runningInsCount: Int, stopAllJobs: () -> Unit) {
             }
         }) {
         Box(contentAlignment = Alignment.Center) {
-            ColorfulCircularProgressIndicator(
-                size = Dimens.DAIconSize,
-                strokeWidth = 3.dp
+            ContainedLoadingIndicator(
+                modifier = Modifier.size(Dimens.DAIconSize),
+                indicatorColor = iconColor,
+                containerColor = iconColor.copy(alpha = ActionColorBgAlpha)
             )
             IconButton(onClick = {
                 stopAllJobs()
             }) {
-                RemixIcon(
-                    remixName = Remix.Media.stop_circle_line,
-                    tint = MaterialTheme.colorScheme.error
-                )
+
             }
         }
     }
@@ -368,176 +372,190 @@ private fun daListItemOverflowMenu(
 
     val menuState = rememberDropdownSelectorState()
 
-    DropdownSelector(widthFraction = menuDropdownFraction, state = menuState, items = listOfNotNull(
-        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.create.shortcut"]),
-            data = DAItemMenuOptions.Shortcut,
-            badge = badge,
-            icon = {
-                RemixIcon(Remix.System.external_link_line)
-            }),
-        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.create.dynamic.shortcut"]),
-            data = DAItemMenuOptions.DynamicShortcut,
-            badge = badge,
-            icon = {
-                RemixIcon(Remix.System.external_link_line)
-            }),
-        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.remove.dynamic.shortcut"]),
-            data = DAItemMenuOptions.RemoveDynamicShortcut,
-            badge = badge,
-            icon = {
-                RemixIcon(Remix.System.delete_bin_5_line)
-            }),
-        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.install.as.apk"]),
-            data = DAItemMenuOptions.CreateApk,
-            badge = badge,
-            icon = {
-                RemixIcon(Remix.Logos.android_line)
-            }),
-        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.dup"]),
-            data = DAItemMenuOptions.Dup,
-            badge = badge,
-            icon = {
-                RemixIcon(Remix.Document.file_copy_2_fill)
-            }),
-        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.edit"]),
-            data = DAItemMenuOptions.Edit,
-            icon = {
-                RemixIcon(Remix.Design.edit_line)
-            }),
-        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.share"]),
-            data = DAItemMenuOptions.Share,
-            badge = badge,
-            icon = {
-                RemixIcon(Remix.System.share_line)
-            }),
-        DropdownItem(labelLines = listOf("Deeplink"),
-            data = DAItemMenuOptions.DeepLink,
-            icon = {
-                RemixIcon(Remix.System.external_link_line)
-            }),
-        DropdownItem(labelLines = listOf("Shell cmd"),
-            data = DAItemMenuOptions.ShellCommand,
-            icon = {
-                RemixIcon(Remix.Editor.hashtag)
-            }),
-        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.move.to.set"]),
-            data = DAItemMenuOptions.MoveToSet,
-            badge = badge,
-            icon = {
-                RemixIcon(Remix.Document.folders_fill)
-            }),
-        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.move.out.set"]),
-            data = DAItemMenuOptions.MoveOutSet,
-            icon = {
-                RemixIcon(Remix.Document.folder_reduce_fill)
-            }),
-        DropdownItem(
-            labelLines = listOf(LocalI18N.current["ui.settings.eva.record"]),
-            data = DAItemMenuOptions.ViewEvaRecord,
-            icon = {
-                RemixIcon(Remix.System.history_fill)
-            }),
-        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
-            data = DAItemMenuOptions.Delete,
-            icon = {
-                RemixIcon(Remix.System.delete_bin_4_line)
-            })
-    ), onSelect = {
-        when (it.data) {
-            DAItemMenuOptions.Shortcut -> {
-                if (isSubscribed) {
-                    ActionShortcutActivity.addShortcut(context, da)
-                    scope.launch {
-                        val res = snackbar.showSnackbar(
-                            i18N["ui.common.create.shortcut.snackbar.message"],
-                            i18N["ui.common.settings"],
-                            true,
-                        )
-                        if (res == SnackbarResult.ActionPerformed) {
-                            kotlin.runCatching {
-                                PkgUtils.launchPkgSettings(
-                                    context,
-                                    BuildPropInternal.APP_PACKAGE_NAME
-                                )
+    DropdownSelector(
+        widthFraction = menuDropdownFraction, state = menuState, items = listOfNotNull(
+            DropdownItem(
+                labelLines = listOf(LocalI18N.current["ui.common.create.shortcut"]),
+                data = DAItemMenuOptions.Shortcut,
+                badge = badge,
+                icon = {
+                    RemixIcon(Remix.System.external_link_line)
+                }),
+            DropdownItem(
+                labelLines = listOf(LocalI18N.current["ui.common.create.dynamic.shortcut"]),
+                data = DAItemMenuOptions.DynamicShortcut,
+                badge = badge,
+                icon = {
+                    RemixIcon(Remix.System.external_link_line)
+                }),
+            DropdownItem(
+                labelLines = listOf(LocalI18N.current["ui.common.remove.dynamic.shortcut"]),
+                data = DAItemMenuOptions.RemoveDynamicShortcut,
+                badge = badge,
+                icon = {
+                    RemixIcon(Remix.System.delete_bin_5_line)
+                }),
+            DropdownItem(
+                labelLines = listOf(LocalI18N.current["ui.common.install.as.apk"]),
+                data = DAItemMenuOptions.CreateApk,
+                badge = badge,
+                icon = {
+                    RemixIcon(Remix.Logos.android_line)
+                }),
+            DropdownItem(
+                labelLines = listOf(LocalI18N.current["ui.common.dup"]),
+                data = DAItemMenuOptions.Dup,
+                badge = badge,
+                icon = {
+                    RemixIcon(Remix.Document.file_copy_2_fill)
+                }),
+            DropdownItem(
+                labelLines = listOf(LocalI18N.current["ui.common.edit"]),
+                data = DAItemMenuOptions.Edit,
+                icon = {
+                    RemixIcon(Remix.Design.edit_line)
+                }),
+            DropdownItem(
+                labelLines = listOf(LocalI18N.current["ui.common.share"]),
+                data = DAItemMenuOptions.Share,
+                badge = badge,
+                icon = {
+                    RemixIcon(Remix.System.share_line)
+                }),
+            DropdownItem(
+                labelLines = listOf("Deeplink"),
+                data = DAItemMenuOptions.DeepLink,
+                icon = {
+                    RemixIcon(Remix.System.external_link_line)
+                }),
+            DropdownItem(
+                labelLines = listOf("Shell cmd"),
+                data = DAItemMenuOptions.ShellCommand,
+                icon = {
+                    RemixIcon(Remix.Editor.hashtag)
+                }),
+            DropdownItem(
+                labelLines = listOf(LocalI18N.current["ui.common.move.to.set"]),
+                data = DAItemMenuOptions.MoveToSet,
+                badge = badge,
+                icon = {
+                    RemixIcon(Remix.Document.folders_fill)
+                }),
+            DropdownItem(
+                labelLines = listOf(LocalI18N.current["ui.common.move.out.set"]),
+                data = DAItemMenuOptions.MoveOutSet,
+                icon = {
+                    RemixIcon(Remix.Document.folder_reduce_fill)
+                }),
+            DropdownItem(
+                labelLines = listOf(LocalI18N.current["ui.settings.eva.record"]),
+                data = DAItemMenuOptions.ViewEvaRecord,
+                icon = {
+                    RemixIcon(Remix.System.history_fill)
+                }),
+            DropdownItem(
+                labelLines = listOf(LocalI18N.current["ui.common.delete"]),
+                data = DAItemMenuOptions.Delete,
+                icon = {
+                    RemixIcon(Remix.System.delete_bin_4_line)
+                })
+        ), onSelect = {
+            when (it.data) {
+                DAItemMenuOptions.Shortcut -> {
+                    if (isSubscribed) {
+                        ActionShortcutActivity.addShortcut(context, da)
+                        scope.launch {
+                            val res = snackbar.showSnackbar(
+                                i18N["ui.common.create.shortcut.snackbar.message"],
+                                i18N["ui.common.settings"],
+                                true,
+                            )
+                            if (res == SnackbarResult.ActionPerformed) {
+                                kotlin.runCatching {
+                                    PkgUtils.launchPkgSettings(
+                                        context,
+                                        BuildPropInternal.APP_PACKAGE_NAME
+                                    )
+                                }
                             }
                         }
+                    } else {
+                        subscribeDialogState.show()
                     }
-                } else {
-                    subscribeDialogState.show()
                 }
-            }
 
-            DAItemMenuOptions.Dup -> {
-                if (isSubscribed) {
-                    handler.dup(da)
-                } else {
-                    subscribeDialogState.show()
-                }
-            }
-
-            DAItemMenuOptions.Delete -> {
-                deleteDialogState.show()
-            }
-
-            DAItemMenuOptions.Edit -> {
-                handler.edit(da)
-            }
-
-            DAItemMenuOptions.DeepLink -> {
-                handler.deepLink(da)
-            }
-
-            DAItemMenuOptions.ShellCommand -> {
-                handler.shellCommand(da)
-            }
-
-            DAItemMenuOptions.Share -> {
-                if (isSubscribed) {
-                    handler.share(da)
-                } else {
-                    subscribeDialogState.show()
-                }
-            }
-
-            DAItemMenuOptions.MoveToSet -> {
-                if (isSubscribed) {
-                    daSetSelectDialogState.show()
-                } else {
-                    subscribeDialogState.show()
-                }
-            }
-
-            DAItemMenuOptions.MoveOutSet -> {
-                handler.moveOutSet(da)
-            }
-
-            DAItemMenuOptions.ViewEvaRecord -> {
-                EvaRecordActivity.start(context, da.id)
-            }
-
-            DAItemMenuOptions.CreateApk -> {
-                if (isSubscribed) {
-                    createApkDialog.show()
-                } else {
-                    subscribeDialogState.show()
-                }
-            }
-
-            DAItemMenuOptions.DynamicShortcut -> {
-                if (isSubscribed) {
-                    if (ActionShortcutActivity.addDynamicShortcut(context, da)) {
-                        Toast.makeText(context, i18N["ui.common.done"], Toast.LENGTH_SHORT).show()
+                DAItemMenuOptions.Dup -> {
+                    if (isSubscribed) {
+                        handler.dup(da)
+                    } else {
+                        subscribeDialogState.show()
                     }
-                } else {
-                    subscribeDialogState.show()
+                }
+
+                DAItemMenuOptions.Delete -> {
+                    deleteDialogState.show()
+                }
+
+                DAItemMenuOptions.Edit -> {
+                    handler.edit(da)
+                }
+
+                DAItemMenuOptions.DeepLink -> {
+                    handler.deepLink(da)
+                }
+
+                DAItemMenuOptions.ShellCommand -> {
+                    handler.shellCommand(da)
+                }
+
+                DAItemMenuOptions.Share -> {
+                    if (isSubscribed) {
+                        handler.share(da)
+                    } else {
+                        subscribeDialogState.show()
+                    }
+                }
+
+                DAItemMenuOptions.MoveToSet -> {
+                    if (isSubscribed) {
+                        daSetSelectDialogState.show()
+                    } else {
+                        subscribeDialogState.show()
+                    }
+                }
+
+                DAItemMenuOptions.MoveOutSet -> {
+                    handler.moveOutSet(da)
+                }
+
+                DAItemMenuOptions.ViewEvaRecord -> {
+                    EvaRecordActivity.start(context, da.id)
+                }
+
+                DAItemMenuOptions.CreateApk -> {
+                    if (isSubscribed) {
+                        createApkDialog.show()
+                    } else {
+                        subscribeDialogState.show()
+                    }
+                }
+
+                DAItemMenuOptions.DynamicShortcut -> {
+                    if (isSubscribed) {
+                        if (ActionShortcutActivity.addDynamicShortcut(context, da)) {
+                            Toast.makeText(context, i18N["ui.common.done"], Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    } else {
+                        subscribeDialogState.show()
+                    }
+                }
+
+                DAItemMenuOptions.RemoveDynamicShortcut -> {
+                    ActionShortcutActivity.removeDynamicShortcut(context, da)
                 }
             }
-
-            DAItemMenuOptions.RemoveDynamicShortcut -> {
-                ActionShortcutActivity.removeDynamicShortcut(context, da)
-            }
-        }
-    })
+        })
 
     return menuState
 }
