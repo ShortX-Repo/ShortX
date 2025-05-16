@@ -57,6 +57,7 @@ import tornaco.apps.shortx.ui.base.LinkText
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MDIcon
 import tornaco.apps.shortx.ui.base.MDIconSelectorActivity
+import tornaco.apps.shortx.ui.base.Md3ExpPullRefreshIndicator
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXCard
@@ -170,7 +171,7 @@ private fun TileSettings(back: () -> Unit, onTileClick: (StatusBarTile) -> Unit)
 
                     }
 
-                    PullRefreshIndicator(
+                    Md3ExpPullRefreshIndicator(
                         state.isLoading,
                         pullRefreshState,
                         Modifier.align(Alignment.TopCenter)

@@ -45,6 +45,7 @@ import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.Md3ExpPullRefreshIndicator
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
@@ -157,7 +158,7 @@ fun SettingsAccessRecordScreen(back: () -> Unit) {
                         }
                     }
 
-                    PullRefreshIndicator(
+                    Md3ExpPullRefreshIndicator(
                         state.isLoading,
                         pullRefreshState,
                         Modifier.align(Alignment.TopCenter)

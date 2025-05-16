@@ -47,6 +47,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.BaseActivity
+import tornaco.apps.shortx.ui.base.Md3ExpPullRefreshIndicator
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.settings.log.LogList
@@ -128,7 +129,7 @@ class JSLogActivity : BaseActivity() {
                         )
                     }
 
-                    PullRefreshIndicator(
+                    Md3ExpPullRefreshIndicator(
                         refreshing,
                         refreshState,
                         Modifier.align(Alignment.TopCenter),

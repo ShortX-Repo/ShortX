@@ -62,6 +62,7 @@ import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
@@ -414,7 +415,10 @@ private fun DiscoverRule(
                                                     modifier = Modifier.size(12.dp),
                                                     remixName = Remix.UserAndFaces.user_line
                                                 )
-                                            })
+                                            }
+                                        )
+                                        MediumSpacer()
+                                        TipBody(text = rule.updateTime)
                                     }
                                 }
                             }
@@ -561,6 +565,8 @@ private fun DiscoverDA(
                                                     remixName = Remix.UserAndFaces.user_line
                                                 )
                                             })
+                                        MediumSpacer()
+                                        TipBody(text = it.updateTime)
                                     }
 
                                 }

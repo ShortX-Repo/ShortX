@@ -20,6 +20,7 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.base.LoadError
+import tornaco.apps.shortx.ui.base.Md3ExpPullRefreshIndicator
 import tornaco.apps.shortx.ui.remote.RemoteExecuteMVELAction
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -42,7 +43,7 @@ fun RemoteActions(addAction: (Action) -> Unit) {
             .pullRefresh(refreshState)
     ) {
         ActionContent(state, addAction)
-        PullRefreshIndicator(
+        Md3ExpPullRefreshIndicator(
             refreshing,
             refreshState,
             Modifier.align(Alignment.TopCenter),

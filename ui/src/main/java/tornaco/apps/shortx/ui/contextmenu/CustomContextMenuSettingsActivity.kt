@@ -46,6 +46,7 @@ import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.InfoCard
 import tornaco.apps.shortx.ui.base.LinkText
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.Md3ExpPullRefreshIndicator
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXCard
@@ -154,7 +155,7 @@ private fun MenuSettings(back: () -> Unit, onMenuClick: (CustomContextMenu) -> U
 
                 }
 
-                PullRefreshIndicator(
+                Md3ExpPullRefreshIndicator(
                     state.isLoading,
                     pullRefreshState,
                     Modifier.align(Alignment.TopCenter)

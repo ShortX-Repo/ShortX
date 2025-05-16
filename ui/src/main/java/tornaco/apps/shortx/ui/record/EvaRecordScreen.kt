@@ -78,6 +78,7 @@ import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LinkText
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.Md3ExpPullRefreshIndicator
 import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
@@ -239,7 +240,7 @@ fun EvaRecordScreen(pinSrcId: String?, back: () -> Unit) {
                         }
                     }
 
-                    PullRefreshIndicator(
+                    Md3ExpPullRefreshIndicator(
                         state.isLoading,
                         pullRefreshState,
                         Modifier.align(Alignment.TopCenter)

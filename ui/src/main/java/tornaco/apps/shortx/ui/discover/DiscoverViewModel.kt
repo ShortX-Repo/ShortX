@@ -207,7 +207,7 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
         updateState { copy(data = LoadState.Loading) }
         kotlin.runCatching {
             val index = onlineRepo.index(url, state.value.enableChucker)
-            val rules = index.rules.map {
+            val rules = index.rules.sortedByDescending { it.updateTimeMillis }.map {
                 val installedRuleOrNull = shortXManager.getRuleById(it.id)
                 RuleUM(
                     title = it.title,
@@ -236,7 +236,7 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                     hasAnyParameter = false
                 )
             }
-            val das = index.directActions.map {
+            val das = index.directActions.sortedByDescending { it.updateTimeMillis }.map {
                 val installedDAOrNull = shortXManager.getDirectActionById(it.id)
                 DirectActionUM(
                     title = it.title,
