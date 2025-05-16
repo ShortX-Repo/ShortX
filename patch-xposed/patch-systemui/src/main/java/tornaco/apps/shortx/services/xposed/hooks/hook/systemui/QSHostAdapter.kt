@@ -31,7 +31,10 @@ object QSHostAdapter {
 
     private fun getTilesAndroid14(): List<*> {
         return runCatching {
-            Reflections.callMethod(qsTileHost, "getTiles") as Collection<*>
+            Reflections.callMethod(
+                requireNotNull(qsTileHost) { "qsTileHost is null." },
+                "getTiles"
+            ) as Collection<*>
         }.getOrElse {
             if (it is NoSuchMethodError) {
                 logger.w("NoSuchMethodError when call getTiles(), try to get field: mTiles")
