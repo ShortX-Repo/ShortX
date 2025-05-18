@@ -2,8 +2,8 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import android.accessibilityservice.AccessibilityServiceInfo
 import de.robv.android.xposed.callbacks.XC_LoadPackage
-import tornaco.apps.shortx.core.platform.Classes.accManager
 import tornaco.apps.shortx.core.platform.Classes.accProxyManager
+import tornaco.apps.shortx.core.platform.Classes.uiAutomationManager
 import tornaco.apps.shortx.core.util.Logger
 import util.Reflections
 
@@ -18,7 +18,7 @@ object AccManagerHook {
     private fun hookSuppressingAccessibilityServices(lpparam: XC_LoadPackage.LoadPackageParam) =
         kotlin.runCatching {
             afterMethod(
-                lpparam.classLoader.accManager(),
+                lpparam.classLoader.uiAutomationManager(),
                 "suppressingAccessibilityServicesLocked"
             ) { param ->
                 logger.d("suppressingAccessibilityServicesLocked ${param.result}")
