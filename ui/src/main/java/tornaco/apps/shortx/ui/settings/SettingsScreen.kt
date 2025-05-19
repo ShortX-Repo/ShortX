@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Environment
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -118,6 +119,8 @@ fun SettingsScreen(
 
     val subscribeState by LVLStateHolder.collectAsState()
     val context = LocalContext.current
+
+    BackHandler { back() }
 
     ShortXTheme {
         Surface(
