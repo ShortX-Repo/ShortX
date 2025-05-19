@@ -1,15 +1,15 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXService
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.ISystemServerLoaded
 import util.Reflections
 
 object DisplayRotationHook {
     private val logger = Logger("ShortXHook.DisplayRotationHook")
 
-    fun hookOnProposedRotationChanged(lpparam: XC_LoadPackage.LoadPackageParam) {
+    fun hookOnProposedRotationChanged(lpparam: ISystemServerLoaded.Param) {
         if (OsUtils.isQOrAbove()) {
             kotlin.runCatching {
                 afterMethod(

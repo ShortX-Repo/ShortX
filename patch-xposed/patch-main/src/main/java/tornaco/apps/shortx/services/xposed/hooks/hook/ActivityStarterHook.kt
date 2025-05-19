@@ -4,18 +4,18 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.ApplicationInfo
 import android.os.IBinder
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.platform.Classes.activityStarterClass
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.ISystemServerLoaded
 import util.Reflections
 import util.ReflectionsExt
 
 object ActivityStarterHook {
     private val logger = Logger("ShortXHook.ActivityStarterHook")
 
-    fun hookEnqueueRequest(lpparam: XC_LoadPackage.LoadPackageParam) {
+    fun hookEnqueueRequest(lpparam: ISystemServerLoaded.Param) {
         if (OsUtils.isROrAbove()) {
             if (BuildPropInternal.APP_IS_DEBUG) {
                 hookEnqueueRequest_30OrAbove(lpparam)
@@ -24,7 +24,7 @@ object ActivityStarterHook {
     }
 
     // Min API level 30
-    private fun hookEnqueueRequest_30OrAbove(lpparam: XC_LoadPackage.LoadPackageParam) =
+    private fun hookEnqueueRequest_30OrAbove(lpparam: ISystemServerLoaded.Param) =
         kotlin.runCatching {
             val executeRequest = ReflectionsExt.findMethodWithMostArgs(
                 lpparam.classLoader.activityStarterClass(),

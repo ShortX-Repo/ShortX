@@ -1,16 +1,16 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.notification.androidNotificationRecordToNotification
 import tornaco.apps.shortx.core.platform.Classes.notificationUsageStatsClass
 import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXService
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.ISystemServerLoaded
 
 object NotificationUsageStatsHook {
     private val logger = Logger("ShortXHook.NotificationUsageStatsHook")
 
-    fun hookNotificationUsageStats(lpparam: XC_LoadPackage.LoadPackageParam) =
+    fun hookNotificationUsageStats(lpparam: ISystemServerLoaded.Param) =
         kotlin.runCatching {
             beforeMethod(
                 lpparam.classLoader.notificationUsageStatsClass(),

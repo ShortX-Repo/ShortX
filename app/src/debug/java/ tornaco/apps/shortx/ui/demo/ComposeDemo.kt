@@ -1,58 +1,42 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package  tornaco.apps.shortx.ui.demo
 
-import android.graphics.Rect
-import android.os.Bundle
-import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FloatingToolbarDefaults
+import androidx.compose.material3.FloatingToolbarDefaults.ScreenOffset
+import androidx.compose.material3.FloatingToolbarExitDirection.Companion.Bottom
+import androidx.compose.material3.HorizontalFloatingToolbar
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
+import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.clipboard.ClipboardItem
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.services.ui.i18NIns
-import tornaco.apps.shortx.ui.FlashingBorderBox
-import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.BaseActivity
+import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.clipbord.ClipboardView
-import tornaco.apps.shortx.ui.screencap.RectangleCaptureScreen
-import tornaco.apps.shortx.ui.util.ClipboardUtils
 import java.util.UUID
 
-class ComposeDemoActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            CompositionLocalProvider(
-                LocalI18N provides i18NIns
-            ) {
-                val context = LocalContext.current
-
-//                FlashingBorderBox {
-//                    RectangleCaptureScreen(
-//                        onSelectFullScreen = {
-//                            Toast
-//                                .makeText(context, "onSelectFullScreen", Toast.LENGTH_SHORT)
-//                                .show()
-//                        },
-//                        onSelected = {
-//                            Toast
-//                                .makeText(context, "Selected Rect: $it", Toast.LENGTH_SHORT)
-//                                .show()
-//
-//                            ClipboardUtils.copyToClipboard(
-//                                context, "rect", Rect(
-//                                    it.left.toInt(),
-//                                    it.top.toInt(),
-//                                    it.right.toInt(),
-//                                    it.bottom.toInt()
-//                                ).flattenToString()
-//                            )
-//                        }
-//                    )
-//                }
-
-                NotificationDemo2()
-            }
-        }
+class ComposeDemoActivity : BaseActivity() {
+    @Composable
+    override fun Content() {
+        MD3ExpToolbarDemo()
     }
 }
 
@@ -84,4 +68,55 @@ fun TestClipboardView() {
         addText = {},
         removeText = {},
         clearAll = {}).ComposeContent()
+}
+
+@Composable
+fun MD3ExpToolbarDemo() {
+    val exitAlwaysScrollBehavior =
+        FloatingToolbarDefaults.exitAlwaysScrollBehavior(exitDirection = Bottom)
+    val vibrantColors = FloatingToolbarDefaults.vibrantFloatingToolbarColors()
+    Scaffold(modifier = Modifier.nestedScroll(exitAlwaysScrollBehavior)) { innerPadding ->
+        Box(Modifier.padding(innerPadding)) {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Text(text = remember { LoremIpsum().values.first() })
+            }
+            HorizontalFloatingToolbar(
+                // Always expanded as the toolbar is bottom-centered. We will use a
+                // FloatingToolbarScrollBehavior to hide both the toolbar and its FAB on scroll.
+                expanded = true,
+                floatingActionButton = {
+                    // Match the FAB to the vibrantColors. See also StandardFloatingActionButton.
+                    FloatingToolbarDefaults.VibrantFloatingActionButton(
+                        onClick = { /* doSomething() */ },
+                    ) {
+                        RemixIcon(Remix.System.add_line)
+                    }
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .offset(y = -ScreenOffset),
+                colors = vibrantColors,
+                scrollBehavior = exitAlwaysScrollBehavior,
+                content = {
+                    IconButton(onClick = { /* doSomething() */ }) {
+                        RemixIcon(Remix.System.check_line)
+                    }
+                    IconButton(onClick = { /* doSomething() */ }) {
+                        RemixIcon(Remix.System.check_line)
+                    }
+                    IconButton(onClick = { /* doSomething() */ }) {
+                        RemixIcon(Remix.System.check_line)
+                    }
+                    IconButton(onClick = { /* doSomething() */ }) {
+                        RemixIcon(Remix.System.check_line)
+                    }
+                },
+            )
+        }
+    }
 }

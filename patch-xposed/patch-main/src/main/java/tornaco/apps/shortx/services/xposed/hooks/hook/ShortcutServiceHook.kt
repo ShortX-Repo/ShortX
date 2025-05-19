@@ -2,19 +2,19 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import android.appwidget.AppWidgetProviderInfo
 import android.content.pm.ShortcutInfo
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.platform.Classes.shortcutServiceClass
 import tornaco.apps.shortx.core.platform.Methods.requestPinItem
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXService
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.ISystemServerLoaded
 import util.ReflectionsExt
 
 object ShortcutServiceHook {
     private val logger = Logger("ShortXHook.SS")
 
-    fun hook(lpparam: XC_LoadPackage.LoadPackageParam) {
+    fun hook(lpparam: ISystemServerLoaded.Param) {
         if (OsUtils.isQOrAbove()) {
             kotlin.runCatching {
                 val method = ReflectionsExt.findMethodWithMostArgs(

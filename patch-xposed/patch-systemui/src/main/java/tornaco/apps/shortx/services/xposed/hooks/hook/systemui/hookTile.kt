@@ -9,11 +9,12 @@ import tornaco.apps.shortx.core.platform.ClassNames.SYSTEM_UI_CUSTOM_TILE
 import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.services.xposed.hooks.hook.afterMethod
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.IPackageLoaded
 import util.Reflections
 
 var sAutoHideControllerImpl: Any? = null
 
-fun SystemUIHook.hookTile(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
+fun SystemUIHook.hookTile(lpparam: IPackageLoaded.Param) = kotlin.runCatching {
     if (PackageNames.systemUI == lpparam.packageName) {
         afterMethod(
             Reflections.findClass(

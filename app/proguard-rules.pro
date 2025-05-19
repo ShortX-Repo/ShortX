@@ -244,3 +244,10 @@
 -dontwarn android.content.IClipboard
 -dontwarn android.app.LoadedApk
 -dontwarn android.app.IApplicationThread
+
+
+-dontwarn io.github.libxposed.api.XposedInterface
+-dontwarn io.github.libxposed.api.XposedModule
+-dontwarn io.github.libxposed.api.XposedModuleInterface$ModuleLoadedParam
+-dontwarn io.github.libxposed.api.XposedModuleInterface$PackageLoadedParam
+-dontwarn io.github.libxposed.api.XposedModuleInterface$SystemServerLoadedParam

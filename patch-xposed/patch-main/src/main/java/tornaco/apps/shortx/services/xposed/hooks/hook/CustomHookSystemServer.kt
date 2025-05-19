@@ -1,6 +1,5 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.proto.fact.MethodHook
 import tornaco.apps.shortx.core.proto.fact.MethodHookLifecycle
@@ -9,12 +8,13 @@ import tornaco.apps.shortx.services.ShortXService
 import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.xposed.hooks.hook.CustomHookUtil.compileExpressions
 import tornaco.apps.shortx.services.xposed.hooks.hook.CustomHookUtil.installHookForRules
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.ISystemServerLoaded
 
 object CustomHookSystemServer {
     private const val IS_FEATURE_ENABLED = true
     private const val LOG_REDIRECT = "method_hook"
 
-    fun hookAndroidSystem(lpparam: XC_LoadPackage.LoadPackageParam) {
+    fun hookAndroidSystem(lpparam: ISystemServerLoaded.Param) {
         if (!IS_FEATURE_ENABLED) return
         ShortXService.shortXContext.serviceLifecycle.registerLifecycleSystemReadyCallback(object :
             ICallback.Stub() {

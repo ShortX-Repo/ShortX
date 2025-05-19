@@ -1,16 +1,16 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.platform.Classes.nfcServiceHandlerClass
 import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.IPackageLoaded
 import util.Reflections
 
 object NFCServiceHook {
     private val logger = Logger("ShortXHook.NFCServiceHook")
 
-    fun hook(lpparam: XC_LoadPackage.LoadPackageParam) {
+    fun hook(lpparam: IPackageLoaded.Param) {
         if (lpparam.packageName == PackageNames.nfc) {
             afterMethod(lpparam.classLoader.nfcServiceHandlerClass(), "dispatchTagEndpoint") {
                 logger.d("dispatchTagEndpoint: ${it.args[0]}")

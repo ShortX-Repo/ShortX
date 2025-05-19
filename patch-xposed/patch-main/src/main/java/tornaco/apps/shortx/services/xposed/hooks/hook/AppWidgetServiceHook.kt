@@ -2,16 +2,16 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import android.content.pm.ParceledListSlice
 import android.os.Bundle
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.platform.Classes.appWidgetServiceImplClass
 import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXService
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.ISystemServerLoaded
 
 object AppWidgetServiceHook {
     private val logger = Logger("ShortXHook.AppWidgetServiceHook")
 
-    fun hookAppWidgetService(lpparam: XC_LoadPackage.LoadPackageParam) =
+    fun hookAppWidgetService(lpparam: ISystemServerLoaded.Param) =
         kotlin.runCatching {
             beforeMethod(
                 lpparam.classLoader.appWidgetServiceImplClass().apply {

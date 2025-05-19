@@ -5,7 +5,6 @@ import android.content.Context
 import android.net.Uri
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.logOnDebug
@@ -19,6 +18,7 @@ import tornaco.apps.shortx.core.platform.PackageNames.mediaProviderPackages
 import tornaco.apps.shortx.core.util.FileHelper
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.logAdapter
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.IPackageLoaded
 import util.Reflections
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
@@ -29,7 +29,7 @@ object MediaProviderHook {
     private const val FILE_LISTENER_CLASS =
         "com.android.providers.media.DatabaseHelper.OnFilesChangeListener"
 
-    fun hook(lpparam: XC_LoadPackage.LoadPackageParam) {
+    fun hook(lpparam: IPackageLoaded.Param) {
         if (mediaProviderPackages.contains(lpparam.packageName)) {
             // Install log
             logAdapter = { _: Int, tag: String, msg: String ->
@@ -55,7 +55,7 @@ object MediaProviderHook {
     }
 
     // For Insert.
-    private fun hookMediaStore(lpparam: XC_LoadPackage.LoadPackageParam) {
+    private fun hookMediaStore(lpparam: IPackageLoaded.Param) {
         fun getUriFromParams(param: XC_MethodHook.MethodHookParam): Uri? {
             val volumeName = param.args[1] as String
             val type = param.args[2] as Int
@@ -79,7 +79,7 @@ object MediaProviderHook {
     }
 
     // For delete.
-    private fun hookOnCreate(lpparam: XC_LoadPackage.LoadPackageParam) {
+    private fun hookOnCreate(lpparam: IPackageLoaded.Param) {
         beforeMethod(
             lpparam.classLoader.mediaProviderClass(), onCreate
         ) { param ->

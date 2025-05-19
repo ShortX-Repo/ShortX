@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.ExperimentalMaterialApi
@@ -30,12 +32,14 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.AddRuleActivity
@@ -60,6 +64,7 @@ import tornaco.apps.shortx.ui.main.MainViewModel
 import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.main.uniqueUIKey
 import tornaco.apps.shortx.ui.main.userSetIdOrNull
+import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.ViewerActivity
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
@@ -192,27 +197,78 @@ fun RuleSetFlowRow(
     selectRuleSetFilter: (CommonSetFilter) -> Unit = {},
 ) {
     if (ruleSetFilters.any { !it.isStock }) {
-        FlowRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp),
-            horizontalArrangement = Arrangement.Start
-        ) {
-            ruleSetFilters.forEachIndexed { index, rs ->
-                OutlinedToggleButton(
-                    checked = selectedRuleSetFilter == rs,
-                    onCheckedChange = {
-                        selectRuleSetFilter(rs)
-                    },
-                    modifier = Modifier.padding(start = 2.dp),
-                    shapes =
-                        when (index) {
-                            0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                            ruleSetFilters.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
-                            else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+        val context = LocalContext.current
+        val pref = remember { Pref(context) }
+        val miscToggles by pref.miscUiToggles.collectAsState(initial = emptySet())
+        val isRowView = miscToggles.contains(KEY_RULE_LIST_RULE_SET_FILTER_ROW)
+        val scope = rememberCoroutineScope()
+
+        if (isRowView) {
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp),
+                horizontalArrangement = Arrangement.Start
+            ) {
+                itemsIndexed(ruleSetFilters) { index, rs ->
+                    OutlinedToggleButton(
+                        checked = selectedRuleSetFilter == rs,
+                        onCheckedChange = {
+                            selectRuleSetFilter(rs)
+                        },
+                        modifier = Modifier.padding(start = 2.dp),
+                        shapes =
+                            when (index) {
+                                0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                                ruleSetFilters.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                                else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                            }
+                    ) {
+                        Text(rs.title)
+                    }
+                }
+
+                item {
+                    IconButton(onClick = {
+                        scope.launch {
+                            pref.miscUiTogglesOff(KEY_RULE_LIST_RULE_SET_FILTER_ROW)
                         }
-                ) {
-                    Text(rs.title)
+                    }) {
+                        RemixIcon(Remix.Editor.text_wrap)
+                    }
+                }
+            }
+        } else {
+            FlowRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp),
+                horizontalArrangement = Arrangement.Start
+            ) {
+                ruleSetFilters.forEachIndexed { index, rs ->
+                    OutlinedToggleButton(
+                        checked = selectedRuleSetFilter == rs,
+                        onCheckedChange = {
+                            selectRuleSetFilter(rs)
+                        },
+                        modifier = Modifier.padding(start = 2.dp),
+                        shapes =
+                            when (index) {
+                                0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                                ruleSetFilters.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                                else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                            }
+                    ) {
+                        Text(rs.title)
+                    }
+                }
+
+                IconButton(onClick = {
+                    scope.launch {
+                        pref.miscUiTogglesOn(KEY_RULE_LIST_RULE_SET_FILTER_ROW)
+                    }
+                }) {
+                    RemixIcon(Remix.Editor.text_wrap)
                 }
             }
         }
@@ -296,3 +352,5 @@ private fun RuleListContent(
         }
     }
 }
+
+private const val KEY_RULE_LIST_RULE_SET_FILTER_ROW = "feat.rule.list.rule.set.filter.row"
