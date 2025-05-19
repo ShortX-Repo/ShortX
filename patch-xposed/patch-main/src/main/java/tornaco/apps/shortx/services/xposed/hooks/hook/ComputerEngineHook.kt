@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.pm.ResolveInfo
 import android.content.pm.ServiceInfo
 import de.robv.android.xposed.XposedHelpers
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.classNameToCustomContextMenu
 import tornaco.apps.shortx.core.platform.Classes.pmComputerEngineClass
@@ -15,6 +14,7 @@ import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXService
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.ISystemServerLoaded
 
 object ComputerEngineHook {
     private val logger = Logger("ShortXHook.ComputerEngineHook")
@@ -27,13 +27,13 @@ object ComputerEngineHook {
 
     }
 
-    fun hook(lpparam: XC_LoadPackage.LoadPackageParam) {
+    fun hook(lpparam: ISystemServerLoaded.Param) {
         // Replaced by TileHook.
         // hookGetServiceInfo(lpparam)
         hookQueryIntentActivities(lpparam)
     }
 
-    private fun hookGetServiceInfo(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
+    private fun hookGetServiceInfo(lpparam: ISystemServerLoaded.Param) = kotlin.runCatching {
         afterMethod(
             lpparam.classLoader.pmComputerEngineClass(),
             "getServiceInfo"
@@ -67,7 +67,7 @@ object ComputerEngineHook {
         logger.e(it, "hookGetServiceInfo")
     }
 
-    private fun hookQueryIntentActivities(lpparam: XC_LoadPackage.LoadPackageParam) =
+    private fun hookQueryIntentActivities(lpparam: ISystemServerLoaded.Param) =
         kotlin.runCatching {
             afterMethod(
                 XposedHelpers.findClass(QueryIntentActivities.engineClassName, lpparam.classLoader),

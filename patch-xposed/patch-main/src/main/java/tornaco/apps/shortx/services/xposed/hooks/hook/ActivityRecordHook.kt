@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.IBinder
 import android.os.UserHandle
 import de.robv.android.xposed.XC_MethodHook
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.platform.ActivityRecordUtils
 import tornaco.apps.shortx.core.platform.Classes.activityRecordClass
@@ -15,11 +14,12 @@ import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXService
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.ISystemServerLoaded
 
 object ActivityRecordHook {
     private val logger = Logger("ShortXHook.ActivityRecordHook")
 
-    fun hook(lpparam: XC_LoadPackage.LoadPackageParam) {
+    fun hook(lpparam: ISystemServerLoaded.Param) {
         logger.d("hook")
         if (OsUtils.isSOrAbove()) {
             // Android 12+
@@ -37,7 +37,7 @@ object ActivityRecordHook {
 
     private fun handleActivityResumed(
         param: XC_MethodHook.MethodHookParam,
-        lpparam: XC_LoadPackage.LoadPackageParam
+        lpparam: ISystemServerLoaded.Param
     ) {
         //  final ActivityRecord r = ActivityRecord.forTokenLocked(token);
         val activityRecord =
@@ -70,7 +70,7 @@ object ActivityRecordHook {
         )
     }
 
-    private fun hookActivityResumedAndroid12_plus(lpparam: XC_LoadPackage.LoadPackageParam) =
+    private fun hookActivityResumedAndroid12_plus(lpparam: ISystemServerLoaded.Param) =
         kotlin.runCatching {
             logger.d("hookActivityResumedAndroid12_plus")
             val activityRecordClazz = lpparam.classLoader.activityRecordClass()
@@ -82,7 +82,7 @@ object ActivityRecordHook {
             }
         }.onFailure { logger.e(it, "hookActivityResumed") }
 
-    private fun hookActivityResumedAndroid10_11(lpparam: XC_LoadPackage.LoadPackageParam) =
+    private fun hookActivityResumedAndroid10_11(lpparam: ISystemServerLoaded.Param) =
         kotlin.runCatching {
             logger.d("hookActivityResumedAndroid10_11")
             val activityRecordClazz = lpparam.classLoader.atmsClass()
@@ -95,7 +95,7 @@ object ActivityRecordHook {
         }.onFailure { logger.e(it, "hookActivityResumed") }
 
 
-    private fun hookActivityResumedAndroid9_(lpparam: XC_LoadPackage.LoadPackageParam) =
+    private fun hookActivityResumedAndroid9_(lpparam: ISystemServerLoaded.Param) =
         kotlin.runCatching {
             logger.d("hookActivityResumedAndroid9_")
             val activityRecordClazz = lpparam.classLoader.amsClass()
@@ -107,7 +107,7 @@ object ActivityRecordHook {
             }
         }.onFailure { logger.e(it, "hookActivityResumed") }
 
-    private fun hookActivityStopped(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
+    private fun hookActivityStopped(lpparam: ISystemServerLoaded.Param) = kotlin.runCatching {
         val activityRecordClazz = lpparam.classLoader.activityRecordClass()
         val method = activityRecordClazz.activityStoppedMethod()
         logger.d("activityStoppedMethod: $method")
@@ -141,7 +141,7 @@ object ActivityRecordHook {
         logger.e(it, "hookActivityStopped")
     }
 
-    private fun hookSetState(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
+    private fun hookSetState(lpparam: ISystemServerLoaded.Param) = kotlin.runCatching {
         val activityRecordClazz = lpparam.classLoader.activityRecordClass()
         beforeMethod(
             activityRecordClazz,

@@ -7,7 +7,6 @@ import android.content.Context
 import android.net.Uri
 import android.provider.Telephony.Mms
 import android.provider.Telephony.Sms
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.phone.ISMSProvider
@@ -15,6 +14,7 @@ import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.newHandlerOfNewThread
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.IPackageLoaded
 import util.Reflections
 import java.util.Locale
 
@@ -22,7 +22,7 @@ import java.util.Locale
 object MMSHook {
     private val logger = Logger("ShortXHook.MMSHook")
 
-    fun hook(lpparam: XC_LoadPackage.LoadPackageParam) {
+    fun hook(lpparam: IPackageLoaded.Param) {
         if (lpparam.packageName == "com.android.providers.telephony") {
             afterMethod(
                 Reflections.findClass(

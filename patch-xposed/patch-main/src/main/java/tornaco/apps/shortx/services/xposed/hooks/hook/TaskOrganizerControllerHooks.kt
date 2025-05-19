@@ -1,15 +1,15 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.platform.Classes.taskOrganizerControllerClass
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.ISystemServerLoaded
 
 object TaskOrganizerControllerHooks {
     private val logger = Logger("ShortXHook.TaskOrganizerControllerHooks")
 
-    fun hookHandleInterceptBackPressedOnTaskRoot(lpparam: XC_LoadPackage.LoadPackageParam) {
+    fun hookHandleInterceptBackPressedOnTaskRoot(lpparam: ISystemServerLoaded.Param) {
         if (BuildPropInternal.APP_IS_DEBUG) {
             kotlin.runCatching {
                 if (OsUtils.isTOrAbove()) {

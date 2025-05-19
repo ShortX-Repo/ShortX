@@ -8,10 +8,6 @@ interface ISystemServerLoaded {
 
     data class Param(
         /**
-         * The name of the package being loaded.
-         */
-        val packageName: String,
-        /**
          * The ClassLoader used for this package.
          */
         val classLoader: ClassLoader

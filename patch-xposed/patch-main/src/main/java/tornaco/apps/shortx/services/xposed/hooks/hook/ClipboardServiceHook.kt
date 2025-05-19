@@ -4,18 +4,18 @@ import android.content.ClipData
 import android.content.Intent
 import android.os.Bundle
 import com.elvishew.xlog.XLog
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.CLIPBOARD_SERVICE_BINDER_CALL_PKG_NAME
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.platform.Classes.clipboardServiceClass
 import tornaco.apps.shortx.core.platform.Classes.clipboardServiceImplClass
 import tornaco.apps.shortx.core.platform.Methods.getPrimaryClip
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.ISystemServerLoaded
 
 object ClipboardServiceHook {
     private val logger = Logger("ShortXHook.ClipboardServiceHook")
 
-    fun hookClipboardService(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
+    fun hookClipboardService(lpparam: ISystemServerLoaded.Param) = kotlin.runCatching {
         hookCheckAccess(lpparam)
         hookGetPrimaryClip(lpparam)
     }.onFailure {
@@ -23,7 +23,7 @@ object ClipboardServiceHook {
     }
 
     // ReadClipBoard Need this.
-    private fun hookCheckAccess(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
+    private fun hookCheckAccess(lpparam: ISystemServerLoaded.Param) = kotlin.runCatching {
         afterMethod(
             lpparam.classLoader.clipboardServiceClass(),
             "clipboardAccessAllowed"
@@ -39,7 +39,7 @@ object ClipboardServiceHook {
         logger.e(it, "hookClipboardService")
     }
 
-    private fun hookGetPrimaryClip(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
+    private fun hookGetPrimaryClip(lpparam: ISystemServerLoaded.Param) = kotlin.runCatching {
         afterMethod(
             lpparam.classLoader.clipboardServiceImplClass(),
             getPrimaryClip

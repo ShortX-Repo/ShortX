@@ -1,16 +1,16 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.platform.Classes.activeServicesClass
 import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXService
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.ISystemServerLoaded
 
 object ActiveServiceHook {
     private val logger = Logger("ShortXHook.ActiveServiceHook")
 
-    fun hookUpdateScreenState(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
+    fun hookUpdateScreenState(lpparam: ISystemServerLoaded.Param) = kotlin.runCatching {
         // Only for >= android 31, the screen off fact slow issue is reported on android 31.
         if (OsUtils.isSOrAbove()) {
             afterMethod(

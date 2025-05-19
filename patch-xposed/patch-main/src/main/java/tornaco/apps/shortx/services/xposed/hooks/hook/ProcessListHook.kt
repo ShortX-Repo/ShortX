@@ -2,7 +2,6 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import android.content.pm.ApplicationInfo
 import de.robv.android.xposed.XC_MethodHook
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.platform.Classes.amsClass
 import tornaco.apps.shortx.core.platform.Classes.processListClass
 import tornaco.apps.shortx.core.platform.Methods.handleProcessStartedLocked
@@ -12,13 +11,14 @@ import tornaco.apps.shortx.core.toAppPkg
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXService
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.ISystemServerLoaded
 import util.Reflections
 import util.ReflectionsExt
 
 object ProcessListHook {
     private val logger = Logger("ShortXHook.ProcessListHook")
 
-    fun hookProcessListRemoveProcess(lpparam: XC_LoadPackage.LoadPackageParam) =
+    fun hookProcessListRemoveProcess(lpparam: ISystemServerLoaded.Param) =
         kotlin.runCatching {
             if (OsUtils.isQOrAbove()) {
                 afterMethod(lpparam.classLoader.processListClass(), removeLruProcessLocked) {
@@ -33,7 +33,7 @@ object ProcessListHook {
             logger.e(it, "hookProcessList")
         }
 
-    fun hookProcessListOnProcessStarted(lpparam: XC_LoadPackage.LoadPackageParam) =
+    fun hookProcessListOnProcessStarted(lpparam: ISystemServerLoaded.Param) =
         kotlin.runCatching {
             if (OsUtils.isQOrAbove()) {
                 val method = ReflectionsExt.findMethodWithMostArgs(

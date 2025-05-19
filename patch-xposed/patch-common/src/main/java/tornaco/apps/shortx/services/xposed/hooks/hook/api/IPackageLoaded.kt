@@ -5,5 +5,9 @@ interface IPackageLoaded {
     fun onPackageLoaded(param: Param) {
     }
 
-    object Param
+    data class Param(
+        val packageName: String,
+        val processName: String?,
+        val classLoader: ClassLoader
+    )
 }

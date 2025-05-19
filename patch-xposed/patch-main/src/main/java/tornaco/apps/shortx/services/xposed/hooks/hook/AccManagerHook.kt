@@ -1,21 +1,21 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import android.accessibilityservice.AccessibilityServiceInfo
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.platform.Classes.accProxyManager
 import tornaco.apps.shortx.core.platform.Classes.uiAutomationManager
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.ISystemServerLoaded
 import util.Reflections
 
 object AccManagerHook {
     private val logger = Logger("ShortXHook.AccManagerHook")
 
-    fun hook(lpparam: XC_LoadPackage.LoadPackageParam) {
+    fun hook(lpparam: ISystemServerLoaded.Param) {
         hookSuppressingAccessibilityServices(lpparam)
         // hookProxyManager(lpparam)
     }
 
-    private fun hookSuppressingAccessibilityServices(lpparam: XC_LoadPackage.LoadPackageParam) =
+    private fun hookSuppressingAccessibilityServices(lpparam: ISystemServerLoaded.Param) =
         kotlin.runCatching {
             afterMethod(
                 lpparam.classLoader.uiAutomationManager(),
@@ -31,7 +31,7 @@ object AccManagerHook {
             logger.e(it, "hookSuppressingAccessibilityServices")
         }
 
-    private fun hookProxyManager(lpparam: XC_LoadPackage.LoadPackageParam) =
+    private fun hookProxyManager(lpparam: ISystemServerLoaded.Param) =
         kotlin.runCatching {
             afterConstruct(
                 lpparam.classLoader.accProxyManager(),

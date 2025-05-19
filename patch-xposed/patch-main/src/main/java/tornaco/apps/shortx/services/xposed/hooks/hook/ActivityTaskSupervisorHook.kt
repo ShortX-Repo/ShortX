@@ -2,7 +2,6 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import android.content.Intent
 import de.robv.android.xposed.XC_MethodHook
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.platform.Classes.activityStackSupervisorClass
 import tornaco.apps.shortx.core.platform.Classes.amsClass
@@ -13,13 +12,14 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.services.ShortXService
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.ISystemServerLoaded
 import util.Reflections
 import util.ReflectionsExt
 
 object ActivityTaskSupervisorHook {
     private val logger = Logger("ShortXHook.ActivityTaskSupervisorHook")
 
-    fun hookActivityTaskSupervisor(lpparam: XC_LoadPackage.LoadPackageParam) {
+    fun hookActivityTaskSupervisor(lpparam: ISystemServerLoaded.Param) {
         hookCleanUpTask(lpparam)
         // Debug.
         if (BuildPropInternal.APP_IS_DEBUG) {
@@ -28,7 +28,7 @@ object ActivityTaskSupervisorHook {
     }
 
     // Observed: happens on the first time starting an Activity.
-    private fun hookRealStartActivity(lpparam: XC_LoadPackage.LoadPackageParam) {
+    private fun hookRealStartActivity(lpparam: ISystemServerLoaded.Param) {
         kotlin.runCatching {
             val methodName = "realStartActivityLocked"
             afterMethod(
@@ -42,7 +42,7 @@ object ActivityTaskSupervisorHook {
         }
     }
 
-    private fun hookCleanUpTask(lpparam: XC_LoadPackage.LoadPackageParam) {
+    private fun hookCleanUpTask(lpparam: ISystemServerLoaded.Param) {
         kotlin.runCatching {
             if (OsUtils.isUOrAbove()) {
                 afterMethod(

@@ -3,7 +3,6 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 import android.app.IApplicationThread
 import android.content.Context
 import android.os.ShellCommand
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.platform.Classes.amsClass
 import tornaco.apps.shortx.core.platform.Classes.amsLifecycleClass
@@ -12,12 +11,13 @@ import tornaco.apps.shortx.core.platform.Fields
 import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXService
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.ISystemServerLoaded
 import util.field
 
 object AMSHook {
     private val logger = Logger("ShortXHook.AMSHook")
 
-    fun hookAMS(lpparam: XC_LoadPackage.LoadPackageParam) {
+    fun hookAMS(lpparam: ISystemServerLoaded.Param) {
         // Start.
         kotlin.runCatching {
             afterMethod(lpparam.classLoader.amsClass(), Methods.start) { param ->
@@ -57,7 +57,7 @@ object AMSHook {
         }
     }
 
-    fun hookAMSLifecycleStart(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
+    fun hookAMSLifecycleStart(lpparam: ISystemServerLoaded.Param) = kotlin.runCatching {
         afterMethod(lpparam.classLoader.amsLifecycleClass(), "onStart") { param ->
             val context = param.thisObject.field<Context>(Fields.mContext)
             logger.w("AMS Lifecycle start")
@@ -70,7 +70,7 @@ object AMSHook {
         logger.e(it, "hookAMS")
     }
 
-    fun hookAMSShellCommand(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
+    fun hookAMSShellCommand(lpparam: ISystemServerLoaded.Param) = kotlin.runCatching {
         beforeMethod(lpparam.classLoader.amsShellCommandClass(), "onCommand") { param ->
             val command = param.args[0].toString()
             logger.d("onCommand: $command")

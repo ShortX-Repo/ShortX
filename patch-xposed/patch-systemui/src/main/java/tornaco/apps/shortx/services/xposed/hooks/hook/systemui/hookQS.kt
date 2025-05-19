@@ -4,9 +4,10 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.xposed.hooks.hook.afterConstruct
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.IPackageLoaded
 import util.Reflections
 
-fun SystemUIHook.hookQS(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
+fun SystemUIHook.hookQS(lpparam: IPackageLoaded.Param) = kotlin.runCatching {
     if (PackageNames.systemUI == lpparam.packageName) {
         afterConstruct(
             clazz = Reflections.findClass(

@@ -3,16 +3,14 @@ package tornaco.apps.shortx.services.xposed.hooks.hook.systemui
 import android.content.res.Resources
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import android.widget.LinearLayout
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.services.xposed.hooks.hook.afterConstruct
 import tornaco.apps.shortx.services.xposed.hooks.hook.afterMethod
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.IPackageLoaded
 import tornaco.apps.shortx.ui.statusbar.StatusBarClipView
 import util.Reflections
 
-fun SystemUIHook.hookView(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
+fun SystemUIHook.hookView(lpparam: IPackageLoaded.Param) = kotlin.runCatching {
     fun View.getIdString(): String {
         val out = StringBuilder()
         val id = id

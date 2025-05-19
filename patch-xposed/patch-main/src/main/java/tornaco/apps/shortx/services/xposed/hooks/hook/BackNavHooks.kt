@@ -1,18 +1,18 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import android.os.Bundle
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.platform.Classes.backNavControllerClass
 import tornaco.apps.shortx.core.platform.Methods.onBackNavigationDone
 import tornaco.apps.shortx.core.platform.Methods.startBackNavigation
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXService
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.ISystemServerLoaded
 
 object BackNavHooks {
     private val logger = Logger("ShortXHook.BackNavHooks")
 
-    fun hookStartNav(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
+    fun hookStartNav(lpparam: ISystemServerLoaded.Param) = kotlin.runCatching {
         if (OsUtils.isTOrAbove()) {
             beforeMethod(
                 lpparam.classLoader.backNavControllerClass(), startBackNavigation
@@ -26,7 +26,7 @@ object BackNavHooks {
         logger.e(it, "hookStartNav")
     }
 
-    fun hookOnNavDone(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
+    fun hookOnNavDone(lpparam: ISystemServerLoaded.Param) = kotlin.runCatching {
         if (OsUtils.isTOrAbove()) {
             beforeMethod(
                 lpparam.classLoader.backNavControllerClass(), onBackNavigationDone

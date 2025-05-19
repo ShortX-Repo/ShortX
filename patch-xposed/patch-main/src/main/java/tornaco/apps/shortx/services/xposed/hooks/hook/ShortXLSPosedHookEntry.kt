@@ -17,25 +17,43 @@
 
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
-import de.robv.android.xposed.XposedBridge
 import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import tornaco.apps.shortx.core.annotations.DoNotStrip
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.IPackageLoaded
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.ISystemServerLoaded
+
+private lateinit var module: ShortXLSPosedHookEntry
+private lateinit var processName: String
 
 @DoNotStrip
-class LSPosedHookEntry(base: XposedInterface, param: XposedModuleInterface.ModuleLoadedParam) :
-    XposedModule(base, param) {
-    private val legacy by lazy { XposedEntry() }
+class ShortXLSPosedHookEntry(
+    base: XposedInterface,
+    moduleParam: XposedModuleInterface.ModuleLoadedParam
+) :
+    XposedModule(base, moduleParam) {
+    init {
+        log("ShortXLSPosedHookEntry.init ${moduleParam.processName} isSystemServer: ${moduleParam.isSystemServer}")
+        module = this
+        processName = moduleParam.processName
+        HookStub2.initZygote()
+    }
 
     override fun onPackageLoaded(param: XposedModuleInterface.PackageLoadedParam) {
         super.onPackageLoaded(param)
-        XposedBridge.log("onPackageLoaded: ${param.packageName}")
+        val pkgParam = IPackageLoaded.Param(
+            param.packageName,
+            processName,
+            param.classLoader
+        )
+        log("ShortXLSPosedHookEntry.onPackageLoaded: $pkgParam")
+        HookStub2.packageLoaded(pkgParam)
     }
 
     override fun onSystemServerLoaded(param: XposedModuleInterface.SystemServerLoadedParam) {
         super.onSystemServerLoaded(param)
-        XposedBridge.log("onSystemServerLoaded")
-
+        log("ShortXLSPosedHookEntry.onSystemServerLoaded")
+        HookStub2.systemServerLoaded(ISystemServerLoaded.Param(param.classLoader))
     }
 }

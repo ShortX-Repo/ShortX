@@ -2,7 +2,6 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import android.annotation.SuppressLint
 import android.view.KeyEvent
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.platform.Classes.inputManagerService
 import tornaco.apps.shortx.core.platform.Classes.keyCombinationManager
@@ -11,6 +10,7 @@ import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXService
 import tornaco.apps.shortx.services.android.ServiceHolder
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.ISystemServerLoaded
 import util.ReflectionsExt
 import java.lang.reflect.Method
 
@@ -21,7 +21,7 @@ object InputManagerHook {
     private var interceptKeyBeforeDispatching_KeyEvent_Index: Int? = null
 
     @SuppressLint("PrivateApi")
-    fun hookInputManager(lpparam: XC_LoadPackage.LoadPackageParam) {
+    fun hookInputManager(lpparam: ISystemServerLoaded.Param) {
         kotlin.runCatching {
             afterMethod(lpparam.classLoader.inputManagerService(), Methods.start) { param ->
                 logger.d("inputManagerService start.")
