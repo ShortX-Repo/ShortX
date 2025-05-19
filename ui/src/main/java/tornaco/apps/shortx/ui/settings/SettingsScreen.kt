@@ -120,8 +120,6 @@ fun SettingsScreen(
     val subscribeState by LVLStateHolder.collectAsState()
     val context = LocalContext.current
 
-    BackHandler { back() }
-
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),

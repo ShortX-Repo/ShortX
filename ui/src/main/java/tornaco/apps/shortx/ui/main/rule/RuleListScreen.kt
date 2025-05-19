@@ -353,4 +353,4 @@ private fun RuleListContent(
     }
 }
 
-const val KEY_RULE_LIST_RULE_SET_FILTER_ROW = "feat.rule.list.rule.set.filter.row"
+private const val KEY_RULE_LIST_RULE_SET_FILTER_ROW = "feat.rule.list.rule.set.filter.row"

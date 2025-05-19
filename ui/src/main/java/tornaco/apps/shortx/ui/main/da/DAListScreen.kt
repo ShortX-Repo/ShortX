@@ -1,5 +1,5 @@
 @file:OptIn(
-    ExperimentalLayoutApi::class
+    ExperimentalLayoutApi::class, ExperimentalMaterial3ExpressiveApi::class
 )
 
 package tornaco.apps.shortx.ui.main.da
@@ -16,14 +16,19 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
+import androidx.compose.material3.ButtonGroupDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -31,6 +36,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -38,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addda.AddDirectActionActivity
@@ -52,7 +59,6 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.ProgressDialog
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
-import tornaco.apps.shortx.ui.base.ShortXFilterChip
 import tornaco.apps.shortx.ui.base.TextDisplayActivity
 import tornaco.apps.shortx.ui.base.TipIds
 import tornaco.apps.shortx.ui.base.UserTip
@@ -68,6 +74,7 @@ import tornaco.apps.shortx.ui.main.MainViewModel
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.main.uniqueUIKey
 import tornaco.apps.shortx.ui.main.userSetIdOrNull
+import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.ViewerActivity
 import tornaco.apps.shortx.ui.shortcut.ApkInstallState
@@ -230,20 +237,78 @@ fun DASetFilterFlowRow(
     selectDASetFilter: (CommonSetFilter) -> Unit = {},
 ) {
     if (daSetFilters.any { !it.isStock }) {
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start
-        ) {
-            daSetFilters.forEach {
-                ShortXFilterChip(
-                    modifier = Modifier.padding(start = 16.dp),
-                    selected = selectedDASetFilter == it,
-                    label = {
-                        Text(text = it.title)
-                    },
-                    onClick = {
-                        selectDASetFilter(it)
-                    })
+        val context = LocalContext.current
+        val pref = remember { Pref(context) }
+        val miscToggles by pref.miscUiToggles.collectAsState(initial = emptySet())
+        val isRowView = miscToggles.contains(KEY_DA_LIST_RULE_SET_FILTER_ROW)
+        val scope = rememberCoroutineScope()
+
+        if (isRowView) {
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp),
+                horizontalArrangement = Arrangement.Start
+            ) {
+                itemsIndexed(daSetFilters) { index, ds ->
+                    OutlinedToggleButton(
+                        checked = selectedDASetFilter == ds,
+                        onCheckedChange = {
+                            selectDASetFilter(ds)
+                        },
+                        modifier = Modifier.padding(start = 2.dp),
+                        shapes =
+                            when (index) {
+                                0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                                daSetFilters.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                                else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                            }
+                    ) {
+                        Text(ds.title)
+                    }
+                }
+                item {
+                    IconButton(onClick = {
+                        scope.launch {
+                            pref.miscUiTogglesOff(KEY_DA_LIST_RULE_SET_FILTER_ROW)
+                        }
+                    }) {
+                        RemixIcon(Remix.Editor.text_wrap)
+                    }
+                }
+            }
+        } else {
+            FlowRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp),
+                horizontalArrangement = Arrangement.Start
+            ) {
+                daSetFilters.forEachIndexed { index, ds ->
+                    OutlinedToggleButton(
+                        checked = selectedDASetFilter == ds,
+                        onCheckedChange = {
+                            selectDASetFilter(ds)
+                        },
+                        modifier = Modifier.padding(start = 2.dp),
+                        shapes =
+                            when (index) {
+                                0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                                daSetFilters.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                                else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                            }
+                    ) {
+                        Text(ds.title)
+                    }
+                }
+
+                IconButton(onClick = {
+                    scope.launch {
+                        pref.miscUiTogglesOn(KEY_DA_LIST_RULE_SET_FILTER_ROW)
+                    }
+                }) {
+                    RemixIcon(Remix.Editor.text_wrap)
+                }
             }
         }
     }
@@ -374,3 +439,5 @@ private fun DAListContentCompat(
         }
     }
 }
+
+private const val KEY_DA_LIST_RULE_SET_FILTER_ROW = "feat.da.list.da.set.filter.row"
