@@ -18,6 +18,9 @@ object SystemUIHook {
 
     fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam) {
         if (PackageNames.systemUI == lpparam.packageName) {
+            val isMainProcess = PackageNames.systemUI == lpparam.processName
+            XposedBridge.log("SystemUIHook.isMainProcess- $isMainProcess")
+            if (!isMainProcess) return
             // Install log
             logAdapter = { level: Int, tag: String, msg: String ->
                 if (BuildPropInternal.APP_IS_DEBUG || level > Log.INFO) {

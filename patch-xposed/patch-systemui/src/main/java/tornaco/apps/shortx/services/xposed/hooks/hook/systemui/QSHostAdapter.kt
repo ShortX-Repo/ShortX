@@ -22,7 +22,9 @@ object QSHostAdapter {
         }
 
     fun getTiles(): List<*> {
-        return if (OsUtils.isVOrAbove()) {
+        return if (OsUtils.isVOrAbove().apply {
+                logger.d("isVOrAbove? $this")
+            }) {
             getTilesAndroid15() ?: getTilesAndroid14()
         } else {
             getTilesAndroid14()
@@ -48,6 +50,7 @@ object QSHostAdapter {
     }
 
     private fun getTilesAndroid15(): List<*>? {
+        logger.w("getTilesAndroid15, _QSHostAdapter: $_QSHostAdapter")
         if (_QSHostAdapter == null) {
             logger.e("getTilesAndroidV, _QSHostAdapter == null")
             return null

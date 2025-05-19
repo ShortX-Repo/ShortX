@@ -12,7 +12,7 @@ object HookStub {
     private val logger = Logger("ShortXHook.HookStub")
 
     fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam) {
-        XposedBridge.log("HookStub handleLoadPackage- ${lpparam.packageName}")
+        XposedBridge.log("HookStub handleLoadPackage- ${lpparam.packageName} ${lpparam.processName}")
         require(isSupportedAndroidVersion)
         if (PackageNames.android == lpparam.packageName) {
             logger.i("Loading android.")
