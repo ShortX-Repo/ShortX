@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.audio
 
+import android.annotation.SuppressLint
 import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
@@ -18,6 +19,7 @@ import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AudioRecordFile
 import tornaco.apps.shortx.core.proto.common.AudioSource
+import tornaco.apps.shortx.core.proto.common.CallState
 import tornaco.apps.shortx.core.proto.common.Ringtone
 import tornaco.apps.shortx.core.proto.nameAndExt
 import tornaco.apps.shortx.core.util.DateUtils
@@ -34,6 +36,7 @@ import tornaco.apps.shortx.services.audio.recorder.ScreenMediaRecorder
 import tornaco.apps.shortx.services.audio.recorder.ScreenRecordingAudioSource
 import tornaco.apps.shortx.services.data.Dirs.baseServerRecordingDir
 import tornaco.apps.shortx.services.enforceCallingPermissions
+import tornaco.apps.shortx.services.rule.cond.impl.IsInCall
 import tornaco.apps.shortx.services.runClearCallingIdentity
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.watchdog.launchSafety
@@ -64,6 +67,7 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     val isRecording: Boolean get() = synchronized(recorderSync) { currentRecorder != null }
 
     private val playingRingtones = mutableListOf<android.media.Ringtone>()
+    private val callStateHelper by lazy { IsInCall.CallStateHelper(context) }
 
     override fun systemReady() {
         super.systemReady()
@@ -376,7 +380,12 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         return res
     }
 
-    fun playRingtone(ringtone: Ringtone) {
+    @SuppressLint("UseKtx")
+    fun playRingtone(ringtone: Ringtone): android.media.Ringtone? {
+        if (callStateHelper.isPhoneInCall()) {
+            logger.e("Phone is in call, ignore playRingtone")
+            return null
+        }
         synchronized(playingRingtones) {
             playingRingtones.removeAll {
                 it.stop()
@@ -389,6 +398,17 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext, 
             }
             androidRingtone.play()
             playingRingtones.add(androidRingtone)
+            return androidRingtone
+        }
+    }
+
+    fun callStateChanged(callState: CallState) {
+        logger.w("callStateChanged: $callState")
+        synchronized(playingRingtones) {
+            playingRingtones.removeAll {
+                it.stop()
+                true
+            }
         }
     }
 }

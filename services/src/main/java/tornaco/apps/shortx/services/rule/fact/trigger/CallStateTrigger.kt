@@ -9,6 +9,7 @@ import tornaco.apps.shortx.core.proto.common.CallState
 import tornaco.apps.shortx.core.proto.fact.CallStateChanged
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.util.SafeBroadcastReceiver
 import java.util.concurrent.atomic.AtomicReference
 
@@ -40,18 +41,25 @@ class CallStateTrigger(override val context: Context, override val shortXContext
 
                     if (callState != lastCallState.get()) {
                         logger.d("callState changed: $callState, incomingNumber: $incomingNumber")
-                        shortXContext.rule.publishFact(
-                            reason = "CallState changed",
-                            fact = CallStateChanged.newBuilder()
-                                .setCallState(callState)
-                                .setIncomingNumber(incomingNumber ?: "")
-                                .build(),
-                            initialContextData = mapOf(
-                                ContextDataMapping.CallStateChanged.callState.name to callState.name,
-                                ContextDataMapping.CallStateChanged.incomingNumber.name to (incomingNumber
-                                    ?: ""),
-                            )
-                        )
+                        shortXContext.rule.publishFactChecked(
+                            CallStateChanged.getDefaultInstance()
+                        ) {
+                            FactPublishData(
+                                reason = "CallState changed",
+                                fact = CallStateChanged.newBuilder()
+                                    .setCallState(callState)
+                                    .setIncomingNumber(incomingNumber ?: "")
+                                    .build(),
+                            ) {
+                                mapOf(
+                                    ContextDataMapping.CallStateChanged.callState.name to callState.name,
+                                    ContextDataMapping.CallStateChanged.incomingNumber.name to (incomingNumber
+                                        ?: ""),
+                                )
+                            }
+                        }
+
+                        shortXContext.audio.callStateChanged(callState)
                     }
                     lastCallState.set(callState)
                 }
