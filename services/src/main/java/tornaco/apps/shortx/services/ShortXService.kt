@@ -118,6 +118,7 @@ import tornaco.apps.shortx.services.util.ListBatchUtils.Batch
 import tornaco.apps.shortx.services.util.MethodHookLogging
 import tornaco.apps.shortx.services.util.waitUntil
 import tornaco.apps.shortx.services.v.v
+import tornaco.apps.shortx.services.watchdog.SystemServerCrashHandler
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
 import java.io.File
@@ -153,6 +154,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
     override fun systemReady() {
         super.systemReady()
+        SystemServerCrashHandler.install()
         //  publishBinderService()
         // Init i18N
         val appRes = AppResources(context, BuildPropInternal.APP_PACKAGE_NAME)
