@@ -82,6 +82,7 @@ fun SystemFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: 
 
         Fact.IMEVisibilityChange::class,
         Fact.Logcat::class,
+        Fact.CpuAvgAvailability::class,
     ).map {
         SelectorItem(
             type = it,

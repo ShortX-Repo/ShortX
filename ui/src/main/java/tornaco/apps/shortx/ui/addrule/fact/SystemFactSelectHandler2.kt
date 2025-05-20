@@ -430,6 +430,11 @@ fun systemFactSelectHandler2(addFact: (Fact) -> Unit): (FactSelectSource) -> Boo
                 true
             }
 
+            Fact.CpuAvgAvailability::class -> {
+                addFact(Fact.CpuAvgAvailability())
+                true
+            }
+
             else -> false
         }
     }

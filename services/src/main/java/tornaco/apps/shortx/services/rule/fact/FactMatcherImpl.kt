@@ -44,6 +44,7 @@ import tornaco.apps.shortx.core.proto.fact.ChargerUnplug
 import tornaco.apps.shortx.core.proto.fact.ClipboardContentChanged
 import tornaco.apps.shortx.core.proto.fact.CombineKeyEvent
 import tornaco.apps.shortx.core.proto.fact.ConnectedWifiSignalLevelChanged
+import tornaco.apps.shortx.core.proto.fact.CpuAvgAvailability
 import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DeepLinkCall
@@ -757,6 +758,9 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
             ruleN.state == ProximitySensorState.ProximitySensorState_Any || actualN.state == ruleN.state
         }
         register(ShakeDevice::class.java) { actual, rule ->
+            true
+        }
+        register(CpuAvgAvailability::class.java) { actual, rule ->
             true
         }
         register(SunRiseSet::class.java) { actual, rule ->

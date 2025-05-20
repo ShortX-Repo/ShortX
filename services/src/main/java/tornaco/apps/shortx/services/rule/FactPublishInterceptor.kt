@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.ICallback
@@ -39,6 +40,7 @@ class FactPublishInterceptor(
     private val logger = Logger("FactPublishInterceptor")
     private val changeTime = MutableStateFlow(0L)
 
+    val enabledProtoUrlsChangedTimeStamp = MutableStateFlow(0L)
     private val enabledProtoUrlCache: MutableSet<String> = mutableSetOf()
 
     private val alwaysPublishUrls = listOf(
@@ -102,6 +104,7 @@ class FactPublishInterceptor(
                     enabledProtoUrlCache.clear()
                     enabledProtoUrlCache.addAll(it)
                     cacheHasBeenBuilt.set(true)
+                    enabledProtoUrlsChangedTimeStamp.update { System.currentTimeMillis() }
                 }
             }
         }

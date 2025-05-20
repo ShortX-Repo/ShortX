@@ -910,7 +910,7 @@ class AppStateService(shortXContext: ShortXContext) :
     fun attachApplication(appThread: IApplicationThread): IApplicationThread? {
         if (BuildPropInternal.APP_IS_DEBUG) {
             val appThreadProxy = AppThread.make(appThread)
-            return appThreadProxy
+            // return appThreadProxy
         }
         return null
     }
