@@ -42,7 +42,12 @@ fun afterConstruct(
                 }
             }
         }
-    })
+    }).apply {
+        require(this.size > 0) {
+            "afterConstruct, unable to hook this Constructor: $clazz"
+        }
+        logger.d("afterConstruct, unhooks: $this for Constructor: $clazz")
+    }
 }
 
 fun beforeMethod(

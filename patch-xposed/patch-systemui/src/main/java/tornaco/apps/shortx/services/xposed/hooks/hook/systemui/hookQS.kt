@@ -1,6 +1,5 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook.systemui
 
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.xposed.hooks.hook.afterConstruct
@@ -15,7 +14,7 @@ fun SystemUIHook.hookQS(lpparam: IPackageLoaded.Param) = kotlin.runCatching {
                 lpparam.classLoader
             ),
         ) { param ->
-            logger.d("afterConstruct.QSTileHost")
+            logger.w("afterConstruct.QSTileHost")
             QSHostAdapter.qsTileHost = param.thisObject
         }
 
