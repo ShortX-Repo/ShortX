@@ -29,6 +29,8 @@ import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
+import tornaco.apps.shortx.core.util.Logger;
+
 /**
  * RequiresApi(api = Build.VERSION_CODES.Q)
  * Service to monitor CPU availability and usage.
@@ -84,6 +86,8 @@ public final class CpuMonitorService {
     private long mCurrentMonitoringIntervalMillis = DEFAULT_MONITORING_INTERVAL_MILLISECONDS;
     private Handler mHandler;
 
+    private static final Logger logger = new Logger("CpuMonitor");
+
     final CpuMonitorInternal localService = new CpuMonitorInternal() {
         @Override
         public void addCpuAvailabilityCallback(Executor executor,
@@ -99,14 +103,14 @@ public final class CpuMonitorService {
                     callbackInfo = mAvailabilityCallbackInfosByCallbacksByCpuset.delete(cpuset,
                             callback);
                     if (callbackInfo != null) {
-                        Slogf.i(TAG, "Overwriting the existing %s", callbackInfo);
+                        logger.d("Overwriting the existing " + callbackInfo);
                     }
                 }
                 callbackInfo = newCallbackInfoLocked(config, callback, executor);
             }
             asyncNotifyMonitoringIntervalChangeToClient(callbackInfo);
             if (DEBUG) {
-                Slogf.d(TAG, "Successfully added %s", callbackInfo);
+                logger.d("Successfully added " + callbackInfo);
             }
         }
 
@@ -119,13 +123,13 @@ public final class CpuMonitorService {
                             mAvailabilityCallbackInfosByCallbacksByCpuset.delete(cpuset, callback);
                     if (callbackInfo != null) {
                         if (DEBUG) {
-                            Slogf.d(TAG, "Successfully removed %s", callbackInfo);
+                            logger.d("Successfully removed " + callbackInfo);
                         }
                         checkAndStopMonitoringLocked();
                         return;
                     }
                 }
-                Slogf.w(TAG, "CpuAvailabilityCallback was not previously added. Ignoring the remove"
+                logger.d("CpuAvailabilityCallback was not previously added. Ignoring the remove"
                         + " request");
             }
         }
@@ -155,13 +159,12 @@ public final class CpuMonitorService {
         mAvailabilityCallbackInfosByCallbacksByCpuset = new SparseArrayMap<>();
     }
 
-
     @SuppressLint("NewApi")
     public void start(@NotNull Context context) {
         // Initialize CPU info reader and perform the first read to make sure the CPU stats are
         // readable without any issues.
         if (!mCpuInfoReader.init() || mCpuInfoReader.readCpuInfos() == null) {
-            Slogf.wtf(TAG, "Failed to initialize CPU info reader. This happens when the CPU "
+            logger.e("Failed to initialize CPU info reader. This happens when the CPU "
                     + "frequency stats are not available or the sysfs interface has changed in "
                     + "the Kernel. Cannot monitor CPU without these stats. Terminating CPU monitor "
                     + "service");
@@ -172,7 +175,7 @@ public final class CpuMonitorService {
         synchronized (mLock) {
             if (mShouldDebugMonitor && !mHandler.hasCallbacks(mMonitorCpuStats)) {
                 mCurrentMonitoringIntervalMillis = mDebugMonitoringIntervalMillis;
-                Slogf.i(TAG, "Starting debug monitoring");
+                logger.d("Starting debug monitoring");
                 mHandler.post(mMonitorCpuStats);
             }
         }
@@ -227,7 +230,7 @@ public final class CpuMonitorService {
         if (cpuInfosByCoreId == null) {
             // This shouldn't happen because the CPU infos are read & verified during
             // the {@link onStart} call.
-            Slogf.wtf(TAG, "Failed to read CPU info from device");
+            logger.e("Failed to read CPU info from device");
             synchronized (mLock) {
                 stopMonitoringCpuStatsLocked();
             }
@@ -333,7 +336,7 @@ public final class CpuMonitorService {
         mAvailabilityCallbackInfosByCallbacksByCpuset.add(callbackInfo.config.cpuset,
                 callbackInfo.callback, callbackInfo);
         if (DEBUG) {
-            Slogf.d(TAG, "Added a CPU availability callback: %s", callbackInfo);
+            logger.d("Added a CPU availability callback" + callbackInfo);
         }
         CpuAvailabilityInfo latestInfo = cpusetInfo.getLatestCpuAvailabilityInfo();
         if (latestInfo != null) {
@@ -357,7 +360,7 @@ public final class CpuMonitorService {
         }
         if (mShouldDebugMonitor) {
             if (DEBUG) {
-                Slogf.e(TAG, "Switching to debug monitoring");
+                logger.d("Switching to debug monitoring");
             }
             mCurrentMonitoringIntervalMillis = mDebugMonitoringIntervalMillis;
         } else {
@@ -394,7 +397,7 @@ public final class CpuMonitorService {
             case CPUSET_BACKGROUND:
                 return (cpusetCategories & FLAG_CPUSET_CATEGORY_BACKGROUND) != 0;
             default:
-                Slogf.wtf(TAG, "Provided invalid expectedCpuset %d", expectedCpuset);
+                logger.e("Provided invalid expectedCpuset " + expectedCpuset);
         }
         return false;
     }
@@ -520,7 +523,7 @@ public final class CpuMonitorService {
                 // mismatch. When this happens, return {@code null} to avoid returning stale
                 // information.
                 if (DEBUG) {
-                    Slogf.d(TAG, "Skipping stale CPU availability information for cpuset %s",
+                    logger.d("Skipping stale CPU availability information for cpuset " +
                             CpuAvailabilityMonitoringConfig.toCpusetString(cpuset));
                 }
                 mLatestCpuAvailabilityInfo = null;
@@ -616,8 +619,7 @@ public final class CpuMonitorService {
                     // TODO(b/279478586): This case should never happen. But this case happens
                     // rarely on certain hardware, which indicates a deeper issue. Once this
                     // issue is reproduced, use this log to debug the issue and fix it.
-                    Slogf.wtf(TAG, "Computed negative CPU availability percent(%d) for %s ",
-                            percent, toString());
+                    logger.e("Computed negative CPU availability percent for " + percent + this);
                     return 0;
                 }
                 return percent;
