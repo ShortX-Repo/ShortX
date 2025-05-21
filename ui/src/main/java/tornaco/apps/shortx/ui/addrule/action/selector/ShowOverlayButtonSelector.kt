@@ -38,6 +38,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
+import tornaco.apps.shortx.core.proto.settings.OverlayButtonComponentType
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
@@ -87,7 +88,8 @@ private fun BaseSelectorActivity<Action.ShowOverlay>.ShowOverlayButtonSelector(c
     }
     val selectorState by vm.state.collectAsState()
 
-    Scaffold(modifier = Modifier,
+    Scaffold(
+        modifier = Modifier,
         topBar = {
             ShortXTopAppBar(
                 modifier = Modifier,
@@ -175,43 +177,73 @@ private fun Content(
                     }
                 )
                 state.buttons.forEachIndexed { index, button ->
-                    ButtonListItem(
-                        index = index,
-                        button = button,
-                        evaluatingActions = state.evaluatingActions,
-                        updateLabel = { i: Int, s: String ->
-                            vm.updateLabel(i, s)
-                        },
-                        updateIcon = { i: Int, s: String ->
-                            vm.updateIcon(i, s)
-                        },
-                        selectIcon = {
-                            localUiStore.ShowOverlayButtonSelectorActivity_SelectButtonIcon_Index.set(
-                                it
+                    when (button.componentType) {
+                        OverlayButtonComponentType.OverlayButtonComponentType_CircleProgress -> {
+                            ProgressBarListItem(
+                                index = index,
+                                button = button,
+                                updateLabel = { i: Int, s: String ->
+                                    vm.updateLabel(i, s)
+                                },
+                                updateProgressValue = { i: Int, s: String ->
+                                    vm.updateProgressValue(i, s)
+                                },
+                                removeButton = {
+                                    vm.removeButton(it)
+                                }
                             )
-                            iconLauncher.launch(
-                                BaseSelectorActivity.newIntent(
-                                    context,
-                                    null,
-                                    MDIconSelectorActivity::class.java
-                                )
+                        }
+
+                        else -> {
+                            ButtonListItem(
+                                index = index,
+                                button = button,
+                                evaluatingActions = state.evaluatingActions,
+                                updateLabel = { i: Int, s: String ->
+                                    vm.updateLabel(i, s)
+                                },
+                                updateIcon = { i: Int, s: String ->
+                                    vm.updateIcon(i, s)
+                                },
+                                selectIcon = {
+                                    localUiStore.ShowOverlayButtonSelectorActivity_SelectButtonIcon_Index.set(
+                                        it
+                                    )
+                                    iconLauncher.launch(
+                                        BaseSelectorActivity.newIntent(
+                                            context,
+                                            null,
+                                            MDIconSelectorActivity::class.java
+                                        )
+                                    )
+                                },
+                                removeButton = {
+                                    vm.removeButton(it)
+                                }
                             )
-                        },
-                        removeButton = {
-                            vm.removeButton(it)
-                        })
+                        }
+                    }
+
                 }
             }
         }
 
         StandardSpacer()
-        // Add icon
+        // Add button
         Button(
             modifier = Modifier.fillMaxSize(),
             onClick = {
                 vm.addButton()
             }) {
             Text(text = LocalI18N.current["ui.action.show.add.button"])
+        }
+        // Add progress
+        Button(
+            modifier = Modifier.fillMaxSize(),
+            onClick = {
+                vm.addButton(componentType = OverlayButtonComponentType.OverlayButtonComponentType_CircleProgress)
+            }) {
+            Text(text = LocalI18N.current["ui.action.show.add.progress.bar"])
         }
 
         LargeSpacer()
@@ -471,6 +503,59 @@ private fun ButtonListItem(
                 warnings = longClickActionState.actionWarningMessages,
                 handler = longClickActionStateHandle.asActionHandler()
             )
+        }
+    }
+}
+
+
+@Composable
+private fun ProgressBarListItem(
+    index: Int,
+    button: Button,
+    updateLabel: (Int, String) -> Unit,
+    updateProgressValue: (Int, String) -> Unit,
+    removeButton: (Int) -> Unit,
+) {
+    ShortXCard(modifier = Modifier.padding(top = 16.dp)) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = SpaceBetween) {
+                MediumTitle(
+                    text = LocalI18N.current["ui.action.show.overlay.button.of", mapOf(
+                        "index" to "${index + 1}"
+                    )]
+                )
+                IconButton(onClick = {
+                    removeButton(index)
+                }) {
+                    RemixIcon(remixName = Remix.System.close_line)
+                }
+            }
+
+            StandardSpacer()
+
+            Column(verticalArrangement = Arrangement.Center) {
+                SmallTitle(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    LocalI18N.current["ui.action.show.overlay.text"]
+                )
+                ShortXTextField(value = button.label, onValueChange = {
+                    updateLabel(index, it)
+                })
+            }
+            StandardSpacer()
+
+            Column(verticalArrangement = Arrangement.Center) {
+                SmallTitle(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    LocalI18N.current["ui.action.show.overlay.progress.value"]
+                )
+                ShortXTextField(value = button.progressValue, onValueChange = {
+                    updateProgressValue(index, it)
+                })
+            }
+            StandardSpacer()
         }
     }
 }

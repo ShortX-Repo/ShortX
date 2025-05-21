@@ -14,7 +14,11 @@ import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.StateViewModel
 
-data class ButtonState(val formattedLabel: String, val setting: OverlayButtonSetting)
+data class ButtonState(
+    val formattedLabel: String,
+    val formattedProgress: Float,
+    val setting: OverlayButtonSetting
+)
 
 data class OverlayState(
     val buttons: List<ButtonState> = emptyList(),
@@ -59,7 +63,7 @@ class OverlayViewModel : StateViewModel<OverlayState, Unit>({ OverlayState() }) 
         updateState {
             copy(
                 buttons = action.buttonSettingsList.map {
-                    ButtonState(it.label, it)
+                    ButtonState(it.label, it.progress.toFloatOrNull() ?: 0f, it)
                 },
                 localVars = localVars,
                 contextData = contextData,
@@ -75,7 +79,10 @@ class OverlayViewModel : StateViewModel<OverlayState, Unit>({ OverlayState() }) 
                 copy(buttons = buttons.map { button ->
                     val formattedLabel =
                         button.setting.label.compileContextAndVars(cv)
-                    ButtonState(formattedLabel, button.setting)
+                    val formattedProgress =
+                        (button.setting.progress.compileContextAndVars(cv).toFloatOrNull()
+                            ?: 0f) / 100f
+                    ButtonState(formattedLabel, formattedProgress, button.setting)
                 })
             }
         }

@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.IActionEvaluateListener
+import tornaco.apps.shortx.core.proto.settings.OverlayButtonComponentType
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.shortXManager
@@ -48,6 +49,8 @@ data class Button(
     val id: String = newButtonId(),
     val icon: String = BuildProp.DEFAULT_OVERLAY_BUTTON_ICON,
     val label: String = "",
+    val progressValue: String = "",
+    val componentType: OverlayButtonComponentType = OverlayButtonComponentType.OverlayButtonComponentType_Button,
     val actionHandle: ActionContentStateHandler = ActionContentStateHandler(),
     val longClickActionHandle: ActionContentStateHandler = ActionContentStateHandler()
 )
@@ -56,6 +59,8 @@ fun Button.toOverlayButtonSetting(): OverlayButtonSetting {
     return OverlayButtonSetting.newBuilder()
         .setId(id.fallbackOnEmpty { newButtonId() })
         .setIcon(icon).setLabel(label)
+        .setProgress(progressValue)
+        .setComponentType(componentType)
         .addAllActions(actionHandle.state.value.actions.map { it.toProtoAction().pack_() })
         .addAllLongClickActions(longClickActionHandle.state.value.actions.map {
             it.toProtoAction().pack_()
@@ -68,6 +73,9 @@ fun OverlayButtonSetting.toButton(): Button {
         id = id.fallbackOnEmpty { newButtonId() },
         icon = icon,
         label = label,
+        progressValue = progress,
+        componentType = componentType.takeIf { it != OverlayButtonComponentType.UNRECOGNIZED }
+            ?: OverlayButtonComponentType.OverlayButtonComponentType_Button,
         actionHandle = ActionContentStateHandler().apply {
             updateState {
                 copy(actions = actionsList.mapNotNull {
@@ -179,6 +187,17 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
         }
     }
 
+    fun updateProgressValue(index: Int, value: String) {
+        updateState {
+            copy(
+                buttons = buttons.toMutableList().apply {
+                    val current = get(index)
+                    set(index, current.copy(progressValue = value))
+                }
+            )
+        }
+    }
+
     fun updateTag(tag: String) {
         updateState {
             copy(
@@ -231,9 +250,15 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
         updateState { copy(closeOnAction = closeOnAction) }
     }
 
-    fun addButton() {
+    fun addButton(componentType: OverlayButtonComponentType = OverlayButtonComponentType.OverlayButtonComponentType_Button) {
         updateState {
-            copy(buttons = buttons.toMutableList().apply { add(Button()) })
+            copy(buttons = buttons.toMutableList().apply {
+                add(
+                    Button(
+                        componentType = componentType
+                    )
+                )
+            })
         }
         logger.d("addButton after, items size: ${state.value.buttons.size}")
     }

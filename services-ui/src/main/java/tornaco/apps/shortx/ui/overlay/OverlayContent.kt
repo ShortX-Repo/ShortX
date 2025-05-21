@@ -28,6 +28,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -65,6 +66,7 @@ import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
+import tornaco.apps.shortx.core.proto.settings.OverlayButtonComponentType
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.res.isBase64Image
@@ -161,7 +163,8 @@ fun OverlayContent(
                 containerColor = ColorDefaults.backgroundSurfaceColor().copy(alpha = 0.86f)
             )
         ) {
-            ExpandContainer(isExpanded = expandState.isExpand,
+            ExpandContainer(
+                isExpanded = expandState.isExpand,
                 expandContent = {
 
                     var gridWidth by remember {
@@ -170,12 +173,13 @@ fun OverlayContent(
                     val density = LocalDensity.current
                     // Drag handle
                     if (!action.enableGlobalDrag) {
-                        Box(modifier = Modifier
-                            .width(gridWidth)
-                            .height(16.dp)
-                            .motionEventSpy {
-                                dragHandleMotionEvent(it)
-                            })
+                        Box(
+                            modifier = Modifier
+                                .width(gridWidth)
+                                .height(16.dp)
+                                .motionEventSpy {
+                                    dragHandleMotionEvent(it)
+                                })
                     }
 
                     LazyVerticalGrid(
@@ -205,15 +209,16 @@ fun OverlayContent(
                         })
                 },
                 collapseContent = {
-                    Box(modifier = Modifier
-                        .motionEventSpy {
-                            dragHandleMotionEvent(it)
-                        }
-                        .width(48.dp)
-                        .height(24.dp)
-                        .clickable {
-                            expandState.expand()
-                        }) {
+                    Box(
+                        modifier = Modifier
+                            .motionEventSpy {
+                                dragHandleMotionEvent(it)
+                            }
+                            .width(48.dp)
+                            .height(24.dp)
+                            .clickable {
+                                expandState.expand()
+                            }) {
                         RemixIcon(
                             modifier = Modifier
                                 .size(16.dp)
@@ -232,55 +237,118 @@ private fun LazyGridScope.overlayButtons(
     onButtonClick: (OverlayButtonSetting) -> Unit,
     onButtonLongClick: (OverlayButtonSetting) -> Unit,
 ) {
-    itemsIndexed(state.buttons) { index, button ->
-        val color = ColorPalette[index % ColorPalette.size]
-        val updateButton by rememberUpdatedState(newValue = button)
-        Column(
-            modifier = Modifier
-                .thenIf(Modifier.padding(bottom = 8.dp), index != state.buttons.size - 1)
-                .clip(ShortXCardRoundedCornerShape)
-                .combinedClickable(
-                    onLongClick = {
-                        onButtonLongClick(updateButton.setting)
-                    },
-                    onClick = {
-                        onButtonClick(updateButton.setting)
-                    }),
-            horizontalAlignment = CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            val icon = updateButton.setting.icon
-
-            if (icon.isNotBlank()) {
-                val isImage = icon.isBase64Image()
-                ColoredIcon(
-                    size = COLOR_ICON_SIZE.dp,
-                    padding = if (isImage) 0.dp else 4.dp,
-                    color = if (isImage) Color.Transparent else color
-                ) {
-                    RemixIcon(
-                        modifier = Modifier
-                            .size(if (isImage) COLOR_ICON_SIZE.dp else 12.dp),
-                        remixName = icon,
-                        tint = Color.White
-                    )
-                }
+    itemsIndexed(state.buttons) { index, button: ButtonState ->
+        when (button.setting.componentType) {
+            OverlayButtonComponentType.OverlayButtonComponentType_CircleProgress -> {
+                OverlayCircleProgressItem(
+                    index,
+                    button,
+                    index == state.buttons.lastIndex
+                )
             }
 
-            val label = updateButton.formattedLabel
-            if (label.isNotEmpty()) {
-                Text(
-                    modifier = Modifier
-                        .padding(horizontal = 4.dp)
-                        .padding(top = 3.dp),
-                    text = label,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp)
+            else -> {
+                OverlayButtonItem(
+                    index,
+                    button,
+                    index == state.buttons.lastIndex,
+                    onButtonClick,
+                    onButtonLongClick
                 )
             }
         }
     }
 }
+
+@Composable
+private fun OverlayButtonItem(
+    index: Int,
+    button: ButtonState,
+    isLastOne: Boolean,
+    onButtonClick: (OverlayButtonSetting) -> Unit,
+    onButtonLongClick: (OverlayButtonSetting) -> Unit,
+) {
+    val color = ColorPalette[index % ColorPalette.size]
+    val updateButton by rememberUpdatedState(newValue = button)
+    Column(
+        modifier = Modifier
+            .thenIf(Modifier.padding(bottom = 8.dp), !isLastOne)
+            .clip(ShortXCardRoundedCornerShape)
+            .combinedClickable(
+                onLongClick = {
+                    onButtonLongClick(updateButton.setting)
+                },
+                onClick = {
+                    onButtonClick(updateButton.setting)
+                }),
+        horizontalAlignment = CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        val icon = updateButton.setting.icon
+
+        if (icon.isNotBlank()) {
+            val isImage = icon.isBase64Image()
+            ColoredIcon(
+                size = COLOR_ICON_SIZE.dp,
+                padding = if (isImage) 0.dp else 4.dp,
+                color = if (isImage) Color.Transparent else color
+            ) {
+                RemixIcon(
+                    modifier = Modifier
+                        .size(if (isImage) COLOR_ICON_SIZE.dp else 12.dp),
+                    remixName = icon,
+                    tint = Color.White
+                )
+            }
+        }
+
+        val label = updateButton.formattedLabel
+        if (label.isNotEmpty()) {
+            Text(
+                modifier = Modifier
+                    .padding(horizontal = 4.dp)
+                    .padding(top = 3.dp),
+                text = label,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp)
+            )
+        }
+    }
+}
+
+
+@Composable
+private fun OverlayCircleProgressItem(
+    index: Int,
+    button: ButtonState,
+    isLastOne: Boolean,
+) {
+    val color = ColorPalette[index % ColorPalette.size]
+    val updateButton by rememberUpdatedState(newValue = button)
+    Column(
+        modifier = Modifier
+            .thenIf(Modifier.padding(bottom = 8.dp), !isLastOne)
+            .clip(ShortXCardRoundedCornerShape),
+        horizontalAlignment = CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        CircularProgressIndicator(progress = {
+            button.formattedProgress
+        }, modifier = Modifier.size(CIRCLE_PROGRESS_SIZE.dp))
+        val label = updateButton.formattedLabel
+        if (label.isNotEmpty()) {
+            Text(
+                modifier = Modifier
+                    .padding(horizontal = 4.dp)
+                    .padding(top = 3.dp),
+                text = label,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp)
+            )
+        }
+    }
+}
+
 
 @Composable
 private fun DragHandle(
@@ -376,3 +444,4 @@ private val ColorPalette = arrayOf(
 )
 
 private const val COLOR_ICON_SIZE = 26
+private const val CIRCLE_PROGRESS_SIZE = 36
