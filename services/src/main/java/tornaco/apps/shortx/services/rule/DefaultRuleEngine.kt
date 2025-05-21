@@ -689,7 +689,11 @@ class DefaultRuleEngine(
                     srcId = context.srcId,
                     instanceId = context.srcId,
                     job = job,
-                    tags = setOf(context.srcEvent)
+                    tags = setOf(
+                        context.srcEvent,
+                        context.srcEventPayload1,
+                        context.srcEventPayload2
+                    )
                 )
             )
         }

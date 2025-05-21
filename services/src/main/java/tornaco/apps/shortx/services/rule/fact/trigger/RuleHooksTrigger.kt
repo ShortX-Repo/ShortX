@@ -6,6 +6,7 @@ import tornaco.apps.shortx.core.proto.rule.ActionAsyncMode
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.proto.rule.RuleEditOp
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
 
@@ -32,6 +33,7 @@ class RuleHooksTrigger(
                         val evaluateContext = EvaluateContext.newBuilder()
                             .setSrcId(it.id)
                             .setSrcEvent(ContextSrcEvent.ContextSrc_RuleHook)
+                            .setSrcEventPayload1(RuleEditOp.RuleEditOp_Enable.name)
                             .setSrcTitle(it.title)
                             .build()
                         shortXContext.rule.executeActions(
@@ -56,6 +58,7 @@ class RuleHooksTrigger(
                         val evaluateContext = EvaluateContext.newBuilder()
                             .setSrcId(it.id)
                             .setSrcEvent(ContextSrcEvent.ContextSrc_RuleHook)
+                            .setSrcEventPayload1(RuleEditOp.RuleEditOp_Disable.name)
                             .setSrcTitle(it.title)
                             .build()
                         shortXContext.rule.executeActions(
@@ -80,6 +83,7 @@ class RuleHooksTrigger(
                     val evaluateContext = EvaluateContext.newBuilder()
                         .setSrcId(rule.id)
                         .setSrcEvent(ContextSrcEvent.ContextSrc_RuleHook)
+                        .setSrcEventPayload1(RuleEditOp.RuleEditOp_Remove.name)
                         .setSrcTitle(rule.title)
                         .build()
                     shortXContext.rule.executeActions(

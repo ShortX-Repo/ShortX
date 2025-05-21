@@ -56,6 +56,7 @@ import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.FactPublishRecord
 import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.proto.rule.RuleEditOp
 import tornaco.apps.shortx.core.proto.rule.RuleList
 import tornaco.apps.shortx.core.proto.rule.RuleSet
 import tornaco.apps.shortx.core.proto.toggles.Toggle
@@ -632,11 +633,15 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             }
         }
 
-        // Stop tasks
-        handler.postSafety("cancelJobs") {
-            engine.cancelJobs("Rule disabled(指令关闭)") {
-                // Do not cancel RuleHook jobs.
-                it.srcId == ruleId && !it.hasTag(ContextSrcEvent.ContextSrc_RuleHook)
+        // Stop tasks on disable.
+        if (!enable) {
+            handler.postSafety("cancelJobs") {
+                engine.cancelJobs("Rule disabled(指令关闭)") {
+                    // Do not cancel RuleHook-Disable jobs.
+                    it.srcId == ruleId && (!it.hasTag(ContextSrcEvent.ContextSrc_RuleHook) || it.hasTag(
+                        RuleEditOp.RuleEditOp_Enable.name
+                    ))
+                }
             }
         }
     }
