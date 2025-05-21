@@ -231,6 +231,8 @@ fun AddRuleScreen(
         actionOnEnabledState,
         actionOnDisabledState,
         actionOnDeletedState,
+        actionOnUpdatedState,
+        actionOnStoppedState,
         quitFactContentState,
         quitConditionContentState,
         quitActionState
@@ -242,6 +244,8 @@ fun AddRuleScreen(
                 || actionOnEnabledState.isChanged
                 || actionOnDisabledState.isChanged
                 || actionOnDeletedState.isChanged
+                || actionOnStoppedState.isChanged
+                || actionOnUpdatedState.isChanged
                 || quitFactContentState.isChanged
                 || quitConditionContentState.isChanged
                 || quitActionState.isChanged

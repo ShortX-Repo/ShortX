@@ -19,8 +19,10 @@ import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.containsAnyTypeUrl
 import tornaco.apps.shortx.core.proto.da.DirectAction
+import tornaco.apps.shortx.core.proto.da.DirectActionHook
 import tornaco.apps.shortx.core.proto.da.DirectActionQuit
 import tornaco.apps.shortx.core.proto.func.FuncParameter
+import tornaco.apps.shortx.core.proto.rule.ActionAsyncMode
 import tornaco.apps.shortx.core.proto.rule.Quit_EvaluatePolicy
 import tornaco.apps.shortx.core.proto.toStringPair
 import tornaco.apps.shortx.core.rule.Security
@@ -62,6 +64,7 @@ data class AddDirectActionState(
     val daChanged: Boolean = false,
     val copiedAction: Action? = null,
     val showAdvancedOptions: Boolean = false,
+    val expandHooks: Boolean = false,
     val conflictStrategy: ConflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
     val evaluatingActions: List<String> = emptyList(),
     val daSetId: String = "",
@@ -112,27 +115,34 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
         }
     )
 
+    val actionOnStoppedStateHandler = ActionContentStateHandler(
+        parameterInputsProvider = {
+            state.value.parameters
+        }
+    )
+
     val pref by lazy { Pref(context) }
+    private val shortx by lazy { shortXManager }
 
     private val actionEvaluateListener = object : IActionEvaluateListener.Stub() {
         override fun onStart(id: String) {
             logger.d("actionEvaluateListener#onStart: $id")
-            updateState { copy(evaluatingActions = shortXManager.getEvaluatingActions()) }
+            updateState { copy(evaluatingActions = shortx.getEvaluatingActions()) }
         }
 
         override fun onComplete(id: String) {
             logger.d("actionEvaluateListener#onComplete: $id")
-            updateState { copy(evaluatingActions = shortXManager.getEvaluatingActions()) }
+            updateState { copy(evaluatingActions = shortx.getEvaluatingActions()) }
         }
     }
 
     init {
-        shortXManager.registerActionEvaluateListener(actionEvaluateListener)
+        shortx.registerActionEvaluateListener(actionEvaluateListener)
     }
 
     override fun onCleared() {
         super.onCleared()
-        shortXManager.unregisterActionEvaluateListener(actionEvaluateListener)
+        shortx.unregisterActionEvaluateListener(actionEvaluateListener)
     }
 
     fun setTitle(title: String) {
@@ -195,6 +205,10 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
             val quitCondOp = quitConditionContentStateHandler.conditionOp
             val quitActions = quitActionStateHandler.actions
 
+            // Hooks
+            val actionsOnStoppedAsyncMode = actionOnStoppedStateHandler.state.value.asyncMode
+            val actionsOnStopped = actionOnStoppedStateHandler.actions
+
             val protoActions = actions.map {
                 it.toProtoAction().pack_()
             }
@@ -216,6 +230,13 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                 .setVersionCode(state.value.versionCode)
                 .setConflictPolicy(state.value.conflictStrategy)
                 .setDirectActionSetId(state.value.daSetId)
+                .setHook(
+                    DirectActionHook.newBuilder()
+                        .addAllActionsOnStop(actionsOnStopped.map {
+                            it.toProtoAction().pack_()
+                        })
+                        .build()
+                )
                 .setQuit(
                     DirectActionQuit.newBuilder()
                         .addAllFacts(quitFacts.map { it.toProtoFact().pack_() })
@@ -246,20 +267,20 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                 .addAllParameters(state.value.parameters)
                 .build()
 
-            shortXManager.addDirectAction(da)
+            shortx.addDirectAction(da)
             postSideEffect(AddDAEffect.DASaved(da.id))
         }
     }
 
     fun delete(daId: String) {
         viewModelScope.launch {
-            shortXManager.deleteDirectAction(daId)
+            shortx.deleteDirectAction(daId)
         }
     }
 
     fun initFromDirectActionId(daId: String?) {
         daId?.let { id ->
-            initFromDirectAction(shortXManager.getDirectActionById(id))
+            initFromDirectAction(shortx.getDirectActionById(id))
         }
     }
 
@@ -277,20 +298,20 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                 actionContentStateHandler.init(
                     da.actionsList.mapNotNull {
                         it.toAction(
-                            shortXManager
+                            shortx
                         )
                     },
                     actionAsyncMode = da.actionAsyncMode
                 )
                 quitFactContentStateHandler.init(
                     facts = da.quit.factsList.mapNotNull {
-                        it.toFact(shortXManager)
+                        it.toFact(shortx)
                     }
                 )
                 quitConditionContentStateHandler.init(
                     conditions = da.quit.conditionsList.mapNotNull {
                         it.toCondition(
-                            shortXManager
+                            shortx
                         )
                     },
                     conditionOp = da.quit.condOp.toOp(da.quit.condOpPayload)
@@ -298,20 +319,36 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                 quitActionStateHandler.init(
                     actions = da.quit.actionsList.mapNotNull {
                         it.toAction(
-                            shortXManager
+                            shortx
                         )
                     },
                     actionAsyncMode = da.quit.actionAsyncMode
                 )
+
+                da.hook?.let { hook ->
+                    actionOnStoppedStateHandler.init(
+                        actions = hook.actionsOnStopList.mapNotNull {
+                            it.toAction(
+                                shortx
+                            )
+                        },
+                        actionAsyncMode = ActionAsyncMode.ActionAsyncMode_Sync
+                    )
+                }
+
                 val smsTyprUrls = listOf(
                     SendSMS.getDefaultInstance().pack_().typeUrl,
                 )
                 val hasAnySMSAction = da.containsAnyTypeUrl(smsTyprUrls)
                 val hasAnyParam = da.parametersList.isNotEmpty()
-                val hasAnyHookActions: Boolean =
+                val hasAnyQuitActions: Boolean =
                     quitFactContentStateHandler.facts.isNotEmpty()
                             || quitConditionContentStateHandler.conditions.isNotEmpty()
+                logger.d("hasAnyQuitActions: $hasAnyQuitActions")
+
+                val hasAnyHookActions: Boolean = actionOnStoppedStateHandler.actions.isNotEmpty()
                 logger.d("hasAnyHookActions: $hasAnyHookActions")
+
                 updateState {
                     copy(
                         id = da.id,
@@ -321,7 +358,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                         createTime = da.createTime,
                         versionCode = da.versionCode,
                         conflictStrategy = da.conflictPolicy,
-                        evaluatingActions = shortXManager.getEvaluatingActions(),
+                        evaluatingActions = shortx.getEvaluatingActions(),
                         daSetId = da.directActionSetId,
                         isQuitEnabled = da.quit.isEnabled,
                         quitEvaluatePolicy = da.quit.evaluatePolicy.takeIf { it != Quit_EvaluatePolicy.UNRECOGNIZED }
@@ -329,7 +366,8 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                         securityCheckRes = Security.checkSecurity(da),
                         hasSMSAction = hasAnySMSAction,
                         parameters = da.parametersList,
-                        showAdvancedOptions = hasAnyParam || hasAnyHookActions
+                        showAdvancedOptions = hasAnyParam || hasAnyQuitActions || hasAnyHookActions,
+                        expandHooks = hasAnyHookActions
                     )
                 }
             }
@@ -370,5 +408,9 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
 
     fun setQuitEvaluatePolicy(quitEvaluatePolicy: Quit_EvaluatePolicy) {
         updateState { copy(quitEvaluatePolicy = quitEvaluatePolicy, daChanged = true) }
+    }
+
+    fun setExpandHooks(show: Boolean) {
+        updateState { copy(expandHooks = show) }
     }
 }

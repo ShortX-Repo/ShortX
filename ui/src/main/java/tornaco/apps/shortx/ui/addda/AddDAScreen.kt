@@ -30,9 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
@@ -62,6 +60,7 @@ import tornaco.apps.shortx.ui.base.ConfirmDialog
 import tornaco.apps.shortx.ui.base.ErrorCard
 import tornaco.apps.shortx.ui.base.ExpandableSectionBar
 import tornaco.apps.shortx.ui.base.FieldTitle
+import tornaco.apps.shortx.ui.base.FieldTitleWithTip
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LoadError
 import tornaco.apps.shortx.ui.base.LoadState
@@ -178,6 +177,9 @@ fun AddDirectActionScreen(
     val quitActionHandler = remember(vm) { vm.quitActionStateHandler }
     val quitActionState by quitActionHandler.state.collectAsState()
 
+    val actionOnStoppedHandler = remember(vm) { vm.actionOnStoppedStateHandler }
+    val actionOnStoppedState by actionOnStoppedHandler.state.collectAsState()
+
     val shortXProps = LocalShortXProps.current
 
     val backConfirmDialogState = rememberConfirmDialogState()
@@ -199,13 +201,15 @@ fun AddDirectActionScreen(
         actionContentState,
         quitFactContentState,
         quitConditionContentState,
-        quitActionState
+        quitActionState,
+        actionOnStoppedState,
     ) {
         addDirectActionState.daChanged
                 || actionContentState.isChanged
                 || quitFactContentState.isChanged
                 || quitConditionContentState.isChanged
                 || quitActionState.isChanged
+                || actionOnStoppedState.isChanged
     }
 
     BackHandler {
@@ -275,6 +279,8 @@ fun AddDirectActionScreen(
                             quitConditionHandler = quitConditionHandler,
                             quitActionState = quitActionState,
                             quitActionHandler = quitActionHandler,
+                            actionOnStoppedState = actionOnStoppedState,
+                            actionOnStoppedHandler = actionOnStoppedHandler
                         )
                     }
                 }
@@ -296,6 +302,8 @@ private fun LazyListScope.daContent(
     quitConditionHandler: ConditionContentStateHandler,
     quitActionState: ActionContentState,
     quitActionHandler: ActionContentStateHandler,
+    actionOnStoppedHandler: ActionContentStateHandler,
+    actionOnStoppedState: ActionContentState,
 ) {
     // 0
     itemWithPadding {
@@ -399,7 +407,8 @@ private fun LazyListScope.daContent(
                 StandardSpacer()
 
                 // Params
-                FuncParamList(addDirectActionState.parameters,
+                FuncParamList(
+                    addDirectActionState.parameters,
                     add = { param, override ->
                         vm.addParameter(param, override)
                     },
@@ -496,6 +505,55 @@ private fun LazyListScope.daContent(
     }
     // Quit END
 
+    // Hook START
+    // 8
+    stickyHeader {
+        val cornerDp by animateDpAsState(
+            if (currentStickyHeaderIndex >= 8) 0.dp else SECTION_BAR_CORNER_SIZE.dp,
+            label = "Dp"
+        )
+        val paddingDp by animateDpAsState(
+            if (currentStickyHeaderIndex >= 8) 0.dp else SECTION_BAR_H_PADDING.dp,
+            label = "Dp"
+        )
+        // Hooks
+        ExpandableSectionBar(
+            isExpand = addDirectActionState.expandHooks,
+            text = "Hooks",
+            iconName = Remix.Document.file_list_fill,
+            shape = RoundedCornerShape(cornerDp),
+            modifier = Modifier.padding(horizontal = paddingDp)
+        ) {
+            vm.setExpandHooks(!addDirectActionState.expandHooks)
+        }
+        StandardSpacer()
+    }
+    // 9
+    itemWithPadding {
+        AnimatedVisibility(addDirectActionState.expandHooks) {
+            Column {
+                ActionContent(
+                    header = {
+                        FieldTitleWithTip(
+                            LocalI18N.current["ui.actions.hook.on.stopped.title"],
+                            LocalI18N.current["ui.actions.hook.on.stopped.description"]
+                        )
+                    },
+                    srcId = addDirectActionState.id,
+                    actions = actionOnStoppedState.actions,
+                    actionAsyncMode = actionOnStoppedState.asyncMode,
+                    canSelectActionAsyncMode = true,
+                    evaluatingActions = addDirectActionState.evaluatingActions,
+                    handler = actionOnStoppedHandler.asActionHandler(),
+                    readOnly = readOnly,
+                    warnings = actionOnStoppedState.actionWarningMessages
+                )
+                SectionSpacer()
+            }
+        }
+    }
+    // Quit END
+
     itemWithPadding {
         SectionSpacer()
         SuggestedNavEntry()
@@ -508,7 +566,7 @@ private fun TitleAndDescription(
     vm: AddDirectActionViewModel,
     readOnly: Boolean
 ) {
-    var showDescription by remember(state) { mutableStateOf(state.description.isNotEmpty()) }
+    var showDescription = true
     val dropdownRotate by animateFloatAsState(
         targetValue = if (showDescription) 180f else 0f,
         label = "dropdownRotate"
