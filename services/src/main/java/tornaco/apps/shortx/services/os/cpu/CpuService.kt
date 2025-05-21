@@ -1,12 +1,21 @@
 package tornaco.apps.shortx.services.os.cpu
 
+import android.annotation.SuppressLint
+import android.app.ActivityManager
+import android.text.format.Formatter
+import github.tornaco.android.thanos.core.os.SwapInfo
 import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.fact.CpuAvgAvailability
+import tornaco.apps.shortx.core.util.activityManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
+import tornaco.apps.shortx.services.os.MemAvailableInfo
+import tornaco.apps.shortx.services.os.MemoryReader
+import tornaco.apps.shortx.services.os.ProcMemoryInfo
 import tornaco.apps.shortx.services.os.cpu.CpuAvailabilityMonitoringConfig.CPUSET_ALL
 import tornaco.apps.shortx.services.os.cpu.CpuAvailabilityMonitoringConfig.CPUSET_BACKGROUND
+import tornaco.apps.shortx.services.os.cpu.CpuInfoReader.CpuInfo
 import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.watchdog.launchSafety
@@ -95,5 +104,97 @@ class CpuService(shortXContext: ShortXContext) : SystemService(shortXContext, "C
                 }
             }
         }
+    }
+
+    @SuppressLint("UseKtx")
+    fun getCpuAvailablePercent(): Int {
+        val cpuInfosByCoreId = requireNotNull(cpuInfoReader.readCpuInfos()) {
+            "Unable to read cpu info."
+        }
+        var totalNormalizedAvailableCpuFreqKHz = 0L
+        var totalOnlineMaxCpuFreqKHz = 0L
+
+        for (i in 0..<cpuInfosByCoreId.size()) {
+            val cpuInfo: CpuInfo = cpuInfosByCoreId.valueAt(i)
+            totalNormalizedAvailableCpuFreqKHz += cpuInfo.normalizedAvailableCpuFreqKHz
+            totalOnlineMaxCpuFreqKHz += cpuInfo.maxCpuFreqKHz
+        }
+        logger.d("totalNormalizedAvailableCpuFreqKHz $totalNormalizedAvailableCpuFreqKHz")
+        logger.d("totalOnlineMaxCpuFreqKHz $totalOnlineMaxCpuFreqKHz")
+
+        val percent =
+            ((totalNormalizedAvailableCpuFreqKHz * 100.0) / totalOnlineMaxCpuFreqKHz).toInt()
+        if (percent < 0) {
+            // TODO(b/279478586): This case should never happen. But this case happens
+            // rarely on certain hardware, which indicates a deeper issue. Once this
+            // issue is reproduced, use this log to debug the issue and fix it.
+            logger.e("Computed negative CPU availability percent for $percent")
+            return 0
+        }
+        return percent
+    }
+
+    fun getMemAvailableInfo(): MemAvailableInfo {
+        var memTotalSizeString = ""
+        var memUsageSizeString = ""
+        var memAvailableSizeString = ""
+        var memUsedPercent = 0
+        var swapTotalSizeString = ""
+        var swapUsageSizeString = ""
+        var swapAvailableSizeString = ""
+        var swapUsedPercent = 0
+        var swapEnabled = false
+
+        val memoryInfo = getMemoryInfo()
+
+        memTotalSizeString = Formatter.formatFileSize(context, memoryInfo.totalMem)
+        memUsageSizeString =
+            Formatter.formatFileSize(
+                context,
+                memoryInfo.totalMem - memoryInfo.availMem
+            )
+        memAvailableSizeString =
+            Formatter.formatFileSize(context, memoryInfo.availMem)
+        memUsedPercent =
+            (100 * ((memoryInfo.totalMem - memoryInfo.availMem).toFloat() / memoryInfo.totalMem.toFloat()
+                .coerceAtLeast(1f))).toInt()
+        val swapInfo = getSwapInfo()
+        swapEnabled = swapInfo.totalSwap > 0
+        if (swapEnabled) {
+            swapTotalSizeString =
+                Formatter.formatFileSize(context, swapInfo.totalSwap)
+            swapUsageSizeString = Formatter.formatFileSize(
+                context,
+                swapInfo.totalSwap - swapInfo.freeSwap
+            )
+            swapAvailableSizeString =
+                Formatter.formatFileSize(context, swapInfo.freeSwap)
+            swapUsedPercent =
+                (100 * ((swapInfo.totalSwap - swapInfo.freeSwap).toFloat() / swapInfo.totalSwap.toFloat()
+                    .coerceAtLeast(1f))).toInt()
+        }
+
+        return MemAvailableInfo(
+            memTotalSizeString = memTotalSizeString,
+            memUsageSizeString = memUsageSizeString,
+            memAvailableSizeString = memAvailableSizeString,
+            memUsedPercent = memUsedPercent,
+            swapTotalSizeString = swapTotalSizeString,
+            swapUsageSizeString = swapUsageSizeString,
+            swapAvailableSizeString = swapAvailableSizeString,
+            swapUsedPercent = swapUsedPercent,
+            swapEnabled = swapEnabled
+        )
+    }
+
+    private fun getMemoryInfo(): ActivityManager.MemoryInfo {
+        val m = ActivityManager.MemoryInfo()
+        context.activityManager.getMemoryInfo(m)
+        return m
+    }
+
+    private fun getSwapInfo(): SwapInfo {
+        val procMemoryInfo: ProcMemoryInfo = MemoryReader.read()
+        return SwapInfo(procMemoryInfo.totalSwap, procMemoryInfo.freeSwap)
     }
 }

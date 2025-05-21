@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3ExpressiveApi::class)
 
 package tornaco.apps.shortx.ui.overlay
 
@@ -28,7 +28,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -332,7 +333,7 @@ private fun OverlayCircleProgressItem(
         horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        CircularProgressIndicator(progress = {
+        CircularWavyProgressIndicator(progress = {
             button.formattedProgress
         }, modifier = Modifier.size(CIRCLE_PROGRESS_SIZE.dp))
         val label = updateButton.formattedLabel

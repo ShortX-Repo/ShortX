@@ -12,7 +12,12 @@ object SystemEnvInit {
     fun install(context: Context, shortXContext: ShortXContext) {
         Env.entries.forEach { env ->
             SystemEnv.addEnvInflater(env.key to { param ->
-                env.getValue(GetValueInput(context, shortXContext, param))
+                runCatching {
+                    env.getValue(GetValueInput(context, shortXContext, param))
+                }.getOrElse {
+                    shortXContext.watchDog.logger.e(it, "SystemEnv getValue error: ${env.key}")
+                    null
+                }
             })
         }
     }
@@ -103,6 +108,27 @@ enum class Env(
             Settings.System.getString(context.contentResolver, requireNotNull(param) {
                 "Settings name is missing."
             })
+        }
+    ),
+    CpuAvailabilityPercent(
+        displayName = "$I18N_KEY_PREFIX.cpu.availability.percent",
+        key = "CpuAvailabilityPercent",
+        getValue = {
+            shortXContext.cpu.getCpuAvailablePercent().toString()
+        }
+    ),
+    MemAvailabilityPercent(
+        displayName = "$I18N_KEY_PREFIX.mem.availability.percent",
+        key = "MemAvailabilityPercent",
+        getValue = {
+            (100 - shortXContext.cpu.getMemAvailableInfo().memUsedPercent).toString()
+        }
+    ),
+    SwapAvailabilityPercent(
+        displayName = "$I18N_KEY_PREFIX.swap.availability.percent",
+        key = "SwapAvailabilityPercent",
+        getValue = {
+            (100 - shortXContext.cpu.getMemAvailableInfo().swapUsedPercent).toString()
         }
     ),
 }
