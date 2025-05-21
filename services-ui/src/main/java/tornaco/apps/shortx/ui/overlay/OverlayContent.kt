@@ -1,10 +1,11 @@
-@file:OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3ExpressiveApi::class)
+@file:OptIn(ExperimentalFoundationApi::class)
 
 package tornaco.apps.shortx.ui.overlay
 
 import android.view.MotionEvent
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -28,9 +29,9 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularWavyProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -333,9 +334,15 @@ private fun OverlayCircleProgressItem(
         horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        CircularWavyProgressIndicator(progress = {
-            button.formattedProgress
-        }, modifier = Modifier.size(CIRCLE_PROGRESS_SIZE.dp))
+        val animatedProgress by
+        animateFloatAsState(
+            targetValue = button.formattedProgress,
+            animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
+        )
+        CircularProgressIndicator(
+            progress = { animatedProgress },
+            modifier = Modifier.size(CIRCLE_PROGRESS_SIZE.dp)
+        )
         val label = updateButton.formattedLabel
         if (label.isNotEmpty()) {
             Text(
