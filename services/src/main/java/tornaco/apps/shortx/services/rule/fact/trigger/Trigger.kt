@@ -46,6 +46,10 @@ interface Trigger {
 
     fun onAnyChanged() {}
 
+    fun onRuleOrDAStopped(id: String) {
+
+    }
+
     fun onScreenOff() {}
     fun onScreenOn() {}
 }

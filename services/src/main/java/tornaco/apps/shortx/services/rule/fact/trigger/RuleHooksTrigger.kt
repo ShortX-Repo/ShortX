@@ -96,4 +96,70 @@ class RuleHooksTrigger(
             }
         }
     }
+
+    override fun onUpdateRule(oldRule: Rule, newRule: Rule) {
+        super.onUpdateRule(oldRule, newRule)
+        logger.d("onUpdateRule: ${newRule.id}")
+        oldRule.hook?.let { hook ->
+            hook.actionsOnUpdatedList.apply {
+                if (isNotEmpty()) {
+                    val evaluateContext = EvaluateContext.newBuilder()
+                        .setSrcId(oldRule.id)
+                        .setSrcEvent(ContextSrcEvent.ContextSrc_RuleHook)
+                        .setSrcEventPayload1(RuleEditOp.RuleEditOp_Update.name)
+                        .setSrcTitle(oldRule.title)
+                        .build()
+                    shortXContext.rule.executeActions(
+                        context = evaluateContext,
+                        actions = this,
+                        conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
+                        actionAsyncMode = ActionAsyncMode.ActionAsyncMode_Sync
+                    )
+                }
+            }
+        }
+    }
+
+    override fun onRuleOrDAStopped(id: String) {
+        super.onRuleOrDAStopped(id)
+        shortXContext.rule.getRuleById(id)?.let {
+            it.hook?.let { hook ->
+                hook.actionsOnStopList.apply {
+                    if (isNotEmpty()) {
+                        val evaluateContext = EvaluateContext.newBuilder()
+                            .setSrcId(it.id)
+                            .setSrcEvent(ContextSrcEvent.ContextSrc_RuleHook)
+                            .setSrcTitle(it.title)
+                            .build()
+                        shortXContext.rule.executeActions(
+                            context = evaluateContext,
+                            actions = this,
+                            conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
+                            actionAsyncMode = ActionAsyncMode.ActionAsyncMode_Sync
+                        )
+                    }
+                }
+            }
+        }
+
+        shortXContext.rule.getDirectActionById(id)?.let {
+            it.hook?.let { hook ->
+                hook.actionsOnStopList.apply {
+                    if (isNotEmpty()) {
+                        val evaluateContext = EvaluateContext.newBuilder()
+                            .setSrcId(it.id)
+                            .setSrcEvent(ContextSrcEvent.ContextSrc_RuleHook)
+                            .setSrcTitle(it.title)
+                            .build()
+                        shortXContext.rule.executeActions(
+                            context = evaluateContext,
+                            actions = this,
+                            conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
+                            actionAsyncMode = ActionAsyncMode.ActionAsyncMode_Sync
+                        )
+                    }
+                }
+            }
+        }
+    }
 }

@@ -656,6 +656,14 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 jobs.contains(it.srcId)
             }
         }
+
+        handler.postSafety("Call onRuleStopped") {
+            jobs.forEach { jobId ->
+                allTriggers.forEach {
+                    it.onRuleOrDAStopped(jobId)
+                }
+            }
+        }
     }
 
     fun cancelAllJobs(reason: String) {

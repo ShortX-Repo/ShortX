@@ -169,6 +169,12 @@ fun AddRuleScreen(
     val actionOnDeletedHandler = remember(vm) { vm.actionOnDeletedStateHandler }
     val actionOnDeletedState by actionOnDeletedHandler.state.collectAsState()
 
+    val actionOnStoppedHandler = remember(vm) { vm.actionOnStoppedStateHandler }
+    val actionOnStoppedState by actionOnStoppedHandler.state.collectAsState()
+
+    val actionOnUpdatedHandler = remember(vm) { vm.actionOnUpdatedStateHandler }
+    val actionOnUpdatedState by actionOnUpdatedHandler.state.collectAsState()
+
     val conditionHandler = remember(vm) { vm.conditionContentStateHandler }
     val conditionContentState by conditionHandler.state.collectAsState()
 
@@ -314,7 +320,11 @@ fun AddRuleScreen(
                         actionOnDisabledState = actionOnDisabledState,
                         actionOnDisabledHandler = actionOnDisabledHandler,
                         actionOnDeletedState = actionOnDeletedState,
-                        actionOnDeletedHandler = actionOnDeletedHandler
+                        actionOnDeletedHandler = actionOnDeletedHandler,
+                        actionOnStoppedState = actionOnStoppedState,
+                        actionOnStoppedHandler = actionOnStoppedHandler,
+                        actionOnUpdatedState = actionOnUpdatedState,
+                        actionOnUpdatedHandler = actionOnUpdatedHandler
                     )
                 }
             }
@@ -344,7 +354,11 @@ private fun LazyListScope.ruleContent(
     actionOnDisabledState: ActionContentState,
     actionOnDisabledHandler: ActionContentStateHandler,
     actionOnDeletedState: ActionContentState,
-    actionOnDeletedHandler: ActionContentStateHandler
+    actionOnDeletedHandler: ActionContentStateHandler,
+    actionOnStoppedState: ActionContentState,
+    actionOnStoppedHandler: ActionContentStateHandler,
+    actionOnUpdatedState: ActionContentState,
+    actionOnUpdatedHandler: ActionContentStateHandler
 ) {
     // 0
     itemWithPadding {
@@ -697,6 +711,42 @@ private fun LazyListScope.ruleContent(
                     handler = actionOnDeletedHandler.asActionHandler(),
                     readOnly = readOnly,
                     warnings = actionOnDeletedState.actionWarningMessages
+                )
+                SectionSpacer()
+
+                ActionContent(
+                    header = {
+                        FieldTitleWithTip(
+                            LocalI18N.current["ui.actions.hook.on.stopped.title"],
+                            LocalI18N.current["ui.actions.hook.on.stopped.description"]
+                        )
+                    },
+                    srcId = addRuleState.id,
+                    actions = actionOnStoppedState.actions,
+                    actionAsyncMode = actionOnStoppedState.asyncMode,
+                    canSelectActionAsyncMode = true,
+                    evaluatingActions = addRuleState.evaluatingActions,
+                    handler = actionOnStoppedHandler.asActionHandler(),
+                    readOnly = readOnly,
+                    warnings = actionOnStoppedState.actionWarningMessages
+                )
+                SectionSpacer()
+
+                ActionContent(
+                    header = {
+                        FieldTitleWithTip(
+                            LocalI18N.current["ui.actions.hook.on.updated.title"],
+                            LocalI18N.current["ui.actions.hook.on.updated.description"]
+                        )
+                    },
+                    srcId = addRuleState.id,
+                    actions = actionOnUpdatedState.actions,
+                    actionAsyncMode = actionOnUpdatedState.asyncMode,
+                    canSelectActionAsyncMode = true,
+                    evaluatingActions = addRuleState.evaluatingActions,
+                    handler = actionOnUpdatedHandler.asActionHandler(),
+                    readOnly = readOnly,
+                    warnings = actionOnUpdatedState.actionWarningMessages
                 )
                 SectionSpacer()
             }

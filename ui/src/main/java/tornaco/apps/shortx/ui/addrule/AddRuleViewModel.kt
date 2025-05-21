@@ -92,6 +92,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
     ShortXContextViewModelWithEffect<AddRuleState, AddRuleEffect>(context, { AddRuleState() }) {
 
     val pref by lazy { Pref(context) }
+    val shortx by lazy { shortXManager }
 
     val actionContentStateHandler = ActionContentStateHandler(
         parameterInputsProvider = {
@@ -116,6 +117,18 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
         }
     )
 
+    val actionOnStoppedStateHandler = ActionContentStateHandler(
+        parameterInputsProvider = {
+            state.value.parameters
+        }
+    )
+
+    val actionOnUpdatedStateHandler = ActionContentStateHandler(
+        parameterInputsProvider = {
+            state.value.parameters
+        }
+    )
+
     val conditionContentStateHandler = ConditionContentStateHandler()
 
     val factContentStateHandler = FactContentStateHandler()
@@ -131,22 +144,22 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
     private val actionEvaluateListener = object : IActionEvaluateListener.Stub() {
         override fun onStart(id: String) {
             logger.d("actionEvaluateListener#onStart: $id")
-            updateState { copy(evaluatingActions = shortXManager.getEvaluatingActions()) }
+            updateState { copy(evaluatingActions = shortx.getEvaluatingActions()) }
         }
 
         override fun onComplete(id: String) {
             logger.d("actionEvaluateListener#onComplete: $id")
-            updateState { copy(evaluatingActions = shortXManager.getEvaluatingActions()) }
+            updateState { copy(evaluatingActions = shortx.getEvaluatingActions()) }
         }
     }
 
     init {
-        shortXManager.registerActionEvaluateListener(actionEvaluateListener)
+        shortx.registerActionEvaluateListener(actionEvaluateListener)
     }
 
     override fun onCleared() {
         super.onCleared()
-        shortXManager.unregisterActionEvaluateListener(actionEvaluateListener)
+        shortx.unregisterActionEvaluateListener(actionEvaluateListener)
     }
 
     fun setTitle(title: String) {
@@ -205,9 +218,14 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
             val actionsOnEnabled = actionOnEnabledStateHandler.actions
             val actionsOnDisabled = actionOnDisabledStateHandler.actions
             val actionsOnDeleted = actionOnDeletedStateHandler.actions
+            val actionsOnStopped = actionOnStoppedStateHandler.actions
+            val actionsOnUpdated = actionOnUpdatedStateHandler.actions
+
             val actionsOnEnabledAsyncMode = actionOnEnabledStateHandler.state.value.asyncMode
             val actionsOnDisabledAsyncMode = actionOnDisabledStateHandler.state.value.asyncMode
             val actionsOnDeletedAsyncMode = actionOnDeletedStateHandler.state.value.asyncMode
+            val actionsOnStoppedAsyncMode = actionOnStoppedStateHandler.state.value.asyncMode
+            val actionsOnUpdatedAsyncMode = actionOnUpdatedStateHandler.state.value.asyncMode
 
             val facts = factContentStateHandler.facts
 
@@ -264,6 +282,14 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                             it.toProtoAction().pack_()
                         })
                         .setActionsOnDeletedAsyncMode(actionsOnDeletedAsyncMode)
+                        .addAllActionsOnStop(actionsOnStopped.map {
+                            it.toProtoAction().pack_()
+                        })
+                        .setActionsOnStopAsyncMode(actionsOnStoppedAsyncMode)
+                        .addAllActionsOnUpdated(actionsOnUpdated.map {
+                            it.toProtoAction().pack_()
+                        })
+                        .setActionsOnUpdatedAsyncMode(actionsOnUpdatedAsyncMode)
                         .build()
                 )
                 .setQuit(
@@ -309,14 +335,14 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                 .addAllParameters(state.value.parameters)
                 .build()
 
-            shortXManager.addRule(rule)
+            shortx.addRule(rule)
             postSideEffect(AddRuleEffect.RuleSaved(rule.id))
         }
     }
 
     fun delete(ruleId: String) {
         viewModelScope.launch {
-            shortXManager.deleteRule(ruleId)
+            shortx.deleteRule(ruleId)
         }
     }
 
@@ -329,7 +355,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
     fun initFromRuleId(ruleId: String?) {
         ruleId?.let { id ->
             viewModelScope.launch {
-                shortXManager.getRuleById(id)?.let { rule ->
+                shortx.getRuleById(id)?.let { rule ->
                     logger.d("initFromRule: $rule")
                     initFromRule(rule)
                 }
@@ -345,7 +371,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                 actionContentStateHandler.init(
                     actions = r.actionsList.mapNotNull {
                         it.toAction(
-                            shortXManager
+                            shortx
                         )
                     },
                     actionAsyncMode = r.actionAsyncMode
@@ -355,7 +381,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                     actionOnEnabledStateHandler.init(
                         actions = hook.actionsOnEnabledList.mapNotNull {
                             it.toAction(
-                                shortXManager
+                                shortx
                             )
                         },
                         actionAsyncMode = hook.actionsOnEnabledAsyncMode
@@ -364,7 +390,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                     actionOnDisabledStateHandler.init(
                         actions = hook.actionsOnDisabledList.mapNotNull {
                             it.toAction(
-                                shortXManager
+                                shortx
                             )
                         },
                         actionAsyncMode = hook.actionsOnDisabledAsyncMode
@@ -373,10 +399,26 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                     actionOnDeletedStateHandler.init(
                         actions = hook.actionsOnDeletedList.mapNotNull {
                             it.toAction(
-                                shortXManager
+                                shortx
                             )
                         },
                         actionAsyncMode = hook.actionsOnDeletedAsyncMode
+                    )
+                    actionOnStoppedStateHandler.init(
+                        actions = hook.actionsOnStopList.mapNotNull {
+                            it.toAction(
+                                shortx
+                            )
+                        },
+                        actionAsyncMode = hook.actionsOnStopAsyncMode
+                    )
+                    actionOnUpdatedStateHandler.init(
+                        actions = hook.actionsOnUpdatedList.mapNotNull {
+                            it.toAction(
+                                shortx
+                            )
+                        },
+                        actionAsyncMode = hook.actionsOnUpdatedAsyncMode
                     )
                 }
 
@@ -384,7 +426,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                 conditionContentStateHandler.init(
                     conditions = r.conditionsList.mapNotNull {
                         it.toCondition(
-                            shortXManager
+                            shortx
                         )
                     },
                     conditionOp = r.condOp.toOp(r.condOpPayload)
@@ -392,19 +434,19 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
 
                 factContentStateHandler.init(
                     facts = r.factsList.mapNotNull {
-                        it.toFact(shortXManager)
+                        it.toFact(shortx)
                     }
                 )
 
                 quitFactContentStateHandler.init(
                     facts = r.quit.factsList.mapNotNull {
-                        it.toFact(shortXManager)
+                        it.toFact(shortx)
                     }
                 )
                 quitConditionContentStateHandler.init(
                     conditions = r.quit.conditionsList.mapNotNull {
                         it.toCondition(
-                            shortXManager
+                            shortx
                         )
                     },
                     conditionOp = r.quit.condOp.toOp(r.quit.condOpPayload)
@@ -412,7 +454,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                 quitActionStateHandler.init(
                     actions = r.quit.actionsList.mapNotNull {
                         it.toAction(
-                            shortXManager
+                            shortx
                         )
                     },
                     actionAsyncMode = r.quit.actionAsyncMode
@@ -422,6 +464,8 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                     actionOnEnabledStateHandler.actions.isNotEmpty()
                             || actionOnDisabledStateHandler.actions.isNotEmpty()
                             || actionOnDeletedStateHandler.actions.isNotEmpty()
+                            || actionOnStoppedStateHandler.actions.isNotEmpty()
+                            || actionOnUpdatedStateHandler.actions.isNotEmpty()
                             || quitFactContentStateHandler.facts.isNotEmpty()
                             || quitConditionContentStateHandler.conditions.isNotEmpty()
                 logger.d("hasAnyHookActions: $hasAnyHookActions")
@@ -434,7 +478,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                 val hasAnyGeeksOptions: Boolean = r.hasRuleInstanceIdGenerator()
                 logger.d("hasAnyGeeksOptions: $hasAnyGeeksOptions")
 
-                val evaluatingActions = shortXManager.getEvaluatingActions()
+                val evaluatingActions = shortx.getEvaluatingActions()
 
                 updateState {
                     copy(

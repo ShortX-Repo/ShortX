@@ -82,7 +82,6 @@ import tornaco.apps.shortx.ui.base.LargeTitle
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalUiStore
-import tornaco.apps.shortx.ui.base.MenuButtonLayout
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.NoteRow
@@ -104,6 +103,7 @@ import tornaco.apps.shortx.ui.record.EvaRecordActivity
 import tornaco.apps.shortx.ui.rememberClipboardDialogState
 import tornaco.apps.shortx.ui.theme.Dimens
 import tornaco.apps.shortx.ui.theme.ErrorRed
+import tornaco.apps.shortx.ui.theme.NoteTextColor
 import kotlin.reflect.KClass
 
 @Composable
@@ -222,7 +222,7 @@ private fun Actions(
                     IconButton(onClick = {
                         actionSortDialogState.show()
                     }, shapes = IconButtonDefaults.shapes()) {
-                        RemixIcon(Remix.Editor.sort_asc)
+                        RemixIcon(Remix.Editor.sort_asc, tint = NoteTextColor)
                     }
                 }
 
@@ -252,7 +252,7 @@ private fun Actions(
                 IconButton(onClick = {
                     moreDropdownState.open()
                 }) {
-                    RemixIcon(Remix.System.more_2_fill)
+                    RemixIcon(Remix.System.more_2_fill, tint = NoteTextColor)
                 }
             }
         }
