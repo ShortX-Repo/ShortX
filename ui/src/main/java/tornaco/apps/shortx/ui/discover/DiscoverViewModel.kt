@@ -6,7 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.github.promeg.pinyinhelper.Pinyin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -73,6 +75,7 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
     private val onlineRepo = OnlineRepo(context)
     private val pref by lazy { Pref(context) }
     private val currentProtoVersion = shortXProtoVersion
+    private var currentJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -131,6 +134,7 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
     }
 
     fun switchRepo(repo: DiscoverRepo) {
+        logger.d("switchRepo: $repo")
         updateState {
             copy(
                 discoverRepo = repo,
@@ -156,7 +160,9 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
     }
 
     fun loadDiscoverData() {
-        viewModelScope.launch {
+        logger.d("loadDiscoverData.")
+        currentJob?.cancel()
+        val job = viewModelScope.launch {
             when (val repo = state.value.discoverRepo) {
                 is DiscoverRepo.CustomOnline -> {
                     loadOnlineData(repo.indexUrl)
@@ -171,9 +177,11 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                 }
             }
         }
+        currentJob = job
     }
 
     private suspend fun loadPrebuiltData() {
+        logger.d("loadPrebuiltData.")
         updateState { copy(data = LoadState.Loading) }
         kotlin.runCatching {
             val content = BackupAgent(context).readBackupPackageContent(assetName)
@@ -198,14 +206,16 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                     }
                 }
             }
+            logger.d("loadPrebuiltData done.")
             updateState { copy(data = LoadState.Success(DiscoverData(ruleUMs, daUMs))) }
         }.onFailure {
             logger.e(it, "loadPrebuiltData error")
-            updateState { copy(data = LoadState.Error(it)) }
+            if (it !is CancellationException) updateState { copy(data = LoadState.Error(it)) }
         }
     }
 
     private suspend fun loadOnlineData(url: String) = withContext(Dispatchers.IO) {
+        logger.d("loadOnlineData $url")
         updateState { copy(data = LoadState.Loading) }
         kotlin.runCatching {
             val index = onlineRepo.index(url, state.value.enableChucker)
@@ -247,6 +257,7 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
             }
             val das = index.directActions.filter { da ->
                 val requireVersion = da.requireMinShortXProtoVersion
+                logger.d("requireVersion: $requireVersion")
                 (requireVersion == null || currentProtoVersion > requireVersion).also {
                     if (!it) {
                         logger.w("DirectAction ${da.title} is not compatible with current ShortX version, require version: $requireVersion, current version: $currentProtoVersion")
@@ -280,10 +291,11 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                     hasAnyParameter = false
                 )
             }
+            logger.d("loadOnlineData done $url")
             updateState { copy(data = LoadState.Success(DiscoverData(rules, das))) }
         }.onFailure {
             logger.e(it, "loadOnlineData error")
-            updateState { copy(data = LoadState.Error(it)) }
+            if (it !is CancellationException) updateState { copy(data = LoadState.Error(it)) }
         }
     }
 }
