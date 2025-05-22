@@ -6,7 +6,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Environment
 import android.widget.Toast
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -45,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -56,6 +56,7 @@ import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.backup.autoGenBackupFileName
 import tornaco.apps.shortx.core.proto.common.Author
 import tornaco.apps.shortx.core.proto.common.OCREngine
+import tornaco.apps.shortx.core.proto.shortXProtoVersion
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.PkgUtils
@@ -64,6 +65,7 @@ import tornaco.apps.shortx.ui.TestData
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
 import tornaco.apps.shortx.ui.base.ConfirmDialog
 import tornaco.apps.shortx.ui.base.ErrorCard
+import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LinkText
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalShortXProps
@@ -418,15 +420,29 @@ fun SettingsScreen(
                             )
                         )
                     })
-
                     StandardSpacer()
                     SubscriptionStatus(subscribeState)
+
+                    LargeSpacer()
+                    ProtoVersion()
 
                     Spacer(Modifier.size(paddingValues.calculateBottomPadding()))
                 }
             }
         }
     }
+}
+
+@Composable
+private fun ProtoVersion() {
+    Text(
+        modifier = Modifier.padding(horizontal = 16.dp),
+        text = "Proto version: $shortXProtoVersion",
+        style = MaterialTheme.typography.bodySmall.copy(
+            fontSize = 11.sp,
+            fontStyle = FontStyle.Italic
+        ),
+    )
 }
 
 @Composable

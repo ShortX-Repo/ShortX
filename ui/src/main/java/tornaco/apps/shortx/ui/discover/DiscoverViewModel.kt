@@ -14,6 +14,7 @@ import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
 import tornaco.apps.shortx.core.BuildProp.SHORTX_DISCOVERY_DEFAULT_ONLINE_REPO_URL
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.proto.shortXProtoVersion
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.repo.inflateOnlineFileUrl
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
@@ -71,6 +72,7 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
     ShortXContextViewModel<DiscoverState>(context, { DiscoverState() }) {
     private val onlineRepo = OnlineRepo(context)
     private val pref by lazy { Pref(context) }
+    private val currentProtoVersion = shortXProtoVersion
 
     init {
         viewModelScope.launch {
@@ -207,7 +209,14 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
         updateState { copy(data = LoadState.Loading) }
         kotlin.runCatching {
             val index = onlineRepo.index(url, state.value.enableChucker)
-            val rules = index.rules.sortedByDescending { it.updateTimeMillis }.map {
+            val rules = index.rules.filter { r ->
+                val requireVersion = r.requireMinShortXProtoVersion
+                (requireVersion == null || currentProtoVersion > requireVersion).also {
+                    if (!it) {
+                        logger.w("Rule ${r.title} is not compatible with current ShortX version, require version: $requireVersion, current version: $currentProtoVersion")
+                    }
+                }
+            }.sortedByDescending { it.updateTimeMillis }.map {
                 val installedRuleOrNull = shortXManager.getRuleById(it.id)
                 RuleUM(
                     title = it.title,
@@ -236,7 +245,14 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                     hasAnyParameter = false
                 )
             }
-            val das = index.directActions.sortedByDescending { it.updateTimeMillis }.map {
+            val das = index.directActions.filter { da ->
+                val requireVersion = da.requireMinShortXProtoVersion
+                (requireVersion == null || currentProtoVersion > requireVersion).also {
+                    if (!it) {
+                        logger.w("DirectAction ${da.title} is not compatible with current ShortX version, require version: $requireVersion, current version: $currentProtoVersion")
+                    }
+                }
+            }.sortedByDescending { it.updateTimeMillis }.map {
                 val installedDAOrNull = shortXManager.getDirectActionById(it.id)
                 DirectActionUM(
                     title = it.title,

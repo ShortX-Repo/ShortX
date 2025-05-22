@@ -9,6 +9,7 @@ import org.lsposed.hiddenapibypass.HiddenApiBypass
 import tornaco.apps.shortx.core.AppGlobals
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.ShortXManagerNative
+import tornaco.apps.shortx.core.proto.shortXProtoVersion
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.EntryPoint
 import tornaco.apps.shortx.ui.FlavorEntryPoint
@@ -24,7 +25,7 @@ class ShortXApp : Application() {
         super.onCreate()
         initLogger(this)
         AppGlobals.setContext(applicationContext)
-        logger.d("onCreate.")
+        logger.w("onCreate. Proto version: $shortXProtoVersion")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             HiddenApiBypass.addHiddenApiExemptions("")
         }
