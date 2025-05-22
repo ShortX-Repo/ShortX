@@ -7,6 +7,8 @@ import tornaco.apps.shortx.core.context.SystemEnv
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.clipboardManager
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.fact.trigger.BatteryTemperatureTrigger
+import kotlin.math.roundToInt
 
 object SystemEnvInit {
     fun install(context: Context, shortXContext: ShortXContext) {
@@ -120,7 +122,23 @@ enum class Env(
         displayName = "$I18N_KEY_PREFIX.cpu.availability.percent",
         key = "CpuAvailabilityPercent",
         getValue = {
-            shortXContext.cpu.getCpuTotalAvailablePercent().toString()
+            if (param.isNullOrBlank()) {
+                shortXContext.cpu.getCpuTotalAvailablePercent().toString()
+            } else {
+                val core = param.toIntOrNull()
+                if (core == null) {
+                    shortXContext.cpu.getCpuTotalAvailablePercent().toString()
+                } else {
+                    shortXContext.cpu.getCpuAvailablePercents()[core]?.toString() ?: "N/A"
+                }
+            }
+        }
+    ),
+    CpuTemperature(
+        displayName = "$I18N_KEY_PREFIX.cpu.temperature",
+        key = "CpuTemperature",
+        getValue = {
+            shortXContext.cpu.getCpuTemperature().roundToInt().toString()
         }
     ),
     MemAvailabilityPercent(
@@ -135,6 +153,13 @@ enum class Env(
         key = "SwapAvailabilityPercent",
         getValue = {
             (100 - shortXContext.cpu.getMemAvailableInfo().swapUsedPercent).toString()
+        }
+    ),
+    BatteryTemperature(
+        displayName = "$I18N_KEY_PREFIX.battery.temperature",
+        key = "BatteryTemperature",
+        getValue = {
+            (BatteryTemperatureTrigger.temperature.value / 10f).roundToInt().toString()
         }
     ),
 }

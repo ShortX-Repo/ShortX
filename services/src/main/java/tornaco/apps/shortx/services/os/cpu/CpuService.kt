@@ -19,6 +19,7 @@ import tornaco.apps.shortx.services.os.cpu.CpuInfoReader.CpuInfo
 import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.watchdog.launchSafety
+import java.io.File
 
 val MONITORING_CONFIG_ALL_CPUSET = CpuAvailabilityMonitoringConfig.Builder(
     CPUSET_ALL
@@ -212,4 +213,30 @@ class CpuService(shortXContext: ShortXContext) : SystemService(shortXContext, "C
         val procMemoryInfo: ProcMemoryInfo = MemoryReader.read()
         return SwapInfo(procMemoryInfo.totalSwap, procMemoryInfo.freeSwap)
     }
+
+    fun getCpuTemperature(): Float {
+        val possiblePaths = listOf(
+            "/sys/class/thermal/thermal_zone0/temp",
+            "/sys/class/thermal/thermal_zone1/temp",
+            "/sys/class/thermal/thermal_zone2/temp",
+            "/sys/devices/virtual/thermal/thermal_zone0/temp"
+        )
+        for (path in possiblePaths) {
+            try {
+                val tempFile = File(path)
+                if (tempFile.exists()) {
+                    val raw = tempFile.readText().trim()
+                    val temp = raw.toFloatOrNull()
+                    if (temp != null) {
+                        return if (temp > 100) temp / 1000f else temp // 有些是毫度，有些是摄氏度
+                    }
+                }
+            } catch (e: Exception) {
+                // 忽略异常
+            }
+        }
+
+        return -1f // 表示获取失败
+    }
+
 }

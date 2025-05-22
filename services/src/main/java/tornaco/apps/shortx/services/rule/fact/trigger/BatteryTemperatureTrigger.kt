@@ -9,8 +9,8 @@ import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.fact.BatteryTemperatureChanged
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.util.SafeBroadcastReceiver
 
 class BatteryTemperatureTrigger(
@@ -19,7 +19,10 @@ class BatteryTemperatureTrigger(
 ) :
     Trigger {
     private val logger = Logger("BatteryTemperatureTrigger")
-    private val _temp = MutableStateFlow(-1)
+
+    companion object {
+        val temperature = MutableStateFlow(-1)
+    }
 
     private val receiver = object : SafeBroadcastReceiver(shortXContext) {
         override fun handleReceive(context: Context, intent: Intent) {
@@ -28,15 +31,21 @@ class BatteryTemperatureTrigger(
                 logger.d("temp: $temp")
                 if (temp < 0) return
 
-                if (temp != _temp.value) {
-                    logger.d("temp changed from: ${_temp.value} to: $temp")
-                    _temp.value = temp
+                if (temp != temperature.value) {
+                    logger.d("temp changed from: ${temperature.value} to: $temp")
+                    temperature.value = temp
 
-                    shortXContext.rule.publishFact(
-                        reason = "Battery temp changed",
-                        fact = BatteryTemperatureChanged.newBuilder().setTemp(temp / 10f).build(),
-                        initialContextData = mapOf(ContextDataMapping.BatteryTemperatureChanged.batteryTemperature.name to temp / 10f)
-                    )
+                    shortXContext.rule.publishFactChecked(
+                        BatteryTemperatureChanged.getDefaultInstance(),
+                    ) {
+                        FactPublishData(
+                            reason = "Battery temp changed",
+                            fact = BatteryTemperatureChanged.newBuilder().setTemp(temp / 10f)
+                                .build(),
+                        ) {
+                            mapOf(ContextDataMapping.BatteryTemperatureChanged.batteryTemperature.name to temp / 10f)
+                        }
+                    }
                 }
             }
         }
@@ -50,5 +59,4 @@ class BatteryTemperatureTrigger(
     override fun unRegister() {
         context.unregisterReceiver(receiver)
     }
-
 }
