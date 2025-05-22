@@ -1274,6 +1274,7 @@
     "ui.shortx.stub.apk.icon.tint": "圖示顏色",
     "ui.shortx.stub.apk.icon.bg": "圖示背景色",
     "ui.shortx.stub.apk.icon.preview": "預覽",
+    "ui.common.preview": "預覽",
     "ui.common.app.disabled": "已凍結",
     "ui.common.app.suspended": "已暫停",
     "ui.common.app.system": "系統",

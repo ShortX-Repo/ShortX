@@ -1276,6 +1276,7 @@
     "ui.shortx.stub.apk.icon.tint": "Icon tint color",
     "ui.shortx.stub.apk.icon.bg": "Icon background color",
     "ui.shortx.stub.apk.icon.preview": "Preview",
+    "ui.common.preview": "Preview",
     "ui.common.app.disabled": "Disabled",
     "ui.common.app.suspended": "Suspended",
     "ui.common.app.system": "System",

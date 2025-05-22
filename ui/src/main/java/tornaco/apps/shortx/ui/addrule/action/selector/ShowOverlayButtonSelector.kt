@@ -4,8 +4,6 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.SpaceBetween
 import androidx.compose.foundation.layout.Column
@@ -15,12 +13,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -55,13 +53,14 @@ import tornaco.apps.shortx.ui.base.MDIconSelectorActivity
 import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
+import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.ShortXCard
-import tornaco.apps.shortx.ui.base.ShortXSwitch
+import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXTextField
-import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.SwitchBarNoBackground
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.overlay.OverlayContent
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
@@ -88,37 +87,25 @@ private fun BaseSelectorActivity<Action.ShowOverlay>.ShowOverlayButtonSelector(c
     }
     val selectorState by vm.state.collectAsState()
 
-    Scaffold(
-        modifier = Modifier,
-        topBar = {
-            ShortXTopAppBar(
-                modifier = Modifier,
-                title = { Text(LocalI18N.current["ui.action.show.overlay"]) },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        cancelAndFinish()
-                    }) {
-                        RemixIcon(remixName = Remix.System.close_line)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = {
-                        val action = selectorState.toAction()
-                        setResultAndFinish(action)
-                    }) {
-                        RemixIcon(remixName = Remix.System.check_line)
-                    }
-
-                },
-            )
-        }) {
-        Content(paddingValues = it, vm = vm)
+    ShortXAppBarScaffold(
+        title = LocalI18N.current["ui.action.show.overlay"],
+        verticalScroll = false,
+        onBackPressed = { cancelAndFinish() },
+        actions = {
+            IconButton(onClick = {
+                val action = selectorState.toAction()
+                setResultAndFinish(action)
+            }) {
+                RemixIcon(remixName = Remix.System.check_line)
+            }
+        },
+    ) {
+        Content(vm = vm)
     }
 }
 
 @Composable
 private fun Content(
-    paddingValues: PaddingValues,
     vm: ShowOverlayButtonSelectorViewModel
 ) {
     val state by vm.state.collectAsState()
@@ -132,272 +119,290 @@ private fun Content(
     })
     ShowOverlayButtonSortDialog(state = sortDialogState)
 
-    Column(
+    val context = LocalContext.current
+    val localUiStore = LocalUiStore.current
+    val iconLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val icon = result.popupSelectorResult<MDIcon>()
+            val buttonIndex =
+                localUiStore.ShowOverlayButtonSelectorActivity_SelectButtonIcon_Index.get()
+            icon?.let {
+                vm.updateIcon(buttonIndex, it.iconNameOrBase64)
+            }
+        }
+    )
+    LazyColumn(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .padding(paddingValues)
-            .animateContentSize()
-            .verticalScroll(rememberScrollState())
+            .fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            FieldTitle(text = LocalI18N.current["ui.action.show.add.button"])
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = {
-                    vm.setButtonListExpanded(!state.isButtonListExpanded)
-                }) {
-                    RemixIcon(remixName = Remix.Arrows.expand_up_down_fill)
+        // Preview.
+        stickyHeader {
+            OutlinedCard(shape = ShortXCardRoundedCornerShape) {
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth()
+                ) {
+                    FieldTitle(text = LocalI18N.current["ui.common.preview"])
+                    StandardSpacer()
+                    val action = remember(state) {
+                        derivedStateOf {
+                            state.toAction().copy(autoCollapse = false).toProtoAction()
+                        }
+                    }
+                    OverlayContent(
+                        action = action.value as ShowOverlayButton,
+                        localVars = LocalVars.obtain(),
+                        contextData = emptyMap(),
+                        parameters = emptyList(),
+                        onButtonClick = {},
+                        onButtonLongClick = {},
+                        dragHandleMotionEvent = {},
+                        onExpand = {},
+                        onCollapse = {}
+                    )
                 }
-                IconButton(onClick = {
-                    sortDialogState.show()
-                }) {
-                    RemixIcon(remixName = Remix.Editor.sort_desc)
+            }
+            LargeSpacer()
+        }
+
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = SpaceBetween
+            ) {
+                FieldTitle(text = LocalI18N.current["ui.action.show.add.button"])
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = {
+                        vm.setButtonListExpanded(!state.isButtonListExpanded)
+                    }) {
+                        RemixIcon(remixName = Remix.Arrows.expand_up_down_fill)
+                    }
+                    IconButton(onClick = {
+                        sortDialogState.show()
+                    }) {
+                        RemixIcon(remixName = Remix.Editor.sort_desc)
+                    }
+                }
+            }
+            SmallSpacer()
+        }
+        if (state.isButtonListExpanded) {
+            itemsIndexed(state.buttons) { index, button ->
+                when (button.componentType) {
+                    OverlayButtonComponentType.OverlayButtonComponentType_CircleProgress -> {
+                        ProgressBarListItem(
+                            index = index,
+                            button = button,
+                            updateLabel = { i: Int, s: String ->
+                                vm.updateLabel(i, s)
+                            },
+                            updateProgressValue = { i: Int, s: String ->
+                                vm.updateProgressValue(i, s)
+                            },
+                            removeButton = {
+                                vm.removeButton(it)
+                            }
+                        )
+                    }
+
+                    else -> {
+                        ButtonListItem(
+                            index = index,
+                            button = button,
+                            evaluatingActions = state.evaluatingActions,
+                            updateLabel = { i: Int, s: String ->
+                                vm.updateLabel(i, s)
+                            },
+                            updateIcon = { i: Int, s: String ->
+                                vm.updateIcon(i, s)
+                            },
+                            selectIcon = {
+                                localUiStore.ShowOverlayButtonSelectorActivity_SelectButtonIcon_Index.set(
+                                    it
+                                )
+                                iconLauncher.launch(
+                                    BaseSelectorActivity.newIntent(
+                                        context,
+                                        null,
+                                        MDIconSelectorActivity::class.java
+                                    )
+                                )
+                            },
+                            removeButton = {
+                                vm.removeButton(it)
+                            }
+                        )
+                    }
+                }
+
+            }
+        }
+
+        if (state.isButtonListExpanded) {
+            item {
+                StandardSpacer()
+                // Add button
+                Button(
+                    modifier = Modifier.fillMaxSize(),
+                    onClick = {
+                        vm.addButton()
+                    }) {
+                    Text(text = LocalI18N.current["ui.action.show.add.button"])
+                }
+                // Add progress
+                Button(
+                    modifier = Modifier.fillMaxSize(),
+                    onClick = {
+                        vm.addButton(componentType = OverlayButtonComponentType.OverlayButtonComponentType_CircleProgress)
+                    }) {
+                    Text(text = LocalI18N.current["ui.action.show.add.progress.bar"])
                 }
             }
         }
-        SmallSpacer()
-        AnimatedVisibility(visible = state.isButtonListExpanded) {
-            Column {
-                val context = LocalContext.current
-                val localUiStore = LocalUiStore.current
-                val iconLauncher = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.StartActivityForResult(),
-                    onResult = { result ->
-                        val icon = result.popupSelectorResult<MDIcon>()
-                        val buttonIndex =
-                            localUiStore.ShowOverlayButtonSelectorActivity_SelectButtonIcon_Index.get()
-                        icon?.let {
-                            vm.updateIcon(buttonIndex, it.iconNameOrBase64)
-                        }
-                    }
+
+        item {
+            LargeSpacer()
+            Column(verticalArrangement = Arrangement.Center) {
+                FieldTitle(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    LocalI18N.current["ui.action.show.overlay.tag"]
                 )
-                state.buttons.forEachIndexed { index, button ->
-                    when (button.componentType) {
-                        OverlayButtonComponentType.OverlayButtonComponentType_CircleProgress -> {
-                            ProgressBarListItem(
-                                index = index,
-                                button = button,
-                                updateLabel = { i: Int, s: String ->
-                                    vm.updateLabel(i, s)
-                                },
-                                updateProgressValue = { i: Int, s: String ->
-                                    vm.updateProgressValue(i, s)
-                                },
-                                removeButton = {
-                                    vm.removeButton(it)
-                                }
-                            )
-                        }
-
-                        else -> {
-                            ButtonListItem(
-                                index = index,
-                                button = button,
-                                evaluatingActions = state.evaluatingActions,
-                                updateLabel = { i: Int, s: String ->
-                                    vm.updateLabel(i, s)
-                                },
-                                updateIcon = { i: Int, s: String ->
-                                    vm.updateIcon(i, s)
-                                },
-                                selectIcon = {
-                                    localUiStore.ShowOverlayButtonSelectorActivity_SelectButtonIcon_Index.set(
-                                        it
-                                    )
-                                    iconLauncher.launch(
-                                        BaseSelectorActivity.newIntent(
-                                            context,
-                                            null,
-                                            MDIconSelectorActivity::class.java
-                                        )
-                                    )
-                                },
-                                removeButton = {
-                                    vm.removeButton(it)
-                                }
-                            )
-                        }
-                    }
-
-                }
+                TipBody(LocalI18N.current["ui.action.show.overlay.tag.description"])
+                SmallSpacer()
+                ShortXTextField(value = state.tag, onValueChange = {
+                    vm.updateTag(it)
+                })
             }
         }
 
-        StandardSpacer()
-        // Add button
-        Button(
-            modifier = Modifier.fillMaxSize(),
-            onClick = {
-                vm.addButton()
-            }) {
-            Text(text = LocalI18N.current["ui.action.show.add.button"])
-        }
-        // Add progress
-        Button(
-            modifier = Modifier.fillMaxSize(),
-            onClick = {
-                vm.addButton(componentType = OverlayButtonComponentType.OverlayButtonComponentType_CircleProgress)
-            }) {
-            Text(text = LocalI18N.current["ui.action.show.add.progress.bar"])
-        }
-
-        LargeSpacer()
-        Column(verticalArrangement = Arrangement.Center) {
-            FieldTitle(
-                modifier = Modifier.padding(vertical = 12.dp),
-                LocalI18N.current["ui.action.show.overlay.tag"]
-            )
-            TipBody(LocalI18N.current["ui.action.show.overlay.tag.description"])
-            SmallSpacer()
-            ShortXTextField(value = state.tag, onValueChange = {
-                vm.updateTag(it)
-            })
-        }
-
-        StandardSpacer()
-        Column(verticalArrangement = Arrangement.Center) {
-            FieldTitle(
-                modifier = Modifier.padding(vertical = 12.dp),
+        item {
+            StandardSpacer()
+            SwitchBarNoBackground(
+                isChecked = state.autoCollapse,
                 text = LocalI18N.current["ui.action.show.auto.collapse"]
-            )
-            SmallSpacer()
-            ShortXSwitch(checked = state.autoCollapse, onCheckedChange = {
+            ) {
                 vm.setAutoCollapse(it)
-            })
-        }
-
-        StandardSpacer()
-        Column(verticalArrangement = Arrangement.Center) {
-            FieldTitle(
-                modifier = Modifier.padding(vertical = 12.dp),
-                text = LocalI18N.current["ui.action.show.auto.edge"]
-            )
-            SmallSpacer()
-            ShortXSwitch(checked = state.enableAutoEdge, onCheckedChange = {
-                vm.setEnableAutoEdge(it)
-            })
-        }
-
-        StandardSpacer()
-        Column(verticalArrangement = Arrangement.Center) {
-            FieldTitle(
-                modifier = Modifier.padding(vertical = 12.dp),
-                text = LocalI18N.current["ui.action.close.touch.outside"]
-            )
-            SmallSpacer()
-            ShortXSwitch(checked = state.closeOnTouchOutside, onCheckedChange = {
-                vm.setCloseOnTouchOutside(it)
-            })
-        }
-
-        StandardSpacer()
-        Column(verticalArrangement = Arrangement.Center) {
-            FieldTitle(
-                modifier = Modifier.padding(vertical = 12.dp),
-                text = LocalI18N.current["ui.action.close.on.action"]
-            )
-            SmallSpacer()
-            ShortXSwitch(checked = state.closeOnAction, onCheckedChange = {
-                vm.setCloseOnAction(it)
-            })
-        }
-
-        StandardSpacer()
-        Column(verticalArrangement = Arrangement.Center) {
-            FieldTitle(
-                modifier = Modifier.padding(vertical = 12.dp),
-                text = LocalI18N.current["ui.common.button.enable.global.drag"]
-            )
-            SmallSpacer()
-            TipBody(text = LocalI18N.current["ui.common.button.enable.global.drag.description"])
-            SmallSpacer()
-            ShortXSwitch(checked = state.enableGlobalDrag, onCheckedChange = {
-                vm.setEnableGlobalDrag(it)
-            })
-        }
-
-        StandardSpacer()
-        Column(modifier = Modifier.fillMaxWidth()) {
-            FieldTitle(text = LocalI18N.current["ui.common.overlay.max.width"])
-            Text(text = state.maxWidth.toString())
-            Slider(
-                valueRange = 20f..500f,
-                value = state.maxWidth.toFloat(),
-                onValueChange = {
-                    vm.setMaxWidth(it.roundToInt())
-                })
-        }
-        StandardSpacer()
-        Column(modifier = Modifier.fillMaxWidth()) {
-            FieldTitle(text = LocalI18N.current["ui.common.overlay.max.height"])
-            Text(text = state.maxHeight.toString())
-            Slider(
-                valueRange = 20f..500f,
-                value = state.maxHeight.toFloat(),
-                onValueChange = {
-                    vm.setMaxHeight(it.roundToInt())
-                })
-        }
-        StandardSpacer()
-        Column(modifier = Modifier.fillMaxWidth()) {
-            FieldTitle(text = LocalI18N.current["ui.common.button.min.width"])
-            Text(text = state.buttonMinWidth.toString())
-            Slider(
-                valueRange = 20f..500f,
-                value = state.buttonMinWidth.toFloat(),
-                onValueChange = {
-                    vm.setButtonMinWidth(it.roundToInt())
-                })
-        }
-        StandardSpacer()
-        Column(modifier = Modifier.fillMaxWidth()) {
-            FieldTitle(text = LocalI18N.current["ui.common.button.overlay.padding.v"])
-            Text(text = state.overlayPaddingV.toString())
-            Slider(
-                valueRange = 0f..50f,
-                value = state.overlayPaddingV.toFloat(),
-                onValueChange = {
-                    vm.setOverlayPaddingV(it.roundToInt())
-                })
-        }
-        StandardSpacer()
-        Column(modifier = Modifier.fillMaxWidth()) {
-            FieldTitle(text = LocalI18N.current["ui.common.button.overlay.padding.h"])
-            Text(text = state.overlayPaddingH.toString())
-            Slider(
-                valueRange = 0f..50f,
-                value = state.overlayPaddingH.toFloat(),
-                onValueChange = {
-                    vm.setOverlayPaddingH(it.roundToInt())
-                })
-        }
-
-
-        SectionSpacer()
-        val action = remember(state) {
-            derivedStateOf {
-                state.toAction().copy(autoCollapse = false).toProtoAction()
             }
         }
-        OverlayContent(
-            action = action.value as ShowOverlayButton,
-            localVars = LocalVars.obtain(),
-            contextData = emptyMap(),
-            parameters = emptyList(),
-            onButtonClick = {},
-            onButtonLongClick = {},
-            dragHandleMotionEvent = {},
-            onExpand = {},
-            onCollapse = {}
-        )
 
-        SectionSpacer()
-        SuggestedNavEntry()
+        item {
+            StandardSpacer()
+            SwitchBarNoBackground(
+                isChecked = state.enableAutoEdge,
+                text = LocalI18N.current["ui.action.show.auto.edge"]
+            ) {
+                vm.setEnableAutoEdge(it)
+            }
+        }
+
+        item {
+            StandardSpacer()
+            SwitchBarNoBackground(
+                isChecked = state.closeOnTouchOutside,
+                text = LocalI18N.current["ui.action.close.touch.outside"]
+            ) {
+                vm.setCloseOnTouchOutside(it)
+            }
+        }
+
+        item {
+            StandardSpacer()
+            SwitchBarNoBackground(
+                isChecked = state.closeOnAction,
+                text = LocalI18N.current["ui.action.close.on.action"]
+            ) {
+                vm.setCloseOnAction(it)
+            }
+        }
+
+        item {
+            StandardSpacer()
+            SwitchBarNoBackground(
+                isChecked = state.enableGlobalDrag,
+                text = LocalI18N.current["ui.common.button.enable.global.drag"],
+                tip = LocalI18N.current["ui.common.button.enable.global.drag.description"]
+            ) {
+                vm.setEnableGlobalDrag(it)
+            }
+        }
+
+        item {
+            StandardSpacer()
+            Column(modifier = Modifier.fillMaxWidth()) {
+                FieldTitle(text = LocalI18N.current["ui.common.overlay.max.width"])
+                Text(text = state.maxWidth.toString())
+                Slider(
+                    valueRange = 20f..500f,
+                    value = state.maxWidth.toFloat(),
+                    onValueChange = {
+                        vm.setMaxWidth(it.roundToInt())
+                    })
+            }
+        }
+
+        item {
+            StandardSpacer()
+            Column(modifier = Modifier.fillMaxWidth()) {
+                FieldTitle(text = LocalI18N.current["ui.common.overlay.max.height"])
+                Text(text = state.maxHeight.toString())
+                Slider(
+                    valueRange = 20f..500f,
+                    value = state.maxHeight.toFloat(),
+                    onValueChange = {
+                        vm.setMaxHeight(it.roundToInt())
+                    })
+            }
+        }
+        item {
+            StandardSpacer()
+            Column(modifier = Modifier.fillMaxWidth()) {
+                FieldTitle(text = LocalI18N.current["ui.common.button.min.width"])
+                Text(text = state.buttonMinWidth.toString())
+                Slider(
+                    valueRange = 20f..500f,
+                    value = state.buttonMinWidth.toFloat(),
+                    onValueChange = {
+                        vm.setButtonMinWidth(it.roundToInt())
+                    })
+            }
+        }
+        item {
+            StandardSpacer()
+            Column(modifier = Modifier.fillMaxWidth()) {
+                FieldTitle(text = LocalI18N.current["ui.common.button.overlay.padding.v"])
+                Text(text = state.overlayPaddingV.toString())
+                Slider(
+                    valueRange = 0f..50f,
+                    value = state.overlayPaddingV.toFloat(),
+                    onValueChange = {
+                        vm.setOverlayPaddingV(it.roundToInt())
+                    })
+            }
+        }
+        item {
+            StandardSpacer()
+            Column(modifier = Modifier.fillMaxWidth()) {
+                FieldTitle(text = LocalI18N.current["ui.common.button.overlay.padding.h"])
+                Text(text = state.overlayPaddingH.toString())
+                Slider(
+                    valueRange = 0f..50f,
+                    value = state.overlayPaddingH.toFloat(),
+                    onValueChange = {
+                        vm.setOverlayPaddingH(it.roundToInt())
+                    })
+            }
+
+        }
+
+        item {
+            SectionSpacer()
+            SuggestedNavEntry()
+        }
     }
 }
 
