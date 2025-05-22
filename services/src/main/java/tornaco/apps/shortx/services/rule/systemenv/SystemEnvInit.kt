@@ -29,6 +29,8 @@ object SystemEnvInit {
                 .setKeyDecored(with(SystemEnv) {
                     it.key.asEnvName()
                 })
+                .setTip(it.tip.orEmpty())
+                .setRequireParam(it.requireParam)
                 .build()
         }
     }
@@ -45,7 +47,9 @@ private const val I18N_KEY_PREFIX = "ui.system.env"
 enum class Env(
     val displayName: String,
     val key: String,
-    val getValue: GetValueInput.() -> String?
+    val getValue: GetValueInput.() -> String?,
+    val tip: String? = null,
+    val requireParam: Boolean = false
 ) {
     UUID(
         displayName = "$I18N_KEY_PREFIX.uuid",
@@ -108,13 +112,15 @@ enum class Env(
             Settings.System.getString(context.contentResolver, requireNotNull(param) {
                 "Settings name is missing."
             })
-        }
+        },
+        tip = "$I18N_KEY_PREFIX.system.settings.tip",
+        requireParam = true
     ),
     CpuAvailabilityPercent(
         displayName = "$I18N_KEY_PREFIX.cpu.availability.percent",
         key = "CpuAvailabilityPercent",
         getValue = {
-            shortXContext.cpu.getCpuAvailablePercent().toString()
+            shortXContext.cpu.getCpuTotalAvailablePercent().toString()
         }
     ),
     MemAvailabilityPercent(

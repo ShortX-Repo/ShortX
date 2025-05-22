@@ -158,8 +158,15 @@ fun DiscoverScreen() {
                     title = it.alias,
                     summary = it.url,
                     iconName = Remix.Business.global_line,
-                    customAction = Remix.System.delete_bin_2_line to {
-                        discoverModel.removeCustomRepo(it)
+                    customAction = {
+                        IconButton(onClick = {
+                            discoverModel.removeCustomRepo(it)
+                        }) {
+                            RemixIcon(
+                                Remix.System.delete_bin_2_line,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                 )
             })

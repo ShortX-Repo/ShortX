@@ -107,7 +107,7 @@ class CpuService(shortXContext: ShortXContext) : SystemService(shortXContext, "C
     }
 
     @SuppressLint("UseKtx")
-    fun getCpuAvailablePercent(): Int {
+    fun getCpuTotalAvailablePercent(): Int {
         val cpuInfosByCoreId = requireNotNull(cpuInfoReader.readCpuInfos()) {
             "Unable to read cpu info."
         }
@@ -132,6 +132,21 @@ class CpuService(shortXContext: ShortXContext) : SystemService(shortXContext, "C
             return 0
         }
         return percent
+    }
+
+    @SuppressLint("UseKtx")
+    fun getCpuAvailablePercents(): Map<Int, Int> {
+        val cpuInfosByCoreId = requireNotNull(cpuInfoReader.readCpuInfos()) {
+            "Unable to read cpu info."
+        }
+        val res = mutableMapOf<Int, Int>()
+        for (i in 0..<cpuInfosByCoreId.size()) {
+            val cpuInfo: CpuInfo = cpuInfosByCoreId.valueAt(i)
+            val percent =
+                ((cpuInfo.normalizedAvailableCpuFreqKHz * 100.0) / cpuInfo.maxCpuFreqKHz).toInt()
+            res[cpuInfo.cpuCore] = percent.takeIf { it >= 0 } ?: 0
+        }
+        return res
     }
 
     fun getMemAvailableInfo(): MemAvailableInfo {
