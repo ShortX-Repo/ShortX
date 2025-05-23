@@ -1,9 +1,6 @@
-@file:OptIn(ExperimentalFoundationApi::class)
-
 package tornaco.apps.shortx.ui.main.rule
 
 import android.widget.Toast
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -58,13 +55,12 @@ import tornaco.apps.shortx.ui.util.themedTextColor
 fun RuleItem(
     modifier: Modifier = Modifier,
     rule: RuleUM,
+    isEnabledFast: Boolean,
     isSubscribed: Boolean,
     colorfulCard: Boolean,
     showDescription: Boolean = true,
     runningInsCount: Int
 ) {
-    val handler = LocalRuleItemHandler.current
-    // TODO Animate item
     Box {
         val popMenuState = listItemOverflowMenu(
             rule = rule,
@@ -77,6 +73,7 @@ fun RuleItem(
                 modifier = modifier.then(it),
                 popMenuState = popMenuState,
                 rule = rule,
+                isEnabledFast = isEnabledFast,
                 colorfulCard = colorfulCard,
                 showDescription = showDescription,
                 runningInsCount = runningInsCount
@@ -90,6 +87,7 @@ private fun RuleItem(
     modifier: Modifier,
     popMenuState: DropdownSelectorState,
     rule: RuleUM,
+    isEnabledFast: Boolean,
     colorfulCard: Boolean,
     showDescription: Boolean,
     runningInsCount: Int,
@@ -124,7 +122,7 @@ private fun RuleItem(
             }
             ShortXSwitch(
                 modifier = Modifier,
-                checked = rule.isEnabled,
+                checked = isEnabledFast,
                 stock = false,
                 onCheckedChange = {
                     handler.setRuleEnabled(rule, it)

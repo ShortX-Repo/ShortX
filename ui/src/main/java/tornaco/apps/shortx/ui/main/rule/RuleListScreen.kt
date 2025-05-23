@@ -180,6 +180,7 @@ fun RuleScreen() {
                     RuleContent(
                         colorfulCard = ruleListState.colorfulCard,
                         rules = (ruleList as LoadState.Success).data.rules,
+                        fastEnabledRuleIds = ruleListState.fastEnabledRuleIds,
                         showDescription = ruleListState.showDescription,
                         activeJobs = activeJobIds
                     )
@@ -280,6 +281,7 @@ fun RuleContent(
     colorfulCard: Boolean,
     showDescription: Boolean,
     rules: List<RuleUM>,
+    fastEnabledRuleIds: Set<String>,
     activeJobs: List<String>,
 ) {
     Column {
@@ -297,6 +299,7 @@ fun RuleContent(
             RuleListContent(
                 isSubscribed = subscribeState.isSubscribed,
                 rules = rules,
+                fastEnabledRuleIds = fastEnabledRuleIds,
                 colorfulCard = colorfulCard,
                 showDescription = showDescription,
                 activeJobs = activeJobs
@@ -311,6 +314,7 @@ private fun RuleListContent(
     colorfulCard: Boolean,
     showDescription: Boolean,
     rules: List<RuleUM>,
+    fastEnabledRuleIds: Set<String>,
     activeJobs: List<String>,
 ) {
     LazyVerticalStaggeredGrid(
@@ -342,6 +346,7 @@ private fun RuleListContent(
                     }
                     RuleItem(
                         rule = rule,
+                        isEnabledFast = fastEnabledRuleIds.contains(rule.id),
                         isSubscribed = isSubscribed,
                         colorfulCard = colorfulCard,
                         showDescription = showDescription,

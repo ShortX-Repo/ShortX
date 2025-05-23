@@ -18,25 +18,6 @@ class RuleSetDetailsViewModel(
 ) :
     BaseRuleListViewModel(context) {
 
-    override val ruleList: StateFlow<LoadState<RuleList>> by lazy {
-        combine(
-            loadRuleRequest,
-            state.map { it.onlyShowEnabled },
-            state.map { it.ruleSortBy },
-            state.map { it.searchQuery }) { _, _, _, _ ->
-            runCatching {
-                LoadState.Success(getRuleList())
-            }.getOrElse {
-                logger.e(it, "load rule list")
-                LoadState.Error(it)
-            }
-        }.onEach {
-            if (it is LoadState.Success) {
-                pref.setSelectedRuleFilter(it.data.selectedRuleSetFilter.filterId)
-            }
-        }.stateIn(viewModelScope, SharingStarted.Lazily, initialValue = LoadState.Loading)
-    }
-
     private suspend fun getRuleList(): RuleList {
         logger.d("loadRuleList")
         val startLoadingTime = System.currentTimeMillis()
@@ -59,5 +40,24 @@ class RuleSetDetailsViewModel(
         }
 
         return RuleList(rules = rules)
+    }
+
+    override fun createRuleListFlow(): StateFlow<LoadState<RuleList>> {
+        return combine(
+            loadRuleRequest,
+            state.map { it.onlyShowEnabled },
+            state.map { it.ruleSortBy },
+            state.map { it.searchQuery }) { _, _, _, _ ->
+            runCatching {
+                LoadState.Success(getRuleList())
+            }.getOrElse {
+                logger.e(it, "load rule list")
+                LoadState.Error(it)
+            }
+        }.onEach {
+            if (it is LoadState.Success) {
+                pref.setSelectedRuleFilter(it.data.selectedRuleSetFilter.filterId)
+            }
+        }.stateIn(viewModelScope, SharingStarted.Lazily, initialValue = LoadState.Loading)
     }
 }

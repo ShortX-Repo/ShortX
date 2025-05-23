@@ -30,7 +30,8 @@ fun RuleDetailsBottomSheet(dialogState: ShortXBottomSheetState) {
         val ruleList by vm.ruleList.collectAsState()
         val activeJobIds by vm.activeJobIds.collectAsState()
 
-        CompositionLocalProvider(LocalRuleItemHandler provides daHandler,
+        CompositionLocalProvider(
+            LocalRuleItemHandler provides daHandler,
             LocalRuleSetItemHandler provides object : RuleSetItemHandler {}) {
 
             when (ruleList) {
@@ -46,6 +47,7 @@ fun RuleDetailsBottomSheet(dialogState: ShortXBottomSheetState) {
                 is LoadState.Success -> {
                     RuleContent(
                         rules = (ruleList as LoadState.Success).data.rules,
+                        fastEnabledRuleIds = state.fastEnabledRuleIds,
                         colorfulCard = state.colorfulCard,
                         showDescription = true,
                         activeJobs = activeJobIds
