@@ -154,25 +154,28 @@ object ActivityRecordHook {
             val getState: Any =
                 ActivityRecordUtils.getState(param.thisObject) ?: return@beforeMethod
             val currentState = State.valueOf(getState.toString())
-            logger.d("SetState, currentState: $state")
+            logger.d("SetState, currentState: $currentState")
+
+            val activityRecord = param.thisObject
+            val intent = ActivityRecordUtils.getIntent(activityRecord)
+            val uid = ActivityRecordUtils.getUid(activityRecord)
+            if (intent == null || uid < 0) {
+                logger.e("SetState, can not get intent or user for activityRecord: $activityRecord")
+                return@beforeMethod
+            }
+            val displayId =
+                kotlin.runCatching { ActivityRecordUtils.getDisplayId(activityRecord) }.getOrElse {
+                    logger.e(it, "getDisplayId err.")
+                }
+            val componentName = intent.component
+            if (componentName == null) {
+                logger.e("SetState, can not get component from Intent: $intent")
+                return@beforeMethod
+            }
+            logger.d("SetState: $currentState ----> $state, uid: $uid, displayId: $displayId, name: $componentName")
 
             if (currentState != State.DESTROYED && state == State.DESTROYED) {
-                val activityRecord = param.thisObject
-                val intent = ActivityRecordUtils.getIntent(activityRecord)
-                val uid = ActivityRecordUtils.getUid(activityRecord)
-                if (intent == null || uid < 0) {
-                    logger.e("destroyed, can not get intent or user for activityRecord: $activityRecord")
-                    return@beforeMethod
-                }
-                val displayId = ActivityRecordUtils.getDisplayId(activityRecord)
                 logger.i("destroyed, uid: $uid, displayId: $displayId, intent: $intent")
-
-                val componentName = intent.component
-                if (componentName == null) {
-                    logger.e("destroyed, can not get component from Intent: $intent")
-                    return@beforeMethod
-                }
-
                 val taskId = ActivityRecordUtils.getTaskId(activityRecord)
                 logger.d("destroyed, taskId: $taskId")
 
