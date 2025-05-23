@@ -29,8 +29,8 @@ import javax.inject.Inject
 class RuleListViewModel @Inject constructor(@ApplicationContext context: Context) :
     BaseRuleListViewModel(context) {
 
-    override fun createRuleListFlow(): StateFlow<LoadState<RuleList>> {
-        return combine(
+    override val ruleList: StateFlow<LoadState<RuleList>> by lazy {
+        combine(
             loadRuleRequest,
             state.map { it.onlyShowEnabled },
             state.map { it.ruleSortBy },

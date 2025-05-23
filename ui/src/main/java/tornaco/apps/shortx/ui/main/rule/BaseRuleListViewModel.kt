@@ -6,7 +6,6 @@ import android.widget.Toast
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -64,8 +63,6 @@ data class RuleListState(
     val showDescription: Boolean = true,
     val onlyShowEnabled: Boolean = true,
     val searchQuery: String = "",
-    // For UI opt.
-    val fastEnabledRuleIds: Set<String> = emptySet(),
 )
 
 data class RuleList(
@@ -84,7 +81,7 @@ abstract class BaseRuleListViewModel(context: Context) :
     protected val loadRuleRequest: MutableStateFlow<Long> =
         MutableStateFlow(System.currentTimeMillis())
 
-    val ruleList: StateFlow<LoadState<RuleList>> by lazy { createRuleListFlow() }
+    abstract val ruleList: StateFlow<LoadState<RuleList>>
 
     @OptIn(FlowPreview::class)
     val activeJobIds: StateFlow<List<String>> by lazy {
@@ -167,23 +164,8 @@ abstract class BaseRuleListViewModel(context: Context) :
             }
         }
 
-        viewModelScope.launch {
-            ruleList.collectLatest { loadState ->
-                if (loadState is LoadState.Success) {
-                    val fastEnabledRuleIds =
-                        loadState.data.rules.filter { it.isEnabled }.map { it.id }.toSet()
-                    logger.d("fastEnabledRuleIds update $fastEnabledRuleIds")
-                    updateState {
-                        copy(fastEnabledRuleIds = fastEnabledRuleIds)
-                    }
-                }
-            }
-        }
-
         requestLoadActiveJobs()
     }
-
-    abstract fun createRuleListFlow(): StateFlow<LoadState<RuleList>>
 
     override fun onCleared() {
         super.onCleared()
@@ -205,17 +187,7 @@ abstract class BaseRuleListViewModel(context: Context) :
     }
 
     fun setRuleEnabled(ruleId: String, enable: Boolean) {
-        updateState {
-            copy(
-                fastEnabledRuleIds = if (enable) {
-                    fastEnabledRuleIds + ruleId
-                } else {
-                    fastEnabledRuleIds - ruleId
-                }
-            )
-        }
         viewModelScope.launch {
-            delay(300)
             shortXManager.setRuleEnabled(ruleId, enable)
         }
     }
