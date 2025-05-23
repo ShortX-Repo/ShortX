@@ -221,7 +221,7 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
             val index = onlineRepo.index(url, state.value.enableChucker)
             val rules = index.rules.filter { r ->
                 val requireVersion = r.requireMinShortXProtoVersion
-                (requireVersion == null || currentProtoVersion > requireVersion).also {
+                (requireVersion == null || currentProtoVersion >= requireVersion).also {
                     if (!it) {
                         logger.w("Rule ${r.title} is not compatible with current ShortX version, require version: $requireVersion, current version: $currentProtoVersion")
                     }
@@ -258,7 +258,7 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
             val das = index.directActions.filter { da ->
                 val requireVersion = da.requireMinShortXProtoVersion
                 logger.d("requireVersion: $requireVersion")
-                (requireVersion == null || currentProtoVersion > requireVersion).also {
+                (requireVersion == null || currentProtoVersion >= requireVersion).also {
                     if (!it) {
                         logger.w("DirectAction ${da.title} is not compatible with current ShortX version, require version: $requireVersion, current version: $currentProtoVersion")
                     }
