@@ -123,7 +123,7 @@ enum class Env(
         key = "CpuAvailabilityPercent",
         getValue = {
             if (param.isNullOrBlank()) {
-                shortXContext.cpu.getCpuTotalAvailablePercent().toString()
+                shortXContext.cpu.getCpuTotalAvailablePercentFallback().toString()
             } else {
                 val core = param.toIntOrNull()
                 if (core == null) {
