@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.os.cpu
 import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.text.format.Formatter
+import com.android.internal.os.ProcessCpuTracker
 import github.tornaco.android.thanos.core.os.SwapInfo
 import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.context.ContextDataMapping
@@ -16,6 +17,7 @@ import tornaco.apps.shortx.services.os.ProcMemoryInfo
 import tornaco.apps.shortx.services.os.cpu.CpuAvailabilityMonitoringConfig.CPUSET_ALL
 import tornaco.apps.shortx.services.os.cpu.CpuAvailabilityMonitoringConfig.CPUSET_BACKGROUND
 import tornaco.apps.shortx.services.os.cpu.CpuInfoReader.CpuInfo
+import tornaco.apps.shortx.services.os.cpu.fallback.FallbackProcessCpuTracker
 import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.watchdog.launchSafety
@@ -64,6 +66,9 @@ class CpuService(shortXContext: ShortXContext) : SystemService(shortXContext, "C
             logger.d("onMonitoringIntervalChanged, intervalMilliseconds: $intervalMilliseconds")
         }
     }
+
+    private val processCpuTracker by lazy { ProcessCpuTracker(false) }
+    private val processCpuTrackerFallback by lazy { FallbackProcessCpuTracker(false) }
 
     override fun systemReady() {
         super.systemReady()
@@ -133,6 +138,17 @@ class CpuService(shortXContext: ShortXContext) : SystemService(shortXContext, "C
             return 0
         }
         return percent
+    }
+
+    @SuppressLint("UseKtx")
+    fun getCpuTotalAvailablePercentFallback(): Int {
+        return runCatching {
+            processCpuTracker.update()
+            100 - (processCpuTracker.totalCpuPercent * 100).toInt()
+        }.getOrElse {
+            processCpuTrackerFallback.update()
+            100 - (processCpuTrackerFallback.totalCpuPercent * 100).toInt()
+        }
     }
 
     @SuppressLint("UseKtx")
