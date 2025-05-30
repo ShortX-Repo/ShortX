@@ -661,33 +661,47 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
     }
 
+    // java.util.ConcurrentModificationException
+    //	at java.util.LinkedHashMap$LinkedHashIterator.nextNode(LinkedHashMap.java:1061)
+    //	at java.util.LinkedHashMap$LinkedKeyIterator.next(LinkedHashMap.java:1084)
+    //	at qspzkxl.upuit.ivmpnjd.lqkb.j62.OooO00o(Unknown Source:138)
+    //	at qspzkxl.upuit.ivmpnjd.lqkb.o0OoOo0.run(Unknown Source:46)
+    //	at android.os.Handler.handleCallback(Handler.java:995)
+    //	at android.os.Handler.dispatchMessage(Handler.java:105)
+    //	at android.os.Looper.loopOnce(Looper.java:288)
+    //	at android.os.Looper.loop(Looper.java:393)
+    //	at com.android.server.SystemServer.run(SystemServer.java:1071)
+    //	at com.android.server.SystemServer.main(SystemServer.java:679)
+    //	at java.lang.reflect.Method.invoke(Native Method)
+    //	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:600)
+    //	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:983)
     private fun disableAllOverlayViews(action: suspend () -> Unit) {
         mainHandler.postSafety("disableAllOverlayViews-1") {
-            showingDrawerBoard.forEach {
+            showingDrawerBoard.toTypedArray().forEach {
                 kotlin.runCatching { it.detach() }
                     .onFailure { logger.e(it, "disableDrawBoard detach fail") }
             }
             showingDrawerBoard.clear()
 
-            showingAreaSelector.forEach {
+            showingAreaSelector.toTypedArray().forEach {
                 kotlin.runCatching { it.detach() }
                     .onFailure { logger.e(it, "showingAreaSelector detach fail") }
             }
             showingAreaSelector.clear()
 
-            showingUCHints.forEach {
+            showingUCHints.toTypedArray().forEach {
                 kotlin.runCatching { it.detach() }
                     .onFailure { logger.e(it, "showingUCHints detach fail") }
             }
             showingUCHints.clear()
 
-            showingIVHints.forEach {
+            showingIVHints.toTypedArray().forEach {
                 kotlin.runCatching { it.detach() }
                     .onFailure { logger.e(it, "disableIVViewer detach fail") }
             }
             showingIVHints.clear()
 
-            showingClipboard.forEach {
+            showingClipboard.toTypedArray().forEach {
                 kotlin.runCatching { it.detach() }
                     .onFailure { logger.e(it, "disableClipboard detach fail") }
             }
