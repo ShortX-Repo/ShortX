@@ -127,7 +127,7 @@ enum class Env(
             } else {
                 val core = param.toIntOrNull()
                 if (core == null) {
-                    shortXContext.cpu.getCpuTotalAvailablePercent().toString()
+                    shortXContext.cpu.getCpuTotalAvailablePercentFallback().toString()
                 } else {
                     shortXContext.cpu.getCpuAvailablePercents()[core]?.toString() ?: "N/A"
                 }

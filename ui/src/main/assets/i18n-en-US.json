@@ -1363,9 +1363,11 @@
     "ui.system.env.uuid": "UUID",
     "ui.system.env.random.int": "Random number",
     "ui.system.env.clipboard.text": "Clipboard text",
-    "ui.system.env.cpu.availability.percent": "Cpu availability percent",
+    "ui.system.env.cpu.availability.percent": "cpu availability percent",
     "ui.system.env.mem.availability.percent": "Mem availability percent",
     "ui.system.env.swap.availability.percent": "Swap availability percent",
+    "ui.system.env.cpu.temperature": "cpu temperature",
+    "ui.system.env.battery.temperature": "Battery temperature",
     "ui.n.wait.for.systemui.title": "Waiting for SystemUI",
     "ui.n.wait.for.systemui.message": "Waiting for SystemUI hooks, please enable SystemUI app in Xposed Manager"
 }

@@ -1361,9 +1361,11 @@
     "ui.system.env.uuid": "UUID",
     "ui.system.env.random.int": "随机数字",
     "ui.system.env.clipboard.text": "剪贴板文字",
-    "ui.system.env.cpu.availability.percent": "CPU可用百分比",
+    "ui.system.env.cpu.availability.percent": "cpu可用百分比",
     "ui.system.env.mem.availability.percent": "内存可用百分比",
     "ui.system.env.swap.availability.percent": "Swap可用百分比",
+    "ui.system.env.cpu.temperature": "cpu温度",
+    "ui.system.env.battery.temperature": "Battery温度",
     "ui.n.wait.for.systemui.title": "等待SystemUI",
     "ui.n.wait.for.systemui.message": "SystemUI客户端没有连接到ShortX系统服务上，请确保你在Xposed中勾选了SystemUI作用域并重启尝试"
 }

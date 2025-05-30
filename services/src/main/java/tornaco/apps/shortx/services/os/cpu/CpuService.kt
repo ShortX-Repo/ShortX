@@ -144,10 +144,10 @@ class CpuService(shortXContext: ShortXContext) : SystemService(shortXContext, "C
     fun getCpuTotalAvailablePercentFallback(): Int {
         return runCatching {
             processCpuTracker.update()
-            100 - (processCpuTracker.totalCpuPercent * 100).toInt()
+            100 - (processCpuTracker.totalCpuPercent).toInt()
         }.getOrElse {
             processCpuTrackerFallback.update()
-            100 - (processCpuTrackerFallback.totalCpuPercent * 100).toInt()
+            100 - (processCpuTrackerFallback.totalCpuPercent).toInt()
         }
     }
 
