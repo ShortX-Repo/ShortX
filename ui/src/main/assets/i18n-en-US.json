@@ -1296,6 +1296,7 @@
     "ui.common.regex.options.RegexMatchOptions_Match": "Match all",
     "ui.common.regex.options.RegexMatchOptions_ContainsMatchIn": "Contains match in",
     "ui.common.feature.not.work.on.3rd.rom": "May not work on custom Android ROM",
+    "ui.common.enable.math": "Math expr",
     "ui.common.activity": "Activity",
     "ui.common.broadcast": "Broadcast",
     "ui.common.service": "Service",

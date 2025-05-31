@@ -91,6 +91,11 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
                     .setId(UUID.randomUUID().toString())
                     .setValue(string)
                     .setCreateAt(System.currentTimeMillis())
+                    .apply {
+                        shortXContext.appState.currentFrontPkgs().firstOrNull()?.let {
+                            owner = it
+                        }
+                    }
                     .build()
             )
         }

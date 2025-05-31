@@ -1295,6 +1295,7 @@
     "ui.common.regex.options.RegexMatchOptions_Match": "完整匹配",
     "ui.common.regex.options.RegexMatchOptions_ContainsMatchIn": "包含匹配",
     "ui.common.feature.not.work.on.3rd.rom": "该功能在三方ROM上可能不生效",
+    "ui.common.enable.math": "数学计算",
     "ui.common.activity": "活动",
     "ui.common.broadcast": "广播",
     "ui.common.service": "服务",

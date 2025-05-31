@@ -37,10 +37,12 @@ import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.core.util.windowManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
+import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.rule.FactPublishData
+import tornaco.apps.shortx.services.rule.actor.impl.ShowListDialog.ServiceGlideContextWrapper
 import tornaco.apps.shortx.services.rule.fact.trigger.rotationToDegree
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
@@ -516,7 +518,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
         disableAllOverlayViews {
             val guideLineView =
                 ClipboardView(
-                    context = context,
+                    context = ServiceGlideContextWrapper(Dirs.picassoCacheDir(), context),
                     i18N = i18NIns,
                     clips = shortXContext.input.getAllClipboardText().reversed(),
                     onDetach = {

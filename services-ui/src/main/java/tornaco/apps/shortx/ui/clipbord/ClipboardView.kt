@@ -21,7 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -44,8 +44,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.I18N
+import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.proto.clipboard.ClipboardItem
+import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.ui.AttachableComposeView
@@ -82,12 +85,24 @@ class ClipboardView(
         ShortXServiceUITheme {
             val interactionSource = remember { MutableInteractionSource() }
             val requester = remember { FocusRequester() }
+
+            var inputState by remember { mutableStateOf("") }
+            var isShowInput by remember { mutableStateOf(false) }
+
+            var searchState by remember { mutableStateOf("") }
+            var isShowSearch by remember { mutableStateOf(false) }
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .onKeyEvent {
-                        if (it.key == Key.Back) {
-                            detach()
+                        if (it.key == Key.Back && it.nativeKeyEvent.action == android.view.KeyEvent.ACTION_UP) {
+                            if (isShowSearch || isShowInput) {
+                                isShowInput = false
+                                isShowSearch = false
+                            } else {
+                                detach()
+                            }
                         }
                         true
                     }
@@ -115,15 +130,19 @@ class ClipboardView(
                     shadowElevation = 8.dp,
                 ) {
                     var clipState by remember { mutableStateOf(clips) }
-                    var inputState by remember { mutableStateOf("") }
-                    var isShowInput by remember { mutableStateOf(false) }
+
+                    // java.lang.IllegalStateException: No OnBackPressedDispatcherOwner was provided via LocalOnBackPressedDispatcherOwner
+//                    BackHandler(isShowSearch || isShowInput) {
+//                        isShowSearch = false
+//                        isShowInput = false
+//                    }
 
                     val i18N = LocalI18N.current
 
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight(fraction = 0.4f),
+                            .fillMaxHeight(fraction = if (clipState.size <= 4) 0.4f else 0.5f),
                         contentPadding = PaddingValues(bottom = 32.dp)
                     ) {
 
@@ -146,6 +165,7 @@ class ClipboardView(
                                     // Add
                                     IconButton(onClick = {
                                         isShowInput = true
+                                        isShowSearch = false
                                     }) {
                                         ColoredIcon(
                                             size = 28.dp,
@@ -157,6 +177,17 @@ class ClipboardView(
                                                 tint = Color.White
                                             )
                                         }
+                                    }
+
+                                    // Search
+                                    IconButton(onClick = {
+                                        isShowInput = false
+                                        isShowSearch = true
+                                    }) {
+                                        RemixIcon(
+                                            Remix.System.search_2_line,
+                                            tint = MaterialTheme.colorScheme.onSurface
+                                        )
                                     }
 
                                     // More
@@ -195,7 +226,7 @@ class ClipboardView(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = 16.dp),
-                                    showSymbolButton = false,
+                                    showSymbolButton = true,
                                     value = inputState,
                                     onValueChange = {
                                         inputState = it
@@ -205,6 +236,11 @@ class ClipboardView(
                                                 .setCreateAt(System.currentTimeMillis())
                                                 .setId(UUID.randomUUID().toString())
                                                 .setValue(inputState)
+                                                .setOwner(
+                                                    AppPkg.newBuilder().setUserId(myUserId)
+                                                        .setPkgName(BuildPropInternal.APP_PACKAGE_NAME)
+                                                        .build()
+                                                )
                                                 .build()
                                             addText(item)
                                             clipState = clipState.toMutableList().apply {
@@ -223,9 +259,36 @@ class ClipboardView(
                             }
                         }
 
+                        item {
+                            AnimatedVisibility(visible = isShowSearch) {
+                                ShortXTextField(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp),
+                                    showSymbolButton = true,
+                                    value = searchState,
+                                    onValueChange = {
+                                        searchState = it
+                                    }, trailingIcon = {
+                                        IconButton(onClick = {
+                                            searchState = ""
+                                            isShowSearch = false
+                                        }) {
+                                            RemixIcon(
+                                                modifier = Modifier.size(18.dp),
+                                                remixName = Remix.System.close_fill,
+                                                tint = MaterialTheme.colorScheme.onSurface,
+                                            )
+                                        }
+                                    })
+                            }
+                        }
+
 
                         if (clipState.isNotEmpty()) {
-                            itemsIndexed(clipState) { index, clip: ClipboardItem ->
+                            itemsIndexed(clipState.filter {
+                                searchState.isBlank() || it.value.contains(searchState, true)
+                            }) { index, clip: ClipboardItem ->
                                 val context = LocalContext.current
                                 val formatTime = remember {
                                     if (System.currentTimeMillis() - clip.createAt < java.time.Duration.ofHours(
@@ -274,30 +337,51 @@ class ClipboardView(
                                                     maxLines = 3,
                                                     fontSize = 12.5.sp
                                                 )
-                                                Text(
-                                                    color = MaterialTheme.colorScheme.onSurface.copy(
-                                                        alpha = 0.8f
-                                                    ),
-                                                    text = formatTime,
-                                                    fontSize = 10.5.sp
-                                                )
+                                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                                    Text(
+                                                        color = MaterialTheme.colorScheme.onSurface.copy(
+                                                            alpha = 0.8f
+                                                        ),
+                                                        text = formatTime,
+                                                        fontSize = 10.5.sp
+                                                    )
+                                                }
                                             }
                                         }
 
-                                        IconButton(onClick = {
-                                            removeText(clip.id)
-                                            clipState = clipState.toMutableList().apply {
-                                                removeIf { it.id == clip.id }
+                                        Row {
+                                            // Pin
+                                            if (false) {
+                                                IconButton(onClick = {
+                                                    removeText(clip.id)
+                                                    clipState = clipState.toMutableList().apply {
+                                                        removeIf { it.id == clip.id }
+                                                    }
+                                                }) {
+                                                    RemixIcon(
+                                                        modifier = Modifier.size(18.dp),
+                                                        remixName = Remix.Map.pushpin_fill,
+                                                        tint = PrefIcon
+                                                    )
+                                                }
                                             }
-                                        }) {
-                                            RemixIcon(
-                                                modifier = Modifier.size(18.dp),
-                                                remixName = Remix.System.close_fill,
-                                                tint = PrefIcon
-                                            )
+
+                                            // Remove
+                                            IconButton(onClick = {
+                                                removeText(clip.id)
+                                                clipState = clipState.toMutableList().apply {
+                                                    removeIf { it.id == clip.id }
+                                                }
+                                            }) {
+                                                RemixIcon(
+                                                    modifier = Modifier.size(18.dp),
+                                                    remixName = Remix.System.close_fill,
+                                                    tint = PrefIcon
+                                                )
+                                            }
                                         }
                                     }
-                                    Divider(
+                                    HorizontalDivider(
                                         modifier = Modifier
                                             .padding(horizontal = 16.dp),
                                         thickness = 0.5.dp

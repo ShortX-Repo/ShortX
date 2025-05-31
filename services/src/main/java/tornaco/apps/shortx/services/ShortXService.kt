@@ -54,6 +54,7 @@ import tornaco.apps.shortx.core.proto.common.CoroutineContext
 import tornaco.apps.shortx.core.proto.common.CustomContextMenuSetting
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.RemoteRuleContextAndVars
+import tornaco.apps.shortx.core.proto.common.ShortXServerDirs
 import tornaco.apps.shortx.core.proto.common.StatusBarClipUiSettings
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.common.StringPair
@@ -1647,6 +1648,13 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun unRegisterFrontAppChangeListener(callback: ICallback) {
             shortXContext.appState.unRegisterFrontAppChangeListener(callback)
+        }
+
+        override fun getShortXServerDirs(): ByteArrayWrapper {
+            return ByteArrayWrapper(
+                ShortXServerDirs.newBuilder().setBaseServerDir(Dirs.baseServerDir.absolutePath)
+                    .setImageCacheDir(Dirs.picassoCacheDir().absolutePath).build().toByteArray()
+            )
         }
 
         override fun addToggle(toggle: ByteArrayWrapper) {
