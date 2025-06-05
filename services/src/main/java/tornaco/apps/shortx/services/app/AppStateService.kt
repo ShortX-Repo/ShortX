@@ -36,6 +36,8 @@ import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AppComponentInfo
 import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.common.DynamicShortcut
+import tornaco.apps.shortx.core.proto.common.DynamicShortcutSetting
 import tornaco.apps.shortx.core.proto.common.ProcessName
 import tornaco.apps.shortx.core.proto.common.ProcessRecord
 import tornaco.apps.shortx.core.proto.common.RecentTask
@@ -61,6 +63,7 @@ import tornaco.apps.shortx.services.app.pm.PMSFuncs
 import tornaco.apps.shortx.services.app.pm.PmSetAppEnabledApplicationPackageEnabler
 import tornaco.apps.shortx.services.app.pm.PmSuspendApplicationPackageEnabler
 import tornaco.apps.shortx.services.data.Dirs
+import tornaco.apps.shortx.services.data.DynamicShortcutSettingsStore
 import tornaco.apps.shortx.services.os.UserEvent
 import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.runClearCallingIdentity
@@ -102,8 +105,14 @@ class AppStateService(shortXContext: ShortXContext) :
 
     private val pkgStopRunningEvents = mutableMapOf<AppPkg, Long>()
 
+    private val dynamicShortcutSettingsStore by lazy {
+        DynamicShortcutSettingsStore(systemServiceScope)
+    }
+
     override fun systemReady() {
         super.systemReady()
+        dynamicShortcutSettingsStore.readBlocking()
+
         systemServiceScope.launchSafety("AppStateService.systemReady.initPoolForUser") {
             shortXContext.user.getUsers().forEach {
                 val pool = initPoolForUser(it.id)
@@ -921,5 +930,17 @@ class AppStateService(shortXContext: ShortXContext) :
 
     fun unRegisterFrontAppChangeListener(callback: ICallback) {
         activityState.unRegisterFrontAppChangeListener(callback)
+    }
+
+    fun getAllDynamicShortcutSettings(): List<DynamicShortcutSetting> {
+        return dynamicShortcutSettingsStore.getAllSettings()
+    }
+
+    fun getDynamicShortcutSettingsByNumber(num: Int): DynamicShortcutSetting? {
+        return dynamicShortcutSettingsStore.getSettingByShortcut(DynamicShortcut.forNumber(num))
+    }
+
+    fun updateDynamicShortcutSetting(setting: DynamicShortcutSetting) {
+        dynamicShortcutSettingsStore.addSetting(setting)
     }
 }

@@ -169,6 +169,9 @@
 
         </activity>
         <activity
+            android:name="tornaco.apps.shortx.ui.settings.DynamicShortcutSettingsActivity"
+            android:exported="false" />
+        <activity
             android:name="tornaco.apps.shortx.ui.record.SettingsAccessRecordActivity"
             android:exported="false" />
         <activity

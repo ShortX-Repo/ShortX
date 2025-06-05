@@ -52,6 +52,7 @@ import tornaco.apps.shortx.core.proto.common.Author
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.common.CoroutineContext
 import tornaco.apps.shortx.core.proto.common.CustomContextMenuSetting
+import tornaco.apps.shortx.core.proto.common.DynamicShortcutSetting
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.RemoteRuleContextAndVars
 import tornaco.apps.shortx.core.proto.common.ShortXServerDirs
@@ -1656,6 +1657,23 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                 ShortXServerDirs.newBuilder().setBaseServerDir(Dirs.baseServerDir.absolutePath)
                     .setImageCacheDir(Dirs.picassoCacheDir().absolutePath).build().toByteArray()
             )
+        }
+
+        override fun getAllDynamicShortcutSettings(): List<ByteArrayWrapper> {
+            return shortXContext.appState.getAllDynamicShortcutSettings().map {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun getDynamicShortcutSettingsByNumber(number: Int): ByteArrayWrapper? {
+            return shortXContext.appState.getDynamicShortcutSettingsByNumber(number)?.let {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun updateDynamicShortcutSetting(setting: ByteArrayWrapper) {
+            val dynamicShortcutSetting = DynamicShortcutSetting.parseFrom(setting.byteData)
+            shortXContext.appState.updateDynamicShortcutSetting(dynamicShortcutSetting)
         }
 
         override fun addToggle(toggle: ByteArrayWrapper) {
