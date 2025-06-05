@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.xposed.hooks.hook.systemui
 
 import android.graphics.drawable.Icon
 import android.service.quicksettings.Tile
+import tornaco.apps.shortx.core.AppGlobals
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.core.res.remixResId
 import tornaco.apps.shortx.core.shortXManager
@@ -15,7 +16,7 @@ fun SystemUIHook.hookTileIcon() {
         "getIcon"
     ) { param ->
         runCatching {
-            if (shortxAppContext == null) {
+            if (AppGlobals.appContext == null) {
                 logger.w("shortxAppContext is null.")
                 return@afterMethod
             }
@@ -36,11 +37,11 @@ fun SystemUIHook.hookTileIcon() {
                 logger.d("getIcon: $label, iconName?: $iconName")
                 if (iconName != null) {
                     val remixResId =
-                        requireNotNull(shortxAppContext) { "shortxAppContext is null" }.remixResId(
+                        requireNotNull(AppGlobals.appContext) { "shortxAppContext is null" }.remixResId(
                             iconName
                         )
                     logger.d("getIcon: $label, remixResId?: $remixResId")
-                    val iconFixed = Icon.createWithResource(shortxAppContext, remixResId)
+                    val iconFixed = Icon.createWithResource(AppGlobals.appContext, remixResId)
                     logger.d("getIcon: $label, iconFixed?: $iconFixed")
                     param.result = iconFixed
                 }

@@ -159,8 +159,9 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         //  publishBinderService()
         // Init i18N
         val appRes = AppResources(context, BuildPropInternal.APP_PACKAGE_NAME)
-        val localeName = appRes.getString("ui_i18n_name")
-        I18NCache.init(appRes.appContext, localeName)
+        AppGlobals.setAppResources(appRes)
+        val localeName = AppGlobals.appResources.getString("ui_i18n_name")
+        I18NCache.init(AppGlobals.appContext, localeName)
         val testRes = i18NIns["ui.common.delete"]
         logger.d("testRes: $testRes")
         shortXContext.serviceLifecycle.systemReady()

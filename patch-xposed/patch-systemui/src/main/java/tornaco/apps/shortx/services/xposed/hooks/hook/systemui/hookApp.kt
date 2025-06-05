@@ -2,7 +2,6 @@ package tornaco.apps.shortx.services.xposed.hooks.hook.systemui
 
 import android.content.Context
 import de.robv.android.xposed.XposedBridge
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.AppGlobals
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.ICallback
@@ -19,7 +18,6 @@ import tornaco.apps.shortx.core.platform.Methods.onCreate
 import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.proto.fact.MethodHookLifecycle
-import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.res.PicassoInitializer
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
@@ -35,10 +33,6 @@ import util.Reflections
 fun SystemUIHook.hookApp(lpparam: IPackageLoaded.Param) = kotlin.runCatching {
     fun createNotificationPoster(shortx: IShortX, context: Context): INotificationPoster {
         logger.d("installNotificationPoster")
-        val appRes = AppResources(
-            context,
-            BuildPropInternal.APP_PACKAGE_NAME
-        )
         val notificationPoster by lazy {
             NotificationPoster(
                 context,
@@ -49,11 +43,11 @@ fun SystemUIHook.hookApp(lpparam: IPackageLoaded.Param) = kotlin.runCatching {
                 getIcon = { remixNam ->
                     val resName = Remix.allFlat[remixNam]
                     resName?.let {
-                        appRes.getIcon(it)
+                        AppGlobals.appResources.getIcon(it)
                     }
                 },
                 getBitmap = {
-                    appRes.getBitmap(it)
+                    AppGlobals.appResources.getBitmap(it)
                 },
                 onButtonClick = { postN, buttonId ->
                     handleButtonClick(postN, buttonId, ShortXManager(shortx))
@@ -94,7 +88,6 @@ fun SystemUIHook.hookApp(lpparam: IPackageLoaded.Param) = kotlin.runCatching {
             val app: Context = param.thisObject as Context
             logger.d("After onCreate: $app")
 
-            AppGlobals.setContext(app)
             initShortXAppContext(app)
             GlobalSettings.init(app)
 

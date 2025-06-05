@@ -7,11 +7,11 @@ import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.Logger
 import java.lang.reflect.Method
 
-private val logger = Logger("ShortXHookUtil")
+private val utilLogger = Logger("ShortXHookUtil")
 
 fun beforeConstruct(
     clazz: Class<*>,
-    beforeConstruct: (param: XC_MethodHook.MethodHookParam) -> Unit,
+    beforeConstruct: (param: MethodHookParam) -> Unit,
 ) {
     XposedBridge.hookAllConstructors(clazz, object : XC_MethodHook() {
         override fun beforeHookedMethod(param: MethodHookParam?) {
@@ -20,7 +20,7 @@ fun beforeConstruct(
                 kotlin.runCatching {
                     beforeConstruct(it)
                 }.onFailure {
-                    logger.e(it, "beforeConstruct-$clazz")
+                    utilLogger.e(it, "beforeConstruct-$clazz")
                 }
             }
         }
@@ -29,7 +29,7 @@ fun beforeConstruct(
 
 fun afterConstruct(
     clazz: Class<*>,
-    afterConstruct: (param: XC_MethodHook.MethodHookParam) -> Unit,
+    afterConstruct: (param: MethodHookParam) -> Unit,
 ) {
     XposedBridge.hookAllConstructors(clazz, object : XC_MethodHook() {
         override fun afterHookedMethod(param: MethodHookParam?) {
@@ -38,7 +38,7 @@ fun afterConstruct(
                 kotlin.runCatching {
                     afterConstruct(it)
                 }.onFailure {
-                    logger.e(it, "afterConstruct-$clazz")
+                    utilLogger.e(it, "afterConstruct-$clazz")
                 }
             }
         }
@@ -46,14 +46,15 @@ fun afterConstruct(
         require(this.size > 0) {
             "afterConstruct, unable to hook this Constructor: $clazz"
         }
-        logger.d("afterConstruct, unhooks: $this for Constructor: $clazz")
+        utilLogger.d("afterConstruct, unhooks: $this for Constructor: $clazz")
     }
 }
 
 fun beforeMethod(
     clazz: Class<*>,
     methodName: String,
-    beforeMethod: (param: XC_MethodHook.MethodHookParam) -> Unit,
+    logger: Logger = utilLogger,
+    beforeMethod: (param: MethodHookParam) -> Unit,
 ) {
     XposedBridge.hookAllMethods(clazz, methodName, object : XC_MethodHook() {
         override fun beforeHookedMethod(param: MethodHookParam?) {
@@ -67,7 +68,7 @@ fun beforeMethod(
             }
         }
     }).apply {
-        require(this.size > 0) {
+        require(this.isNotEmpty()) {
             "beforeMethod, unable to hook this method: $clazz#$methodName"
         }
         logger.d("beforeMethod, unhooks: $this for method: $clazz#$methodName")
@@ -77,7 +78,8 @@ fun beforeMethod(
 fun afterMethod(
     clazz: Class<*>,
     methodName: String,
-    afterMethod: (param: XC_MethodHook.MethodHookParam) -> Unit,
+    logger: Logger = utilLogger,
+    afterMethod: (param: MethodHookParam) -> Unit,
 ) {
     XposedBridge.hookAllMethods(clazz, methodName, object : XC_MethodHook() {
         override fun afterHookedMethod(param: MethodHookParam?) {
@@ -91,7 +93,7 @@ fun afterMethod(
             }
         }
     }).apply {
-        require(this.size > 0) {
+        require(this.isNotEmpty()) {
             "afterMethod, unable to hook this method: $clazz#$methodName"
         }
         logger.d("afterMethod, unhooks: $this for method: $clazz#$methodName")
@@ -100,7 +102,7 @@ fun afterMethod(
 
 fun afterMethod(
     method: Method,
-    afterMethod: (param: XC_MethodHook.MethodHookParam) -> Unit,
+    afterMethod: (param: MethodHookParam) -> Unit,
 ) {
     val unHook: XC_MethodHook.Unhook? = XposedBridge.hookMethod(method, object : XC_MethodHook() {
         override fun afterHookedMethod(param: MethodHookParam?) {
@@ -109,7 +111,7 @@ fun afterMethod(
                 kotlin.runCatching {
                     afterMethod(it)
                 }.onFailure {
-                    logger.e(it, "afterHookedMethod-$method")
+                    utilLogger.e(it, "afterHookedMethod-$method")
                 }
             }
         }
@@ -117,13 +119,13 @@ fun afterMethod(
     require(unHook != null) {
         "afterMethod, unable to hook this method: $method"
     }
-    logger.d("afterMethod, unhook: $unHook for method: $method")
+    utilLogger.d("afterMethod, unhook: $unHook for method: $method")
 }
 
 
 fun beforeMethod(
     method: Method,
-    beforeMethod: (param: XC_MethodHook.MethodHookParam) -> Unit,
+    beforeMethod: (param: MethodHookParam) -> Unit,
 ) {
     val unHook: XC_MethodHook.Unhook? = XposedBridge.hookMethod(method, object : XC_MethodHook() {
         override fun beforeHookedMethod(param: MethodHookParam?) {
@@ -132,7 +134,7 @@ fun beforeMethod(
                 kotlin.runCatching {
                     beforeMethod(it)
                 }.onFailure {
-                    logger.e(it, "beforeMethod-$method")
+                    utilLogger.e(it, "beforeMethod-$method")
                 }
             }
         }
@@ -140,10 +142,10 @@ fun beforeMethod(
     require(unHook != null) {
         "beforeMethod, unable to hook this method: $method"
     }
-    logger.d("beforeMethod, unhook: $unHook for method: $method")
+    utilLogger.d("beforeMethod, unhook: $unHook for method: $method")
 }
 
 
-fun MethodHookParam.logParamsOnDebug() {
+fun MethodHookParam.logParamsOnDebug(logger: Logger = utilLogger) {
     logger.logOnDebug { "${method.name} - ${this.args.map { it }.joinToString()}" }
 }

@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.xposed.hooks.hook.systemui
 import android.content.Context
 import android.util.Log
 import de.robv.android.xposed.XposedBridge
+import tornaco.apps.shortx.core.AppGlobals
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.res.AppResources
@@ -12,9 +13,6 @@ import tornaco.apps.shortx.services.xposed.hooks.hook.api.IPackageLoaded
 
 object SystemUIHook {
     internal val logger = Logger("SystemUIHook")
-
-    var shortxAppContext: Context? = null
-        private set
 
     fun handleLoadPackage(lpparam: IPackageLoaded.Param) {
         if (PackageNames.systemUI == lpparam.packageName) {
@@ -43,11 +41,12 @@ object SystemUIHook {
     }
 
     fun initShortXAppContext(context: Context) {
+        AppGlobals.setContext(context)
         val appRes = AppResources(
             context,
             BuildPropInternal.APP_PACKAGE_NAME
         )
-        this.shortxAppContext = appRes.appContext
-        logger.w("initShortXAppContext: $shortxAppContext")
+        AppGlobals.setAppResources(appRes)
+        logger.w("initShortXAppContext: ${AppGlobals.appContext}")
     }
 }
