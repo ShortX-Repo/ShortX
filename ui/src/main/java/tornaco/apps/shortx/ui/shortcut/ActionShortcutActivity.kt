@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.shortcut
 
 import android.app.Activity
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -19,6 +20,7 @@ import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.shortcutManager
 import tornaco.apps.shortx.ui.base.i18NIns
+import tornaco.apps.shortx.ui.main.MainActivity
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 
 private const val KEY_ACTION_ID = "key_action_id"
@@ -103,6 +105,7 @@ class ActionShortcutActivity : Activity() {
                 .setLongLabel(action.title)
                 .setIcon(icon)
                 .setIntent(shortcutInfoIntent)
+                .setActivity(ComponentName(context, MainActivity::class.java))
                 .build()
 
             return ShortcutManagerCompat.pushDynamicShortcut(context, shortcutInfo)
