@@ -43,9 +43,12 @@ import tornaco.apps.shortx.core.proto.common.ProcessRecord
 import tornaco.apps.shortx.core.proto.common.RecentTask
 import tornaco.apps.shortx.core.proto.fact.AppProcessRemoved
 import tornaco.apps.shortx.core.proto.fact.AppProcessStarted
+import tornaco.apps.shortx.core.proto.fact.OnStartDynamicShortcut
 import tornaco.apps.shortx.core.proto.fact.PkgStartRunning
 import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
+import tornaco.apps.shortx.core.rule.is_
+import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.settings.defaultDynamicShortcutSettings
 import tornaco.apps.shortx.core.store.WRITE_DELAY
 import tornaco.apps.shortx.core.toAppComponent
@@ -953,5 +956,37 @@ class AppStateService(shortXContext: ShortXContext) :
 
     fun updateDynamicShortcutSetting(setting: DynamicShortcutSetting) {
         dynamicShortcutSettingsStore.addSetting(setting)
+    }
+
+    fun getDynamicShortcutsShouldEnable(): Set<DynamicShortcut> {
+        val res = mutableSetOf<DynamicShortcut>()
+        shortXContext.rule.getAllEnabledRules().forEach { rule ->
+            val menuFacts =
+                rule.factsList.filter { it is_ OnStartDynamicShortcut::class.java }
+            menuFacts.forEach { fact ->
+                val factModel = fact unpack_ OnStartDynamicShortcut::class.java
+                if (!factModel.isDisabled) {
+                    logger.d("getDynamicShortcutsShouldEnable, add for rule: ${rule.title} ${factModel.shortcutNumber}")
+                    DynamicShortcut.forNumber(factModel.shortcutNumber)?.let {
+                        res.add(it)
+                    }
+                }
+            }
+        }
+        return res
+    }
+
+    fun onStartDynamicShortcut(shortcut: DynamicShortcut) {
+        logger.d("onStartDynamicShortcut: $shortcut")
+        systemServiceScope.launchSafety("onStartDynamicShortcut") {
+            shortXContext.rule.publishFactChecked(OnStartDynamicShortcut.getDefaultInstance()) {
+                FactPublishData(
+                    "onStartDynamicShortcut",
+                    OnStartDynamicShortcut.newBuilder().build()
+                ) {
+                    emptyMap()
+                }
+            }
+        }
     }
 }

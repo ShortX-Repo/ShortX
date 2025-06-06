@@ -17,13 +17,15 @@ import tornaco.apps.shortx.core.platform.Classes.shortcutServiceClass
 import tornaco.apps.shortx.core.platform.Classes.shortcutServiceLocalServiceClass
 import tornaco.apps.shortx.core.platform.Methods.requestPinItem
 import tornaco.apps.shortx.core.proto.common.AppCategory
+import tornaco.apps.shortx.core.proto.common.DynamicShortcut
+import tornaco.apps.shortx.core.proto.common.DynamicShortcutSetting
+import tornaco.apps.shortx.core.settings.defaultDynamicShortcutSettings
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXService
 import tornaco.apps.shortx.services.xposed.hooks.hook.api.ISystemServerLoaded
 import util.ReflectionsExt
-import java.util.UUID
 
 
 object ShortcutServiceHook {
@@ -98,13 +100,21 @@ object ShortcutServiceHook {
                 } else {
                     logger.d("No shortcuts.")
                 }
-                val ourInfo = newShortcutInfo(activity, activity.packageName)
-                val newList = mutableListOf(ourInfo).apply {
+                val shortcutSettings =
+                    ShortXService.shortXContext.appState.getDynamicShortcutsShouldEnable()
+                val insertShortcuts: List<ShortcutInfo> = shortcutSettings.mapNotNull {
+                    val setting =
+                        ShortXService.shortXContext.appState.getDynamicShortcutSettingsByNumber(it.number)
+                            ?: return@mapNotNull null
+                    val ourInfo = newShortcutInfo(activity, activity.packageName, setting)
+                    ourInfo
+                }
+                val newList = insertShortcuts.toMutableList().apply {
                     addAll(infos)
                 }
                 val newRes = ParceledListSlice(newList)
                 param.result = newRes
-                logger.d("Add: $ourInfo to activity query.")
+                logger.d("Add: $insertShortcuts to activity query.")
             }
         }.onFailure {
             logger.e(it, "hook getShortcuts")
@@ -151,7 +161,7 @@ object ShortcutServiceHook {
                     if (isLauncher && packageName == null && shortcutIds == null && componentName == null) {
                         logger.w("Insert for all packages!!")
 
-                        val insertShortcuts: List<ShortcutInfo> =
+                        val insertShortcuts =
                             ShortXService.shortXContext.appState.getInstalledApps()
                                 .apply {
                                     logger.d("getInstalledApps: ${this.size}")
@@ -162,11 +172,27 @@ object ShortcutServiceHook {
                                             it.pkg.pkgName
                                         )?.component
                                             ?: return@mapNotNull null
-                                    val appShortcut =
-                                        newShortcutInfo(mainActivity, mainActivity.packageName)
-                                    logger.d("Add appShortcut: ${appShortcut.`package`}")
-                                    appShortcut
-                                }
+                                    val stubShortcuts = DynamicShortcut.entries.filterNot {
+                                        it == DynamicShortcut.UNRECOGNIZED
+                                    }.map {
+                                        val appShortcut =
+                                            newShortcutInfo(
+                                                mainActivity, mainActivity.packageName,
+                                                defaultDynamicShortcutSettings(it)
+                                            )
+                                        appShortcut
+                                    }
+                                    logger.d(
+                                        "Add appShortcut: ${
+                                            stubShortcuts.joinToString(
+                                                System.lineSeparator(),
+                                                transform = {
+                                                    "${it.`package`} ${it.label} ${it.id}"
+                                                })
+                                        }"
+                                    )
+                                    stubShortcuts
+                                }.flatten()
 
                         val updatedResList = insertShortcuts.toMutableList().apply {
                             addAll(resList)
@@ -186,15 +212,27 @@ object ShortcutServiceHook {
         kotlin.runCatching {
             afterMethod(
                 lpparam.classLoader.launcherAppsServiceImplClass(),
-                "startShortcutInner",
+                "startShortcut",
                 logger
             ) { param ->
                 //  boolean startShortcutInner(int callerUid, int callerPid, int callingUserId,
                 //                String callingPackage, String packageName, String featureId, String shortcutId,
                 //                Rect sourceBounds, Bundle startActivityOptions, int targetUserId)
+
+                // boolean startShortcut(String callingPackage, String packageName, String featureId,
+                //                String shortcutId, Rect sourceBounds, Bundle startActivityOptions,
+                //                int targetUserId)
                 param.logParamsOnDebug(logger)
+                val packageName = param.args[1]
+                val shortcutId = param.args[3] as String
+                val targetUserId = param.args[param.args.lastIndex]
 
-
+                val shortcut = runCatching { DynamicShortcut.valueOf(shortcutId) }.getOrNull()
+                if (shortcut != null) {
+                    logger.i("DynamicShortcut start: $shortcut - $packageName@user$targetUserId")
+                    ShortXService.shortXContext.appState.onStartDynamicShortcut(shortcut)
+                    param.result = true
+                }
             }
         }.onFailure {
             logger.e(it, "hook startShortcutInner")
@@ -219,7 +257,7 @@ object ShortcutServiceHook {
     private fun newShortcutInfo(
         activity: ComponentName,
         pkgName: String,
-        label: String = "ShortX"
+        dynamicShortcutSetting: DynamicShortcutSetting
     ): ShortcutInfo {
         val ourInfo =
             ShortcutInfo.Builder(object :
@@ -227,9 +265,9 @@ object ShortcutServiceHook {
                 override fun getPackageName(): String {
                     return pkgName
                 }
-            }, UUID.randomUUID().toString())
-                .setShortLabel(label)
-                .setLongLabel(label)
+            }, dynamicShortcutSetting.shortcut.name)
+                .setShortLabel(dynamicShortcutSetting.label)
+                .setLongLabel(dynamicShortcutSetting.label)
                 .apply {
                     shortxIconOrNull?.let {
                         setIcon(it)
