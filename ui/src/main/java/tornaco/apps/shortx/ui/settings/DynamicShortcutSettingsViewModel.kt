@@ -66,6 +66,7 @@ class DynamicShortcutSettingsViewModel @Inject constructor(@ApplicationContext c
         shortXManager.getDynamicShortcutSettingsByNumber(sc.number).let {
             val updated = DynamicShortcutSetting.newBuilder(it).setLabel(newName).build()
             shortXManager.updateDynamicShortcutSetting(updated)
+            loadState()
         }
     }
 
@@ -73,6 +74,7 @@ class DynamicShortcutSettingsViewModel @Inject constructor(@ApplicationContext c
         shortXManager.getDynamicShortcutSettingsByNumber(sc.number).let {
             val updated = DynamicShortcutSetting.newBuilder(it).setIconName(icon).build()
             shortXManager.updateDynamicShortcutSetting(updated)
+            loadState()
         }
     }
 }

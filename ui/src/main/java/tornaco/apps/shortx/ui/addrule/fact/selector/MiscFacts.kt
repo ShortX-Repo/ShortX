@@ -25,6 +25,7 @@ fun MiscFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: (F
         Fact.BackNavDone::class,
         Fact.MethodHook::class,
         Fact.OnMenuActionTrigger::class,
+        Fact.OnStartDynamicShortcut::class,
     ).apply {
         add(Fact.AnyFact::class)
     }.map {

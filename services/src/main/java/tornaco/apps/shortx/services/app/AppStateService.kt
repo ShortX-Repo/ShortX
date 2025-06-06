@@ -46,6 +46,7 @@ import tornaco.apps.shortx.core.proto.fact.AppProcessStarted
 import tornaco.apps.shortx.core.proto.fact.PkgStartRunning
 import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
+import tornaco.apps.shortx.core.settings.defaultDynamicShortcutSettings
 import tornaco.apps.shortx.core.store.WRITE_DELAY
 import tornaco.apps.shortx.core.toAppComponent
 import tornaco.apps.shortx.core.toComponentName
@@ -112,6 +113,16 @@ class AppStateService(shortXContext: ShortXContext) :
     override fun systemReady() {
         super.systemReady()
         dynamicShortcutSettingsStore.readBlocking()
+
+        // Init default settings.
+        DynamicShortcut.entries.filterNot { it == DynamicShortcut.UNRECOGNIZED }.forEach {
+            val setting = getDynamicShortcutSettingsByNumber(it.number)
+            logger.d("DynamicShortcut: $it, setting: $setting")
+            if (setting == null) {
+                logger.i("Init default settings for DynamicShortcut: $it")
+                updateDynamicShortcutSetting(defaultDynamicShortcutSettings(it))
+            }
+        }
 
         systemServiceScope.launchSafety("AppStateService.systemReady.initPoolForUser") {
             shortXContext.user.getUsers().forEach {

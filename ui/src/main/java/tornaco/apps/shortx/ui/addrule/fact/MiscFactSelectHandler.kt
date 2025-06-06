@@ -6,6 +6,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import tornaco.apps.shortx.core.proto.common.CustomContextMenu
+import tornaco.apps.shortx.core.proto.common.DynamicShortcut
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.selector.GVSelectorDialog
@@ -17,6 +18,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.contextmenu.CustomContextMenuSettingsActivity
+import tornaco.apps.shortx.ui.settings.DynamicShortcutSettingsActivity
 import tornaco.apps.shortx.ui.settings.TileSettingsActivity
 
 @Composable
@@ -30,6 +32,16 @@ fun miscFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolea
             if (it.resultCode == Activity.RESULT_OK) {
                 val tileNum = it.data?.getIntExtra("tile", 0) ?: 0
                 addFact(Fact.OnQSTileClick(tile = StatusBarTile.forNumber(tileNum)))
+            }
+        }
+    )
+
+    val dynamicShortcutSelectState = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = {
+            if (it.resultCode == Activity.RESULT_OK) {
+                val num = it.data?.getIntExtra("shortcut", 0) ?: 0
+                addFact(Fact.OnStartDynamicShortcut(shortcut = DynamicShortcut.forNumber(num)))
             }
         }
     )
@@ -102,8 +114,13 @@ fun miscFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolea
                 true
             }
 
-            Fact.OnStartD::class -> {
-                qsTileSelectState.launch(TileSettingsActivity.intent(context, true))
+            Fact.OnStartDynamicShortcut::class -> {
+                dynamicShortcutSelectState.launch(
+                    DynamicShortcutSettingsActivity.intent(
+                        context,
+                        true
+                    )
+                )
                 true
             }
 

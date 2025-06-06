@@ -82,7 +82,7 @@ class DynamicShortcutSettingsActivity : BaseActivity() {
             onShortcutClick = {
                 if (pick) {
                     setResult(RESULT_OK, Intent().apply {
-                        putExtra("tile", it.number)
+                        putExtra("shortcut", it.number)
                     })
                     finish()
                 }
