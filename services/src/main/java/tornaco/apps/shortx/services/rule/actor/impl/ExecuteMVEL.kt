@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.rule.actor.impl
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
+import tornaco.apps.shortx.core.context.SystemEnv.inflateSystemEnv
 import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.proto.action.ExecuteMVEL
 import tornaco.apps.shortx.core.rule.unpack_
@@ -25,7 +26,9 @@ object ExecuteMVEL : Actor {
         val ret = MVELExecutor(
             context = params.androidContext,
             shortXContext = params.shortXContext,
-            expression = d.expression.inflateContextMap(params.contextData.map.mapValues { entry ->
+            expression = d.expression
+                .inflateSystemEnv()
+                .inflateContextMap(params.contextData.map.mapValues { entry ->
                 // Wrap all data with ""
                 entry.value?.let {
                     "\"$it\""

@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.rule.cond.impl
 
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
+import tornaco.apps.shortx.core.context.SystemEnv.inflateSystemEnv
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.Interceptors
@@ -18,7 +19,9 @@ object MatchMVEL : Cond {
             val res = MVELExecutor(
                 context,
                 shortXContext,
-                mvel.expression.inflateContextMap(param.contextData.map.mapValues { entry ->
+                mvel.expression
+                    .inflateSystemEnv()
+                    .inflateContextMap(param.contextData.map.mapValues { entry ->
                     // Wrap all data with ""
                     entry.value?.let {
                         if (it is String) "\"$it\"" else it
