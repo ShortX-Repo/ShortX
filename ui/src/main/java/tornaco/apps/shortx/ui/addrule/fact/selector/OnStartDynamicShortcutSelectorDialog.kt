@@ -27,6 +27,7 @@ import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.DynamicShortcut
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.base.AppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.base.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
@@ -157,7 +158,7 @@ fun OnStartDynamicShortcutDialog(state: OnStartDynamicShortcutState) {
 
                             FieldTitle(text = "App")
                             ListItem(
-                                titleLines = mutableListOf("")
+                                titleLines = mutableListOf("App")
                                     .labelLinesFromAppsAndPkgSets(
                                         state.currentValue.appList,
                                         state.currentValue.pkgSetList
@@ -186,8 +187,12 @@ fun OnStartDynamicShortcutDialog(state: OnStartDynamicShortcutState) {
                             )
                             val context = LocalContext.current
                             FieldTitle(text = i18N["ui.settings.dynamic.shortcut"])
+                            val label = remember(state.currentValue) {
+                                shortXManager.getDynamicShortcutSettingsByNumber(state.currentValue.shortcut.number)?.label
+                                    ?: "N/A"
+                            }
                             ListItem(
-                                title = i18N[state.currentValue.shortcut.name],
+                                title = label,
                                 icon = {
                                 },
                                 onClick = {
