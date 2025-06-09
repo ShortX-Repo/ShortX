@@ -70,6 +70,8 @@ import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.data.DynamicShortcutSettingsStore
 import tornaco.apps.shortx.services.os.UserEvent
 import tornaco.apps.shortx.services.rule.FactPublishData
+import tornaco.apps.shortx.services.rule.fact.OnStartDynamicShortcutWrapper
+import tornaco.apps.shortx.services.rule.fact.matchWithAppOrPkgSetListFact
 import tornaco.apps.shortx.services.runClearCallingIdentity
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
@@ -958,14 +960,31 @@ class AppStateService(shortXContext: ShortXContext) :
         dynamicShortcutSettingsStore.addSetting(setting)
     }
 
-    fun getDynamicShortcutsShouldEnable(): Set<DynamicShortcut> {
+    fun getDynamicShortcutsShouldEnable(queryPackageName: String): Set<DynamicShortcut> {
         val res = mutableSetOf<DynamicShortcut>()
         shortXContext.rule.getAllEnabledRules().forEach { rule ->
             val menuFacts =
                 rule.factsList.filter { it is_ OnStartDynamicShortcut::class.java }
             menuFacts.forEach { fact ->
                 val factModel = fact unpack_ OnStartDynamicShortcut::class.java
-                if (!factModel.isDisabled) {
+                val matchPkgs: () -> Boolean = {
+                    matchWithAppOrPkgSetListFact(
+                        { shortXContext },
+                        OnStartDynamicShortcutWrapper(
+                            OnStartDynamicShortcut.newBuilder()
+                                .addAllApps(
+                                    shortXContext.user.getUsers().map { it.id }
+                                        .map { user ->
+                                            AppPkg.newBuilder().setPkgName(queryPackageName)
+                                                .setUserId(user).build()
+                                        }
+                                )
+                                .build()
+                        ),
+                        OnStartDynamicShortcutWrapper(factModel)
+                    )
+                }
+                if (!factModel.isDisabled && matchPkgs()) {
                     logger.d("getDynamicShortcutsShouldEnable, add for rule: ${rule.title} ${factModel.shortcutNumber}")
                     DynamicShortcut.forNumber(factModel.shortcutNumber)?.let {
                         res.add(it)
@@ -976,15 +995,21 @@ class AppStateService(shortXContext: ShortXContext) :
         return res
     }
 
-    fun onStartDynamicShortcut(shortcut: DynamicShortcut) {
+    fun onStartDynamicShortcut(shortcut: DynamicShortcut, pkg: AppPkg) {
         logger.d("onStartDynamicShortcut: $shortcut")
         systemServiceScope.launchSafety("onStartDynamicShortcut") {
             shortXContext.rule.publishFactChecked(OnStartDynamicShortcut.getDefaultInstance()) {
                 FactPublishData(
                     "onStartDynamicShortcut",
-                    OnStartDynamicShortcut.newBuilder().build()
+                    OnStartDynamicShortcut.newBuilder()
+                        .setShortcutNumber(shortcut.number)
+                        .addAllApps(listOf(pkg))
+                        .build()
                 ) {
-                    emptyMap()
+                    mapOf(
+                        ContextDataMapping.OnStartDynamicShortcut.pkgName.name to pkg.pkgName,
+                        ContextDataMapping.OnStartDynamicShortcut.userId.name to pkg.userId
+                    )
                 }
             }
         }

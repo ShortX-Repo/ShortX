@@ -73,6 +73,7 @@ import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
 import tornaco.apps.shortx.core.proto.fact.OnFinishOp
 import tornaco.apps.shortx.core.proto.fact.OnMenuActionTrigger
 import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
+import tornaco.apps.shortx.core.proto.fact.OnStartDynamicShortcut
 import tornaco.apps.shortx.core.proto.fact.OnStartOp
 import tornaco.apps.shortx.core.proto.fact.PkgStartRunning
 import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
@@ -768,6 +769,15 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
             (rule as SunRiseSet)
             actual.rise == rule.rise
         }
+        register(OnStartDynamicShortcut::class.java) { actual, rule ->
+            (actual as OnStartDynamicShortcut)
+            (rule as OnStartDynamicShortcut)
+            actual.shortcutNumber == rule.shortcutNumber && matchWithAppOrPkgSetListFact(
+                shortXContextProvider,
+                OnStartDynamicShortcutWrapper(actual),
+                OnStartDynamicShortcutWrapper(rule)
+            )
+        }
 
         logger.i("Init complete.")
     }
@@ -1087,5 +1097,14 @@ class OnFinishOpWrapper(private val onFinishOp: OnFinishOp) : WithAppOrPkgSetLis
         get() = onFinishOp.pkgSetsList ?: emptyList()
     override val appList: List<AppPkg>
         get() = onFinishOp.appsList ?: emptyList()
+
+}
+
+class OnStartDynamicShortcutWrapper(private val os: OnStartDynamicShortcut) :
+    WithAppOrPkgSetListFact {
+    override val pkgSetList: List<String>
+        get() = os.pkgSetsList ?: emptyList()
+    override val appList: List<AppPkg>
+        get() = os.appsList ?: emptyList()
 
 }

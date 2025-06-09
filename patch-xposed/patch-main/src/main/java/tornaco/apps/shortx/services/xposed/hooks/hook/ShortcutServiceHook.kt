@@ -17,6 +17,7 @@ import tornaco.apps.shortx.core.platform.Classes.shortcutServiceClass
 import tornaco.apps.shortx.core.platform.Classes.shortcutServiceLocalServiceClass
 import tornaco.apps.shortx.core.platform.Methods.requestPinItem
 import tornaco.apps.shortx.core.proto.common.AppCategory
+import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.DynamicShortcut
 import tornaco.apps.shortx.core.proto.common.DynamicShortcutSetting
 import tornaco.apps.shortx.core.settings.defaultDynamicShortcutSettings
@@ -101,7 +102,7 @@ object ShortcutServiceHook {
                     logger.d("No shortcuts.")
                 }
                 val shortcutSettings =
-                    ShortXService.shortXContext.appState.getDynamicShortcutsShouldEnable()
+                    ShortXService.shortXContext.appState.getDynamicShortcutsShouldEnable(activity.packageName)
                 val insertShortcuts: List<ShortcutInfo> = shortcutSettings.mapNotNull {
                     val setting =
                         ShortXService.shortXContext.appState.getDynamicShortcutSettingsByNumber(it.number)
@@ -223,14 +224,17 @@ object ShortcutServiceHook {
                 //                String shortcutId, Rect sourceBounds, Bundle startActivityOptions,
                 //                int targetUserId)
                 param.logParamsOnDebug(logger)
-                val packageName = param.args[1]
+                val packageName = param.args[1] as String
                 val shortcutId = param.args[3] as String
-                val targetUserId = param.args[param.args.lastIndex]
+                val targetUserId = param.args[param.args.lastIndex] as Int
 
                 val shortcut = runCatching { DynamicShortcut.valueOf(shortcutId) }.getOrNull()
                 if (shortcut != null) {
                     logger.i("DynamicShortcut start: $shortcut - $packageName@user$targetUserId")
-                    ShortXService.shortXContext.appState.onStartDynamicShortcut(shortcut)
+                    ShortXService.shortXContext.appState.onStartDynamicShortcut(
+                        shortcut,
+                        AppPkg.newBuilder().setPkgName(packageName).setUserId(targetUserId).build()
+                    )
                     param.result = true
                 }
             }
