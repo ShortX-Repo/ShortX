@@ -27,15 +27,17 @@ object ExecuteMVEL : Actor {
             context = params.androidContext,
             shortXContext = params.shortXContext,
             expression = d.expression
-                .inflateSystemEnv()
-                .inflateContextMap(params.contextData.map.mapValues { entry ->
-                // Wrap all data with ""
-                entry.value?.let {
+                .inflateSystemEnv(valueTransformer = {
                     "\"$it\""
-                }
-            }).apply {
-                logger.d("inflated expression: $this")
-            },
+                })
+                .inflateContextMap(params.contextData.map.mapValues { entry ->
+                    // Wrap all data with ""
+                    entry.value?.let {
+                        "\"$it\""
+                    }
+                }).apply {
+                    logger.d("inflated expression: $this")
+                },
             evaluateContext = params.evaluateContext
         ).invoke(
             vars = params.contextData.map,

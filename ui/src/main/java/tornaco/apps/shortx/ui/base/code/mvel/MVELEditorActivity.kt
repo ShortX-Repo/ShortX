@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 
 package tornaco.apps.shortx.ui.base.code.mvel
 
@@ -18,6 +18,7 @@ import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -117,14 +118,17 @@ fun MVELEditorActivity.MVELEditor(
                         MenuDialog(state = contextMenuState)
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Column {
-                                Text(text = LocalI18N.current["ui.title.mvel"])
+                                Text(text = "MVEL")
                                 LinkText(text = LocalI18N.current["ui.user.guide"]) {
                                     BrowserUtils.launch(context, BuildProp.WIKI_URL_MVEL)
                                 }
                             }
                             StandardSpacer()
                             AssistChip(label = {
-                                Text(LocalI18N.current[state.coroutineContext.labelKey()])
+                                Text(
+                                    LocalI18N.current[state.coroutineContext.labelKey()],
+                                    maxLines = 1
+                                )
                             }, onClick = {
                                 contextMenuState.show()
                             })

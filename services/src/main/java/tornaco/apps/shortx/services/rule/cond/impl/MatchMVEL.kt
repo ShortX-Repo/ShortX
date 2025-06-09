@@ -20,15 +20,17 @@ object MatchMVEL : Cond {
                 context,
                 shortXContext,
                 mvel.expression
-                    .inflateSystemEnv()
+                    .inflateSystemEnv(valueTransformer = {
+                        "\"$it\""
+                    })
                     .inflateContextMap(param.contextData.map.mapValues { entry ->
-                    // Wrap all data with ""
-                    entry.value?.let {
-                        if (it is String) "\"$it\"" else it
-                    }
-                }).apply {
-                    logger.d("inflated expression: $this")
-                }).invoke(
+                        // Wrap all data with ""
+                        entry.value?.let {
+                            if (it is String) "\"$it\"" else it
+                        }
+                    }).apply {
+                        logger.d("inflated expression: $this")
+                    }).invoke(
                 vars = contextData.map,
                 localVars = localVars,
                 parameterInputs = parameterInputs
