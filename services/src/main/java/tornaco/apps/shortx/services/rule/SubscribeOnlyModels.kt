@@ -105,7 +105,9 @@ import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
 import tornaco.apps.shortx.core.proto.fact.LightSensor
 import tornaco.apps.shortx.core.proto.fact.MethodHook
 import tornaco.apps.shortx.core.proto.fact.NFCTagDiscover
+import tornaco.apps.shortx.core.proto.fact.OnMenuActionTrigger
 import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
+import tornaco.apps.shortx.core.proto.fact.OnStartDynamicShortcut
 import tornaco.apps.shortx.core.proto.fact.PkgStartRunning
 import tornaco.apps.shortx.core.proto.fact.ProximitySensor
 import tornaco.apps.shortx.core.proto.fact.ProximitySensorStateChanged
@@ -151,6 +153,8 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         ProximitySensor::class,
         ProximitySensorStateChanged::class,
         ShakeDevice::class,
+        OnMenuActionTrigger::class,
+        OnStartDynamicShortcut::class,
 
         AppHasAudioFocus::class,
         RequireMobileDataEnabled::class,

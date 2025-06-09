@@ -65,8 +65,9 @@ private fun SubscriptionIntro(
         MediumTitle(text = LocalI18N.current["ui.subscription.intro.message"])
         SectionSpacer()
 
-        Button(modifier = Modifier
-            .fillMaxWidth(0.68f),
+        Button(
+            modifier = Modifier
+                .fillMaxWidth(0.68f),
             onClick = {
                 SubscribeActivity.start(context)
             }) {
@@ -116,6 +117,8 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Fact.ShakeDevice::class,
     Fact.EdgeGesture::class,
     Fact.ScreenGesture::class,
+    Fact.OnMenuActionTrigger::class,
+    Fact.OnStartDynamicShortcut::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 
     Condition.AppHasAudioFocus::class,

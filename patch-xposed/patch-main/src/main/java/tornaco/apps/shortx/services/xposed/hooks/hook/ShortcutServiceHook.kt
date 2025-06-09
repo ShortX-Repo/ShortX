@@ -34,8 +34,7 @@ object ShortcutServiceHook {
 
     fun hook(lpparam: ISystemServerLoaded.Param) {
         hookPinItem(lpparam)
-        @Suppress("KotlinConstantConditions")
-        if (BuildPropInternal.APP_IS_DEBUG) {
+        if (OsUtils.isQOrAbove()) {
             hookLocalService(lpparam)
             hookLauncherApps(lpparam)
             hookStartShortcut(lpparam)

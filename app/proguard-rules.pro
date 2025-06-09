@@ -251,3 +251,6 @@
 -dontwarn io.github.libxposed.api.XposedModuleInterface$ModuleLoadedParam
 -dontwarn io.github.libxposed.api.XposedModuleInterface$PackageLoadedParam
 -dontwarn io.github.libxposed.api.XposedModuleInterface$SystemServerLoadedParam
+
+-dontwarn android.content.pm.ShortcutQueryWrapper
+-dontwarn com.android.internal.os.ProcessCpuTracker
