@@ -12,6 +12,7 @@ import org.mozilla.javascript.ScriptableObject
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
+import tornaco.apps.shortx.core.context.SystemEnv.inflateSystemEnv
 import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.common.CoroutineContext
@@ -154,14 +155,18 @@ object ExecuteJS : Actor {
             )
         }
 
-        val expression = rawExpression.inflateContextMap(contextData.map.mapValues { entry ->
-            // Wrap all data with ""
-            entry.value?.let {
+        val expression = rawExpression
+            .inflateSystemEnv(valueTransformer = {
                 "\"$it\""
+            })
+            .inflateContextMap(contextData.map.mapValues { entry ->
+                // Wrap all data with ""
+                entry.value?.let {
+                    "\"$it\""
+                }
+            }).apply {
+                logger.d("inflated expression: $this")
             }
-        }).apply {
-            logger.d("inflated expression: $this")
-        }
 
         return runCatching {
             logger.d("In execute JS: ${Thread.currentThread()}")
