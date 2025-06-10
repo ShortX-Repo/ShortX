@@ -12,15 +12,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
@@ -233,6 +236,7 @@ private fun DAListItem(
                         size = Dimens.DAIconSize,
                         padding = 0.dp,
                         color = if (isImage) Color.Transparent else iconColor,
+                        shape = if (LocalUiSettings.current.uiExperimental) MaterialShapes.Cookie12Sided.toShape() else CircleShape,
                         onClick = {
                             onLongClick()
                         }
@@ -249,6 +253,7 @@ private fun DAListItem(
                         size = Dimens.DAIconSize,
                         padding = 0.dp,
                         color = if (isImage) Color.Transparent else iconColor.copy(alpha = ActionColorBgAlpha),
+                        shape = if (LocalUiSettings.current.uiExperimental) MaterialShapes.Cookie12Sided.toShape() else CircleShape,
                         onClick = {
                             onLongClick()
                         }
