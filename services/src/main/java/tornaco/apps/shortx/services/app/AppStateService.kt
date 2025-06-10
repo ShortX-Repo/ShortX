@@ -32,6 +32,7 @@ import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.os.UidObserverCompat
+import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AppComponentInfo
@@ -973,11 +974,10 @@ class AppStateService(shortXContext: ShortXContext) :
                         OnStartDynamicShortcutWrapper(
                             OnStartDynamicShortcut.newBuilder()
                                 .addAllApps(
-                                    shortXContext.user.getUsers().map { it.id }
-                                        .map { user ->
-                                            AppPkg.newBuilder().setPkgName(queryPackageName)
-                                                .setUserId(user).build()
-                                        }
+                                    listOf(
+                                        AppPkg.newBuilder().setPkgName(queryPackageName)
+                                            .setUserId(myUserId).build()
+                                    )
                                 )
                                 .build()
                         ),

@@ -118,7 +118,6 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Fact.EdgeGesture::class,
     Fact.ScreenGesture::class,
     Fact.OnMenuActionTrigger::class,
-    Fact.OnStartDynamicShortcut::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 
     Condition.AppHasAudioFocus::class,

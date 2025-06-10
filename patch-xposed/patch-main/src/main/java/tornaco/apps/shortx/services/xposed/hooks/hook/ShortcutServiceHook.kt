@@ -33,11 +33,15 @@ object ShortcutServiceHook {
     private val logger = Logger("ShortXHook.SS")
 
     fun hook(lpparam: ISystemServerLoaded.Param) {
-        hookPinItem(lpparam)
+
         if (OsUtils.isQOrAbove()) {
-            hookLocalService(lpparam)
-            hookLauncherApps(lpparam)
-            hookStartShortcut(lpparam)
+            hookPinItem(lpparam)
+
+            if (BuildPropInternal.APP_IS_DEBUG) {
+                hookLocalService(lpparam)
+                hookLauncherApps(lpparam)
+                hookStartShortcut(lpparam)
+            }
         }
     }
 
@@ -91,7 +95,7 @@ object ShortcutServiceHook {
                 val infos = resList.list
                 if (infos.isNotEmpty()) {
                     logger.d(
-                        "shortcuts, ${
+                        "LauncherApps shortcuts, ${
                             infos.joinToString(System.lineSeparator()) {
                                 it.toInsecureString()
                             }
@@ -102,6 +106,8 @@ object ShortcutServiceHook {
                 }
                 val shortcutSettings =
                     ShortXService.shortXContext.appState.getDynamicShortcutsShouldEnable(activity.packageName)
+
+                logger.d("shortcutSettings: $shortcutSettings")
                 val insertShortcuts: List<ShortcutInfo> = shortcutSettings.mapNotNull {
                     val setting =
                         ShortXService.shortXContext.appState.getDynamicShortcutSettingsByNumber(it.number)
@@ -109,6 +115,7 @@ object ShortcutServiceHook {
                     val ourInfo = newShortcutInfo(activity, activity.packageName, setting)
                     ourInfo
                 }
+                logger.d("insertShortcuts: ${insertShortcuts.joinToString { it.toInsecureString() }}")
                 val newList = insertShortcuts.toMutableList().apply {
                     addAll(infos)
                 }
@@ -163,13 +170,16 @@ object ShortcutServiceHook {
 
                         val insertShortcuts =
                             ShortXService.shortXContext.appState.getInstalledApps()
+                                .filter {
+                                    !it.isXposedMod && !it.isShortcutStub
+                                }
                                 .apply {
                                     logger.d("getInstalledApps: ${this.size}")
                                 }
-                                .filter { it.category == AppCategory.User }.mapNotNull {
+                                .filter { it.category == AppCategory.User }.mapNotNull { app ->
                                     val mainActivity =
                                         AppGlobals.context.packageManager.getLaunchIntentForPackage(
-                                            it.pkg.pkgName
+                                            app.pkg.pkgName
                                         )?.component
                                             ?: return@mapNotNull null
                                     val stubShortcuts = DynamicShortcut.entries.filterNot {
@@ -178,7 +188,7 @@ object ShortcutServiceHook {
                                         val appShortcut =
                                             newShortcutInfo(
                                                 mainActivity, mainActivity.packageName,
-                                                defaultDynamicShortcutSettings(it)
+                                                defaultDynamicShortcutSettings(it),
                                             )
                                         appShortcut
                                     }
@@ -260,7 +270,8 @@ object ShortcutServiceHook {
     private fun newShortcutInfo(
         activity: ComponentName,
         pkgName: String,
-        dynamicShortcutSetting: DynamicShortcutSetting
+        dynamicShortcutSetting: DynamicShortcutSetting,
+        flags: IntArray = intArrayOf()
     ): ShortcutInfo {
         val ourInfo =
             ShortcutInfo.Builder(object :
@@ -281,7 +292,7 @@ object ShortcutServiceHook {
                 .build()
 
         ourInfo.addFlags(ShortcutInfo.FLAG_DYNAMIC)
-        ourInfo.addFlags(ShortcutInfo.FLAG_IMMUTABLE)
+        flags.forEach { ourInfo.addFlags(it) }
         ourInfo.setReturnedByServer()
         return ourInfo
     }

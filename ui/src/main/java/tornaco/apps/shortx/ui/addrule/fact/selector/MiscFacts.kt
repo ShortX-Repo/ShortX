@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.addrule.fact.selector
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.fact.FactSelectSource
@@ -25,8 +26,10 @@ fun MiscFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: (F
         Fact.BackNavDone::class,
         Fact.MethodHook::class,
         Fact.OnMenuActionTrigger::class,
-        Fact.OnStartDynamicShortcut::class,
     ).apply {
+        if (BuildPropInternal.APP_IS_DEBUG) {
+            Fact.OnStartDynamicShortcut::class
+        }
         add(Fact.AnyFact::class)
     }.map {
         SelectorItem(

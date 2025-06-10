@@ -154,7 +154,6 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         ProximitySensorStateChanged::class,
         ShakeDevice::class,
         OnMenuActionTrigger::class,
-        OnStartDynamicShortcut::class,
 
         AppHasAudioFocus::class,
         RequireMobileDataEnabled::class,

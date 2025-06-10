@@ -147,9 +147,11 @@ fun OnStartDynamicShortcutDialog(state: OnStartDynamicShortcutState) {
                             val appPkgSelectorState = rememberAppPkgSelectorState(
                                 onAppListSelected = {
                                     state.selectApps(it)
+                                    state.selectPkgSets(emptyList())
                                 },
                                 onPkgSetSelected = {
                                     state.selectPkgSets(it)
+                                    state.selectApps(emptyList())
                                 }
                             )
                             AppPkgSelectorDialog(state = appPkgSelectorState)
