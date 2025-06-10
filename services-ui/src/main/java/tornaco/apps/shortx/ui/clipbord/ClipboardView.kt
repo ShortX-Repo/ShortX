@@ -226,7 +226,7 @@ class ClipboardView(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = 16.dp),
-                                    showSymbolButton = true,
+                                    showSymbolButton = false,
                                     value = inputState,
                                     onValueChange = {
                                         inputState = it
