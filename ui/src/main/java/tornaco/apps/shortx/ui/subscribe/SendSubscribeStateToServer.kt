@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +20,9 @@ import tornaco.apps.shortx.ui.subscribe.util.getLVLTokenForServer
 @Composable
 inline fun ShortXProps(crossinline content: @Composable () -> Unit) {
     val propLogger = remember { Logger("ShortXProps") }
-    val props = mutableListOf<String>()
+    val props = remember {
+        mutableStateListOf<String>()
+    }
     CompositionLocalProvider(LocalShortXProps provides props) {
         val context = LocalContext.current
         val i18N = LocalI18N.current
