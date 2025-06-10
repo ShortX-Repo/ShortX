@@ -190,6 +190,12 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
         }
     }
 
+    fun setUiExperimental(exp: Boolean) {
+        viewModelScope.launch {
+            pref.enableUiExperimental(exp)
+        }
+    }
+
     fun setShareAuthor(author: Author) {
         viewModelScope.launch {
             pref.setShareAuthor(author)

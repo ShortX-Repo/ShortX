@@ -600,6 +600,16 @@ private fun miscSettings(
                 }
             }
         ),
+        Preference.SwitchPreference(
+            icon = Remix.Design.ink_bottle_fill,
+            title = LocalI18N.current["Experimental ui design"],
+            summary = LocalI18N.current["Testing options for developer"],
+            value = LocalUiSettings.current.uiExperimental,
+            badge = badge,
+            onCheckChanged = {
+                vm.setUiExperimental(it)
+            }
+        ),
     )
 }
 

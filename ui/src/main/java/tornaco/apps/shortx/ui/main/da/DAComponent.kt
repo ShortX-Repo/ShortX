@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -52,6 +53,7 @@ import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.DropdownSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalSnackbarHostState
+import tornaco.apps.shortx.ui.base.LocalUiSettings
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
@@ -321,12 +323,27 @@ fun RunningIndicator(
                 cap = StrokeCap.Round
             )
 
-            CircularProgressIndicator(
-                modifier = Modifier.size(Dimens.DAIconSize),
-                color = iconColor,
-                strokeWidth = 6.dp,
-                trackColor = iconColor.copy(alpha = ActionColorBgAlpha)
-            )
+            if (LocalUiSettings.current.uiExperimental) {
+                CircularWavyProgressIndicator(
+                    modifier = Modifier.size(Dimens.DAIconSize),
+                    color = iconColor,
+                    stroke = Stroke(
+                        width =
+                            with(LocalDensity.current) {
+                                6.dp.toPx()
+                            },
+                        cap = StrokeCap.Round
+                    ),
+                    trackColor = iconColor.copy(alpha = ActionColorBgAlpha)
+                )
+            } else {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(Dimens.DAIconSize),
+                    color = iconColor,
+                    strokeWidth = 6.dp,
+                    trackColor = iconColor.copy(alpha = ActionColorBgAlpha)
+                )
+            }
             IconButton(onClick = {
                 stopAllJobs()
             }) {

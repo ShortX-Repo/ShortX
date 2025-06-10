@@ -196,6 +196,12 @@ class Pref(val context: Context) {
         }
     }
 
+    suspend fun enableUiExperimental(value: Boolean) {
+        context.dataStore.edit { settings ->
+            settings[UI_EXPERIMENTAL] = value
+        }
+    }
+
     suspend fun onlyShowEnabled(value: Boolean) {
         context.dataStore.edit { settings ->
             settings[UI_ONLY_SHOW_ENABLED] = value
