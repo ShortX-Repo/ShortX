@@ -31,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -52,6 +53,7 @@ import tornaco.apps.shortx.ui.base.LoadState.Loading.data
 import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalUiSettings
+import tornaco.apps.shortx.ui.base.NiaGradientBackground
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.TipIds
@@ -69,6 +71,7 @@ import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.ViewerActivity
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
+import tornaco.apps.shortx.ui.theme.gradientColorsFromThemeColor
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 import java.io.File
 
@@ -322,27 +325,44 @@ private fun RuleListContent(
                 modifier = Modifier
                     .animateItem()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                backgroundColor = if (!LocalUiSettings.current.uiColorfulCard || rule.isRuleSet) {
-                    ColorDefaults.backgroundSurfaceColor()
-                } else {
-                    Color(rule.iconColor).copy(alpha = ActionColorBgAlpha)
-                }
-            ) {
-                if (rule.isRuleSet) {
-                    RuleSetItem(
-                        rule = rule,
-                        isSubscribed = isSubscribed
-                    )
-                } else {
-                    val runningInsCount = remember(rule.id, activeJobs) {
-                        activeJobs.count { it == rule.id }
+                backgroundColor =
+                    if (LocalUiSettings.current.uiExperimental) {
+                        Color.Transparent
+                    } else {
+                        if (!LocalUiSettings.current.uiColorfulCard || rule.isRuleSet) {
+                            ColorDefaults.backgroundSurfaceColor()
+                        } else {
+                            Color(rule.iconColor).copy(alpha = ActionColorBgAlpha)
+                        }
                     }
-                    RuleItem(
-                        rule = rule,
-                        isSubscribed = isSubscribed,
-                        showDescription = showDescription,
-                        runningInsCount = runningInsCount
-                    )
+            ) {
+                val content = movableContentOf {
+                    if (rule.isRuleSet) {
+                        RuleSetItem(
+                            rule = rule,
+                            isSubscribed = isSubscribed
+                        )
+                    } else {
+                        val runningInsCount = remember(rule.id, activeJobs) {
+                            activeJobs.count { it == rule.id }
+                        }
+                        RuleItem(
+                            rule = rule,
+                            isSubscribed = isSubscribed,
+                            showDescription = showDescription,
+                            runningInsCount = runningInsCount
+                        )
+                    }
+                }
+
+                if (LocalUiSettings.current.uiExperimental) {
+                    NiaGradientBackground(
+                        gradientColors = gradientColorsFromThemeColor(Color(rule.iconColor))
+                    ) {
+                        content()
+                    }
+                } else {
+                    content()
                 }
             }
         }

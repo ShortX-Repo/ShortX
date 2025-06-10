@@ -35,6 +35,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -57,6 +58,7 @@ import tornaco.apps.shortx.ui.base.LoadState.Loading.data
 import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalUiSettings
+import tornaco.apps.shortx.ui.base.NiaGradientBackground
 import tornaco.apps.shortx.ui.base.ProgressDialog
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
@@ -80,6 +82,7 @@ import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.ViewerActivity
 import tornaco.apps.shortx.ui.shortcut.ApkInstallState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
+import tornaco.apps.shortx.ui.theme.gradientColorsFromThemeColor
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 import java.io.File
 
@@ -373,34 +376,50 @@ private fun DAListContent(
                 modifier = Modifier
                     .animateItem()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                backgroundColor = if (!colorfulCard || da.isDirectActionSet) {
-                    ColorDefaults.backgroundSurfaceColor()
+                backgroundColor = if (LocalUiSettings.current.uiExperimental) {
+                    Color.Transparent
                 } else {
-                    Color(da.iconColor).copy(alpha = ActionColorBgAlpha)
+                    if (!colorfulCard || da.isDirectActionSet) {
+                        ColorDefaults.backgroundSurfaceColor()
+                    } else {
+                        Color(da.iconColor).copy(alpha = ActionColorBgAlpha)
+                    }
                 },
             ) {
-                Box {
-                    if (da.isDirectActionSet) {
-                        DirectActionSetItem(
-                            modifier = Modifier,
-                            da = da,
-                            isSubscribed = isSubscribed
-                        )
-                    } else {
-                        composeLogger.d("RUNNING-INS activeJobs: $activeJobs")
-                        val runningInsCount = remember(activeJobs) {
-                            activeJobs.ids.count { it == da.id }
+                val content = movableContentOf {
+                    Box {
+                        if (da.isDirectActionSet) {
+                            DirectActionSetItem(
+                                modifier = Modifier,
+                                da = da,
+                                isSubscribed = isSubscribed
+                            )
+                        } else {
+                            composeLogger.d("RUNNING-INS activeJobs: $activeJobs")
+                            val runningInsCount = remember(activeJobs) {
+                                activeJobs.ids.count { it == da.id }
+                            }
+                            composeLogger.d("RUNNING-INS runningInsCount: $activeJobs")
+                            DirectActionItem(
+                                modifier = Modifier,
+                                da = da,
+                                isSubscribed = isSubscribed,
+                                isLongClickEnabled = showOverflowMenu,
+                                colorfulCard = colorfulCard,
+                                runningInsCount = runningInsCount
+                            )
                         }
-                        composeLogger.d("RUNNING-INS runningInsCount: $activeJobs")
-                        DirectActionItem(
-                            modifier = Modifier,
-                            da = da,
-                            isSubscribed = isSubscribed,
-                            isLongClickEnabled = showOverflowMenu,
-                            colorfulCard = colorfulCard,
-                            runningInsCount = runningInsCount
-                        )
                     }
+                }
+
+                if (LocalUiSettings.current.uiExperimental) {
+                    NiaGradientBackground(
+                        gradientColors = gradientColorsFromThemeColor(Color(da.iconColor))
+                    ) {
+                        content()
+                    }
+                } else {
+                    content()
                 }
             }
         }
