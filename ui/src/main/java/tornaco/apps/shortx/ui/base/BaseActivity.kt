@@ -25,25 +25,39 @@ abstract class BaseActivity : AppCompatActivity() {
 
         val appName = "ShortX"
         setContent {
-            val pref = Pref(LocalContext.current)
-            val uiColorfulCard by pref.uiColorfulCard.collectAsStateWithLifecycle(false)
-            val uiExperimental by pref.uiExperimental.collectAsStateWithLifecycle(false)
-            val uiSettings = UiSettings(
-                uiColorfulCard = uiColorfulCard,
-                uiExperimental = uiExperimental
-            )
-
             CompositionLocalProvider(
                 LocalI18N provides i18NIns,
                 LocalActivity provides this,
                 LocalAppName provides appName,
                 LocalUiStore provides UiStore(),
-                LocalUiSettings provides uiSettings
             ) {
                 ShortXProps {
                     ShortXTheme {
                         ClickOutsideClearFocusBox {
-                            Content()
+                            val pref = Pref(LocalContext.current)
+                            val uiColorfulCard by pref.uiColorfulCard.collectAsStateWithLifecycle(
+                                null
+                            )
+                            val uiExperimental by pref.uiExperimental.collectAsStateWithLifecycle(
+                                null
+                            )
+                            val uiSettings = uiColorfulCard?.let { colorful ->
+                                uiExperimental?.let { experimental ->
+                                    UiSettings(
+                                        uiColorfulCard = colorful,
+                                        uiExperimental = experimental
+                                    )
+                                }
+                            }
+
+                            uiSettings?.let {
+                                CompositionLocalProvider(
+                                    LocalUiSettings provides uiSettings
+                                ) {
+                                    Content()
+                                }
+                            }
+
                         }
                     }
                 }
