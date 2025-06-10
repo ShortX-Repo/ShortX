@@ -42,7 +42,8 @@ data class OverlayButtonSelectorState(
     val evaluatingActions: List<String> = emptyList(),
 
     // UI states
-    val isButtonListExpanded: Boolean = true
+    val isButtonListExpanded: Boolean = true,
+    val isPreviewExpanded: Boolean = true
 )
 
 data class Button(
@@ -276,5 +277,9 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
 
     fun setButtonListExpanded(expanded: Boolean) {
         updateState { copy(isButtonListExpanded = expanded) }
+    }
+
+    fun setPreviewExpanded(expanded: Boolean) {
+        updateState { copy(isPreviewExpanded = expanded) }
     }
 }

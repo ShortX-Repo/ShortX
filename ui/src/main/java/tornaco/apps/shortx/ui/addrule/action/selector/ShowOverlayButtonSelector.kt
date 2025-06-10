@@ -4,6 +4,8 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.SpaceBetween
 import androidx.compose.foundation.layout.Column
@@ -44,6 +46,7 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
+import tornaco.apps.shortx.ui.base.ExpandIndicator
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -139,30 +142,41 @@ private fun Content(
     ) {
         // Preview.
         stickyHeader {
+            val paddingDp by animateDpAsState(if (state.isPreviewExpanded) 16.dp else 0.dp)
             OutlinedCard(shape = ShortXCardRoundedCornerShape) {
                 Column(
                     modifier = Modifier
-                        .padding(16.dp)
+                        .padding(vertical = paddingDp, horizontal = 16.dp)
                         .fillMaxWidth()
                 ) {
-                    FieldTitle(text = LocalI18N.current["ui.common.preview"])
-                    StandardSpacer()
-                    val action = remember(state) {
-                        derivedStateOf {
-                            state.toAction().copy(autoCollapse = false).toProtoAction()
-                        }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        FieldTitle(text = LocalI18N.current["ui.common.preview"])
+                        ExpandIndicator(state.isPreviewExpanded, expand = {
+                            vm.setPreviewExpanded(it)
+                        })
                     }
-                    OverlayContent(
-                        action = action.value as ShowOverlayButton,
-                        localVars = LocalVars.obtain(),
-                        contextData = emptyMap(),
-                        parameters = emptyList(),
-                        onButtonClick = {},
-                        onButtonLongClick = {},
-                        dragHandleMotionEvent = {},
-                        onExpand = {},
-                        onCollapse = {}
-                    )
+                    AnimatedVisibility(state.isPreviewExpanded) {
+                        val action = remember(state) {
+                            derivedStateOf {
+                                state.toAction().copy(autoCollapse = false).toProtoAction()
+                            }
+                        }
+                        OverlayContent(
+                            action = action.value as ShowOverlayButton,
+                            localVars = LocalVars.obtain(),
+                            contextData = emptyMap(),
+                            parameters = emptyList(),
+                            onButtonClick = {},
+                            onButtonLongClick = {},
+                            dragHandleMotionEvent = {},
+                            onExpand = {},
+                            onCollapse = {}
+                        )
+                    }
                 }
             }
             LargeSpacer()
@@ -177,11 +191,9 @@ private fun Content(
             ) {
                 FieldTitle(text = LocalI18N.current["ui.action.show.add.button"])
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = {
-                        vm.setButtonListExpanded(!state.isButtonListExpanded)
-                    }) {
-                        RemixIcon(remixName = Remix.Arrows.expand_up_down_fill)
-                    }
+                    ExpandIndicator(state.isButtonListExpanded, expand = {
+                        vm.setButtonListExpanded(it)
+                    })
                     IconButton(onClick = {
                         sortDialogState.show()
                     }) {
@@ -191,8 +203,8 @@ private fun Content(
             }
             SmallSpacer()
         }
-        if (state.isButtonListExpanded) {
-            itemsIndexed(state.buttons) { index, button ->
+        itemsIndexed(state.buttons) { index, button ->
+            AnimatedVisibility(state.isButtonListExpanded) {
                 when (button.componentType) {
                     OverlayButtonComponentType.OverlayButtonComponentType_CircleProgress -> {
                         ProgressBarListItem(
@@ -239,7 +251,6 @@ private fun Content(
                         )
                     }
                 }
-
             }
         }
 
