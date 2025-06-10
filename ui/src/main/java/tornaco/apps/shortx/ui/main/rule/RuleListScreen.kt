@@ -51,6 +51,7 @@ import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.LoadState.Loading.data
 import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.LocalUiSettings
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.TipIds
@@ -178,7 +179,6 @@ fun RuleScreen() {
                 is LoadState.Success -> {
                     val activeJobIds by ruleListViewModel.activeJobIds.collectAsState()
                     RuleContent(
-                        colorfulCard = ruleListState.colorfulCard,
                         rules = (ruleList as LoadState.Success).data.rules,
                         showDescription = ruleListState.showDescription,
                         activeJobs = activeJobIds
@@ -277,7 +277,6 @@ fun RuleSetFlowRow(
 
 @Composable
 fun RuleContent(
-    colorfulCard: Boolean,
     showDescription: Boolean,
     rules: List<RuleUM>,
     activeJobs: List<String>,
@@ -297,7 +296,6 @@ fun RuleContent(
             RuleListContent(
                 isSubscribed = subscribeState.isSubscribed,
                 rules = rules,
-                colorfulCard = colorfulCard,
                 showDescription = showDescription,
                 activeJobs = activeJobs
             )
@@ -308,7 +306,6 @@ fun RuleContent(
 @Composable
 private fun RuleListContent(
     isSubscribed: Boolean,
-    colorfulCard: Boolean,
     showDescription: Boolean,
     rules: List<RuleUM>,
     activeJobs: List<String>,
@@ -325,7 +322,7 @@ private fun RuleListContent(
                 modifier = Modifier
                     .animateItem()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                backgroundColor = if (!colorfulCard || rule.isRuleSet) {
+                backgroundColor = if (!LocalUiSettings.current.uiColorfulCard || rule.isRuleSet) {
                     ColorDefaults.backgroundSurfaceColor()
                 } else {
                     Color(rule.iconColor).copy(alpha = ActionColorBgAlpha)
@@ -343,7 +340,6 @@ private fun RuleListContent(
                     RuleItem(
                         rule = rule,
                         isSubscribed = isSubscribed,
-                        colorfulCard = colorfulCard,
                         showDescription = showDescription,
                         runningInsCount = runningInsCount
                     )

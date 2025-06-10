@@ -132,7 +132,6 @@ private fun DASelector(dialogState: DADialogState) {
                                     isShowDetailedDAItem = true,
                                     das = (daList as LoadState.Success<DAList>).data.das,
                                     showOverflowMenu = false,
-                                    colorfulCard = false,
                                     activeJobs = ActiveJobIds()
                                 )
                             }

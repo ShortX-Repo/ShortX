@@ -47,7 +47,6 @@ fun DADetailsBottomSheet(dialogState: ShortXBottomSheetState) {
                         isShowDetailedDAItem = true,
                         das = (daList as LoadState.Success<DAList>).data.das,
                         showOverflowMenu = true,
-                        colorfulCard = state.colorfulCard,
                         activeJobs = activeJobIds
                     )
                 }

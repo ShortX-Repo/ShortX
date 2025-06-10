@@ -36,6 +36,7 @@ import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.DropdownSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalShortXProps
+import tornaco.apps.shortx.ui.base.LocalUiSettings
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXSwitch
@@ -59,7 +60,6 @@ fun RuleItem(
     modifier: Modifier = Modifier,
     rule: RuleUM,
     isSubscribed: Boolean,
-    colorfulCard: Boolean,
     showDescription: Boolean = true,
     runningInsCount: Int
 ) {
@@ -77,7 +77,6 @@ fun RuleItem(
                 modifier = modifier.then(it),
                 popMenuState = popMenuState,
                 rule = rule,
-                colorfulCard = colorfulCard,
                 showDescription = showDescription,
                 runningInsCount = runningInsCount
             )
@@ -90,7 +89,6 @@ private fun RuleItem(
     modifier: Modifier,
     popMenuState: DropdownSelectorState,
     rule: RuleUM,
-    colorfulCard: Boolean,
     showDescription: Boolean,
     runningInsCount: Int,
 ) {
@@ -116,7 +114,6 @@ private fun RuleItem(
             RuleIcon(
                 rule = rule,
                 runningInsCount = runningInsCount,
-                colorfulCard = colorfulCard,
                 stopAllJobs = {
                     handler.stopAllJobs(rule)
                 }) {
@@ -136,6 +133,7 @@ private fun RuleItem(
             modifier = Modifier
                 .padding(top = 6.dp)
         ) {
+            val colorfulCard = LocalUiSettings.current.uiColorfulCard
             Text(
                 text = rule.title,
                 style = MaterialTheme.typography.titleMedium.copy(
@@ -167,7 +165,6 @@ private fun RuleItem(
 fun RuleIcon(
     rule: RuleUM,
     runningInsCount: Int,
-    colorfulCard: Boolean,
     stopAllJobs: () -> Unit,
     onClick: (() -> Unit)
 ) {
@@ -175,6 +172,7 @@ fun RuleIcon(
     if (isRunning) {
         RunningIndicator(runningInsCount, stopAllJobs, Color(rule.iconColor))
     } else {
+        val colorfulCard = LocalUiSettings.current.uiColorfulCard
         ColoredIcon(
             onClick = onClick,
             size = Dimens.RuleIconSize,

@@ -56,7 +56,6 @@ fun defaultNewDASetId() = "DS-${UUID.randomUUID()}"
 data class DAListState(
     val daSortBy: DASortBy = DASortBy.CreateTime,
     val isShowDetailedDAItem: Boolean = true,
-    val colorfulCard: Boolean = false,
     val searchQuery: String = ""
 )
 
@@ -151,12 +150,6 @@ abstract class BaseDAListViewModel(context: Context) :
             RestoreEventRegistry.dataRestoreComplete.collect {
                 logger.d("reload data since data restored")
                 requestLoadDAList()
-            }
-        }
-
-        viewModelScope.launch {
-            pref.uiColorfulCard.collectLatest {
-                updateState { copy(colorfulCard = it) }
             }
         }
 

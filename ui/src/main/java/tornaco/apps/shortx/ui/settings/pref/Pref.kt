@@ -37,6 +37,9 @@ private val UI_SHOW_RULE_DESCRIPTION =
 private val UI_COLORFUL_CARD =
     booleanPreferencesKey("ui_colorful_card")
 
+private val UI_EXPERIMENTAL =
+    booleanPreferencesKey("ui_experimental")
+
 private val UI_ONLY_SHOW_ENABLED =
     booleanPreferencesKey("ui_only_show_enabled")
 
@@ -108,6 +111,10 @@ class Pref(val context: Context) {
 
     val uiColorfulCard: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[UI_COLORFUL_CARD] ?: false
+    }
+
+    val uiExperimental: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[UI_EXPERIMENTAL] ?: false
     }
 
     val uiOnlyShowEnabled: Flow<Boolean> = context.dataStore.data.map { preferences ->

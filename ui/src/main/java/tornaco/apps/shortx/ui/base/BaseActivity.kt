@@ -6,7 +6,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.subscribe.ShortXProps
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -21,11 +25,20 @@ abstract class BaseActivity : AppCompatActivity() {
 
         val appName = "ShortX"
         setContent {
+            val pref = Pref(LocalContext.current)
+            val uiColorfulCard by pref.uiColorfulCard.collectAsStateWithLifecycle(false)
+            val uiExperimental by pref.uiExperimental.collectAsStateWithLifecycle(false)
+            val uiSettings = UiSettings(
+                uiColorfulCard = uiColorfulCard,
+                uiExperimental = uiExperimental
+            )
+
             CompositionLocalProvider(
                 LocalI18N provides i18NIns,
                 LocalActivity provides this,
                 LocalAppName provides appName,
-                LocalUiStore provides UiStore()
+                LocalUiStore provides UiStore(),
+                LocalUiSettings provides uiSettings
             ) {
                 ShortXProps {
                     ShortXTheme {

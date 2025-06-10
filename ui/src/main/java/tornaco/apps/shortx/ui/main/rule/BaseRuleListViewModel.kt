@@ -59,7 +59,6 @@ fun defaultNewRuleSetId() = "RS-${UUID.randomUUID()}"
 data class RuleListState(
     val isShowRuleDescription: Boolean = true,
     val ruleSortBy: RuleSortBy = RuleSortBy.CreateTime,
-    val colorfulCard: Boolean = false,
     val showDescription: Boolean = true,
     val onlyShowEnabled: Boolean = true,
     val searchQuery: String = "",
@@ -143,12 +142,6 @@ abstract class BaseRuleListViewModel(context: Context) :
             RestoreEventRegistry.dataRestoreComplete.collect {
                 logger.d("reload data since data restored")
                 requestLoadRuleList("dataRestoreComplete")
-            }
-        }
-
-        viewModelScope.launch {
-            pref.uiColorfulCard.collectLatest {
-                updateState { copy(colorfulCard = it) }
             }
         }
 

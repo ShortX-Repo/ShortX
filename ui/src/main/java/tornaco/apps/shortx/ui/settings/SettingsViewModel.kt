@@ -53,7 +53,6 @@ data class SettingsState(
     val isPostNByApp: Boolean = false,
     val isForceDisableShortXByKeyPress: Boolean = false,
     val dynamicColor: Boolean = true,
-    val colorfulCard: Boolean = true,
     val customSUPath: String? = null,
     val sensorUsages: List<SensorUsage> = emptyList(),
     val ocrEngine: OCREngine = OCREngine.OCREngine_Paddle,
@@ -175,11 +174,6 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
             themePref.themeDynamicColor.collectLatest {
                 logger.d("themeDynamicColor changed: $it")
                 updateState { copy(dynamicColor = it) }
-            }
-        }
-        viewModelScope.launch {
-            pref.uiColorfulCard.collectLatest {
-                updateState { copy(colorfulCard = it) }
             }
         }
     }

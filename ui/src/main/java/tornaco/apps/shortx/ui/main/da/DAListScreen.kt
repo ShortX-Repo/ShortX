@@ -56,6 +56,7 @@ import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.LoadState.Loading.data
 import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.LocalUiSettings
 import tornaco.apps.shortx.ui.base.ProgressDialog
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
@@ -219,7 +220,6 @@ fun DirectActionListScreen() {
                     DirectActionListContent(
                         lazyStaggeredGridState = lazyStaggeredGridState,
                         isShowDetailedDAItem = daListState.isShowDetailedDAItem,
-                        colorfulCard = daListState.colorfulCard,
                         das = (daList as LoadState.Success<DAList>).data.das,
                         activeJobs = activeJobIds,
                         showOverflowMenu = true
@@ -318,7 +318,6 @@ fun DASetFilterFlowRow(
 fun DirectActionListContent(
     lazyStaggeredGridState: LazyStaggeredGridState = rememberLazyStaggeredGridState(),
     isShowDetailedDAItem: Boolean,
-    colorfulCard: Boolean,
     das: List<DirectActionUM>,
     activeJobs: ActiveJobIds,
     showOverflowMenu: Boolean = false,
@@ -340,7 +339,6 @@ fun DirectActionListContent(
                     das = das,
                     activeJobs = activeJobs,
                     isSubscribed = subscribeState.isSubscribed,
-                    colorfulCard = colorfulCard,
                     showOverflowMenu = showOverflowMenu,
                 )
             } else {
@@ -361,7 +359,6 @@ private fun DAListContent(
     das: List<DirectActionUM>,
     activeJobs: ActiveJobIds,
     isSubscribed: Boolean,
-    colorfulCard: Boolean,
     showOverflowMenu: Boolean,
 ) {
     LazyVerticalStaggeredGrid(
@@ -371,6 +368,7 @@ private fun DAListContent(
         contentPadding = PaddingValues(top = 8.dp, bottom = 72.dp)
     ) {
         items(items = das, key = { it.uniqueUIKey }) { da ->
+            val colorfulCard = LocalUiSettings.current.uiColorfulCard
             ShortXCard(
                 modifier = Modifier
                     .animateItem()

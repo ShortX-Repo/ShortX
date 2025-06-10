@@ -58,7 +58,8 @@ class CreateShortcutActivity : BaseActivity() {
     override fun Content() {
         ShortXTheme {
             Surface {
-                Scaffold(modifier = Modifier,
+                Scaffold(
+                    modifier = Modifier,
                     topBar = {
                         ShortXTopAppBar(
                             modifier = Modifier,
@@ -129,7 +130,6 @@ class CreateShortcutActivity : BaseActivity() {
                                         isShowDetailedDAItem = true,
                                         das = (daList as LoadState.Success<DAList>).data.das,
                                         showOverflowMenu = false,
-                                        colorfulCard = false,
                                         activeJobs = ActiveJobIds()
                                     )
                                 }

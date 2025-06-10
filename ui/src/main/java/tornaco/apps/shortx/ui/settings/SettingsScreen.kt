@@ -69,6 +69,7 @@ import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LinkText
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalShortXProps
+import tornaco.apps.shortx.ui.base.LocalUiSettings
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.OutlineBadge
@@ -589,11 +590,11 @@ private fun miscSettings(
             icon = Remix.Design.pantone_fill,
             title = LocalI18N.current["ui.settings.colorful.card"],
             summary = LocalI18N.current["ui.settings.colorful.card.summary"],
-            value = state.colorfulCard,
+            value = LocalUiSettings.current.uiColorfulCard,
             badge = badge,
             onCheckChanged = {
                 if (mainState.isSubscribed) {
-                    vm.setColorfulCard(!state.colorfulCard)
+                    vm.setColorfulCard(it)
                 } else {
                     subscribeDialogState.show()
                 }
