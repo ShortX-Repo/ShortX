@@ -19,14 +19,11 @@ import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.rule.toLogString
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util._dp
-import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.ui.widget.showInSystemServer
 import tornaco.apps.shortx.services.watchdog.postSafety
 import tornaco.apps.shortx.ui.sidebar.SideBarDialogView
-import tornaco.apps.shortx.ui.sidebar.SideBarDragHandleView
-import kotlin.math.roundToInt
 
 
 private const val SIDE_BAR_WIDTH_DP = 70
@@ -43,7 +40,6 @@ class SideBarManager(
     private val logger = Logger("SideBarManager")
 
     private var sideBarDialog: Dialog? = null
-    private var sideBarDragHandle: SideBarDragHandleView? = null
 
     fun postShowSideBar(
         evaluateContext: EvaluateContext,
@@ -61,35 +57,13 @@ class SideBarManager(
             return@postSafety
         }
 
-        val currentDragHandle = sideBarDragHandle
-        if (currentDragHandle != null && currentDragHandle.isShow()) {
-            logger.d("postShowSideBar skip since has currentDragHandle showing.")
-            return@postSafety
-        }
-
-        val screenSize = context.screenSize()
-
-        val handleView = SideBarDragHandleView(
-            context = context,
-            initialPos = SIDE_BAR_DRAG_HANDLE_X_DP._dp
-                    to (screenSize.y * SIDE_BAR_DRAG_HANDLE_Y_SCREEN_HEIGHT_FACTOR).roundToInt(),
-            onPosChange = { x, y ->
-
-            },
-            showBar = {
-                showSideBarDialog(
-                    evaluateContext = evaluateContext,
-                    contextData = contextData,
-                    localVars = localVars,
-                    parameters = parameters,
-                    action = action
-                )
-            }
-        ).apply {
-            show()
-        }
-
-        sideBarDragHandle = handleView
+        showSideBarDialog(
+            evaluateContext = evaluateContext,
+            contextData = contextData,
+            localVars = localVars,
+            parameters = parameters,
+            action = action
+        )
     }
 
     private fun showSideBarDialog(
@@ -140,7 +114,7 @@ class SideBarManager(
 
         // Initial, alpha is 0.
         dialogView.initView()
-        dialogView.setAlpha(0f)
+        dialogView.alpha = 0f
 
         val isWindowGravityLeft = true
 
@@ -149,7 +123,7 @@ class SideBarManager(
             dialogView.translationX =
                 (if (isWindowGravityLeft) -1 else 1) * dialogView.width / 2.0f
 
-            dialogView.setAlpha(0f)
+            dialogView.alpha = 0f
 
             dialogView.animate()
                 .alpha(1f)
@@ -189,18 +163,16 @@ class SideBarManager(
                 attributes = params
             },
             onDismiss = {
-                sideBarDragHandle?.showDragHandle()
                 sideBarDialog = null
             }
         )
-
 
         sideBarDialog = androidDialog
     }
 
     private fun dismissSidebarDialog(dialogView: SideBarDialogView) {
         dialogView.translationX = 0f
-        dialogView.setAlpha(1f)
+        dialogView.alpha = 1f
         val animator: ViewPropertyAnimator = dialogView.animate()
             .alpha(0f)
             .setDuration(300)
@@ -220,7 +192,5 @@ class SideBarManager(
         logger.d("postHideSideBar")
         sideBarDialog?.dismiss()
         sideBarDialog = null
-        sideBarDragHandle?.dismiss()
-        sideBarDragHandle = null
     }
 }

@@ -13,10 +13,10 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.FloatingToolbarDefaults.ScreenOffset
 import androidx.compose.material3.FloatingToolbarExitDirection.Companion.Bottom
-import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalFloatingToolbar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -85,7 +85,7 @@ fun MD3ExpToolbarDemo() {
             ) {
                 Text(text = remember { LoremIpsum().values.first() })
             }
-            HorizontalFloatingToolbar(
+            VerticalFloatingToolbar(
                 // Always expanded as the toolbar is bottom-centered. We will use a
                 // FloatingToolbarScrollBehavior to hide both the toolbar and its FAB on scroll.
                 expanded = true,
