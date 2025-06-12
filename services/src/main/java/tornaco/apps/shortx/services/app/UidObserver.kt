@@ -54,7 +54,7 @@ object UidObserverRegisterCompat {
                 UidObserverV34(obs)
             }
 
-            35 -> {
+            35, 36 -> {
                 UidObserverV35(obs)
             }
 
