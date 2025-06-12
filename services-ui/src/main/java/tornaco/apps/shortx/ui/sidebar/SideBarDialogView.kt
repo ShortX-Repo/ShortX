@@ -4,6 +4,7 @@ package tornaco.apps.shortx.ui.sidebar
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -46,36 +47,39 @@ class SideBarDialogView(
 
 @Composable
 private fun Bar() {
-    val vibrantColors = FloatingToolbarDefaults.vibrantFloatingToolbarColors()
-    VerticalFloatingToolbar(
-        // Always expanded as the toolbar is bottom-centered. We will use a
-        // FloatingToolbarScrollBehavior to hide both the toolbar and its FAB on scroll.
-        expanded = true,
-        floatingActionButton = {
-            // Match the FAB to the vibrantColors. See also StandardFloatingActionButton.
-            FloatingToolbarDefaults.VibrantFloatingActionButton(
-                onClick = { /* doSomething() */ },
-            ) {
-                RemixIcon(Remix.System.add_line)
-            }
-        },
+    Box(
         modifier = Modifier
             .width(BAR_W.dp)
-            .height(BAR_H.dp),
-        colors = vibrantColors,
-        content = {
-            IconButton(onClick = { /* doSomething() */ }) {
-                RemixIcon(Remix.System.check_line)
-            }
-            IconButton(onClick = { /* doSomething() */ }) {
-                RemixIcon(Remix.System.check_line)
-            }
-            IconButton(onClick = { /* doSomething() */ }) {
-                RemixIcon(Remix.System.check_line)
-            }
-            IconButton(onClick = { /* doSomething() */ }) {
-                RemixIcon(Remix.System.check_line)
-            }
-        },
-    )
+            .height(BAR_H.dp)
+    ) {
+        val vibrantColors = FloatingToolbarDefaults.vibrantFloatingToolbarColors()
+        VerticalFloatingToolbar(
+            // Always expanded as the toolbar is bottom-centered. We will use a
+            // FloatingToolbarScrollBehavior to hide both the toolbar and its FAB on scroll.
+            expanded = true,
+            floatingActionButton = {
+                // Match the FAB to the vibrantColors. See also StandardFloatingActionButton.
+                FloatingToolbarDefaults.VibrantFloatingActionButton(
+                    onClick = { /* doSomething() */ },
+                ) {
+                    RemixIcon(Remix.System.add_line)
+                }
+            },
+            colors = vibrantColors,
+            content = {
+                IconButton(onClick = { /* doSomething() */ }) {
+                    RemixIcon(Remix.System.check_line)
+                }
+                IconButton(onClick = { /* doSomething() */ }) {
+                    RemixIcon(Remix.System.check_line)
+                }
+                IconButton(onClick = { /* doSomething() */ }) {
+                    RemixIcon(Remix.System.check_line)
+                }
+                IconButton(onClick = { /* doSomething() */ }) {
+                    RemixIcon(Remix.System.check_line)
+                }
+            },
+        )
+    }
 }
