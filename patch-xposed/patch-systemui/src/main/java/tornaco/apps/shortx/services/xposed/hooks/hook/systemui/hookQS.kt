@@ -8,14 +8,18 @@ import util.Reflections
 
 fun SystemUIHook.hookQS(lpparam: IPackageLoaded.Param) = kotlin.runCatching {
     if (PackageNames.systemUI == lpparam.packageName) {
-        afterConstruct(
-            clazz = Reflections.findClass(
-                "com.android.systemui.qs.QSTileHost",
-                lpparam.classLoader
-            ),
-        ) { param ->
-            logger.w("afterConstruct.QSTileHost")
-            QSHostAdapter.qsTileHost = param.thisObject
+        runCatching {
+            afterConstruct(
+                clazz = Reflections.findClass(
+                    "com.android.systemui.qs.QSTileHost",
+                    lpparam.classLoader
+                ),
+            ) { param ->
+                logger.w("afterConstruct.QSTileHost")
+                QSHostAdapter.qsTileHost = param.thisObject
+            }
+        }.onFailure {
+            logger.e("afterConstruct.QSTileHost error.")
         }
 
         // Android 15.
