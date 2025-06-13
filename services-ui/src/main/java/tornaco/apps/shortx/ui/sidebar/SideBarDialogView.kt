@@ -6,11 +6,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FloatingToolbarDefaults
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.VerticalFloatingToolbar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -20,11 +18,13 @@ import tornaco.apps.shortx.core.proto.action.ShowSideBar
 import tornaco.apps.shortx.core.proto.common.DialogUiStyleSettings
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
-import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.RemixIcon
-import tornaco.apps.shortx.ui.dialog.DialogView
+import tornaco.apps.shortx.ui.dialog.ShadowDialogView
 
-private const val BAR_W = 68
+private const val COLOR_ICON_SIZE = 50
+private const val COLOR_ICON_PADDING = 8
+private const val BAR_W = 100
 private const val BAR_H = 320
 
 @SuppressLint("ViewConstructor")
@@ -38,48 +38,30 @@ class SideBarDialogView(
     context: Context,
     i18N: I18N,
     style: DialogUiStyleSettings = DialogUiStyleSettings.getDefaultInstance(),
-) : DialogView(context, i18N, style) {
+) : ShadowDialogView(context, i18N, style) {
     @Composable
     override fun DialogContent() {
         Bar()
     }
-}
 
-@Composable
-private fun Bar() {
-    Box(
-        modifier = Modifier
-            .width(BAR_W.dp)
-            .height(BAR_H.dp)
-    ) {
-        val vibrantColors = FloatingToolbarDefaults.vibrantFloatingToolbarColors()
-        VerticalFloatingToolbar(
-            // Always expanded as the toolbar is bottom-centered. We will use a
-            // FloatingToolbarScrollBehavior to hide both the toolbar and its FAB on scroll.
-            expanded = true,
-            floatingActionButton = {
-                // Match the FAB to the vibrantColors. See also StandardFloatingActionButton.
-                FloatingToolbarDefaults.VibrantFloatingActionButton(
-                    onClick = { /* doSomething() */ },
+
+    @Composable
+    private fun Bar() {
+        Box(
+            modifier = Modifier
+                .wrapContentWidth()
+                .height(BAR_H.dp)
+        ) {
+            action.buttonSettingsList.forEach { setting ->
+                ColoredIcon(
+                    size = COLOR_ICON_SIZE.dp,
+                    modifier = Modifier.padding(COLOR_ICON_PADDING.dp),
+                    onClick = {
+                    }
                 ) {
-                    RemixIcon(Remix.System.add_line)
+                    RemixIcon(remixName = setting.icon)
                 }
-            },
-            colors = vibrantColors,
-            content = {
-                IconButton(onClick = { /* doSomething() */ }) {
-                    RemixIcon(Remix.System.check_line)
-                }
-                IconButton(onClick = { /* doSomething() */ }) {
-                    RemixIcon(Remix.System.check_line)
-                }
-                IconButton(onClick = { /* doSomething() */ }) {
-                    RemixIcon(Remix.System.check_line)
-                }
-                IconButton(onClick = { /* doSomething() */ }) {
-                    RemixIcon(Remix.System.check_line)
-                }
-            },
-        )
+            }
+        }
     }
 }
