@@ -48,9 +48,6 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
         data object EnableForceDisableShortXByKeyPress :
             BoolSettings(key = "EnableForceDisableShortXByKeyPress", defaultValue = { true })
 
-        data object AreaSelectorTipsShown :
-            BoolSettings(key = "AreaSelectorTipsShown", defaultValue = { false })
-
         data class EnableToggle(val id: String) :
             BoolSettings(key = "EnableToggle${id}", defaultValue = { false })
 
@@ -144,6 +141,9 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
             IntSettings(
                 key = "OCREngine",
                 defaultValue = { tornaco.apps.shortx.core.proto.common.OCREngine.OCREngine_Paddle_VALUE })
+
+        data object AreaSelectorTipsShown :
+            IntSettings(key = "AreaSelectorTipsShown", defaultValue = { 0 })
     }
 
     sealed class FloatSettings(key: String, defaultValue: (Context) -> Float) :

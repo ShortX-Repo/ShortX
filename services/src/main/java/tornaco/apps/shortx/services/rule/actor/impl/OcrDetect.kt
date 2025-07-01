@@ -15,6 +15,7 @@ import tornaco.apps.shortx.core.os.ScreenCap
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.ByteArrayList
 import tornaco.apps.shortx.core.proto.common.OCREngine
+import tornaco.apps.shortx.core.proto.common.RectSourceFullScreen
 import tornaco.apps.shortx.core.proto.common.RectSourcePath
 import tornaco.apps.shortx.core.proto.common.RectSourceRect
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
@@ -176,7 +177,12 @@ object OcrDetect : Actor {
             val path = (src unpack_ RectSourcePath::class.java).path
             getBitmapFromPath(evaluateContext, shortXContext, path)
         } else {
-            val area = SelectScreenArea.startSelectScreenArea(shortXContext)
+            val area = if (src is_ RectSourceFullScreen::class.java) {
+                AreaSelection.FullScreen
+            } else {
+                SelectScreenArea.startSelectScreenArea(shortXContext)
+            }
+            logger.d("area: $area")
             val rect: Rect? = area?.getRect(androidContext)
 
             requireNotNull(rect) {

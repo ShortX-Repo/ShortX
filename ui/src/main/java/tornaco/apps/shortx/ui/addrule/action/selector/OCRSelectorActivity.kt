@@ -157,6 +157,19 @@ private fun BaseSelectorActivity<Action.OcrDetect>.Selector(currentAction: Actio
                         )
                     )
                 }
+
+                Action.OcrDetect.RectSrc.FullScreen -> {
+                    ListItem(
+                        icon = {
+                            ColoredIcon {
+                                RemixIcon(remixName = Remix.Device.device_fill)
+                            }
+                        },
+                        titleLines = listOf(
+                            i18N["ui.action.rect.src.fullscreen"],
+                        )
+                    )
+                }
             }
 
             StandardSpacer()
@@ -176,11 +189,19 @@ private fun BaseSelectorActivity<Action.OcrDetect>.Selector(currentAction: Actio
                         id = Action.OcrDetect.RectSrc.FromPath::class.java.name,
                         title = i18N["ui.action.rect.src.path"]
                     ),
+                    MenuDialogItem(
+                        id = Action.OcrDetect.RectSrc.FullScreen::class.java.name,
+                        title = i18N["ui.action.rect.src.fullscreen"]
+                    ),
                 ),
                 onItemSelected = { _, id ->
                     when (id) {
                         Action.OcrDetect.RectSrc.SelectScreenArea::class.java.name -> {
                             vm.setSrc(Action.OcrDetect.RectSrc.SelectScreenArea)
+                        }
+
+                        Action.OcrDetect.RectSrc.FullScreen::class.java.name -> {
+                            vm.setSrc(Action.OcrDetect.RectSrc.FullScreen)
                         }
 
                         Action.OcrDetect.RectSrc.FromRect::class.java.name -> {
