@@ -32,16 +32,19 @@ class DelayState(
 
     var currentValue by mutableStateOf("")
     var useAlarm by mutableStateOf(false)
+    var showCD by mutableStateOf(false)
 
     fun show(initialValue: Action.Delay? = null) {
         this.currentValue = initialValue?.time ?: ""
         this.useAlarm = initialValue?.useAlarm ?: false
+        this.showCD = initialValue?.showCD ?: false
         show()
     }
 
-    fun show(initialTime: String? = null, useAlarm: Boolean? = false) {
+    fun show(initialTime: String? = null, useAlarm: Boolean? = false, showCD: Boolean? = false) {
         this.currentValue = initialTime ?: ""
         this.useAlarm = useAlarm ?: false
+        this.showCD = showCD ?: false
         show()
     }
 
@@ -72,7 +75,8 @@ fun DelaySelectorDialog(state: DelayState) {
                     state.onSelected(
                         Action.Delay(
                             time = state.currentValue,
-                            useAlarm = state.useAlarm
+                            useAlarm = state.useAlarm,
+                            showCD = state.showCD
                         )
                     )
                     state.dismiss()
@@ -101,6 +105,11 @@ fun DelaySelectorDialog(state: DelayState) {
                         state.useAlarm = it
                     })
                 }
+
+                FieldTitle(text = LocalI18N.current["ui.action.delay.show.cd"])
+                ShortXSwitch(checked = state.showCD, onCheckedChange = {
+                    state.showCD = it
+                })
             }
         })
     }
