@@ -5,11 +5,8 @@ import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +24,7 @@ import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.ui.BaseComposeView
 import tornaco.apps.shortx.ui.base.AnimatedTextContainer
+import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShapeXL
 import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
 
 @SuppressLint("ViewConstructor")
@@ -51,18 +49,17 @@ class CountdownView(
 
     @Composable
     private fun DialogContent() {
-        Row(
+        Box(
             modifier = Modifier
-                .size(72.dp)
-                .clip(CircleShape)
+                .clip(ShortXCardRoundedCornerShapeXL)
                 .background(MaterialTheme.colorScheme.primaryContainer)
                 .combinedClickable(onClick = {
                     onClick()
                 }, onLongClick = {
                     onLongClick()
                 })
-                .padding(24.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(vertical = 24.dp, horizontal = 32.dp),
+            contentAlignment = Alignment.Center
         ) {
             var currentNum by remember { mutableIntStateOf(totalNumber) }
             LaunchedEffect(Unit) {
@@ -74,7 +71,7 @@ class CountdownView(
             }
             AnimatedTextContainer(currentNum.toString()) {
                 Text(
-                    it, style = MaterialTheme.typography.titleLarge.copy(
+                    text = it, style = MaterialTheme.typography.titleLarge.copy(
                         fontSize = 28.sp
                     )
                 )
