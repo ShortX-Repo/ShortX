@@ -534,9 +534,10 @@ class WindowManagerService(shortXContext: ShortXContext) :
                     addText = {
                         shortXContext.input.addClipboardText(it)
                     },
-                    inputText = { text ->
+                    inputText = { text, shouldDelay ->
                         systemServiceScope.launchSafety("inputText") {
-                            logger.d("ClipboardView input text: $text")
+                            logger.d("ClipboardView input text: $text $shouldDelay")
+                            if (shouldDelay) delay(320)
                             var isSuccess = false
                             var retryCount = 0
                             while (!isSuccess && retryCount < 10) {

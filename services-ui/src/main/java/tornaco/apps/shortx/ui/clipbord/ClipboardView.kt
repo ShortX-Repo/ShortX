@@ -6,7 +6,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,7 +28,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,10 +36,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,6 +52,7 @@ import tornaco.apps.shortx.core.proto.clipboard.ClipboardItem
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.DateUtils
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.AttachableComposeView
 import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.ColoredIcon
@@ -74,7 +76,7 @@ class ClipboardView(
     i18N: I18N,
     val clips: List<ClipboardItem>,
     onDetach: (AttachableComposeView) -> Unit,
-    val inputText: (String) -> Unit,
+    val inputText: (String, Boolean) -> Unit,
     val addText: (ClipboardItem) -> Unit,
     val removeText: (id: String) -> Unit,
     val clearAll: () -> Unit,
@@ -83,7 +85,6 @@ class ClipboardView(
     @Composable
     override fun ComposeContent() {
         ShortXServiceUITheme {
-            val interactionSource = remember { MutableInteractionSource() }
             val requester = remember { FocusRequester() }
 
             var inputState by remember { mutableStateOf("") }
@@ -92,33 +93,24 @@ class ClipboardView(
             var searchState by remember { mutableStateOf("") }
             var isShowSearch by remember { mutableStateOf(false) }
 
+            var lazyColumnBounds by remember { mutableStateOf<Rect?>(null) }
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .onKeyEvent {
-                        if (it.key == Key.Back && it.nativeKeyEvent.action == android.view.KeyEvent.ACTION_UP) {
-                            if (isShowSearch || isShowInput) {
-                                isShowInput = false
-                                isShowSearch = false
-                            } else {
-                                detach()
+                    .pointerInput(Unit) {
+                        detectTapGestures { offset ->
+                            val bounds = lazyColumnBounds
+                            // 如果不在 LazyColumn 区域
+                            if (bounds == null || !bounds.contains(offset)) {
+                                detach(reason = "Out of bounds")
                             }
                         }
-                        true
                     }
                     .focusRequester(requester)
-                    .focusable()
-                    .clickable(
-                        interactionSource = interactionSource,
-                        indication = null,
-                        onClick = {
-                            detach()
-                        }
-                    ), contentAlignment = Alignment.BottomCenter
+                    .focusable(),
+                contentAlignment = Alignment.BottomCenter
             ) {
-                LaunchedEffect(Unit) {
-                    requester.requestFocus()
-                }
 
                 Surface(
                     modifier = Modifier,
@@ -142,10 +134,14 @@ class ClipboardView(
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight(fraction = if (clipState.size <= 4) 0.4f else 0.5f),
+                            .fillMaxHeight(fraction = if (clipState.size <= 4) 0.4f else 0.5f)
+                            .imePadding()
+                            .onGloballyPositioned { coordinates ->
+                                // 记录 LazyColumn 在整个屏幕的坐标
+                                lazyColumnBounds = coordinates.boundsInRoot()
+                            },
                         contentPadding = PaddingValues(bottom = 32.dp)
                     ) {
-
                         item {
                             Row(
                                 modifier = Modifier
@@ -308,8 +304,12 @@ class ClipboardView(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .clickable {
-                                                detach()
-                                                inputText(clip.value)
+                                                val shouldDelay = isShowSearch
+                                                detach(reason = "Click item")
+                                                isShowInput = false
+                                                isShowSearch = false
+                                                Logger.nameless.d("shouldDelay? $shouldDelay")
+                                                inputText(clip.value, shouldDelay)
                                             }
                                             .padding(horizontal = 16.dp)
                                             .padding(vertical = 4.dp),
@@ -353,10 +353,7 @@ class ClipboardView(
                                             // Pin
                                             if (false) {
                                                 IconButton(onClick = {
-                                                    removeText(clip.id)
-                                                    clipState = clipState.toMutableList().apply {
-                                                        removeIf { it.id == clip.id }
-                                                    }
+
                                                 }) {
                                                     RemixIcon(
                                                         modifier = Modifier.size(18.dp),

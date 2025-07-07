@@ -18,7 +18,7 @@ abstract class AttachableComposeView(
 ) :
     BaseComposeView(context, i18N) {
 
-    private val logger = Logger(javaClass.simpleName)
+    protected val logger = Logger(javaClass.simpleName)
     private val windowManager: WindowManager by lazy {
         context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     }
@@ -41,8 +41,8 @@ abstract class AttachableComposeView(
         logger.d("attach")
     }
 
-    fun detach(callback: Boolean = true) {
-        logger.d("detach")
+    fun detach(callback: Boolean = true, reason: String? = null) {
+        logger.d("detach: ${reason.orEmpty()}")
         if (isAttached) {
             windowManager.removeViewImmediate(this)
             isAttached = false

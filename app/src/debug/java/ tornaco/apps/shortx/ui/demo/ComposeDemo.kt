@@ -64,7 +64,7 @@ fun TestClipboardView() {
             ).build(),
         ),
         onDetach = {},
-        inputText = {},
+        inputText = { _, _ -> },
         addText = {},
         removeText = {},
         clearAll = {}).ComposeContent()
