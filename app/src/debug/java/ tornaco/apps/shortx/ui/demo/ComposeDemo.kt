@@ -67,6 +67,7 @@ fun TestClipboardView() {
         inputText = { _, _ -> },
         addText = {},
         removeText = {},
+        pinItem = { _, _ -> },
         clearAll = {}).ComposeContent()
 }
 

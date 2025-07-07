@@ -43,6 +43,12 @@ class ClipboardStore(
         }
     }
 
+    fun getText(id: String): ClipboardItem? {
+        return synchronized(cache) {
+            cache.firstOrNull { it.id == id }
+        }
+    }
+
     fun getAllText(): List<ClipboardItem> {
         synchronized(cache) {
             return cache.toList()

@@ -111,6 +111,16 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         clipboardStore.deleteText(id)
     }
 
+    fun pinClipboardText(id: String, pin: Boolean) {
+        logger.logOnDebug("pinClipboardText: $id $pin")
+        val clip = clipboardStore.getText(id)
+        clip?.let {
+            val newClip = ClipboardItem.newBuilder(it).setIsPinned(pin).build()
+            clipboardStore.deleteText(id)
+            clipboardStore.addText(newClip)
+        }
+    }
+
     fun getAllClipboardText() = clipboardStore.getAllText()
 
     fun clearAllClipboardText() {

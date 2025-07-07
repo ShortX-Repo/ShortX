@@ -54,6 +54,7 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.AttachableComposeView
+import tornaco.apps.shortx.ui.base.AppImageIcon
 import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.DropdownItem
@@ -65,6 +66,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.ui.theme.AliBlue
 import tornaco.apps.shortx.ui.theme.PrefIcon
 import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
 import java.util.Date
@@ -79,6 +81,7 @@ class ClipboardView(
     val inputText: (String, Boolean) -> Unit,
     val addText: (ClipboardItem) -> Unit,
     val removeText: (id: String) -> Unit,
+    val pinItem: (id: String, Boolean) -> Unit,
     val clearAll: () -> Unit,
 ) : AttachableComposeView(context, i18N, onDetach) {
 
@@ -134,7 +137,7 @@ class ClipboardView(
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight(fraction = if (clipState.size <= 4) 0.4f else 0.5f)
+                            .fillMaxHeight(fraction = if (clipState.size <= 5) 0.5f else 0.72f)
                             .imePadding()
                             .onGloballyPositioned { coordinates ->
                                 // 记录 LazyColumn 在整个屏幕的坐标
@@ -284,7 +287,7 @@ class ClipboardView(
                         if (clipState.isNotEmpty()) {
                             itemsIndexed(clipState.filter {
                                 searchState.isBlank() || it.value.contains(searchState, true)
-                            }) { index, clip: ClipboardItem ->
+                            }.sortedBy { !it.isPinned }) { index, clip: ClipboardItem ->
                                 val context = LocalContext.current
                                 val formatTime = remember {
                                     if (System.currentTimeMillis() - clip.createAt < java.time.Duration.ofHours(
@@ -303,6 +306,7 @@ class ClipboardView(
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
+                                            .animateItem()
                                             .clickable {
                                                 val shouldDelay = isShowSearch
                                                 detach(reason = "Click item")
@@ -345,22 +349,34 @@ class ClipboardView(
                                                         text = formatTime,
                                                         fontSize = 10.5.sp
                                                     )
+
+                                                    if (clip.owner != null && clip.owner.pkgName.isNotBlank()) {
+                                                        AppImageIcon(
+                                                            "app://${clip.owner.pkgName}",
+                                                            modifier = Modifier.size(18.dp)
+                                                        )
+                                                    }
                                                 }
                                             }
                                         }
 
                                         Row {
                                             // Pin
-                                            if (false) {
-                                                IconButton(onClick = {
-
-                                                }) {
-                                                    RemixIcon(
-                                                        modifier = Modifier.size(18.dp),
-                                                        remixName = Remix.Map.pushpin_fill,
-                                                        tint = PrefIcon
+                                            IconButton(onClick = {
+                                                pinItem(clip.id, !clip.isPinned)
+                                                clipState = clipState.toMutableList().apply {
+                                                    set(
+                                                        indexOf(clip),
+                                                        ClipboardItem.newBuilder(clip)
+                                                            .setIsPinned(!clip.isPinned).build()
                                                     )
                                                 }
+                                            }) {
+                                                RemixIcon(
+                                                    modifier = Modifier.size(18.dp),
+                                                    remixName = Remix.Map.pushpin_fill,
+                                                    tint = if (clip.isPinned) AliBlue else PrefIcon
+                                                )
                                             }
 
                                             // Remove

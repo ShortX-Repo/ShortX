@@ -531,6 +531,9 @@ class WindowManagerService(shortXContext: ShortXContext) :
                     removeText = {
                         shortXContext.input.removeClipboardText(it)
                     },
+                    pinItem = { id, isPin ->
+                        shortXContext.input.pinClipboardText(id, isPin)
+                    },
                     addText = {
                         shortXContext.input.addClipboardText(it)
                     },
