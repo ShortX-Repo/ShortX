@@ -19,7 +19,7 @@ abstract class AttachableComposeView(
     BaseComposeView(context, i18N) {
 
     protected val logger = Logger(javaClass.simpleName)
-    private val windowManager: WindowManager by lazy {
+    protected val windowManager: WindowManager by lazy {
         context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     }
 

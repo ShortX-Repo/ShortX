@@ -116,7 +116,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
     override fun screenOff() {
         super.screenOff()
         logger.d("disableAllOverlayViews since screen off.")
-        disableAllOverlayViews { }
+        disableAllOverlayViews("screenOff") { }
     }
 
     private fun registerListeners() {
@@ -410,14 +410,14 @@ class WindowManagerService(shortXContext: ShortXContext) :
     }
 
     fun enableUniversalCopy() {
-        disableAllOverlayViews {
+        disableAllOverlayViews("enableUniversalCopy") {
             val screenTexts = mutableListOf<TextViewNode>()
 
             val guideLineView =
                 UniversalCopyView(
                     context = context,
                     onClick = { x, y ->
-                        disableAllOverlayViews {
+                        disableAllOverlayViews("UniversalCopyView.onClick") {
                             lookUpTextFromClick(screenTexts, x, y)
                         }
                     },
@@ -450,7 +450,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
     }
 
     fun enableDrawBoard() {
-        disableAllOverlayViews {
+        disableAllOverlayViews("enableDrawBoard") {
             val guideLineView =
                 DrawBoardView(
                     context = context,
@@ -470,7 +470,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
         onSelectFullScreen: () -> Unit,
         onDetach: () -> Unit
     ) {
-        disableAllOverlayViews {
+        disableAllOverlayViews("enableAreaSelector") {
             val guideLineView =
                 AreaSelectorView(
                     context = context,
@@ -514,12 +514,12 @@ class WindowManagerService(shortXContext: ShortXContext) :
     }
 
     fun disableAreaSelector() {
-        disableAllOverlayViews { }
+        disableAllOverlayViews("disableAreaSelector") { }
     }
 
     fun showClipboard() {
         logger.logOnDebug("showClipboard: ${shortXContext.input.getAllClipboardText()}")
-        disableAllOverlayViews {
+        disableAllOverlayViews("showClipboard") {
             val guideLineView =
                 ClipboardView(
                     context = ServiceGlideContextWrapper(Dirs.picassoCacheDir(), context),
@@ -567,14 +567,14 @@ class WindowManagerService(shortXContext: ShortXContext) :
     }
 
     fun enableIdViewer() {
-        disableAllOverlayViews {
+        disableAllOverlayViews("enableIdViewer") {
             val idNodes = mutableListOf<ViewNode>()
 
             val guideLineView =
                 IdViewerView(
                     context = context,
                     onClick = { x, y ->
-                        disableAllOverlayViews {
+                        disableAllOverlayViews("IdViewerView.onClick") {
                             lookUpViewNodeFromClick(idNodes, x, y)
                         }
                     },
@@ -685,16 +685,17 @@ class WindowManagerService(shortXContext: ShortXContext) :
     //	at java.lang.reflect.Method.invoke(Native Method)
     //	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:600)
     //	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:983)
-    private fun disableAllOverlayViews(action: suspend () -> Unit) {
+    private fun disableAllOverlayViews(reason: String, action: suspend () -> Unit) {
+        logger.w("disableAllOverlayViews: $reason")
         mainHandler.postSafety("disableAllOverlayViews-1") {
             showingDrawerBoard.toTypedArray().forEach {
-                kotlin.runCatching { it.detach() }
+                kotlin.runCatching { it.detach(reason = "disableAllOverlayViews") }
                     .onFailure { logger.e(it, "disableDrawBoard detach fail") }
             }
             showingDrawerBoard.clear()
 
             showingAreaSelector.toTypedArray().forEach {
-                kotlin.runCatching { it.detach() }
+                kotlin.runCatching { it.detach(reason = "disableAllOverlayViews") }
                     .onFailure { logger.e(it, "showingAreaSelector detach fail") }
             }
             showingAreaSelector.clear()
@@ -712,7 +713,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
             showingIVHints.clear()
 
             showingClipboard.toTypedArray().forEach {
-                kotlin.runCatching { it.detach() }
+                kotlin.runCatching { it.detach(reason = "disableAllOverlayViews") }
                     .onFailure { logger.e(it, "disableClipboard detach fail") }
             }
             showingClipboard.clear()
@@ -952,6 +953,9 @@ class WindowManagerService(shortXContext: ShortXContext) :
     fun onBackNavDone(triggerBack: Boolean, type: Int) {
         if (triggerBack) {
             shortXContext.input.updateLastInputKey(KeyEvent.KEYCODE_BACK, "onBackNavDone")
+
+            // Disable overlays
+            disableAllOverlayViews("onBackNavDone and triggerBack") { }
         }
 
         shortXContext.rule.publishFactChecked(BackNavDone.getDefaultInstance()) {
@@ -965,9 +969,6 @@ class WindowManagerService(shortXContext: ShortXContext) :
     }
 
     fun onBackNavStart() {
-        // Disable overlays
-        disableAllOverlayViews { }
-
         shortXContext.rule.publishFactChecked(BackNavStart.getDefaultInstance()) {
             FactPublishData(
                 reason = "onBackNavStart",

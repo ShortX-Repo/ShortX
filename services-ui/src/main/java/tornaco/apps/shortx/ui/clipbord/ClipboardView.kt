@@ -2,6 +2,8 @@ package tornaco.apps.shortx.ui.clipbord
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,6 +35,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -51,6 +55,7 @@ import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.inputMethodManager
 import tornaco.apps.shortx.ui.AttachableComposeView
 import tornaco.apps.shortx.ui.base.AppImageIcon
 import tornaco.apps.shortx.ui.base.ColorDefaults
@@ -87,6 +92,8 @@ class ClipboardView(
     @Composable
     override fun ComposeContent() {
         ShortXServiceUITheme {
+            val focusRequester = remember { FocusRequester() }
+
             var inputState by remember { mutableStateOf("") }
             var isShowInput by remember { mutableStateOf(false) }
 
@@ -106,7 +113,8 @@ class ClipboardView(
                                 detach(reason = "Out of bounds")
                             }
                         }
-                    },
+                    }
+                    .focusRequester(focusRequester),
                 contentAlignment = Alignment.BottomCenter
             ) {
 
@@ -177,6 +185,21 @@ class ClipboardView(
                                     IconButton(onClick = {
                                         isShowInput = false
                                         isShowSearch = true
+
+                                        lp.flags =
+                                            lp.flags and WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE.inv()
+                                        windowManager.updateViewLayout(
+                                            this@ClipboardView,
+                                            lp
+                                        )
+                                        focusRequester.requestFocus()
+
+                                        // 4. Show keyboard
+                                        val imm = context.inputMethodManager
+                                        imm.showSoftInput(
+                                            this@ClipboardView,
+                                            InputMethodManager.SHOW_IMPLICIT
+                                        )
                                     }) {
                                         RemixIcon(
                                             Remix.System.search_2_line,
