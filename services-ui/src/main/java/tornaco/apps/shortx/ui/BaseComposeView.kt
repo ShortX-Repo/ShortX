@@ -54,13 +54,8 @@ abstract class BaseComposeView(
                     ComposeContent()
                 }
             }
-            isFocusable = true
-            isClickable = true
         }
         addView(composeView, wrapContent)
-
-        isFocusable = true
-        isClickable = true
     }
 
     open fun layoutParams() = FrameLayout.LayoutParams(

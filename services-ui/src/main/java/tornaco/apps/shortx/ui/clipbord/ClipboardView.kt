@@ -5,7 +5,6 @@ import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,14 +33,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
@@ -64,6 +62,7 @@ import tornaco.apps.shortx.ui.base.MD3Badge
 import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTextField
+import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.theme.AliBlue
@@ -88,8 +87,6 @@ class ClipboardView(
     @Composable
     override fun ComposeContent() {
         ShortXServiceUITheme {
-            val requester = remember { FocusRequester() }
-
             var inputState by remember { mutableStateOf("") }
             var isShowInput by remember { mutableStateOf(false) }
 
@@ -109,9 +106,7 @@ class ClipboardView(
                                 detach(reason = "Out of bounds")
                             }
                         }
-                    }
-                    .focusRequester(requester)
-                    .focusable(),
+                    },
                 contentAlignment = Alignment.BottomCenter
             ) {
 
@@ -339,7 +334,8 @@ class ClipboardView(
                                                     color = MaterialTheme.colorScheme.onSurface,
                                                     text = clip.value,
                                                     maxLines = 3,
-                                                    fontSize = 12.5.sp
+                                                    fontSize = 12.5.sp,
+                                                    fontWeight = FontWeight.W500
                                                 )
                                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                                     Text(
@@ -351,9 +347,10 @@ class ClipboardView(
                                                     )
 
                                                     if (clip.owner != null && clip.owner.pkgName.isNotBlank()) {
+                                                        StandardSpacer()
                                                         AppImageIcon(
                                                             "app://${clip.owner.pkgName}",
-                                                            modifier = Modifier.size(18.dp)
+                                                            modifier = Modifier.size(12.dp)
                                                         )
                                                     }
                                                 }

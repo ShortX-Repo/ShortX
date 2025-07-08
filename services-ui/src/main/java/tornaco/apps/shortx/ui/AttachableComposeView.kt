@@ -57,7 +57,7 @@ abstract class AttachableComposeView(
         lp.height = ViewGroup.LayoutParams.MATCH_PARENT
         lp.format = PixelFormat.RGBA_8888
         lp.flags =
-            (WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN)
+            (WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
         if (OsUtils.isROrAbove()) {
             lp.layoutInDisplayCutoutMode =
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
