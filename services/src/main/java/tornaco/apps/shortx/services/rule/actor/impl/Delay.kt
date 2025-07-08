@@ -13,6 +13,8 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import okhttp3.internal.toLongOrDefault
 import tornaco.apps.shortx.core.proto.action.Delay
+import tornaco.apps.shortx.core.proto.common.TimeUnit
+import tornaco.apps.shortx.core.proto.convertToMillis
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.ShortXContext
@@ -61,11 +63,16 @@ object Delay : Actor {
         } else {
             d.time.toString()
         }
-        logger.d("timeStr: $timeStr")
-        val timeLong = timeStr.toLongOrDefault(0L)
+        val timeUnit = d.timeUnit.takeIf { it != TimeUnit.UNRECOGNIZED } ?: TimeUnit.TimeUnit_MS
+
+        logger.d("timeStr: $timeStr, timeunit: $timeUnit")
+
+        val timeLongInMillis = convertToMillis(timeStr.toLongOrDefault(0L), timeUnit)
+        logger.d("timeLongInMillis: $timeLongInMillis")
+
         val dialog = if (d.showCD) {
             withContext(Dispatchers.Main) {
-                cdView?.showCDDialog(maxOf(0, timeLong / 1000).toInt())
+                cdView?.showCDDialog(maxOf(0, timeLongInMillis / 1000).toInt())
             }
         } else null
 
@@ -74,7 +81,7 @@ object Delay : Actor {
             suspendCancellableCoroutine<Unit> { continuation ->
                 val requestId = UUID.randomUUID().toString()
                 logger.d("delay with requestId: $requestId")
-                DelaySchedulerHolder.delayScheduler.schedule(requestId, timeLong) {
+                DelaySchedulerHolder.delayScheduler.schedule(requestId, timeLongInMillis) {
                     logger.d("delay alarm tick.")
                     continuation.resume(Unit) {}
                 }
@@ -87,7 +94,7 @@ object Delay : Actor {
             }
         } else {
             kotlin.runCatching {
-                delay(maxOf(0, timeLong))
+                delay(maxOf(0, timeLongInMillis))
             }.onFailure {
                 if (it is CancellationException) {
                     dialog?.dismiss()
