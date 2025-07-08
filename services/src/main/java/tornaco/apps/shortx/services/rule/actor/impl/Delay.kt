@@ -72,7 +72,7 @@ object Delay : Actor {
 
         val dialog = if (d.showCD) {
             withContext(Dispatchers.Main) {
-                cdView?.showCDDialog(maxOf(0, timeLongInMillis / 1000).toInt())
+                cdView?.showCDDialog(maxOf(0, timeLongInMillis / 1000).toInt(), d.note.orEmpty())
             }
         } else null
 

@@ -22,7 +22,7 @@ class CountdownViewManager(
 
     private val logger = Logger("CountdownViewManager")
 
-    fun showCDDialog(total: Int): Dialog {
+    fun showCDDialog(total: Int, note: String): Dialog {
         val androidDialog = Dialog(context)
 
         val dialogView = CountdownView(
@@ -33,7 +33,8 @@ class CountdownViewManager(
                 androidDialog.dismiss()
             },
             onClick = {},
-            onLongClick = {}
+            onLongClick = {},
+            note = note
         )
 
 

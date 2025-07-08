@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +27,7 @@ import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.ui.BaseComposeView
 import tornaco.apps.shortx.ui.base.AnimatedTextContainer
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShapeXL
+import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
 
 @SuppressLint("ViewConstructor")
@@ -36,6 +39,7 @@ class CountdownView(
     private val onClick: () -> Unit,
     private val onLongClick: () -> Unit,
     private val intervalMillis: Long = 1000L,
+    private val note: String = "",
 ) : BaseComposeView(context, i18N) {
 
     @Composable
@@ -69,12 +73,26 @@ class CountdownView(
                 }
                 onDismissRequest()
             }
-            AnimatedTextContainer(currentNum.toString()) {
-                Text(
-                    text = it, style = MaterialTheme.typography.titleLarge.copy(
-                        fontSize = 28.sp
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                AnimatedTextContainer(currentNum.toString()) {
+                    Text(
+                        text = it, style = MaterialTheme.typography.titleLarge.copy(
+                            fontSize = 28.sp
+                        )
                     )
-                )
+                }
+                if (note.isNotEmpty()) {
+                    StandardSpacer()
+                    Text(
+                        text = note,
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    )
+                }
             }
         }
     }
