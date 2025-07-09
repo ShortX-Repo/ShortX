@@ -556,7 +556,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
                         }
                     },
                     clearAll = {
-                        shortXContext.input.clearAllClipboardText()
+                        shortXContext.input.clearAllUnPinedClipboardText()
                     }
                 )
             showingClipboard.add(guideLineView)

@@ -62,6 +62,13 @@ class ClipboardStore(
         }
     }
 
+    fun clearAllUnPinedText() {
+        synchronized(cache) {
+            cache.removeIf { !it.isPinned }
+            postWrite()
+        }
+    }
+
     private suspend fun readInternal() = withContext(Dispatchers.IO) {
         if (!storeFile.exists()) {
             logger.d("skip read no-exists file: $storeFile")

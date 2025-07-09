@@ -140,7 +140,7 @@ class ClipboardView(
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight(fraction = if (clipState.size <= 5) 0.5f else 0.72f)
+                            .fillMaxHeight(fraction = if (clipState.size <= 5) 0.4f else 0.5f)
                             .imePadding()
                             .onGloballyPositioned { coordinates ->
                                 // 记录 LazyColumn 在整个屏幕的坐标

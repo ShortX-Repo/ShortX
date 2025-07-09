@@ -128,6 +128,11 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         clipboardStore.clearAllText()
     }
 
+    fun clearAllUnPinedClipboardText() {
+        logger.w("clearAllUnPinedClipboardText")
+        clipboardStore.clearAllUnPinedText()
+    }
+
     fun addOnClipboardListener(listener: (String) -> Unit) {
         _onClipboardListener.add(listener)
     }
