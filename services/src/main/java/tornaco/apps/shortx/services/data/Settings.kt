@@ -144,6 +144,9 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
 
         data object AreaSelectorTipsShown :
             IntSettings(key = "AreaSelectorTipsShown", defaultValue = { 0 })
+
+        data class SIMSlotSubIdMapping(val slotId: Int) :
+            IntSettings(key = "SIMSlotSubIdMapping${slotId}", defaultValue = { -1 })
     }
 
     sealed class FloatSettings(key: String, defaultValue: (Context) -> Float) :
