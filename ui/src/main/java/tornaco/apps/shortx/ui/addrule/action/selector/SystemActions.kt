@@ -144,6 +144,27 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     )
     MenuDialog(state = adjustVolumeSelectorState)
 
+    val requestAudioFocusSelectorState = rememberMenuDialogState<String>(
+        title = i18N["ui.action.request.audio.focus"],
+        menuItems = listOf(
+            MenuDialogItem(
+                id = true.toString(),
+                title = i18N["ui.action.request.audio.focus.request"]
+            ),
+            MenuDialogItem(
+                id = false.toString(),
+                title = i18N["ui.action.request.audio.focus.abandon"]
+            ),
+        ),
+        onItemSelected = { _, id ->
+            val isRequest = id.toBoolean()
+            addAction(
+                Action.RequestAudioFocus(isRequest = isRequest)
+            )
+        }
+    )
+    MenuDialog(state = requestAudioFocusSelectorState)
+
     val screenTimeDialogState = rememberMenuDialogState<String>(
         title = i18N["ui.common.get"] + i18N["ui.fact.screen.on.time"],
         menuItems = listOf(
@@ -559,6 +580,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.RequestAudioFocus::class -> {
+                requestAudioFocusSelectorState.show()
+                true
+            }
+
             else -> false
         }
     }
@@ -617,6 +643,7 @@ fun SystemActions(
         Action.DisableSensorsOff::class,
         Action.Vibrate::class,
         Action.PlayRingtone::class,
+        Action.RequestAudioFocus::class,
         OsUtils.isQOrAbove().select(Action.AudioRecording::class, null),
         OsUtils.isQOrAbove().select(Action.StopAudioRecording::class, null),
         Action.SetWallpaper::class,

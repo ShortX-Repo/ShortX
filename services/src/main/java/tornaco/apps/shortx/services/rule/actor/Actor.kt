@@ -482,6 +482,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetVolume
     },
+    RequestAudioFocus {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.RequestAudioFocus
+    },
     Vibrate {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.Vibrate
