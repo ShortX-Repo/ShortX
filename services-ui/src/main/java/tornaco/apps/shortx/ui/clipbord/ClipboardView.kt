@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
@@ -29,6 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -136,7 +138,14 @@ class ClipboardView(
 //                    }
 
                     val i18N = LocalI18N.current
-
+                    val lazyState = rememberLazyListState()
+                    LaunchedEffect(Unit) {
+                        val pinnedIndex = clipState.indexOfLast { it.isPinned }
+                        val headerOffset = 0
+                        if (pinnedIndex >= 0) {
+                            lazyState.animateScrollToItem(pinnedIndex + headerOffset)
+                        }
+                    }
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -146,6 +155,7 @@ class ClipboardView(
                                 // 记录 LazyColumn 在整个屏幕的坐标
                                 lazyColumnBounds = coordinates.boundsInRoot()
                             },
+                        state = lazyState,
                         contentPadding = PaddingValues(bottom = 32.dp)
                     ) {
                         item {
@@ -221,7 +231,9 @@ class ClipboardView(
                                             )
                                         ) {
                                             clearAll()
-                                            clipState = emptyList()
+                                            clipState = clipState.toMutableList().apply {
+                                                removeIf { !it.isPinned }
+                                            }
                                         }
 
                                         IconButton(onClick = {
