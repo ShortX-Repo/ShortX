@@ -44,6 +44,7 @@ object HookStub2 {
             null,
             MethodHookLifecycle.InitZygote
         )
+        InputConnHook.onPackageLoaded()
     }
 
     private fun androidHooks(param: ISystemServerLoaded.Param) {
