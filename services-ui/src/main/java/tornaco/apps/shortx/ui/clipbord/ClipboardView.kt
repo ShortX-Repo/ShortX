@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -34,6 +34,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +49,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.I18N
@@ -109,6 +111,23 @@ class ClipboardView(
 
             var lazyColumnBounds by remember { mutableStateOf<Rect?>(null) }
 
+            fun updateLPRequestFocus() {
+                lp.flags =
+                    lp.flags and WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE.inv()
+                windowManager.updateViewLayout(
+                    this@ClipboardView,
+                    lp
+                )
+                focusRequester.requestFocus()
+
+                // 4. Show keyboard
+                val imm = context.inputMethodManager
+                imm.showSoftInput(
+                    this@ClipboardView,
+                    InputMethodManager.SHOW_IMPLICIT
+                )
+            }
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -144,6 +163,7 @@ class ClipboardView(
 
                     val i18N = LocalI18N.current
                     val lazyState = rememberLazyListState()
+                    val scope = rememberCoroutineScope()
                     LaunchedEffect(Unit) {
                         val pinnedIndex = clipState.indexOfLast { it.isPinned }
                         val headerOffset = 3
@@ -163,11 +183,11 @@ class ClipboardView(
                         state = lazyState,
                         contentPadding = PaddingValues(bottom = 32.dp)
                     ) {
-                        item {
+                        stickyHeader {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(54.dp)
+                                    .heightIn(max = 54.dp)
                                     .background(ColorDefaults.backgroundSurfaceColor(elevation = 4.dp))
                                     .padding(horizontal = 16.dp),
                                 verticalAlignment = Alignment.CenterVertically,
@@ -183,6 +203,10 @@ class ClipboardView(
                                     IconButton(onClick = {
                                         isShowInput = true
                                         isShowSearch = false
+                                        scope.launch {
+                                            lazyState.scrollToItem(0)
+                                        }
+                                        updateLPRequestFocus()
                                     }) {
                                         ColoredIcon(
                                             size = 28.dp,
@@ -200,21 +224,10 @@ class ClipboardView(
                                     IconButton(onClick = {
                                         isShowInput = false
                                         isShowSearch = true
-
-                                        lp.flags =
-                                            lp.flags and WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE.inv()
-                                        windowManager.updateViewLayout(
-                                            this@ClipboardView,
-                                            lp
-                                        )
-                                        focusRequester.requestFocus()
-
-                                        // 4. Show keyboard
-                                        val imm = context.inputMethodManager
-                                        imm.showSoftInput(
-                                            this@ClipboardView,
-                                            InputMethodManager.SHOW_IMPLICIT
-                                        )
+                                        scope.launch {
+                                            lazyState.scrollToItem(0)
+                                        }
+                                        updateLPRequestFocus()
                                     }) {
                                         RemixIcon(
                                             Remix.System.search_2_line,
