@@ -90,6 +90,11 @@ class ClipboardView(
     val pinItem: (id: String, Boolean) -> Unit,
     val clearAll: () -> Unit,
 ) : AttachableComposeView(context, i18N, onDetach) {
+    override fun createLayoutParams(): WindowManager.LayoutParams {
+        return super.createLayoutParams().apply {
+            type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR
+        }
+    }
 
     @Composable
     override fun ComposeContent() {
@@ -129,7 +134,7 @@ class ClipboardView(
                     color = ColorDefaults.backgroundSurfaceColor(),
                     shadowElevation = 8.dp,
                 ) {
-                    var clipState by remember { mutableStateOf(clips) }
+                    var clipState by remember { mutableStateOf(clips.sortedBy { !it.isPinned }) }
 
                     // java.lang.IllegalStateException: No OnBackPressedDispatcherOwner was provided via LocalOnBackPressedDispatcherOwner
 //                    BackHandler(isShowSearch || isShowInput) {
@@ -141,7 +146,7 @@ class ClipboardView(
                     val lazyState = rememberLazyListState()
                     LaunchedEffect(Unit) {
                         val pinnedIndex = clipState.indexOfLast { it.isPinned }
-                        val headerOffset = 0
+                        val headerOffset = 3
                         if (pinnedIndex >= 0) {
                             lazyState.animateScrollToItem(pinnedIndex + headerOffset)
                         }
@@ -317,7 +322,7 @@ class ClipboardView(
                         if (clipState.isNotEmpty()) {
                             itemsIndexed(clipState.filter {
                                 searchState.isBlank() || it.value.contains(searchState, true)
-                            }.sortedBy { !it.isPinned }) { index, clip: ClipboardItem ->
+                            }) { index, clip: ClipboardItem ->
                                 val context = LocalContext.current
                                 val formatTime = remember {
                                     if (System.currentTimeMillis() - clip.createAt < java.time.Duration.ofHours(
