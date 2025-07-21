@@ -45,7 +45,7 @@ class SystemSettingsAccessRecorder {
             )
         )
         if (readRecords.size > MAX_ENTRY_SIZE) {
-            readRecords.removeFirst()
+            readRecords.removeAt(0)
         }
     }
 
@@ -58,7 +58,7 @@ class SystemSettingsAccessRecorder {
             )
         )
         if (writeRecords.size > MAX_ENTRY_SIZE) {
-            writeRecords.removeFirst()
+            writeRecords.removeAt(0)
         }
     }
 
