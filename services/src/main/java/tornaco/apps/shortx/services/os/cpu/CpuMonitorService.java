@@ -21,7 +21,6 @@ import android.util.SparseArray;
 
 import com.android.internal.annotations.GuardedBy;
 import com.android.internal.annotations.VisibleForTesting;
-import com.android.internal.util.Preconditions;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -108,7 +107,9 @@ public final class CpuMonitorService {
                 }
                 callbackInfo = newCallbackInfoLocked(config, callback, executor);
             }
-            asyncNotifyMonitoringIntervalChangeToClient(callbackInfo);
+            if (callbackInfo != null) {
+                asyncNotifyMonitoringIntervalChangeToClient(callbackInfo);
+            }
             if (DEBUG) {
                 logger.d("Successfully added " + callbackInfo);
             }
@@ -330,8 +331,10 @@ public final class CpuMonitorService {
         String cpusetStr = CpuAvailabilityMonitoringConfig.toCpusetString(
                 callbackInfo.config.cpuset);
         CpusetInfo cpusetInfo = mCpusetInfosByCpuset.get(callbackInfo.config.cpuset);
-        Preconditions.checkState(cpusetInfo != null, "Missing cpuset info for cpuset %s",
-                cpusetStr);
+        if (cpusetInfo == null) {
+            logger.e("Missing cpuset info for cpuset " + cpusetStr);
+            return null;
+        }
         boolean hasExistingClientCallbacks = hasClientCallbacksLocked();
         mAvailabilityCallbackInfosByCallbacksByCpuset.add(callbackInfo.config.cpuset,
                 callbackInfo.callback, callbackInfo);
