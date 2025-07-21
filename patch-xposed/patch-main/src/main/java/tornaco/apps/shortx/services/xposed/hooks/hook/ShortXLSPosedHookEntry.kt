@@ -21,6 +21,7 @@ import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import tornaco.apps.shortx.core.annotations.DoNotStrip
+import tornaco.apps.shortx.core.util.logAdapter
 import tornaco.apps.shortx.services.xposed.hooks.hook.api.IPackageLoaded
 import tornaco.apps.shortx.services.xposed.hooks.hook.api.ISystemServerLoaded
 
@@ -34,6 +35,9 @@ class ShortXLSPosedHookEntry(
 ) :
     XposedModule(base, moduleParam) {
     init {
+        logAdapter = { _, tag, msg ->
+            log("$tag $msg")
+        }
         log("ShortXLSPosedHookEntry.init ${moduleParam.processName} isSystemServer: ${moduleParam.isSystemServer}")
         module = this
         processName = moduleParam.processName

@@ -45,6 +45,7 @@ object HookStub2 {
             MethodHookLifecycle.InitZygote
         )
         InputConnHook.onPackageLoaded()
+        RenderNodeHook.onPackageLoaded()
     }
 
     private fun androidHooks(param: ISystemServerLoaded.Param) {
