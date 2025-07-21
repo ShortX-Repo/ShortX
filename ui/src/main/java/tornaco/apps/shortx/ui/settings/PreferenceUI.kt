@@ -48,29 +48,33 @@ fun PreferenceUi(preferences: List<Preference>) {
     splitListByCategory(preferences).forEach { group ->
         val firstPrefIndex = group.indexOfFirst { !it.isDecor }
         val lastPrefIndex = group.indexOfLast { !it.isDecor }
+        val onlyOnePref = group.filter { !it.isDecor }.size == 1
         Column(Modifier.padding(top = 16.dp)) {
             group.forEachIndexed { index, pref ->
                 Box(
                     Modifier
                         .thenIf(Modifier.padding(horizontal = 16.dp), !pref.isDecor)
-                        .clip(
-                            when (index) {
-                                firstPrefIndex -> RoundedCornerShape(
-                                    topStart = 24.dp,
-                                    topEnd = 24.dp,
-                                    bottomStart = 4.dp,
-                                    bottomEnd = 4.dp
-                                )
+                        .thenIf(Modifier.clip(RoundedCornerShape(24.dp)), onlyOnePref)
+                        .thenIf(
+                            Modifier.clip(
+                                when (index) {
+                                    firstPrefIndex -> RoundedCornerShape(
+                                        topStart = 24.dp,
+                                        topEnd = 24.dp,
+                                        bottomStart = 4.dp,
+                                        bottomEnd = 4.dp
+                                    )
 
-                                lastPrefIndex -> RoundedCornerShape(
-                                    topStart = 4.dp,
-                                    topEnd = 4.dp,
-                                    bottomStart = 24.dp,
-                                    bottomEnd = 24.dp
-                                )
+                                    lastPrefIndex -> RoundedCornerShape(
+                                        topStart = 4.dp,
+                                        topEnd = 4.dp,
+                                        bottomStart = 24.dp,
+                                        bottomEnd = 24.dp
+                                    )
 
-                                else -> RoundedCornerShape(4.dp)
-                            }
+                                    else -> RoundedCornerShape(4.dp)
+                                }
+                            ), !onlyOnePref
                         )
                         .thenIf(
                             Modifier.background(ColorDefaults.backgroundSurfaceColor(0.8.dp)),
