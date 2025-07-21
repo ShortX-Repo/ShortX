@@ -1,5 +1,7 @@
 package tornaco.apps.shortx.services.rule.actor.impl.js
 
+import tornaco.apps.shortx.core.annotations.DoNotStrip
+
 interface Console {
     fun println(message: Any?)
     fun log(message: Any?)
@@ -14,6 +16,7 @@ interface Console {
     fun countReset(label: String)
 }
 
+@DoNotStrip
 object KotlinConsole : Console {
     private val timers = mutableMapOf<String, Long>()
     private val counters = mutableMapOf<String, Int>()
