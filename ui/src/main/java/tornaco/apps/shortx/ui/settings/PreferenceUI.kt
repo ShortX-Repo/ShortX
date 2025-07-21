@@ -2,15 +2,18 @@ package tornaco.apps.shortx.ui.settings
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Divider
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,22 +33,53 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.CategoryTitle
+import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.ColoredIcon
-import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
-import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.thenIf
 
 @Composable
 fun PreferenceUi(preferences: List<Preference>) {
     splitListByCategory(preferences).forEach { group ->
-        Column {
-            group.forEach {
-                PreferenceUi(preference = it)
-                MediumSpacer()
+        val firstPrefIndex = group.indexOfFirst { !it.isDecor }
+        val lastPrefIndex = group.indexOfLast { !it.isDecor }
+        Column(Modifier.padding(top = 16.dp)) {
+            group.forEachIndexed { index, pref ->
+                Box(
+                    Modifier
+                        .thenIf(Modifier.padding(horizontal = 16.dp), !pref.isDecor)
+                        .clip(
+                            when (index) {
+                                firstPrefIndex -> RoundedCornerShape(
+                                    topStart = 24.dp,
+                                    topEnd = 24.dp,
+                                    bottomStart = 4.dp,
+                                    bottomEnd = 4.dp
+                                )
+
+                                lastPrefIndex -> RoundedCornerShape(
+                                    topStart = 4.dp,
+                                    topEnd = 4.dp,
+                                    bottomStart = 24.dp,
+                                    bottomEnd = 24.dp
+                                )
+
+                                else -> RoundedCornerShape(4.dp)
+                            }
+                        )
+                        .thenIf(
+                            Modifier.background(ColorDefaults.backgroundSurfaceColor(0.8.dp)),
+                            !pref.isDecor
+                        )
+                ) {
+                    PreferenceUi(preference = pref)
+                }
+                SmallSpacer()
             }
         }
     }
@@ -85,7 +119,7 @@ private fun PreferenceUi(preference: Preference) {
         }
 
         is Preference.Divider -> {
-            Divider()
+            HorizontalDivider()
         }
 
         is Preference.Category -> {
@@ -101,7 +135,10 @@ private fun PreferenceUi(preference: Preference) {
 
 @Composable
 private fun CategoryUi(preference: Preference.Category) {
-    CategoryTitle(title = preference.title)
+    Column {
+        CategoryTitle(title = preference.title)
+        TinySpacer()
+    }
 }
 
 @Composable
@@ -131,7 +168,6 @@ private fun TextPreferenceUi(preference: Preference.TextPreference) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(ShortXCardRoundedCornerShape)
             .clickable {
                 scope.launch {
                     delay(128)
@@ -191,15 +227,12 @@ private fun PreferenceIcon(preference: Preference) {
 
 @Composable
 private fun SwitchPreferenceUi(preference: Preference.SwitchPreference) {
-
     var isShowMoreSummary by remember {
         mutableStateOf(false)
     }
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(ShortXCardRoundedCornerShape)
             .clickable {
                 if (preference.onClick != null) {
                     preference.onClick.invoke()
@@ -279,8 +312,7 @@ private fun ExpandableContainer(
         mutableStateOf(ExpandableState.Collapsed)
     }
     Column(
-        modifier = Modifier
-            .clip(ShortXCardRoundedCornerShape),
+        modifier = Modifier,
         verticalArrangement = Arrangement.Center
     ) {
         Row(

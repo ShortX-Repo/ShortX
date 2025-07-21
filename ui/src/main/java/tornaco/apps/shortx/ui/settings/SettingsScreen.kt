@@ -232,7 +232,7 @@ fun SettingsScreen(
                     }
 
                     SwitchBar(
-                        modifier = Modifier.padding(horizontal = 8.dp),
+                        modifier = Modifier.padding(horizontal = 16.dp),
                         isChecked = state.ruleFeatureEnabled,
                         text = LocalI18N.current["ui.settings.enable.rule.feature"],
                         tip = LocalI18N.current["ui.settings.enable.rule.feature.description"]
