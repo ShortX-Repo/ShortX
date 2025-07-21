@@ -8,15 +8,20 @@ object InputConnHook {
     private val logger = Logger("ShortXHook.InputConnHook")
 
     fun onPackageLoaded() {
-        logger.d("hook")
-        afterMethod(
-            Reflections.findClass("android.view.inputmethod.RemoteInputConnectionImpl", null),
-            "commitText"
-        ) { param ->
-            param.logParamsOnDebug(logger)
-            val mCurrentSessionId =
-                Reflections.getObjectField(param.thisObject, "mCurrentSessionId") as AtomicInteger
-            logger.d("commitText, mCurrentSessionId: ${mCurrentSessionId.get()}")
+        kotlin.runCatching {
+            logger.d("hook")
+            afterMethod(
+                Reflections.findClass("android.view.inputmethod.RemoteInputConnectionImpl", null),
+                "commitText"
+            ) { param ->
+                param.logParamsOnDebug(logger)
+                val mCurrentSessionId =
+                    Reflections.getObjectField(
+                        param.thisObject,
+                        "mCurrentSessionId"
+                    ) as AtomicInteger
+                logger.d("commitText, mCurrentSessionId: ${mCurrentSessionId.get()}")
+            }
         }
     }
 }
