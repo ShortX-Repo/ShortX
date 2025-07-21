@@ -212,6 +212,8 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Action.ShowListDialog::class,
     Action.ShowChoiceDialog::class,
     Action.ForEach::class,
+    Action.ExecuteJS::class,
+    Action.MVEL::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 )
 

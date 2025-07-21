@@ -10,6 +10,8 @@ import tornaco.apps.shortx.core.proto.action.ClickTile
 import tornaco.apps.shortx.core.proto.action.ConnectWifi
 import tornaco.apps.shortx.core.proto.action.DownloadFile
 import tornaco.apps.shortx.core.proto.action.EnableUniversalCopy
+import tornaco.apps.shortx.core.proto.action.ExecuteJS
+import tornaco.apps.shortx.core.proto.action.ExecuteMVEL
 import tornaco.apps.shortx.core.proto.action.FindAndClickMatchedView
 import tornaco.apps.shortx.core.proto.action.FindAndClickViewById
 import tornaco.apps.shortx.core.proto.action.FindAndClickViewByText
@@ -107,7 +109,6 @@ import tornaco.apps.shortx.core.proto.fact.MethodHook
 import tornaco.apps.shortx.core.proto.fact.NFCTagDiscover
 import tornaco.apps.shortx.core.proto.fact.OnMenuActionTrigger
 import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
-import tornaco.apps.shortx.core.proto.fact.OnStartDynamicShortcut
 import tornaco.apps.shortx.core.proto.fact.PkgStartRunning
 import tornaco.apps.shortx.core.proto.fact.ProximitySensor
 import tornaco.apps.shortx.core.proto.fact.ProximitySensorStateChanged
@@ -243,6 +244,9 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         GetScreenOnTime::class,
         ShowListDialog::class,
         ShowChoiceDialog::class,
+        ForEach::class,
+        ExecuteMVEL::class,
+        ExecuteJS::class,
         ForEach::class,
     ).also {
         onRes()
