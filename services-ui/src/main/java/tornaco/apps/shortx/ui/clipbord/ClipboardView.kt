@@ -94,7 +94,7 @@ class ClipboardView(
 ) : AttachableComposeView(context, i18N, onDetach) {
     override fun createLayoutParams(): WindowManager.LayoutParams {
         return super.createLayoutParams().apply {
-            type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR
+            type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT
         }
     }
 
