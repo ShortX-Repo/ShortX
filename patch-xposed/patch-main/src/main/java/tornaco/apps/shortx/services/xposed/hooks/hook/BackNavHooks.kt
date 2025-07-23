@@ -6,6 +6,7 @@ import tornaco.apps.shortx.core.platform.Methods.onBackNavigationDone
 import tornaco.apps.shortx.core.platform.Methods.startBackNavigation
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
+import tornaco.apps.shortx.core.util.bundleToString
 import tornaco.apps.shortx.services.ShortXService
 import tornaco.apps.shortx.services.xposed.hooks.hook.api.ISystemServerLoaded
 
@@ -34,8 +35,10 @@ object BackNavHooks {
                 val command = param.args.joinToString { it?.toString().orEmpty() }
                 // Coloros is NavigationFinished.
                 val keys = arrayOf("TriggerBack", "NavigationFinished")
-                val triggerBack = keys.any {
-                    (param.args[0] as? Bundle)?.getBoolean(it, false) ?: false
+                val triggerBack = keys.any { key ->
+                    (param.args[0] as? Bundle)?.also {
+                        logger.w("BackNavigationController, bundle: ${it.bundleToString()}")
+                    }?.getBoolean(key, false) ?: false
                 }
                 // Android 13 http://aospxref.com/android-13.0.0_r3/xref/frameworks/base/services/core/java/com/android/server/wm/BackNavigationController.java
                 val type = Int.MIN_VALUE
