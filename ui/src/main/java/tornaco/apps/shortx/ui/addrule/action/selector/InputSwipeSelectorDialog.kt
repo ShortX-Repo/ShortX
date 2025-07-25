@@ -146,7 +146,7 @@ private fun InputSwipeSelector(
                         label = {
                             Text(LocalI18N.current["ui.action.input.swipe.start.x"])
                         },
-                        showSymbolButton = false,
+                        showSymbolButton = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
                     StandardSpacer()
@@ -159,7 +159,7 @@ private fun InputSwipeSelector(
                         label = {
                             Text(LocalI18N.current["ui.action.input.swipe.start.y"])
                         },
-                        showSymbolButton = false,
+                        showSymbolButton = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
                     StandardSpacer()
@@ -179,7 +179,7 @@ private fun InputSwipeSelector(
                         label = {
                             Text(LocalI18N.current["ui.action.input.swipe.end.x"])
                         },
-                        showSymbolButton = false,
+                        showSymbolButton = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
                     StandardSpacer()
@@ -192,7 +192,7 @@ private fun InputSwipeSelector(
                         label = {
                             Text(LocalI18N.current["ui.action.input.swipe.end.y"])
                         },
-                        showSymbolButton = false,
+                        showSymbolButton = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
                     StandardSpacer()
@@ -209,7 +209,7 @@ private fun InputSwipeSelector(
                         onValueChange = {
                             state.swipeTime = it
                         },
-                        showSymbolButton = false,
+                        showSymbolButton = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
 
