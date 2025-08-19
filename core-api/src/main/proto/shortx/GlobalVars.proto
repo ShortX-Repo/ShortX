@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+option java_package = "tornaco.apps.shortx.core.proto.gv";
+option java_outer_classname = "OuterGlobalVars";
+option java_multiple_files = true;
+
+import "google/protobuf/any.proto";
+
+message GlobalVarList {
+  repeated GlobalVar allVars = 1;
+}
+
+message LocalVar {
+  string name = 1;
+  google.protobuf.Any var = 2;
+
+  // Type indicator, just set default value.
+  google.protobuf.Any type = 3;
+}
+
+message GlobalVar {
+  string name = 1;
+  google.protobuf.Any var = 2;
+
+  // Type indicator, just set default value.
+  google.protobuf.Any type = 3;
+
+  int64 updateTimeMillis = 4;
+
+  bool isSecret = 5;
+  string note = 6;
+
+  google.protobuf.Any createdBy = 7;
+}
+
+message GlobalVarCreatedBy_User {}
+
+message GlobalVarCreatedBy_Rule {
+  string srcId = 1;
+}
+
+enum VarOp {
+  Plus = 0;
+  Minus = 1;
+  Multiple = 3;
+  Divide = 4;
+
+  Add = 5;
+  Remove = 6;
+  Clear = 7;
+}
+
+message Int64Var {
+  int64 value = 1;
+}
+
+message StringVar {
+  string value = 1;
+}
+
+message BoolVar {
+  bool value = 1;
+}
+
+message Int64ListVar {
+  repeated int64 values = 1;
+}
+
+message StringListVar {
+  repeated string values = 1;
+}
+
+message BoolListVar {
+  repeated bool values = 1;
+}
+
+

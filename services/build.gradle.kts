@@ -10,6 +10,7 @@ dependencies {
     compileOnly(files("${rootProject.rootDir.path}/services-jni/jar/classes.jar"))
 
     implementation(project(":core"))
+    implementation(project(":core-api"))
     implementation(project(":services-28"))
     implementation(project(":services-29"))
     implementation(project(":services-30"))
@@ -21,11 +22,11 @@ dependencies {
 
     implementation(libs.tinypinyin)
 
-    implementation(libs.shortx.ext.dex.maker)
-    implementation(libs.shortx.ext.utils)
-    implementation(libs.shortx.ext.sardine.android)
-    implementation(libs.shortx.ext.picasso)
-    implementation(libs.shortx.ext.rhino.android)
+    implementation(project(":external:dex-maker"))
+    implementation(project(":external:utils"))
+    implementation(project(":external:sardine-android"))
+    implementation(project(":external:picasso"))
+    implementation(project(":external:rhino-android"))
 
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
@@ -44,8 +45,6 @@ dependencies {
     implementation(libs.jsoup)
 
     implementation(libs.zxing.core)
-
-    implementation(libs.shortx.plugin.sdk)
 
     implementation(libs.luckycatlabs.sunrisesunsetcalculator)
 

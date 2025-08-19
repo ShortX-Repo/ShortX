@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+option java_package = "tornaco.apps.shortx.core.proto.rule";
+option java_outer_classname = "OuterRuleCommon";
+option java_multiple_files = true;
+
+import "google/protobuf/any.proto";
+import "shortx/Common.proto";
+import "shortx/Conditions.proto";
+import "shortx/Functions.proto";
+
+message ActionEvaluateRecord {
+  google.protobuf.Any action = 1;
+  bool isSuccess = 2;
+  string message = 3;
+  int64 timeStamp = 4;
+
+  EvaluateContext context = 6;
+  string actionId = 7;
+}
+
+message ConditionEvaluateRecord {
+  google.protobuf.Any condition = 1;
+  bool isSuccess = 2;
+  bool isMatch = 3;
+  string message = 4;
+  int64 timeStamp = 5;
+
+  EvaluateContext context = 6;
+}
+
+message FactPublishRecord {
+  google.protobuf.Any fact = 1;
+  int64 timeStamp = 2;
+}
+
+message EvaluateContext {
+  // The Rule or DA id.
+  string srcId = 1;
+  string srcTitle = 2;
+  // Unique number by execute sequence.
+  int32 serialNumber = 3;
+  ContextSrcEvent srcEvent = 8;
+  string srcEventPayload1 = 9;
+  string srcEventPayload2 = 10;
+}
+
+enum ContextSrcEvent {
+  ContextSrc_DirectAction = 0;
+  ContextSrc_ExecuteOnDAEditor = 1;
+  ContextSrc_ExecuteOnOverlay = 2;
+  ContextSrc_ExecuteRuleActions = 3;
+  ContextSrc_Rule = 4;
+  ContextSrc_RuleHook = 5;
+  ContextSrc_RuleQuit = 6;
+  ContextSrc_DirectActionHook = 7;
+  ContextSrc_DirectActionQuit = 8;
+}
+
+// Rule async mode.
+enum AsyncMode {
+  AsyncMode_Async = 0;
+  AsyncMode_Sync = 1;
+  AsyncMode_Sync_InRule = 2;
+}
+
+enum Quit_EvaluatePolicy {
+  Quit_EvaluatePolicy_Always = 0;
+  Quit_EvaluatePolicy_Only_When_Is_Running = 1;
+  Quit_EvaluatePolicy_Once = 2;
+}
+
+enum ActionAsyncMode {
+  ActionAsyncMode_Sync = 0;
+  ActionAsyncMode_Async = 1;
+}
+
+enum RuleEditOp {
+  RuleEditOp_Enable = 0;
+  RuleEditOp_Disable = 1;
+  RuleEditOp_Remove = 2;
+  RuleEditOp_Update = 3;
+}

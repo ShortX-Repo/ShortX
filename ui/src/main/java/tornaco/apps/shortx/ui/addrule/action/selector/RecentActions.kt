@@ -43,7 +43,6 @@ fun RecentActions(
         extActionSelectHandler(addAction = addAction),
         varActionSelectHandler(addAction = addAction),
         miscActionSelectHandler(addAction = addAction),
-        pluginActionSelectHandler(addAction = addAction),
     )
 
     val itemSelected: (KClass<out Action>) -> Unit = { it ->

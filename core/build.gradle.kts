@@ -74,8 +74,8 @@ dependencies {
     api(libs.okhttp)
     api(libs.logging.interceptor)
 
-    api(libs.shortx.core)
-    api(libs.shortx.ext.utils)
+    implementation(project(":core-api"))
+    implementation(project(":external:utils"))
 }
 
 addAidlTask()

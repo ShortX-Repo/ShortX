@@ -29,21 +29,15 @@ pluginManagement {
         jcenter()
         maven(url = "https://jitpack.io")
         maven(url = "https://maven.aliyun.com/repository/public")
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/ShortX-Repo/ShortX-Core")
-            credentials {
-                username = (githubProperties["gpr.usr"] ?: System.getenv("GPR_USER")).toString()
-                password = (githubProperties["gpr.key"] ?: System.getenv("GPR_API_KEY")).toString()
-            }
-        }
     }
 }
 
 include(":app")
 include(":ui")
+include(":ui-base")
 include(":services-jni")
 include(":core")
+include(":core-api")
 include(":services")
 include(":services-29")
 include(":services-28")
@@ -62,4 +56,15 @@ include(":patch-magisk:bridge")
 include(":patch-magisk:bridge-dex-app")
 include(":patch-magisk:patch-framework")
 include(":external:sec_net")
+include(":external:utils")
+include(":external:dateformatter")
+include(":external:reorderable")
+include(":external:picasso")
+include(":external:compose-color-picker")
+include(":external:icons")
+include(":external:dex-maker")
+include(":external:rhino-android")
+include(":external:drawbox")
+include(":external:codeditor")
+include(":external:sardine-android")
 include(":prebuilts-gen")

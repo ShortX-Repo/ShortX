@@ -1,0 +1,114 @@
+syntax = "proto3";
+
+option java_package = "tornaco.apps.shortx.core.proto.rule";
+option java_outer_classname = "OuterRules";
+option java_multiple_files = true;
+
+import "google/protobuf/any.proto";
+import "shortx/Common.proto";
+import "shortx/RuleCommon.proto";
+import "shortx/Conditions.proto";
+import "shortx/Functions.proto";
+
+message RuleSet {
+    string id = 1;
+    string title = 2;
+    string description = 3;
+    string icon = 4;
+    int64 lastUpdateTime = 5;
+    int64 createTime = 6;
+
+    RuleList ruleList = 7;
+}
+
+message RuleSetList {
+    repeated RuleSet ruleSet = 1;
+}
+
+message Rule {
+    repeated google.protobuf.Any facts = 1;
+    repeated google.protobuf.Any conditions = 2;
+    repeated google.protobuf.Any actions = 3;
+
+    string id = 4;
+    int32 priority = 5;
+    int64 lastUpdateTime = 6;
+    int64 createTime = 7;
+
+    Author author = 8;
+
+    string title = 9;
+    string description = 10;
+
+    bool isEnabled = 11;
+
+    ConditionOperator condOp = 12;
+    ConditionOperatorPayload condOpPayload = 13;
+
+    RuleHook hook = 14;
+    RuleQuit quit = 15;
+
+    AsyncMode asyncMode = 16;
+
+    int64 versionCode = 17;
+    ConflictStrategy conflictPolicy = 18;
+
+    repeated StringPair extras = 19;
+
+    string ruleSetId = 20;
+
+    // Geeks options
+    google.protobuf.Any ruleInstanceIdGenerator = 21;
+
+    repeated FuncParameter parameters = 22;
+
+    string icon = 23;
+
+    ActionAsyncMode actionAsyncMode = 24;
+    int32 requireMinShortXProtoVersion = 25;
+}
+
+message RuleInstanceIdGenerator_Static {
+    string insId = 1;
+}
+
+message RuleInstanceIdGenerator_String {
+    string insId = 1;
+}
+
+message RuleInstanceIdGenerator_MVEL {
+    string expression = 1;
+}
+
+message RuleInstanceIdGenerator_JS {
+    string expression = 1;
+}
+
+message RuleHook {
+    repeated google.protobuf.Any actionsOnEnabled = 1;
+    repeated google.protobuf.Any actionsOnDisabled = 2;
+    repeated google.protobuf.Any actionsOnDeleted = 3;
+    ActionAsyncMode actionsOnEnabledAsyncMode = 4;
+    ActionAsyncMode actionsOnDisabledAsyncMode = 5;
+    ActionAsyncMode actionsOnDeletedAsyncMode = 6;
+
+    repeated google.protobuf.Any actionsOnUpdated = 7;
+    repeated google.protobuf.Any actionsOnStop = 8;
+    ActionAsyncMode actionsOnUpdatedAsyncMode = 9;
+    ActionAsyncMode actionsOnStopAsyncMode = 10;
+}
+
+message RuleQuit {
+    repeated google.protobuf.Any facts = 1;
+    repeated google.protobuf.Any conditions = 2;
+    bool isEnabled = 3;
+    ConditionOperator condOp = 4;
+    ConditionOperatorPayload condOpPayload = 5;
+    repeated google.protobuf.Any actions = 6;
+    Quit_EvaluatePolicy evaluatePolicy = 7;
+    ActionAsyncMode actionAsyncMode = 8;
+}
+
+message RuleList {
+    repeated Rule rules = 1;
+}

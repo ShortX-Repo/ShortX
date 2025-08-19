@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option java_package = "tornaco.apps.shortx.core.proto.func";
+option java_outer_classname = "OuterFunc";
+option java_multiple_files = true;
+
+message FuncParameter {
+  string name = 1;
+  string defaultValue = 2;
+  bool isRequired = 3;
+  string comments = 4;
+}
+
+message FuncParameterInput {
+  string name = 1;
+  string value = 2;
+}
+
+message FuncReturnValue {
+  string value = 1;
+}

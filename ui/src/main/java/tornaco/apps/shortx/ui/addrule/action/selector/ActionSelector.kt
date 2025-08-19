@@ -168,13 +168,6 @@ private fun AllActions(
     LifeActions(searchBarState.keyword, subscribeState, selectedFilter, addAction = addAction)
     FuncActions(searchBarState.keyword, subscribeState, selectedFilter, addAction = addAction)
     MiscActions(searchBarState.keyword, subscribeState, selectedFilter, addAction = addAction)
-    PluginActions(
-        searchBarState.keyword,
-        subscribeState,
-        selectedFilter,
-        pluginActions,
-        addAction = addAction
-    )
 }
 
 @Composable

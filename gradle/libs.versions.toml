@@ -12,9 +12,7 @@ firebase-bom = "33.16.0"
 glance-appwidget = "1.1.1"
 paging-compose = "3.3.6"
 paging-runtime-ktx = "3.3.6"
-shortx-core = "1.1.2-SNAPSHOT"
 rang-vikalp = "1.0.0-alpha02"
-shortx-plugin-sdk = "v1.1.1"
 sunrisesunsetcalculator-version = "1.2"
 tinypinyin = "3.0.0"
 touchimageview = "3.6"
@@ -68,13 +66,16 @@ protobuf-java = "3.25.5"
 retrofit = "2.11.0"
 room = "2.7.2"
 swiperefreshlayout = "1.1.0"
-xposed-service = "100-1.0.0"
+okhttp3-integration = "4.16.0"
+rxjava = "2.2.21"
+compose-markdown = "0.5.4"
 
 [plugins]
 agp-lib = { id = "com.android.library", version.ref = "agp" }
 agp-app = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
@@ -107,22 +108,10 @@ firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "fir
 firebase-config = { module = "com.google.firebase:firebase-config" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 luckycatlabs-sunrisesunsetcalculator = { module = "com.luckycatlabs:SunriseSunsetCalculator", version.ref = "sunrisesunsetcalculator-version" }
-shortx-core = { module = "shortx:core", version.ref = "shortx-core" }
-shortx-ui-base = { module = "shortx:ui-base", version.ref = "shortx-core" }
-shortx-ext-utils = { module = "shortx:external-utils", version.ref = "shortx-core" }
-shortx-ext-sardine-android = { module = "shortx:external-sardine-android", version.ref = "shortx-core" }
-shortx-ext-compose-color-picker = { module = "shortx:external-compose-color-picker", version.ref = "shortx-core" }
-shortx-ext-codeditor = { module = "shortx:external-codeditor", version.ref = "shortx-core" }
-shortx-ext-dateformatter = { module = "shortx:external-dateformatter", version.ref = "shortx-core" }
-shortx-ext-icons = { module = "shortx:external-icons", version.ref = "shortx-core" }
-shortx-ext-dex-maker = { module = "shortx:external-dex-maker", version.ref = "shortx-core" }
-shortx-ext-drawbox = { module = "shortx:external-drawbox", version.ref = "shortx-core" }
-shortx-ext-picasso = { module = "shortx:external-picasso", version.ref = "shortx-core" }
-shortx-ext-rhino-android = { module = "shortx:external-rhino-android", version.ref = "shortx-core" }
-shortx-ext-reorderable = { module = "shortx:external-reorderable", version.ref = "shortx-core" }
+compose-markdown = { module = "com.github.jeziellago:compose-markdown", version.ref = "compose-markdown" }
+rxjava = { module = "io.reactivex.rxjava2:rxjava", version.ref = "rxjava" }
 
 rang-vikalp = { module = "io.ak1:rang-vikalp", version.ref = "rang-vikalp" }
-shortx-plugin-sdk = { module = "shortx:plugin.sdk", version.ref = "shortx-plugin-sdk" }
 tinypinyin = { module = "com.github.promeg:tinypinyin", version.ref = "tinypinyin" }
 touchimageview = { module = "com.github.MikeOrtiz:TouchImageView", version.ref = "touchimageview" }
 zxing-core = { module = "com.google.zxing:core", version.ref = "zxing-core" }
@@ -164,6 +153,7 @@ compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", versio
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose-ui" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose-ui" }
 compose-ui-viewbinding = { module = "androidx.compose.ui:ui-viewbinding", version.ref = "compose-ui" }
+compose-ui-util = { module = "androidx.compose.ui:ui-util", version.ref = "compose-ui" }
 
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore-preferences" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
@@ -185,6 +175,7 @@ mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mvel2 = { module = "org.mvel:mvel2", version.ref = "mvel2" }
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+okhttp3-integration = { module = "com.github.bumptech.glide:okhttp3-integration", version.ref = "okhttp3-integration" }
 logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
 
 gson = { module = "com.google.code.gson:gson", version = "2.13.1" }
@@ -204,6 +195,3 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
-
-
-libxposed-service = { group = "io.github.libxposed", name = "service", version.ref = "xposed-service" }

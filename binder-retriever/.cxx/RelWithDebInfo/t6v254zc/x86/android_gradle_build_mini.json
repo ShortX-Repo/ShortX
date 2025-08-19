@@ -1,0 +1,29 @@
+{
+  "buildFiles": [
+    "C:\\Users\\TORNACO\\Documents\\Workspace\\ShortX\\binder-retriever\\src\\main\\cpp\\CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "C:\\Users\\TORNACO\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+      "-C",
+      "C:\\Users\\TORNACO\\Documents\\Workspace\\ShortX\\binder-retriever\\.cxx\\RelWithDebInfo\\t6v254zc\\x86",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "C:\\Users\\TORNACO\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+    "-C",
+    "C:\\Users\\TORNACO\\Documents\\Workspace\\ShortX\\binder-retriever\\.cxx\\RelWithDebInfo\\t6v254zc\\x86",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "retriever::@6890427a1f51a3e7e1df": {
+      "artifactName": "retriever",
+      "abi": "x86",
+      "output": "C:\\Users\\TORNACO\\Documents\\Workspace\\ShortX\\out\\binder-retriever\\intermediates\\cxx\\RelWithDebInfo\\t6v254zc\\obj\\x86\\libretriever.so",
+      "runtimeFiles": [
+        "C:\\Users\\TORNACO\\AppData\\Local\\Android\\Sdk\\ndk\\21.1.6352462\\toolchains\\llvm\\prebuilt\\windows-x86_64\\sysroot\\usr\\lib\\i686-linux-android\\26\\liblog.so"
+      ]
+    }
+  }
+}

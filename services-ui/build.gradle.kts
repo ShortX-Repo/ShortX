@@ -45,9 +45,11 @@ dependencies {
     implementation(libs.activity.compose)
 
     implementation(project(":core"))
-    implementation(libs.shortx.ui.base)
-    implementation(libs.shortx.ext.drawbox)
-    implementation(libs.shortx.ext.dateformatter)
+    implementation(project(":core-api"))
+    implementation(project(":external:utils"))
+    implementation(project(":ui-base"))
+    implementation(project(":external:drawbox"))
+    implementation(project(":external:dateformatter"))
     // Color picker
     implementation(libs.rang.vikalp)
 

@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+option java_package = "tornaco.apps.shortx.services.proto";
+option java_outer_classname = "OuterServices";
+option java_multiple_files = true;
+
+
+message Settings {
+  map<string, string> stringSettings = 1;
+  map<string, int32> intSettings = 2;
+  map<string, float> floatSettings = 3;
+  map<string, bool> boolSettings = 4;
+
+  map<string, StringList> stringListSettings = 5;
+  map<string, IntList> intListSettings = 6;
+  map<string, BoolList> boolListSettings = 7;
+
+  map<string, StringMap> stringMapSettings = 8;
+}
+
+message StringList {
+  repeated string strings = 1;
+}
+
+message IntList {
+  repeated int32 ints = 1[packed = true];
+}
+
+message BoolList {
+  repeated bool bools = 1[packed = true];
+}
+
+message StringMap {
+  map<string, string> data = 1;
+}

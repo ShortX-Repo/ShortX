@@ -8,6 +8,10 @@ import java.io.File
 
 private const val taskName = "generateAidlFiles"
 
+fun Project.aidlBuildDir(): File {
+    return File(layout.buildDirectory.asFile.get(), "generated/sources/aidl")
+}
+
 fun Project.addAidlTask() {
     tasks.register(taskName) {
         group = "idl"
@@ -17,32 +21,24 @@ fun Project.addAidlTask() {
             println("aidlTask, javaSrcDirs: $javaSrcDirs")
 
             println("aidl executable file: ${aidl()}, is it exists? ${File(aidl()).exists()}")
-
+            val outDir = aidlBuildDir()
             javaSrcDirs.forEach { srcDir ->
                 val tree = fileTree(srcDir)
                 tree.forEach { file ->
                     if (file.name.endsWith(".aidl")) {
                         val aidlPath = file.path
-                        val commands = arrayOf(
-                            aidl(),
-                            "-I$srcDir",
-                            "-p$projectPrebuiltAndroidSdkDir${File.separator}framework.aidl",
-                            "-p$projectPrebuiltAndroidSdkDir${File.separator}shortx.aidl",
-                            "-p$projectPrebuiltAndroidSdkDir${File.separator}thanos.aidl",
-                            aidlPath
-                        )
-                        println("command: ${commands.map { it }}")
                         exec {
                             commandLine(
                                 aidl(),
                                 "-I$srcDir",
+                                "--out=$outDir",
                                 "-p$projectPrebuiltAndroidSdkDir${File.separator}framework.aidl",
                                 "-p$projectPrebuiltAndroidSdkDir${File.separator}shortx.aidl",
                                 "-p$projectPrebuiltAndroidSdkDir${File.separator}thanos.aidl",
                                 aidlPath
                             )
                         }.apply {
-                            println("Result: ${this}")
+                            println("Result: $this")
                         }
                     }
                 }

@@ -10,9 +10,11 @@ dependencies {
 
     implementation(project(":services"))
     implementation(project(":core"))
+    implementation(project(":core-api"))
     implementation(project(":patch-xposed:patch-systemui"))
     implementation(project(":patch-xposed:patch-common"))
-    implementation(libs.shortx.ext.dex.maker)
+    implementation(project(":external:dex-maker"))
+    implementation(project(":external:utils"))
 
     implementation(libs.mvel2)
 

@@ -9,9 +9,11 @@ dependencies {
     compileOnly(files("${rootProject.rootDir.path}/patch-xposed/patch-main/libs/api-82.jar"))
 
     implementation(project(":core"))
+    implementation(project(":core-api"))
     implementation(project(":patch-xposed:patch-common"))
 
-    implementation(libs.shortx.ext.dex.maker)
+    implementation(project(":external:dex-maker"))
+    implementation(project(":external:utils"))
 
     implementation(libs.mvel2)
 

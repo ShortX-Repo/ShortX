@@ -1,0 +1,9 @@
+/build
+
+# Specifically ignore generated proto classes
+**/bin/main/**/*.class
+
+# Common build directories
+**/build/
+**/bin/
+**/out/

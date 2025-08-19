@@ -1,0 +1,622 @@
+syntax = "proto3";
+
+import "google/protobuf/any.proto";
+import "shortx/Functions.proto";
+import "shortx/GlobalVars.proto";
+
+option java_package = "tornaco.apps.shortx.core.proto.common";
+option java_outer_classname = "OuterCommon";
+option java_multiple_files = true;
+
+message AppPkg {
+  string pkgName = 1;
+  int32 userId = 2;
+}
+
+message AppPkgList {
+  repeated AppPkg appPkg = 1;
+}
+
+enum AppCategory {
+  User = 0;
+  System = 1;
+}
+
+message App {
+  AppPkg pkg = 1;
+  string label = 2;
+  AppCategory category = 3;
+  int32 uid = 4;
+
+  bool isGame = 5;
+  bool isXposedMod = 6;
+  bool isDisabled = 7;
+  bool isSuspend = 8;
+  bool isShortcutStub = 9;
+
+  int64 versionCode = 10;
+  string versionName = 11;
+}
+
+message AppComponent {
+  AppPkg pkg = 1;
+  string className = 2;
+}
+
+message AppComponentInfo {
+  AppComponent component = 1;
+  string label = 2;
+  int32 enableSetting = 3;
+}
+
+message AppProcessName {
+  AppPkg pkg = 1;
+  string processName = 2;
+}
+
+message ProcessName {
+  int32 userId = 1;
+  string processName = 2;
+}
+
+message Author {
+  string name = 1;
+}
+
+enum OnOffAny {
+  On = 0;
+  Off = 1;
+  Any = 2;
+}
+
+enum OnOffToggle {
+  OnOffToggle_On = 0;
+  OnOffToggle_Off = 1;
+  OnOffToggle_Toggle = 2;
+}
+
+message CommonApiRes {
+  int32 result = 1;
+  string msg = 2;
+  string k = 3;
+  string i = 4;
+  string j = 5;
+  string l = 6;
+  string m = 7;
+}
+
+message AndroidIntent {
+  string action = 1;
+  int32 flags = 2;
+  string pkgName = 3;
+  string className = 4;
+  string data = 5;
+  repeated AndroidIntentExtra extras = 6;
+}
+
+message AndroidIntentExtra {
+  string key = 1;
+  string value = 2;
+  AndroidIntentExtraType type = 3;
+}
+
+enum AndroidIntentExtraType {
+  Int = 0;
+  Long = 1;
+  String = 2;
+  Bool = 3;
+  Float = 4;
+  Double = 5;
+}
+
+enum AndroidIntentComponentType {
+  AndroidIntentComponentTypeActivity = 0;
+  AndroidIntentComponentTypeBroadcast = 1;
+  AndroidIntentComponentTypeService = 2;
+}
+
+message Location {
+  string latitude = 1;
+  string longitude = 2;
+}
+
+message UserInfo {
+  string name = 1;
+  int32 userId = 2;
+  bool isMain = 3;
+}
+
+message RecentTask {
+  AppPkg owner = 1;
+  int32 taskId = 2;
+}
+
+enum IntOp {
+  // >
+  IntGreaterThan = 0;
+  // >=
+  IntGreaterThanOrEQ = 1;
+  // <
+  IntLessThan = 2;
+  // <=
+  IntLessThanOrEQ = 3;
+  // ==
+  IntEqualTo = 4;
+}
+
+message ProcessRecord {
+  AppPkg owner = 1;
+  int64 pid = 2;
+  int32 uid = 3;
+  string processName = 4;
+}
+
+message ShellRes {
+  repeated string out = 1;
+  repeated string err = 2;
+  int32 code = 3;
+}
+
+message FloatRange {
+  float from = 1;
+  float to = 2;
+}
+
+message IntRange {
+  int32 from = 1;
+  int32 to = 2;
+}
+
+message TimeOfADay {
+  int32 hour = 1;
+  int32 minutes = 2;
+  int32 seconds = 3;
+}
+
+message TimeOfADayRange {
+  TimeOfADay start = 1;
+  TimeOfADay end = 2;
+}
+
+enum VolumeDirection {
+  // public static final int ADJUST_RAISE = 1;
+  //    public static final int ADJUST_LOWER = -1;
+  //    public static final int ADJUST_SAME = 0;
+  //    public static final int ADJUST_MUTE = -100;
+  //    public static final int ADJUST_UNMUTE = 100;
+  //    public static final int ADJUST_TOGGLE_MUTE = 101;
+
+  ADJUST_SAME = 0;
+  ADJUST_RAISE = 1;
+  ADJUST_LOWER = -1;
+  ADJUST_MUTE = -100;
+  ADJUST_UNMUTE = 100;
+  ADJUST_TOGGLE_MUTE = 101;
+}
+
+enum KeyGesture {
+  KeyPress = 0;
+  KeyMultiplePress = 1;
+  KeyTriplePress = 2;
+  KeyLongPress = 3;
+}
+
+message PhoneCellInfo {
+  string mcc = 1;
+  string mnc = 2;
+  string clazz = 3;
+  string operatorAlphaLong = 4;
+  string id = 5;
+}
+
+enum AudioSource {
+  Mic = 0;
+  Internal = 1;
+  MicAndInternal = 2;
+}
+
+message AudioRecordFile {
+  string name = 1;
+  string path = 2;
+  int64 date = 3;
+  int64 fileSize = 4;
+  int64 duration = 5;
+  string ext = 6;
+}
+
+message BTBondedDevice {
+  string alias = 1;
+  string address = 2;
+  int32 batteryLevel = 3;
+  bool isConnected = 4;
+}
+
+enum HttpRequestMethod {
+  GET = 0;
+  POST = 1;
+  PUT = 2;
+  PATCH = 3;
+  DELETE = 4;
+  HEAD = 5;
+}
+
+message HttpRequestHeader {
+  string key = 1;
+  string value = 2;
+}
+
+message HttpRequestBodyJson {
+  string json = 1;
+}
+
+message HttpRequestBodyForm {
+  repeated HttpRequestBodyFormItem items = 1;
+}
+
+message HttpRequestBodyFormItem {
+  string key = 1;
+  string value = 2;
+}
+
+enum ActionOnError {
+  Continue = 0;
+  Break = 1;
+}
+
+enum ConflictStrategy {
+  ConflictStrategy_ExecuteBoth = 0;
+  ConflictStrategy_ReplaceOld = 1;
+  ConflictStrategy_SkipNew = 2;
+}
+
+enum ScreenOrientation {
+  ScreenOrientation_P = 0;
+  ScreenOrientation_L = 1;
+}
+
+message GestureRecord {
+  repeated bytes eventData = 1;
+  string label = 2;
+  int64 duration = 3;
+  int64 recordingTimeMillis = 4;
+  ScreenOrientation screenOrientation = 5;
+
+  string id = 100;
+}
+
+message GestureRecordList {
+  repeated GestureRecord records = 1;
+}
+
+
+message TextFieldProp {
+  string label = 1;
+  string placeholder = 2;
+  string isRequired = 3;
+  string value = 4;
+}
+
+message ChoiceProp {
+  string label = 1;
+  string value = 2;
+  bool isSelectedByDefault = 3;
+}
+
+enum AppLanguage {
+  enUS = 0;
+  zhCN = 2;
+  zhTW = 3;
+}
+
+enum StatusBarTile {
+  Tile1 = 0;
+  Tile2 = 1;
+  Tile3 = 2;
+  Tile4 = 3;
+  Tile5 = 4;
+  Tile6 = 5;
+  Tile7 = 6;
+  Tile8 = 7;
+  Tile9 = 8;
+}
+
+message StatusBarTileSetting {
+  StatusBarTile tile = 1;
+  string label = 2;
+  string iconName = 3;
+  bool isActive = 4;
+}
+
+message StatusBarTileSettingList {
+  repeated StatusBarTileSetting settings = 1;
+}
+
+enum DynamicShortcut {
+  ShortX_DynamicShortcut1 = 0;
+  ShortX_DynamicShortcut2 = 1;
+  ShortX_DynamicShortcut3 = 2;
+}
+
+message DynamicShortcutSetting {
+  DynamicShortcut shortcut = 1;
+  string label = 2;
+  string iconName = 3;
+  bool isEnabled = 4;
+}
+
+message DynamicShortcutSettingList {
+  repeated DynamicShortcutSetting settings = 1;
+}
+
+enum CustomContextMenu {
+  CustomContextMenu1 = 0;
+  CustomContextMenu2 = 1;
+  CustomContextMenu3 = 2;
+  CustomContextMenu4 = 3;
+}
+
+message CustomContextMenuSetting {
+  CustomContextMenu menu = 1;
+  string label = 2;
+}
+
+message CustomContextMenuSettingList {
+  repeated CustomContextMenuSetting settings = 1;
+}
+
+message StringPair {
+  string first = 1;
+  string second = 2;
+}
+
+message SystemSettingsAccessRecord {
+  string url = 1;
+  string value = 2;
+  int64 timeMillis = 3;
+}
+
+enum CallState {
+  CallStateIdle = 0;
+  CallStateRinging = 1;
+  CallStateOffHook = 2;
+}
+
+message CustomContextDataKey {
+  repeated StringPair keys = 1;
+}
+
+message QSTile {
+  string tileSpec = 1;
+  string label = 2;
+}
+
+message QSTileList {
+  repeated QSTile tile = 1;
+}
+
+enum QSTileState  {
+  QSTileState_Unavailable = 0;
+  QSTileState_InActive = 1;
+  QSTileState_Active = 2;
+}
+
+enum BiometricVerifyResultCase {
+  BiometricVerifyResult_Allow_BiometricNotReady = 0;
+  BiometricVerifyResult_Allow_Verified = 1;
+  BiometricVerifyResult_Deny_VerifyFail = 2;
+  BiometricVerifyResult_Deny_UserCanceled = 3;
+}
+
+
+enum ScreenRotateDegree {
+  ScreenRotateDegree_0 = 0;
+  ScreenRotateDegree_90 = 1;
+  ScreenRotateDegree_180 = 2;
+  ScreenRotateDegree_270 = 3;
+  ScreenRotateDegree_Any = 4;
+}
+
+message SensorUsage {
+  int32 sensor = 1;
+  repeated string srcId = 2;
+}
+
+enum RegexMatchOptions {
+  RegexMatchOptions_Match = 0;
+  RegexMatchOptions_ContainsMatchIn = 1;
+}
+
+message WifiConfig {
+  int32 networkId = 1;
+  string ssid = 2;
+}
+
+message Ringtone {
+  string title = 1;
+  string uri = 2;
+  int32 type = 3;
+}
+
+message DownloadSubject {
+  string title = 1;
+  string description = 2;
+  string url = 3;
+  string fileName = 4;
+}
+
+message HttpResponseData {
+  int32 code = 1;
+  string message = 2;
+  string body = 3;
+  map<string, string> headers = 4;
+}
+
+enum RingerMode {
+  // public static final int RINGER_MODE_SILENT = 0;
+  // public static final int RINGER_MODE_VIBRATE = 1;
+  // public static final int RINGER_MODE_NORMAL = 2;
+  silent = 0;
+  vibrate = 1;
+  normal = 2;
+}
+
+enum WebSocketEvent {
+  WS_OPEN = 0;
+  WS_MESSAGE = 1;
+  WS_CLOSED = 2;
+  WS_FAILURE = 3;
+}
+
+enum FindTextMethod {
+  FTM_UI_AUTO = 0;
+  FTM_OCR = 1;
+  FTM_UI_AUTO_OCR = 2;
+}
+
+message OcrResult {
+  string label = 1;
+  float confidence = 2;
+  Rect bounds = 3;
+  repeated OcrResult elements = 4;
+}
+
+message Rect {
+  int32 left = 1;
+  int32 top = 2;
+  int32 right = 3;
+  int32 bottom = 4;
+}
+
+message RectSourceRect {
+  Rect rect = 1;
+}
+
+message RectSourcePath {
+  string path = 1;
+}
+
+message RectSourceSelectScreenArea {}
+
+message RectSourceFullScreen {}
+
+message ImageSourceScreenshot {}
+
+message ImageSourcePath {
+  string path = 1;
+}
+
+message ImageSourceBase64 {
+  string base64 = 1;
+}
+
+message FindPointsByColorConfig {
+  google.protobuf.Any image = 1;
+  int32 color = 2;
+  int32 threshold = 3;
+  Rect rect = 4;
+}
+
+enum ImageScaleType {
+  IMAGE_SCALE_TYPE_FIT_CENTER = 0;
+  IMAGE_SCALE_TYPE_FIT_XY = 1;
+  IMAGE_SCALE_TYPE_CENTER = 2;
+  IMAGE_SCALE_TYPE_CENTER_CROP = 3;
+  IMAGE_SCALE_TYPE_CENTER_INSIDE = 4;
+  IMAGE_SCALE_TYPE_MATRIX = 5;
+}
+
+message StatusBarClipState {
+  string icon = 1;
+  string text = 2;
+  string id = 3;
+  repeated LocalVar localVar = 4;
+  repeated FuncParameterInput funcParameterInputs = 5;
+}
+
+message StatusBarClipUiSettings {
+  int32 paddingTop = 1;
+  int32 paddingBottom = 2;
+  int32 paddingStart = 3;
+  int32 paddingEnd = 4;
+  int32 fontSize = 5;
+  int32 iconSize = 6;
+  StatusBarClipUiPlacement placement = 7;
+  int32 backgroundColor = 8;
+  int32 textColor = 9;
+  int32 maxLength = 10;
+}
+
+enum StatusBarClipUiPlacement {
+  StatusBarClipUiPlacement_Start = 0;
+  StatusBarClipUiPlacement_End = 1;
+}
+
+// For pass context across process.
+message RemoteRuleContextAndVars {
+  repeated LocalVar localVar = 1;
+  repeated StringPair contextData = 2;
+  repeated FuncParameterInput funcParameter = 3;
+}
+
+enum WindowInsetType {
+  WindowInsetType_StatusBar = 0;
+  WindowInsetType_NavBar = 1;
+  WindowInsetType_Ime = 2;
+  WindowInsetType_SystemOverlays = 3;
+  WindowInsetType_displayCutout = 4;
+}
+
+enum ScreenOnTimeStartFrom {
+  ScreenOnTimeStartFrom_LastScreenOff = 0;
+  ScreenOnTimeStartFrom_SystemReady = 1;
+}
+
+enum CoroutineContext {
+  CoroutineContext_Default = 0;
+  CoroutineContext_IO = 1;
+  CoroutineContext_UI = 2;
+}
+
+message WebDavProfile {
+  string userName = 1;
+  string password = 2;
+  string alias = 4;
+  string profileId = 99;
+}
+
+message WebDavProfileList {
+  repeated WebDavProfile profiles = 1;
+}
+
+message DialogUiStyleSettings {
+  float fontScale = 1;
+}
+
+message SystemEnv {
+  string keyDecored = 1;
+  string displayName = 2;
+  bool requireParam = 3;
+  string tip = 4;
+}
+
+message ByteArrayList {
+  repeated bytes data = 1;
+}
+
+enum OCREngine {
+  OCREngine_Paddle = 0;
+  OCREngine_Tesseract = 1;
+}
+
+message ShortXServerDirs {
+   string imageCacheDir = 1;
+   string baseServerDir = 100;
+}
+
+enum TimeUnit {
+  TimeUnit_MS = 0;
+  TimeUnit_S = 1;
+  TimeUnit_M = 2;
+  TimeUnit_H = 3;
+  TimeUnit_D = 4;
+}

@@ -1,0 +1,1 @@
+C:\Users\TORNACO\Documents\Workspace\ShortX\binder-retriever\src\main\cpp\CMakeLists.txt

@@ -13,35 +13,39 @@ import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 
 object RequestAudioFocus : Actor {
-    private val audioAttributes = AudioAttributes.Builder()
-        .setUsage(AudioAttributes.USAGE_MEDIA)
-        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-        .build()
+    private val audioAttributes by lazy {
+        AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_MEDIA)
+            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+            .build()
+    }
 
-    private val focusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
-        .setAudioAttributes(audioAttributes)
-        .setOnAudioFocusChangeListener { focusChange ->
-            when (focusChange) {
-                AudioManager.AUDIOFOCUS_GAIN -> {
-                    // 获得焦点，可以播放或继续
-                    logger.d("AUDIOFOCUS_GAIN")
-                }
+    private val focusRequest by lazy {
+        AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+            .setAudioAttributes(audioAttributes)
+            .setOnAudioFocusChangeListener { focusChange ->
+                when (focusChange) {
+                    AudioManager.AUDIOFOCUS_GAIN -> {
+                        // 获得焦点，可以播放或继续
+                        logger.d("AUDIOFOCUS_GAIN")
+                    }
 
-                AudioManager.AUDIOFOCUS_LOSS -> {
-                    // 永久失去焦点，应该停止播放
-                    logger.d("AUDIOFOCUS_LOSS")
-                }
+                    AudioManager.AUDIOFOCUS_LOSS -> {
+                        // 永久失去焦点，应该停止播放
+                        logger.d("AUDIOFOCUS_LOSS")
+                    }
 
-                AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
-                    // 临时失去焦点，应该暂停
-                }
+                    AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
+                        // 临时失去焦点，应该暂停
+                    }
 
-                AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
-                    // 可以播放，但音量要变小
+                    AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
+                        // 可以播放，但音量要变小
+                    }
                 }
             }
-        }
-        .build()
+            .build()
+    }
 
     override fun actionsCanHandle(): Class<out Message> {
         return tornaco.apps.shortx.core.proto.action.RequestAudioFocus::class.java

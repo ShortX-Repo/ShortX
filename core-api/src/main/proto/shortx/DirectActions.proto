@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+option java_package = "tornaco.apps.shortx.core.proto.da";
+option java_outer_classname = "OuterDirectActions";
+option java_multiple_files = true;
+
+import "google/protobuf/any.proto";
+import "shortx/Common.proto";
+import "shortx/RuleCommon.proto";
+import "shortx/Conditions.proto";
+import "shortx/Functions.proto";
+
+message DirectActionSet {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  string icon = 4;
+  int64 lastUpdateTime = 5;
+  int64 createTime = 6;
+
+  DirectActionList daList = 7;
+}
+
+message DirectActionSetList {
+  repeated DirectActionSet directActionSet = 1;
+}
+
+message DirectAction {
+  repeated google.protobuf.Any actions = 1;
+
+  string id = 2;
+  int64 lastUpdateTime = 3;
+  int64 createTime = 4;
+
+  Author author = 5;
+
+  string title = 6;
+  string description = 7;
+
+  int64 versionCode = 8;
+  ConflictStrategy conflictPolicy = 9;
+
+  repeated StringPair extras = 10;
+
+  string directActionSetId = 11;
+
+  repeated FuncParameter parameters = 12;
+
+  string icon = 13;
+
+  DirectActionHook hook = 14;
+  DirectActionQuit quit = 15;
+  AsyncMode asyncMode = 17;
+  ActionAsyncMode actionAsyncMode = 18;
+  int32 requireMinShortXProtoVersion = 19;
+}
+
+message DirectActionHook {
+  repeated google.protobuf.Any actionsOnStart = 1;
+  repeated google.protobuf.Any actionsOnStop = 2;
+}
+
+message DirectActionQuit {
+  repeated google.protobuf.Any facts = 1;
+  repeated google.protobuf.Any conditions = 2;
+  bool isEnabled = 3;
+  ConditionOperator condOp = 4;
+  ConditionOperatorPayload condOpPayload = 5;
+  repeated google.protobuf.Any actions = 6;
+  Quit_EvaluatePolicy evaluatePolicy = 7;
+  ActionAsyncMode actionAsyncMode = 8;
+}
+
+message DirectActionList {
+  repeated DirectAction directActions = 1;
+}

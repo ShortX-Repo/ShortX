@@ -147,9 +147,11 @@ dependencies {
     implementation(project(":services"))
     implementation(project(":patch-xposed:patch-main"))
     implementation(project(":core"))
+    implementation(project(":core-api"))
 
-    implementation(libs.shortx.ext.codeditor)
-    implementation(libs.shortx.ui.base)
+    implementation(project(":external:codeditor"))
+    implementation(project(":external:utils"))
+    implementation(project(":ui-base"))
 
     debugImplementation(project(":services-ui"))
     // Demo to test

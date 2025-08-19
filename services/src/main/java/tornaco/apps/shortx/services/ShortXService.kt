@@ -649,15 +649,11 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         }
 
         override fun getInstalledPlugins(): List<ByteArrayWrapper> {
-            return shortXContext.plugin.getInstalledPlugins().map {
-                ByteArrayWrapper(it.toByteArray())
-            }
+            return emptyList()
         }
 
         override fun getInstalledPluginActions(): List<ByteArrayWrapper> {
-            return shortXContext.plugin.getInstalledPluginActions().map {
-                ByteArrayWrapper(it.toByteArray())
-            }
+            return emptyList()
         }
 
         override fun getInstalledPluginConditions(): List<ByteArrayWrapper> {

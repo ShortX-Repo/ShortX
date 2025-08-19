@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option java_package = "tornaco.apps.shortx.core.proto.pkgset";
+option java_outer_classname = "OuterPkgSets";
+option java_multiple_files = true;
+
+import "google/protobuf/any.proto";
+import "shortx/Common.proto";
+
+message PkgSet {
+  repeated AppPkg appPkgs = 1;
+  string label = 2;
+  string description = 3;
+
+  bool isPrebuilt = 4;
+}
+
+message PkgSetList {
+  repeated PkgSet pkgSets = 1;
+}

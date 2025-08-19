@@ -6,7 +6,8 @@ dependencies {
     compileOnly(files("${rootProject.rootDir.path}/android-sdk/29/android-29.jar"))
 
     implementation(project(":core"))
-    implementation(libs.shortx.ext.utils)
+    implementation(project(":external:utils"))
+    implementation(project(":core-api"))
 
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)

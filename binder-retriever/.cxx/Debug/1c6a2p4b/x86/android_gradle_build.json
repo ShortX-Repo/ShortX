@@ -1,0 +1,38 @@
+{
+  "buildFiles": [
+    "C:\\Users\\TORNACO\\Documents\\Workspace\\ShortX\\binder-retriever\\src\\main\\cpp\\CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "C:\\Users\\TORNACO\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+      "-C",
+      "C:\\Users\\TORNACO\\Documents\\Workspace\\ShortX\\binder-retriever\\.cxx\\Debug\\1c6a2p4b\\x86",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "C:\\Users\\TORNACO\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+    "-C",
+    "C:\\Users\\TORNACO\\Documents\\Workspace\\ShortX\\binder-retriever\\.cxx\\Debug\\1c6a2p4b\\x86",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "retriever::@6890427a1f51a3e7e1df": {
+      "toolchain": "toolchain",
+      "abi": "x86",
+      "artifactName": "retriever",
+      "output": "C:\\Users\\TORNACO\\Documents\\Workspace\\ShortX\\out\\binder-retriever\\intermediates\\cxx\\Debug\\1c6a2p4b\\obj\\x86\\libretriever.so",
+      "runtimeFiles": []
+    }
+  },
+  "toolchains": {
+    "toolchain": {
+      "cCompilerExecutable": "C:\\Users\\TORNACO\\AppData\\Local\\Android\\Sdk\\ndk\\21.1.6352462\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang.exe",
+      "cppCompilerExecutable": "C:\\Users\\TORNACO\\AppData\\Local\\Android\\Sdk\\ndk\\21.1.6352462\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": [
+    "cpp"
+  ]
+}

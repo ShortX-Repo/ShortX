@@ -1,0 +1,3 @@
+C:/Users/TORNACO/Documents/Workspace/ShortX/binder-retriever/.cxx/Debug/6e3yi501/arm64-v8a/CMakeFiles/retriever.dir
+C:/Users/TORNACO/Documents/Workspace/ShortX/binder-retriever/.cxx/Debug/6e3yi501/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/Users/TORNACO/Documents/Workspace/ShortX/binder-retriever/.cxx/Debug/6e3yi501/arm64-v8a/CMakeFiles/rebuild_cache.dir

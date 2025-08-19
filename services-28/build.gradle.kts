@@ -6,8 +6,8 @@ dependencies {
     compileOnly(files("${rootProject.rootDir.path}/android-sdk/28/android-28.jar"))
 
     implementation(project(":core"))
-
-    implementation(libs.shortx.ext.utils)
+    implementation(project(":core-api"))
+    implementation(project(":external:utils"))
 
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)

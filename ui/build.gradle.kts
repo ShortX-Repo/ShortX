@@ -107,19 +107,20 @@ dependencies {
     implementation(libs.tinypinyin)
 
     implementation(project(":core"))
+    implementation(project(":core-api"))
     implementation(project(":services-ui"))
     implementation(project(":services-jni"))
     implementation(project(":external:sec_net"))
 
-    implementation(libs.shortx.ui.base)
-    implementation(libs.shortx.ext.compose.color.picker)
-    implementation(libs.shortx.ext.reorderable)
-    implementation(libs.shortx.ext.dateformatter)
-    implementation(libs.shortx.ext.utils)
-    implementation(libs.shortx.ext.codeditor)
-    implementation(libs.shortx.ext.icons)
-    implementation(libs.shortx.ext.dex.maker)
-    implementation(libs.shortx.plugin.sdk)
+    implementation(project(":ui-base"))
+    implementation(project(":external:compose-color-picker"))
+    implementation(project(":external:reorderable"))
+    implementation(project(":external:dateformatter"))
+    implementation(project(":external:utils"))
+    implementation(project(":external:codeditor"))
+    implementation(project(":external:icons"))
+    implementation(project(":external:dex-maker"))
+
 
     implementation(libs.mmkv)
     implementation(libs.jotp)
@@ -135,8 +136,9 @@ dependencies {
     implementation(libs.androidx.paging.runtime.ktx)
     implementation(libs.androidx.paging.compose)
 
-    implementation(libs.libxposed.service)
     compileOnly(files("${project.rootDir.path}/patch-xposed/patch-main/libs/libxposed-api.jar"))
+    implementation(files("${project.rootDir.path}/patch-xposed/patch-main/libs/libxposed-service.jar"))
+    implementation(files("${project.rootDir.path}/patch-xposed/patch-main/libs/libxposed-service-interface.jar"))
 
     val rowImplementation by configurations
     // This dependency is downloaded from the Google’s Maven repository.

@@ -1,0 +1,113 @@
+syntax = "proto3";
+
+import "google/protobuf/any.proto";
+
+option java_package = "tornaco.apps.shortx.core.proto.lego";
+option java_outer_classname = "OuterLego";
+option java_multiple_files = true;
+
+message LegoScreen {
+    repeated google.protobuf.Any child = 1;
+    string id = 100;
+}
+
+message LegoModifier {
+    google.protobuf.Any width = 1;
+    google.protobuf.Any height = 2;
+    Padding padding = 3;
+    Padding margin = 4;
+}
+
+message LegoLayoutModifier {
+    LegoModifier modifier = 1;
+    bool vertical_scroll = 2;
+    bool horizontal_scroll = 3;
+    Alignment horizontal_alignment = 4;
+    Arrangement vertical_arrangement = 5;
+}
+
+enum Alignment {
+    ALIGNMENT_START = 0;
+    ALIGNMENT_END = 1;
+    ALIGNMENT_CENTER_HORIZONTALLY = 2;
+}
+
+enum Arrangement {
+    ARRANGEMENT_TOP = 0;
+    ARRANGEMENT_CENTER = 1;
+    ARRANGEMENT_BOTTOM = 2;
+    ARRANGEMENT_SPACE_BETWEEN = 3;
+    ARRANGEMENT_SPACE_EVENLY = 4;
+    ARRANGEMENT_SPACE_AROUND = 5;
+}
+
+message Padding {
+    int32 start = 1;
+    int32 end = 2;
+    int32 top = 3;
+    int32 bottom = 4;
+}
+
+// Size
+message LegoModifier_Size_Fill_Max {
+    float fraction = 1;
+}
+message LegoModifier_Size_Wrap_Content {}
+message LegoModifier_Size_Static {
+    int32 size = 1;
+}
+
+
+// Style
+message TextStyle {
+    string color_int = 1;
+    string font_size = 2;
+}
+
+message LegoText {
+    string text = 1;
+    LegoModifier modifier = 2;
+    TextStyle text_style = 3;
+
+    string id = 100;
+}
+
+message LegoTextField {
+    string value = 1;
+    string placeholder = 2;
+    LegoModifier modifier = 3;
+    TextStyle text_style = 4;
+
+    string id = 100;
+}
+
+message LegoButton {
+    LegoText text = 1;
+    LegoText icon = 2;
+    LegoModifier modifier = 3;
+    LegoClickableActions clickableActions = 4;
+
+    string id = 100;
+}
+
+message LegoSwitch {
+    LegoText text = 1;
+    bool is_checked = 2;
+    LegoModifier modifier = 3;
+
+    string id = 100;
+}
+
+message LegoColumn {
+    LegoLayoutModifier layout_modifier = 1;
+    repeated google.protobuf.Any child = 6;
+}
+
+message LegoLazyColumn {
+  LegoLayoutModifier layout_modifier = 1;
+}
+
+message LegoClickableActions {
+    repeated google.protobuf.Any onClickAction = 3;
+    repeated google.protobuf.Any onLongClickAction = 4;
+}

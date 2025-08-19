@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+option java_package = "tornaco.apps.shortx.core.proto.toggles";
+option java_outer_classname = "OuterToggles";
+option java_multiple_files = true;
+
+import "google/protobuf/any.proto";
+import "shortx/Common.proto";
+import "shortx/Conditions.proto";
+
+
+message ToggleList {
+  repeated Toggle toggle = 1;
+}
+
+message Toggle {
+  string id = 1;
+  int64 lastUpdateTime = 2;
+  int64 createTime = 3;
+
+  Author author = 4;
+
+  string title = 5;
+  string description = 6;
+
+  int64 versionCode = 8;
+
+  repeated StringPair extras = 9;
+
+  string toggleSetId = 10;
+
+  repeated google.protobuf.Any actionsOnEnabled = 11;
+  repeated google.protobuf.Any actionsOnDisabled = 12;
+  repeated google.protobuf.Any actionsOnDeleted = 13;
+
+  google.protobuf.Any stateHandle = 14;
+
+  ToggleTileSetting tileSetting = 15;
+
+  string icon = 16;
+}
+
+message ToggleTileSetting {
+  int32 bondToTileNumber = 1;
+}
+
+message ToggleStateHandleByCondition {
+  repeated google.protobuf.Any conditions = 1;
+  ConditionOperator condOp = 2;
+  ConditionOperatorPayload condOpPayload = 3;
+}
+
+message ToggleStateHandleByStore {
+  // Noop.
+}
