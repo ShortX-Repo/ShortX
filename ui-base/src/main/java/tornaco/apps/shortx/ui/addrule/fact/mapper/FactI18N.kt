@@ -417,6 +417,14 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         is Fact.ScreenGesture -> listOfNotNull(
             i18N["ui.fact.screen.gesture"],
             i18N[fact.gesture.displayNameKey()],
+            fact.gestureArea?.let { area ->
+                i18N["ui.fact.screen.gesture.area", mapOf(
+                    "left" to area.left.toString(),
+                    "top" to area.top.toString(),
+                    "right" to area.right.toString(),
+                    "bottom" to area.bottom.toString()
+                )]
+            },
             i18N.gestureDisabledMessageOrNull()
         )
 

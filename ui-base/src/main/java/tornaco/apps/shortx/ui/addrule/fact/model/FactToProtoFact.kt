@@ -203,6 +203,9 @@ fun Fact.toProtoFact(
         is Fact.ScreenGesture -> {
             ScreenGesture.newBuilder()
                 .setGesture(gesture)
+                .apply {
+                    gestureArea?.let { setGestureArea(it) }
+                }
                 .setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
                 .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)

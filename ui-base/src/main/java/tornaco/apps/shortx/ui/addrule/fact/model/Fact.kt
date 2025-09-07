@@ -18,6 +18,7 @@ import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.common.TimeOfADay
+import tornaco.apps.shortx.core.proto.common.Rect
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.proto.fact.MethodHookConstraintParamsCount
@@ -352,6 +353,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class ScreenGesture(
         val gesture: Gesture,
+        val gestureArea: Rect? = null,
         override val note: String = "",
         override val isDisabled: Boolean = false,
         override val tag: String = "",

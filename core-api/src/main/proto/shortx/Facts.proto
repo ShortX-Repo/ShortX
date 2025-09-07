@@ -137,6 +137,7 @@ message EdgeGesture {
 message ScreenGesture {
   Gesture gesture = 1;
   repeated AppPkg constraintFrontApps = 2;
+  Rect gestureArea = 3;
 
   string tag = 97;
   CustomContextDataKey customContextDataKey = 98;

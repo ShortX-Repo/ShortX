@@ -86,6 +86,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             val data = this unpack_ tornaco.apps.shortx.core.proto.fact.ScreenGesture::class.java
             Fact.ScreenGesture(
                 gesture = data.gesture,
+                gestureArea = if (data.hasGestureArea()) data.gestureArea else null,
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
                 isDisabled = data.isDisabled,

@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tornaco.android.sec.net.S
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.StateViewModel
@@ -129,7 +130,9 @@ class SubscribeViewModel @Inject constructor(@ApplicationContext val context: Co
     fun verify(code: String) {
         viewModelScope.launch {
             _codeVerifyEvent.emit(CodeVerifyEvent.Verifying)
-            delay(5834)
+            if (!BuildPropInternal.APP_IS_DEBUG) {
+                delay(5834)
+            }
             when (val res = repo.verify(code)) {
                 is VerifyResult.Fail -> {
                     _codeVerifyEvent.emit(CodeVerifyEvent.Fail)
@@ -145,7 +148,8 @@ class SubscribeViewModel @Inject constructor(@ApplicationContext val context: Co
 
                 is VerifyResult.Success -> {
                     S.c(code, res.data.k)
-                    tornaco.apps.shortx.ui.util.verifyOtp(code, requireNotNull(res.data.i),
+                    tornaco.apps.shortx.ui.util.verifyOtp(
+                        code, requireNotNull(res.data.i),
                         onRes = {
                             setLVLToken(code)
                             viewModelScope.launch {

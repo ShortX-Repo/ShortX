@@ -8,12 +8,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.core.text.isDigitsOnly
 import tornaco.apps.shortx.core.alarm.toLocalTime
-import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.proto.fact.SunRise
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.addrule.fact.mapper.displayNameKey
 import tornaco.apps.shortx.ui.addrule.fact.mapper.factLabelKey
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.selector.AdvancedKeyEventSelector
@@ -25,6 +23,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.FixedPeriodSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.OnOffAnyStateSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.PeriodSelector
+import tornaco.apps.shortx.ui.addrule.fact.selector.ScreenGestureSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.WifiSSIDSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAdvancedKeyEventSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAlarmSelectorState
@@ -34,6 +33,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.rememberFixedInPeriodSelecto
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberKeyEventSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberOnOffAnyStateSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberRandomInPeriodSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberScreenGestureSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberWifiSSIDSelectorState
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
@@ -86,16 +86,13 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
         })
     EdgeGestureSelector(edgeGestureSelectorState)
 
-    val screenGestureMenuState = rememberMenuDialogState<String>(
+    val screenGestureSelectorState = rememberScreenGestureSelectorState(
         title = LocalI18N.current["ui.fact.screen.gesture"],
-        menuItems = Gesture.entries.filter { it != Gesture.UNRECOGNIZED }.map {
-            MenuDialogItem(it.name, title = LocalI18N.current[it.displayNameKey()])
-        },
-        onItemSelected = { _, id ->
-            val gesture = Gesture.valueOf(id)
-            addFact(Fact.ScreenGesture(gesture))
-        })
-    MenuDialog(state = screenGestureMenuState)
+        onSelected = { gesture, gestureArea ->
+            addFact(Fact.ScreenGesture(gesture = gesture, gestureArea = gestureArea))
+        }
+    )
+    ScreenGestureSelectorDialog(state = screenGestureSelectorState)
 
     val timeOfADaySelector = rememberAlarmSelectorState { alarm ->
         addFact(Fact.Alarm(timeOfADay = alarm.triggerAt, repeatDays = alarm.repeat))
@@ -290,10 +287,9 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
             }
 
             Fact.ScreenGesture::class -> {
-                screenGestureMenuState.show(
-                    currentSelection = listOfNotNull(
-                        source.getFactAs<Fact.ScreenGesture>()?.gesture?.name
-                    )
+                screenGestureSelectorState.show(
+                    currentGesture = source.getFactAs<Fact.ScreenGesture>()?.gesture,
+                    currentGestureArea = source.getFactAs<Fact.ScreenGesture>()?.gestureArea,
                 )
                 true
             }
