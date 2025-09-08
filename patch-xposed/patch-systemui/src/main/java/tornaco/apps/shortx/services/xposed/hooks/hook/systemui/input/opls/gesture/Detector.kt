@@ -7,6 +7,7 @@ import android.os.Handler
 import android.view.GestureDetector
 import android.view.MotionEvent
 import tornaco.apps.shortx.core.BuildPropInternal
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.util.Logger
@@ -86,6 +87,7 @@ class Detector(
     }
 
     private fun handleSwipeEvent(downX: Float, downY: Float, gestureEvent: Gesture): Boolean {
+        logger.logOnDebug { "handleSwipeEvent $gestureEvent" }
         postHandleScreenGestureEvent(downX, downY, gestureEvent)
         val area = detectArea(downX, downY)
         if (area.isEmpty()) return false
@@ -93,6 +95,7 @@ class Detector(
     }
 
     private fun handleTapEvent(motionEvent: MotionEvent, gestureEvent: Gesture): Boolean {
+        logger.logOnDebug { "handleTapEvent $gestureEvent" }
         postHandleScreenGestureEvent(motionEvent.x, motionEvent.y, gestureEvent)
         val area = detectArea(motionEvent)
         if (area.isEmpty()) return false
@@ -104,6 +107,7 @@ class Detector(
     }
 
     private fun postHandleScreenGestureEvent(downX: Float, downY: Float, gesture: Gesture) {
+        logger.logOnDebug { "postHandleScreenGestureEvent $gesture $downX-$downY" }
         handler.post {
             runCatching {
                 service.handleScreenGestureEvent(downX, downY, gesture)

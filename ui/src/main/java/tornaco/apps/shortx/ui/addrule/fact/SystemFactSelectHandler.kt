@@ -44,6 +44,7 @@ import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.composeLogger
 import java.time.LocalTime
 
 @Composable
@@ -89,6 +90,7 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     val screenGestureSelectorState = rememberScreenGestureSelectorState(
         title = LocalI18N.current["ui.fact.screen.gesture"],
         onSelected = { gesture, gestureArea ->
+            composeLogger.d("onSelected- $gesture $gestureArea")
             addFact(Fact.ScreenGesture(gesture = gesture, gestureArea = gestureArea))
         }
     )

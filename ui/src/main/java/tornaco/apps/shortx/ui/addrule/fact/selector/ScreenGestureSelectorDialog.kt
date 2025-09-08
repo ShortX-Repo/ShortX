@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.common.Rect
@@ -26,6 +27,7 @@ import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
+import tornaco.apps.shortx.ui.composeLogger
 
 class ScreenGestureSelectorDialogState(
     val title: String,
@@ -40,6 +42,8 @@ class ScreenGestureSelectorDialogState(
     ) {
         this.currentGesture = currentGesture
         this.currentGestureArea = currentGestureArea
+        composeLogger.d("currentGesture: $currentGesture")
+        composeLogger.d("currentGestureArea: $currentGestureArea")
         show()
     }
 }
@@ -82,12 +86,12 @@ fun ScreenGestureSelectorDialog(
                 ) {
                     // 手势类型选择
                     Text(
-                        text = i18N["ui.fact.screen.gesture.type"],
+                        text = i18N["ui.fact.edge.gesture.gesture"],
                         style = MaterialTheme.typography.bodyMedium
                     )
 
                     val gestureMenuState = rememberMenuDialogState<String>(
-                        title = i18N["ui.fact.screen.gesture.type"],
+                        title = i18N["ui.fact.edge.gesture.gesture"],
                         menuItems = Gesture.entries.filter { it != Gesture.UNRECOGNIZED }.map {
                             MenuDialogItem(it.name, title = i18N[it.displayNameKey()])
                         },
@@ -116,7 +120,7 @@ fun ScreenGestureSelectorDialog(
 
                     // 区域输入
                     Text(
-                        text = i18N["ui.fact.screen.gesture.area"],
+                        text = i18N["ui.action.rect.src.rect"],
                         style = MaterialTheme.typography.bodyMedium
                     )
 
@@ -126,7 +130,6 @@ fun ScreenGestureSelectorDialog(
                             rectText = it
                             rectError = false
                         },
-                        label = { Text(i18N["ui.fact.screen.gesture.area.hint"]) },
                         placeholder = { Text("left,top,right,bottom (可选)") },
                         isError = rectError,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
@@ -135,7 +138,7 @@ fun ScreenGestureSelectorDialog(
 
                     if (rectError) {
                         Text(
-                            text = i18N["ui.fact.screen.gesture.area.error"],
+                            text = i18N["ui.action.rect.src.rect.format.error"],
                             color = MaterialTheme.colorScheme.error,
                             style = MaterialTheme.typography.bodySmall
                         )
@@ -176,12 +179,12 @@ fun ScreenGestureSelectorDialog(
                     },
                     enabled = selectedGesture != Gesture.UNRECOGNIZED
                 ) {
-                    Text(i18N["ui.common.ok"])
+                    Text(stringResource(android.R.string.ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { state.dismiss() }) {
-                    Text(i18N["ui.common.cancel"])
+                    Text(stringResource(android.R.string.cancel))
                 }
             }
         )

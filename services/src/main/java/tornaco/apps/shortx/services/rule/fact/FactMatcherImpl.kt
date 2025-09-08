@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.RegexMatchData
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.OnOffAny
+import tornaco.apps.shortx.core.proto.common.Rect
 import tornaco.apps.shortx.core.proto.common.RegexMatchOptions
 import tornaco.apps.shortx.core.proto.common.ScreenOnTimeStartFrom
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
@@ -104,6 +105,7 @@ import tornaco.apps.shortx.core.proto.fact.WifiConnectedTo
 import tornaco.apps.shortx.core.proto.fact.WifiDisconnectedFrom
 import tornaco.apps.shortx.core.proto.fact.WifiStatusChanged
 import tornaco.apps.shortx.core.proto.fact.WindowRotationChange
+import tornaco.apps.shortx.core.proto.toAndroidRect
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.is_
@@ -429,7 +431,15 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
         register(ScreenGesture::class.java) { actual, rule ->
             val actualN = (actual as ScreenGesture)
             val ruleN = (rule as ScreenGesture)
-            actualN.gesture == ruleN.gesture
+            actualN.gesture == ruleN.gesture && (
+                    (actualN.downX == -1 && actualN.downY == -1)
+                            || ruleN.gestureArea == null
+                            || ruleN.gestureArea == Rect.getDefaultInstance()
+                            || ruleN.gestureArea.toAndroidRect()
+                        .contains(
+                            actualN.downX, actualN.downY
+                        )
+                    )
         }
 
         register(WifiConnectedTo::class.java) { actual, rule ->
