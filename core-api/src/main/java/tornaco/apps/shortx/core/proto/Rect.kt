@@ -11,15 +11,6 @@ fun Rect.toAndroidRect(): android.graphics.Rect {
     )
 }
 
-fun Rect.toAndroidRectF(): android.graphics.RectF {
-    return android.graphics.RectF(
-        left.toFloat(),
-        top.toFloat(),
-        right.toFloat(),
-        bottom.toFloat()
-    )
-}
-
 fun android.graphics.Rect.toProtoRect(): Rect {
     return Rect.newBuilder().setLeft(left).setRight(right).setTop(top).setBottom(bottom).build()
 }

@@ -9,8 +9,6 @@ import android.view.MotionEvent
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
-import tornaco.apps.shortx.core.proto.fact.ScreenGesture
-import tornaco.apps.shortx.core.proto.toAndroidRectF
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.core.util.screenSize
@@ -26,9 +24,6 @@ class Detector(
     }
 
     private val logger = Logger("GestureDetector")
-
-    // 添加全局变量存储用户的ScreenGesture列表
-    private var customScreenGestures: List<ScreenGesture> = emptyList()
 
     private var screenSize: Point = context.screenSize().apply {
         logger.w("Init screenSize: $this")
@@ -104,7 +99,7 @@ class Detector(
         return handleEdgeGestureEvent(area, gestureEvent)
     }
 
-    private fun handleEdgeGestureEvent(area: Array<GestureArea>, gestureEvent: Gesture): Boolean {
+    private fun handleEdgeGestureEvent(area: Array<Edge>, gestureEvent: Gesture): Boolean {
         return service.handleEdgeGestureEvent(area, gestureEvent)
     }
 
@@ -118,21 +113,17 @@ class Detector(
         }
     }
 
-    private fun detectArea(event: MotionEvent): Array<GestureArea> {
+    private fun detectArea(event: MotionEvent): Array<Edge> {
         val downX = event.x
         val downY = event.y
         return detectArea(downX, downY)
     }
 
-    private fun detectArea(downX: Float, downY: Float): Array<GestureArea> {
+    private fun detectArea(downX: Float, downY: Float): Array<Edge> {
         val currentOrientation = context.resources.configuration.orientation
         if (LOGV) logger.d("currentOrientation: $currentOrientation (ORIENTATION_PORTRAIT = 1, ORIENTATION_LANDSCAPE = 2)")
         val isPortrait = currentOrientation == Configuration.ORIENTATION_PORTRAIT
-
-        val detectedAreas = mutableListOf<GestureArea>()
-
-        // 检测预定义的Edge区域
-        val edgeAreas = Edge.entries.filter {
+        val area = Edge.entries.filter {
             val rect = it.getRect(
                 isPortrait = isPortrait,
                 screenWidth = screenSize.x.toFloat(),
@@ -143,30 +134,9 @@ class Detector(
             val res = rect.contains(downX, downY)
             if (LOGV) logger.d("$it, rect: $rect (downX: $downX downY: $downY) contains: $res")
             res
-        }.map { PredefinedEdgeArea(it) }
-
-        detectedAreas.addAll(edgeAreas)
-
-        // 检测自定义ScreenGesture区域
-        val customAreas = customScreenGestures.mapNotNull {
-            it.gestureArea?.toAndroidRectF()
-        }.filter {
-            val rect = it
-            val res = rect.contains(downX, downY)
-            if (LOGV) logger.d("CustomGesture: $it, rect: $rect (downX: $downX downY: $downY) contains: $res")
-            res
-        }.map { CustomGestureArea(it) }
-
-        detectedAreas.addAll(customAreas)
-
-        if (LOGV) logger.d("detectArea, $downX $downY return: $detectedAreas (screen info: $screenSize)")
-        return detectedAreas.toTypedArray()
-    }
-
-    // 添加方法用于更新自定义ScreenGesture列表（后期用于读取配置）
-    fun updateCustomScreenGestures(gestures: List<ScreenGesture>) {
-        customScreenGestures = gestures
-        if (LOGV) logger.d("updateCustomScreenGestures: ${gestures.size} gestures")
+        }
+        if (LOGV) logger.d("detectArea, $downX $downY return: $area (screen info: $screenSize)")
+        return area.toTypedArray()
     }
 
     fun consumeEvent(event: MotionEvent): Boolean? {
