@@ -2,7 +2,6 @@ package tornaco.apps.shortx.ui.addrule.fact.model
 
 import tornaco.apps.shortx.core.alarm.toProto
 import tornaco.apps.shortx.core.proto.common.AppPkg
-import tornaco.apps.shortx.core.proto.common.Rect
 import tornaco.apps.shortx.core.proto.fact.APMStatusChanged
 import tornaco.apps.shortx.core.proto.fact.AccelerometerSensor
 import tornaco.apps.shortx.core.proto.fact.ActivityDestroyed
@@ -204,7 +203,9 @@ fun Fact.toProtoFact(
         is Fact.ScreenGesture -> {
             ScreenGesture.newBuilder()
                 .setGesture(gesture)
-                .setGestureArea(gestureArea ?: Rect.getDefaultInstance())
+                .apply {
+                    gestureArea?.let { setGestureArea(it) }
+                }
                 .setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
                 .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)

@@ -1571,7 +1571,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         override fun shouldFireScreenGesture(gesture: Int, x: Int, y: Int): Boolean {
             val gestureE = Gesture.forNumber(gesture) ?: return false
             return shortXContext.rule.shouldFire(
-                ScreenGesture.newBuilder().setGesture(gestureE).setDownX(x).setDownY(y).build()
+                ScreenGesture.newBuilder().setGesture(gestureE).build()
             )
         }
 
@@ -1579,10 +1579,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             val gestureE = Gesture.forNumber(gesture) ?: return
             shortXContext.rule.publishFact(
                 "fireScreenGesture",
-                ScreenGesture.newBuilder()
-                    .setDownX(x)
-                    .setDownY(y)
-                    .setGesture(gestureE).build()
+                ScreenGesture.newBuilder().setGesture(gestureE).build()
             ) {
                 mapOf(
                     ContextDataMapping.ScreenGesture.eventX.name to x,

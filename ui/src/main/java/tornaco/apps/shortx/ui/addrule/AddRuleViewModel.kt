@@ -242,13 +242,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                 .setId(state.value.id)
                 .setCreateTime(state.value.createTime)
                 .setLastUpdateTime(System.currentTimeMillis())
-                .addAllFacts(facts.map {
-                    it.apply {
-                        logger.logOnDebug { "Model toProtoFact - $this" }
-                    }.toProtoFact().apply {
-                        logger.logOnDebug { "toProtoFact - $this" }
-                    }.pack_()
-                })
+                .addAllFacts(facts.map { it.toProtoFact().pack_() })
                 .setTitle(
                     state.value.title.fallbackOnEmpty(
                         DateUtils.formatHHMMSS(

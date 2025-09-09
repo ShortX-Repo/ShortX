@@ -76,7 +76,8 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
 
     val shouldDetectMotion
         get() = isGestureEnabledQuick
-                && (fireableScreenGestures.isNotEmpty() || (fireableEdgeGestures.isNotEmpty() && requiredFrontAppMatchQuick))
+                && requiredFrontAppMatchQuick
+                && (fireableScreenGestures.isNotEmpty() || fireableEdgeGestures.isNotEmpty())
 
     private var isGestureEnabledQuick = false
 
@@ -173,8 +174,7 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
             fireableScreenGestures.clear()
             fireableScreenGestures.addAll(
                 allScreenGestures.filter { gesture ->
-                    // -1 means we check. @FactMatcherImpl
-                    shortx.shouldFireScreenGesture(gesture.number, -1, -1)
+                    shortx.shouldFireScreenGesture(gesture.number, 0, 0)
                 }
             )
             logger.w(
@@ -354,7 +354,7 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
     private fun checkFrontAppPkg(reason: String) {
         logger.d("checkFrontAppPkg: $reason")
         requiredFrontAppMatchQuick =
-            requiredFrontAppAny || requiredFrontApps.isEmpty() || (currentFrontApps.isNotEmpty() && requiredFrontApps.any {
+            requiredFrontAppAny || (currentFrontApps.isNotEmpty() && requiredFrontApps.any {
                 currentFrontApps.contains(it)
             })
     }
