@@ -129,6 +129,8 @@ message EdgeGesture {
   
   // 添加自定义矩形区域，当设置时将覆盖默认的edge区域计算
   Rect customRect = 6;
+  int32 downX = 7;
+  int32 downY = 8;
 
   string tag = 97;
   CustomContextDataKey customContextDataKey = 98;

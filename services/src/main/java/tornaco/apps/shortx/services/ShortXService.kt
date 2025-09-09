@@ -1557,13 +1557,10 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             return shortXContext.rule.shouldFire(edgeGesture)
         }
 
-        override fun fireEdgeGesture(edge: Int, gesture: Int) {
-            logger.w("fireEdgeGesture - $edge $gesture")
-            val edgeE = Edge.forNumber(edge) ?: return
-            val gestureE = Gesture.forNumber(gesture) ?: return
-            val edgeGesture = EdgeGesture.newBuilder()
-                .setEdge(edgeE)
-                .setGesture(gestureE)
+        override fun fireEdgeGesture(data: ByteArrayWrapper) {
+            val protoModel = EdgeGesture.parseFrom(data.byteData)
+            logger.w("fireEdgeGesture - $protoModel")
+            val edgeGesture = EdgeGesture.newBuilder(protoModel)
                 .build()
             shortXContext.rule.publishFact("fireEdgeGesture", edgeGesture) { emptyMap() }
         }

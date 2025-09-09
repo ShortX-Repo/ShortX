@@ -398,7 +398,7 @@ interface IShortX {
     void unregisterGestureSettingsListener(in ICallback listener);
 
     boolean shouldFireEdgeGesture(int edge, int gesture);
-    void fireEdgeGesture(int edge, int gesture);
+    void fireEdgeGesture(in ByteArrayWrapper data);
 
     boolean shouldFireScreenGesture(int gesture, int x, int y);
     void fireScreenGesture(int gesture, int x, int y);

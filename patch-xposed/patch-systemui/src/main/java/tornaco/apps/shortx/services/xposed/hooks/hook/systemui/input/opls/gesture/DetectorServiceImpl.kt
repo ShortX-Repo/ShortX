@@ -10,7 +10,6 @@ import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AppPkgList
-import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.proto.feature.AppFeature
@@ -39,7 +38,7 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
     private var afterGestureSettingsChangedObs: () -> Unit = {}
     private var afterConfigChangedObs: () -> Unit = {}
 
-    private val enabledEdgeGestures = mutableSetOf<EdgeGesture>()
+    override val enabledEdgeGestures = mutableSetOf<EdgeGesture>()
     private val interceptMotionPortRects = mutableListOf<RectF>()
     private val interceptMotionLandRects = mutableListOf<RectF>()
 
@@ -165,25 +164,34 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         afterConfigChangedObs = obs
     }
 
-    override fun handleEdgeGestureEvent(area: Array<Edge>, gestureEvent: Gesture): Boolean {
+    override fun handleEdgeGestureEvent(areas: List<DetectedArea>, gestureEvent: Gesture): Boolean {
         var res = false
-        area.forEach {
-            val handled = onEdgeGestureEvent(it to gestureEvent)
+        areas.forEach {
+            val handled = onEdgeGestureEvent(it, gestureEvent)
             if (handled) res = true
         }
         return res
     }
 
-    private fun onEdgeGestureEvent(pair: Pair<Edge, Gesture>): Boolean {
-        if (shouldFireEdgeGesture(pair)) {
-            logger.d("Let's fire: $pair")
-            shortx.fireEdgeGesture(pair.first.number, pair.second.number)
+    private fun onEdgeGestureEvent(area: DetectedArea, gesture: Gesture): Boolean {
+        if (shouldFireEdgeGesture(area, gesture)) {
+            logger.d("Let's fire: $area $gesture")
+            val data = EdgeGesture.newBuilder()
+                .setGesture(gesture)
+                .apply {
+                    if (area is DetectedArea.PredefinedEdge) {
+                        setEdge(area.edge)
+                    } else if (area is DetectedArea.CustomRect) {
+                        setCustomRect(area.rect)
+                    }
+                }
+                .build()
+            shortx.fireEdgeGesture(data)
             return true
         } else return false
     }
 
-    private fun shouldFireEdgeGesture(pair: Pair<Edge, Gesture>): Boolean {
-        // TODO Do we need to pre check?
+    private fun shouldFireEdgeGesture(area: DetectedArea, gesture: Gesture): Boolean {
         return true
     }
 
@@ -213,6 +221,8 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         val portRects = mutableListOf<RectF>()
         val landRects = mutableListOf<RectF>()
         val requiredApps = mutableSetOf<AppPkg>()
+        val enabledFacts = mutableSetOf<EdgeGesture>()
+
         // Reset.
         requiredFrontAppAny = false
 
@@ -243,7 +253,7 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
                     }
 
                     if (!eg.isDisabled) {
-                        enabledEdgeGestures.add(eg)
+                        enabledFacts.add(eg)
 
                         // For all.
                         if (eg.appsList.isEmpty() && eg.pkgSetsList.isEmpty()) {
@@ -261,12 +271,15 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
             }
         }
 
-        logger.d("updateQuickCheckDataOnRuleChange, enabledEdgeGestures: $enabledEdgeGestures")
+        logger.d("updateQuickCheckDataOnRuleChange, enabledFacts: $enabledFacts")
         logger.d("updateQuickCheckDataOnRuleChange, portRects: $portRects")
         logger.d("updateQuickCheckDataOnRuleChange, landRects: $landRects")
         logger.d("updateQuickCheckDataOnRuleChange, requiredFrontAppAny: $requiredFrontAppAny")
         logger.d("updateQuickCheckDataOnRuleChange, requiredFrontAppMatchQuick: $requiredFrontAppMatchQuick")
         logger.d("updateQuickCheckDataOnRuleChange, requiredApps: $requiredApps")
+
+        this.enabledEdgeGestures.clear()
+        this.enabledEdgeGestures.addAll(enabledFacts)
 
         this.interceptMotionLandRects.clear()
         this.interceptMotionLandRects.addAll(landRects)

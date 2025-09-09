@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.RegexMatchData
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.OnOffAny
+import tornaco.apps.shortx.core.proto.common.Rect
 import tornaco.apps.shortx.core.proto.common.RegexMatchOptions
 import tornaco.apps.shortx.core.proto.common.ScreenOnTimeStartFrom
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
@@ -48,6 +49,7 @@ import tornaco.apps.shortx.core.proto.fact.CpuAvgAvailability
 import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DeepLinkCall
+import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.fact.FlashLightStatusChanged
@@ -423,7 +425,8 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
         register(EdgeGesture::class.java) { actual, rule ->
             val actualN = (actual as EdgeGesture)
             val ruleN = (rule as EdgeGesture)
-            actualN.edge == ruleN.edge && actualN.gesture == ruleN.gesture
+            actualN.gesture == ruleN.gesture && ((actualN.edge != Edge.UNRECOGNIZED && actualN.edge == ruleN.edge)
+                    || (actualN.customRect != Rect.getDefaultInstance() && actualN.customRect == ruleN.customRect))
         }
 
         register(ScreenGesture::class.java) { actual, rule ->
