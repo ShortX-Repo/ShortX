@@ -185,7 +185,7 @@ fun Fact.toProtoFact(
         }
 
         is Fact.EdgeGesture -> {
-            EdgeGesture.newBuilder()
+            val builder = EdgeGesture.newBuilder()
                 .setEdge(edge)
                 .setGesture(gesture)
                 .setIsIntercept(isIntercept)
@@ -197,7 +197,11 @@ fun Fact.toProtoFact(
                 .setNote(overrideNote ?: note)
                 .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
-                .build()
+            
+            // 如果有自定义矩形，则设置它
+            customRect?.let { builder.setCustomRect(it) }
+            
+            builder.build()
         }
 
         is Fact.ScreenGesture -> {

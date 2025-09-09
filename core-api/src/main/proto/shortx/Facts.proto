@@ -126,6 +126,9 @@ message EdgeGesture {
   bool isIntercept = 3;
   repeated AppPkg apps = 4;
   repeated string pkgSets = 5;
+  
+  // 添加自定义矩形区域，当设置时将覆盖默认的edge区域计算
+  Rect customRect = 6;
 
   string tag = 97;
   CustomContextDataKey customContextDataKey = 98;

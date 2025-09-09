@@ -75,6 +75,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 isIntercept = data.isIntercept,
                 apps = models.first,
                 pkgSets = models.second,
+                customRect = if (data.hasCustomRect()) data.customRect else null,
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
                 isDisabled = data.isDisabled,

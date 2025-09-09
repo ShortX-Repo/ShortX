@@ -325,6 +325,7 @@ sealed interface Fact : Parcelable {
         val isIntercept: Boolean,
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList(),
+        val customRect: tornaco.apps.shortx.core.proto.common.Rect? = null,
         override val note: String = "",
         override val isDisabled: Boolean = false,
         override val tag: String = "",
