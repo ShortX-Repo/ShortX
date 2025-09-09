@@ -5,7 +5,6 @@ import tornaco.apps.shortx.core.proto.fact.Gesture
 
 interface DetectorService {
     fun handleEdgeGestureEvent(area: Array<Edge>, gestureEvent: Gesture): Boolean
-    fun handleScreenGestureEvent(downX: Float, downY: Float, gestureEvent: Gesture)
     fun getSwipeDistanceThresholdDp(): Int
     fun getGestureAreaWidthDp(): Int
     fun getGestureLengthScale(): Float

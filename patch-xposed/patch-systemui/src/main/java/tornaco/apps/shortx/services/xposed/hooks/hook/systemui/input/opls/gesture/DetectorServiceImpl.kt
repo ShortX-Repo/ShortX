@@ -39,22 +39,7 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
     private var afterGestureSettingsChangedObs: () -> Unit = {}
     private var afterConfigChangedObs: () -> Unit = {}
 
-    private val allEdgeGestures = Gesture.entries
-        .filter { it != Gesture.UNRECOGNIZED }
-        .flatMap { gesture ->
-            Edge.entries
-                .filter { it != Edge.UNRECOGNIZED }
-                .map { edge ->
-                    edge to gesture
-                }
-        }
-
-    private val allScreenGestures = Gesture.entries
-        .filter { it != Gesture.UNRECOGNIZED }
-
-    private val fireableEdgeGestures = mutableSetOf<Pair<Edge, Gesture>>()
-    private val fireableScreenGestures = mutableSetOf<Gesture>()
-
+    private val enabledEdgeGestures = mutableSetOf<EdgeGesture>()
     private val interceptMotionPortRects = mutableListOf<RectF>()
     private val interceptMotionLandRects = mutableListOf<RectF>()
 
@@ -65,8 +50,8 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
 
     val shouldDetectMotion
         get() = isGestureEnabledQuick
-                && requiredFrontAppMatchQuick
-                && (fireableScreenGestures.isNotEmpty() || fireableEdgeGestures.isNotEmpty())
+                && enabledEdgeGestures.isNotEmpty()
+                && (requiredFrontAppAny || requiredFrontAppMatchQuick)
 
     private var isGestureEnabledQuick = false
 
@@ -91,7 +76,6 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         shortx.registerRuleObs(object : RuleObserver() {
             override fun onRuleChanged(id: String) {
                 super.onRuleChanged(id)
-                readGestureFireState("Rule changed")
                 updateQuickCheckDataOnRuleChange()
             }
         })
@@ -99,19 +83,16 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         shortx.registerDAObs(object : DAObserver() {
             override fun onDAChanged(id: String) {
                 super.onDAChanged(id)
-                readGestureFireState("DA changed")
                 updateQuickCheckDataOnRuleChange()
             }
         })
 
         shortx.registerPkgSetObs(object : IPkgSetObserver.Stub() {
             override fun onAddOrUpdate(id: String?) {
-                readGestureFireState("PkgSet changed")
                 updateQuickCheckDataOnRuleChange()
             }
 
             override fun onDelete(id: String?) {
-                readGestureFireState("PkgSet changed")
                 updateQuickCheckDataOnRuleChange()
             }
         })
@@ -139,39 +120,11 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         })
 
         readAllSettings()
-        readGestureFireState("Init")
         updateQuickCheckDataOnRuleChange()
     }
 
     fun shouldInstallMonitor(): Boolean {
         return GlobalSettings.isEdgeGestureEnabled
-    }
-
-    private fun readGestureFireState(reason: String) {
-        logger.d("readGestureFireState, reason: $reason")
-        synchronized(fireableEdgeGestures) {
-            fireableEdgeGestures.clear()
-            fireableEdgeGestures.addAll(
-                allEdgeGestures.filter { eg ->
-                    shortx.shouldFireEdgeGesture(eg.first.number, eg.second.number)
-                }
-            )
-            logger.w("fireableEdgeGestures: ${fireableEdgeGestures.joinToString()}")
-        }
-
-        synchronized(fireableScreenGestures) {
-            fireableScreenGestures.clear()
-            fireableScreenGestures.addAll(
-                allScreenGestures.filter { gesture ->
-                    shortx.shouldFireScreenGesture(gesture.number, 0, 0)
-                }
-            )
-            logger.w(
-                "fireableScreenGestures: ${
-                    fireableScreenGestures.joinToString { it.name }
-                }"
-            )
-        }
     }
 
     private fun readAllSettings() {
@@ -221,14 +174,6 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         return res
     }
 
-    override fun handleScreenGestureEvent(downX: Float, downY: Float, gestureEvent: Gesture) {
-        logger.v("handleScreenGestureEvent: $gestureEvent ($downX, $downY)")
-        if (shouldFireScreenGesture(gestureEvent)) {
-            logger.d("Let's fire: $gestureEvent")
-            shortx.fireScreenGesture(gestureEvent.number, downX.toInt(), downY.toInt())
-        }
-    }
-
     private fun onEdgeGestureEvent(pair: Pair<Edge, Gesture>): Boolean {
         if (shouldFireEdgeGesture(pair)) {
             logger.d("Let's fire: $pair")
@@ -238,17 +183,8 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
     }
 
     private fun shouldFireEdgeGesture(pair: Pair<Edge, Gesture>): Boolean {
-        return synchronized(fireableEdgeGestures) {
-            if (fireableEdgeGestures.isEmpty()) return false
-            fireableEdgeGestures.contains(pair)
-        }
-    }
-
-    private fun shouldFireScreenGesture(gesture: Gesture): Boolean {
-        return synchronized(fireableScreenGestures) {
-            if (fireableScreenGestures.isEmpty()) return false
-            fireableScreenGestures.contains(gesture)
-        }
+        // TODO Do we need to pre check?
+        return true
     }
 
     fun shouldStealMotionEvent(input: MotionEvent): Boolean {
@@ -307,6 +243,8 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
                     }
 
                     if (!eg.isDisabled) {
+                        enabledEdgeGestures.add(eg)
+
                         // For all.
                         if (eg.appsList.isEmpty() && eg.pkgSetsList.isEmpty()) {
                             requiredFrontAppAny = true
@@ -323,6 +261,7 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
             }
         }
 
+        logger.d("updateQuickCheckDataOnRuleChange, enabledEdgeGestures: $enabledEdgeGestures")
         logger.d("updateQuickCheckDataOnRuleChange, portRects: $portRects")
         logger.d("updateQuickCheckDataOnRuleChange, landRects: $landRects")
         logger.d("updateQuickCheckDataOnRuleChange, requiredFrontAppAny: $requiredFrontAppAny")
