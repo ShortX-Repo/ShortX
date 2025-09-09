@@ -44,14 +44,12 @@ class Repo(private val context: Context) {
             val binding = DeviceCodeBinding.from(code, DeviceId.requireDeviceId())
             val body = binding.toRequestBody()
             val res = CodeApi.create(context).verify(body)
-            logger.logOnDebug { "verify res $res" }
             if (res.isSuccess) {
                 VerifyResult.Success(res)
             } else {
                 VerifyResult.Fail
             }
         }.getOrElse {
-            logger.logOnDebug { "verify err ${it.stackTraceToString()}" }
             if (it is IOException) {
                 VerifyResult.NetworkError
             } else {
