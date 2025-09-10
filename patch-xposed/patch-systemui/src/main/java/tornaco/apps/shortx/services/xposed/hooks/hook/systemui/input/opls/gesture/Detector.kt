@@ -38,6 +38,10 @@ class Detector(
     private var lastOrientation = -1
     private var cacheVersion = 0
 
+    // 复用对象，避免频繁创建
+    private val reusableDetectedAreas = mutableListOf<DetectedArea>()
+    private val reusableAddedEdges = mutableSetOf<Edge>()
+
     // 缓存数据结构
     private data class CachedGestureRect(
         val rectF: RectF,
@@ -193,23 +197,25 @@ class Detector(
         // 确保缓存有效
         ensureCacheValid(isPortrait)
 
-        val detectedAreas = mutableListOf<DetectedArea>()
+        // 复用集合，避免重复创建
+        reusableDetectedAreas.clear()
+        reusableAddedEdges.clear()
+
         val targetCache = if (isPortrait) cachedPortraitRects else cachedLandscapeRects
-        val addedEdges = mutableSetOf<Edge>() // 避免重复添加相同的Edge
 
         // 使用缓存的矩形进行检测
         targetCache.forEach { cachedRect ->
             if (cachedRect.rectF.contains(downX, downY)) {
                 when (val area = cachedRect.detectedArea) {
                     is DetectedArea.CustomRect -> {
-                        detectedAreas.add(area)
+                        reusableDetectedAreas.add(area)
                         if (LOGV) logger.d("CustomRect: ${cachedRect.rectF} (downX: $downX downY: $downY) contains: true")
                     }
 
                     is DetectedArea.PredefinedEdge -> {
-                        if (!addedEdges.contains(area.edge)) {
-                            detectedAreas.add(area)
-                            addedEdges.add(area.edge)
+                        if (!reusableAddedEdges.contains(area.edge)) {
+                            reusableDetectedAreas.add(area)
+                            reusableAddedEdges.add(area.edge)
                             if (LOGV) logger.d("${area.edge}, rect: ${cachedRect.rectF} (downX: $downX downY: $downY) contains: true")
                         }
                     }
@@ -217,8 +223,9 @@ class Detector(
             }
         }
 
-        if (LOGV) logger.d("detectArea, $downX $downY return: $detectedAreas (screen info: $screenSize)")
-        return detectedAreas
+        if (LOGV) logger.d("detectArea, $downX $downY return: $reusableDetectedAreas (screen info: $screenSize)")
+        // 返回副本，避免外部修改影响复用对象
+        return reusableDetectedAreas.toList()
     }
 
     fun consumeEvent(event: MotionEvent): Boolean? {
