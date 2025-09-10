@@ -11,6 +11,8 @@ interface DetectorService {
 
     fun obsGestureSettingsChanged(obs: () -> Unit)
     fun obsConfigChanged(obs: () -> Unit)
+    // Rule/DA/PkgSet...
+    fun obsUserDataChanged(obs: () -> Unit)
 
     val enabledEdgeGestures: Set<EdgeGesture>
 }

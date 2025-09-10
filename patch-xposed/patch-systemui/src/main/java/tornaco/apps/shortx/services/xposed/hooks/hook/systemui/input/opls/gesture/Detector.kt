@@ -3,12 +3,14 @@ package tornaco.apps.shortx.services.xposed.hooks.hook.systemui.input.opls.gestu
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Point
+import android.graphics.RectF
 import android.os.Handler
 import android.view.GestureDetector
 import android.view.MotionEvent
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.common.Rect
 import tornaco.apps.shortx.core.proto.fact.Edge
+import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util._dp
@@ -29,6 +31,19 @@ class Detector(
     private var screenSize: Point = context.screenSize().apply {
         logger.w("Init screenSize: $this")
     }
+
+    // 缓存计算好的矩形区域
+    private var cachedPortraitRects = mutableListOf<CachedGestureRect>()
+    private var cachedLandscapeRects = mutableListOf<CachedGestureRect>()
+    private var lastOrientation = -1
+    private var cacheVersion = 0
+
+    // 缓存数据结构
+    private data class CachedGestureRect(
+        val rectF: RectF,
+        val detectedArea: DetectedArea,
+        val edgeGesture: EdgeGesture
+    )
 
     private val gestureDetector: GestureDetector =
         GestureDetector(context, object : OnGestureListenerAdapter() {
@@ -74,9 +89,18 @@ class Detector(
     init {
         service.obsGestureSettingsChanged {
             setSwipeDistanceThresholdDp(service.getSwipeDistanceThresholdDp())
+            // 手势设置变化时清除缓存
+            invalidateCache()
         }
         service.obsConfigChanged {
             onConfigurationChanged()
+        }
+        service.obsUserDataChanged {
+            invalidateCache()
+
+            val currentOrientation = context.resources.configuration.orientation
+            val isPortrait = currentOrientation == Configuration.ORIENTATION_PORTRAIT
+            ensureCacheValid(isPortrait)
         }
     }
 
@@ -84,6 +108,60 @@ class Detector(
         screenSize = context.screenSize().apply {
             logger.w("onConfigurationChanged, screenSize: $this")
         }
+        // 屏幕配置变化时清除缓存
+        invalidateCache()
+    }
+
+    private fun invalidateCache() {
+        logger.w("invalidateCache.")
+        cachedPortraitRects.clear()
+        cachedLandscapeRects.clear()
+        cacheVersion++
+        lastOrientation = -1
+    }
+
+    private fun ensureCacheValid(isPortrait: Boolean) {
+        val currentOrientation =
+            if (isPortrait) Configuration.ORIENTATION_PORTRAIT else Configuration.ORIENTATION_LANDSCAPE
+
+        // 如果方向没变且缓存有效，直接返回
+        if (lastOrientation == currentOrientation &&
+            (if (isPortrait) cachedPortraitRects.isNotEmpty() else cachedLandscapeRects.isNotEmpty())
+        ) {
+            return
+        }
+
+        // 重建缓存
+        val targetCache = if (isPortrait) cachedPortraitRects else cachedLandscapeRects
+        targetCache.clear()
+
+        service.enabledEdgeGestures.forEach { edgeGesture ->
+            if (edgeGesture.customRect != null && edgeGesture.customRect != Rect.getDefaultInstance()) {
+                // 自定义矩形区域
+                val rect = edgeGesture.customRect
+                val rectF = android.graphics.RectF(
+                    rect.left.toFloat(),
+                    rect.top.toFloat(),
+                    rect.right.toFloat(),
+                    rect.bottom.toFloat()
+                )
+                val detectedArea = DetectedArea.CustomRect(rect)
+                targetCache.add(CachedGestureRect(rectF, detectedArea, edgeGesture))
+            } else if (edgeGesture.edge != Edge.UNRECOGNIZED) {
+                // 预定义边缘区域
+                val rectF = edgeGesture.edge.getRect(
+                    isPortrait = isPortrait,
+                    screenWidth = screenSize.x.toFloat(),
+                    screenHeight = screenSize.y.toFloat(),
+                    areaSize = service.getGestureAreaWidthDp()._dp.toFloat(),
+                    areaLengthScale = service.getGestureLengthScale()
+                )
+                val detectedArea = DetectedArea.PredefinedEdge(edgeGesture.edge)
+                targetCache.add(CachedGestureRect(rectF, detectedArea, edgeGesture))
+            }
+        }
+
+        lastOrientation = currentOrientation
     }
 
     private fun handleSwipeEvent(downX: Float, downY: Float, gestureEvent: Gesture): Boolean {
@@ -110,41 +188,30 @@ class Detector(
 
     private fun detectArea(downX: Float, downY: Float): List<DetectedArea> {
         val currentOrientation = context.resources.configuration.orientation
-        if (LOGV) logger.d("currentOrientation: $currentOrientation (ORIENTATION_PORTRAIT = 1, ORIENTATION_LANDSCAPE = 2)")
         val isPortrait = currentOrientation == Configuration.ORIENTATION_PORTRAIT
 
-        val detectedAreas = mutableListOf<DetectedArea>()
+        // 确保缓存有效
+        ensureCacheValid(isPortrait)
 
-        // 从enabledEdgeGestures中检测所有启用的手势
-        service.enabledEdgeGestures.forEach { edgeGesture ->
-            if (edgeGesture.customRect != null && edgeGesture.customRect != Rect.getDefaultInstance()) {
-                // 检测自定义Rect
-                val rect = edgeGesture.customRect
-                val rectF = android.graphics.RectF(
-                    rect.left.toFloat(),
-                    rect.top.toFloat(),
-                    rect.right.toFloat(),
-                    rect.bottom.toFloat()
-                )
-                if (rectF.contains(downX, downY)) {
-                    detectedAreas.add(DetectedArea.CustomRect(rect))
-                    if (LOGV) logger.d("CustomRect: $rectF (downX: $downX downY: $downY) contains: true")
-                }
-            } else if (edgeGesture.edge != Edge.UNRECOGNIZED) {
-                // 检测预定义的Edge（只检测enabledEdgeGestures中的Edge）
-                val rect = edgeGesture.edge.getRect(
-                    isPortrait = isPortrait,
-                    screenWidth = screenSize.x.toFloat(),
-                    screenHeight = screenSize.y.toFloat(),
-                    areaSize = service.getGestureAreaWidthDp()._dp.toFloat(),
-                    areaLengthScale = service.getGestureLengthScale()
-                )
-                if (rect.contains(downX, downY)) {
-                    // 避免重复添加相同的Edge
-                    val predefinedEdge = DetectedArea.PredefinedEdge(edgeGesture.edge)
-                    if (!detectedAreas.contains(predefinedEdge)) {
-                        detectedAreas.add(predefinedEdge)
-                        if (LOGV) logger.d("${edgeGesture.edge}, rect: $rect (downX: $downX downY: $downY) contains: true")
+        val detectedAreas = mutableListOf<DetectedArea>()
+        val targetCache = if (isPortrait) cachedPortraitRects else cachedLandscapeRects
+        val addedEdges = mutableSetOf<Edge>() // 避免重复添加相同的Edge
+
+        // 使用缓存的矩形进行检测
+        targetCache.forEach { cachedRect ->
+            if (cachedRect.rectF.contains(downX, downY)) {
+                when (val area = cachedRect.detectedArea) {
+                    is DetectedArea.CustomRect -> {
+                        detectedAreas.add(area)
+                        if (LOGV) logger.d("CustomRect: ${cachedRect.rectF} (downX: $downX downY: $downY) contains: true")
+                    }
+
+                    is DetectedArea.PredefinedEdge -> {
+                        if (!addedEdges.contains(area.edge)) {
+                            detectedAreas.add(area)
+                            addedEdges.add(area.edge)
+                            if (LOGV) logger.d("${area.edge}, rect: ${cachedRect.rectF} (downX: $downX downY: $downY) contains: true")
+                        }
                     }
                 }
             }

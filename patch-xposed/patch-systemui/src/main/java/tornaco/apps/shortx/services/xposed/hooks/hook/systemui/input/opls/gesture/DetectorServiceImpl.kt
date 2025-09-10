@@ -38,6 +38,7 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
 
     private var afterGestureSettingsChangedObs: () -> Unit = {}
     private var afterConfigChangedObs: () -> Unit = {}
+    private var afterUserDataChangedObs: () -> Unit = {}
 
     override val enabledEdgeGestures = mutableSetOf<EdgeGesture>()
     private val interceptMotionPortRects = mutableListOf<RectF>()
@@ -61,6 +62,7 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
                 logger.w("GestureSettings changed.")
                 readAllSettings()
                 updateQuickCheckDataOnRuleChange()
+                afterUserDataChangedObs()
                 afterGestureSettingsChangedObs()
             }
         })
@@ -77,6 +79,7 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
             override fun onRuleChanged(id: String) {
                 super.onRuleChanged(id)
                 updateQuickCheckDataOnRuleChange()
+                afterUserDataChangedObs()
             }
         })
 
@@ -84,16 +87,19 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
             override fun onDAChanged(id: String) {
                 super.onDAChanged(id)
                 updateQuickCheckDataOnRuleChange()
+                afterUserDataChangedObs()
             }
         })
 
         shortx.registerPkgSetObs(object : IPkgSetObserver.Stub() {
             override fun onAddOrUpdate(id: String?) {
                 updateQuickCheckDataOnRuleChange()
+                afterUserDataChangedObs()
             }
 
             override fun onDelete(id: String?) {
                 updateQuickCheckDataOnRuleChange()
+                afterUserDataChangedObs()
             }
         })
 
@@ -121,6 +127,7 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
 
         readAllSettings()
         updateQuickCheckDataOnRuleChange()
+        afterUserDataChangedObs()
     }
 
     fun shouldInstallMonitor(): Boolean {
@@ -163,6 +170,10 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
 
     override fun obsConfigChanged(obs: () -> Unit) {
         afterConfigChangedObs = obs
+    }
+
+    override fun obsUserDataChanged(obs: () -> Unit) {
+        afterUserDataChangedObs = obs
     }
 
     override fun handleEdgeGestureEvent(areas: List<DetectedArea>, gestureEvent: Gesture): Boolean {
