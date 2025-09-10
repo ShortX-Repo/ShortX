@@ -252,10 +252,18 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
     private fun updateQuickCheckDataOnRuleChange() {
         val screenSize = shortx.getScreenSize()
         logger.i("updateQuickCheckDataOnRuleChange, screenSize: $screenSize")
-        val portRects = mutableListOf<RectF>()
-        val landRects = mutableListOf<RectF>()
-        val requiredApps = mutableSetOf<AppPkg>()
-        val enabledFacts = mutableSetOf<EdgeGesture>()
+
+        // 复用现有集合而不是创建新的
+        interceptMotionPortRects.clear()
+        interceptMotionLandRects.clear()
+        enabledEdgeGestures.clear()
+        requiredFrontApps.clear()
+
+        // 使用临时集合来收集数据，避免频繁的clear/add操作
+        val tempPortRects = mutableListOf<RectF>()
+        val tempLandRects = mutableListOf<RectF>()
+        val tempEnabledFacts = mutableSetOf<EdgeGesture>()
+        val tempRequiredApps = mutableSetOf<AppPkg>()
 
         // Reset.
         requiredFrontAppAny = false
@@ -276,11 +284,11 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
                                 eg.customRect.bottom.toFloat()
                             )
                             // 自定义矩形区域在横竖屏下都使用相同的坐标
-                            portRects.add(customRectF)
-                            landRects.add(customRectF)
+                            tempPortRects.add(customRectF)
+                            tempLandRects.add(customRectF)
                         } else if (eg.edge != Edge.UNRECOGNIZED) {
                             // 使用预定义的边缘区域计算
-                            portRects.add(
+                            tempPortRects.add(
                                 eg.edge.getRect(
                                     isPortrait = true,
                                     screenWidth = screenSize.x.toFloat(),
@@ -289,7 +297,7 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
                                     areaLengthScale = getGestureLengthScale()
                                 )
                             )
-                            landRects.add(
+                            tempLandRects.add(
                                 eg.edge.getRect(
                                     isPortrait = false,
                                     screenWidth = screenSize.x.toFloat(),
@@ -302,43 +310,39 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
                     }
 
                     if (!eg.isDisabled) {
-                        enabledFacts.add(eg)
+                        tempEnabledFacts.add(eg)
 
                         // For all.
                         if (eg.appsList.isEmpty() && eg.pkgSetsList.isEmpty()) {
                             requiredFrontAppAny = true
                             requiredFrontAppMatchQuick = true
                         } else {
-                            requiredApps.addAll(eg.appsList)
+                            tempRequiredApps.addAll(eg.appsList)
                             val pkgSetApps = eg.pkgSetsList.flatMap {
                                 shortx.getPkgSetByLabel(it)?.appPkgsList ?: emptyList()
                             }
-                            requiredApps.addAll(pkgSetApps)
+                            tempRequiredApps.addAll(pkgSetApps)
                         }
                     }
                 }
             }
         }
 
-        logger.d("updateQuickCheckDataOnRuleChange, enabledFacts: $enabledFacts")
-        logger.d("updateQuickCheckDataOnRuleChange, portRects: $portRects")
-        logger.d("updateQuickCheckDataOnRuleChange, landRects: $landRects")
-        logger.d("updateQuickCheckDataOnRuleChange, requiredFrontAppAny: $requiredFrontAppAny")
-        logger.d("updateQuickCheckDataOnRuleChange, requiredFrontAppMatchQuick: $requiredFrontAppMatchQuick")
-        logger.d("updateQuickCheckDataOnRuleChange, requiredApps: $requiredApps")
+        // 一次性更新所有集合
+        enabledEdgeGestures.addAll(tempEnabledFacts)
+        interceptMotionLandRects.addAll(tempLandRects)
+        interceptMotionPortRects.addAll(tempPortRects)
+        requiredFrontApps.addAll(tempRequiredApps)
 
-        this.enabledEdgeGestures.clear()
-        this.enabledEdgeGestures.addAll(enabledFacts)
-
-        this.interceptMotionLandRects.clear()
-        this.interceptMotionLandRects.addAll(landRects)
-
-        this.interceptMotionPortRects.clear()
-        this.interceptMotionPortRects.addAll(portRects)
-
-        this.requiredFrontApps.clear()
-        this.requiredFrontApps.addAll(requiredApps)
         checkFrontAppPkg("updateQuickCheckDataOnRuleChange")
+
+        logger.d("updateQuickCheckDataOnRuleChange, enabledEdgeGestures: $enabledEdgeGestures")
+        logger.d("updateQuickCheckDataOnRuleChange, interceptMotionLandRects: $interceptMotionLandRects")
+        logger.d("updateQuickCheckDataOnRuleChange, interceptMotionPortRects: $interceptMotionPortRects")
+        logger.d("updateQuickCheckDataOnRuleChange, requiredFrontApps: $requiredFrontApps")
+        logger.d("updateQuickCheckDataOnRuleChange, requiredFrontAppMatchQuick: $requiredFrontAppMatchQuick")
+        logger.d("updateQuickCheckDataOnRuleChange, requiredFrontAppAny: $requiredFrontAppAny")
+
     }
 
     private fun checkFrontAppPkg(reason: String) {
