@@ -425,8 +425,19 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
         register(EdgeGesture::class.java) { actual, rule ->
             val actualN = (actual as EdgeGesture)
             val ruleN = (rule as EdgeGesture)
-            actualN.gesture == ruleN.gesture && ((actualN.edge != Edge.UNRECOGNIZED && actualN.edge == ruleN.edge)
-                    || (actualN.customRect != Rect.getDefaultInstance() && actualN.customRect == ruleN.customRect))
+
+            val gestureMatches = actualN.gesture == ruleN.gesture
+            val isDefaultRect = { rect: Rect -> rect == Rect.getDefaultInstance() }
+            val isValidEdge = { edge: Edge -> edge != Edge.UNRECOGNIZED }
+
+            val edgeMatches = isDefaultRect(actualN.customRect) &&
+                    isValidEdge(actualN.edge) &&
+                    actualN.edge == ruleN.edge
+
+            val customRectMatches = !isDefaultRect(actualN.customRect) &&
+                    actualN.customRect == ruleN.customRect
+
+            gestureMatches && (edgeMatches || customRectMatches)
         }
 
         register(ScreenGesture::class.java) { actual, rule ->

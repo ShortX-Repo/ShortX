@@ -428,4 +428,6 @@ interface IShortX {
     List<ByteArrayWrapper> getAllDynamicShortcutSettings();
     ByteArrayWrapper getDynamicShortcutSettingsByNumber(int num);
     void updateDynamicShortcutSetting(in ByteArrayWrapper setting);
+
+    void showScreenAreaSelector(in SynchronousResultReceiver onSelectRect);
 }

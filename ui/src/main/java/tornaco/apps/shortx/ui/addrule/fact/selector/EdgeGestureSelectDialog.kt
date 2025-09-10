@@ -1,5 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.fact.selector
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -7,9 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -20,8 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.Rect
@@ -49,6 +49,8 @@ import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.ui.composeLogger
+import tornaco.apps.shortx.ui.gesture.ScreenRectPickerActivity
 
 data class EdgeGestureSelectDialogResult(
     val edge: Edge,
@@ -56,7 +58,7 @@ data class EdgeGestureSelectDialogResult(
     val isIntercept: Boolean,
     val apps: List<App>,
     val pkgSet: List<PkgSet>,
-    val customRect: tornaco.apps.shortx.core.proto.common.Rect? = null,
+    val customRect: Rect? = null,
 )
 
 class EdgeGestureSelectorState(
@@ -66,56 +68,25 @@ class EdgeGestureSelectorState(
     var edge by mutableStateOf(Edge.BottomRight)
     var gesture by mutableStateOf(Gesture.DoubleTap)
     var isIntercept by mutableStateOf(false)
-    var customRect by mutableStateOf<tornaco.apps.shortx.core.proto.common.Rect?>(null)
+    var customRect by mutableStateOf<Rect?>(null)
     var useCustomRect by mutableStateOf(false)
-
-    // 自定义Rect的输入值
-    var customRectLeft by mutableStateOf("0")
-    var customRectTop by mutableStateOf("0")
-    var customRectRight by mutableStateOf("100")
-    var customRectBottom by mutableStateOf("100")
 
     val apps = mutableStateListOf<App>()
     val pkgSets = mutableStateListOf<PkgSet>()
 
     fun show(data: Fact.EdgeGesture?) {
+        composeLogger.d("EdgeGestureSelectorState show: $data")
         this.edge = data?.edge ?: Edge.BottomRight
         this.gesture = data?.gesture ?: Gesture.SingleTap
         this.isIntercept = data?.isIntercept ?: false
         this.customRect = data?.customRect
         this.useCustomRect = data?.customRect != null
 
-        // 如果有自定义Rect，则填充输入框
-        data?.customRect?.let { rect ->
-            this.customRectLeft = rect.left.toString()
-            this.customRectTop = rect.top.toString()
-            this.customRectRight = rect.right.toString()
-            this.customRectBottom = rect.bottom.toString()
-        }
-
         this.apps.clear()
         this.pkgSets.clear()
         this.apps.addAll(data?.apps ?: emptyList())
         this.pkgSets.addAll(data?.pkgSets ?: emptyList())
         show()
-    }
-
-    // 构建自定义Rect对象
-    private fun buildCustomRect(): Rect? {
-        return if (useCustomRect) {
-            try {
-                Rect.newBuilder()
-                    .setLeft(customRectLeft.toInt())
-                    .setTop(customRectTop.toInt())
-                    .setRight(customRectRight.toInt())
-                    .setBottom(customRectBottom.toInt())
-                    .build()
-            } catch (e: NumberFormatException) {
-                null
-            }
-        } else {
-            null
-        }
     }
 
     fun getResult(): EdgeGestureSelectDialogResult {
@@ -125,7 +96,7 @@ class EdgeGestureSelectorState(
             isIntercept = isIntercept,
             apps = apps,
             pkgSet = pkgSets,
-            customRect = buildCustomRect()
+            customRect = if (useCustomRect) customRect else null
         )
     }
 }
@@ -143,6 +114,20 @@ fun rememberEdgeGestureSelectorState(
 @Composable
 fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
     if (state.isShowing) {
+        val context = LocalContext.current
+
+        // Activity启动器，用于选择屏幕区域
+        val screenRectPickerLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == android.app.Activity.RESULT_OK) {
+                val rect = result.data?.getSerializableExtra("rect") as Rect?
+                if (rect != null) {
+                    state.customRect = rect
+                }
+            }
+        }
+
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
             DialogTitle(text = LocalI18N.current["ui.fact.edge.gesture"])
         }, buttons = {
@@ -165,62 +150,49 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                     FieldTitle(text = "使用自定义区域")
                     ShortXSwitch(checked = state.useCustomRect, onCheckedChange = {
                         state.useCustomRect = it
+                        if (!it) {
+                            state.customRect = null
+                        }
                     })
                 }
                 StandardSpacer()
 
-                // 自定义Rect输入区域
+                // 自定义Rect选择区域
                 AnimatedVisibility(visible = state.useCustomRect) {
                     Column {
                         SmallTitle(
                             modifier = Modifier.padding(vertical = 12.dp),
-                            text = "自定义矩形区域 (像素)"
+                            text = "自定义矩形区域"
                         )
 
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            OutlinedTextField(
-                                value = state.customRectLeft,
-                                onValueChange = { state.customRectLeft = it },
-                                label = { Text("Left") },
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                modifier = Modifier.weight(1f)
+                        // 显示当前选择的区域信息
+                        if (state.customRect != null) {
+                            val rect = state.customRect!!
+                            Text(
+                                text = "已选择区域: (${rect.left}, ${rect.top}) - (${rect.right}, ${rect.bottom})",
+                                modifier = Modifier.padding(vertical = 8.dp)
                             )
-                            OutlinedTextField(
-                                value = state.customRectTop,
-                                onValueChange = { state.customRectTop = it },
-                                label = { Text("Top") },
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                modifier = Modifier.weight(1f)
+                        } else {
+                            Text(
+                                text = "未选择区域",
+                                modifier = Modifier.padding(vertical = 8.dp)
                             )
                         }
 
-                        StandardSpacer()
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        // 选择区域按钮
+                        TextButton(
+                            onClick = {
+                                screenRectPickerLauncher.launch(
+                                    ScreenRectPickerActivity.start(context)
+                                )
+                            },
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            OutlinedTextField(
-                                value = state.customRectRight,
-                                onValueChange = { state.customRectRight = it },
-                                label = { Text("Right") },
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                modifier = Modifier.weight(1f)
-                            )
-                            OutlinedTextField(
-                                value = state.customRectBottom,
-                                onValueChange = { state.customRectBottom = it },
-                                label = { Text("Bottom") },
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                modifier = Modifier.weight(1f)
-                            )
+                            Text("选择屏幕区域")
                         }
 
                         StandardSpacer()
-                        TipRow(text = "提示：Left < Right, Top < Bottom")
+                        TipRow(text = "提示：点击按钮在屏幕上选择触发区域")
                         StandardSpacer()
                     }
                 }

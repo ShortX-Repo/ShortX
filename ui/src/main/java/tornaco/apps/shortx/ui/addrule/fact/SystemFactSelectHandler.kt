@@ -44,6 +44,7 @@ import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.composeLogger
 import java.time.LocalTime
 
 @Composable
@@ -79,7 +80,17 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
     val edgeGestureSelectorState = rememberEdgeGestureSelectorState(
         selected = { eg ->
-            addFact(Fact.EdgeGesture(eg.edge, eg.gesture, eg.isIntercept, eg.apps, eg.pkgSet))
+            composeLogger.d("EdgeGestureSelectorState selected: $eg")
+            addFact(
+                Fact.EdgeGesture(
+                    edge = eg.edge,
+                    gesture = eg.gesture,
+                    isIntercept = eg.isIntercept,
+                    apps = eg.apps,
+                    pkgSets = eg.pkgSet,
+                    customRect = eg.customRect
+                )
+            )
         },
         showEdgeHint = {
             shortXManager.showEdgeHint(listOf(it))

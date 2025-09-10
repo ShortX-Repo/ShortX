@@ -597,6 +597,12 @@ class ShortXManager(val service: IShortX) {
         }
     }
 
+    fun showScreenAreaSelector(onSelectRect: SynchronousResultReceiver) {
+        invokeService(Unit) {
+            showScreenAreaSelector(onSelectRect)
+        }
+    }
+
     fun getScreenSize(): Point {
         return invokeService(Point()) {
             screenSize

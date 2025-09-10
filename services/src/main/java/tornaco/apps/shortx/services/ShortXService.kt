@@ -79,6 +79,7 @@ import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleSet
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
+import tornaco.apps.shortx.core.proto.toProtoRect
 import tornaco.apps.shortx.core.proto.toggles.Toggle
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.res.Remix
@@ -1667,6 +1668,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         override fun updateDynamicShortcutSetting(setting: ByteArrayWrapper) {
             val dynamicShortcutSetting = DynamicShortcutSetting.parseFrom(setting.byteData)
             shortXContext.appState.updateDynamicShortcutSetting(dynamicShortcutSetting)
+        }
+
+        override fun showScreenAreaSelector(onSelectRect: SynchronousResultReceiver) {
+            shortXContext.wm.enableAreaSelector(
+                onSelect = { onSelectRect.send(ByteArrayWrapper(it.toProtoRect().toByteArray())) },
+                onSelectFullScreen = {},
+                onDetach = {}
+            )
         }
 
         override fun addToggle(toggle: ByteArrayWrapper) {
