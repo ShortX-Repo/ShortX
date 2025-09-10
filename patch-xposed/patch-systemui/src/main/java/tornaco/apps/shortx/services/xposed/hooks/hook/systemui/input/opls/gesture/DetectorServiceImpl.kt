@@ -193,7 +193,29 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
     }
 
     private fun shouldFireEdgeGesture(area: DetectedArea, gesture: Gesture): Boolean {
-        return true
+        // 检查enabledEdgeGestures中是否包含匹配的EdgeGesture
+        return enabledEdgeGestures.any { enabledGesture ->
+            // 首先检查gesture是否匹配，不匹配则提前返回false
+            if (enabledGesture.gesture != gesture) {
+                return@any false
+            }
+
+            // gesture匹配后再检查区域是否匹配
+            when (area) {
+                is DetectedArea.PredefinedEdge -> {
+                    // 对于预定义边缘，检查edge是否匹配且customRect为默认值
+                    enabledGesture.edge == area.edge &&
+                            (enabledGesture.customRect == null || enabledGesture.customRect == tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance())
+                }
+
+                is DetectedArea.CustomRect -> {
+                    // 对于自定义矩形，检查customRect是否匹配
+                    enabledGesture.customRect != null &&
+                            enabledGesture.customRect != tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance() &&
+                            enabledGesture.customRect == area.rect
+                }
+            }
+        }
     }
 
     fun shouldStealMotionEvent(input: MotionEvent): Boolean {
