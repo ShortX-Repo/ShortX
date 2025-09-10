@@ -6,7 +6,12 @@ import android.graphics.RectF
 import android.os.SystemClock
 import android.view.InputEvent
 import android.view.MotionEvent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.ICallback
+import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AppPkgList
@@ -28,6 +33,8 @@ import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.data.GlobalSettin
 class DetectorServiceImpl(private val context: Context) : DetectorService {
     private val shortx by lazy { shortXManager }
     private val logger = Logger("DetectorService")
+
+    private val scope: CoroutineScope = CoroutineScope(SupervisorJob())
 
     private var swipeDistanceThresholdDp: Int = 24
     private var gestureAreaWidthDp: Int = 28
@@ -125,9 +132,28 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
             }
         })
 
-        readAllSettings()
-        updateQuickCheckDataOnRuleChange()
-        afterUserDataChangedObs()
+        val initDataFunc = {
+            readAllSettings()
+            updateQuickCheckDataOnRuleChange()
+            afterUserDataChangedObs()
+        }
+
+        runCatching {
+            ShortXManagerNative.shortX?.registerSystemReadyListener(object : ICallback.Stub() {
+                override fun receive(p0: ByteArrayWrapper?) {
+                    logger.w("System ready.")
+                    scope.launch {
+                        // Wait PkgPool.
+                        delay(6000)
+                        initDataFunc()
+                    }
+                }
+            })
+        }.onFailure {
+            logger.e(it, "registerSystemReadyListener")
+        }
+
+        initDataFunc()
     }
 
     fun shouldInstallMonitor(): Boolean {

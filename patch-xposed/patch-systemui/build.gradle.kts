@@ -16,6 +16,7 @@ dependencies {
     implementation(project(":external:utils"))
 
     implementation(libs.mvel2)
+    implementation(libs.kotlinx.coroutines.core)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotest.assertions.core)
