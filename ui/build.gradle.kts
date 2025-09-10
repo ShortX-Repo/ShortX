@@ -168,4 +168,4 @@ configurations.all {
     exclude(group = "javax.annotation", module = "javax.annotation-api")
 }
 
-addI18NTask()
+// addI18NTask()

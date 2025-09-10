@@ -116,7 +116,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
     if (state.isShowing) {
         val context = LocalContext.current
 
-        // Activity启动器，用于选择屏幕区域
+        // Activity launcher for selecting screen area
         val screenRectPickerLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult()
         ) { result ->
@@ -141,13 +141,13 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 val i18N = LocalI18N.current
 
-                // 自定义Rect开关
+                // Custom Rect toggle
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    FieldTitle(text = "使用自定义区域")
+                    FieldTitle(text = i18N["ui.fact.edge.gesture.use.custom.rect"])
                     ShortXSwitch(checked = state.useCustomRect, onCheckedChange = {
                         state.useCustomRect = it
                         if (!it) {
@@ -157,29 +157,32 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                 }
                 StandardSpacer()
 
-                // 自定义Rect选择区域
+                // Custom Rect selection area
                 AnimatedVisibility(visible = state.useCustomRect) {
                     Column {
                         SmallTitle(
                             modifier = Modifier.padding(vertical = 12.dp),
-                            text = "自定义矩形区域"
+                            text = i18N["ui.fact.edge.gesture.custom.rect.area"]
                         )
 
-                        // 显示当前选择的区域信息
+                        // Display current selected area info
                         if (state.customRect != null) {
                             val rect = state.customRect!!
                             Text(
-                                text = "已选择区域: (${rect.left}, ${rect.top}) - (${rect.right}, ${rect.bottom})",
+                                text = i18N["ui.fact.edge.gesture.selected.area"].replace("{left}", rect.left.toString())
+                                    .replace("{top}", rect.top.toString())
+                                    .replace("{right}", rect.right.toString())
+                                    .replace("{bottom}", rect.bottom.toString()),
                                 modifier = Modifier.padding(vertical = 8.dp)
                             )
                         } else {
                             Text(
-                                text = "未选择区域",
+                                text = i18N["ui.fact.edge.gesture.no.area.selected"],
                                 modifier = Modifier.padding(vertical = 8.dp)
                             )
                         }
 
-                        // 选择区域按钮
+                        // Select area button
                         TextButton(
                             onClick = {
                                 screenRectPickerLauncher.launch(
@@ -188,16 +191,16 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                             },
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text("选择屏幕区域")
+                            Text(i18N["ui.fact.edge.gesture.select.screen.area"])
                         }
 
                         StandardSpacer()
-                        TipRow(text = "提示：点击按钮在屏幕上选择触发区域")
+                        TipRow(text = i18N["ui.fact.edge.gesture.select.area.tip"])
                         StandardSpacer()
                     }
                 }
 
-                // 边缘位置选择（当不使用自定义Rect时显示）
+                // Edge position selection (shown when not using custom Rect)
                 AnimatedVisibility(visible = !state.useCustomRect) {
                     Box {
                         val dropdownState = rememberDropdownSelectorState()
