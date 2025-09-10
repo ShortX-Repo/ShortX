@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AppPkgList
+import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.proto.feature.AppFeature
@@ -232,24 +233,39 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
                 if (isEG) {
                     val eg = protoFact unpack_ EdgeGesture::class.java
                     if (!eg.isDisabled && eg.isIntercept) {
-                        portRects.add(
-                            eg.edge.getRect(
-                                isPortrait = true,
-                                screenWidth = screenSize.x.toFloat(),
-                                screenHeight = screenSize.y.toFloat(),
-                                areaSize = getGestureAreaWidthDp()._dp.toFloat(),
-                                areaLengthScale = getGestureLengthScale()
+                        // 优先检查是否有自定义矩形区域
+                        if (eg.customRect != null && eg.customRect != tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance()) {
+                            // 使用自定义矩形区域
+                            val customRectF = RectF(
+                                eg.customRect.left.toFloat(),
+                                eg.customRect.top.toFloat(),
+                                eg.customRect.right.toFloat(),
+                                eg.customRect.bottom.toFloat()
                             )
-                        )
-                        landRects.add(
-                            eg.edge.getRect(
-                                isPortrait = false,
-                                screenWidth = screenSize.x.toFloat(),
-                                screenHeight = screenSize.y.toFloat(),
-                                areaSize = getGestureAreaWidthDp()._dp.toFloat(),
-                                areaLengthScale = getGestureLengthScale()
+                            // 自定义矩形区域在横竖屏下都使用相同的坐标
+                            portRects.add(customRectF)
+                            landRects.add(customRectF)
+                        } else if (eg.edge != Edge.UNRECOGNIZED) {
+                            // 使用预定义的边缘区域计算
+                            portRects.add(
+                                eg.edge.getRect(
+                                    isPortrait = true,
+                                    screenWidth = screenSize.x.toFloat(),
+                                    screenHeight = screenSize.y.toFloat(),
+                                    areaSize = getGestureAreaWidthDp()._dp.toFloat(),
+                                    areaLengthScale = getGestureLengthScale()
+                                )
                             )
-                        )
+                            landRects.add(
+                                eg.edge.getRect(
+                                    isPortrait = false,
+                                    screenWidth = screenSize.x.toFloat(),
+                                    screenHeight = screenSize.y.toFloat(),
+                                    areaSize = getGestureAreaWidthDp()._dp.toFloat(),
+                                    areaLengthScale = getGestureLengthScale()
+                                )
+                            )
+                        }
                     }
 
                     if (!eg.isDisabled) {

@@ -119,7 +119,7 @@ class Detector(
         service.enabledEdgeGestures.forEach { edgeGesture ->
             if (edgeGesture.customRect != null && edgeGesture.customRect != Rect.getDefaultInstance()) {
                 // 检测自定义Rect
-                val rect = edgeGesture.customRect!!
+                val rect = edgeGesture.customRect
                 val rectF = android.graphics.RectF(
                     rect.left.toFloat(),
                     rect.top.toFloat(),
