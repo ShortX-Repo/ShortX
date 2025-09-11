@@ -1679,7 +1679,18 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         override fun showScreenAreaSelector(onSelectRect: SynchronousResultReceiver) {
             shortXContext.wm.enableAreaSelector(
                 onSelect = { onSelectRect.send(ByteArrayWrapper(it.toProtoRect().toByteArray())) },
-                onSelectFullScreen = {},
+                onSelectFullScreen = {
+                    // 获取屏幕尺寸并创建全屏Rect
+                    val screenSize = shortXContext.wm.screenSize
+                    val fullScreenRect = android.graphics.Rect(
+                        0,
+                        0,
+                        screenSize.x,
+                        screenSize.y
+                    )
+                    // 发送全屏Rect给调用者
+                    onSelectRect.send(ByteArrayWrapper(fullScreenRect.toProtoRect().toByteArray()))
+                },
                 onDetach = {}
             )
         }
