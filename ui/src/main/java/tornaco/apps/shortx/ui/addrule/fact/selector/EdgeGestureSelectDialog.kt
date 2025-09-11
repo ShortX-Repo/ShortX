@@ -140,22 +140,10 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
         }, content = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 val i18N = LocalI18N.current
-
-                // Custom Rect toggle
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    FieldTitle(text = i18N["ui.fact.edge.gesture.use.custom.rect"])
-                    ShortXSwitch(checked = state.useCustomRect, onCheckedChange = {
-                        state.useCustomRect = it
-                        if (!it) {
-                            state.customRect = null
-                        }
-                    })
-                }
-                StandardSpacer()
+                FieldTitle(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    text = i18N["ui.fact.edge.gesture.position"]
+                )
 
                 // Custom Rect selection area
                 AnimatedVisibility(visible = state.useCustomRect) {
@@ -169,7 +157,10 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                         if (state.customRect != null) {
                             val rect = state.customRect!!
                             Text(
-                                text = i18N["ui.fact.edge.gesture.selected.area"].replace("{left}", rect.left.toString())
+                                text = i18N["ui.fact.edge.gesture.selected.area"].replace(
+                                    "{left}",
+                                    rect.left.toString()
+                                )
                                     .replace("{top}", rect.top.toString())
                                     .replace("{right}", rect.right.toString())
                                     .replace("{bottom}", rect.bottom.toString()),
@@ -206,10 +197,6 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                         val dropdownState = rememberDropdownSelectorState()
 
                         Column {
-                            SmallTitle(
-                                modifier = Modifier.padding(vertical = 12.dp),
-                                text = i18N["ui.fact.edge.gesture.position"]
-                            )
                             ListItem(
                                 title = i18N[state.edge.displayNameKey()],
                                 action1 = {
@@ -238,12 +225,27 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                     }
                 }
 
+                // Custom Rect toggle
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    SmallTitle(text = i18N["ui.fact.edge.gesture.use.custom.rect"])
+                    ShortXSwitch(checked = state.useCustomRect, onCheckedChange = {
+                        state.useCustomRect = it
+                        if (!it) {
+                            state.customRect = null
+                        }
+                    })
+                }
+
                 StandardSpacer()
 
                 Box {
                     val dropdownState = rememberDropdownSelectorState()
                     Column {
-                        SmallTitle(
+                        FieldTitle(
                             modifier = Modifier.padding(vertical = 12.dp),
                             text = i18N["ui.fact.edge.gesture.gesture"]
                         )
@@ -308,6 +310,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                     state.pkgSets
                 )
                 StandardSpacer()
+                FieldTitle(text = LocalI18N.current["ui.fact.edge.gesture.front.app"])
                 ListItem(titleLines = appPkgSetText, onClick = {
                     appFgPkgSelectorState.show(
                         state.apps,

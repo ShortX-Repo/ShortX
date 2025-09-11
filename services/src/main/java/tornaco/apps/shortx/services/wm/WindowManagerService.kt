@@ -481,7 +481,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
                     },
                     onDragEnd = {
                         val everShowTips =
-                            store.read(Settings.IntSettings.AreaSelectorTipsShown) < 10
+                            store.read(Settings.IntSettings.AreaSelectorTipsShown) > 24
                         if (!everShowTips) {
                             showAreaSelectorTips()
                         }
