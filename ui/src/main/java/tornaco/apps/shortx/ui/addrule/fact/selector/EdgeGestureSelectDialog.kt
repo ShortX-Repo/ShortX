@@ -7,9 +7,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -29,6 +37,7 @@ import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.base.AppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.base.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.mapper.displayNameKey
@@ -154,8 +163,8 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                         )
 
                         // Display current selected area info
-                        if (state.customRect != null) {
-                            val rect = state.customRect!!
+                        val rect = state.customRect
+                        if (rect != null) {
                             Text(
                                 text = i18N["ui.fact.edge.gesture.selected.area"].replace(
                                     "{left}",
@@ -166,6 +175,23 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                     .replace("{bottom}", rect.bottom.toString()),
                                 modifier = Modifier.padding(vertical = 8.dp)
                             )
+
+                            // 添加显示区域位置的按钮
+                            Spacer(modifier = Modifier.height(8.dp))
+                            OutlinedButton(
+                                onClick = {
+                                    shortXManager.showScreenRectHint(rect)
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Visibility,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(i18N["ui.fact.edge.gesture.show.selected.area"])
+                            }
                         } else {
                             Text(
                                 text = i18N["ui.fact.edge.gesture.no.area.selected"],

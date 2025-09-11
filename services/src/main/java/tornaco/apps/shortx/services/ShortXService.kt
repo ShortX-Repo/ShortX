@@ -54,6 +54,7 @@ import tornaco.apps.shortx.core.proto.common.CoroutineContext
 import tornaco.apps.shortx.core.proto.common.CustomContextMenuSetting
 import tornaco.apps.shortx.core.proto.common.DynamicShortcutSetting
 import tornaco.apps.shortx.core.proto.common.GestureRecord
+import tornaco.apps.shortx.core.proto.common.Rect
 import tornaco.apps.shortx.core.proto.common.RemoteRuleContextAndVars
 import tornaco.apps.shortx.core.proto.common.ShortXServerDirs
 import tornaco.apps.shortx.core.proto.common.StatusBarClipUiSettings
@@ -385,6 +386,11 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun showEdgeHint(edgeNumber: IntArray) {
             shortXContext.gesture.showEdgeHint(edgeNumber.toList())
+        }
+
+        override fun showScreenRectHint(rect: ByteArrayWrapper) {
+            val model = Rect.parseFrom(rect.byteData)
+            shortXContext.gesture.showScreenRectHint(model)
         }
 
         override fun addDirectAction(da: ByteArrayWrapper) {

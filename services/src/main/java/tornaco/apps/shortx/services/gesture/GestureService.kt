@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.GestureRecord
+import tornaco.apps.shortx.core.proto.common.Rect
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.action.emptyByteArrayWrapper
@@ -57,11 +58,15 @@ class GestureService(shortXContext: ShortXContext) :
         showGideLineViewForArea(edgeNumber.mapNotNull { Edge.forNumber(it) })
     }
 
+    fun showScreenRectHint(rect: Rect) {
+        showGideLineViewForRect(listOf(rect))
+    }
+
     private fun showGideLineViewForArea(area: List<Edge>) {
         systemServiceScope.launchSafety("showGideLineViewForArea") {
             // Dismiss first.
-            showingHints.forEach {
-                kotlin.runCatching { it.detach() }.onFailure { logger.e(it, "detach fail") }
+            showingHints.forEach { hint ->
+                kotlin.runCatching { hint.detach() }.onFailure { logger.e(it, "detach fail") }
             }
             showingHints.clear()
 
@@ -72,7 +77,31 @@ class GestureService(shortXContext: ShortXContext) :
                         HotSeat(area, ColorPalette[index % ColorPalette.size])
                     },
                     getGestureAreaWidthDp()._dp,
-                    getGestureLengthScale()
+                    getGestureLengthScale(),
+                    emptyList()
+                ).apply { attach() }
+            showingHints.add(guideLineView)
+            delay(GUIDELINE_VIEW_SHOWN_TIME)
+            guideLineView.detach()
+            showingHints.remove(guideLineView)
+        }
+    }
+
+    private fun showGideLineViewForRect(rects: List<Rect>) {
+        systemServiceScope.launchSafety("showGideLineViewForRect") {
+            // Dismiss first.
+            showingHints.forEach { hint ->
+                kotlin.runCatching { hint.detach() }.onFailure { logger.e(it, "detach fail") }
+            }
+            showingHints.clear()
+
+            val guideLineView =
+                GuideLineView(
+                    context,
+                    emptyList(),
+                    0,
+                    0f,
+                    rects
                 ).apply { attach() }
             showingHints.add(guideLineView)
             delay(GUIDELINE_VIEW_SHOWN_TIME)
@@ -237,9 +266,9 @@ class GestureService(shortXContext: ShortXContext) :
     fun notifyGestureSettingsChanged() {
         logger.logOnDebug("notifyGestureSettingsChanged.")
         synchronized(gestureSettingsListeners) {
-            gestureSettingsListeners.broadcast {
+            gestureSettingsListeners.broadcast { item ->
                 runCatching {
-                    it.receive(emptyByteArrayWrapper)
+                    item.receive(emptyByteArrayWrapper)
                 }.onFailure {
                     logger.e(it, "notifyGestureSettingsChanged")
                 }

@@ -33,6 +33,7 @@ import tornaco.apps.shortx.core.proto.common.DynamicShortcutSetting
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.OCREngine
 import tornaco.apps.shortx.core.proto.common.QSTileList
+import tornaco.apps.shortx.core.proto.common.Rect
 import tornaco.apps.shortx.core.proto.common.RemoteRuleContextAndVars
 import tornaco.apps.shortx.core.proto.common.Ringtone
 import tornaco.apps.shortx.core.proto.common.SensorUsage
@@ -352,6 +353,12 @@ class ShortXManager(val service: IShortX) {
     fun showEdgeHint(edge: List<Edge>) {
         invokeService(Unit) {
             showEdgeHint(edge.map { it.number }.toIntArray())
+        }
+    }
+
+    fun showScreenRectHint(rect: Rect) {
+        invokeService(Unit) {
+            showScreenRectHint(ByteArrayWrapper(rect.toByteArray()))
         }
     }
 

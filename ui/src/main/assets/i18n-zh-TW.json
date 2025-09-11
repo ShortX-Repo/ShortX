@@ -1389,5 +1389,6 @@
   "ui.fact.edge.gesture.selected.area": "已選擇區域: ({left}, {top}) - ({right}, {bottom})",
   "ui.fact.edge.gesture.no.area.selected": "未選擇區域",
   "ui.fact.edge.gesture.select.screen.area": "選擇螢幕區域",
-  "ui.fact.edge.gesture.select.area.tip": "提示：點擊按鈕在螢幕上選擇觸發區域"
+  "ui.fact.edge.gesture.select.area.tip": "提示：點擊按鈕在螢幕上選擇觸發區域",
+  "ui.fact.edge.gesture.show.selected.area": "顯示選中區域"
 }

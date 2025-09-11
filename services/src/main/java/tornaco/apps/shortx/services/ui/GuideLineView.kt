@@ -13,6 +13,8 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.FrameLayout
 import com.android.internal.R
+import tornaco.apps.shortx.core.proto.common.Rect
+import tornaco.apps.shortx.core.proto.toAndroidRect
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.screenSize
@@ -25,7 +27,8 @@ class GuideLineView(
     context: Context,
     hotSeats: List<HotSeat>,
     areaSize: Int,
-    areaLengthScale: Float
+    areaLengthScale: Float,
+    customRects: List<Rect>
 ) :
     FrameLayout(context) {
 
@@ -38,7 +41,7 @@ class GuideLineView(
 
     init {
         addView(
-            Guideline(context, hotSeats, areaSize, areaLengthScale),
+            Guideline(context, hotSeats, areaSize, areaLengthScale, customRects),
             LayoutParams.MATCH_PARENT,
             LayoutParams.MATCH_PARENT
         )
@@ -93,7 +96,8 @@ class GuideLineView(
         context: Context,
         private val hotSeats: List<HotSeat>,
         private val areaSize: Int,
-        private val areaLengthScale: Float
+        private val areaLengthScale: Float,
+        private val customRects: List<Rect>
     ) :
         View(context) {
         private val screenSize by lazy {
@@ -127,6 +131,12 @@ class GuideLineView(
                 )
                 canvas.drawRect(rect, paint.apply {
                     color = it.color
+                })
+            }
+
+            customRects.forEach {
+                canvas.drawRect(it.toAndroidRect(), paint.apply {
+                    color = Color.RED
                 })
             }
         }

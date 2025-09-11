@@ -430,4 +430,5 @@ interface IShortX {
     void updateDynamicShortcutSetting(in ByteArrayWrapper setting);
 
     void showScreenAreaSelector(in SynchronousResultReceiver onSelectRect);
+    void showScreenRectHint(in ByteArrayWrapper rect);
 }
