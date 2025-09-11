@@ -1,7 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.action.selector.cv
 
-import android.graphics.Rect
-import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.proto.toAndroidRect
-import tornaco.apps.shortx.core.proto.toProtoRect
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.FindPointsByColorConfig
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
@@ -36,9 +35,9 @@ import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.SmallSpacer
-import tornaco.apps.shortx.ui.base.TextInputDialog
-import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.gesture.ScreenRectPickerActivity
 import tornaco.apps.shortx.ui.util.toComposeColor
+import tornaco.apps.shortx.core.proto.common.Rect as ProtoRect
 
 @AndroidEntryPoint
 class FindColorSelectorActivity : BaseSelectorActivity<FindPointsByColorConfig>() {
@@ -57,6 +56,17 @@ private fun BaseSelectorActivity<FindPointsByColorConfig>.Selector(currentAction
     }
 
     val state by vm.state.collectAsState()
+
+    val screenRectPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == android.app.Activity.RESULT_OK) {
+            val rect = result.data?.getSerializableExtra("rect") as ProtoRect?
+            if (rect != null) {
+                vm.setRect(rect)
+            }
+        }
+    }
 
     ShortXAppBarScaffold(
         title = LocalI18N.current["ui.action.find.color"],
@@ -109,42 +119,21 @@ private fun BaseSelectorActivity<FindPointsByColorConfig>.Selector(currentAction
 
             }
 
-            val showRectFormatError = {
-                Toast.makeText(
-                    context,
-                    i18N["ui.action.rect.src.rect.format.error"],
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-            val rectInputDialogState = rememberTextInputState(
-                title = i18N["ui.action.rect.src.rect"],
-                message = i18N["ui.action.rect.src.rect.format"]
-            ) {
-                val rect = kotlin.runCatching {
-                    Rect.unflattenFromString(it)
-                }.getOrElse {
-                    showRectFormatError()
-                    null
-                }
-                rect?.let {
-                    vm.setRect(it.toProtoRect())
-                }
-            }
-            TextInputDialog(state = rectInputDialogState)
-
             SectionSpacer()
             FieldTitle(text = LocalI18N.current["ui.action.find.color.rect"])
             SmallSpacer()
             ListItem(
                 titleLines = listOf(
-                    if (state.rect == tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance()) {
+                    if (state.rect == ProtoRect.getDefaultInstance()) {
                         i18N["ui.common.all"]
                     } else {
                         state.rect.toAndroidRect().flattenToString()
                     }
                 ),
                 onClick = {
-                    rectInputDialogState.show(state.rect.toAndroidRect().flattenToString())
+                    screenRectPickerLauncher.launch(
+                        ScreenRectPickerActivity.start(context)
+                    )
                 }
             )
         }
