@@ -78,9 +78,9 @@ private fun ContextViewModel<*, *>.translateDA(
 ) =
     da.description
         .replaceGlobalVarValues { globalVars }
-        .fallbackOnEmpty(da.actionsList.mapNotNull {
+        .fallbackOnEmpty(da.actionsList.mapNotNull { mod ->
             runCatching {
-                it.toAction(shortXManager)
+                mod.toAction(shortXManager)
             }.getOrElse {
                 Logger.nameless.e(it, "translateDA.toAction")
                 null
@@ -91,7 +91,8 @@ private fun ContextViewModel<*, *>.translateDA(
 
 fun ContextViewModel<*, *>.ruleToRuleUM(
     rule: Rule,
-    globalVars: List<GlobalVar>
+    globalVars: List<GlobalVar>,
+    pinnedRuleIds: Set<String> = emptySet()
 ): RuleUM {
     val firstFact: Fact? =
         if (rule.factsList.isEmpty()) null else rule.factsList[0]?.toFact(shortXManager)
@@ -128,7 +129,8 @@ fun ContextViewModel<*, *>.ruleToRuleUM(
         } ?: ShortXRed.value,
         rule = rule,
         versionCode = rule.versionCode,
-        hasAnyParameter = rule.parametersList.isNotEmpty()
+        hasAnyParameter = rule.parametersList.isNotEmpty(),
+        isPinned = pinnedRuleIds.contains(rule.id)
     )
 }
 

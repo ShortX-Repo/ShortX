@@ -134,16 +134,33 @@ private fun RuleItem(
                 .padding(top = 6.dp)
         ) {
             val colorfulCard = LocalUiSettings.current.uiColorfulCard
-            Text(
-                text = rule.title,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontSize = if (showDescription) 14.5.sp else 13.5.sp
-                ),
-                color = colorfulCard.select(
-                    themedTextColor(color = Color(rule.iconColor)),
-                    Color.Unspecified
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = rule.title,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = if (showDescription) 14.5.sp else 13.5.sp
+                    ),
+                    color = colorfulCard.select(
+                        themedTextColor(color = Color(rule.iconColor)),
+                        Color.Unspecified
+                    )
                 )
-            )
+                if (rule.isPinned) {
+                    RemixIcon(
+                        modifier = Modifier.size(16.dp),
+                        remixName = Remix.Map.pushpin_fill,
+                        tint = colorfulCard.select(
+                            themedTextColor(color = Color(rule.iconColor)),
+                            MaterialTheme.colorScheme.primary
+                        )
+                    )
+                }
+            }
             androidx.compose.animation.AnimatedVisibility(showDescription) {
                 Text(
                     modifier = Modifier.padding(top = 0.dp),
@@ -240,6 +257,12 @@ private fun listItemOverflowMenu(
         state = menuState,
         items = listOf(
             DropdownItem(
+                labelLines = listOf(i18N[if (rule.isPinned) "ui.common.unpin" else "ui.common.pin"]),
+                data = RuleItemMenuOptions.TogglePin,
+                icon = {
+                    RemixIcon(if (rule.isPinned) Remix.Map.pushpin_line else Remix.Map.pushpin_fill)
+                }),
+            DropdownItem(
                 labelLines = listOf(i18N["ui.common.execute.actions"]),
                 data = RuleItemMenuOptions.Execute,
                 icon = {
@@ -324,6 +347,10 @@ private fun listItemOverflowMenu(
                     }
                 }
 
+                RuleItemMenuOptions.TogglePin -> {
+                    handler.togglePin(rule)
+                }
+
                 RuleItemMenuOptions.Execute -> {
                     handler.run(rule)
                 }
@@ -353,5 +380,5 @@ private fun listItemOverflowMenu(
 }
 
 enum class RuleItemMenuOptions {
-    Dup, Delete, Edit, Share, Execute, MoveToSet, MoveOutSet, ViewEvaRecord, ExtractAsDA
+    TogglePin, Dup, Delete, Edit, Share, Execute, MoveToSet, MoveOutSet, ViewEvaRecord, ExtractAsDA
 }

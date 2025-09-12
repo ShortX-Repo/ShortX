@@ -79,6 +79,10 @@ fun getLocalRuleItemHandler(vm: BaseRuleListViewModel): RuleItemHandler {
         override fun extractAsDA(title: String, rule: RuleUM, token: String?) {
             vm.extractAsDA(title, rule, token)
         }
+
+        override fun togglePin(rule: RuleUM) {
+            vm.togglePin(rule)
+        }
     }
     return handler
 }

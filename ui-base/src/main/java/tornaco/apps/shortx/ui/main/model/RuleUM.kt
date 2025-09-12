@@ -30,4 +30,7 @@ data class RuleUM(
     val isRuleSet: Boolean = false,
     val hasAnyEnabled: Boolean = false,
     val itemsCount: Int = 0,
+
+    // For Pin
+    val isPinned: Boolean = false,
 )

@@ -56,6 +56,7 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
     ): RuleList {
         logger.d("getRuleList")
         val gvs = shortXManager.getAllGlobalVars()
+        val pinnedRuleIds = pref.pinnedRuleIds.firstOrNull() ?: emptySet()
         val allRules = shortXManager.getAllRules().apply {
             logger.i("all rules: ${this.joinToString { it.title }}")
         }.filter {
@@ -97,7 +98,7 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
             .let(sort(ruleSortBy))
             .mapNotNull { rule ->
                 runCatching {
-                    ruleToRuleUM(rule, gvs)
+                    ruleToRuleUM(rule, gvs, pinnedRuleIds)
                 }.getOrElse {
                     logger.e(it, "ruleToRuleUM")
                     null
@@ -123,7 +124,8 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                     isEnabled = subRules.isNotEmpty() && subRules.all { it.isEnabled },
                     hasAnyEnabled = subRules.isNotEmpty() && subRules.any { it.isEnabled },
                     itemsCount = subRules.size,
-                    hasAnyParameter = false
+                    hasAnyParameter = false,
+                    isPinned = pinnedRuleIds.contains(ruleSet.id)
                 )
             }
         val ruleSetFilters = listOf(

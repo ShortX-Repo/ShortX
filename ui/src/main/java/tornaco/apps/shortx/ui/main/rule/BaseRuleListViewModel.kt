@@ -354,4 +354,26 @@ abstract class BaseRuleListViewModel(context: Context) :
             }
         }
     }
+
+    fun pinRule(rule: RuleUM) {
+        viewModelScope.launch {
+            pref.pinRule(rule.id)
+            requestLoadRuleList("pinRule")
+        }
+    }
+
+    fun unpinRule(rule: RuleUM) {
+        viewModelScope.launch {
+            pref.unpinRule(rule.id)
+            requestLoadRuleList("unpinRule")
+        }
+    }
+
+    fun togglePin(rule: RuleUM) {
+        if (rule.isPinned) {
+            unpinRule(rule)
+        } else {
+            pinRule(rule)
+        }
+    }
 }
