@@ -30,7 +30,8 @@ import java.util.Date
 
 fun ContextViewModel<*, *>.daToDirectActionUM(
     directAction: DirectAction,
-    globalVars: List<GlobalVar>
+    globalVars: List<GlobalVar>,
+    pinnedDAIds: Set<String> = emptySet()
 ): DirectActionUM {
     val firstAction: Action? = directAction.actionsList?.let { list ->
         if (list.isEmpty()) {
@@ -66,7 +67,8 @@ fun ContextViewModel<*, *>.daToDirectActionUM(
         } ?: ShortXRed.value,
         directAction = directAction,
         versionCode = directAction.versionCode,
-        hasAnyParameter = directAction.parametersList.isNotEmpty()
+        hasAnyParameter = directAction.parametersList.isNotEmpty(),
+        isPinned = pinnedDAIds.contains(directAction.id)
     )
 }
 

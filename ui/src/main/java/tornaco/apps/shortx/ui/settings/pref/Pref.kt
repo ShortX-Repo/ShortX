@@ -71,6 +71,9 @@ private val SELECTED_DA_FILTER =
 private val SELECTED_RULE_FILTER =
     stringPreferencesKey("selected_rule_filter")
 
+private val PINNED_DA_IDS =
+    stringSetPreferencesKey("pinned_da_ids")
+
 class Pref(val context: Context) {
     companion object {
         private val gson by lazy { Gson() }
@@ -141,6 +144,10 @@ class Pref(val context: Context) {
     }
     val selectedRuleFilter: Flow<String> = context.dataStore.data.map { preferences ->
         preferences[SELECTED_RULE_FILTER] ?: ""
+    }
+
+    val pinnedDAIds: Flow<Set<String>> = context.dataStore.data.map { preferences ->
+        preferences[PINNED_DA_IDS] ?: emptySet()
     }
 
     val shareAuthorInfo: Flow<Author> = context.dataStore.data.map { preferences ->
@@ -270,6 +277,30 @@ class Pref(val context: Context) {
         context.dataStore.edit {
             it[SELECTED_RULE_FILTER] = filter
         }
+    }
+
+    suspend fun pinDA(daId: String) {
+        val current = pinnedDAIds.firstOrNull() ?: emptySet()
+        val updated = current.toMutableSet().apply {
+            add(daId)
+        }
+        context.dataStore.edit { settings ->
+            settings[PINNED_DA_IDS] = updated
+        }
+    }
+
+    suspend fun unpinDA(daId: String) {
+        val current = pinnedDAIds.firstOrNull() ?: emptySet()
+        val updated = current.toMutableSet().apply {
+            remove(daId)
+        }
+        context.dataStore.edit { settings ->
+            settings[PINNED_DA_IDS] = updated
+        }
+    }
+
+    suspend fun isPinned(daId: String): Boolean {
+        return pinnedDAIds.firstOrNull()?.contains(daId) ?: false
     }
 
     suspend fun setShareAuthor(author: Author) {

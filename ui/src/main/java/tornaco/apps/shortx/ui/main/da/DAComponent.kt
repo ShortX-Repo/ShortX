@@ -109,6 +109,7 @@ fun DirectActionItem(
                 runningInsCount = runningInsCount,
                 hasFuncParameter = da.hasAnyParameter,
                 colorfulCard = colorfulCard,
+                isPinned = da.isPinned,
                 onClick = { handler.click(da) },
                 run = {
                     clickAnimateState.startAllAnim()
@@ -205,6 +206,7 @@ private fun DAListItem(
     iconColor: Color,
     hasFuncParameter: Boolean,
     colorfulCard: Boolean,
+    isPinned: Boolean = false,
     onClick: () -> Unit,
     run: () -> Unit,
     onLongClick: () -> Unit,
@@ -284,13 +286,26 @@ private fun DAListItem(
         MediumSpacer()
 
         Column(modifier = Modifier) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontSize = 14.5.sp
-                ),
-                color = if (colorfulCard) themedTextColor(iconColor) else Color.Unspecified
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 14.5.sp
+                    ),
+                    color = if (colorfulCard) themedTextColor(iconColor) else Color.Unspecified,
+                    modifier = Modifier.weight(1f)
+                )
+                if (isPinned) {
+                    TinySpacer()
+                    RemixIcon(
+                        remixName = Remix.Map.pushpin_fill,
+                        tint = if (colorfulCard) themedTextColor(iconColor) else MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(12.dp)
+                    )
+                }
+            }
             SmallSpacer()
             Text(
                 text = description,
@@ -412,6 +427,22 @@ private fun daListItemOverflowMenu(
 
     DropdownSelector(
         widthFraction = menuDropdownFraction, state = menuState, items = listOfNotNull(
+            // 添加置顶/取消置顶选项（放在第一个位置）
+            if (da.isPinned) {
+                DropdownItem(
+                    labelLines = listOf(LocalI18N.current["ui.common.unpin"]),
+                    data = DAItemMenuOptions.Unpin,
+                    icon = {
+                        RemixIcon(Remix.Map.unpin_line)
+                    })
+            } else {
+                DropdownItem(
+                    labelLines = listOf(LocalI18N.current["ui.common.pin"]),
+                    data = DAItemMenuOptions.Pin,
+                    icon = {
+                        RemixIcon(Remix.Map.pushpin_2_line)
+                    })
+            },
             DropdownItem(
                 labelLines = listOf(LocalI18N.current["ui.common.create.shortcut"]),
                 data = DAItemMenuOptions.Shortcut,
@@ -509,7 +540,7 @@ private fun daListItemOverflowMenu(
                                 true,
                             )
                             if (res == SnackbarResult.ActionPerformed) {
-                                kotlin.runCatching {
+                                runCatching {
                                     PkgUtils.launchPkgSettings(
                                         context,
                                         BuildPropInternal.APP_PACKAGE_NAME
@@ -592,6 +623,14 @@ private fun daListItemOverflowMenu(
                 DAItemMenuOptions.RemoveDynamicShortcut -> {
                     ActionShortcutActivity.removeDynamicShortcut(context, da)
                 }
+
+                DAItemMenuOptions.Pin -> {
+                    handler.togglePin(da)
+                }
+
+                DAItemMenuOptions.Unpin -> {
+                    handler.togglePin(da)
+                }
             }
         })
 
@@ -600,7 +639,7 @@ private fun daListItemOverflowMenu(
 
 
 enum class DAItemMenuOptions {
-    Dup, DeepLink, ShellCommand, Delete, Edit, Share, Shortcut, DynamicShortcut, RemoveDynamicShortcut, CreateApk, MoveToSet, MoveOutSet, ViewEvaRecord
+    Dup, DeepLink, ShellCommand, Delete, Edit, Share, Shortcut, DynamicShortcut, RemoveDynamicShortcut, CreateApk, MoveToSet, MoveOutSet, ViewEvaRecord, Pin, Unpin
 }
 
 @Composable

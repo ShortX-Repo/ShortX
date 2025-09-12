@@ -321,8 +321,28 @@ abstract class BaseDAListViewModel(context: Context) :
     }
 
     fun updateSearchQuery(query: String) {
+        updateState { copy(searchQuery = query) }
+    }
+
+    fun pinDA(da: DirectActionUM) {
         viewModelScope.launch {
-            updateState { copy(searchQuery = query) }
+            pref.pinDA(da.id)
+            requestLoadDAList()
+        }
+    }
+
+    fun unpinDA(da: DirectActionUM) {
+        viewModelScope.launch {
+            pref.unpinDA(da.id)
+            requestLoadDAList()
+        }
+    }
+
+    fun togglePin(da: DirectActionUM) {
+        if (da.isPinned) {
+            unpinDA(da)
+        } else {
+            pinDA(da)
         }
     }
 }

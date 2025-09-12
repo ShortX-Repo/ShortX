@@ -100,6 +100,10 @@ fun getLocalDAItemHandler(vm: BaseDAListViewModel): DAItemHandler {
         override fun stopAllJobs(da: DirectActionUM) {
             vm.stopJobs(da)
         }
+        
+        override fun togglePin(da: DirectActionUM) {
+            vm.togglePin(da)
+        }
     }
 
     return daHandler

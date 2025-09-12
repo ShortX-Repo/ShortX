@@ -56,6 +56,7 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
         logger.d("getDAList: $searchQuery")
         val gvs = shortXManager.getAllGlobalVars()
         val allDASets = shortXManager.getAllDASets()
+        val pinnedDAIds = pref.pinnedDAIds.firstOrNull() ?: emptySet()
 
         // Fix Filter.
         val selectedFilterId = pref.selectedDAFilter.firstOrNull()
@@ -93,13 +94,20 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                     }
                 }
             }
-            .sortedByDescending { it.createTime }
             .mapNotNull { directAction ->
                 runCatching {
-                    daToDirectActionUM(directAction, gvs)
+                    daToDirectActionUM(directAction, gvs, pinnedDAIds)
                 }.getOrElse {
                     logger.e(it, "daToDirectActionUM")
                     null
+                }
+            }
+            // 置顶排序：置顶的在前，然后按创建时间排序
+            .sortedWith { a, b ->
+                when {
+                    a.isPinned && !b.isPinned -> -1
+                    !a.isPinned && b.isPinned -> 1
+                    else -> b.directAction.createTime.compareTo(a.directAction.createTime)
                 }
             }
 

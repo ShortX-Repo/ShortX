@@ -32,5 +32,8 @@ data class DirectActionUM(
 
     // For Set
     val isDirectActionSet: Boolean = false,
-    val itemsCount: Int = 0
+    val itemsCount: Int = 0,
+    
+    // For pinning
+    val isPinned: Boolean = false
 ) : Parcelable
