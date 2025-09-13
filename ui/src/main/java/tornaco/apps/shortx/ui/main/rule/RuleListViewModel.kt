@@ -104,6 +104,14 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                     null
                 }
             }
+            // 添加置顶排序：置顶的规则在前，然后按原有排序
+            .sortedWith { a, b ->
+                when {
+                    a.isPinned && !b.isPinned -> -1
+                    !a.isPinned && b.isPinned -> 1
+                    else -> 0 // 保持原有排序
+                }
+            }
         val sets = allRuleSets
             .sortedWith { o1, o2 ->
                 Collator.getInstance(Locale.CHINESE).compare(o1.title, o2.title)
