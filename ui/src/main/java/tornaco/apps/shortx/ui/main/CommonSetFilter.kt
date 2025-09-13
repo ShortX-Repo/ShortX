@@ -23,6 +23,14 @@ sealed interface CommonSetFilter {
             get() = "PinnedAll"
     }
 
+    data object PinnedItems : CommonSetFilter {
+        override val title: String
+            get() = i18NIns["ui.common.pinned"]
+        override val isStock: Boolean = true
+        override val filterId: String
+            get() = "PinnedItems"
+    }
+
     data class UserSet(val id: String, override val title: String) : CommonSetFilter {
         override val isStock: Boolean = false
         override val filterId: String get() = id
@@ -30,7 +38,11 @@ sealed interface CommonSetFilter {
 
     companion object {
         fun prebuiltOfId(id: String?): CommonSetFilter =
-            if (id == PinnedAllFlat.filterId) PinnedAllFlat else PinnedAll
+            when (id) {
+                PinnedAllFlat.filterId -> PinnedAllFlat
+                PinnedItems.filterId -> PinnedItems
+                else -> PinnedAll
+            }
     }
 }
 

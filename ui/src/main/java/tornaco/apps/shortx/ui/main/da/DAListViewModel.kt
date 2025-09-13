@@ -89,6 +89,10 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                         true
                     }
 
+                    CommonSetFilter.PinnedItems -> {
+                        pinnedDAIds.contains(directAction.id)
+                    }
+
                     is CommonSetFilter.UserSet -> {
                         directAction.directActionSetId == selectedFilter.id
                     }
@@ -140,10 +144,16 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                 )
             }
 
-        val daSetFilters = listOf(
-            CommonSetFilter.PinnedAll,
-            CommonSetFilter.PinnedAllFlat
-        ) + sets.map { CommonSetFilter.UserSet(it.id, it.title) }
+        // 构建集合过滤器列表，只有当有置顶项目时才显示置顶集合
+        val daSetFilters = mutableListOf<CommonSetFilter>().apply {
+            add(CommonSetFilter.PinnedAll)
+            add(CommonSetFilter.PinnedAllFlat)
+            // 只有当有置顶项目时才显示置顶集合
+            if (pinnedDAIds.isNotEmpty()) {
+                add(CommonSetFilter.PinnedItems)
+            }
+            addAll(sets.map { CommonSetFilter.UserSet(it.id, it.title) })
+        }
 
         val finalDAS = when (selectedFilter) {
             CommonSetFilter.PinnedAll -> {
@@ -153,6 +163,10 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
 
             CommonSetFilter.PinnedAllFlat -> {
                 das
+            }
+
+            CommonSetFilter.PinnedItems -> {
+                (sets + das).filter { it.isPinned }
             }
 
             else -> {

@@ -93,6 +93,10 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                     is CommonSetFilter.UserSet -> {
                         rule.ruleSetId == selectedSetFilter.id
                     }
+
+                    CommonSetFilter.PinnedItems -> {
+                        pinnedRuleIds.contains(rule.id)
+                    }
                 }
             }
             .let(sort(ruleSortBy))
@@ -136,10 +140,15 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                     isPinned = pinnedRuleIds.contains(ruleSet.id)
                 )
             }
-        val ruleSetFilters = listOf(
-            CommonSetFilter.PinnedAll,
-            CommonSetFilter.PinnedAllFlat
-        ) + sets.map { CommonSetFilter.UserSet(it.id, it.title) }
+        val ruleSetFilters = mutableListOf<CommonSetFilter>().apply {
+            add(CommonSetFilter.PinnedAll)
+            add(CommonSetFilter.PinnedAllFlat)
+            // 只有当有置顶项目时才显示置顶集合
+            if (pinnedRuleIds.isNotEmpty()) {
+                add(CommonSetFilter.PinnedItems)
+            }
+            addAll(sets.map { CommonSetFilter.UserSet(it.id, it.title) })
+        }
 
         val finalRules = when (selectedSetFilter) {
             CommonSetFilter.PinnedAll -> {
@@ -148,6 +157,11 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
 
             CommonSetFilter.PinnedAllFlat -> {
                 rules
+            }
+
+            CommonSetFilter.PinnedItems -> {
+                // 只显示置顶的规则和规则集
+                (sets + rules).filter { it.isPinned }
             }
 
             else -> {
