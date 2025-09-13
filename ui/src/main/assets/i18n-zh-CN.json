@@ -456,6 +456,7 @@
   "ui.common.time.of.day.selector.title": "选择时间区间",
   "ui.common.pinned": "置顶",
   "ui.common.pinned.items": "置顶项目",
+  "ui.common.unpin": "取消置顶",
   "ui.title.jobs.count": "{count}个任务",
   "ui.fact.overlay.button.click": "点击侧边栏按钮",
   "ui.fact.app.become.bg": "应用回到后台",

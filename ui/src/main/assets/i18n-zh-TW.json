@@ -372,6 +372,7 @@
   "ui.common.move.out.set": "移出集合",
   "ui.common.pinned": "置頂",
   "ui.common.pinned.items": "置頂項目",
+  "ui.common.unpin": "取消置頂",
   "ui.common.only.show": "只顯示",
   "ui.common.show.all": "顯示全部",
   "ui.common.copied.to.clipboard": "已複製到剪貼簿",

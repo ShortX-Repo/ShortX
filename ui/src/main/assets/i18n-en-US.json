@@ -372,6 +372,7 @@
   "ui.common.move.out.set": "Move out of Collection",
   "ui.common.pinned": "Pinned",
   "ui.common.pinned.items": "Pinned Items",
+  "ui.common.unpin": "Unpin",
   "ui.common.only.show": "Only show",
   "ui.common.show.all": "Show all",
   "ui.common.copied.to.clipboard": "Has been copied to clipboard",
