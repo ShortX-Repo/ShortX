@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.draw
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.view.WindowManager
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -63,6 +64,12 @@ class DrawBoardView(
             LaunchedEffect(Unit) {
                 requester.requestFocus()
             }
+        }
+    }
+
+    override fun createLayoutParams(): WindowManager.LayoutParams {
+        return super.createLayoutParams().apply {
+            flags = (WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN)
         }
     }
 }
