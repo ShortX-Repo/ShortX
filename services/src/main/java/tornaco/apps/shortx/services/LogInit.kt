@@ -148,7 +148,7 @@ fun File.appendDebugLogHeader() {
     appendText(System.lineSeparator())
     appendText("SDK: ${Build.VERSION.SDK_INT}")
     appendText(System.lineSeparator())
-    appendText("SHORTX: ${BuildPropInternal.APP_VERSION_NAME} ${BuildPropInternal.APP_VERSION_CODE}")
+    appendText("SHORTX: ${BuildPropInternal.APP_VERSION_NAME} ${BuildPropInternal.APP_VERSION_CODE} ${BuildPropInternal.BUILD_FLAVOR}")
     appendText(System.lineSeparator())
     appendText("-------------------")
     appendText(System.lineSeparator())

@@ -24,11 +24,13 @@ object InputConnectionV34 {
     }
 
     fun performContextMenuAction(input: Any, action: Int) {
+        logger.w("performContextMenuAction $action start.")
         for (i in 0 until INPUT_SESSION_ID_HIT_TIME) {
             (input as IRemoteInputConnection).performContextMenuAction(
                 InputConnectionCommandHeader(i),
                 action
             )
         }
+        logger.w("performContextMenuAction $action done.")
     }
 }

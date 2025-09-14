@@ -24,6 +24,7 @@ buildConfig {
         provider { "\"${Configs.sxVersionNameSuffix}\"" })
     buildConfigField("int", "APP_VERSION_CODE", provider { "${Configs.sxVersionCode}" })
     buildConfigField("boolean", "APP_IS_DEBUG", provider { "${Configs.sxIsDebugBuild}" })
+    buildConfigField("String", "BUILD_FLAVOR", provider { "\"${Configs.sxFlavor}\"" })
     buildConfigField("long", "BUILD_TIME", "${System.currentTimeMillis()}L")
     buildConfigField("String", "BUILD_FINGERPRINT", "\"${UUID.randomUUID()}\"")
 
