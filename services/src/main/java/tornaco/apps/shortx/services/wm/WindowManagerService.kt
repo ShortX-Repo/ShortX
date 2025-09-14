@@ -557,6 +557,10 @@ class WindowManagerService(shortXContext: ShortXContext) :
                     },
                     clearAll = {
                         shortXContext.input.clearAllUnPinedClipboardText()
+                    },
+                    initialIsDeduplicated = store.read(Settings.BoolSettings.ClipboardEnableDeDup),
+                    onDeduplicateChanged = {
+                        store.write(Settings.BoolSettings.ClipboardEnableDeDup, it)
                     }
                 )
             showingClipboard.add(guideLineView)

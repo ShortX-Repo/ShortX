@@ -68,7 +68,9 @@ fun TestClipboardView() {
         addText = {},
         removeText = {},
         pinItem = { _, _ -> },
-        clearAll = {}).ComposeContent()
+        clearAll = {},
+        false,
+        {}).ComposeContent()
 }
 
 @Composable

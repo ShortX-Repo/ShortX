@@ -53,6 +53,9 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
 
         data class EnableFeature(val id: String, val defValue: Boolean = true) :
             BoolSettings(key = "EnableFeature${id}", defaultValue = { defValue })
+
+        data object ClipboardEnableDeDup :
+            BoolSettings(key = "ClipboardEnableDeDup", defaultValue = { false })
     }
 
     sealed class StringSettings(key: String, defaultValue: (Context) -> String?) :

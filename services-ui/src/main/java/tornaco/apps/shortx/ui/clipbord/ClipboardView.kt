@@ -91,6 +91,8 @@ class ClipboardView(
     val removeText: (id: String) -> Unit,
     val pinItem: (id: String, Boolean) -> Unit,
     val clearAll: () -> Unit,
+    val initialIsDeduplicated: Boolean,
+    val onDeduplicateChanged: (Boolean) -> Unit,
 ) : AttachableComposeView(context, i18N, onDetach) {
     override fun createLayoutParams(): WindowManager.LayoutParams {
         return super.createLayoutParams().apply {
@@ -154,6 +156,17 @@ class ClipboardView(
                     shadowElevation = 8.dp,
                 ) {
                     var clipState by remember { mutableStateOf(clips.sortedBy { !it.isPinned }) }
+                    // 使用本地状态，但初始值来自构造器参数
+                    var isDeduplicated by remember { mutableStateOf(initialIsDeduplicated) }
+
+                    // 去重复逻辑
+                    val displayClips = remember(clipState, isDeduplicated) {
+                        if (isDeduplicated) {
+                            clipState.distinctBy { it.value }
+                        } else {
+                            clipState
+                        }
+                    }
 
                     // java.lang.IllegalStateException: No OnBackPressedDispatcherOwner was provided via LocalOnBackPressedDispatcherOwner
 //                    BackHandler(isShowSearch || isShowInput) {
@@ -194,7 +207,7 @@ class ClipboardView(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 MediumTitle(
-                                    text = i18N["ui.action.show.clip.board"] + "(${clipState.size})",
+                                    text = i18N["ui.action.show.clip.board"] + "(${displayClips.size})",
                                     color = MaterialTheme.colorScheme.onSurface,
                                 )
 
@@ -243,14 +256,33 @@ class ClipboardView(
                                             state = dropdownState,
                                             items = listOf(
                                                 DropdownItem(
+                                                    labelLines = listOf(
+                                                        if (isDeduplicated)
+                                                            i18N["ui.action.show.clip.board.disable.deduplicate"]
+                                                        else
+                                                            i18N["ui.action.show.clip.board.enable.deduplicate"]
+                                                    ),
+                                                    data = "toggleDeduplicate"
+                                                ),
+                                                DropdownItem(
                                                     labelLines = listOf(i18N["ui.action.show.clip.board.clear.all"]),
                                                     data = "clearAll"
                                                 )
                                             )
-                                        ) {
-                                            clearAll()
-                                            clipState = clipState.toMutableList().apply {
-                                                removeIf { !it.isPinned }
+                                        ) { selectedData ->
+                                            when (selectedData.data) {
+                                                "toggleDeduplicate" -> {
+                                                    // 更新本地状态并通知调用方
+                                                    isDeduplicated = !isDeduplicated
+                                                    onDeduplicateChanged(isDeduplicated)
+                                                }
+
+                                                "clearAll" -> {
+                                                    clearAll()
+                                                    clipState = clipState.toMutableList().apply {
+                                                        removeIf { !it.isPinned }
+                                                    }
+                                                }
                                             }
                                         }
 
@@ -332,8 +364,8 @@ class ClipboardView(
                         }
 
 
-                        if (clipState.isNotEmpty()) {
-                            itemsIndexed(clipState.filter {
+                        if (displayClips.isNotEmpty()) {
+                            itemsIndexed(displayClips.filter {
                                 searchState.isBlank() || it.value.contains(searchState, true)
                             }) { index, clip: ClipboardItem ->
                                 val context = LocalContext.current

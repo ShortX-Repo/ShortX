@@ -86,8 +86,6 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     fun addClipboardText(string: String) {
         logger.logOnDebug("addClipboardText: $string")
         string.takeIf { it.isNotBlank() }?.let {
-            clipboardStore.deleteTextByValue(string)
-
             clipboardStore.addText(
                 ClipboardItem.newBuilder()
                     .setId(UUID.randomUUID().toString())
