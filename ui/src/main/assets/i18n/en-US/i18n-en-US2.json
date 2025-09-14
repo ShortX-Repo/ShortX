@@ -8,6 +8,8 @@
   "ui.sort.by_update_time_desc": "Sort by Update Time (Desc)",
   "ui.sort.by_priority": "Sort by Priority",
   "ui.sort.by_priority_desc": "Sort by Priority (Desc)",
+  "ui.sort.by_enable_state": "Sort by Enable State",
+  "ui.sort.by_enable_state_desc": "Sort by Enable State (Desc)",
   "ui.sort.pinned_first": "Pinned Items First",
   "ui.sort.apply": "Apply Sort",
   "ui.sort.reset": "Reset Sort",

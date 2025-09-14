@@ -77,6 +77,10 @@ private val PINNED_DA_IDS =
 private val PINNED_RULE_IDS =
     stringSetPreferencesKey("pinned_rule_ids")
 
+// 添加排序设置的偏好键
+private val DA_SORT_BY = stringPreferencesKey("da_sort_by")
+private val RULE_SORT_BY = stringPreferencesKey("rule_sort_by")
+
 class Pref(val context: Context) {
     companion object {
         private val gson by lazy { Gson() }
@@ -155,6 +159,15 @@ class Pref(val context: Context) {
 
     val pinnedRuleIds: Flow<Set<String>> = context.dataStore.data.map { preferences ->
         preferences[PINNED_RULE_IDS] ?: emptySet()
+    }
+
+    // 添加排序设置的Flow
+    val daSortBy: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[DA_SORT_BY] ?: "CreateTime"
+    }
+
+    val ruleSortBy: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[RULE_SORT_BY] ?: "CreateTime"
     }
 
     val shareAuthorInfo: Flow<Author> = context.dataStore.data.map { preferences ->
@@ -341,8 +354,21 @@ class Pref(val context: Context) {
     }
 
     suspend fun setHttpChuckerEnabled(enable: Boolean) {
-        context.dataStore.edit {
-            it[UI_ENABLE_HTTP_CHUCKER] = enable
+        context.dataStore.edit { preferences ->
+            preferences[UI_ENABLE_HTTP_CHUCKER] = enable
+        }
+    }
+
+    // 添加排序设置的方法
+    suspend fun setDASortBy(sortBy: String) {
+        context.dataStore.edit { preferences ->
+            preferences[DA_SORT_BY] = sortBy
+        }
+    }
+
+    suspend fun setRuleSortBy(sortBy: String) {
+        context.dataStore.edit { preferences ->
+            preferences[RULE_SORT_BY] = sortBy
         }
     }
 

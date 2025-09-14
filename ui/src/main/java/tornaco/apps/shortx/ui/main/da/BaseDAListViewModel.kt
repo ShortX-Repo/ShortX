@@ -140,6 +140,15 @@ abstract class BaseDAListViewModel(context: Context) :
         }
 
         viewModelScope.launch {
+            pref.daSortBy.collectLatest { sortByName ->
+                val sortBy = DASortBy.values().find { it.name == sortByName } ?: DASortBy.CreateTime
+                logger.d("daSortBy changed: $sortByName -> $sortBy")
+                updateState { copy(daSortBy = sortBy) }
+                requestLoadDAList()
+            }
+        }
+
+        viewModelScope.launch {
             ResetEventRegistry.dataResetComplete.collect {
                 logger.d("reload data since data has been reset")
                 requestLoadDAList()
@@ -327,6 +336,9 @@ abstract class BaseDAListViewModel(context: Context) :
 
     fun updateSortBy(sortBy: DASortBy) {
         updateState { copy(daSortBy = sortBy) }
+        viewModelScope.launch {
+            pref.setDASortBy(sortBy.name)
+        }
         requestLoadDAList()
     }
 

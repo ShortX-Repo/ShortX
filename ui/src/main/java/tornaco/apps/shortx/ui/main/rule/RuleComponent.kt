@@ -257,7 +257,7 @@ private fun listItemOverflowMenu(
         state = menuState,
         items = listOf(
             DropdownItem(
-                labelLines = listOf(i18N[if (rule.isPinned) "ui.common.unpin" else "ui.common.pin"]),
+                labelLines = listOf(i18N[if (rule.isPinned) "ui.common.unpin" else "ui.common.pinned"]),
                 data = RuleItemMenuOptions.TogglePin,
                 icon = {
                     RemixIcon(if (rule.isPinned) Remix.Map.pushpin_line else Remix.Map.pushpin_fill)

@@ -437,7 +437,7 @@ private fun daListItemOverflowMenu(
                     })
             } else {
                 DropdownItem(
-                    labelLines = listOf(LocalI18N.current["ui.common.pin"]),
+                    labelLines = listOf(LocalI18N.current["ui.common.pinned"]),
                     data = DAItemMenuOptions.Pin,
                     icon = {
                         RemixIcon(Remix.Map.pushpin_2_line)

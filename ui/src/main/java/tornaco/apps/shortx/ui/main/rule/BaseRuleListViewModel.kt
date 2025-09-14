@@ -157,6 +157,15 @@ abstract class BaseRuleListViewModel(context: Context) :
             }
         }
 
+        viewModelScope.launch {
+            pref.ruleSortBy.collectLatest { sortByName ->
+                val sortBy = RuleSortBy.values().find { it.name == sortByName } ?: RuleSortBy.CreateTime
+                logger.d("ruleSortBy changed: $sortByName -> $sortBy")
+                updateState { copy(ruleSortBy = sortBy) }
+                requestLoadRuleList("sortByChanged")
+            }
+        }
+
         requestLoadActiveJobs()
     }
 
@@ -177,6 +186,10 @@ abstract class BaseRuleListViewModel(context: Context) :
 
     fun setRuleSortBy(ruleSortBy: RuleSortBy) {
         updateState { copy(ruleSortBy = ruleSortBy) }
+        viewModelScope.launch {
+            pref.setRuleSortBy(ruleSortBy.name)
+        }
+        requestLoadRuleList("setRuleSortBy")
     }
 
     fun setRuleEnabled(ruleId: String, enable: Boolean) {

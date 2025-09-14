@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.main.RuleSortBy
 
 @Composable
@@ -33,37 +34,40 @@ fun RuleSortSelector(
                 tint = MaterialTheme.colorScheme.onSurface
             )
         }
-
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
+        MaterialTheme(
+            shapes = MaterialTheme.shapes.copy(extraSmall = ShortXCardRoundedCornerShape)
         ) {
-            RuleSortBy.entries.forEach { sortBy ->
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = when (sortBy) {
-                                RuleSortBy.Name -> i18n["ui.sort.by_name"]
-                                RuleSortBy.NameReverse -> i18n["ui.sort.by_name_desc"]
-                                RuleSortBy.CreateTime -> i18n["ui.sort.by_create_time"]
-                                RuleSortBy.CreateTimeReverse -> i18n["ui.sort.by_create_time_desc"]
-                                RuleSortBy.LastUpdateTime -> i18n["ui.sort.by_update_time"]
-                                RuleSortBy.LastUpdateTimeReverse -> i18n["ui.sort.by_update_time_desc"]
-                                RuleSortBy.EnableState -> i18n["ui.sort.by_priority"]
-                                RuleSortBy.EnableStateReverse -> i18n["ui.sort.by_priority_desc"]
-                            },
-                            color = if (sortBy == currentSortBy) {
-                                MaterialTheme.colorScheme.primary
-                            } else {
-                                MaterialTheme.colorScheme.onSurface
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                RuleSortBy.entries.forEach { sortBy ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = when (sortBy) {
+                                    RuleSortBy.Name -> i18n["ui.sort.by_name"]
+                                    RuleSortBy.NameReverse -> i18n["ui.sort.by_name_desc"]
+                                    RuleSortBy.CreateTime -> i18n["ui.sort.by_create_time"]
+                                    RuleSortBy.CreateTimeReverse -> i18n["ui.sort.by_create_time_desc"]
+                                    RuleSortBy.LastUpdateTime -> i18n["ui.sort.by_update_time"]
+                                    RuleSortBy.LastUpdateTimeReverse -> i18n["ui.sort.by_update_time_desc"]
+                                    RuleSortBy.EnableState -> i18n["ui.sort.by_enable_state"]
+                                    RuleSortBy.EnableStateReverse -> i18n["ui.sort.by_enable_state_desc"]
+                                }
+                            )
+                        },
+                        onClick = {
+                            onSortByChanged(sortBy)
+                            expanded = false
+                        },
+                        leadingIcon = if (currentSortBy == sortBy) {
+                            {
+                                RemixIcon(remixName = Remix.System.check_line)
                             }
-                        )
-                    },
-                    onClick = {
-                        onSortByChanged(sortBy)
-                        expanded = false
-                    }
-                )
+                        } else null
+                    )
+                }
             }
         }
     }

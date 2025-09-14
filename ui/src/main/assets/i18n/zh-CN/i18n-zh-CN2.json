@@ -8,6 +8,8 @@
   "ui.sort.by_update_time_desc": "按更新时间降序",
   "ui.sort.by_priority": "按优先级排序",
   "ui.sort.by_priority_desc": "按优先级降序",
+  "ui.sort.by_enable_state": "按启用状态排序",
+  "ui.sort.by_enable_state_desc": "按启用状态降序",
   "ui.sort.pinned_first": "置顶项目优先",
   "ui.sort.apply": "应用排序",
   "ui.sort.reset": "重置排序",
