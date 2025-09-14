@@ -15,7 +15,8 @@ class I18NImpl : I18N {
 }
 
 object I18NCache {
-    private const val DEFAULT_LANGUAGE = "i18n-en-US.json"
+    private const val DEFAULT_LANGUAGE = "i18n/en-US/i18n-en-US.json"
+    private const val DEFAULT_LOCALE_DIR = "i18n/en-US"
 
     private val logger = Logger("services.I18NCache")
     private val res: MutableMap<String, String> = mutableMapOf()
@@ -28,12 +29,67 @@ object I18NCache {
 
     fun init(context: Context, localeName: String) {
         logger.d("init, locale: $localeName")
-        kotlin.runCatching { context.assets.open(localeName) }.getOrElse {
-            logger.e(it, "Using fallback file: $DEFAULT_LANGUAGE")
-            context.assets.open(DEFAULT_LANGUAGE)
-        }.use {
-            val content = it.bufferedReader(Charsets.UTF_8).readText()
-            res.putAll(Json.decodeFromString<Map<String, String>>(content))
+
+        // 加载指定语言目录下的所有JSON文件
+        loadI18nFromDirectory(context, localeName)
+    }
+
+    private fun loadI18nFromDirectory(context: Context, localeName: String) {
+        try {
+            // 首先尝试从语言目录加载
+            val localeDir = "i18n/$localeName"
+            val dirFiles = context.assets.list(localeDir)
+
+            if (dirFiles != null && dirFiles.isNotEmpty()) {
+                // 筛选JSON文件并排序
+                val jsonFiles = dirFiles.filter { it.endsWith(".json") }.sorted()
+                logger.d("Found JSON files in directory $localeDir: $jsonFiles")
+
+                jsonFiles.forEach { fileName ->
+                    loadSingleFile(context, "$localeDir/$fileName")
+                }
+            } else {
+                // 如果目录不存在或为空，尝试加载旧格式的单文件
+                logger.d("Directory $localeDir not found, trying fallback")
+                loadFallbackLanguage(context)
+            }
+        } catch (e: Exception) {
+            logger.e(e, "Error loading i18n files from directory, using fallback")
+            // 尝试加载默认语言目录
+            loadFallbackLanguage(context)
+        }
+    }
+
+    private fun loadFallbackLanguage(context: Context) {
+        try {
+            val dirFiles = context.assets.list(DEFAULT_LOCALE_DIR)
+            if (dirFiles != null && dirFiles.isNotEmpty()) {
+                val jsonFiles = dirFiles.filter { it.endsWith(".json") }.sorted()
+                logger.d("Loading fallback files from $DEFAULT_LOCALE_DIR: $jsonFiles")
+
+                jsonFiles.forEach { fileName ->
+                    loadSingleFile(context, "$DEFAULT_LOCALE_DIR/$fileName")
+                }
+            } else {
+                // 最后的降级方案：加载根目录的默认文件
+                loadSingleFile(context, DEFAULT_LANGUAGE)
+            }
+        } catch (e: Exception) {
+            logger.e(e, "Error loading fallback language")
+            loadSingleFile(context, DEFAULT_LANGUAGE)
+        }
+    }
+
+    private fun loadSingleFile(context: Context, filePath: String) {
+        kotlin.runCatching {
+            context.assets.open(filePath).use { inputStream ->
+                val content = inputStream.bufferedReader(Charsets.UTF_8).readText()
+                val translations = Json.decodeFromString<Map<String, String>>(content)
+                res.putAll(translations)
+                logger.d("Loaded $filePath with ${translations.size} translations")
+            }
+        }.getOrElse { exception ->
+            logger.e(exception, "Failed to load $filePath")
         }
     }
 }
