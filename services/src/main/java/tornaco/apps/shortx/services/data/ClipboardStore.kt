@@ -43,6 +43,13 @@ class ClipboardStore(
         }
     }
 
+    fun deleteTextByValue(value: String) {
+        synchronized(cache) {
+            cache.removeIf { it.value == value }
+            postWrite()
+        }
+    }
+
     fun getText(id: String): ClipboardItem? {
         return synchronized(cache) {
             cache.firstOrNull { it.id == id }
