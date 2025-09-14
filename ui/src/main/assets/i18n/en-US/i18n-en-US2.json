@@ -14,5 +14,8 @@
   "ui.sort.apply": "Apply Sort",
   "ui.sort.reset": "Reset Sort",
   "ui.sort.ascending": "Ascending",
-  "ui.sort.descending": "Descending"
+  "ui.sort.descending": "Descending",
+  "ui.action.select.full.screen": "Select Full Screen",
+  "ui.action.confirm.selection": "Confirm Selection",
+  "ui.action.drag.to.select.area": "Drag to Select Area"
 }

@@ -14,5 +14,8 @@
   "ui.sort.apply": "套用排序",
   "ui.sort.reset": "重設排序",
   "ui.sort.ascending": "升序",
-  "ui.sort.descending": "降序"
+  "ui.sort.descending": "降序",
+  "ui.action.select.full.screen": "選擇全螢幕",
+  "ui.action.confirm.selection": "確認選擇",
+  "ui.action.drag.to.select.area": "拖拽選擇區域"
 }
