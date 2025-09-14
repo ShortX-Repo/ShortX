@@ -35,9 +35,11 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
     override val daList: StateFlow<LoadState<DAList>> by lazy {
         combine(
             loadDARequest,
-            state.map { it.searchQuery }) { _, query ->
+            state.map { it.searchQuery },
+            state.map { it.daSortBy }
+        ) { _, query, sortBy ->
             runCatching {
-                LoadState.Success(getDAList(query))
+                LoadState.Success(getDAList(query, sortBy))
             }.getOrElse {
                 logger.e(it, "load da list")
                 LoadState.Error(it)
@@ -160,15 +162,12 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                 // No filter, show set and das.
                 sets + das
             }
-
             CommonSetFilter.PinnedAllFlat -> {
                 das
             }
-
             CommonSetFilter.PinnedItems -> {
                 (sets + das).filter { it.isPinned }
             }
-
             else -> {
                 das
             }
@@ -176,6 +175,10 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
             searchQuery.isBlank() || it.title.contains(
                 searchQuery, true
             ) || it.titlePinyin.contains(searchQuery.lowercase(), true)
+        }.let { filteredList ->
+            // 应用排序逻辑
+            val sortFunction = sortDirectActions(daSortBy)
+            sortFunction(filteredList)
         }
 
         return DAList(

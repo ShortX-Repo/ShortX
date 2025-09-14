@@ -322,6 +322,12 @@ abstract class BaseDAListViewModel(context: Context) :
 
     fun updateSearchQuery(query: String) {
         updateState { copy(searchQuery = query) }
+        requestLoadDAList()
+    }
+
+    fun updateSortBy(sortBy: DASortBy) {
+        updateState { copy(daSortBy = sortBy) }
+        requestLoadDAList()
     }
 
     fun pinDA(da: DirectActionUM) {

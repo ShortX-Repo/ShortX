@@ -152,6 +152,10 @@ fun DirectActionListScreen() {
         enableSearch = true,
         searchBarState = searchBarState,
         appBarActions = {
+            DASortSelector(
+                currentSortBy = daListState.daSortBy,
+                onSortByChanged = { daListViewModel.updateSortBy(it) }
+            )
             IconButton(onClick = {
                 daListViewModel.toggleShowDetailedDAItem()
             }) {
