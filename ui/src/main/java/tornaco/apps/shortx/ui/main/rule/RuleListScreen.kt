@@ -114,6 +114,12 @@ fun RuleScreen() {
         enableSearch = true,
         searchBarState = searchBarState,
         appBarActions = {
+            RuleSortSelector(
+                currentSortBy = ruleListState.ruleSortBy,
+                onSortByChanged = { sortBy ->
+                    ruleListViewModel.setRuleSortBy(sortBy)
+                }
+            )
             IconButton(onClick = {
                 ruleListViewModel.toggleOnlyShowEnabled()
             }) {
