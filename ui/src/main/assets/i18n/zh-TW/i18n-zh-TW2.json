@@ -17,5 +17,10 @@
   "ui.sort.descending": "降序",
   "ui.action.select.full.screen": "選擇全螢幕",
   "ui.action.confirm.selection": "確認選擇",
-  "ui.action.drag.to.select.area": "拖拽選擇區域"
+  "ui.action.drag.to.select.area": "拖拽選擇區域",
+  "ui.action.find.color.rect.picker": "使用選擇器選擇區域",
+  "ui.action.find.color.rect.input.label": "輸入座標 (left top right bottom)",
+  "ui.action.find.color.rect.input.error": "格式錯誤，請輸入四個數字，用空格分隔",
+  "ui.fact.edge.gesture.rect.input.label": "輸入座標 (left top right bottom)",
+  "ui.fact.edge.gesture.rect.input.error": "格式錯誤，請輸入四個數字，用空格分隔"
 }

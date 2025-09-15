@@ -13,11 +13,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -30,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.Rect
@@ -79,6 +82,7 @@ class EdgeGestureSelectorState(
     var isIntercept by mutableStateOf(false)
     var customRect by mutableStateOf<Rect?>(null)
     var useCustomRect by mutableStateOf(false)
+    var rectInputText by mutableStateOf("")
 
     val apps = mutableStateListOf<App>()
     val pkgSets = mutableStateListOf<PkgSet>()
@@ -91,11 +95,42 @@ class EdgeGestureSelectorState(
         this.customRect = data?.customRect
         this.useCustomRect = data?.customRect != null
 
+        // 初始化输入框文本
+        this.rectInputText = data?.customRect?.let { rect ->
+            "${rect.left} ${rect.top} ${rect.right} ${rect.bottom}"
+        } ?: ""
+
         this.apps.clear()
         this.pkgSets.clear()
         this.apps.addAll(data?.apps ?: emptyList())
         this.pkgSets.addAll(data?.pkgSets ?: emptyList())
         show()
+    }
+
+    fun parseRectFromInput(): Rect? {
+        return try {
+            val parts = rectInputText.trim().split("\\s+".toRegex())
+            if (parts.size == 4) {
+                val left = parts[0].toInt()
+                val top = parts[1].toInt()
+                val right = parts[2].toInt()
+                val bottom = parts[3].toInt()
+                Rect.newBuilder()
+                    .setLeft(left)
+                    .setTop(top)
+                    .setRight(right)
+                    .setBottom(bottom)
+                    .build()
+            } else {
+                null
+            }
+        } catch (e: NumberFormatException) {
+            null
+        }
+    }
+
+    fun updateRectFromInput() {
+        customRect = parseRectFromInput()
     }
 
     fun getResult(): EdgeGestureSelectDialogResult {
@@ -161,6 +196,36 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                             modifier = Modifier.padding(vertical = 12.dp),
                             text = i18N["ui.fact.edge.gesture.custom.rect.area"]
                         )
+
+                        // Rect输入框
+                        OutlinedTextField(
+                            value = state.rectInputText,
+                            onValueChange = {
+                                state.rectInputText = it
+                                state.updateRectFromInput()
+                            },
+                            label = {
+                                Text(
+                                    i18N["ui.fact.edge.gesture.rect.input.label"]
+                                        ?: "输入坐标 (left top right bottom)"
+                                )
+                            },
+                            placeholder = { Text("例如: 100 200 300 400") },
+                            modifier = Modifier.fillMaxWidth(),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                            isError = state.rectInputText.isNotEmpty() && state.parseRectFromInput() == null
+                        )
+
+                        if (state.rectInputText.isNotEmpty() && state.parseRectFromInput() == null) {
+                            Text(
+                                text = i18N["ui.fact.edge.gesture.rect.input.error"]
+                                    ?: "格式错误，请输入四个数字，用空格分隔",
+                                color = androidx.compose.material3.MaterialTheme.colorScheme.error,
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
 
                         // Display current selected area info
                         val rect = state.customRect

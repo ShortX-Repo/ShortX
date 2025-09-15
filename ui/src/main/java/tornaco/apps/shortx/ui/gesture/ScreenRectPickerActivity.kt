@@ -6,23 +6,17 @@ import android.os.Build
 import android.view.View
 import android.view.WindowManager
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.BaseActivity
-import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import java.time.Duration
 import tornaco.apps.shortx.core.proto.common.Rect as ProtoRect
@@ -75,17 +69,7 @@ class ScreenRectPickerActivity : BaseActivity() {
         }
 
         ShortXTheme {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    SmallTitle(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        text = LocalI18N.current["ui.action.select.screen.area.tip"]
-                    )
-                }
-            }
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {}
         }
     }
 

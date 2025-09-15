@@ -36,7 +36,6 @@ import java.util.UUID
 class ComposeDemoActivity : BaseActivity() {
     @Composable
     override fun Content() {
-        TestClipboardView()
     }
 }
 

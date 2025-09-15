@@ -17,5 +17,10 @@
   "ui.sort.descending": "Descending",
   "ui.action.select.full.screen": "Select Full Screen",
   "ui.action.confirm.selection": "Confirm Selection",
-  "ui.action.drag.to.select.area": "Drag to Select Area"
+  "ui.action.drag.to.select.area": "Drag to Select Area",
+  "ui.action.find.color.rect.picker": "Use Picker to Select Area",
+  "ui.action.find.color.rect.input.label": "Input coordinates (left top right bottom)",
+  "ui.action.find.color.rect.input.error": "Format error, please input four numbers separated by spaces",
+  "ui.fact.edge.gesture.rect.input.label": "Input coordinates (left top right bottom)",
+  "ui.fact.edge.gesture.rect.input.error": "Format error, please input four numbers separated by spaces"
 }

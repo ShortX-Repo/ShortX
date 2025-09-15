@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.ui.addrule.action.selector.cv
 
+import android.graphics.Rect
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,17 +21,21 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import tornaco.apps.shortx.core.proto.toAndroidRect
+import tornaco.apps.shortx.core.proto.toProtoRect
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.action.model.FindPointsByColorConfig
@@ -37,13 +43,14 @@ import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.ColorPickerDialog
 import tornaco.apps.shortx.ui.base.ColorPickerDialogState
 import tornaco.apps.shortx.ui.base.FieldTitle
-import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.ShortXCard
+import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.gesture.ScreenRectPickerActivity
 import tornaco.apps.shortx.ui.util.toComposeColor
 import tornaco.apps.shortx.core.proto.common.Rect as ProtoRect
@@ -131,22 +138,71 @@ private fun BaseSelectorActivity<FindPointsByColorConfig>.Selector(currentAction
             SectionSpacer()
             FieldTitle(text = LocalI18N.current["ui.action.find.color.rect"])
             SmallSpacer()
-            ListItem(
-                titleLines = listOf(
+
+            // Rect输入框
+            var rectInputText by remember(state.rect) {
+                mutableStateOf(
                     if (state.rect == ProtoRect.getDefaultInstance()) {
-                        i18N["ui.common.all"]
+                        ""
                     } else {
-                        state.rect.toAndroidRect().flattenToString()
+                        "${state.rect.left} ${state.rect.top} ${state.rect.right} ${state.rect.bottom}"
                     }
-                ),
+                )
+            }
+
+            fun parseRectFromInput(): ProtoRect? {
+                return runCatching { Rect.unflattenFromString(rectInputText) }.getOrNull()
+                    ?.toProtoRect()
+            }
+
+            ShortXTextField(
+                value = rectInputText,
+                onValueChange = {
+                    rectInputText = it
+                    val parsedRect = parseRectFromInput()
+                    if (parsedRect != null) {
+                        vm.setRect(parsedRect)
+                    } else if (it.isEmpty()) {
+                        vm.setRect(ProtoRect.getDefaultInstance())
+                    }
+                },
+                label = {
+                    Text(
+                        i18N["ui.action.find.color.rect.input.label"]
+                    )
+                },
+                placeholder = { Text("例如: 100 200 300 400，留空表示全屏") },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                isError = rectInputText.isNotEmpty() && parseRectFromInput() == null
+            )
+
+            if (rectInputText.isNotEmpty() && parseRectFromInput() == null) {
+                Text(
+                    text = i18N["ui.action.find.color.rect.input.error"],
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
+
+            SmallSpacer()
+
+            // 添加选择器按钮
+            TextButton(
                 onClick = {
                     screenRectPickerLauncher.launch(
                         ScreenRectPickerActivity.start(context)
                     )
-                }
-            )
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(i18N["ui.action.find.color.rect.picker"])
+            }
+
+            SmallSpacer()
             OutlinedButton(
                 onClick = {
+                    composeLogger.d("showScreenRectHint ${state.rect}")
                     shortXManager.showScreenRectHint(state.rect)
                 },
                 modifier = Modifier.fillMaxWidth()

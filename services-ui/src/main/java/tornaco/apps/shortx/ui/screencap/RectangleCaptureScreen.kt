@@ -3,7 +3,6 @@ package tornaco.apps.shortx.ui.screencap
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -39,7 +38,6 @@ enum class InteractionMode {
 
 @Composable
 fun RectangleCaptureScreen(
-    onDragEnd: () -> Unit = {},
     onSelectFullScreen: () -> Unit = {},
     onSelected: (Rect) -> Unit = {},
 ) {
@@ -65,35 +63,17 @@ fun RectangleCaptureScreen(
         modifier = Modifier
             .fillMaxSize()
             .pointerInput(Unit) {
-                detectTapGestures(
-                    onTap = { offset ->
-                        when (interactionMode) {
-                            InteractionMode.IDLE -> {
-                                // 重新开始绘制
-                                startOffset = offset
-                                endOffset = offset
-                                interactionMode = InteractionMode.DRAWING
-                            }
-
-                            else -> {
-                                // 其他状态下的点击暂时忽略
-                            }
-                        }
-                    }
-                )
-            }
-            .pointerInput(Unit) {
                 detectDragGestures(
                     onDragStart = { offset ->
                         when {
                             currentRect?.contains(offset) == true -> {
-                                // 在矩形内开始拖拽，进入拖动模式
+                                // 在矩形内 → 拖动
                                 interactionMode = InteractionMode.DRAGGING
                                 dragStartOffset = offset
                             }
 
                             else -> {
-                                // 在矩形外开始拖拽，绘制新矩形
+                                // 在矩形外 → 新绘制
                                 startOffset = offset
                                 endOffset = offset
                                 interactionMode = InteractionMode.DRAWING
@@ -111,15 +91,9 @@ fun RectangleCaptureScreen(
                                     currentRect?.let { rect ->
                                         val deltaX = change.position.x - dragStart.x
                                         val deltaY = change.position.y - dragStart.y
-
-                                        startOffset = Offset(
-                                            rect.left + deltaX,
-                                            rect.top + deltaY
-                                        )
-                                        endOffset = Offset(
-                                            rect.right + deltaX,
-                                            rect.bottom + deltaY
-                                        )
+                                        startOffset = Offset(rect.left + deltaX, rect.top + deltaY)
+                                        endOffset =
+                                            Offset(rect.right + deltaX, rect.bottom + deltaY)
                                         dragStartOffset = change.position
                                     }
                                 }
@@ -129,18 +103,14 @@ fun RectangleCaptureScreen(
                         }
                     },
                     onDragEnd = {
-                        when (interactionMode) {
-                            InteractionMode.DRAWING, InteractionMode.DRAGGING -> {
-                                interactionMode = InteractionMode.IDLE
-                                onDragEnd()
-                            }
-
-                            else -> {}
+                        if (interactionMode == InteractionMode.DRAWING || interactionMode == InteractionMode.DRAGGING) {
+                            interactionMode = InteractionMode.IDLE
                         }
                     }
                 )
             }
-    ) {
+    )
+    {
         // 绘制矩形
         Canvas(
             modifier = Modifier.fillMaxSize()
@@ -209,22 +179,6 @@ fun RectangleCaptureScreen(
                     Text(i18N["ui.action.confirm.selection"] ?: "确认选择")
                 }
             }
-        }
-
-        // 操作提示文本
-        if (currentRect == null) {
-            val i18N = LocalI18N.current
-            Text(
-                text = i18N["ui.action.drag.to.select.area"] ?: "拖拽选择区域",
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .background(
-                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
-                        shape = RoundedCornerShape(8.dp)
-                    )
-                    .padding(12.dp),
-                color = MaterialTheme.colorScheme.onSurface
-            )
         }
     }
 }

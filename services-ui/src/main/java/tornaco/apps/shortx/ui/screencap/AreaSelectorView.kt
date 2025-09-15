@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.screencap
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Rect
+import android.view.WindowManager
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.ui.AttachableComposeView
@@ -25,23 +26,28 @@ class AreaSelectorView(
         ShortXServiceUITheme {
             FlashingBorderBox {
                 RectangleCaptureScreen(
-                    onDragEnd = onDragEnd,
                     onSelectFullScreen = {
                         onSelectFullScreen()
                         detach(false)
-                    }
-                ) {
-                    selected(
-                        Rect(
-                            it.left.toInt(),
-                            it.top.toInt(),
-                            it.right.toInt(),
-                            it.bottom.toInt()
+                    }, onSelected = {
+                        selected(
+                            Rect(
+                                it.left.toInt(),
+                                it.top.toInt(),
+                                it.right.toInt(),
+                                it.bottom.toInt()
+                            )
                         )
-                    )
-                    detach(false)
-                }
+                        detach(false)
+                    }
+                )
             }
+        }
+    }
+
+    override fun createLayoutParams(): WindowManager.LayoutParams {
+        return super.createLayoutParams().apply {
+            flags = (WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN)
         }
     }
 }
