@@ -1398,5 +1398,6 @@
   "ui.fact.edge.gesture.no.area.selected": "No area selected",
   "ui.fact.edge.gesture.select.screen.area": "Select screen area",
   "ui.fact.edge.gesture.select.area.tip": "Tip: Click button to select trigger area on screen",
-  "ui.fact.edge.gesture.show.selected.area": "Show Selected Area"
+  "ui.fact.edge.gesture.show.selected.area": "Show Selected Area",
+  "ui.fact.edge.gesture.custom.rect.description": "Custom area ({left}, {top}) - ({right}, {bottom})"
 }

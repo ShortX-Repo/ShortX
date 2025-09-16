@@ -404,7 +404,17 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
 
         is Fact.EdgeGesture -> listOfNotNull(
             i18N["ui.fact.edge.gesture"],
-            i18N[fact.edge.displayNameKey()]
+            // 如果有自定义Rect，显示自定义Rect描述；否则显示边缘位置
+            if (fact.customRect != null) {
+                i18N["ui.fact.edge.gesture.custom.rect.description", mapOf(
+                    "left" to fact.customRect.left.toString(),
+                    "top" to fact.customRect.top.toString(),
+                    "right" to fact.customRect.right.toString(),
+                    "bottom" to fact.customRect.bottom.toString()
+                )]
+            } else {
+                i18N[fact.edge.displayNameKey()]
+            }
                     + " "
                     + i18N[fact.gesture.displayNameKey()]
                     + " "
