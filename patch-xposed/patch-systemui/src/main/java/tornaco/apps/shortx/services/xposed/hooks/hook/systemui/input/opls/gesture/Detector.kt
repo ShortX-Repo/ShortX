@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook.systemui.input.opls.gesture
 
+import SystemCornerSwipeDetector
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Point
@@ -89,6 +90,12 @@ class Detector(
             },
             service.getSwipeDistanceThresholdDp()._dp
         )
+
+    private val cornerSwipeDetector =
+        SystemCornerSwipeDetector(context.screenSize().x, context.screenSize().y) {
+            logger.w("SystemCornerSwipeDetector- $it")
+            false
+        }
 
     init {
         service.obsGestureSettingsChanged {
@@ -234,6 +241,9 @@ class Detector(
                 return true
             }
             if (pointerEventListener.onPointerEvent(event)) {
+                return true
+            }
+            if (cornerSwipeDetector.onMotionEvent(event)) {
                 return true
             }
         }
