@@ -476,6 +476,7 @@ message RequireWindowRotation {
 message RequireDelay {
   string timeString = 1;
   bool useAlarm = 2;
+  TimeUnit timeUnit = 3;
 
   CustomContextDataKey customContextDataKey = 97;
   bool isDisabled = 96;

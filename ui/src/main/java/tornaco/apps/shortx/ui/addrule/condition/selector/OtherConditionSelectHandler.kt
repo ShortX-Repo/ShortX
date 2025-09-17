@@ -88,7 +88,11 @@ fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSe
         rememberDelayState(
             canUseAlarm = true,
             onSelected = {
-                addCondition(Condition.RequireDelay(timeString = it.time, isAlarm = it.useAlarm))
+                addCondition(Condition.RequireDelay(
+                    timeString = it.time, 
+                    isAlarm = it.useAlarm,
+                    timeUnit = it.timeUnit
+                ))
             })
     DelaySelectorDialog(state = delaySelectionState)
 
@@ -153,7 +157,8 @@ fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSe
             Condition.RequireDelay::class -> {
                 delaySelectionState.show(
                     initialTime = source.getConditionAs<Condition.RequireDelay>()?.timeString,
-                    useAlarm = source.getConditionAs<Condition.RequireDelay>()?.isAlarm
+                    useAlarm = source.getConditionAs<Condition.RequireDelay>()?.isAlarm,
+                    timeUnit = source.getConditionAs<Condition.RequireDelay>()?.timeUnit,
                 )
                 true
             }

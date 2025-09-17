@@ -592,7 +592,8 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 timeString = data.timeString,
-                isAlarm = data.useAlarm
+                isAlarm = data.useAlarm,
+                timeUnit = data.timeUnit
             )
         }
 

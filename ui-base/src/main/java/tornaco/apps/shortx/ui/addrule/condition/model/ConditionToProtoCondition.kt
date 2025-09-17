@@ -614,6 +614,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setCustomContextDataKey(customContextDataKey)
                 .setTimeString(timeString)
                 .setUseAlarm(isAlarm)
+                .setTimeUnit(timeUnit)
                 .build()
         }
 

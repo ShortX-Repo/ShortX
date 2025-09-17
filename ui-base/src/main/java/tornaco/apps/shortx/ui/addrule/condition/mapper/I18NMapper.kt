@@ -578,7 +578,7 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
         is Condition.RequireDelay -> {
             listOf(
                 i18N["ui.action.delay"],
-                i18N[condition.timeString]
+                "${condition.timeString} ${i18N[condition.timeUnit.labelKey()]}"
             )
         }
 

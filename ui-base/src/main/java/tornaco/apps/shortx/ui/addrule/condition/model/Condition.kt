@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.proto.common.ScreenOnTimeStartFrom
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.common.TimeOfADayRange
+import tornaco.apps.shortx.core.proto.common.TimeUnit
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOp
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOpPayload
 import tornaco.apps.shortx.core.proto.condition.PlugType
@@ -1266,7 +1267,8 @@ sealed interface Condition : Parcelable {
         override val note: String = "",
         override val id: String = defaultNewConditionId(),
         val timeString: String,
-        val isAlarm: Boolean
+        val isAlarm: Boolean,
+        val timeUnit: TimeUnit = TimeUnit.TimeUnit_MS
     ) : Condition {
         override fun clone(
             id: String,

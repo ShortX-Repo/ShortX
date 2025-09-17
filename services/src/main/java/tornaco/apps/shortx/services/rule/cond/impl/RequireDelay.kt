@@ -6,6 +6,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.internal.toLongOrDefault
+import tornaco.apps.shortx.core.proto.common.TimeUnit
+import tornaco.apps.shortx.core.proto.convertToMillis
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.ShortXContext
@@ -31,13 +33,18 @@ object RequireDelay : Cond {
         val timeStr = data.timeString.compileContextAndVars(cv)
         logger.d("timeStr: $timeStr")
         val timeLong = timeStr.toLongOrDefault(0L)
+        val timeUnit = data.timeUnit.takeIf { it != TimeUnit.UNRECOGNIZED } ?: TimeUnit.TimeUnit_MS
+        
+        logger.d("timeStr: $timeStr, timeunit: $timeUnit")
+        val timeLongInMillis = convertToMillis(timeLong, timeUnit)
+        logger.d("timeLongInMillis: $timeLongInMillis")
 
         if (data.useAlarm) {
             logger.d("delay with alarm")
             suspendCancellableCoroutine { continuation ->
                 val requestId = UUID.randomUUID().toString()
                 logger.d("delay with requestId: $requestId")
-                DelaySchedulerHolder.delayScheduler.schedule(requestId, timeLong) {
+                DelaySchedulerHolder.delayScheduler.schedule(requestId, timeLongInMillis) {
                     logger.d("delay alarm tick.")
                     continuation.resume(Unit) {}
                 }
@@ -46,7 +53,7 @@ object RequireDelay : Cond {
                 }
             }
         } else {
-            delay(maxOf(0, timeLong))
+            delay(maxOf(0, timeLongInMillis))
         }
 
         return Cond.Result(true)
