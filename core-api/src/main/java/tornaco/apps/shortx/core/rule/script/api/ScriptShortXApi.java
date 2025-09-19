@@ -3,10 +3,13 @@ package tornaco.apps.shortx.core.rule.script.api;
 import com.google.protobuf.Message;
 
 import java.util.List;
+import java.util.Map;
 
+import tornaco.apps.shortx.core.annotations.DoNotStrip;
 import tornaco.apps.shortx.core.proto.da.DirectAction;
 import tornaco.apps.shortx.core.proto.rule.Rule;
 
+@DoNotStrip
 public interface ScriptShortXApi {
 
     /**
@@ -39,7 +42,15 @@ public interface ScriptShortXApi {
 
     void enableDisableRuleById(String id, boolean enable);
 
-    void executeAction(Message action);
+    Result executeAction(Message action);
 
-    void executeActions(List<Message> actions);
+    Result executeActions(List<Message> actions);
+
+    @DoNotStrip
+    class Result {
+        /**
+         * Context data from the actions.
+         */
+        public Map<String, Object> contextData;
+    }
 }

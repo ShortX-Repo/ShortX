@@ -150,11 +150,12 @@ class ScriptShortXApiImpl(
         shortXContext.rule.setRuleEnabled(id, enable)
     }
 
-    override fun executeAction(action: ProtoMessage) {
-        executeActions(listOf(action))
+    override fun executeAction(action: ProtoMessage): ScriptShortXApi.Result {
+        return executeActions(listOf(action))
     }
 
-    override fun executeActions(actions: List<ProtoMessage>) {
+    override fun executeActions(actions: List<ProtoMessage>): ScriptShortXApi.Result {
+        val res = ScriptShortXApi.Result()
         val evaId = evaId
         logger.w("evaluate $evaId ${actions.joinToString { it.toString() }}")
         runBlocking {
@@ -170,6 +171,7 @@ class ScriptShortXApiImpl(
                     onComplete = {
                         logger.w("Action@ $evaId complete.")
                         logger.d("context data: $it")
+                        res.contextData = it
                         con.resume(Unit) { cause, _, _ ->
                             logger.e(cause, "resume error.")
                         }
@@ -178,5 +180,6 @@ class ScriptShortXApiImpl(
             }
             logger.w("evaluate $evaId complete.")
         }
+        return res
     }
 }
