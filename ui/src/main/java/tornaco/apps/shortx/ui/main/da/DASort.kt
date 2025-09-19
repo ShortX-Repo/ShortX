@@ -33,3 +33,17 @@ fun sortDirectActions(sortBy: DASortBy): (List<DirectActionUM>) -> List<DirectAc
         }
     }
 }
+
+/**
+ * 排序函数，保持置顶项目在顶部
+ */
+fun sortDirectActionsWithPinned(sortBy: DASortBy): (List<DirectActionUM>) -> List<DirectActionUM> {
+    return { das ->
+        val sortFunction = sortDirectActions(sortBy)
+        val pinnedItems = das.filter { it.isPinned }
+        val unpinnedItems = das.filter { !it.isPinned }
+        
+        // 分别对置顶和非置顶项目进行排序，然后合并
+        sortFunction(pinnedItems) + sortFunction(unpinnedItems)
+    }
+}

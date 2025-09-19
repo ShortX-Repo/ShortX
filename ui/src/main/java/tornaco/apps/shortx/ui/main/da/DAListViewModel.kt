@@ -108,14 +108,14 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                     null
                 }
             }
-            // 置顶排序：置顶的在前，然后按创建时间排序
-            .sortedWith { a, b ->
-                when {
-                    a.isPinned && !b.isPinned -> -1
-                    !a.isPinned && b.isPinned -> 1
-                    else -> b.directAction.createTime.compareTo(a.directAction.createTime)
-                }
-            }
+            // 移除这里的置顶排序，因为会在后面统一处理
+            // .sortedWith { a, b ->
+            //     when {
+            //         a.isPinned && !b.isPinned -> -1
+            //         !a.isPinned && b.isPinned -> 1
+            //         else -> b.directAction.createTime.compareTo(a.directAction.createTime)
+            //     }
+            // }
 
         val sets = allDASets
             .sortedWith { o1, o2 ->
@@ -176,8 +176,8 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                 searchQuery, true
             ) || it.titlePinyin.contains(searchQuery.lowercase(), true)
         }.let { filteredList ->
-            // 应用排序逻辑
-            val sortFunction = sortDirectActions(daSortBy)
+            // 使用新的排序函数，保持置顶项目在顶部
+            val sortFunction = sortDirectActionsWithPinned(daSortBy)
             sortFunction(filteredList)
         }
 
