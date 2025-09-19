@@ -1,7 +1,6 @@
 package tornaco.apps.shortx.services.phone
 
 import android.annotation.SuppressLint
-import android.os.RemoteCallbackList
 import android.telephony.CellInfo
 import android.telephony.CellLocation
 import android.telephony.TelephonyCallback
@@ -26,7 +25,7 @@ private const val MISSING_SMS_PROVIDER_ERROR_MSG =
     "No registered SMS providers. Please ensure 'PhoneProvider' scope is selected in Xposed."
 
 class PhoneService(shortXContext: ShortXContext) : SystemService(shortXContext, "PhoneService") {
-    private val nfcListeners = RemoteCallbackList<INFCTagEndpointListener>()
+    private val nfcListeners = RemoteCallbackListExt<INFCTagEndpointListener>()
     private val smsProviders = RemoteCallbackListExt<ISMSProvider>()
 
     override fun systemReady() {

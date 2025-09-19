@@ -1,11 +1,11 @@
 package tornaco.apps.shortx.services
 
 import android.content.Context
-import android.os.RemoteCallbackList
 import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.rule.action.emptyByteArrayWrapper
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.RemoteCallbackListExt
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -13,7 +13,7 @@ class ServiceLifecycle(private val shortXContext: ShortXContext) {
     private val logger = Logger("ServiceLifecycle")
     private val exe = Executors.newSingleThreadExecutor()
 
-    private val lifecycleSystemReadyCallbacks = RemoteCallbackList<ICallback>()
+    private val lifecycleSystemReadyCallbacks = RemoteCallbackListExt<ICallback>()
 
     val isSystemReadyCalled: AtomicBoolean = AtomicBoolean(false)
 

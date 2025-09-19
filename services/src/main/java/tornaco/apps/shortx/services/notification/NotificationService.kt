@@ -8,7 +8,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.IBinder
-import android.os.RemoteCallbackList
 import android.os.ServiceManager
 import kotlinx.coroutines.CoroutineScope
 import tornaco.apps.shortx.core.BuildProp
@@ -30,6 +29,7 @@ import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.util.OsUtils
+import tornaco.apps.shortx.core.util.RemoteCallbackListExt
 import tornaco.apps.shortx.core.util.appPkgToString
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.core.util.select
@@ -57,7 +57,7 @@ class NotificationService(shortXContext: ShortXContext) :
         )
     }
 
-    private val attachedPoster = RemoteCallbackList<INotificationPoster>()
+    private val attachedPoster = RemoteCallbackListExt<INotificationPoster>()
 
     private val fallbackNotificationPoster by lazy {
         NotificationPoster(

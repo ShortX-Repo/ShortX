@@ -1,7 +1,6 @@
 package tornaco.apps.shortx.services.watchdog
 
 import android.os.Handler
-import android.os.RemoteCallbackList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
@@ -16,6 +15,7 @@ import tornaco.apps.shortx.core.proto.common.SensorUsage
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.DateUtils
+import tornaco.apps.shortx.core.util.RemoteCallbackListExt
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.ShortXService.shortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -32,7 +32,7 @@ class WatchDogService(shortXContext: ShortXContext) :
     SystemService(shortXContext, "WatchDogService") {
     private val fatalErrors = mutableListOf<Throwable>()
     private val sensorUsages = mutableMapOf<Int, List<String>>()
-    private val sensorUsageListeners = RemoteCallbackList<ISensorUsageListener>()
+    private val sensorUsageListeners = RemoteCallbackListExt<ISensorUsageListener>()
 
     override fun systemReady() {
         super.systemReady()
@@ -48,8 +48,8 @@ class WatchDogService(shortXContext: ShortXContext) :
         sensorUsages[sensor] = srcId
         logger.i("onSensorUsage: $sensor $srcId")
         systemServiceScope.launchSafety("onSensorUsage") {
-            sensorUsageListeners.broadcast {
-                kotlin.runCatching { it.onUpdate() }
+            sensorUsageListeners.broadcast { lis ->
+                kotlin.runCatching { lis.onUpdate() }
                     .onFailure { logger.e(it, "call onUpdate") }
             }
         }
@@ -58,8 +58,8 @@ class WatchDogService(shortXContext: ShortXContext) :
     fun removeSensorUsage(sensor: Int) {
         sensorUsages.remove(sensor)
         systemServiceScope.launchSafety("removeSensorUsage") {
-            sensorUsageListeners.broadcast {
-                kotlin.runCatching { it.onUpdate() }
+            sensorUsageListeners.broadcast { lis ->
+                kotlin.runCatching { lis.onUpdate() }
                     .onFailure { logger.e(it, "call onUpdate") }
             }
         }

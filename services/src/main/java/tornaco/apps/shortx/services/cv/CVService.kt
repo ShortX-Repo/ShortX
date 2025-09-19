@@ -1,13 +1,13 @@
 package tornaco.apps.shortx.services.cv
 
-import android.os.RemoteCallbackList
 import tornaco.apps.shortx.core.cv.ICV
+import tornaco.apps.shortx.core.util.RemoteCallbackListExt
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 
 class CVService(shortXContext: ShortXContext) :
     SystemService(shortXContext, "CVService") {
-    private val cvStubs = RemoteCallbackList<ICV>()
+    private val cvStubs = RemoteCallbackListExt<ICV>()
 
     fun attachCV(cv: ICV?) {
         logger.w("attachCV: $cv")

@@ -1,11 +1,11 @@
 package tornaco.apps.shortx.services.app
 
-import android.os.RemoteCallbackList
 import tornaco.apps.shortx.core.PrebuiltStablePkgSetLabel
 import tornaco.apps.shortx.core.PrebuiltUserPkgSetLabel
 import tornaco.apps.shortx.core.proto.common.AppCategory
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.rule.IPkgSetObserver
+import tornaco.apps.shortx.core.util.RemoteCallbackListExt
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.PkgSetsStore
@@ -15,7 +15,7 @@ class PkgSetService(shortXContext: ShortXContext) : SystemService(shortXContext,
     private val pkgSetsStore: PkgSetsStore by lazy {
         PkgSetsStore(systemServiceScope)
     }
-    private val pkgSetObs = RemoteCallbackList<IPkgSetObserver>()
+    private val pkgSetObs = RemoteCallbackListExt<IPkgSetObserver>()
 
     private val prebuiltStablePkgSets = listOf(
         PrebuiltStablePkgSet.User,

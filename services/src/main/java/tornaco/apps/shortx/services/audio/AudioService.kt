@@ -9,7 +9,6 @@ import android.media.MediaRecorder
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.ParcelFileDescriptor
-import android.os.RemoteCallbackList
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.runBlocking
@@ -24,6 +23,7 @@ import tornaco.apps.shortx.core.proto.common.Ringtone
 import tornaco.apps.shortx.core.proto.nameAndExt
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.OsUtils
+import tornaco.apps.shortx.core.util.RemoteCallbackListExt
 import tornaco.apps.shortx.core.util.audioManager
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.ShortXContext
@@ -62,7 +62,7 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext, 
 
     private var currentRecorder: IRecorder? = null
 
-    private val recordListeners = RemoteCallbackList<IAudioRecordingListener>()
+    private val recordListeners = RemoteCallbackListExt<IAudioRecordingListener>()
 
     val isRecording: Boolean get() = synchronized(recorderSync) { currentRecorder != null }
 

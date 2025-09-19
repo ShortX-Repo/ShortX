@@ -1,6 +1,5 @@
 package tornaco.apps.shortx.services.gesture
 
-import android.os.RemoteCallbackList
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.widget.Toast
@@ -17,6 +16,7 @@ import tornaco.apps.shortx.core.proto.common.Rect
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.action.emptyByteArrayWrapper
+import tornaco.apps.shortx.core.util.RemoteCallbackListExt
 import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -47,7 +47,7 @@ class GestureService(shortXContext: ShortXContext) :
     private val gestureRecorder by lazy { GestureRecorder(context) }
     private val gesturePlayer by lazy { GesturePlayer(context) }
 
-    private val gestureSettingsListeners = RemoteCallbackList<ICallback>()
+    private val gestureSettingsListeners = RemoteCallbackListExt<ICallback>()
 
     override fun systemReady() {
         super.systemReady()

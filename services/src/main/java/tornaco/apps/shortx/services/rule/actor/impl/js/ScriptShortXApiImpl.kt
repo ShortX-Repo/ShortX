@@ -158,7 +158,7 @@ class ScriptShortXApiImpl(
         val evaId = evaId
         logger.w("evaluate $evaId ${actions.joinToString { it.toString() }}")
         runBlocking {
-            suspendCancellableCoroutine<Unit> { con ->
+            suspendCancellableCoroutine { con ->
                 shortXContext.rule.executeActions(
                     context = evaluateContext,
                     actions = actions.map { it.pack_() },
@@ -169,6 +169,7 @@ class ScriptShortXApiImpl(
                     conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
                     onComplete = {
                         logger.w("Action@ $evaId complete.")
+                        logger.d("context data: $it")
                         con.resume(Unit) { cause, _, _ ->
                             logger.e(cause, "resume error.")
                         }

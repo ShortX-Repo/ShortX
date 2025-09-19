@@ -3,7 +3,6 @@ package tornaco.apps.shortx.services.rule
 import android.content.Context
 import android.os.IBinder
 import android.os.ParcelFileDescriptor
-import android.os.RemoteCallbackList
 import android.util.Log
 import android.view.KeyEvent.KEYCODE_POWER
 import android.widget.Toast
@@ -75,6 +74,7 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.toLogString
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.core.util.RemoteCallbackListExt
 import tornaco.apps.shortx.core.util.maskAll
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext
@@ -181,13 +181,13 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         }
     }
 
-    private val jobStatusListeners = RemoteCallbackList<IJobStatusListener>()
-    private val actionEvaluateListener = RemoteCallbackList<IActionEvaluateListener>()
+    private val jobStatusListeners = RemoteCallbackListExt<IJobStatusListener>()
+    private val actionEvaluateListener = RemoteCallbackListExt<IActionEvaluateListener>()
 
-    private val globalVarObs = RemoteCallbackList<IGlobalVarObserver>()
-    private val ruleObs = RemoteCallbackList<IRuleObserver>()
-    private val daObs = RemoteCallbackList<IDAObserver>()
-    private val toggleObs = RemoteCallbackList<IToggleObserver>()
+    private val globalVarObs = RemoteCallbackListExt<IGlobalVarObserver>()
+    private val ruleObs = RemoteCallbackListExt<IRuleObserver>()
+    private val daObs = RemoteCallbackListExt<IDAObserver>()
+    private val toggleObs = RemoteCallbackListExt<IToggleObserver>()
 
     private val actionEvaluateRecorder = ActionEvaluateRecorder()
     private val conditionEvaluateRecorder = ConditionEvaluateRecorder()
@@ -484,7 +484,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         localVars: LocalVars = LocalVars.obtain(),
         parameterInputs: List<FuncParameterInput> = emptyList(),
         conflictStrategy: ConflictStrategy,
-        onComplete: () -> Unit = {}
+        onComplete: ((contextData: Map<String, Any?>) -> Unit)? = null
     ) {
         logger.d("executeActions: ${context.srcEvent} ${context.srcTitle}")
         if (actions.isNotEmpty()) {

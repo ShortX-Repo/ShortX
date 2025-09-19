@@ -54,7 +54,7 @@ interface Engine {
         localVars: LocalVars = LocalVars.obtain(),
         parameterInputs: List<FuncParameterInput> = emptyList(),
         conflictStrategy: ConflictStrategy,
-        onComplete: () -> Unit = {}
+        onComplete: ((contextData: Map<String, Any?>) -> Unit)?
     )
 
     fun evaluateConditions(

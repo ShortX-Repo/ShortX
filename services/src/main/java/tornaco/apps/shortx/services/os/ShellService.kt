@@ -4,7 +4,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.IBinder
-import android.os.RemoteCallbackList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -15,6 +14,7 @@ import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.action.su.ISu
 import tornaco.apps.shortx.core.su.SHELL_TIMEOUT_MINUTES
+import tornaco.apps.shortx.core.util.RemoteCallbackListExt
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicReference
 const val SHELL_ERROR_NO_SUCH_FILE_OR_DIR = "No such file or directory"
 
 class ShellService(shortXContext: ShortXContext) : SystemService(shortXContext, "ShellService") {
-    private val shellStubs = RemoteCallbackList<ISu>()
+    private val shellStubs = RemoteCallbackListExt<ISu>()
 
     override fun systemReady() {
         super.systemReady()

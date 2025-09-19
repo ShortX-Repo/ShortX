@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.os.RemoteCallbackList
 import android.provider.Settings
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -29,6 +28,7 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.settings.defaultCustomContextMenuSetting
 import tornaco.apps.shortx.core.toActivityClassName
+import tornaco.apps.shortx.core.util.RemoteCallbackListExt
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -63,7 +63,7 @@ class SystemSettingsService(shortXContext: ShortXContext) :
         }
     }
 
-    private val configChangeListeners = RemoteCallbackList<ICallback>()
+    private val configChangeListeners = RemoteCallbackListExt<ICallback>()
 
     private val _currentConfig = MutableSharedFlow<Configuration>()
     val currentConfig = _currentConfig.asSharedFlow()

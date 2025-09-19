@@ -2,7 +2,6 @@ package tornaco.apps.shortx.services.app
 
 import android.content.ComponentName
 import android.content.Context
-import android.os.RemoteCallbackList
 import kotlinx.coroutines.flow.MutableStateFlow
 import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.appComponentToString
@@ -20,6 +19,7 @@ import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.toAppComponent
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
+import tornaco.apps.shortx.core.util.RemoteCallbackListExt
 import tornaco.apps.shortx.core.util.appPkgToString
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.android.ServiceRetriever
@@ -49,7 +49,7 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
         }
     }
 
-    private val frontAppChangeListeners = RemoteCallbackList<ICallback>()
+    private val frontAppChangeListeners = RemoteCallbackListExt<ICallback>()
 
     fun isFront(appPkg: AppPkg): Boolean {
         val topVisibleActivities = func.getTopVisibleActivities()

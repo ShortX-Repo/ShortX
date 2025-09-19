@@ -2,7 +2,6 @@ package tornaco.apps.shortx.services.statusbar
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.RemoteCallbackList
 import android.view.WindowInsets
 import com.google.protobuf.BoolValue
 import kotlinx.coroutines.Dispatchers
@@ -29,6 +28,7 @@ import tornaco.apps.shortx.core.rule.ToggleObserver
 import tornaco.apps.shortx.core.rule.action.wrap
 import tornaco.apps.shortx.core.settings.defaultStatusBarTileSetting
 import tornaco.apps.shortx.core.util.OsUtils
+import tornaco.apps.shortx.core.util.RemoteCallbackListExt
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.core.util.statusBarManager
 import tornaco.apps.shortx.services.ShortXContext
@@ -53,11 +53,12 @@ class StatusBarService(shortXContext: ShortXContext) :
     private val tileSettingsStore by lazy {
         StatusBarTileSettingsStore(systemServiceScope)
     }
-    private val settingsChangeListeners = RemoteCallbackList<IStatusBarTileSettingsChangeListener>()
+    private val settingsChangeListeners =
+        RemoteCallbackListExt<IStatusBarTileSettingsChangeListener>()
 
-    private val statusBarClipStateListeners = RemoteCallbackList<ICallback>()
-    private val statusBarClipSettingsListeners = RemoteCallbackList<ICallback>()
-    private val lightBarTransitionsListeners = RemoteCallbackList<ICallback>()
+    private val statusBarClipStateListeners = RemoteCallbackListExt<ICallback>()
+    private val statusBarClipSettingsListeners = RemoteCallbackListExt<ICallback>()
+    private val lightBarTransitionsListeners = RemoteCallbackListExt<ICallback>()
 
     private var isLightBarTransitionsIconsDark: Boolean = false
 

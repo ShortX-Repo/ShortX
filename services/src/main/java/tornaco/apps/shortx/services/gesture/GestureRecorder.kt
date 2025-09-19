@@ -2,7 +2,6 @@ package tornaco.apps.shortx.services.gesture
 
 import android.content.Context
 import android.content.res.Configuration
-import android.os.RemoteCallbackList
 import android.view.MotionEvent
 import com.google.protobuf.ByteString
 import tornaco.apps.shortx.core.ICallback
@@ -13,6 +12,7 @@ import tornaco.apps.shortx.core.rule.action.emptyByteArrayWrapper
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.ParcelableUtil
+import tornaco.apps.shortx.core.util.RemoteCallbackListExt
 import tornaco.apps.shortx.core.util.select
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
@@ -23,7 +23,7 @@ class GestureRecorder(
     private val logger = Logger("GestureRecorder")
     private val isStart = AtomicBoolean(false)
     private val eventCache = mutableListOf<ByteArray>()
-    private val recorderStateListeners = RemoteCallbackList<ICallback>()
+    private val recorderStateListeners = RemoteCallbackListExt<ICallback>()
 
     val isRecording get() = isStart.get()
 

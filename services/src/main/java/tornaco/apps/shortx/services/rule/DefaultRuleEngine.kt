@@ -641,7 +641,7 @@ class DefaultRuleEngine(
         localVars: LocalVars,
         parameterInputs: List<FuncParameterInput>,
         conflictStrategy: ConflictStrategy,
-        onComplete: () -> Unit
+        onComplete: ((contextData: Map<String, Any?>) -> Unit)?
     ) {
         val contextData = ContextData.obtain(initialContextData)
         val isAlreadyRunning = synchronized(jobs) { jobs.any { it.srcId == context.srcId } }
@@ -659,7 +659,7 @@ class DefaultRuleEngine(
 
                 ConflictStrategy.ConflictStrategy_SkipNew -> {
                     logger.logOnDebug { ("Skip this rule actions since ConflictStrategy_SkipNew") }
-                    onComplete()
+                    onComplete?.invoke(emptyMap())
                     return
                 }
             }
@@ -705,9 +705,11 @@ class DefaultRuleEngine(
                     it.job == job
                 }
             }
-            contextData.recycle()
             onJobCompleted(context.srcId)
-            onComplete()
+            onComplete?.let {
+                it(contextData.map.toMap())
+            }
+            contextData.recycle()
         }
     }
 
