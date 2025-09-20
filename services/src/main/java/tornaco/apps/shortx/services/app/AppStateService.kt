@@ -453,10 +453,14 @@ class AppStateService(shortXContext: ShortXContext) :
 
             delay(500)
 
-            appPkgList.forEach {
-                if (!it.isFront() && it.isRunning()) {
-                    logger.w("forceStopApp should kill again: $it")
-                    context.activityManager.forceStopPackageAsUser(it.pkgName, it.userId)
+            appPkgList.forEach { app ->
+                if (!app.isFront() && app.isRunning()) {
+                    logger.w("forceStopApp should kill again: $app")
+                    runCatching {
+                        context.activityManager.forceStopPackageAsUser(app.pkgName, app.userId)
+                    }.onFailure {
+                        logger.e(it, "forceStopPackageAsUser failed.")
+                    }
                 }
             }
         }
