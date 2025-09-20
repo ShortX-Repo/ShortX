@@ -1569,7 +1569,12 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             logger.w("fireEdgeGesture - $protoModel")
             val edgeGesture = EdgeGesture.newBuilder(protoModel)
                 .build()
-            shortXContext.rule.publishFact("fireEdgeGesture", edgeGesture) { emptyMap() }
+            shortXContext.rule.publishFact("fireEdgeGesture", edgeGesture) {
+                mapOf(
+                    ContextDataMapping.ScreenGesture.eventX.name to protoModel.downX,
+                    ContextDataMapping.ScreenGesture.eventY.name to protoModel.downY,
+                )
+            }
         }
 
         override fun shouldFireScreenGesture(gesture: Int, x: Int, y: Int): Boolean {

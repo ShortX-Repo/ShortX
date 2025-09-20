@@ -469,6 +469,12 @@ object ContextDataMapping {
     }
 
     @DoNotStrip
+    enum class EdgeGesture(val description: String) {
+        eventX("The screen.x of the motion event"),
+        eventY("The screen.y of the motion event"),
+    }
+
+    @DoNotStrip
     enum class CpuAvgAvailability(val description: String) {
         latestAvgAvailabilityPercent("The latest average CPU availability percent."),
         pastNMillisAvgAvailabilityPercent("The past N-millisecond average CPU availability percent."),

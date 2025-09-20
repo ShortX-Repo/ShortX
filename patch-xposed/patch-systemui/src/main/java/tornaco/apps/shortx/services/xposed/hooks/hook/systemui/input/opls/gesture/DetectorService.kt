@@ -4,13 +4,20 @@ import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.Gesture
 
 interface DetectorService {
-    fun handleEdgeGestureEvent(areas: List<DetectedArea>, gestureEvent: Gesture): Boolean
+    fun handleEdgeGestureEvent(
+        areas: List<DetectedArea>,
+        gestureEvent: Gesture,
+        downX: Float,
+        downY: Float,
+    ): Boolean
+
     fun getSwipeDistanceThresholdDp(): Int
     fun getGestureAreaWidthDp(): Int
     fun getGestureLengthScale(): Float
 
     fun obsGestureSettingsChanged(obs: () -> Unit)
     fun obsConfigChanged(obs: () -> Unit)
+
     // Rule/DA/PkgSet...
     fun obsUserDataChanged(obs: () -> Unit)
 

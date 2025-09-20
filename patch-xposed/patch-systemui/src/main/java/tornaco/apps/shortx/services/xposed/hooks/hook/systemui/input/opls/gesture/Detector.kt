@@ -150,7 +150,7 @@ class Detector(
             if (edgeGesture.customRect != null && edgeGesture.customRect != Rect.getDefaultInstance()) {
                 // 自定义矩形区域
                 val rect = edgeGesture.customRect
-                val rectF = android.graphics.RectF(
+                val rectF = RectF(
                     rect.left.toFloat(),
                     rect.top.toFloat(),
                     rect.right.toFloat(),
@@ -158,7 +158,9 @@ class Detector(
                 )
                 val detectedArea = DetectedArea.CustomRect(rect)
                 targetCache.add(CachedGestureRect(rectF, detectedArea, edgeGesture))
-            } else if (edgeGesture.edge != Edge.UNRECOGNIZED) {
+            } else if (edgeGesture.edge != Edge.UNRECOGNIZED
+                && (edgeGesture.customRect == null || edgeGesture.customRect == Rect.getDefaultInstance())
+            ) {
                 // 预定义边缘区域
                 val rectF = edgeGesture.edge.getRect(
                     isPortrait = isPortrait,
@@ -178,17 +180,22 @@ class Detector(
     private fun handleSwipeEvent(downX: Float, downY: Float, gestureEvent: Gesture): Boolean {
         val areas = detectArea(downX, downY)
         if (areas.isEmpty()) return false
-        return handleEdgeGestureEvent(areas, gestureEvent)
+        return handleEdgeGestureEvent(areas, gestureEvent, downX, downY)
     }
 
     private fun handleTapEvent(motionEvent: MotionEvent, gestureEvent: Gesture): Boolean {
         val areas = detectArea(motionEvent)
         if (areas.isEmpty()) return false
-        return handleEdgeGestureEvent(areas, gestureEvent)
+        return handleEdgeGestureEvent(areas, gestureEvent, motionEvent.x, motionEvent.y)
     }
 
-    private fun handleEdgeGestureEvent(areas: List<DetectedArea>, gestureEvent: Gesture): Boolean {
-        return service.handleEdgeGestureEvent(areas, gestureEvent)
+    private fun handleEdgeGestureEvent(
+        areas: List<DetectedArea>,
+        gestureEvent: Gesture,
+        downX: Float,
+        downY: Float,
+    ): Boolean {
+        return service.handleEdgeGestureEvent(areas, gestureEvent, downX, downY)
     }
 
     private fun detectArea(event: MotionEvent): List<DetectedArea> {

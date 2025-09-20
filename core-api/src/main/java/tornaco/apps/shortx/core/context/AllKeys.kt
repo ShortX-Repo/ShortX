@@ -72,4 +72,5 @@ val allKeys: List<String> = listOf(
     enumValues<ContextDataMapping.ForEach>().map { it.name },
     enumValues<ContextDataMapping.CustomContextMenu>().map { it.name },
     enumValues<ContextDataMapping.ScreenGesture>().map { it.name },
+    enumValues<ContextDataMapping.EdgeGesture>().map { it.name },
 ).flatten().distinct().sorted()

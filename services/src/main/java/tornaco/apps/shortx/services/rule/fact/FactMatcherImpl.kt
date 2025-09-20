@@ -431,6 +431,7 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
             val isValidEdge = { edge: Edge -> edge != Edge.UNRECOGNIZED }
 
             val edgeMatches = isDefaultRect(actualN.customRect) &&
+                    isDefaultRect(ruleN.customRect) &&
                     isValidEdge(actualN.edge) &&
                     actualN.edge == ruleN.edge
 

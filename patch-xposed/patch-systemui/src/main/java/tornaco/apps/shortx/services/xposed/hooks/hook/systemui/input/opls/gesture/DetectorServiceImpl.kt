@@ -29,6 +29,7 @@ import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.data.GlobalSettings
+import kotlin.math.roundToInt
 
 class DetectorServiceImpl(private val context: Context) : DetectorService {
     private val shortx by lazy { shortXManager }
@@ -202,16 +203,26 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         afterUserDataChangedObs = obs
     }
 
-    override fun handleEdgeGestureEvent(areas: List<DetectedArea>, gestureEvent: Gesture): Boolean {
+    override fun handleEdgeGestureEvent(
+        areas: List<DetectedArea>,
+        gestureEvent: Gesture,
+        downX: Float,
+        downY: Float,
+    ): Boolean {
         var res = false
         areas.forEach {
-            val handled = onEdgeGestureEvent(it, gestureEvent)
+            val handled = onEdgeGestureEvent(it, gestureEvent, downX, downY)
             if (handled) res = true
         }
         return res
     }
 
-    private fun onEdgeGestureEvent(area: DetectedArea, gesture: Gesture): Boolean {
+    private fun onEdgeGestureEvent(
+        area: DetectedArea,
+        gesture: Gesture,
+        downX: Float,
+        downY: Float,
+    ): Boolean {
         if (shouldFireEdgeGesture(area, gesture)) {
             logger.d("Let's fire: $area $gesture")
             val data = EdgeGesture.newBuilder()
@@ -219,10 +230,14 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
                 .apply {
                     if (area is DetectedArea.PredefinedEdge) {
                         setEdge(area.edge)
+                        setIsTriggerCustom(false)
                     } else if (area is DetectedArea.CustomRect) {
                         setCustomRect(area.rect)
+                        setIsTriggerCustom(true)
                     }
                 }
+                .setDownX(downX.roundToInt())
+                .setDownY(downY.roundToInt())
                 .build()
             shortx.fireEdgeGesture(data)
             return true
