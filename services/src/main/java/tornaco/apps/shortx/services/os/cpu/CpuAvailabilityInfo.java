@@ -16,11 +16,6 @@
 
 package tornaco.apps.shortx.services.os.cpu;
 
-import static tornaco.apps.shortx.services.os.cpu.CpuAvailabilityMonitoringConfig.CPUSET_ALL;
-import static tornaco.apps.shortx.services.os.cpu.CpuAvailabilityMonitoringConfig.CPUSET_BACKGROUND;
-
-import com.android.internal.util.Preconditions;
-
 import java.util.Objects;
 
 /**
@@ -97,14 +92,10 @@ public final class CpuAvailabilityInfo {
     CpuAvailabilityInfo(int cpuset, long dataTimestampUptimeMillis,
                         int latestAvgAvailabilityPercent, int pastNMillisAvgAvailabilityPercent,
                         long pastNMillisDuration) {
-        this.cpuset = Preconditions.checkArgumentInRange(cpuset, CPUSET_ALL, CPUSET_BACKGROUND,
-                "cpuset");
-        this.dataTimestampUptimeMillis =
-                Preconditions.checkArgumentNonnegative(dataTimestampUptimeMillis);
-        this.latestAvgAvailabilityPercent = Preconditions.checkArgumentNonnegative(
-                latestAvgAvailabilityPercent);
+        this.cpuset = cpuset;
+        this.dataTimestampUptimeMillis = dataTimestampUptimeMillis;
+        this.latestAvgAvailabilityPercent = latestAvgAvailabilityPercent;
         this.pastNMillisAvgAvailabilityPercent = pastNMillisAvgAvailabilityPercent;
-        this.pastNMillisDuration = Preconditions.checkArgumentNonnegative(
-                pastNMillisDuration);
+        this.pastNMillisDuration = pastNMillisDuration;
     }
 }
