@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import tornaco.apps.shortx.core.input.InternalInputFlags.FLAG_SHORTX_INJECTION
 import tornaco.apps.shortx.core.logOnDebug
+import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.proto.clipboard.ClipboardItem
 import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
 import tornaco.apps.shortx.core.proto.feature.AppFeature
@@ -146,7 +147,9 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     }
 
     fun performContextMenuAction(action: Int) {
-        if (OsUtils.isUOrAbove()) {
+        if (OsUtils.is16OrAbove()) {
+            performContextMenuActionAndroid16(action)
+        } else if (OsUtils.isUOrAbove()) {
             performContextMenuActionAndroid14(action)
         } else {
             performContextMenuActionAndroid14Below(action)
@@ -167,7 +170,13 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     private fun performContextMenuActionAndroid14(action: Int) {
         logger.d("performContextMenuActionAndroid14Below, imeService: $imeService")
         val mCurInputConnection =
-            Reflections.getObjectField(imeService, "mCurInputConnection")
+            runCatching {
+                Reflections.getObjectField(imeService, "mCurInputConnection")
+            }.getOrElse {
+                val userData = Reflections.callMethod(imeService, "getUserData", myUserId)
+                logger.d("performContextMenuActionAndroid14Below,NoSuchFieldError try get with userData: $userData")
+                Reflections.getObjectField(userData, "mCurInputConnection")
+            }
         logger.d("performContextMenuActionAndroid14Below, mCurInputConnection: $mCurInputConnection")
         val inputConnection =
             requireNotNull(mCurInputConnection) { "No Input context. (no focused TextField?)" }
@@ -175,8 +184,23 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         InputConnectionCompat.performContextMenuAction(inputConnection, action)
     }
 
+    private fun performContextMenuActionAndroid16(action: Int) {
+        logger.d("performContextMenuActionAndroid16, imeService: $imeService")
+        val userData = Reflections.callMethod(imeService, "getUserData", myUserId)
+        logger.d("performContextMenuActionAndroid16, userData: $userData")
+        val mCurInputConnection =
+            Reflections.getObjectField(userData, "mCurInputConnection")
+        logger.d("performContextMenuActionAndroid16, mCurInputConnection: $mCurInputConnection")
+        val inputConnection =
+            requireNotNull(mCurInputConnection) { "No Input context. (no focused TextField?)" }
+        logger.d("performContextMenuActionAndroid16, inputConnection: $inputConnection")
+        InputConnectionCompat.performContextMenuAction(inputConnection, action)
+    }
+
     fun submitText(text: String) {
-        if (OsUtils.isUOrAbove()) {
+        if (OsUtils.is16OrAbove()) {
+            submitTextAndroid16(text)
+        } else if (OsUtils.isUOrAbove()) {
             submitTextAndroid14(text)
         } else {
             submitTextAndroid14Below(text)
@@ -199,7 +223,30 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     private fun submitTextAndroid14(text: String) {
         logger.d("submitText, imeService: $imeService")
         val mCurInputConnection =
-            Reflections.getObjectField(imeService, "mCurInputConnection")
+            runCatching {
+                Reflections.getObjectField(imeService, "mCurInputConnection")
+            }.getOrElse {
+                val userData = Reflections.callMethod(imeService, "getUserData", myUserId)
+                logger.d("submitText,NoSuchFieldError try get with userData: $userData")
+                Reflections.getObjectField(userData, "mCurInputConnection")
+            }
+        logger.d("submitText, mCurInputConnection: $mCurInputConnection")
+        val inputConnection =
+            requireNotNull(mCurInputConnection) { "No Input context. (no focused TextField?)" }
+        logger.d("submitText, inputConnection: $inputConnection")
+        InputConnectionCompat.commitText(inputConnection, text)
+    }
+
+    // final var userData = getUserData(userId);
+    // session.mMethod.startInput(startInputToken, userData.mCurInputConnection,
+    //                userData.mCurEditorInfo, restarting, navButtonFlags, userData.mCurImeDispatcher);
+    // https://cs.android.com/android/platform/superproject/+/android-latest-release:frameworks/base/services/core/java/com/android/server/inputmethod/InputMethodManagerService.java?q=InputMethodManagerService&ss=android
+    private fun submitTextAndroid16(text: String) {
+        logger.d("submitText, imeService: $imeService")
+        val userData = Reflections.callMethod(imeService, "getUserData", myUserId)
+        logger.d("submitText, userData: $userData")
+        val mCurInputConnection =
+            Reflections.getObjectField(userData, "mCurInputConnection")
         logger.d("submitText, mCurInputConnection: $mCurInputConnection")
         val inputConnection =
             requireNotNull(mCurInputConnection) { "No Input context. (no focused TextField?)" }
