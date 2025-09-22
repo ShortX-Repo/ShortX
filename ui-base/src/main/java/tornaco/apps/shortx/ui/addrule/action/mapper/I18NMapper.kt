@@ -1293,6 +1293,7 @@ fun RingerMode.labelKey() = when (this) {
     RingerMode.silent -> "ui.action.set.ringer.mode.silent"
     RingerMode.vibrate -> "ui.action.set.ringer.mode.vibrate"
     RingerMode.normal -> "ui.action.set.ringer.mode.normal"
+    RingerMode.switch -> "ui.action.set.ringer.mode.switch"
     RingerMode.UNRECOGNIZED -> "N/A"
 }
 

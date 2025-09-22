@@ -458,6 +458,7 @@ enum RingerMode {
   silent = 0;
   vibrate = 1;
   normal = 2;
+  switch = 3;
 }
 
 enum WebSocketEvent {

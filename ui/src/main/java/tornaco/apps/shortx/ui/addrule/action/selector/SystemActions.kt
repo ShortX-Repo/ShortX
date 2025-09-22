@@ -77,7 +77,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     val ringerModeSelectDialogState = rememberSelectionDialogState(
         title = i18N["ui.action.set.ringer.mode"],
         message = null,
-        selectionLabel2Ids = listOf(RingerMode.normal, RingerMode.vibrate, RingerMode.silent).map {
+        selectionLabel2Ids = listOf(RingerMode.normal, RingerMode.vibrate, RingerMode.silent, RingerMode.switch).map {
             i18N[it.labelKey()] to it.name
         },
         onSelect = {

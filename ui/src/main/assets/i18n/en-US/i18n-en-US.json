@@ -800,6 +800,7 @@
   "ui.action.set.ringer.mode.normal": "Normal",
   "ui.action.set.ringer.mode.silent": "Silent",
   "ui.action.set.ringer.mode.vibrate": "Vibrate",
+  "ui.action.set.ringer.mode.switch": "Switch",
   "ui.action.set.brightness": "Set brightness",
   "ui.action.start.service": "Start service",
   "ui.action.start.service.is.fg": "Foreground service",
