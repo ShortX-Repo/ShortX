@@ -19,7 +19,7 @@ fun SystemUIHook.hookQS(lpparam: IPackageLoaded.Param) = kotlin.runCatching {
                 QSHostAdapter.qsTileHost = param.thisObject
             }
         }.onFailure {
-            logger.e("afterConstruct.QSTileHost error.")
+            logger.e("afterConstruct.QSTileHost error, maybe 15+?.")
         }
 
         // Android 15.

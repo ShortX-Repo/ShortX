@@ -34,18 +34,18 @@ class Logger(private val tag: String = "-") {
     }
 
     fun w(any: Any?) {
-        logAdapter(Log.WARN, fullTag, "[${Thread.currentThread().name}] $any")
+        logAdapter(Log.WARN, fullTag, "[${Thread.currentThread().name}] [WARN] $any")
     }
 
     fun e(any: Any?) {
-        logAdapter(Log.ERROR, fullTag, "[${Thread.currentThread().name}] $any")
+        logAdapter(Log.ERROR, fullTag, "[${Thread.currentThread().name}] [ERROR] $any")
     }
 
     fun e(throwable: Throwable, any: Any?) {
         logAdapter(
             Log.ERROR,
             fullTag,
-            "[${Thread.currentThread().name}] $any --- ${throwable.stackTraceToString()}"
+            "[${Thread.currentThread().name}] [ERROR] $any --- ${throwable.stackTraceToString()}"
         )
     }
 }

@@ -2,7 +2,6 @@ package tornaco.apps.shortx.services.xposed.hooks.hook.systemui
 
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
-import tornaco.apps.shortx.services.xposed.hooks.hook.ClazzDumper
 import util.Reflections
 
 object QSHostAdapter {
@@ -22,10 +21,10 @@ object QSHostAdapter {
         }
 
     fun getTiles(): List<*> {
-        return if (OsUtils.isVOrAbove().apply {
-                logger.d("isVOrAbove? $this")
-            }) {
-            getTilesAndroid15() ?: getTilesAndroid14()
+        logger.w("getTiles isVOrAbove? ${OsUtils.isVOrAbove()}")
+        return if (OsUtils.isVOrAbove()) {
+            val tiles = getTilesAndroid15()
+            tiles ?: getTilesAndroid14()
         } else {
             getTilesAndroid14()
         }
@@ -52,14 +51,26 @@ object QSHostAdapter {
     private fun getTilesAndroid15(): List<*>? {
         logger.w("getTilesAndroid15, _QSHostAdapter: $_QSHostAdapter")
         if (_QSHostAdapter == null) {
-            logger.e("getTilesAndroidV, _QSHostAdapter == null")
+            logger.e("getTilesAndroid15, _QSHostAdapter == null")
             return null
         }
         return runCatching {
-            (Reflections.callMethod(_QSHostAdapter, "getTiles") as Collection<*>).filterNotNull()
+            // public final CurrentTilesInteractor interactor;
+            val interactor = runCatching {
+                Reflections.getObjectField(_QSHostAdapter, "interactor")
+            }.getOrNull()
+            logger.w("getTilesAndroid15, interactor: $interactor")
+            if (interactor == null) {
+                (Reflections.callMethod(
+                    _QSHostAdapter,
+                    "getTiles"
+                ) as Collection<*>).filterNotNull()
+            } else {
+                (KotlinTileAccessor.getTiles(interactor) as Collection<*>).filterNotNull()
+            }
+
         }.getOrElse {
-            ClazzDumper.dump(_QSHostAdapter?.javaClass)
-            logger.e(it, "getTilesAndroidV")
+            logger.e(it, "getTilesAndroid15")
             null
         }
     }

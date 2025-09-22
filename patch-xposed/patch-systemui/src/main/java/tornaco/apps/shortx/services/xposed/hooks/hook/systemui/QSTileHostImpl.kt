@@ -26,12 +26,20 @@ class QSTileHostImpl(private val shortx: IShortX) : IQSTileHost.Stub() {
             onEachTiles { spec, tile ->
                 if (spec == tileSpec) {
                     logger.d("click: $spec")
-                    val isCustomTile = tile.javaClass.name.endsWith("CustomTile")
-                    logger.d("Tile class: ${tile.javaClass.name}")
+                    // Android 15晚期版本？ 16上是：
+                    // public final class TileModel {
+                    //    public final TileSpec spec;
+                    //    public final QSTile tile;
+                    val tileOfTheModel = runCatching {
+                        Reflections.getObjectField(tile, "tile")
+                    }.getOrNull()
+                    val tileToClick = tileOfTheModel ?: tile
+                    val isCustomTile = tileToClick.javaClass.name.endsWith("CustomTile")
+                    logger.d("Tile - tileToClick class: ${tileToClick.javaClass.name}")
                     if (isCustomTile) {
-                        clickCustomTile(tile)
+                        clickCustomTile(tileToClick)
                     } else {
-                        clickStockTile(tile)
+                        clickStockTile(tileToClick)
                     }
                 }
             }
@@ -43,7 +51,8 @@ class QSTileHostImpl(private val shortx: IShortX) : IQSTileHost.Stub() {
     private fun clickStockTile(tile: Any) {
         altFuncs(
             // Android 15.
-            Func("Android15 - handleClick(Expandable)",
+            Func(
+                "Android15 - handleClick(Expandable)",
                 { OsUtils.isVOrAbove() }) {
                 val expandableClazz = Reflections.findClass(
                     "com.android.systemui.animation.Expandable",
@@ -145,7 +154,19 @@ class QSTileHostImpl(private val shortx: IShortX) : IQSTileHost.Stub() {
             onEachTiles { spec, tile ->
                 if (spec == tileSpec) {
                     logger.d("getState found spec: $spec")
-                    val stateObj = Reflections.callMethod(tile, "getState")
+
+                    // Android 15晚期版本？ 16上是：
+                    // public final class TileModel {
+                    //    public final TileSpec spec;
+                    //    public final QSTile tile;
+                    val tileOfModel = runCatching {
+                        Reflections.getObjectField(tile, "tile")
+                    }.getOrNull()
+                    val stateObj = if (tileOfModel == null) {
+                        Reflections.callMethod(tile, "getState")
+                    } else {
+                        Reflections.callMethod(tileOfModel, "getState")
+                    }
                     logger.d("getState stateObj: $stateObj")
                     if (stateObj != null) {
                         val stateInt = Reflections.getIntField(stateObj, "state")
@@ -165,20 +186,49 @@ class QSTileHostImpl(private val shortx: IShortX) : IQSTileHost.Stub() {
         val tiles = getTiles().filterNotNull()
         logger.d("onEachTiles, tiles: ${tiles.map { it }}")
         tiles.forEach {
-            val spec = Reflections.callMethod(it, "getTileSpec") ?: it.toString()
-            action(spec.toString(), it)
+            // Android 15晚期版本？ 16上是：
+            // public final class TileModel {
+            //    public final TileSpec spec;
+            //    public final QSTile tile;
+            val tile = runCatching {
+                Reflections.getObjectField(it, "tile")
+            }.getOrNull()
+            if (tile == null) {
+                val spec = Reflections.callMethod(it, "getTileSpec") ?: it.toString()
+                action(spec.toString(), it)
+            } else {
+                val spec = Reflections.callMethod(tile, "getTileSpec") ?: tile.toString()
+                action(spec.toString(), it)
+            }
         }
     }
 
     private fun getTilesInternal(): QSTileList = runCatching {
         val tiles = getTiles()
         logger.d("getTilesInternal, tiles: ${tiles.map { it }}")
-        val qsTiles = tiles.mapNotNull {
+        val qsTiles = tiles.mapNotNull { t ->
             runCatching {
-                val spec = Reflections.callMethod(it, "getTileSpec") ?: it.toString()
-                val label = Reflections.callMethod(it, "getTileLabel") ?: it.toString()
-                logger.d("Spec: $spec - $label")
-                QSTile.newBuilder().setTileSpec(spec.toString()).setLabel(label.toString()).build()
+
+                // Android 15晚期版本？ 16上是：
+                // public final class TileModel {
+                //    public final TileSpec spec;
+                //    public final QSTile tile;
+                val tile = runCatching {
+                    Reflections.getObjectField(t, "tile")
+                }.getOrNull()
+                if (tile == null) {
+                    val spec = Reflections.callMethod(t, "getTileSpec") ?: t.toString()
+                    val label = Reflections.callMethod(t, "getTileLabel") ?: t.toString()
+                    logger.d("Spec: $spec - $label")
+                    QSTile.newBuilder().setTileSpec(spec.toString()).setLabel(label.toString())
+                        .build()
+                } else {
+                    val spec = Reflections.callMethod(tile, "getTileSpec") ?: tile.toString()
+                    val label = Reflections.callMethod(tile, "getTileLabel") ?: tile.toString()
+                    logger.d("Spec: $spec - $label")
+                    QSTile.newBuilder().setTileSpec(spec.toString()).setLabel(label.toString())
+                        .build()
+                }
             }.getOrElse {
                 logger.e(it, "getTilesInternal")
                 null
