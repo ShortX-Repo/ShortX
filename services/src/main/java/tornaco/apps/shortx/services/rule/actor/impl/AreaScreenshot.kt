@@ -46,6 +46,9 @@ object AreaScreenshot : Actor {
         val screenCap = ScreenCap(androidContext)
         val screen: Bitmap = try {
             screenCap.cap()
+        } catch (e: Throwable) {
+            logger.e(e, "cap error")
+            error("Cap error.")
         } finally {
             screenCap.waitUntilDestroyed()
         }

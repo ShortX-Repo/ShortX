@@ -17,6 +17,7 @@ import android.media.projection.MediaProjection.Callback
 import android.media.projection.MediaProjectionManager
 import android.os.Binder
 import android.os.ServiceManager
+import android.view.Display
 import android.view.Surface
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -27,6 +28,7 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.defaultDisplay
 import tornaco.apps.shortx.core.util.newHandlerOfNewThread
 import tornaco.apps.shortx.core.util.screenSize
+import util.Reflections
 import java.util.concurrent.atomic.AtomicBoolean
 
 class ScreenCap(private val context: Context) {
@@ -54,26 +56,43 @@ class ScreenCap(private val context: Context) {
         //Setup media projection
         val b = ServiceManager.getService(Context.MEDIA_PROJECTION_SERVICE)
         val mediaService = IMediaProjectionManager.Stub.asInterface(b)
-        val proj = mediaService.createProjection(
-            Binder.getCallingUid(),
-            context.packageName,
-            MediaProjectionManager.TYPE_SCREEN_CAPTURE,
-            false
-        )
+        val proj = runCatching {
+            mediaService.createProjection(
+                Binder.getCallingUid(),
+                context.packageName,
+                MediaProjectionManager.TYPE_SCREEN_CAPTURE,
+                false
+            )
+        }.getOrElse {
+            // Android 16
+            //    IMediaProjection createProjection(int processUid, String packageName, int type,
+            //            boolean permanentGrant, int displayId);
+            Reflections.callMethod(
+                mediaService, "createProjection",
+                Binder.getCallingUid(),
+                context.packageName,
+                MediaProjectionManager.TYPE_SCREEN_CAPTURE,
+                false,
+                Display.DEFAULT_DISPLAY
+            ) as IMediaProjection
+        }
+
+        logger.d("cap proj: $proj")
         val projection = IMediaProjection.Stub.asInterface(proj.asBinder())
         mediaProjection = MediaProjection(context, projection)
+        logger.d("cap mediaProjection: $mediaProjection")
         val mp = mediaProjection
         requireNotNull(mp) { "WTF mediaProjection is null" }
 
         mp.registerCallback(callback, handler)
-
+        logger.d("cap registerCallback.")
         return runCatching {
             val bitmap = cap(mp)
             logger.d("cap complete.")
             mp.stop()
             bitmap
         }.getOrElse {
-            logger.e(it, "cap")
+            logger.e(it, "cap err")
             mp.stop()
             throw Error(it)
         }
