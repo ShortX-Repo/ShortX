@@ -2,24 +2,34 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 
 import android.content.Context
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
@@ -31,6 +41,7 @@ import tornaco.apps.shortx.core.proto.common.FindTextMethod
 import tornaco.apps.shortx.core.proto.common.Rect
 import tornaco.apps.shortx.core.proto.toAndroidRect
 import tornaco.apps.shortx.core.proto.toProtoRect
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
@@ -47,6 +58,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
+import tornaco.apps.shortx.ui.gesture.ScreenRectPickerActivity
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -56,11 +68,25 @@ class FindAndClickViewByTextSelectorActivity :
     @Composable
     override fun BaseSelectorActivity<Action.FindAndClickViewByText>.SelectorContent(currentData: Action.FindAndClickViewByText?) {
         val vm = hiltViewModel<FindAndClickViewByTextSelectorVM>()
+        val context = LocalContext.current
+        
         LaunchedEffect(vm) {
             vm.initFrom(currentData)
         }
 
         val state by vm.state.collectAsState()
+        
+        // Activity launcher for selecting screen area
+        val screenRectPickerLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == android.app.Activity.RESULT_OK) {
+                val rect = result.data?.getSerializableExtra("rect") as Rect?
+                if (rect != null) {
+                    vm.setRect(rect)
+                }
+            }
+        }
 
         ShortXAppBarScaffold(
             title = LocalI18N.current["ui.action.find.click.view.by.text"],
@@ -169,6 +195,40 @@ class FindAndClickViewByTextSelectorActivity :
                                 }
                             },
                         )
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        // 区域选择按钮
+                        TextButton(
+                            onClick = {
+                                screenRectPickerLauncher.launch(
+                                    ScreenRectPickerActivity.start(context)
+                                )
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(LocalI18N.current["ui.fact.edge.gesture.select.screen.area"])
+                        }
+                        
+                        // 预览按钮 - 只有当矩形不为空时才显示
+                        if (state.rect != Rect.getDefaultInstance()) {
+                            Spacer(modifier = Modifier.height(4.dp))
+                            OutlinedButton(
+                                onClick = {
+                                    shortXManager.showScreenRectHint(state.rect)
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Visibility,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(LocalI18N.current["ui.fact.edge.gesture.show.selected.area"])
+                            }
+                        }
+                        
                         StandardSpacer()
                     }
                 }
