@@ -23,6 +23,7 @@ import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IActionEvaluateListener
 import tornaco.apps.shortx.core.IAudioRecordingListener
 import tornaco.apps.shortx.core.ICallback
+import tornaco.apps.shortx.core.IForceDisableListener
 import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.INFCTagEndpointListener
 import tornaco.apps.shortx.core.ISensorUsageListener
@@ -591,6 +592,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun isForceDisableShortXByKeyPressEnabled(): Boolean {
             return shortXContext.rule.isForceDisableShortXByKeyPressEnabled()
+        }
+
+        override fun registerForceDisableListener(listener: IForceDisableListener) {
+            shortXContext.rule.registerForceDisableListener(listener)
+        }
+
+        override fun unregisterForceDisableListener(listener: IForceDisableListener) {
+            shortXContext.rule.unregisterForceDisableListener(listener)
         }
 
         override fun dispatchTagEndpoint(uid: ByteArray) {

@@ -11,6 +11,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.ICallback
+import tornaco.apps.shortx.core.IForceDisableListener
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.common.AppPkg
@@ -58,11 +59,13 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
     private var requiredFrontAppMatchQuick: Boolean = false
 
     val shouldDetectMotion
-        get() = isGestureEnabledQuick
+        get() = !isForceDisabled
+                && isGestureEnabledQuick
                 && enabledEdgeGestures.isNotEmpty()
                 && (requiredFrontAppAny || requiredFrontAppMatchQuick)
 
     private var isGestureEnabledQuick = false
+    private var isForceDisabled = false
 
     init {
         shortx.registerGestureSettingsListener(object : ICallback.Stub() {
@@ -130,6 +133,13 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
                     }
                 }
                 logger.w("requiredFrontAppMatchQuick - $requiredFrontAppMatchQuick")
+            }
+        })
+
+        shortx.registerForceDisableListener(object : IForceDisableListener.Stub() {
+            override fun onForceDisableStateChanged(isDisabled: Boolean) {
+                logger.w("ForceDisable state changed: $isDisabled")
+                isForceDisabled = isDisabled
             }
         })
 

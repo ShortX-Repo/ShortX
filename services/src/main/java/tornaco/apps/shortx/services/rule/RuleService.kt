@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IActionEvaluateListener
 import tornaco.apps.shortx.core.ICallback
+import tornaco.apps.shortx.core.IForceDisableListener
 import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.RuleEngineNames
 import tornaco.apps.shortx.core.annotations.DoNotStrip
@@ -183,6 +184,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     private val jobStatusListeners = RemoteCallbackListExt<IJobStatusListener>()
     private val actionEvaluateListener = RemoteCallbackListExt<IActionEvaluateListener>()
+    private val forceDisableListeners = RemoteCallbackListExt<IForceDisableListener>()
 
     private val globalVarObs = RemoteCallbackListExt<IGlobalVarObserver>()
     private val ruleObs = RemoteCallbackListExt<IRuleObserver>()
@@ -1181,10 +1183,23 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     fun setForceDisableShortXByKeyPressEnabled(enable: Boolean) {
         store.write(Settings.BoolSettings.EnableForceDisableShortXByKeyPress, enable)
+        // 通知所有注册的ForceDisable监听器
+        forceDisableListeners.broadcast {
+            kotlin.runCatching { it.onForceDisableStateChanged(enable) }
+                .onFailure { logger.e(it, "Call onForceDisableStateChanged") }
+        }
     }
 
     fun isForceDisableShortXByKeyPressEnabled(): Boolean {
         return store.read(Settings.BoolSettings.EnableForceDisableShortXByKeyPress)
+    }
+
+    fun registerForceDisableListener(listener: IForceDisableListener) {
+        forceDisableListeners.register(listener)
+    }
+
+    fun unregisterForceDisableListener(listener: IForceDisableListener) {
+        forceDisableListeners.unregister(listener)
     }
 
     fun registerRuleObs(obs: IRuleObserver) {
@@ -1447,6 +1462,12 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         systemServiceScope.launchSafety("forceDisableShortX") {
             setRuleFeatureEnabled(false)
             cancelJobs(getActiveJobs(), "Force disable ShortX")
+
+            // 通知ForceDisable监听器状态已改变
+            forceDisableListeners.broadcast {
+                kotlin.runCatching { it.onForceDisableStateChanged(true) }
+                    .onFailure { logger.e(it, "call onForceDisableStateChanged") }
+            }
 
             shortXContext.notification.post(
                 PostNotification.newBuilder()
