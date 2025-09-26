@@ -66,6 +66,7 @@ import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
 import tornaco.apps.shortx.core.proto.toggles.Toggle
 import tornaco.apps.shortx.core.rule.IDAObserver
 import tornaco.apps.shortx.core.IForceDisableListener
+import tornaco.apps.shortx.core.IRuleFeatureStateListener
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.rule.IPkgSetObserver
 import tornaco.apps.shortx.core.rule.IRuleObserver
@@ -1384,6 +1385,18 @@ class ShortXManager(val service: IShortX) {
     fun unregisterForceDisableListener(listener: IForceDisableListener) {
         invokeService(Unit) {
             unregisterForceDisableListener(listener)
+        }
+    }
+
+    fun registerRuleFeatureStateListener(listener: IRuleFeatureStateListener) {
+        invokeService(Unit) {
+            registerRuleFeatureStateListener(listener)
+        }
+    }
+
+    fun unregisterRuleFeatureStateListener(listener: IRuleFeatureStateListener) {
+        invokeService(Unit) {
+            unregisterRuleFeatureStateListener(listener)
         }
     }
 

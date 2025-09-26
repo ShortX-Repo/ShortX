@@ -25,6 +25,7 @@ import tornaco.apps.shortx.core.IAudioRecordingListener
 import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.IForceDisableListener
 import tornaco.apps.shortx.core.IJobStatusListener
+import tornaco.apps.shortx.core.IRuleFeatureStateListener
 import tornaco.apps.shortx.core.INFCTagEndpointListener
 import tornaco.apps.shortx.core.ISensorUsageListener
 import tornaco.apps.shortx.core.IShortX
@@ -600,6 +601,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun unregisterForceDisableListener(listener: IForceDisableListener) {
             shortXContext.rule.unregisterForceDisableListener(listener)
+        }
+
+        override fun registerRuleFeatureStateListener(listener: IRuleFeatureStateListener) {
+            shortXContext.rule.registerRuleFeatureStateListener(listener)
+        }
+
+        override fun unregisterRuleFeatureStateListener(listener: IRuleFeatureStateListener) {
+            shortXContext.rule.unregisterRuleFeatureStateListener(listener)
         }
 
         override fun dispatchTagEndpoint(uid: ByteArray) {

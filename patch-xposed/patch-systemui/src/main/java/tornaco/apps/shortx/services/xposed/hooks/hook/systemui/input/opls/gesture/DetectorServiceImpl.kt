@@ -12,6 +12,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.IForceDisableListener
+import tornaco.apps.shortx.core.IRuleFeatureStateListener
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.common.AppPkg
@@ -59,13 +60,13 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
     private var requiredFrontAppMatchQuick: Boolean = false
 
     val shouldDetectMotion
-        get() = !isForceDisabled
+        get() = !isRuleFeatureDisabled
                 && isGestureEnabledQuick
                 && enabledEdgeGestures.isNotEmpty()
                 && (requiredFrontAppAny || requiredFrontAppMatchQuick)
 
     private var isGestureEnabledQuick = false
-    private var isForceDisabled = false
+    private var isRuleFeatureDisabled = false
 
     init {
         shortx.registerGestureSettingsListener(object : ICallback.Stub() {
@@ -139,7 +140,13 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         shortx.registerForceDisableListener(object : IForceDisableListener.Stub() {
             override fun onForceDisableStateChanged(isDisabled: Boolean) {
                 logger.w("ForceDisable state changed: $isDisabled")
-                isForceDisabled = isDisabled
+            }
+        })
+
+        shortx.registerRuleFeatureStateListener(object : IRuleFeatureStateListener.Stub() {
+            override fun onRuleFeatureStateChanged(isEnabled: Boolean) {
+                isRuleFeatureDisabled = !isEnabled
+                logger.w("Rule feature state changed: enabled=$isEnabled")
             }
         })
 
@@ -179,6 +186,9 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         GlobalSettings.isEdgeGestureEnabled =
             shortx.isAppFeatureEnabled(AppFeature.AppFeature_EdgeGesture.number)
         isGestureEnabledQuick = GlobalSettings.isEdgeGestureEnabled
+        
+        // 读取 forceDisable 和 ruleFeature 状态
+        isRuleFeatureDisabled = !shortx.isRuleFeatureEnabled()
 
         logger.w("swipeDistanceThresholdDp: $swipeDistanceThresholdDp")
         logger.w("gestureAreaWidthDp: $gestureAreaWidthDp")
@@ -186,6 +196,7 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         logger.w("isGestureRecording: $isGestureRecording")
         logger.logOnDebug("isGestureEnabledQuick: $isGestureEnabledQuick")
         logger.logOnDebug("isEdgeGestureEnabled: ${GlobalSettings.isEdgeGestureEnabled}")
+        logger.logOnDebug("isRuleFeatureDisabled: $isRuleFeatureDisabled")
     }
 
     override fun getSwipeDistanceThresholdDp(): Int {

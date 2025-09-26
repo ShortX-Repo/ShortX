@@ -15,6 +15,7 @@ import tornaco.apps.shortx.core.IActionEvaluateListener
 import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.IForceDisableListener
 import tornaco.apps.shortx.core.IJobStatusListener
+import tornaco.apps.shortx.core.IRuleFeatureStateListener
 import tornaco.apps.shortx.core.RuleEngineNames
 import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.context.ContextDataMapping
@@ -185,6 +186,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     private val jobStatusListeners = RemoteCallbackListExt<IJobStatusListener>()
     private val actionEvaluateListener = RemoteCallbackListExt<IActionEvaluateListener>()
     private val forceDisableListeners = RemoteCallbackListExt<IForceDisableListener>()
+    private val ruleFeatureStateListeners = RemoteCallbackListExt<IRuleFeatureStateListener>()
 
     private val globalVarObs = RemoteCallbackListExt<IGlobalVarObserver>()
     private val ruleObs = RemoteCallbackListExt<IRuleObserver>()
@@ -1202,6 +1204,14 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         forceDisableListeners.unregister(listener)
     }
 
+    fun registerRuleFeatureStateListener(listener: IRuleFeatureStateListener) {
+        ruleFeatureStateListeners.register(listener)
+    }
+
+    fun unregisterRuleFeatureStateListener(listener: IRuleFeatureStateListener) {
+        ruleFeatureStateListeners.unregister(listener)
+    }
+
     fun registerRuleObs(obs: IRuleObserver) {
         ruleObs.register(obs)
     }
@@ -1334,6 +1344,14 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         store.write(Settings.BoolSettings.EnableRuleFeature, enable)
         if (!enable) {
             shortXContext.wm.ensureAutomationDisconnected("Disable Rule feature")
+        }
+        
+        // 通知监听器规则功能状态已改变
+        systemServiceScope.launchSafety("notifyRuleFeatureStateChanged") {
+            ruleFeatureStateListeners.broadcast { ie ->
+                kotlin.runCatching { ie.onRuleFeatureStateChanged(enable) }
+                    .onFailure { logger.e(it, "call onRuleFeatureStateChanged") }
+            }
         }
     }
 
