@@ -97,9 +97,6 @@ class Detector(
             false
         }
 
-    // 持续滑动手势管理器
-    private val continuousSwipeManager = ContinuousSwipeManager.getInstance()
-
     init {
         service.obsGestureSettingsChanged {
             setSwipeDistanceThresholdDp(service.getSwipeDistanceThresholdDp())
@@ -116,9 +113,6 @@ class Detector(
             val isPortrait = currentOrientation == Configuration.ORIENTATION_PORTRAIT
             ensureCacheValid(isPortrait)
         }
-        
-        // 初始化持续滑动手势
-        initializeContinuousSwipeGestures()
     }
 
     private fun onConfigurationChanged() {
@@ -259,7 +253,6 @@ class Detector(
             if (cornerSwipeDetector.onMotionEvent(event)) {
                 return true
             }
-            continuousSwipeManager.onTouchEvent(event)
         }
         return null
     }
@@ -271,47 +264,6 @@ class Detector(
     private fun setSwipeDistanceThresholdDp(dp: Int) {
         logger.d("setSwipeDistanceThresholdDp: $dp px: ${dp._dp}")
         pointerEventListener.setSwipeDistanceThresholdPx(dp._dp)
-    }
-
-    /**
-     * 初始化持续滑动手势
-     */
-    private fun initializeContinuousSwipeGestures() {
-        logger.d("Initializing continuous swipe gestures")
-        
-        // 创建示例持续滑动监听器
-        val exampleListener = object : SimpleContinuousSwipeListener() {
-            override fun onSwipeStart(event: ContinuousSwipeEvent) {
-                logger.d("Continuous swipe started: direction=${event.direction}")
-            }
-            
-            override fun onSwipeContinue(event: ContinuousSwipeEvent) {
-                logger.v("Continuous swipe continue: distance=${event.totalDistance}, velocity=${event.velocity}")
-            }
-            
-            override fun onSwipeEnd(event: ContinuousSwipeEvent) {
-                logger.d("Continuous swipe ended: total distance=${event.totalDistance}")
-            }
-            
-            override fun onSwipeCancel(event: ContinuousSwipeEvent) {
-                logger.d("Continuous swipe cancelled")
-            }
-        }
-        
-        // 添加全局监听器
-        continuousSwipeManager.addGlobalListener(exampleListener)
-        
-        // 创建预定义的手势检测器
-        continuousSwipeManager.getOrCreateDetector("general", ContinuousSwipeConfigs.GENERAL)
-        
-        logger.d("Continuous swipe gestures initialized")
-    }
-
-    /**
-     * 获取持续滑动手势管理器
-     */
-    fun getContinuousSwipeManager(): ContinuousSwipeManager {
-        return continuousSwipeManager
     }
 }
 
