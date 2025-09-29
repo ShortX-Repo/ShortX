@@ -47,31 +47,53 @@ fun SystemUIHook.hookView(lpparam: IPackageLoaded.Param) = kotlin.runCatching {
         }
     }
 
+    fun ViewGroup.findChild(targetId: String): View? {
+        repeat(childCount) {
+            val child = getChildAt(it)
+            val id = child.getIdString()
+            if (id == targetId) {
+                return child
+            }
+            if (child is ViewGroup) {
+                val found = child.findChild(targetId)
+                if (found != null) {
+                    return found
+                }
+            }
+        }
+        return null
+    }
+
     if (PackageNames.systemUI == lpparam.packageName) {
-        afterMethod(
-            clazz = Reflections.findClass(
+        // MiuiPhoneStatusBarView
+        val clazz = runCatching {
+            Reflections.findClass(
+                "com.android.systemui.statusbar.phone.MiuiPhoneStatusBarView",
+                lpparam.classLoader
+            )
+        }.getOrElse {
+            Reflections.findClass(
                 "com.android.systemui.statusbar.phone.PhoneStatusBarView",
                 lpparam.classLoader
-            ),
+            )
+        }
+        logger.w("PhoneStatusBarView class: $clazz")
+        afterMethod(
+            clazz = clazz,
             methodName = "onFinishInflate"
         ) { param ->
             logger.d("onFinishInflate: ${param.args.map { it }}")
             val view: ViewGroup = param.thisObject as ViewGroup
             view.dumpChild()
-            repeat(view.childCount) { index ->
-                val child = view.getChildAt(index)
-                val id = child.getIdString()
-                if (id == "app:id/status_bar_contents") {
-                    logger.d("status_bar_contents: $child")
-                    kotlin.runCatching {
-                        // Android it's Linear, Oneui6 is Relative.
-                        val linearRoot = child as ViewGroup
-                        linearRoot.addView(StatusBarClipView(child.context), 0)
-                        logger.d("Chip added.")
-                    }.onFailure {
-                        logger.e(it, "Fail to add chip")
-                    }
-                }
+            val contentView = view.findChild("app:id/status_bar_contents")
+            logger.d("status_bar_contents: $contentView")
+            kotlin.runCatching {
+                // Android it's Linear, Oneui6 is Relative.
+                val linearRoot = contentView as ViewGroup
+                linearRoot.addView(StatusBarClipView(contentView.context), 0)
+                logger.d("Chip added.")
+            }.onFailure {
+                logger.e(it, "Fail to add chip")
             }
         }
 
