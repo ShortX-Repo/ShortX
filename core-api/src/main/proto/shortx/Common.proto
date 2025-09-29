@@ -655,3 +655,7 @@ message CodeLibraryQuery {
   repeated string tags = 3;
   CodeLibrarySortBy sortBy = 4;
 }
+
+message CodeLibraryItemList {
+  repeated CodeLibraryItem codeLibraryItems = 1;
+}

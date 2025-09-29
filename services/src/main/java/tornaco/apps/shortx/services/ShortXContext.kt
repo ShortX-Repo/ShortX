@@ -4,6 +4,7 @@ import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.services.app.AppStateService
 import tornaco.apps.shortx.services.app.PkgSetService
 import tornaco.apps.shortx.services.audio.AudioService
+import tornaco.apps.shortx.services.codelibrary.CodeLibraryService
 import tornaco.apps.shortx.services.cv.CVService
 import tornaco.apps.shortx.services.dev.DevService
 import tornaco.apps.shortx.services.gesture.GestureService
@@ -51,6 +52,7 @@ interface ShortXContext {
     val cv: CVService
     val ocr: OCRService
     val dev: DevService
+    val codeLibrary: CodeLibraryService
 
     val serviceLifecycle: ServiceLifecycle
 
@@ -79,6 +81,7 @@ interface ShortXContext {
             plugin,
             cv,
             ocr,
+            codeLibrary,
         ).apply {
             if (BuildPropInternal.APP_IS_DEBUG) {
                 add(dev)
@@ -111,6 +114,7 @@ class ShortXContextImpl : ShortXContext {
     override val cv = CVService(this)
     override val ocr = OCRService(this)
     override val dev = DevService(this)
+    override val codeLibrary = CodeLibraryService(this)
 
     override val serviceLifecycle = ServiceLifecycle(this)
 }

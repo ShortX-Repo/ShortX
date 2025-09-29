@@ -25,8 +25,8 @@ import tornaco.apps.shortx.core.IAudioRecordingListener
 import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.IForceDisableListener
 import tornaco.apps.shortx.core.IJobStatusListener
-import tornaco.apps.shortx.core.IRuleFeatureStateListener
 import tornaco.apps.shortx.core.INFCTagEndpointListener
+import tornaco.apps.shortx.core.IRuleFeatureStateListener
 import tornaco.apps.shortx.core.ISensorUsageListener
 import tornaco.apps.shortx.core.IShortX
 import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener
@@ -51,6 +51,8 @@ import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AudioRecordFile
 import tornaco.apps.shortx.core.proto.common.Author
+import tornaco.apps.shortx.core.proto.common.CodeLibraryItem
+import tornaco.apps.shortx.core.proto.common.CodeLibraryQuery
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.common.CoroutineContext
 import tornaco.apps.shortx.core.proto.common.CustomContextMenuSetting
@@ -612,38 +614,96 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         }
 
         override fun addCodeLibraryItem(item: ByteArrayWrapper?) {
-            TODO("Not yet implemented")
+            item?.let {
+                try {
+                    val codeLibraryItem = CodeLibraryItem.parseFrom(it.byteData)
+                    shortXContext.codeLibrary.addCodeLibraryItem(codeLibraryItem)
+                } catch (e: Exception) {
+                    Log.e("ShortXService", "Failed to add CodeLibraryItem", e)
+                }
+            }
         }
 
         override fun updateCodeLibraryItem(item: ByteArrayWrapper?) {
-            TODO("Not yet implemented")
+            item?.let {
+                try {
+                    val codeLibraryItem = CodeLibraryItem.parseFrom(it.byteData)
+                    shortXContext.codeLibrary.updateCodeLibraryItem(codeLibraryItem)
+                } catch (e: Exception) {
+                    Log.e("ShortXService", "Failed to update CodeLibraryItem", e)
+                }
+            }
         }
 
         override fun deleteCodeLibraryItem(id: String?) {
-            TODO("Not yet implemented")
+            id?.let {
+                try {
+                    shortXContext.codeLibrary.deleteCodeLibraryItem(it)
+                } catch (e: Exception) {
+                    Log.e("ShortXService", "Failed to delete CodeLibraryItem: $it", e)
+                }
+            }
         }
 
         override fun getCodeLibraryItemById(id: String?): ByteArrayWrapper? {
-            TODO("Not yet implemented")
+            return id?.let {
+                try {
+                    val item = shortXContext.codeLibrary.getCodeLibraryItemById(it)
+                    item?.let { ByteArrayWrapper(it.toByteArray()) }
+                } catch (e: Exception) {
+                    Log.e("ShortXService", "Failed to get CodeLibraryItem: $it", e)
+                    null
+                }
+            }
         }
 
         override fun getAllCodeLibraryItems(): List<ByteArrayWrapper?>? {
-            TODO("Not yet implemented")
+            return try {
+                shortXContext.codeLibrary.getAllCodeLibraryItems().map {
+                    ByteArrayWrapper(it.toByteArray())
+                }
+            } catch (e: Exception) {
+                Log.e("ShortXService", "Failed to get all CodeLibraryItems", e)
+                emptyList()
+            }
         }
 
         override fun queryCodeLibraryItems(query: ByteArrayWrapper?): List<ByteArrayWrapper?>? {
-            TODO("Not yet implemented")
+            return query?.let {
+                try {
+                    val codeLibraryQuery = CodeLibraryQuery.parseFrom(it.byteData)
+                    shortXContext.codeLibrary.queryCodeLibraryItems(codeLibraryQuery).map { item ->
+                        ByteArrayWrapper(item.toByteArray())
+                    }
+                } catch (e: Exception) {
+                    Log.e("ShortXService", "Failed to query CodeLibraryItems", e)
+                    emptyList()
+                }
+            } ?: emptyList()
         }
 
         override fun getCodeLibraryItemCount(): Int {
-            TODO("Not yet implemented")
+            return try {
+                shortXContext.codeLibrary.getCodeLibraryItemCount()
+            } catch (e: Exception) {
+                Log.e("ShortXService", "Failed to get CodeLibraryItem count", e)
+                0
+            }
         }
 
         override fun executeCodeLibraryItem(
             id: String?,
             context: Int
         ): String? {
-            TODO("Not yet implemented")
+            return id?.let {
+                try {
+                    shortXContext.codeLibrary.executeCodeLibraryItem(it)
+                    "Success"
+                } catch (e: Exception) {
+                    Log.e("ShortXService", "Failed to execute CodeLibraryItem: $it", e)
+                    "Error: ${e.message}"
+                }
+            } ?: "Error: ID is null"
         }
 
         override fun dispatchTagEndpoint(uid: ByteArray) {
