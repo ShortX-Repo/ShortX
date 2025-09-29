@@ -611,6 +611,41 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.rule.unregisterRuleFeatureStateListener(listener)
         }
 
+        override fun addCodeLibraryItem(item: ByteArrayWrapper?) {
+            TODO("Not yet implemented")
+        }
+
+        override fun updateCodeLibraryItem(item: ByteArrayWrapper?) {
+            TODO("Not yet implemented")
+        }
+
+        override fun deleteCodeLibraryItem(id: String?) {
+            TODO("Not yet implemented")
+        }
+
+        override fun getCodeLibraryItemById(id: String?): ByteArrayWrapper? {
+            TODO("Not yet implemented")
+        }
+
+        override fun getAllCodeLibraryItems(): List<ByteArrayWrapper?>? {
+            TODO("Not yet implemented")
+        }
+
+        override fun queryCodeLibraryItems(query: ByteArrayWrapper?): List<ByteArrayWrapper?>? {
+            TODO("Not yet implemented")
+        }
+
+        override fun getCodeLibraryItemCount(): Int {
+            TODO("Not yet implemented")
+        }
+
+        override fun executeCodeLibraryItem(
+            id: String?,
+            context: Int
+        ): String? {
+            TODO("Not yet implemented")
+        }
+
         override fun dispatchTagEndpoint(uid: ByteArray) {
             shortXContext.phone.dispatchTagEndpoint(uid)
         }

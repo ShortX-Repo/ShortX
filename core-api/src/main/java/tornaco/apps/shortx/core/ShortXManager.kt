@@ -24,6 +24,8 @@ import tornaco.apps.shortx.core.proto.common.AppComponentInfo
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AudioRecordFile
 import tornaco.apps.shortx.core.proto.common.BTBondedDevice
+import tornaco.apps.shortx.core.proto.common.CodeLibraryItem
+import tornaco.apps.shortx.core.proto.common.CodeLibraryQuery
 import tornaco.apps.shortx.core.proto.common.CommonApiRes
 import tornaco.apps.shortx.core.proto.common.CoroutineContext
 import tornaco.apps.shortx.core.proto.common.CustomContextMenu
@@ -74,6 +76,9 @@ import tornaco.apps.shortx.core.rule.IToggleObserver
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.action.wrap
+import tornaco.apps.shortx.core.code.toByteArrayWrapper
+import tornaco.apps.shortx.core.code.toCodeLibraryItem
+import tornaco.apps.shortx.core.code.toCodeLibraryQuery
 import tornaco.apps.shortx.core.settings.defaultCustomContextMenuSetting
 import tornaco.apps.shortx.core.settings.defaultDanmuUISettings
 import tornaco.apps.shortx.core.settings.defaultDynamicShortcutSettings
@@ -468,6 +473,69 @@ class ShortXManager(val service: IShortX) {
         }
         invokeService(Unit) {
             directExecuteRuleActions(ByteArrayWrapper(context.toByteArray()), ruleId)
+        }
+    }
+
+    // CodeLibrary methods
+    fun addCodeLibraryItem(item: CodeLibraryItem) {
+        invokeService(Unit) {
+            addCodeLibraryItem(item.toByteArrayWrapper())
+        }
+    }
+
+    fun updateCodeLibraryItem(item: CodeLibraryItem) {
+        invokeService(Unit) {
+            updateCodeLibraryItem(item.toByteArrayWrapper())
+        }
+    }
+
+    fun deleteCodeLibraryItem(id: String) {
+        invokeService(Unit) {
+            deleteCodeLibraryItem(id)
+        }
+    }
+
+    fun getCodeLibraryItemById(id: String): CodeLibraryItem? {
+        return invokeService(null) {
+            getCodeLibraryItemById(id)?.toCodeLibraryItem()
+        }
+    }
+
+    fun getAllCodeLibraryItems(): List<CodeLibraryItem> {
+        return invokeService(emptyList()) {
+            getAllCodeLibraryItems().mapNotNull {
+                runCatching {
+                    it.toCodeLibraryItem()
+                }.getOrElse { error ->
+                    managerLogger.e(error, "Error parse CodeLibraryItem.")
+                    null
+                }
+            }
+        }
+    }
+
+    fun queryCodeLibraryItems(query: CodeLibraryQuery): List<CodeLibraryItem> {
+        return invokeService(emptyList()) {
+            queryCodeLibraryItems(query.toByteArrayWrapper()).mapNotNull {
+                runCatching {
+                    it.toCodeLibraryItem()
+                }.getOrElse { error ->
+                    managerLogger.e(error, "Error parse CodeLibraryItem.")
+                    null
+                }
+            }
+        }
+    }
+
+    fun getCodeLibraryItemCount(): Int {
+        return invokeService(0) {
+            codeLibraryItemCount
+        }
+    }
+
+    fun executeCodeLibraryItem(id: String) {
+        invokeService(Unit) {
+            executeCodeLibraryItem(id)
         }
     }
 

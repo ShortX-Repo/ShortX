@@ -621,3 +621,37 @@ enum TimeUnit {
   TimeUnit_H = 3;
   TimeUnit_D = 4;
 }
+
+enum CodeType {
+  CodeType_MVEL = 0;
+  CodeType_JAVASCRIPT = 1;
+}
+
+message CodeLibraryItem {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  CodeType type = 4;
+  string content = 5;
+  int64 createdAt = 6;
+  int64 updatedAt = 7;
+  repeated string tags = 8;
+}
+
+enum CodeLibrarySortBy {
+  CodeLibrarySortBy_NAME_ASC = 0;
+  CodeLibrarySortBy_NAME_DESC = 1;
+  CodeLibrarySortBy_CREATED_ASC = 2;
+  CodeLibrarySortBy_CREATED_DESC = 3;
+  CodeLibrarySortBy_UPDATED_ASC = 4;
+  CodeLibrarySortBy_UPDATED_DESC = 5;
+  CodeLibrarySortBy_TYPE_ASC = 6;
+  CodeLibrarySortBy_TYPE_DESC = 7;
+}
+
+message CodeLibraryQuery {
+  string keyword = 1;
+  CodeType type = 2;
+  repeated string tags = 3;
+  CodeLibrarySortBy sortBy = 4;
+}

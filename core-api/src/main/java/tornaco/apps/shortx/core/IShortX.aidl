@@ -25,6 +25,7 @@ import tornaco.apps.shortx.core.ocr.IOCR;
 import tornaco.apps.shortx.core.phone.ISMSProvider;
 import tornaco.apps.shortx.core.media.FileRow;
 
+
 interface IShortX {
     Version version();
     String fingerprint();
@@ -439,4 +440,15 @@ interface IShortX {
 
     void registerRuleFeatureStateListener(in IRuleFeatureStateListener listener);
     void unregisterRuleFeatureStateListener(in IRuleFeatureStateListener listener);
+
+    // Code Library start
+    void addCodeLibraryItem(in ByteArrayWrapper item);
+    void updateCodeLibraryItem(in ByteArrayWrapper item);
+    void deleteCodeLibraryItem(String id);
+    ByteArrayWrapper getCodeLibraryItemById(String id);
+    List<ByteArrayWrapper> getAllCodeLibraryItems();
+    List<ByteArrayWrapper> queryCodeLibraryItems(in ByteArrayWrapper query);
+    int getCodeLibraryItemCount();
+    String executeCodeLibraryItem(String id, int context);
+    // Code Library end
 }

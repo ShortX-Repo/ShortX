@@ -448,6 +448,12 @@
             android:name="tornaco.apps.shortx.ui.gesture.ScreenRectPickerActivity"
             android:excludeFromRecents="true"
             android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.code.CodeLibraryEditorActivity"
+            android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.code.CodeLibraryListActivity"
+            android:exported="false" />
 
         <service
             android:name=".service.tile.Tile1"

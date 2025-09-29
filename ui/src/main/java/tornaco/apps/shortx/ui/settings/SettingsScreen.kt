@@ -84,6 +84,7 @@ import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.code.CodeLibraryListActivity
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
@@ -504,6 +505,15 @@ private fun generalSettings(
             summary = LocalI18N.current["ui.global.var.desc"],
             onClick = {
                 goToGV()
+            }
+        ),
+
+        Preference.TextPreference(
+            icon = Remix.Development.code_fill,
+            title = LocalI18N.current["ui.code.library.title"],
+            summary = LocalI18N.current["ui.code.library.summary"],
+            onClick = {
+                CodeLibraryListActivity.start(context)
             }
         ),
 
