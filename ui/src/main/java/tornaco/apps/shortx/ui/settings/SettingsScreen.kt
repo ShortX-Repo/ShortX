@@ -487,7 +487,7 @@ private fun generalSettings(
     val subscribeDialogState = rememberShortXBottomSheetState()
     FeatureAccessDialog(subscribeDialogState)
 
-    return listOf(
+    return listOfNotNull(
         Preference.Category(LocalI18N.current["ui.settings.general"]),
 
         Preference.TextPreference(
@@ -508,14 +508,16 @@ private fun generalSettings(
             }
         ),
 
-        Preference.TextPreference(
-            icon = Remix.Development.code_fill,
-            title = LocalI18N.current["ui.code.library.title"],
-            summary = LocalI18N.current["ui.code.library.summary"],
-            onClick = {
-                CodeLibraryListActivity.start(context)
-            }
-        ),
+        if (BuildPropInternal.APP_IS_DEBUG) {
+            Preference.TextPreference(
+                icon = Remix.Development.code_fill,
+                title = LocalI18N.current["ui.code.library.title"],
+                summary = LocalI18N.current["ui.code.library.summary"],
+                onClick = {
+                    CodeLibraryListActivity.start(context)
+                }
+            )
+        } else null,
 
         Preference.TextPreference(
             icon = Remix.Communication.message_fill,

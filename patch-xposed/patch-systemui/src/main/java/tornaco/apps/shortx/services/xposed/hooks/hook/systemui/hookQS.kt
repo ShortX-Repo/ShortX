@@ -35,6 +35,17 @@ fun SystemUIHook.hookQS(lpparam: IPackageLoaded.Param) = kotlin.runCatching {
                     QSHostAdapter._QSHostAdapter = param.thisObject
                 }
             }
+            kotlin.runCatching {
+                afterConstruct(
+                    clazz = Reflections.findClass(
+                        "com.android.systemui.qs.pipeline.domain.adapter.MiuiQSHostAdapter",
+                        lpparam.classLoader
+                    ),
+                ) { param ->
+                    logger.d("MiuiQSHostAdapter init: ${param.thisObject}")
+                    QSHostAdapter._QSHostAdapter = param.thisObject
+                }
+            }
         }
     }
 }.onFailure {
