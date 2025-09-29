@@ -155,7 +155,7 @@ class ShortXManager(val service: IShortX) {
         val queryId get() = _queryId.getAndIncrement()
 
         // 缩小，尽量避免指令丢失的问题
-        const val QUERY_PAGE_SIZE = 1
+        const val QUERY_PAGE_SIZE = 2
 
         object HookFlags {
         }

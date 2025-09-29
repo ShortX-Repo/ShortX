@@ -342,28 +342,33 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         ): List<ByteArrayWrapper> {
             logger.d("getAllRules-$queryId")
             return v(context) {
-                synchronized(ruleQueryCache) {
-                    val cache = ruleQueryCache[queryId]
-                    // Keep only one.
-                    if (cache == null) {
-                        ruleQueryCache.clear()
-                    } else {
-                        logger.d("Use ruleQueryCache")
-                    }
-                    val batches =
-                        cache ?: ListBatchUtils.toArrayBatch(
-                            shortXContext.rule.getAllRules(),
-                            pageSize
-                        ).also {
-                            ruleQueryCache[queryId] = it
+                runCatching {
+                    synchronized(ruleQueryCache) {
+                        val cache = ruleQueryCache[queryId]
+                        // Keep only one.
+                        if (cache == null) {
+                            ruleQueryCache.clear()
+                        } else {
+                            logger.d("Use ruleQueryCache")
                         }
+                        val batches =
+                            cache ?: ListBatchUtils.toArrayBatch(
+                                shortXContext.rule.getAllRules(),
+                                pageSize
+                            ).also {
+                                ruleQueryCache[queryId] = it
+                            }
 
-                    val totalBatchCount: Int = batches.batches.size
-                    if (pageNumber >= totalBatchCount) {
-                        emptyList()
-                    } else batches.batches[pageNumber].map {
-                        ByteArrayWrapper(it.toByteArray())
+                        val totalBatchCount: Int = batches.batches.size
+                        if (pageNumber >= totalBatchCount) {
+                            emptyList()
+                        } else batches.batches[pageNumber].map {
+                            ByteArrayWrapper(it.toByteArray())
+                        }
                     }
+                }.getOrElse {
+                    logger.e(it, "Error getAllRules")
+                    error(it)
                 }
             } ?: emptyList()
         }
