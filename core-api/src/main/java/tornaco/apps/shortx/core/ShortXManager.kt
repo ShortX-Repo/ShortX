@@ -154,7 +154,8 @@ class ShortXManager(val service: IShortX) {
         private val _queryId = AtomicLong(System.currentTimeMillis())
         val queryId get() = _queryId.getAndIncrement()
 
-        const val QUERY_PAGE_SIZE = 5
+        // 缩小，尽量避免指令丢失的问题
+        const val QUERY_PAGE_SIZE = 1
 
         object HookFlags {
         }
