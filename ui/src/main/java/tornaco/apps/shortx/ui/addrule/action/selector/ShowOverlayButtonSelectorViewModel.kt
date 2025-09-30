@@ -243,6 +243,14 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
         updateState { copy(enableAutoEdge = enable) }
     }
 
+    fun setBackgroundColor(color: String) {
+        updateState { copy(backgroundColor = color) }
+    }
+
+    fun setBackgroundAlpha(alpha: Float) {
+        updateState { copy(backgroundAlpha = alpha) }
+    }
+
     fun setCloseOnTouchOutside(closeOnTouchOutside: Boolean) {
         updateState { copy(closeOnTouchOutside = closeOnTouchOutside) }
     }

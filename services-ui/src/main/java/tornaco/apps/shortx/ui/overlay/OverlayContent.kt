@@ -162,7 +162,15 @@ fun OverlayContent(
         Card(
             modifier = Modifier,
             colors = CardDefaults.cardColors(
-                containerColor = ColorDefaults.backgroundSurfaceColor().copy(alpha = 0.86f)
+                containerColor = if (action.backgroundColor.isNotEmpty()) {
+                    try {
+                        Color(action.backgroundColor.toLong(16)).copy(alpha = action.backgroundAlpha)
+                    } catch (e: Exception) {
+                        ColorDefaults.backgroundSurfaceColor().copy(alpha = action.backgroundAlpha)
+                    }
+                } else {
+                    ColorDefaults.backgroundSurfaceColor()
+                }
             )
         ) {
             ExpandContainer(

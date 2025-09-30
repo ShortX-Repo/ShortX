@@ -6,8 +6,11 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.SpaceBetween
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -17,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
@@ -32,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -46,6 +51,8 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
+import tornaco.apps.shortx.ui.base.ColorPickerDialog
+import tornaco.apps.shortx.ui.base.ColorPickerDialogState
 import tornaco.apps.shortx.ui.base.ExpandIndicator
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
@@ -121,6 +128,26 @@ private fun Content(
         vm.applySort(overlayButtonSettings.map { it.toButton() })
     })
     ShowOverlayButtonSortDialog(state = sortDialogState)
+
+    val colorPickerDialogState = remember(state) {
+        ColorPickerDialogState(
+            colorInt = try {
+                if (state.backgroundColor.isNotEmpty()) {
+                    state.backgroundColor.toLong(16).toInt()
+                } else {
+                    0xFF000000.toInt() // 默认黑色
+                }
+            } catch (e: NumberFormatException) {
+                0xFF000000.toInt() // 默认黑色
+            },
+            onColorChanged = { colorInt ->
+                val hexString = Integer.toHexString(colorInt).uppercase().padStart(8, '0')
+                vm.setBackgroundColor(hexString)
+            })
+    }
+    ColorPickerDialog(
+        state = colorPickerDialogState,
+    )
 
     val context = LocalContext.current
     val localUiStore = LocalUiStore.current
@@ -407,7 +434,53 @@ private fun Content(
                         vm.setOverlayPaddingH(it.roundToInt())
                     })
             }
+        }
 
+        item {
+            StandardSpacer()
+            Column(modifier = Modifier.fillMaxWidth()) {
+                FieldTitle(text = LocalI18N.current["ui.common.bg.alpha"])
+                Text(text = "${(state.backgroundAlpha * 100).roundToInt()}%")
+                Slider(
+                    valueRange = 0f..1f,
+                    value = state.backgroundAlpha,
+                    onValueChange = {
+                        vm.setBackgroundAlpha(it)
+                    })
+            }
+        }
+
+        item {
+            StandardSpacer()
+            Column(modifier = Modifier.fillMaxWidth()) {
+                FieldTitle(text = LocalI18N.current["ui.common.bg.color"])
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(text = "#${state.backgroundColor.ifEmpty { "FF000000" }}")
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(
+                                color = try {
+                                    if (state.backgroundColor.isNotEmpty()) {
+                                        Color(state.backgroundColor.toLong(16).toInt())
+                                    } else {
+                                        Color(0xFF000000)
+                                    }
+                                } catch (e: NumberFormatException) {
+                                    Color(0xFF000000)
+                                },
+                                shape = CircleShape
+                            )
+                            .clickable {
+                                colorPickerDialogState.show()
+                            }
+                    )
+                }
+            }
         }
 
         item {
