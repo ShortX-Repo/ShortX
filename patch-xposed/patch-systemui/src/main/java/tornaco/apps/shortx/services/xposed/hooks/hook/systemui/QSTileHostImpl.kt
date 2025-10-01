@@ -31,31 +31,34 @@ class QSTileHostImpl(private val shortx: IShortX) : IQSTileHost.Stub() {
                     //    public final TileSpec spec;
                     //    public final QSTile tile;
                     // 都试试
-                    runCatching {
-                        val tileToClick = tile
-                        val isCustomTile = tileToClick.javaClass.name.endsWith("CustomTile")
-                        logger.d("Tile - tileToClick1 class: ${tileToClick.javaClass.name}")
-                        if (isCustomTile) {
-                            clickCustomTile(tileToClick)
-                        } else {
-                            clickStockTile(tileToClick)
-                        }
+
+                    val tileToClick = tile
+                    val isCustomTile = tileToClick.javaClass.name.endsWith("CustomTile")
+                    logger.d("Tile - tileToClick1 class: ${tileToClick.javaClass.name}")
+                    val clickSuccess = if (isCustomTile) {
+                        clickCustomTile(tileToClick)
+                    } else {
+                        clickStockTile(tileToClick)
+                    }
+                    logger.d("Tile - tileToClick1 clickSuccess- $clickSuccess")
+                    if (clickSuccess) {
                         callHandleSetListening(tileToClick)
-                    }.onFailure {
-                        logger.w("Tile - fail to tileToClick1, try 2. ${it.message}")
+                    } else {
+                        logger.w("Tile - fail to tileToClick1, try 2.")
                         val tileOfTheModel = Reflections.getObjectField(tile, "tile")
                         val tileToClick = tileOfTheModel
                         val isCustomTile = tileToClick.javaClass.name.endsWith("CustomTile")
                         logger.d("Tile - tileToClick2 class: ${tileToClick.javaClass.name}")
-                        if (isCustomTile) {
+                        val clickSuccess = if (isCustomTile) {
                             clickCustomTile(tileToClick)
                         } else {
                             clickStockTile(tileToClick)
                         }
-                        callHandleSetListening(tileToClick)
+                        logger.d("Tile - tileToClick2 clickSuccess- $clickSuccess")
+                        if (clickSuccess) {
+                            callHandleSetListening(tileToClick)
+                        }
                     }
-
-
                 }
             }
         }.onFailure {
@@ -78,8 +81,8 @@ class QSTileHostImpl(private val shortx: IShortX) : IQSTileHost.Stub() {
         }
     }
 
-    private fun clickStockTile(tile: Any) {
-        altFuncs(
+    private fun clickStockTile(tile: Any): Boolean {
+        return altFuncs(
             // Android 15.
             Func(
                 "Android15 - handleClick(Expandable)",
@@ -123,8 +126,8 @@ class QSTileHostImpl(private val shortx: IShortX) : IQSTileHost.Stub() {
         )
     }
 
-    private fun clickCustomTile(tile: Any) {
-        altFuncs(
+    private fun clickCustomTile(tile: Any): Boolean {
+        return altFuncs(
             Func("handleClick(@Nullable Expandable)", { OsUtils.isVOrAbove() }) {
                 val expandableClazz = Reflections.findClass(
                     "com.android.systemui.animation.Expandable",

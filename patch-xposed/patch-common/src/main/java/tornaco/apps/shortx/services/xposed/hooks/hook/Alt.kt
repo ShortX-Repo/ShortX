@@ -4,19 +4,20 @@ import tornaco.apps.shortx.core.util.Logger
 
 private val logger = Logger("Alt")
 
-fun altFuncs(vararg funs: Func) {
-    run loop@{
+fun altFuncs(vararg funs: Func): Boolean {
+    return run loop@{
         funs.forEach { func ->
             if (func.condition()) {
                 logger.d("Trying: ${func.logTag}")
                 runCatching {
                     func.action()
-                    return@loop
+                    return@loop true
                 }.onFailure {
                     logger.d("${func.logTag} fails.")
                 }
             }
         }
+        false
     }
 }
 
