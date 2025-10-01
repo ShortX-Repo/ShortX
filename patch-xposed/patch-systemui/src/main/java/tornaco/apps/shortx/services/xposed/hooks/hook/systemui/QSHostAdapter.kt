@@ -60,15 +60,26 @@ object QSHostAdapter {
                 Reflections.getObjectField(_QSHostAdapter, "interactor")
             }.getOrNull()
             logger.w("getTilesAndroid15, interactor: $interactor")
-            if (interactor == null) {
+            // 两种都尝试一下，防止有的rom，有interactor但是又没用?
+            val adapterTiles = runCatching {
                 (Reflections.callMethod(
                     _QSHostAdapter,
                     "getTiles"
                 ) as Collection<*>).filterNotNull()
-            } else {
-                (KotlinTileAccessor.getTiles(interactor) as Collection<*>).filterNotNull()
+            }.getOrElse {
+                logger.w("_QSHostAdapter-getTiles error ${it.message}")
+                emptyList()
             }
 
+            val interactorTiles = interactor?.let { ir ->
+                runCatching {
+                    (KotlinTileAccessor.getTiles(ir) as Collection<*>).filterNotNull()
+                }.getOrElse {
+                    logger.w("interactor-getTiles error ${it.message}")
+                    emptyList()
+                }
+            }
+            (adapterTiles + interactorTiles).distinct()
         }.getOrElse {
             logger.e(it, "getTilesAndroid15")
             null
