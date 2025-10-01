@@ -41,6 +41,19 @@ class QSTileHostImpl(private val shortx: IShortX) : IQSTileHost.Stub() {
                     } else {
                         clickStockTile(tileToClick)
                     }
+
+                    runCatching {
+                        // listening. to update tile
+                        // mListening
+                        val mListening = Reflections.getBooleanField(tileToClick, "mListening")
+                        logger.d("Tile - mListening: $mListening")
+                        Reflections.callMethod(tileToClick, "handleSetListening", false)
+                        Reflections.callMethod(tileToClick, "handleSetListening", true)
+                        Reflections.callMethod(tileToClick, "handleSetListening", mListening)
+                        logger.d("Tile - handleSetListening done.")
+                    }.onFailure {
+                        logger.e(it, "handleSetListening")
+                    }
                 }
             }
         }.onFailure {
@@ -186,6 +199,7 @@ class QSTileHostImpl(private val shortx: IShortX) : IQSTileHost.Stub() {
         val tiles = getTiles().filterNotNull()
         logger.d("onEachTiles, tiles: ${tiles.map { it }}")
         tiles.forEach {
+            logger.w("onEachTiles, tile - $it")
             // Android 15晚期版本？ 16上是：
             // public final class TileModel {
             //    public final TileSpec spec;

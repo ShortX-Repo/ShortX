@@ -61,7 +61,7 @@ object QSHostAdapter {
             }.getOrNull()
             logger.w("getTilesAndroid15, interactor: $interactor")
             // 两种都尝试一下，防止有的rom，有interactor但是又没用?
-            val adapterTiles = runCatching {
+            val adapterTiles: List<Any> = runCatching {
                 (Reflections.callMethod(
                     _QSHostAdapter,
                     "getTiles"
@@ -70,16 +70,20 @@ object QSHostAdapter {
                 logger.w("_QSHostAdapter-getTiles error ${it.message}")
                 emptyList()
             }
+            logger.d("getTilesAndroid15-adapterTiles $adapterTiles")
 
-            val interactorTiles = interactor?.let { ir ->
+            val interactorTiles: List<Any> = interactor?.let { ir ->
                 runCatching {
                     (KotlinTileAccessor.getTiles(ir) as Collection<*>).filterNotNull()
                 }.getOrElse {
                     logger.w("interactor-getTiles error ${it.message}")
                     emptyList()
                 }
-            }
-            (adapterTiles + interactorTiles).distinct()
+            } ?: emptyList()
+            logger.d("getTilesAndroid15-interactorTiles $adapterTiles")
+            (adapterTiles.toMutableList().apply {
+                addAll(interactorTiles)
+            }).distinct()
         }.getOrElse {
             logger.e(it, "getTilesAndroid15")
             null

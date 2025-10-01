@@ -1,9 +1,12 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook.systemui
 
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.xposed.hooks.hook.afterConstruct
+import tornaco.apps.shortx.services.xposed.hooks.hook.afterMethod
 import tornaco.apps.shortx.services.xposed.hooks.hook.api.IPackageLoaded
+import tornaco.apps.shortx.services.xposed.hooks.hook.logParamsOnDebug
 import util.Reflections
 
 fun SystemUIHook.hookQS(lpparam: IPackageLoaded.Param) = kotlin.runCatching {
@@ -44,6 +47,18 @@ fun SystemUIHook.hookQS(lpparam: IPackageLoaded.Param) = kotlin.runCatching {
                 ) { param ->
                     logger.d("MiuiQSHostAdapter init: ${param.thisObject}")
                     QSHostAdapter._QSHostAdapter = param.thisObject
+                }
+            }
+
+            if (BuildPropInternal.APP_IS_DEBUG) runCatching {
+                afterMethod(
+                    Reflections.findClass(
+                        "com.android.systemui.qs.tileimpl.QSTileImpl",
+                        lpparam.classLoader
+                    ),
+                    "refreshState"
+                ) {
+                    it.logParamsOnDebug(logger, true)
                 }
             }
         }

@@ -146,6 +146,10 @@ fun beforeMethod(
 }
 
 
-fun MethodHookParam.logParamsOnDebug(logger: Logger = utilLogger) {
-    logger.logOnDebug { "${method.name} - ${this.args.map { it }.joinToString()}" }
+fun MethodHookParam.logParamsOnDebug(logger: Logger = utilLogger, printStack: Boolean = false) {
+    logger.logOnDebug {
+        "${method.name} - ${
+            this.args.map { it }.joinToString()
+        } ${if (printStack) Throwable().stackTraceToString() else ""}"
+    }
 }
