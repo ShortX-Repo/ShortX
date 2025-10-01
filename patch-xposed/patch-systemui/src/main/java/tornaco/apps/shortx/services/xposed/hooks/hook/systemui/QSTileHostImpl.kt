@@ -30,34 +30,51 @@ class QSTileHostImpl(private val shortx: IShortX) : IQSTileHost.Stub() {
                     // public final class TileModel {
                     //    public final TileSpec spec;
                     //    public final QSTile tile;
-                    val tileOfTheModel = runCatching {
-                        Reflections.getObjectField(tile, "tile")
-                    }.getOrNull()
-                    val tileToClick = tileOfTheModel ?: tile
-                    val isCustomTile = tileToClick.javaClass.name.endsWith("CustomTile")
-                    logger.d("Tile - tileToClick class: ${tileToClick.javaClass.name}")
-                    if (isCustomTile) {
-                        clickCustomTile(tileToClick)
-                    } else {
-                        clickStockTile(tileToClick)
+                    // 都试试
+                    runCatching {
+                        val tileToClick = tile
+                        val isCustomTile = tileToClick.javaClass.name.endsWith("CustomTile")
+                        logger.d("Tile - tileToClick1 class: ${tileToClick.javaClass.name}")
+                        if (isCustomTile) {
+                            clickCustomTile(tileToClick)
+                        } else {
+                            clickStockTile(tileToClick)
+                        }
+                        callHandleSetListening(tileToClick)
+                    }.onFailure {
+                        logger.w("Tile - fail to tileToClick1, try 2. ${it.message}")
+                        val tileOfTheModel = Reflections.getObjectField(tile, "tile")
+                        val tileToClick = tileOfTheModel
+                        val isCustomTile = tileToClick.javaClass.name.endsWith("CustomTile")
+                        logger.d("Tile - tileToClick2 class: ${tileToClick.javaClass.name}")
+                        if (isCustomTile) {
+                            clickCustomTile(tileToClick)
+                        } else {
+                            clickStockTile(tileToClick)
+                        }
+                        callHandleSetListening(tileToClick)
                     }
 
-                    runCatching {
-                        // listening. to update tile
-                        // mListening
-                        val mListening = Reflections.getBooleanField(tileToClick, "mListening")
-                        logger.d("Tile - mListening: $mListening")
-                        Reflections.callMethod(tileToClick, "handleSetListening", false)
-                        Reflections.callMethod(tileToClick, "handleSetListening", true)
-                        Reflections.callMethod(tileToClick, "handleSetListening", mListening)
-                        logger.d("Tile - handleSetListening done.")
-                    }.onFailure {
-                        logger.e(it, "handleSetListening")
-                    }
+
                 }
             }
         }.onFailure {
             shortx.reportFATALError(it.stackTraceToString())
+        }
+    }
+
+    private fun callHandleSetListening(tileToClick: Any) {
+        runCatching {
+            // listening. to update tile
+            // mListening
+            val mListening = Reflections.getBooleanField(tileToClick, "mListening")
+            logger.d("Tile - mListening: $mListening")
+            Reflections.callMethod(tileToClick, "handleSetListening", false)
+            Reflections.callMethod(tileToClick, "handleSetListening", true)
+            Reflections.callMethod(tileToClick, "handleSetListening", mListening)
+            logger.d("Tile - handleSetListening done.")
+        }.onFailure {
+            logger.e(it, "handleSetListening")
         }
     }
 
@@ -172,12 +189,11 @@ class QSTileHostImpl(private val shortx: IShortX) : IQSTileHost.Stub() {
                     // public final class TileModel {
                     //    public final TileSpec spec;
                     //    public final QSTile tile;
-                    val tileOfModel = runCatching {
-                        Reflections.getObjectField(tile, "tile")
-                    }.getOrNull()
-                    val stateObj = if (tileOfModel == null) {
+                    val stateObj = runCatching {
                         Reflections.callMethod(tile, "getState")
-                    } else {
+                    }.getOrElse {
+                        logger.w("getState fail with tile, try tile.tile. ${it.message}")
+                        val tileOfModel = Reflections.getObjectField(tile, "tile")
                         Reflections.callMethod(tileOfModel, "getState")
                     }
                     logger.d("getState stateObj: $stateObj")
@@ -198,54 +214,59 @@ class QSTileHostImpl(private val shortx: IShortX) : IQSTileHost.Stub() {
     private fun onEachTiles(action: (spec: String, Any) -> Unit) {
         val tiles = getTiles().filterNotNull()
         logger.d("onEachTiles, tiles: ${tiles.map { it }}")
-        tiles.forEach {
-            logger.w("onEachTiles, tile - $it")
-            // Android 15晚期版本？ 16上是：
-            // public final class TileModel {
-            //    public final TileSpec spec;
-            //    public final QSTile tile;
-            val tile = runCatching {
-                Reflections.getObjectField(it, "tile")
-            }.getOrNull()
-            if (tile == null) {
-                val spec = Reflections.callMethod(it, "getTileSpec") ?: it.toString()
-                action(spec.toString(), it)
-            } else {
-                val spec = Reflections.callMethod(tile, "getTileSpec") ?: tile.toString()
-                action(spec.toString(), it)
-            }
+        tiles.forEach { tileOnEach ->
+            val spec =
+                getTileFieldFromTileOrNull(tileOnEach, "getTileSpec") ?: tileOnEach.toString()
+            action(spec, tileOnEach)
         }
+    }
+
+    private fun getTileFieldFromTileOrNull(tileOnEach: Any, methodName: String): String? {
+        // Android 15晚期版本？ 16上是：
+        // public final class TileModel {
+        //    public final TileSpec spec;
+        //    public final QSTile tile;
+        val tile = runCatching {
+            Reflections.getObjectField(tileOnEach, "tile")
+        }.getOrNull()
+
+        // 都尝试防止有些rom有tile但是不用
+        val tileFieldOnTile = runCatching {
+            val spec = Reflections.callMethod(tileOnEach, methodName) as String
+            spec
+        }.getOrElse {
+            logger.w("$methodName from Tile error ${it.message}")
+            null
+        }
+        logger.d("$methodName tileFieldOnTile- $tileFieldOnTile")
+        val tileFieldOnTileTile = runCatching {
+            val spec = Reflections.callMethod(tile, methodName) as String
+            spec
+        }.getOrElse {
+            logger.w("$methodName from Tile.tile error ${it.message}")
+            null
+        }
+        logger.d("$methodName tileFieldOnTileTile- $tileFieldOnTileTile")
+
+        val spec = tileFieldOnTile ?: tileFieldOnTileTile
+        return spec
     }
 
     private fun getTilesInternal(): QSTileList = runCatching {
         val tiles = getTiles()
         logger.d("getTilesInternal, tiles: ${tiles.map { it }}")
         val qsTiles = tiles.mapNotNull { t ->
-            runCatching {
-
-                // Android 15晚期版本？ 16上是：
-                // public final class TileModel {
-                //    public final TileSpec spec;
-                //    public final QSTile tile;
-                val tile = runCatching {
-                    Reflections.getObjectField(t, "tile")
-                }.getOrNull()
-                if (tile == null) {
-                    val spec = Reflections.callMethod(t, "getTileSpec") ?: t.toString()
-                    val label = Reflections.callMethod(t, "getTileLabel") ?: t.toString()
+            t?.let {
+                runCatching {
+                    val spec = getTileFieldFromTileOrNull(t, "getTileSpec") ?: t.toString()
+                    val label = getTileFieldFromTileOrNull(t, "getTileLabel") ?: t.toString()
                     logger.d("Spec: $spec - $label")
-                    QSTile.newBuilder().setTileSpec(spec.toString()).setLabel(label.toString())
+                    QSTile.newBuilder().setTileSpec(spec).setLabel(label)
                         .build()
-                } else {
-                    val spec = Reflections.callMethod(tile, "getTileSpec") ?: tile.toString()
-                    val label = Reflections.callMethod(tile, "getTileLabel") ?: tile.toString()
-                    logger.d("Spec: $spec - $label")
-                    QSTile.newBuilder().setTileSpec(spec.toString()).setLabel(label.toString())
-                        .build()
+                }.getOrElse {
+                    logger.e(it, "getTilesInternal")
+                    null
                 }
-            }.getOrElse {
-                logger.e(it, "getTilesInternal")
-                null
             }
         }
         QSTileList.newBuilder().addAllTile(qsTiles).build()
