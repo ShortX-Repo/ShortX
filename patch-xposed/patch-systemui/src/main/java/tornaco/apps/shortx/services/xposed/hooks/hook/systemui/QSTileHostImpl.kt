@@ -229,9 +229,7 @@ class QSTileHostImpl(private val shortx: IShortX) : IQSTileHost.Stub() {
         // public final class TileModel {
         //    public final TileSpec spec;
         //    public final QSTile tile;
-        val tile = runCatching {
-            Reflections.getObjectField(tileOnEach, "tile")
-        }.getOrNull()
+
 
         // 都尝试防止有些rom有tile但是不用
         val tileFieldOnTile = runCatching {
@@ -243,8 +241,10 @@ class QSTileHostImpl(private val shortx: IShortX) : IQSTileHost.Stub() {
         }
         logger.d("$methodName tileFieldOnTile- $tileFieldOnTile")
         val tileFieldOnTileTile = runCatching {
-            val spec = Reflections.callMethod(tile, methodName) as String
-            spec
+            Reflections.callMethod(
+                Reflections.getObjectField(tileOnEach, "tile"),
+                methodName
+            ) as String
         }.getOrElse {
             logger.w("$methodName from Tile.tile error ${it.message}")
             null
