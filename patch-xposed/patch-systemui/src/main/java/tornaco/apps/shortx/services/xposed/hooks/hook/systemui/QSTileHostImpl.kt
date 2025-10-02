@@ -43,6 +43,7 @@ class QSTileHostImpl(private val shortx: IShortX) : IQSTileHost.Stub() {
                     logger.d("Tile - tileToClick1 clickSuccess- $clickSuccess")
                     if (clickSuccess) {
                         callHandleSetListening(tileToClick)
+                        callRefreshState(tileToClick)
                     } else {
                         logger.w("Tile - fail to tileToClick1, try 2.")
                         val tileOfTheModel = Reflections.getObjectField(tile, "tile")
@@ -57,6 +58,7 @@ class QSTileHostImpl(private val shortx: IShortX) : IQSTileHost.Stub() {
                         logger.d("Tile - tileToClick2 clickSuccess- $clickSuccess")
                         if (clickSuccess) {
                             callHandleSetListening(tileToClick)
+                            callRefreshState(tileToClick)
                         }
                     }
                 }
@@ -78,6 +80,15 @@ class QSTileHostImpl(private val shortx: IShortX) : IQSTileHost.Stub() {
             logger.d("Tile - handleSetListening done.")
         }.onFailure {
             logger.e(it, "handleSetListening")
+        }
+    }
+
+    private fun callRefreshState(tileToClick: Any) {
+        runCatching {
+            Reflections.callMethod(tileToClick, "refreshState")
+            logger.d("Tile - refreshState done.")
+        }.onFailure {
+            logger.e(it, "refreshState")
         }
     }
 
