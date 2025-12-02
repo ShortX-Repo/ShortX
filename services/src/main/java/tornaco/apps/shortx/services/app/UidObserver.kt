@@ -63,14 +63,16 @@ object UidObserverRegisterCompat {
             }
         }
 
-        logger.d("$obs = $observer")
+        logger.w("$obs = $observer")
 
-        am.registerUidObserver(
-            observer,
-            ActivityManager.UID_OBSERVER_PROCSTATE or ActivityManager.UID_OBSERVER_GONE
-                    or ActivityManager.UID_OBSERVER_IDLE or ActivityManager.UID_OBSERVER_ACTIVE,
-            ActivityManager.PROCESS_STATE_UNKNOWN,
-            null
-        )
+        observer?.let {
+            am.registerUidObserver(
+                observer,
+                ActivityManager.UID_OBSERVER_PROCSTATE or ActivityManager.UID_OBSERVER_GONE
+                        or ActivityManager.UID_OBSERVER_IDLE or ActivityManager.UID_OBSERVER_ACTIVE,
+                ActivityManager.PROCESS_STATE_UNKNOWN,
+                null
+            )
+        }
     }
 }

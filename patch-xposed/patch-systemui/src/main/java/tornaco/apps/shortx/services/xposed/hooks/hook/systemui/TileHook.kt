@@ -22,33 +22,69 @@ fun SystemUIHook.hookTileIcon() {
             }
             val result = param.result
             val tile = param.thisObject as Tile
-            logger.d("Tile: ${tile.label} ${tile.contentDescription} $result")
+            logger.d("hookTileIcon Tile: ${tile.label} ${tile.contentDescription} $result")
             val label: CharSequence = tile.label ?: return@afterMethod
             val contentDescription: CharSequence = tile.contentDescription ?: return@afterMethod
             // Tile 1
             // Tile 2..
             val number = contentDescription.toString().toIntOrNull() ?: return@afterMethod
-            logger.d("number: $number")
+            logger.d("hookTileIcon number: $number")
             val sbtOrNull = StatusBarTile.forNumber(number)
-            logger.d("sbtOrNull: $sbtOrNull")
+            logger.d("hookTileIcon sbtOrNull: $sbtOrNull")
             if (sbtOrNull != null) {
                 val iconName =
                     shortx.getStatusBarTileSettingsByNumber(sbtOrNull.number)?.iconName
-                logger.d("getIcon: $label, iconName?: $iconName")
+                logger.d("hookTileIcon getIcon: $label, iconName?: $iconName")
                 if (iconName != null) {
                     val remixResId =
                         requireNotNull(AppGlobals.appContext) { "shortxAppContext is null" }.remixResId(
                             iconName
                         )
-                    logger.d("getIcon: $label, remixResId?: $remixResId")
+                    logger.d("hookTileIcon getIcon: $label, remixResId?: $remixResId")
                     val iconFixed = Icon.createWithResource(AppGlobals.appContext, remixResId)
-                    logger.d("getIcon: $label, iconFixed?: $iconFixed")
+                    logger.d("hookTileIcon getIcon: $label, iconFixed?: $iconFixed")
                     param.result = iconFixed
                 }
             }
 
         }.onFailure {
             logger.e(it, "Handle Tile.getIcon")
+        }
+    }
+}
+
+
+fun SystemUIHook.hookTileLabel() {
+    afterMethod(
+        Tile::class.java,
+        "getLabel"
+    ) { param ->
+        runCatching {
+            if (AppGlobals.appContext == null) {
+                logger.w("shortxAppContext is null.")
+                return@afterMethod
+            }
+            val result = param.result
+            val tile = param.thisObject as Tile
+            logger.d("hookTileLabel Tile: ${tile.contentDescription} $result")
+            val contentDescription: CharSequence = tile.contentDescription ?: return@afterMethod
+            // Tile 1
+            // Tile 2..
+            val number = contentDescription.toString().toIntOrNull() ?: return@afterMethod
+            logger.d("hookTileLabel number: $number")
+            val sbtOrNull = StatusBarTile.forNumber(number)
+            logger.d("hookTileLabel sbtOrNull: $sbtOrNull")
+            if (sbtOrNull != null) {
+                val overlayLabel =
+                    shortx.getStatusBarTileSettingsByNumber(sbtOrNull.number).label
+                logger.d("hookTileLabel getLabel for number: $number, overlayLabel?: $overlayLabel")
+                if (overlayLabel != null) {
+                    param.result = overlayLabel
+                }
+            }
+
+        }.onFailure {
+            logger.e(it, "Handle Tile.getLabel")
         }
     }
 }

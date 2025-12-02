@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,7 +37,6 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import tornaco.apps.shortx.core.appComponentToString
 import tornaco.apps.shortx.core.os.isMainUser
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.res.Remix
@@ -183,7 +180,8 @@ private fun ComponentOrGVSelectorContent(dialogState: AppComponentOrGVSelectorDi
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
-            Scaffold(modifier = Modifier,
+            Scaffold(
+                modifier = Modifier,
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
@@ -328,18 +326,10 @@ private fun ComponentContent(dialogState: AppComponentOrGVSelectorDialogState) {
             text = LocalI18N.current["ui.common.select.component.empty"]
         )
     } else {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(max = 520.dp)
-        ) {
-            items(
-                items = dialogState.componentsOrGV.components.distinctBy { it },
-                key = { it.appComponentToString() }) { appComponent ->
-                AppComponentItem(component = appComponent, remove = {
-                    dialogState.removeComponent(appComponent)
-                })
-            }
+        dialogState.componentsOrGV.components.distinctBy { it }.forEach { appComponent ->
+            AppComponentItem(component = appComponent, remove = {
+                dialogState.removeComponent(appComponent)
+            })
         }
     }
 

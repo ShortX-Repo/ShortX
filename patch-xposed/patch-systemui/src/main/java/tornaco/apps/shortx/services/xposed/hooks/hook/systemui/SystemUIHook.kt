@@ -21,7 +21,7 @@ object SystemUIHook {
             if (!isMainProcess) return
             // Install log
             logAdapter = { level: Int, tag: String, msg: String ->
-                if (BuildPropInternal.APP_IS_DEBUG || level > Log.INFO) {
+                if (BuildPropInternal.APP_IS_DEBUG) {
                     XposedBridge.log("ShortXSystemUi $tag - $msg")
                 } else {
                     Log.println(Log.INFO, "ShortXSystemUi", "$tag - $msg")
@@ -38,6 +38,7 @@ object SystemUIHook {
 
     fun onPackageLoaded() {
         hookTileIcon()
+        hookTileLabel()
     }
 
     fun initShortXAppContext(context: Context) {
