@@ -28,12 +28,14 @@ import android.media.projection.IMediaProjectionManager;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
+import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Display;
 
 import java.io.Closeable;
 import java.io.File;
@@ -44,6 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import tornaco.apps.shortx.services.data.Dirs;
+import util.Reflections;
 
 /**
  * Recording screen and mic/internal audio
@@ -77,8 +80,22 @@ public class ScreenMediaRecorder extends MediaProjection.Callback {
         IMediaProjectionManager mediaService =
                 IMediaProjectionManager.Stub.asInterface(b);
         IMediaProjection proj = null;
-        proj = mediaService.createProjection(mUser, mContext.getPackageName(),
-                MediaProjectionManager.TYPE_SCREEN_CAPTURE, false);
+        try {
+            proj = mediaService.createProjection(mUser, mContext.getPackageName(),
+                    MediaProjectionManager.TYPE_SCREEN_CAPTURE, false);
+        } catch (Throwable e) {
+            // Android 16
+            //    IMediaProjection createProjection(int processUid, String packageName, int type,
+            //            boolean permanentGrant, int displayId);
+            proj = (IMediaProjection) Reflections.callMethod(
+                    mediaService, "createProjection",
+                    Binder.getCallingUid(),
+                    mContext.getPackageName(),
+                    MediaProjectionManager.TYPE_SCREEN_CAPTURE,
+                    false,
+                    Display.DEFAULT_DISPLAY);
+        }
+
         IMediaProjection projection = IMediaProjection.Stub.asInterface(proj.asBinder());
         mMediaProjection = new MediaProjection(mContext, projection);
         mMediaProjection.registerCallback(this, mHandler);
