@@ -383,7 +383,9 @@ public final class CpuMonitorService {
 
     @GuardedBy("mLock")
     private void stopMonitoringCpuStatsLocked() {
-        mHandler.removeCallbacks(mMonitorCpuStats);
+        if (mHandler != null) {
+            mHandler.removeCallbacks(mMonitorCpuStats);
+        }
         mCurrentMonitoringIntervalMillis = DEFAULT_MONITORING_INTERVAL_MILLISECONDS;
         // When the monitoring is stopped, the latest CPU availability info and the snapshots in
         // {@code mCpusetInfosByCpuset} will become obsolete soon. So, remove them.
