@@ -1,5 +1,14 @@
 package tornaco.apps.shortx.core.rule.script.api;
 
+import android.accessibilityservice.AccessibilityService;
+import android.accessibilityservice.AccessibilityServiceInfo;
+import android.accessibilityservice.GestureDescription;
+import android.annotation.NonNull;
+import android.annotation.Nullable;
+import android.os.Handler;
+import android.view.InputEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
+
 import com.google.protobuf.Message;
 
 import java.util.List;
@@ -46,11 +55,45 @@ public interface ScriptShortXApi {
 
     Result executeActions(List<Message> actions);
 
+    UiAutomationApi getUiAutomation();
+
     @DoNotStrip
     class Result {
         /**
          * Context data from the actions.
          */
         public Map<String, Object> contextData;
+    }
+
+    @DoNotStrip
+    interface UiAutomationApi {
+        /**
+         * 是否已连接，使用API前必须确保已经连接
+         */
+        boolean isConnected();
+
+        /**
+         * 连接，使用API前必须确保已经连接
+         */
+        void connect();
+
+        /**
+         * 断开连接，使用API前必须确保已经连接
+         */
+        void disconnect();
+
+        AccessibilityNodeInfo getRootInActiveWindow();
+
+        void performAccessibilityAction(long sourceNodeId, int windowId, int action);
+
+        AccessibilityServiceInfo getServiceInfo();
+
+        boolean injectInputEvent(InputEvent event, boolean sync);
+
+        boolean performGlobalAction(int action);
+
+        boolean dispatchGesture(@NonNull GestureDescription gesture,
+                                @Nullable AccessibilityService.GestureResultCallback callback,
+                                @Nullable Handler handler);
     }
 }

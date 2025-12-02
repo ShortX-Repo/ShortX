@@ -1,17 +1,23 @@
 package tornaco.apps.shortx.services.wm;
 
 import android.accessibilityservice.AccessibilityGestureEvent;
+import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.accessibilityservice.GestureDescription;
 import android.accessibilityservice.IAccessibilityServiceClient;
 import android.accessibilityservice.IAccessibilityServiceConnection;
+import android.annotation.NonNull;
+import android.annotation.Nullable;
 import android.app.UiAutomation;
 import android.app.UiAutomationConnection;
+import android.content.pm.ParceledListSlice;
 import android.graphics.Bitmap;
 import android.graphics.Region;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
+import android.util.SparseArray;
 import android.view.InputEvent;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
@@ -41,15 +47,21 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
     private UiAutomation.OnAccessibilityEventListener mOnAccessibilityEventListener;
     private final Handler mLocalCallbackHandler;
 
+
+    // Copy from Android SDK AccessibilityService
+    private int mGestureStatusCallbackSequence;
+    private SparseArray<GestureResultCallbackInfo> mGestureStatusCallbackInfos;
+    private final Object mLock = new Object();
+
     public UiAutomationManager(Handler localCallbackHandler) {
         this.mLocalCallbackHandler = localCallbackHandler;
     }
 
-    boolean isConnected() {
+    public boolean isConnected() {
         return connectionId.get() != AccessibilityInteractionClient.NO_ID;
     }
 
-    void connect() {
+    public void connect() {
         synchronized (syncLock) {
             LOGGER.w("UiAutomationManager connect");
             if (connectionId.get() != AccessibilityInteractionClient.NO_ID) {
@@ -62,7 +74,7 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
         }
     }
 
-    void disconnect() {
+    public void disconnect() {
         synchronized (syncLock) {
             LOGGER.w("UiAutomationManager disconnect");
             if (connectionId.get() == AccessibilityInteractionClient.NO_ID) {
@@ -171,6 +183,22 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
 
     @Override
     public boolean performGlobalAction(int action) {
+        if (connectionId.get() == AccessibilityInteractionClient.NO_ID) {
+            LOGGER.e("performGlobalAction, not connected...");
+            return false;
+        }
+        final IAccessibilityServiceConnection connection;
+        synchronized (syncLock) {
+            connection = AccessibilityInteractionClient.getConnection(connectionId.get());
+        }
+
+        if (connection != null) {
+            try {
+                return connection.performGlobalAction(action);
+            } catch (RemoteException re) {
+                LOGGER.e(re, "Error while calling performGlobalAction");
+            }
+        }
         return false;
     }
 
@@ -256,7 +284,35 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
 
     @Override
     public void onPerformGestureResult(int sequence, boolean completedSuccessfully) {
-
+        if (mGestureStatusCallbackInfos == null) {
+            return;
+        }
+        GestureResultCallbackInfo callbackInfo;
+        synchronized (mLock) {
+            callbackInfo = mGestureStatusCallbackInfos.get(sequence);
+            mGestureStatusCallbackInfos.remove(sequence);
+        }
+        final GestureResultCallbackInfo finalCallbackInfo = callbackInfo;
+        if ((callbackInfo != null) && (callbackInfo.gestureDescription != null)
+                && (callbackInfo.callback != null)) {
+            if (callbackInfo.handler != null) {
+                callbackInfo.handler.post(() -> {
+                    if (completedSuccessfully) {
+                        finalCallbackInfo.callback
+                                .onCompleted(finalCallbackInfo.gestureDescription);
+                    } else {
+                        finalCallbackInfo.callback
+                                .onCancelled(finalCallbackInfo.gestureDescription);
+                    }
+                });
+                return;
+            }
+            if (completedSuccessfully) {
+                callbackInfo.callback.onCompleted(callbackInfo.gestureDescription);
+            } else {
+                callbackInfo.callback.onCancelled(callbackInfo.gestureDescription);
+            }
+        }
     }
 
     @Override
@@ -283,4 +339,62 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
     public void onSystemActionsChanged() {
 
     }
+
+    public boolean dispatchGesture(@NonNull GestureDescription gesture,
+                                   @Nullable AccessibilityService.GestureResultCallback callback,
+                                   @Nullable Handler handler) {
+        if (connectionId.get() == AccessibilityInteractionClient.NO_ID) {
+            LOGGER.e("getServiceInfo, not connected...");
+            return false;
+        }
+        final IAccessibilityServiceConnection connection;
+        synchronized (syncLock) {
+            connection = AccessibilityInteractionClient.getConnection(connectionId.get());
+        }
+        // Calling out without a lock held.
+        if (connection != null) {
+            int sampleTimeMs = calculateGestureSampleTimeMs(0);
+            List<GestureDescription.GestureStep> steps =
+                    GestureDescription.MotionEventGenerator.getGestureStepsFromGestureDescription(gesture, sampleTimeMs);
+            try {
+                synchronized (mLock) {
+                    mGestureStatusCallbackSequence++;
+                    if (callback != null) {
+                        if (mGestureStatusCallbackInfos == null) {
+                            mGestureStatusCallbackInfos = new SparseArray<>();
+                        }
+                        GestureResultCallbackInfo callbackInfo = new GestureResultCallbackInfo(gesture,
+                                callback, handler);
+                        mGestureStatusCallbackInfos.put(mGestureStatusCallbackSequence, callbackInfo);
+                    }
+                    connection.dispatchGesture(mGestureStatusCallbackSequence,
+                            new ParceledListSlice<>(steps), 0); // gesture.getDisplayId()
+                }
+                return true;
+            } catch (Throwable re) {
+                LOGGER.e(re, "dispatchGesture error");
+            }
+        }
+        return false;
+    }
+
+    private int calculateGestureSampleTimeMs(int displayId) {
+//        if (getApplicationInfo().targetSdkVersion <= Build.VERSION_CODES.Q) {
+//            return 100;
+//        }
+//        Display display = getSystemService(DisplayManager.class).getDisplay(
+//                displayId);
+//        if (display == null) {
+//            return 100;
+//        }
+//        int msPerSecond = 1000;
+//        int sampleTimeMs = (int) (msPerSecond / display.getRefreshRate());
+//        if (sampleTimeMs < 1) {
+//            // Should be impossible, but do not return 0.
+//            return 100;
+//        }
+//        return sampleTimeMs;
+        return 100;
+    }
+
 }

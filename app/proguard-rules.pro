@@ -254,3 +254,5 @@
 
 -dontwarn android.content.pm.ShortcutQueryWrapper
 -dontwarn com.android.internal.os.ProcessCpuTracker
+
+-dontwarn android.accessibilityservice.GestureDescription$MotionEventGenerator

@@ -24,6 +24,7 @@ import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.actor.dummyHandlerParamsForAction
 import tornaco.apps.shortx.services.rule.actor.impl.WriteGlobalVar
 import tornaco.apps.shortx.services.rule.nextEvaluateContextSerialNumber
+import tornaco.apps.shortx.services.wm.UiAutomationApiImpl
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -181,5 +182,9 @@ class ScriptShortXApiImpl(
             logger.w("evaluate $evaId complete.")
         }
         return res
+    }
+
+    override fun getUiAutomation(): ScriptShortXApi.UiAutomationApi {
+        return UiAutomationApiImpl(shortXContext.wm)
     }
 }

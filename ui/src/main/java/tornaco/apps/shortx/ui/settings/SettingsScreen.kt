@@ -1011,7 +1011,7 @@ private fun engineSettings(
     TextInputDialog(customSUDialogState)
 
     val ocrEngineMenuState = rememberMenuDialogState<String>(
-        title = i18N["ORC Engine"],
+        title = i18N["OCR Engine"],
         menuItems = listOf(
             OCREngine.OCREngine_Paddle,
             OCREngine.OCREngine_Tesseract
