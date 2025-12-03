@@ -256,3 +256,4 @@
 -dontwarn com.android.internal.os.ProcessCpuTracker
 
 -dontwarn android.accessibilityservice.GestureDescription$MotionEventGenerator
+-dontwarn android.view.accessibility.AccessibilityCache

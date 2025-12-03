@@ -237,7 +237,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
     }
 
-    suspend fun waitForIdle(): Boolean {
+    fun waitForIdle(): Boolean {
         synchronized(uiAutoLock) {
             if (!isSystemReady) return false
             if (!automationManager.isConnected) {

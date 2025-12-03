@@ -6,6 +6,7 @@ import android.accessibilityservice.GestureDescription
 import android.os.Handler
 import android.view.InputEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import android.view.accessibility.AccessibilityWindowInfo
 import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.rule.script.api.ScriptShortXApi
 import tornaco.apps.shortx.core.util.Logger
@@ -61,5 +62,21 @@ class UiAutomationApiImpl(
         handler: Handler?
     ): Boolean {
         return wms.automationManager.dispatchGesture(gesture, callback, handler)
+    }
+
+    override fun findFocus(focus: Int): AccessibilityNodeInfo? {
+        return wms.automationManager.findFocus(focus)
+    }
+
+    override fun clearCache(): Boolean {
+        return wms.automationManager.clearCache()
+    }
+
+    override fun getWindows(): List<AccessibilityWindowInfo?>? {
+        return wms.automationManager.windows
+    }
+
+    override fun waitForIdle(idleTimeoutMillis: Long, globalTimeoutMillis: Long) {
+        wms.waitForIdle()
     }
 }

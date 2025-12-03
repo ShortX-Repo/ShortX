@@ -20,6 +20,7 @@ import android.os.RemoteException;
 import android.util.SparseArray;
 import android.view.InputEvent;
 import android.view.KeyEvent;
+import android.view.accessibility.AccessibilityCache;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityInteractionClient;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -108,7 +109,11 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
 
     @Override
     public List<AccessibilityWindowInfo> getWindows() {
-        return null;
+        if (connectionId.get() == AccessibilityInteractionClient.NO_ID) {
+            LOGGER.e("getWindows, not connected...");
+            return null;
+        }
+        return AccessibilityInteractionClient.getInstance().getWindows(connectionId.get());
     }
 
     public AccessibilityNodeInfo getRootInActiveWindow() {
@@ -123,6 +128,32 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
             } else {
                 return AccessibilityInteractionClient.getInstance().getRootInActiveWindow(connectionId.get());
             }
+        }
+    }
+
+    /**
+     * Clears the cache.
+     *
+     * @return {@code true} if the cache was cleared
+     */
+    public boolean clearCache() {
+        if (connectionId.get() == AccessibilityInteractionClient.NO_ID) {
+            LOGGER.e("clearCache, not connected...");
+            return false;
+        }
+        // SDK 35
+        // public static AccessibilityCache getCache(int connectionId) {
+        //    }
+        try {
+            AccessibilityCache cache =
+                    (AccessibilityCache) Reflections.callStaticMethod(AccessibilityCache.class, "getCache", connectionId.get());
+            if (cache == null) {
+                return false;
+            }
+            cache.clear();
+            return true;
+        } catch (Throwable e) {
+            return false;
         }
     }
 
@@ -397,4 +428,12 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
         return 100;
     }
 
+    public AccessibilityNodeInfo findFocus(int focus) {
+        if (connectionId.get() == AccessibilityInteractionClient.NO_ID) {
+            LOGGER.e("findFocus, not connected...");
+            return null;
+        }
+        return AccessibilityInteractionClient.getInstance().findFocus(connectionId.get(),
+                AccessibilityWindowInfo.ANY_WINDOW_ID, AccessibilityNodeInfo.ROOT_NODE_ID, focus);
+    }
 }

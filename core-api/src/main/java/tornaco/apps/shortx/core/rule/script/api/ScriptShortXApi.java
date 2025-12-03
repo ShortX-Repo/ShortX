@@ -8,6 +8,7 @@ import android.annotation.Nullable;
 import android.os.Handler;
 import android.view.InputEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.accessibility.AccessibilityWindowInfo;
 
 import com.google.protobuf.Message;
 
@@ -95,5 +96,13 @@ public interface ScriptShortXApi {
         boolean dispatchGesture(@NonNull GestureDescription gesture,
                                 @Nullable AccessibilityService.GestureResultCallback callback,
                                 @Nullable Handler handler);
+
+        AccessibilityNodeInfo findFocus(int focus);
+
+        boolean clearCache();
+
+        List<AccessibilityWindowInfo> getWindows();
+
+        void waitForIdle(long idleTimeoutMillis, long globalTimeoutMillis);
     }
 }
