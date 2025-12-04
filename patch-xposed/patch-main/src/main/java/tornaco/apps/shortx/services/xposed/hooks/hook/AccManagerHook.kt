@@ -12,6 +12,7 @@ object AccManagerHook {
 
     fun hook(lpparam: ISystemServerLoaded.Param) {
         hookSuppressingAccessibilityServices(lpparam)
+        hookRIW(lpparam)
         // hookProxyManager(lpparam)
     }
 
@@ -29,6 +30,19 @@ object AccManagerHook {
             }
         }.onFailure {
             logger.e(it, "hookSuppressingAccessibilityServices")
+        }
+
+    private fun hookRIW(lpparam: ISystemServerLoaded.Param) =
+        kotlin.runCatching {
+            afterMethod(
+                lpparam.classLoader.uiAutomationManager(),
+                "canRetrieveInteractiveWindowsLocked"
+            ) { param ->
+                param.logParamsAndResOnDebug(logger)
+                param.result = true
+            }
+        }.onFailure {
+            logger.e(it, "hookRIW")
         }
 
     private fun hookProxyManager(lpparam: ISystemServerLoaded.Param) =

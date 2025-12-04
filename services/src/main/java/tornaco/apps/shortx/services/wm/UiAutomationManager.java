@@ -109,6 +109,11 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
 
     @Override
     public List<AccessibilityWindowInfo> getWindows() {
+        try {
+            Reflections.setStaticBooleanField(AccessibilityInteractionClient.class, "DEBUG", true);
+        } catch (Throwable e) {
+            LOGGER.e(e, "getWindows set static field error");
+        }
         if (connectionId.get() == AccessibilityInteractionClient.NO_ID) {
             LOGGER.e("getWindows, not connected...");
             return null;
@@ -146,7 +151,7 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
         //    }
         try {
             AccessibilityCache cache =
-                    (AccessibilityCache) Reflections.callStaticMethod(AccessibilityCache.class, "getCache", connectionId.get());
+                    (AccessibilityCache) Reflections.callStaticMethod(AccessibilityInteractionClient.class, "getCache", connectionId.get());
             if (cache == null) {
                 return false;
             }
@@ -251,15 +256,16 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
                 try {
                     connectionId.set(id);
                     if (OsUtils.isTOrAbove()) {
+                        //  AccessibilityInteractionClient.getInstance(mContext).addConnection(
+                        //                            mConnectionId, connection, /*initializeCache=*/true);
                         Reflections.callStaticMethod(AccessibilityInteractionClient.class,
                                 "addConnection",
-                                id, connection, false);
+                                id, connection, true);
                     } else {
                         Reflections.callStaticMethod(AccessibilityInteractionClient.class,
                                 "addConnection",
                                 id, connection);
                     }
-
                 } catch (Throwable e) {
                     LOGGER.e(e, "UiAutomationManager#init addConnection");
                 }
@@ -311,6 +317,18 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
     @Override
     public void onSoftKeyboardShowModeChanged(int showMode) {
 
+    }
+
+    public boolean isCacheEnabled() {
+        // AccessibilityCache cache =
+        //                AccessibilityInteractionClient.getCache(mConnectionId);
+        AccessibilityCache cache =
+                (AccessibilityCache) Reflections.callStaticMethod(AccessibilityInteractionClient.class, "getCache", connectionId.get());
+        LOGGER.d("isCacheEnabled cache: " + cache);
+        if (cache == null) {
+            return false;
+        }
+        return (boolean) Reflections.callMethod(cache, "isEnabled");
     }
 
     @Override

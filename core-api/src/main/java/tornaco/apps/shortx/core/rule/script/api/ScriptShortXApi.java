@@ -104,5 +104,7 @@ public interface ScriptShortXApi {
         List<AccessibilityWindowInfo> getWindows();
 
         void waitForIdle(long idleTimeoutMillis, long globalTimeoutMillis);
+
+        boolean isCacheEnabled();
     }
 }

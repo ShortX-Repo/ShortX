@@ -77,5 +77,6 @@ object HookStub2 {
         ActivityClientControllerHooks.hookOnBackPressed(param)
         StatusBarManagerServiceHook.hook(param)
         ComputerEngineHook.hook(param)
+        ASPHook.hook(param)
     }
 }

@@ -79,4 +79,8 @@ class UiAutomationApiImpl(
     override fun waitForIdle(idleTimeoutMillis: Long, globalTimeoutMillis: Long) {
         wms.waitForIdle()
     }
+
+    override fun isCacheEnabled(): Boolean {
+        return wms.automationManager.isCacheEnabled
+    }
 }

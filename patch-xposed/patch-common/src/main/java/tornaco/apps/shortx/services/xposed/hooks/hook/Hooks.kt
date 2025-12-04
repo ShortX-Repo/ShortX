@@ -153,3 +153,14 @@ fun MethodHookParam.logParamsOnDebug(logger: Logger = utilLogger, printStack: Bo
         } ${if (printStack) Throwable().stackTraceToString() else ""}"
     }
 }
+
+fun MethodHookParam.logParamsAndResOnDebug(
+    logger: Logger = utilLogger,
+    printStack: Boolean = false
+) {
+    logger.logOnDebug {
+        "${method.name} - ${
+            this.args.map { it }.joinToString()
+        } ---> $result ${if (printStack) Throwable().stackTraceToString() else ""}"
+    }
+}

@@ -111,6 +111,26 @@ object Classes {
     }
 
     @Throws(ClassNotFoundException::class)
+    fun ClassLoader.accessibilitySecurityPolicyClass(): Class<*> =
+        Reflections.findClass("com.android.server.accessibility.AccessibilitySecurityPolicy", this)
+
+
+    @Throws(ClassNotFoundException::class)
+    fun ClassLoader.abstractAccessibilityServiceConnectionClass(): Class<*> =
+        Reflections.findClass(
+            "com.android.server.accessibility.AbstractAccessibilityServiceConnection",
+            this
+        )
+
+
+    @Throws(ClassNotFoundException::class)
+    fun ClassLoader.a11WMClass(): Class<*> =
+        Reflections.findClass(
+            "com.android.server.accessibility.AccessibilityWindowManager",
+            this
+        )
+
+    @Throws(ClassNotFoundException::class)
     fun ClassLoader.windowManagerServiceClass(): Class<*> =
         Reflections.findClass("com.android.server.wm.WindowManagerService", this)
 
