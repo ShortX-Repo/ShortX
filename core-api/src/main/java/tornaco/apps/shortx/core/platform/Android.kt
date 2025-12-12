@@ -81,6 +81,7 @@ object ClassNames {
     const val CLIPBOARD_SERVICE_IMPL =
         "com.android.server.clipboard.ClipboardService\$ClipboardImpl"
     const val SYSTEM_UI_APP = "com.android.systemui.SystemUIApplication"
+    const val SYSTEM_UI_APP_2 = "com.android.systemui.application.impl.SystemUIApplicationImpl"
     const val SYSTEM_UI_CUSTOM_TILE = "com.android.systemui.qs.external.CustomTile"
     const val NFC_SERVICE_HANDLER = "com.android.nfc.NfcService\$NfcServiceHandler"
 }

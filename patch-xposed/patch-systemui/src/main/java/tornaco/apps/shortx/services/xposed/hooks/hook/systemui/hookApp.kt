@@ -14,6 +14,7 @@ import tornaco.apps.shortx.core.notification.NotificationPoster
 import tornaco.apps.shortx.core.notification.handleButtonClick
 import tornaco.apps.shortx.core.notification.handleNotificationClick
 import tornaco.apps.shortx.core.platform.ClassNames.SYSTEM_UI_APP
+import tornaco.apps.shortx.core.platform.ClassNames.SYSTEM_UI_APP_2
 import tornaco.apps.shortx.core.platform.Methods.onCreate
 import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.proto.action.PostNotification
@@ -30,7 +31,24 @@ import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.input.opls.instal
 import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.ocr.OCRImpl
 import util.Reflections
 
-fun SystemUIHook.hookApp(lpparam: IPackageLoaded.Param) = kotlin.runCatching {
+fun SystemUIHook.hookApp(lpparam: IPackageLoaded.Param) {
+    if (PackageNames.systemUI == lpparam.packageName) {
+        runCatching { hookSystemUIApp(lpparam, SYSTEM_UI_APP) }.onFailure {
+            logger.e(
+                "hookSystemUIApp failed - $SYSTEM_UI_APP"
+            )
+        }
+        runCatching {
+            hookSystemUIApp(lpparam, SYSTEM_UI_APP_2)
+        }.onFailure {
+            logger.e(
+                "hookSystemUIApp failed - $SYSTEM_UI_APP_2"
+            )
+        }
+    }
+}
+
+private fun SystemUIHook.hookSystemUIApp(lpparam: IPackageLoaded.Param, appClass: String) {
     fun createNotificationPoster(shortx: IShortX, context: Context): INotificationPoster {
         logger.d("installNotificationPoster")
         val notificationPoster by lazy {
@@ -73,55 +91,50 @@ fun SystemUIHook.hookApp(lpparam: IPackageLoaded.Param) = kotlin.runCatching {
             }
         }
     }
-
-    if (PackageNames.systemUI == lpparam.packageName) {
-        afterMethod(
-            Reflections.findClass(SYSTEM_UI_APP, lpparam.classLoader),
-            onCreate
-        ) { param ->
-            val shortx = ShortXManagerNative.shortX
-            if (shortx == null) {
-                XposedBridge.log("SystemUIHook. ERROR, shortX is null")
-                return@afterMethod
-            }
-            logger.i("ShortX: $shortx")
-            val app: Context = param.thisObject as Context
-            logger.d("After onCreate: $app")
-
-            initShortXAppContext(app)
-            GlobalSettings.init(app)
-
-            PicassoInitializer.install(
-                app,
-                app.cacheDir,
-                BuildPropInternal.APP_PACKAGE_NAME
-            )
-
-            shortx.registerSystemReadyListener(object : ICallback.Stub() {
-                override fun receive(p0: ByteArrayWrapper?) {
-                    logger.w("System is ready, GO!!!")
-                    // Attach client, let Service known SystemUI is up.
-                    shortx.attachSystemUIClient(
-                        SystemUIClient(
-                            cv = CVImpl(app),
-                            ocr = OCRImpl(app),
-                            su = LibShKtShellImpl,
-                            poster = createNotificationPoster(shortx, app),
-                            tile = QSTileHostImpl(shortx)
-                        )
-                    )
-
-                    installInputMonitor(app)
-
-                    CustomHookApp.hookApp(
-                        lpparam.classLoader,
-                        PackageNames.systemUI,
-                        MethodHookLifecycle.LoadedPackage
-                    )
-                }
-            })
+    afterMethod(
+        Reflections.findClass(appClass, lpparam.classLoader),
+        onCreate
+    ) { param ->
+        val shortx = ShortXManagerNative.shortX
+        if (shortx == null) {
+            XposedBridge.log("SystemUIHook. ERROR, shortX is null")
+            return@afterMethod
         }
+        logger.i("ShortX: $shortx")
+        val app: Context = param.thisObject as Context
+        logger.d("After onCreate: $app")
+
+        initShortXAppContext(app)
+        GlobalSettings.init(app)
+
+        PicassoInitializer.install(
+            app,
+            app.cacheDir,
+            BuildPropInternal.APP_PACKAGE_NAME
+        )
+
+        shortx.registerSystemReadyListener(object : ICallback.Stub() {
+            override fun receive(p0: ByteArrayWrapper?) {
+                logger.w("System is ready, GO!!!")
+                // Attach client, let Service known SystemUI is up.
+                shortx.attachSystemUIClient(
+                    SystemUIClient(
+                        cv = CVImpl(app),
+                        ocr = OCRImpl(app),
+                        su = LibShKtShellImpl,
+                        poster = createNotificationPoster(shortx, app),
+                        tile = QSTileHostImpl(shortx)
+                    )
+                )
+
+                installInputMonitor(app)
+
+                CustomHookApp.hookApp(
+                    lpparam.classLoader,
+                    PackageNames.systemUI,
+                    MethodHookLifecycle.LoadedPackage
+                )
+            }
+        })
     }
-}.onFailure {
-    logger.e(it, "hookApp")
 }

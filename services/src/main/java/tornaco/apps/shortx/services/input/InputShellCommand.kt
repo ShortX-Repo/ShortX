@@ -49,7 +49,7 @@ object InputShellCommand {
                 InputShellCommandV33().exec(binder, fdIn, fdOut, fdErr, args)
             }
 
-            34, 35 -> {
+            34, 35, 36 -> {
                 InputShellCommandV34().exec(binder, fdIn, fdOut, fdErr, args)
             }
 
