@@ -27,7 +27,8 @@ object Configs {
     // consider to find the latest version more gracefully
     // currently we set to 30.0.3 to test circle ci.
     const val buildToolsVersion = "30.0.3"
-    const val ndkVersion = "21.1.6352462"
+    // NDK r26+ 才完全支持 16 KB page size
+    const val ndkVersion = "29.0.14206865"
     val cmakeVersion get() = "3.22.1"
 
     val Project.resPrefix: String get() = "${this.name}_"

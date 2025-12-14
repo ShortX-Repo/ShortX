@@ -189,7 +189,9 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
         // Calling out without a lock held.
         if (connection != null) {
             try {
-                return connection.getServiceInfo();
+                AccessibilityServiceInfo info = connection.getServiceInfo();
+                LOGGER.i("getServiceInfo: " + info);
+                return info;
             } catch (RemoteException re) {
                 LOGGER.e(re, "Error while getting AccessibilityServiceInfo");
             }
