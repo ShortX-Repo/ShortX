@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.protobuf.gradle.plugin)
     alias(libs.plugins.kover)
+    id("shortxmvnpub")
 }
 
 buildConfig {

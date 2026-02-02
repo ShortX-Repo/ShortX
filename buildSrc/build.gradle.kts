@@ -13,5 +13,9 @@ gradlePlugin {
             id = "shortx"
             implementationClass = "tornaco.project.android.shortx.ShortXBuildPlugin"
         }
+        register("shortxmvnpub") {
+            id = "shortxmvnpub"
+            implementationClass = "tornaco.project.android.shortx.ShortXMavenPublishPlugin"
+        }
     }
 }

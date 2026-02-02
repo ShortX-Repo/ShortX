@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.agp.lib)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.kapt)
+    id("shortxmvnpub")
 }
 
 android {
