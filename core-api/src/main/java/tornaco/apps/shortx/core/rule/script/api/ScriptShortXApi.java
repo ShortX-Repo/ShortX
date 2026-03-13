@@ -58,6 +58,8 @@ public interface ScriptShortXApi {
 
     UiAutomationApi getUiAutomation();
 
+    String getShortXDir();
+
     @DoNotStrip
     class Result {
         /**

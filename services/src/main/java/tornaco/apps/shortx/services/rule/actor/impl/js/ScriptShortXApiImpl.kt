@@ -21,6 +21,7 @@ import tornaco.apps.shortx.core.rule.valueList
 import tornaco.apps.shortx.core.rule.valueString
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.actor.dummyHandlerParamsForAction
 import tornaco.apps.shortx.services.rule.actor.impl.WriteGlobalVar
 import tornaco.apps.shortx.services.rule.nextEvaluateContextSerialNumber
@@ -186,5 +187,9 @@ class ScriptShortXApiImpl(
 
     override fun getUiAutomation(): ScriptShortXApi.UiAutomationApi {
         return UiAutomationApiImpl(shortXContext.wm)
+    }
+
+    override fun getShortXDir(): String? {
+        return Dirs.baseServerDir.absolutePath
     }
 }
