@@ -33,6 +33,7 @@ object SystemUIHook {
             hookTileQuery(lpparam)
             hookView(lpparam)
             hookDarkIcon(lpparam)
+            hookCustomTile(lpparam)
         }
     }
 

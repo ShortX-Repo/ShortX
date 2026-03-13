@@ -152,8 +152,20 @@ fun String.toVarValueNotList(type: GlobalVarType?): ProtoAny? {
             StringVar.newBuilder().setValue(this).build().pack_()
         }
 
+        // Fallback
+        // Fix:
+        // java.lang.NullPointerException: Attempt to invoke virtual method 'java.lang.Class java.lang.Object.getClass()' on a null object reference
+        //	at tornaco.apps.shortx.core.proto.gv.GlobalVar$Builder.setVar(SourceFile:2)
+        //	at dqmqmwu.wavyku.F90.OooO0o(Unknown Source:255)
+        //	at dqmqmwu.wavyku.oo0oOO0o.invokeSuspend(Unknown Source:122)
+        //	at dqmqmwu.wavyku.oo0Oo0oo.resumeWith(Unknown Source:8)
+        //	at dqmqmwu.wavyku.yD.run(Unknown Source:114)
+        //	at dqmqmwu.wavyku.o00o0Oo.run(Unknown Source:658)
+        //	at dqmqmwu.wavyku.Kj2.run(Unknown Source:2)
+        //	at dqmqmwu.wavyku.xm.run(Unknown Source:93)
+        //	Suppressed: dqmqmwu.wavyku.gB: [E82{Cancelling}@2faf76b, HD#Scope]
         else -> {
-            null
+            StringVar.newBuilder().setValue(this).build().pack_()
         }
     }
 }

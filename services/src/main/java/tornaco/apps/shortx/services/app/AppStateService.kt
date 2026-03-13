@@ -211,6 +211,24 @@ class AppStateService(shortXContext: ShortXContext) :
         }
 
         systemServiceScope.launchSafety("AppStateService.systemReady.UidObserverRegisterCompat") {
+            // Try to fix:
+            // java.lang.NullPointerException: Attempt to invoke interface method 'android.os.IBinder android.os.IInterface.asBinder()' on a null object reference
+            //	at android.os.RemoteCallbackList.register(RemoteCallbackList.java:448)
+            //	at com.android.server.am.UidObserverController.register(UidObserverController.java:98)
+            //	at com.android.server.am.ActivityManagerService.registerUidObserverForUids(ActivityManagerService.java:8051)
+            //	at com.android.server.am.ActivityManagerService.registerUidObserver(ActivityManagerService.java:8028)
+            //	at rshwrzr.qlg.aeql.xgm.i63.a(Unknown Source:109)
+            //	at rshwrzr.qlg.aeql.xgm.bo.J(Unknown Source:18)
+            //	at rshwrzr.qlg.aeql.xgm.bo.invoke(Unknown Source:12)
+            //	at rshwrzr.qlg.aeql.xgm.Hd3.J(Unknown Source:36)
+            //	at rshwrzr.qlg.aeql.xgm.lu.o(Unknown Source:8)
+            //	at rshwrzr.qlg.aeql.xgm.Ci0.run(Unknown Source:106)
+            //	at android.os.Handler.handleCallback(Handler.java:995)
+            //	at android.os.Handler.dispatchMessage(Handler.java:103)
+            //	at android.os.Looper.loopOnce(Looper.java:248)
+            //	at android.os.Looper.loop(Looper.java:338)
+            //	at android.os.HandlerThread.run(HandlerThread.java:85)
+            delay(3 * 1000)
             UidObserverRegisterCompat.register(object : UidObserverCompat {
                 override fun onUidActive(uid: Int) {
                     super.onUidActive(uid)

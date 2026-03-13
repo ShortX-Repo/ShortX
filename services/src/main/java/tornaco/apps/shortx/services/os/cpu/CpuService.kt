@@ -88,9 +88,9 @@ class CpuService(shortXContext: ShortXContext) : SystemService(shortXContext, "C
     private fun listenRule() {
         systemServiceScope.launchSafety("listenRuleUpdate") {
             shortXContext.rule.publishInterceptor.apply {
-                enabledProtoUrlsChangedTimeStamp.collectLatest {
+                enabledProtoUrlsChangedTimeStamp.collectLatest { urls ->
                     val shouldWatch = !intercept(CpuAvgAvailability.getDefaultInstance())
-                    logger.d("enabledProtoUrlsChangedTimeStamp changed. $it shouldWatch: $shouldWatch")
+                    logger.d("enabledProtoUrlsChangedTimeStamp changed. $urls shouldWatch: $shouldWatch")
                     if (shouldWatch) {
                         if (isCpuMonitorStartCalled.compareAndSet(false, true)) {
                             cupMonitorService.start(context)
@@ -101,11 +101,15 @@ class CpuService(shortXContext: ShortXContext) : SystemService(shortXContext, "C
                             cpuAvailabilityCallback
                         )
                         logger.w("addCpuAvailabilityCallback: $cpuAvailabilityCallback")
-                    } else {
-                        cupMonitorService.localService.removeCpuAvailabilityCallback(
-                            cpuAvailabilityCallback
-                        )
-                        logger.w("removeCpuAvailabilityCallback: $cpuAvailabilityCallback")
+                    } else if (isCpuMonitorStartCalled.get()) {
+                      runCatching {
+                          cupMonitorService.localService.removeCpuAvailabilityCallback(
+                              cpuAvailabilityCallback
+                          )
+                          logger.w("removeCpuAvailabilityCallback: $cpuAvailabilityCallback")
+                      }.onFailure {
+                          logger.w("removeCpuAvailabilityCallback error " + it.message)
+                      }
                     }
                 }
             }

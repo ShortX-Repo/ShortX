@@ -59,11 +59,11 @@ object UidObserverRegisterCompat {
             }
 
             else -> {
-                null
+                UidObserverV35(obs)
             }
         }
 
-        logger.w("$obs = $observer")
+        logger.w("register $obs = $observer")
 
         observer?.let {
             am.registerUidObserver(
