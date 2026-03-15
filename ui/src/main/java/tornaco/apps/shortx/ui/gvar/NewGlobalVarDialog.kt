@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.gvar
 
 
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -181,7 +182,7 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
 
                     DropdownSelector(
                         state = typeDropdownState,
-                        items = GlobalVarType.values().map {
+                        items = GlobalVarType.entries.map {
                             DropdownItem(
                                 labelLines = listOf(it.label()),
                                 data = it
@@ -206,18 +207,20 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
                 LargeSpacer()
 
                 // Secret
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    FieldTitle(text = LocalI18N.current["ui.global.var.secrets.title"])
-                    ShortXSwitch(checked = state.isSecret, onCheckedChange = {
-                        state.isSecret = it
-                    })
-                }
-                SmallSpacer()
-                TipRow(text = LocalI18N.current["ui.global.var.secrets.message"])
+               AnimatedVisibility (state.type == GlobalVarType.String) {
+                   Row(
+                       modifier = Modifier.fillMaxWidth(),
+                       horizontalArrangement = Arrangement.SpaceBetween,
+                       verticalAlignment = Alignment.CenterVertically
+                   ) {
+                       FieldTitle(text = LocalI18N.current["ui.global.var.secrets.title"])
+                       ShortXSwitch(checked = state.isSecret, onCheckedChange = {
+                           state.isSecret = it
+                       })
+                   }
+                   SmallSpacer()
+                   TipRow(text = LocalI18N.current["ui.global.var.secrets.message"])
+               }
             }
         })
     }

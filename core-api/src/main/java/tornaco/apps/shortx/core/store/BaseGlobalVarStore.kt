@@ -10,6 +10,7 @@ import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.gv.GlobalVarList
 import tornaco.apps.shortx.core.rule.setValue
+import tornaco.apps.shortx.core.rule.setValueForEnc
 import tornaco.apps.shortx.core.rule.valueList
 import tornaco.apps.shortx.core.util.AtomicFileCompat
 import tornaco.apps.shortx.core.util.Logger
@@ -127,7 +128,7 @@ open class BaseGlobalVarStore(
                             AESCrypt.encrypt(encKey, it)
                         }
                         // logger.v("encValue: $encValue")
-                        val encGV = globalVar.setValue(encValue)
+                        val encGV = globalVar.setValueForEnc(encValue)
                         encGV
                     } else {
                         globalVar

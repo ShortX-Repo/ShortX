@@ -11,6 +11,7 @@ import tornaco.apps.shortx.core.proto.gv.StringListVar
 import tornaco.apps.shortx.core.proto.gv.StringVar
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.replaceLazy
+import tornaco.apps.shortx.services.proto.StringList
 
 private val logger = Logger("GlobalVar")
 
@@ -316,6 +317,28 @@ fun GlobalVar.setValue(value: List<String>): GlobalVar {
         } else {
             GlobalVar.newBuilder(this).setVar(
                 value.first().toVarValueNotList(this.type.toType())
+            ).build()
+        }
+    }
+}
+
+fun GlobalVar.setValueForEnc(value: List<String>): GlobalVar {
+    return if (this.isList()) {
+        GlobalVar.newBuilder(this)
+            .setType(StringListVar.getDefaultInstance().pack_())
+            .setVar(
+            StringListVar.newBuilder().addAllValues(value).build().pack_()
+        ).build()
+    } else {
+        if (value.isEmpty()) {
+            GlobalVar.newBuilder(this)
+                .setType(StringVar.getDefaultInstance().pack_())
+                .clearVar().build()
+        } else {
+            GlobalVar.newBuilder(this)
+                .setType(StringVar.getDefaultInstance().pack_())
+                .setVar(
+                    StringVar.newBuilder().setValue(value.first()).build().pack_()
             ).build()
         }
     }
