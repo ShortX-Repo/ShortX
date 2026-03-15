@@ -29,9 +29,9 @@ fun SystemUIHook.hookCustomTile(lpparam: IPackageLoaded.Param) = runCatching {
             val specStr = spec.toString()
             if (!specStr.contains("tornaco.apps.shortx")) return@afterMethod
             val tileWithNumber = tileNumberRegex.find(specStr)?.groupValues?.get(1)
-            // Tile 1
-            // Tile 2..
-            val number = tileWithNumber?.toIntOrNull() ?: return@afterMethod
+            // Tile1
+            // Tile2..
+            val number = tileWithNumber?.toIntOrNull()?.minus(1) ?: return@afterMethod
             logger.d("CustomTile.getTileLabel number: $number")
             val sbtOrNull = StatusBarTile.forNumber(number)
             logger.d("CustomTile.getTileLabel sbtOrNull: $sbtOrNull")
