@@ -44,9 +44,10 @@ class CodeLibraryListViewModel @Inject constructor(@ApplicationContext context: 
             try {
                 val itemWrappers = shortXManager.getAllCodeLibraryItems()
                 val items = itemWrappers
+                logger.d("getAllCodeLibraryItems- ${itemWrappers.size}")
                 updateState {
                     copy(
-                        items = filterItems(items, query),
+                        items = items,
                         loadState = LoadState.Success(items)
                     )
                 }
@@ -58,12 +59,7 @@ class CodeLibraryListViewModel @Inject constructor(@ApplicationContext context: 
     }
 
     fun updateQuery(query: CodeLibraryQuery) {
-        updateState {
-            copy(
-                query = query,
-                items = filterItems(items, query)
-            )
-        }
+
     }
 
     fun deleteItem(id: String) {
@@ -126,75 +122,5 @@ class CodeLibraryListViewModel @Inject constructor(@ApplicationContext context: 
                 isSelectionMode = false
             )
         }
-    }
-
-    private fun filterItems(
-        items: List<CodeLibraryItem>,
-        query: CodeLibraryQuery
-    ): List<CodeLibraryItem> {
-        var filtered = items
-
-        // 按关键词过滤
-        if (query.keyword.isNotBlank()) {
-            filtered = filtered.filter {
-                it.name.contains(query.keyword, ignoreCase = true) ||
-                        it.description.contains(query.keyword, ignoreCase = true) ||
-                        it.content.contains(query.keyword, ignoreCase = true)
-            }
-        }
-
-        // 按类型过滤
-        if (query.type != CodeType.UNRECOGNIZED) {
-            filtered = filtered.filter { it.type == query.type }
-        }
-
-        // 按标签过滤
-        if (query.tagsList.isNotEmpty()) {
-            filtered = filtered.filter { item ->
-                query.tagsList.any { tag -> item.tagsList.contains(tag) }
-            }
-        }
-
-        // 排序
-        return when (query.sortBy) {
-            CodeLibrarySortBy.CodeLibrarySortBy_NAME_ASC -> filtered.sortedBy { it.name }
-            CodeLibrarySortBy.CodeLibrarySortBy_NAME_DESC -> filtered.sortedByDescending { it.name }
-            CodeLibrarySortBy.CodeLibrarySortBy_CREATED_ASC -> filtered.sortedBy { it.createdAt }
-            CodeLibrarySortBy.CodeLibrarySortBy_CREATED_DESC -> filtered.sortedByDescending { it.createdAt }
-            CodeLibrarySortBy.CodeLibrarySortBy_UPDATED_ASC -> filtered.sortedBy { it.updatedAt }
-            CodeLibrarySortBy.CodeLibrarySortBy_UPDATED_DESC -> filtered.sortedByDescending { it.updatedAt }
-            CodeLibrarySortBy.CodeLibrarySortBy_TYPE_ASC -> filtered.sortedBy { it.type.name }
-            CodeLibrarySortBy.CodeLibrarySortBy_TYPE_DESC -> filtered.sortedByDescending { it.type.name }
-            else -> filtered
-        }
-    }
-
-    private fun getMockData(): List<CodeLibraryItem> {
-        return listOf(
-            CodeLibraryHelper.createCodeLibraryItem(
-                id = "1",
-                name = "获取当前时间",
-                description = "获取当前系统时间的MVEL表达式",
-                type = CodeType.CodeType_MVEL,
-                content = "new java.util.Date()",
-                tags = listOf("时间", "工具")
-            ),
-            CodeLibraryHelper.createCodeLibraryItem(
-                id = "2",
-                name = "显示Toast",
-                description = "显示Toast消息的JavaScript代码",
-                type = CodeType.CodeType_JAVASCRIPT,
-                content = "Android.showToast('Hello World');",
-                tags = listOf("UI", "消息")
-            ),
-            CodeLibraryHelper.createCodeLibraryItem(
-                id = "3",
-                name = "字符串处理",
-                description = "常用的字符串处理函数",
-                type = CodeType.CodeType_MVEL,
-                content = "str.trim().toLowerCase()",
-                tags = listOf("字符串", "工具")
-            )
-        )
     }
 }
