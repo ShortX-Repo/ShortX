@@ -4,10 +4,11 @@ package tornaco.apps.shortx.ui.code
 
 import android.content.Context
 import android.content.Intent
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,9 +16,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.outlined.PlayArrow
@@ -42,32 +45,30 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import io.github.rosemoe.sora.app.CEComposeBinding
-import io.github.rosemoe.sora.app.databinding.CodeEditorComposeBinding
-import org.orbitmvi.orbit.compose.collectAsState
-import tornaco.apps.shortx.core.logOnDebug
+import tornaco.apps.shortx.core.proto.common.CoroutineContext
 import tornaco.apps.shortx.core.proto.common.CodeLibraryItem
 import tornaco.apps.shortx.core.proto.common.CodeType
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.BaseActivity
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.newIntent
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
 import tornaco.apps.shortx.ui.base.ConfirmDialog
 import tornaco.apps.shortx.ui.base.Loading
-import tornaco.apps.shortx.ui.base.MenuDialog
-import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortXCard
+import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
-import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextDisplayActivity
+import tornaco.apps.shortx.ui.base.code.ParcelableCode
+import tornaco.apps.shortx.ui.base.code.js.JSEditorActivity
+import tornaco.apps.shortx.ui.base.code.mvel.MVELEditorActivity
 import tornaco.apps.shortx.ui.base.handleSideEffect
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
-import tornaco.apps.shortx.ui.base.rememberMenuDialogState
-import tornaco.apps.shortx.ui.composeLogger
-import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
@@ -109,6 +110,14 @@ fun CodeLibraryEditorScreen(
     val vm = hiltViewModel<CodeLibraryEditorViewModel>()
     val state by vm.state.collectAsState()
     val context = LocalContext.current
+    val codeEditorLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            result.popupSelectorResult<ParcelableCode>()?.let {
+                vm.updateContent(it.expression)
+            }
+        }
+    )
 
     var showUnsavedChangesDialog by remember { mutableStateOf(false) }
 
@@ -165,6 +174,30 @@ fun CodeLibraryEditorScreen(
         }
     }
 
+    val launchCodeEditor = {
+        val currentCode = ParcelableCode(
+            expression = state.content,
+            coroutineContext = CoroutineContext.CoroutineContext_Default
+        )
+        when (state.type) {
+            CodeType.CodeType_MVEL -> {
+                codeEditorLauncher.launch(
+                    newIntent(context, currentCode, MVELEditorActivity::class.java)
+                )
+            }
+
+            CodeType.CodeType_JAVASCRIPT -> {
+                codeEditorLauncher.launch(
+                    newIntent(context, currentCode, JSEditorActivity::class.java)
+                )
+            }
+
+            else -> {
+                Toast.makeText(context, "暂不支持该代码类型", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     ShortXTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             Scaffold(
@@ -173,7 +206,6 @@ fun CodeLibraryEditorScreen(
                         state = state,
                         onSave = { vm.save() },
                         onExecute = { vm.execute() },
-                        onTypeChange = { type -> vm.updateType(type) },
                         onBack = {
                             if (state.hasUnsavedChanges) {
                                 showUnsavedChangesDialog = true
@@ -189,8 +221,7 @@ fun CodeLibraryEditorScreen(
                     state = state,
                     onNameChange = { vm.updateName(it) },
                     onDescriptionChange = { vm.updateDescription(it) },
-                    onContentChange = { vm.updateContent(it) },
-                    onTagsChange = { vm.updateTags(it) }
+                    onEditCode = launchCodeEditor
                 )
             }
         }
@@ -202,40 +233,14 @@ private fun CodeLibraryEditorTopBar(
     state: CodeLibraryEditorState,
     onSave: () -> Unit,
     onExecute: () -> Unit,
-    onTypeChange: (CodeType) -> Unit,
     onBack: () -> Unit
 ) {
     ShortXTopAppBar(
         title = {
-            val typeMenuState = rememberMenuDialogState<CodeType>(
-                title = "选择代码类型",
-                menuItems = listOf(
-                    MenuDialogItem(
-                        id = CodeType.CodeType_MVEL.name,
-                        title = "MVEL",
-                        iconName = Remix.Development.code_line
-                    ),
-                    MenuDialogItem(
-                        id = CodeType.CodeType_JAVASCRIPT.name,
-                        title = "JavaScript",
-                        iconName = Remix.Logos.vuejs_line
-                    )
-                )
-            ) { _, data ->
-                onTypeChange(CodeType.valueOf(data))
-            }
-
-            MenuDialog(state = typeMenuState)
-
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = if (state.isNewItem) "新建代码" else "编辑代码",
                     style = MaterialTheme.typography.titleLarge
-                )
-                StandardSpacer()
-                AssistChip(
-                    label = { Text(state.type.name) },
-                    onClick = { typeMenuState.show() }
                 )
             }
         },
@@ -289,8 +294,7 @@ private fun CodeLibraryEditorContent(
     state: CodeLibraryEditorState,
     onNameChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
-    onContentChange: (String) -> Unit,
-    onTagsChange: (List<String>) -> Unit
+    onEditCode: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -313,7 +317,7 @@ private fun CodeLibraryEditorContent(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                OutlinedTextField(
+                ShortXTextField(
                     value = state.name,
                     onValueChange = onNameChange,
                     label = { Text("代码名称") },
@@ -333,70 +337,82 @@ private fun CodeLibraryEditorContent(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                OutlinedTextField(
+                ShortXTextField(
                     value = state.description,
                     onValueChange = onDescriptionChange,
                     label = { Text("描述（可选）") },
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 3
                 )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                OutlinedTextField(
-                    value = state.tags.joinToString(", "),
-                    onValueChange = { tagsString ->
-                        val tags = tagsString.split(",")
-                            .map { it.trim() }
-                            .filter { it.isNotBlank() }
-                        onTagsChange(tags)
-                    },
-                    label = { Text("标签（用逗号分隔）") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    placeholder = { Text("例如：工具, 自动化, 测试") }
-                )
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 代码编辑器
-        Text(
-            text = "代码内容",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Medium
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "代码内容",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Medium
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            AssistChip(
+                label = { Text(if (state.content.isBlank()) "编辑代码" else "编辑") },
+                onClick = onEditCode
+            )
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // 使用AndroidViewBinding实现代码编辑器
-        val subscribeState by LVLStateHolder.collectAsState()
-
-        AndroidViewBinding(
-            factory = { inflater: LayoutInflater, parent: ViewGroup, attachToParent: Boolean ->
-                CodeEditorComposeBinding.inflate(inflater, parent, attachToParent)
-                    .apply {
-                        CEComposeBinding(
-                            binding = this,
-                            showToolbar = subscribeState.isSubscribed,
-                            initialText = state.content
-                        ) { newContent ->
-                            composeLogger.logOnDebug("Code content change: $newContent")
-                            onContentChange(newContent)
-                        }.onCreate()
-                    }
-            },
+        ShortXCard (
             modifier = Modifier
-                .fillMaxSize()
-                .imePadding(),
-            onRelease = {
-                CEComposeBinding(
-                    binding = this,
-                    showToolbar = subscribeState.isSubscribed,
-                    initialText = ""
-                ).onDestroy()
+                .fillMaxWidth()
+                .weight(1f),
+        ) {
+            if (state.content.isBlank()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "暂无代码，点击“编辑代码”开始编写",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            } else {
+                SelectionContainer {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            text = state.content,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontFamily = FontFamily.Monospace
+                        )
+                    }
+                }
             }
-        )
+        }
+
+        state.contentError?.let { error ->
+            Text(
+                text = error,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(top = 8.dp, start = 4.dp)
+            )
+        }
     }
 }
