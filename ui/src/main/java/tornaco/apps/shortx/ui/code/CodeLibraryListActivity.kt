@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -58,6 +60,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import tornaco.apps.shortx.core.compat.ManifestCompat
 import tornaco.apps.shortx.core.proto.common.CodeLibraryItem
 import tornaco.apps.shortx.core.proto.common.CodeLibraryQuery
 import tornaco.apps.shortx.core.proto.common.CodeType
@@ -68,12 +71,15 @@ import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShareDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.handleSideEffect
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
+import tornaco.apps.shortx.ui.base.rememberShareDialogState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.ui.util.Permissions.shouldCheckStoragePermissionBeforeWriteDownloads
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -98,6 +104,13 @@ fun CodeLibraryListScreen() {
     val vm = hiltViewModel<CodeLibraryListViewModel>()
     val state by vm.state.collectAsState()
     val context = LocalContext.current
+    val permissionRequest = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions(),
+        onResult = {}
+    )
+    val shareDialogState = rememberShareDialogState("share.shortx.code")
+
+    ShareDialog(state = shareDialogState)
 
     LaunchedEffect(vm) {
         vm.loadCodeLibrary()
@@ -176,6 +189,20 @@ fun CodeLibraryListScreen() {
                     },
                     onDeleteItem = { item ->
                         vm.deleteItem(item.id)
+                    },
+                    onShareItem = { item ->
+                        if (context.shouldCheckStoragePermissionBeforeWriteDownloads()) {
+                            permissionRequest.launch(
+                                arrayOf(
+                                    ManifestCompat.permission.READ_EXTERNAL_STORAGE,
+                                    ManifestCompat.permission.WRITE_EXTERNAL_STORAGE,
+                                )
+                            )
+                        } else {
+                            vm.codeLibraryItemToShareString(item)?.let {
+                                shareDialogState.show(item.name, it)
+                            }
+                        }
                     }
                 )
             }
@@ -284,7 +311,8 @@ private fun CodeLibraryContent(
     state: CodeLibraryListState,
     onItemClick: (CodeLibraryItem) -> Unit,
     onItemLongClick: (CodeLibraryItem) -> Unit,
-    onDeleteItem: (CodeLibraryItem) -> Unit
+    onDeleteItem: (CodeLibraryItem) -> Unit,
+    onShareItem: (CodeLibraryItem) -> Unit
 ) {
     when (state.loadState) {
         is tornaco.apps.shortx.ui.base.LoadState.Loading -> {
@@ -316,7 +344,8 @@ private fun CodeLibraryContent(
                     isSelectionMode = state.isSelectionMode,
                     onItemClick = onItemClick,
                     onItemLongClick = onItemLongClick,
-                    onDeleteItem = onDeleteItem
+                    onDeleteItem = onDeleteItem,
+                    onShareItem = onShareItem
                 )
             }
         }
@@ -364,7 +393,8 @@ private fun CodeLibraryList(
     isSelectionMode: Boolean,
     onItemClick: (CodeLibraryItem) -> Unit,
     onItemLongClick: (CodeLibraryItem) -> Unit,
-    onDeleteItem: (CodeLibraryItem) -> Unit
+    onDeleteItem: (CodeLibraryItem) -> Unit,
+    onShareItem: (CodeLibraryItem) -> Unit
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
@@ -379,6 +409,7 @@ private fun CodeLibraryList(
                 onClick = { onItemClick(item) },
                 onLongClick = { onItemLongClick(item) },
                 onDelete = { onDeleteItem(item) },
+                onShare = { onShareItem(item) },
             )
         }
     }
@@ -393,6 +424,7 @@ private fun CodeLibraryItemCard(
     onClick: () -> Unit,
     onLongClick: () -> Unit,
     onDelete: () -> Unit,
+    onShare: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val deleteDialogState = rememberConfirmDialogState()
@@ -521,6 +553,13 @@ private fun CodeLibraryItemCard(
             }
 
             if (!isSelectionMode) {
+                IconButton(onClick = onShare) {
+                    RemixIcon(
+                        remixName = Remix.System.share_line,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
                 IconButton(onClick = { deleteDialogState.show() }) {
                     Icon(
                         Icons.Default.Delete,

@@ -7,12 +7,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.code.CodeLibraryHelper
+import tornaco.apps.shortx.core.proto.toJson
 import tornaco.apps.shortx.core.proto.common.CodeLibraryItem
 import tornaco.apps.shortx.core.proto.common.CodeLibraryQuery
 import tornaco.apps.shortx.core.proto.common.CodeLibrarySortBy
 import tornaco.apps.shortx.core.proto.common.CodeType
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.ShortXContextViewModelWithEffect
+import tornaco.apps.shortx.ui.share.addShareContentHeader
 import javax.inject.Inject
 
 data class CodeLibraryListState(
@@ -60,6 +62,14 @@ class CodeLibraryListViewModel @Inject constructor(@ApplicationContext context: 
 
     fun updateQuery(query: CodeLibraryQuery) {
 
+    }
+
+    fun codeLibraryItemToShareString(item: CodeLibraryItem): String? {
+        return shortXManager.getCodeLibraryItemById(item.id)?.let {
+            CodeLibraryItem.newBuilder(it)
+                .setId("SHARE-${System.currentTimeMillis()}")
+                .build()
+        }?.toJson()?.addShareContentHeader(mapOf("type" to "CodeLibraryItem"))
     }
 
     fun deleteItem(id: String) {

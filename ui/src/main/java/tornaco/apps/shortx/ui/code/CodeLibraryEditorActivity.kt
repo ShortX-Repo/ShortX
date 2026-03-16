@@ -23,15 +23,11 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Save
-import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -50,9 +46,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import tornaco.apps.shortx.core.proto.common.CoroutineContext
 import tornaco.apps.shortx.core.proto.common.CodeLibraryItem
 import tornaco.apps.shortx.core.proto.common.CodeType
+import tornaco.apps.shortx.core.proto.common.CoroutineContext
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.newIntent
@@ -252,12 +248,6 @@ private fun CodeLibraryEditorTopBar(
         actions = {
             // 执行按钮
             if (!state.isExecuting && state.content.isNotBlank()) {
-                IconButton(onClick = onExecute) {
-                    Icon(
-                        imageVector = Icons.Outlined.PlayArrow,
-                        contentDescription = "执行代码"
-                    )
-                }
             }
 
             if (state.isExecuting) {
@@ -302,9 +292,8 @@ private fun CodeLibraryEditorContent(
             .padding(16.dp)
     ) {
         // 基本信息卡片
-        Card(
+        ShortXCard(
             modifier = Modifier.fillMaxWidth(),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
             Column(
                 modifier = Modifier.padding(16.dp)
@@ -370,7 +359,7 @@ private fun CodeLibraryEditorContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        ShortXCard (
+        ShortXCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
