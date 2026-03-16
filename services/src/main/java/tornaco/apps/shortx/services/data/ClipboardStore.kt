@@ -8,7 +8,10 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.clipboard.ClipboardItem
 import tornaco.apps.shortx.core.proto.clipboard.ClipboardItemList
+import tornaco.apps.shortx.core.util.AtomicFileCompat
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.read
+import tornaco.apps.shortx.core.util.writeInlined
 import tornaco.apps.shortx.core.util.enc.AESCrypt
 
 class ClipboardStore(
@@ -17,6 +20,7 @@ class ClipboardStore(
 ) {
     private val logger = Logger("ClipboardStore")
     private val storeFile by lazy { Dirs.dataStoreFile("Clip") }
+    private val atomicStoreFile by lazy { AtomicFileCompat(storeFile) }
 
     // un-encrypt
     private val cache: MutableList<ClipboardItem> = mutableListOf()
@@ -77,13 +81,13 @@ class ClipboardStore(
     }
 
     private suspend fun readInternal() = withContext(Dispatchers.IO) {
-        if (!storeFile.exists()) {
-            logger.d("skip read no-exists file: $storeFile")
+        if (!atomicStoreFile.exists()) {
+            logger.d("skip read no-exists file: $atomicStoreFile")
             return@withContext
         }
         kotlin.runCatching {
             synchronized(cache) {
-                val list = storeFile.inputStream().use {
+                val list = atomicStoreFile.read {
                     ClipboardItemList.parseDelimitedFrom(it)
                 }
                 cache.clear()
@@ -116,9 +120,9 @@ class ClipboardStore(
                     .build()
             }).build()
             kotlin.runCatching {
-                storeFile.apply { parentFile.mkdirs() }.outputStream().use {
+                atomicStoreFile.writeInlined {
                     list.writeDelimitedTo(it)
-                    logger.d("write to: $storeFile")
+                    logger.d("write to: $atomicStoreFile")
                 }
             }.onFailure {
                 logger.e(it, "write error")
