@@ -64,6 +64,7 @@ import tornaco.apps.shortx.core.proto.common.CodeType
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ConfirmDialog
+import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -101,6 +102,12 @@ fun CodeLibraryListScreen() {
     LaunchedEffect(vm) {
         vm.loadCodeLibrary()
     }
+
+    DisposableEffectWithLifeCycle(
+        onResume = {
+            vm.loadCodeLibrary()
+        }
+    )
 
     vm.handleSideEffect { effect ->
         when (effect) {
