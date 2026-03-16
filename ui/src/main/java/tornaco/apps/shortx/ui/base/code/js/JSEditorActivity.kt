@@ -6,6 +6,8 @@ package tornaco.apps.shortx.ui.base.code.js
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,6 +29,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -39,6 +44,7 @@ import io.github.rosemoe.sora.app.databinding.CodeEditorComposeBinding
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 import tornaco.apps.shortx.core.logOnDebug
+import tornaco.apps.shortx.core.proto.common.CodeType
 import tornaco.apps.shortx.core.proto.common.CoroutineContext
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
@@ -54,6 +60,8 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextDisplayActivity
 import tornaco.apps.shortx.ui.base.code.ParcelableCode
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
+import tornaco.apps.shortx.ui.code.CodeLibSelectorActivity
+import tornaco.apps.shortx.ui.code.popupCodeLibraryItemResult
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.settings.log.js.JSLogActivity
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
@@ -73,10 +81,29 @@ fun JSEditorActivity.ExecuteJSEditor(
 ) {
     val outputTitle = LocalI18N.current["ui.title.js"]
     val context = LocalContext.current
+    var ceComposeBinding by remember { mutableStateOf<CEComposeBinding?>(null) }
 
     val vm = hiltViewModel<JSEditorViewModel>()
+    val codeLibSelectorLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            result.popupCodeLibraryItemResult()?.let { item ->
+                if (item.type == CodeType.CodeType_JAVASCRIPT) {
+                    vm.updateExpression(item.content)
+                } else {
+                    Toast.makeText(context, "请选择 JavaScript 代码", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    )
+    val state by vm.collectAsState()
+
     LaunchedEffect(vm) {
         vm.initWith(currentAction)
+    }
+
+    LaunchedEffect(state.expression) {
+        ceComposeBinding?.updateText(state.expression)
     }
 
     vm.collectSideEffect(sideEffect = {
@@ -86,8 +113,6 @@ fun JSEditorActivity.ExecuteJSEditor(
             TextDisplayActivity.start(context, outputTitle, it)
         }
     })
-
-    val state by vm.collectAsState()
 
     ShortXTheme {
         Surface(
@@ -150,6 +175,17 @@ fun JSEditorActivity.ExecuteJSEditor(
                         }
 
                         IconButton(onClick = {
+                            codeLibSelectorLauncher.launch(
+                                CodeLibSelectorActivity.newIntent(
+                                    context = context,
+                                    codeType = CodeType.CodeType_JAVASCRIPT
+                                )
+                            )
+                        }) {
+                            RemixIcon(remixName = Remix.Development.code_line)
+                        }
+
+                        IconButton(onClick = {
                             JSLogActivity.Starter.start(context)
                         }) {
                             RemixIcon(remixName = Remix.Document.file_text_line)
@@ -186,18 +222,18 @@ fun JSEditorActivity.ExecuteJSEditor(
                                     ) {
                                         composeLogger.logOnDebug("Content change: $it")
                                         vm.updateExpression(it)
-                                    }.onCreate()
+                                    }.also {
+                                        ceComposeBinding = it
+                                        it.onCreate()
+                                    }
                                 }
                         },
                         modifier = Modifier
                             .fillMaxSize()
                             .imePadding(),
                         onRelease = {
-                            CEComposeBinding(
-                                binding = this,
-                                showToolbar = subscribeState.isSubscribed,
-                                initialText = ""
-                            ).onDestroy()
+                            ceComposeBinding?.onDestroy()
+                            ceComposeBinding = null
                         }
                     )
                 }

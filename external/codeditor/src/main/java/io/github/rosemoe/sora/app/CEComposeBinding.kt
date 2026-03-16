@@ -31,6 +31,7 @@ class CEComposeBinding(
     private val onContentChange: (String) -> Unit = {}
 ) {
     private val context get() = binding.root.context
+    private var isApplyingExternalText = false
 
     fun onCreate() {
         val inputView = binding.symbolInput
@@ -74,7 +75,9 @@ class CEComposeBinding(
             subscribeEvent<SelectionChangeEvent> { _, _ -> updatePositionText() }
             subscribeEvent<PublishSearchResultEvent> { _, _ -> updatePositionText() }
             subscribeEvent<ContentChangeEvent> { event, _ ->
-                onContentChange(event.editor.text.toString())
+                if (!isApplyingExternalText) {
+                    onContentChange(event.editor.text.toString())
+                }
                 postDelayedInLifecycle(
                     ::updateBtnState,
                     50
@@ -120,11 +123,30 @@ class CEComposeBinding(
         editor.setEditorLanguage(language)
 
         // Load file here.
-        editor.setText(initialText)
+        setEditorText(initialText)
 
         updatePositionText()
 
         switchThemeIfRequired(context, binding.editor)
+    }
+
+    fun updateText(text: String) {
+        setEditorText(text)
+    }
+
+    private fun setEditorText(text: String) {
+        val currentText = binding.editor.text.toString()
+        if (currentText == text) {
+            return
+        }
+        isApplyingExternalText = true
+        try {
+            binding.editor.setText(text)
+        } finally {
+            isApplyingExternalText = false
+        }
+        updateBtnState()
+        updatePositionText()
     }
 
     private fun updateBtnState() {
