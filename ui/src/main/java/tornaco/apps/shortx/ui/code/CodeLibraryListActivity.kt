@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 
 package tornaco.apps.shortx.ui.code
 
@@ -28,6 +28,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
@@ -36,7 +37,9 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FloatingActionButtonMenu
+import androidx.compose.material3.FloatingActionButtonMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -44,6 +47,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.ToggleFloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -68,15 +72,15 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ConfirmDialog
 import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
-import tornaco.apps.shortx.ui.base.MenuDialog
-import tornaco.apps.shortx.ui.base.MenuDialogItem
+import tornaco.apps.shortx.ui.base.MultiFabItem
+import tornaco.apps.shortx.ui.base.MultiFabState
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShareDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.handleSideEffect
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
-import tornaco.apps.shortx.ui.base.rememberMenuDialogState
+import tornaco.apps.shortx.ui.base.rememberFabState
 import tornaco.apps.shortx.ui.base.rememberShareDialogState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.Permissions.shouldCheckStoragePermissionBeforeWriteDownloads
@@ -104,6 +108,14 @@ fun CodeLibraryListScreen() {
     val vm = hiltViewModel<CodeLibraryListViewModel>()
     val state by vm.state.collectAsState()
     val context = LocalContext.current
+    val pickFileLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { fileUri ->
+            if (fileUri != null) {
+                vm.importFromUri(fileUri)
+            }
+        }
+    )
     val permissionRequest = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
         onResult = {}
@@ -134,6 +146,10 @@ fun CodeLibraryListScreen() {
 
             is CodeLibraryEffect.ItemsDeleted -> {
                 Toast.makeText(context, "已删除 ${effect.count} 个代码", Toast.LENGTH_SHORT).show()
+            }
+
+            is CodeLibraryEffect.ItemImported -> {
+                Toast.makeText(context, "已导入 ${effect.name}", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -166,7 +182,10 @@ fun CodeLibraryListScreen() {
                 },
                 floatingActionButton = {
                     if (!state.isSelectionMode) {
-                        CreateCodeFab(
+                        CodeLibraryFabMenu(
+                            onImportFile = {
+                                pickFileLauncher.launch("text/plain")
+                            },
                             onCreateCode = { type ->
                                 CodeLibraryEditorActivity.start(context, null, type)
                             }
@@ -274,34 +293,77 @@ private fun CodeLibraryTopBar(
     )
 }
 
+private enum class CodeLibraryFabOption {
+    ImportFile,
+    NewMvel,
+    NewJavaScript,
+}
+
 @Composable
-private fun CreateCodeFab(
+private fun CodeLibraryFabMenu(
+    onImportFile: () -> Unit,
     onCreateCode: (CodeType) -> Unit
 ) {
-    val menuState = rememberMenuDialogState<CodeType>(
-        title = "选择代码类型",
-        menuItems = listOf(
-            MenuDialogItem(
-                id = CodeType.CodeType_MVEL.name,
-                title = "MVEL",
-                iconName = Remix.Development.code_line
-            ),
-            MenuDialogItem(
-                id = CodeType.CodeType_JAVASCRIPT.name,
-                title = "JavaScript",
-                iconName = Remix.Logos.vuejs_line
-            )
-        )
-    ) { _, data ->
-        onCreateCode(CodeType.valueOf(data))
+    val fabState = rememberFabState { item ->
+        when (CodeLibraryFabOption.valueOf(item.id)) {
+            CodeLibraryFabOption.ImportFile -> onImportFile()
+            CodeLibraryFabOption.NewMvel -> onCreateCode(CodeType.CodeType_MVEL)
+            CodeLibraryFabOption.NewJavaScript -> onCreateCode(CodeType.CodeType_JAVASCRIPT)
+        }
     }
+    val items = listOf(
+        MultiFabItem(
+            id = CodeLibraryFabOption.ImportFile.name,
+            icon = Remix.Document.file_line,
+            label = "从文件导入"
+        ),
+        MultiFabItem(
+            id = CodeLibraryFabOption.NewMvel.name,
+            icon = Remix.Development.code_line,
+            label = "新建 MVEL"
+        ),
+        MultiFabItem(
+            id = CodeLibraryFabOption.NewJavaScript.name,
+            icon = Remix.Logos.vuejs_line,
+            label = "新建 JavaScript"
+        )
+    )
+    val fabMenuExpanded = fabState.currentState.value == MultiFabState.Expanded
 
-    MenuDialog(state = menuState)
+    BackHandler(fabMenuExpanded) { fabState.collapse() }
 
-    FloatingActionButton(
-        onClick = { menuState.show() }
+    FloatingActionButtonMenu(
+        expanded = fabMenuExpanded,
+        button = {
+            ToggleFloatingActionButton(
+                checked = fabMenuExpanded,
+                onCheckedChange = { fabState.toggle() }
+            ) {
+                Icon(
+                    imageVector = if (checkedProgress > 0.5f) {
+                        Icons.Default.Close
+                    } else {
+                        Icons.Default.Add
+                    },
+                    contentDescription = null
+                )
+            }
+        }
     ) {
-        Icon(Icons.Default.Add, contentDescription = "添加代码")
+        items.forEach { item ->
+            FloatingActionButtonMenuItem(
+                onClick = {
+                    fabState.collapse()
+                    fabState.onFabItemClicked(item)
+                },
+                icon = {
+                    RemixIcon(item.icon)
+                },
+                text = {
+                    Text(item.label)
+                }
+            )
+        }
     }
 }
 

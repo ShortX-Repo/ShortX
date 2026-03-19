@@ -2,12 +2,15 @@ package tornaco.apps.shortx.ui.code
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.code.CodeLibraryHelper
 import tornaco.apps.shortx.core.proto.toJson
+import tornaco.apps.shortx.core.proto.toProto
 import tornaco.apps.shortx.core.proto.common.CodeLibraryItem
 import tornaco.apps.shortx.core.proto.common.CodeLibraryQuery
 import tornaco.apps.shortx.core.proto.common.CodeLibrarySortBy
@@ -15,6 +18,9 @@ import tornaco.apps.shortx.core.proto.common.CodeType
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.ShortXContextViewModelWithEffect
 import tornaco.apps.shortx.ui.share.addShareContentHeader
+import tornaco.apps.shortx.ui.share.getContentData
+import tornaco.apps.shortx.ui.share.getContentHeader
+import java.nio.charset.Charset
 import javax.inject.Inject
 
 data class CodeLibraryListState(
@@ -29,6 +35,7 @@ sealed interface CodeLibraryEffect {
     data class ShowError(val message: String) : CodeLibraryEffect
     data class ItemDeleted(val id: String) : CodeLibraryEffect
     data class ItemsDeleted(val count: Int) : CodeLibraryEffect
+    data class ItemImported(val name: String) : CodeLibraryEffect
 }
 
 @SuppressLint("StaticFieldLeak")
@@ -70,6 +77,28 @@ class CodeLibraryListViewModel @Inject constructor(@ApplicationContext context: 
                 .setId("SHARE-${System.currentTimeMillis()}")
                 .build()
         }?.toJson()?.addShareContentHeader(mapOf("type" to "CodeLibraryItem"))
+    }
+
+    fun importFromUri(uri: Uri) {
+        viewModelScope.launch {
+            runCatching {
+                kotlinx.coroutines.withContext(Dispatchers.IO) {
+                    val text = context.contentResolver.openInputStream(uri)?.use {
+                        it.bufferedReader(Charset.defaultCharset()).readText()
+                    } ?: error("文件内容为空")
+
+                    val importedItem = text.toImportCodeLibraryItem()
+                    shortXManager.addCodeLibraryItem(importedItem)
+                    importedItem
+                }
+            }.onSuccess {
+                loadCodeLibrary()
+                postSideEffect(CodeLibraryEffect.ItemImported(it.name))
+            }.onFailure {
+                logger.e(it, "importFromUri")
+                postSideEffect(CodeLibraryEffect.ShowError(it.message ?: "导入失败"))
+            }
+        }
     }
 
     fun deleteItem(id: String) {
@@ -132,5 +161,38 @@ class CodeLibraryListViewModel @Inject constructor(@ApplicationContext context: 
                 isSelectionMode = false
             )
         }
+    }
+
+    private fun String.toImportCodeLibraryItem(): CodeLibraryItem {
+        val content = when (val header = getContentHeader()) {
+            emptyMap<String, String>() -> trim()
+            else -> {
+                require(header["type"] == "CodeLibraryItem") { "不支持的分享文件类型" }
+                getContentData().trim()
+            }
+        }
+
+        require(content.isNotBlank()) { "文件内容为空" }
+
+        val externalItem = CodeLibraryItem.parseFrom(
+            CodeLibraryItem.newBuilder().toProto(content).toByteArray()
+        )
+        val existingNames = shortXManager.getAllCodeLibraryItems().map { it.name }.toSet()
+        var checkedName = externalItem.name.ifBlank { "导入的代码" }
+        while (checkedName in existingNames) {
+            checkedName += "(2)"
+        }
+
+        val now = System.currentTimeMillis()
+        return CodeLibraryItem.newBuilder(externalItem)
+            .setId(generateId())
+            .setName(checkedName)
+            .setCreatedAt(now)
+            .setUpdatedAt(now)
+            .build()
+    }
+
+    private fun generateId(): String {
+        return "code_${System.currentTimeMillis()}_${(1000..9999).random()}"
     }
 }
