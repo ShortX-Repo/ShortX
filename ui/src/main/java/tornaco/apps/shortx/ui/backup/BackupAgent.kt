@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.backup.BackupSettings
+import tornaco.apps.shortx.core.backup.CODE_LIBRARY_FILE_NAME
 import tornaco.apps.shortx.core.backup.CoreBackupAgent
 import tornaco.apps.shortx.core.backup.DA_FILE_NAME
 import tornaco.apps.shortx.core.backup.DA_SET_FILE_NAME
@@ -17,6 +18,7 @@ import tornaco.apps.shortx.core.backup.PKGSET_FILE_NAME
 import tornaco.apps.shortx.core.backup.RULE_FILE_NAME
 import tornaco.apps.shortx.core.backup.RULE_SET_FILE_NAME
 import tornaco.apps.shortx.core.backup.TOGGLE_FILE_NAME
+import tornaco.apps.shortx.core.proto.common.CodeLibraryItem
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.da.DirectAction
@@ -28,6 +30,7 @@ import tornaco.apps.shortx.core.proto.rule.RuleSet
 import tornaco.apps.shortx.core.proto.toStringPair
 import tornaco.apps.shortx.core.proto.toggles.Toggle
 import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.core.store.BaseCodeLibraryStore
 import tornaco.apps.shortx.core.store.BaseDirectActionSetsStore
 import tornaco.apps.shortx.core.store.BaseDirectActionSettingsStore
 import tornaco.apps.shortx.core.store.BaseGestureRecordsStore
@@ -101,6 +104,10 @@ class BackupAgent(private val context: Context) : CoreBackupAgent(
                         .build()
                 )
             }
+            content.codeLibraries.forEach {
+                logger.d("restore, add code library: ${it.name}")
+                shortX.addCodeLibraryItem(it)
+            }
             content.toggles.forEach {
                 logger.d("restore, add toggle: ${it.title}")
                 shortX.addToggle(
@@ -173,6 +180,16 @@ class BackupAgent(private val context: Context) : CoreBackupAgent(
             daStore.read()
             val das = daStore.getAllDirectActions()
 
+            // Code libraries
+            val codePb = File(tmpExtractedFile, CODE_LIBRARY_FILE_NAME)
+            val codeLibraries = if (codePb.exists()) {
+                val codeStore = BaseCodeLibraryStore(this, codePb)
+                codeStore.read()
+                codeStore.getAllCodeLibraryItems()
+            } else {
+                emptyList()
+            }
+
             // Toggle
             val togglePb = File(tmpExtractedFile, TOGGLE_FILE_NAME)
             val toggleStore = BaseToggleSettingsStore(this, togglePb)
@@ -216,6 +233,7 @@ class BackupAgent(private val context: Context) : CoreBackupAgent(
             BackupPackageContent(
                 das = das,
                 rules = rules,
+                codeLibraries = codeLibraries,
                 toggles = toggles,
                 pkgSets = pkgSets,
                 gvs = gvs,
@@ -245,6 +263,7 @@ class BackupAgent(private val context: Context) : CoreBackupAgent(
 data class BackupPackageContent(
     val das: List<DirectAction>,
     val rules: List<Rule>,
+    val codeLibraries: List<CodeLibraryItem> = emptyList(),
     val toggles: List<Toggle>,
     val pkgSets: List<PkgSet>,
     val gvs: List<GlobalVar>,

@@ -5,11 +5,16 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.code.CodeLibraryHelper
 import tornaco.apps.shortx.core.proto.common.CodeLibraryItem
 import tornaco.apps.shortx.core.proto.common.CodeType
+import tornaco.apps.shortx.core.rule.parseShareContentCodeLibraryItem
+import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.ShortXContextViewModelWithEffect
+import java.net.URL
 import javax.inject.Inject
 
 data class CodeLibraryEditorState(
@@ -18,6 +23,7 @@ data class CodeLibraryEditorState(
     val hasUnsavedChanges: Boolean = false,
     val isSaving: Boolean = false,
     val isExecuting: Boolean = false,
+    val onlineCodeLoadState: LoadState<Unit> = LoadState.Success(Unit),
     val name: String = "",
     val description: String = "",
     val content: String = "",
@@ -54,7 +60,25 @@ class CodeLibraryEditorViewModel @Inject constructor(
                 content = item.content,
                 type = item.type,
                 tags = item.tagsList,
-                hasUnsavedChanges = false
+                hasUnsavedChanges = false,
+                onlineCodeLoadState = LoadState.Success(Unit)
+            )
+        }
+        validateAndUpdateCanSave()
+    }
+
+    fun initForImportItem(item: CodeLibraryItem) {
+        updateState {
+            copy(
+                item = item,
+                isNewItem = true,
+                name = item.name,
+                description = item.description,
+                content = item.content,
+                type = item.type,
+                tags = item.tagsList,
+                hasUnsavedChanges = false,
+                onlineCodeLoadState = LoadState.Success(Unit)
             )
         }
         validateAndUpdateCanSave()
@@ -70,10 +94,32 @@ class CodeLibraryEditorViewModel @Inject constructor(
                 content = "",
                 type = type,
                 tags = emptyList(),
-                hasUnsavedChanges = false
+                hasUnsavedChanges = false,
+                onlineCodeLoadState = LoadState.Success(Unit)
             )
         }
         validateAndUpdateCanSave()
+    }
+
+    fun initFromUrl(url: String?) {
+        url?.let {
+            viewModelScope.launch {
+                updateState { copy(onlineCodeLoadState = LoadState.Loading) }
+                withContext(Dispatchers.IO) {
+                    runCatching {
+                        val content = URL(url).readText()
+                        val item = requireNotNull(parseShareContentCodeLibraryItem(content)) {
+                            "Fail to parse Code library item:\n$content"
+                        }
+                        updateState { copy(onlineCodeLoadState = LoadState.Success(Unit)) }
+                        initForImportItem(item)
+                    }.onFailure {
+                        logger.e(it, "initFromUrl")
+                        updateState { copy(onlineCodeLoadState = LoadState.Error(it)) }
+                    }
+                }
+            }
+        }
     }
 
     fun updateName(name: String) {

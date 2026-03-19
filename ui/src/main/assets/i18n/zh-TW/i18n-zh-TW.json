@@ -556,6 +556,7 @@
   "ui.da.params.is.required": "必填",
   "ui.feat.label.da": "一鍵指令",
   "ui.feat.label.rule": "自動指令",
+  "ui.feat.label.code_library": "代碼庫",
   "ui.feat.label.toggles": "開關",
   "ui.feat.label.discover": "發現",
   "ui.discover.select.source": "選擇源",

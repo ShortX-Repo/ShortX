@@ -2,6 +2,7 @@ package tornaco.apps.shortx.core.rule
 
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
+import tornaco.apps.shortx.core.proto.common.CodeLibraryItem
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleList
 import tornaco.apps.shortx.core.proto.rule.RuleSet
@@ -89,4 +90,24 @@ fun parseShareContentDASet(content: String): DirectActionSet? {
         logger.e(it, "parseShareContentDASet")
         null
     }
+}
+
+fun parseShareContentCodeLibraryItem(content: String): CodeLibraryItem? {
+    return runCatching {
+        parseShareContentCodeLibraryItemOrThrow(content)
+    }.getOrElse {
+        logger.e(it, "parseShareContentCodeLibraryItem")
+        null
+    }
+}
+
+fun parseShareContentCodeLibraryItemOrThrow(content: String): CodeLibraryItem {
+    return CodeLibraryItem.newBuilder(
+        CodeLibraryItem.parseFrom(
+            CodeLibraryItem.newBuilder().toProto(content).toByteArray()
+        ).also {
+            require(it.name.isNotBlank()) { "Name is blank. invalid code library item?" }
+            require(it.content.isNotBlank()) { "Content is blank. invalid code library item?" }
+        }
+    ).build()
 }

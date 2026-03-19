@@ -39,6 +39,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.core.BuildProp.SHORTX_GITHIB_REPO_URL
+import tornaco.apps.shortx.core.proto.common.CodeType
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
@@ -68,6 +69,8 @@ import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.code.CodeLibraryViewerDialog
+import tornaco.apps.shortx.ui.code.rememberCodeLibraryViewerState
 import tornaco.apps.shortx.ui.discover.contribute.ContributorActivity
 import tornaco.apps.shortx.ui.main.MainScaffold
 import tornaco.apps.shortx.ui.main.MainViewModel
@@ -83,7 +86,8 @@ import tornaco.apps.shortx.ui.util.BrowserUtils
 
 enum class DiscoverTabItem(val titleKey: String, val iconName: String) {
     DA("ui.feat.label.da", Remix.Development.command_line),
-    Rule("ui.feat.label.rule", Remix.Weather.meteor_line)
+    Rule("ui.feat.label.rule", Remix.Weather.meteor_line),
+    Code("ui.feat.label.code_library", Remix.Development.code_line)
 }
 
 @Composable
@@ -281,6 +285,16 @@ fun DiscoverScreen() {
 
                     DiscoverTabItem.Rule.ordinal -> {
                         DiscoverRule(discoverState = discoverState, refresh = {
+                            discoverModel.loadDiscoverData()
+                        }) {
+                            if (discoverState.discoverRepo == DiscoverRepo.OfficialOnline) {
+                                ContributorFooter()
+                            }
+                        }
+                    }
+
+                    DiscoverTabItem.Code.ordinal -> {
+                        DiscoverCodeLibrary(discoverState = discoverState, refresh = {
                             discoverModel.loadDiscoverData()
                         }) {
                             if (discoverState.discoverRepo == DiscoverRepo.OfficialOnline) {
@@ -607,5 +621,165 @@ private fun DiscoverDA(
             Modifier.align(Alignment.TopCenter),
             contentColor = MaterialTheme.colorScheme.primary
         )
+    }
+}
+
+@Composable
+private fun DiscoverCodeLibrary(
+    discoverState: DiscoverState,
+    refresh: () -> Unit,
+    footer: @Composable () -> Unit
+) {
+    val refreshing = discoverState.data.isLoading()
+    val refreshState = rememberPullRefreshState(refreshing, onRefresh = {
+        refresh()
+    })
+
+    Box(
+        Modifier
+            .fillMaxSize()
+            .pullRefresh(refreshState)
+    ) {
+        when (val discoverData = discoverState.data) {
+            is LoadState.Success -> {
+                if (discoverData.data.codeLibraries.isEmpty()) {
+                    EmptyList(modifier = Modifier.fillMaxSize()) {
+                        refresh()
+                    }
+                } else {
+                    LazyVerticalStaggeredGrid(
+                        modifier = Modifier.fillMaxSize(),
+                        columns = dynamicStaggeredGridCells(),
+                        contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
+                    ) {
+                        items(items = discoverData.data.codeLibraries, key = { it.id + it.updateTime }) {
+                            val codeViewerState = rememberCodeLibraryViewerState(
+                                title = it.title,
+                                item = it.item,
+                                url = it.url,
+                            )
+                            CodeLibraryViewerDialog(state = codeViewerState)
+
+                            ShortXCard(
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(ShortXCardRoundedCornerShape)
+                                        .clickable { codeViewerState.show() }
+                                        .padding(horizontal = 12.dp)
+                                        .padding(top = 12.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Box(modifier = Modifier.weight(1f)) {
+                                            ColoredIcon(
+                                                size = 32.dp,
+                                                padding = 0.dp,
+                                                color = Color(it.iconColor).copy(alpha = ActionColorBgAlpha)
+                                            ) {
+                                                RemixIcon(
+                                                    modifier = Modifier.size(16.dp),
+                                                    remixName = it.icon,
+                                                    tint = MaterialTheme.colorScheme.tertiary
+                                                )
+                                            }
+                                        }
+
+                                        Row(modifier = Modifier) {
+                                            if (it.hasUpdate) {
+                                                OutlineBadge(
+                                                    modifier = Modifier,
+                                                    text = "Update"
+                                                )
+                                            }
+                                            if (it.isInstalled) {
+                                                OutlineBadge(
+                                                    modifier = Modifier.padding(horizontal = 12.dp),
+                                                    text = "Installed"
+                                                )
+                                            }
+                                        }
+                                    }
+
+                                    MediumSpacer()
+
+                                    Column(modifier = Modifier.padding(bottom = 12.dp)) {
+                                        Text(
+                                            text = it.title,
+                                            style = MaterialTheme.typography.titleMedium.copy(
+                                                fontSize = 16.sp
+                                            )
+                                        )
+                                        SmallSpacer()
+                                        Text(
+                                            text = it.description,
+                                            style = MaterialTheme.typography.bodyMedium.copy(
+                                                fontSize = 12.sp
+                                            ),
+                                            maxLines = 8
+                                        )
+
+                                        discoverCodeTypeLabel(it.type)?.let { typeLabel ->
+                                            StandardSpacer()
+                                            TipBody(text = typeLabel)
+                                        }
+
+                                        StandardSpacer()
+                                        TipRow(
+                                            text = it.author,
+                                            icon = {
+                                                RemixIcon(
+                                                    modifier = Modifier.size(12.dp),
+                                                    remixName = Remix.UserAndFaces.user_line
+                                                )
+                                            }
+                                        )
+                                        MediumSpacer()
+                                        TipBody(text = it.updateTime)
+                                    }
+                                }
+                            }
+                        }
+
+                        item(span = StaggeredGridItemSpan.FullLine) {
+                            footer()
+                        }
+                    }
+                }
+            }
+
+            is LoadState.Error -> {
+                LoadError(
+                    modifier = Modifier.fillMaxSize(),
+                    message = discoverData.err?.stackTraceToString()
+                ) {
+                    refresh()
+                }
+            }
+
+            is LoadState.Loading -> {
+                // Noop
+            }
+        }
+
+        Md3ExpPullRefreshIndicator(
+            refreshing,
+            refreshState,
+            Modifier.align(Alignment.TopCenter),
+            contentColor = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+private fun discoverCodeTypeLabel(type: CodeType): String? {
+    return when (type) {
+        CodeType.CodeType_MVEL -> "MVEL"
+        CodeType.CodeType_JAVASCRIPT -> "JavaScript"
+        else -> null
     }
 }

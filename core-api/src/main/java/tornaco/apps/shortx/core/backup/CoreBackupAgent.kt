@@ -3,6 +3,7 @@ package tornaco.apps.shortx.core.backup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.core.store.BaseCodeLibraryStore
 import tornaco.apps.shortx.core.store.BaseDirectActionSetsStore
 import tornaco.apps.shortx.core.store.BaseDirectActionSettingsStore
 import tornaco.apps.shortx.core.store.BaseGestureRecordsStore
@@ -44,6 +45,13 @@ open class CoreBackupAgent(private val settings: BackupSettings) {
             val daStore = BaseDirectActionSettingsStore(this, File(backupTempDir, DA_FILE_NAME))
             daStore.addDirectActions(das = allDAs, write = false)
             daStore.write()
+
+            // Code libraries
+            val allCodeLibraries = shortX.getAllCodeLibraryItems()
+            val codeLibraryStore =
+                BaseCodeLibraryStore(this, File(backupTempDir, CODE_LIBRARY_FILE_NAME))
+            codeLibraryStore.addAllCodeLibraryItems(allCodeLibraries, write = false)
+            codeLibraryStore.write()
 
             // Toggles
             val allToggles = shortX.getAllToggles()

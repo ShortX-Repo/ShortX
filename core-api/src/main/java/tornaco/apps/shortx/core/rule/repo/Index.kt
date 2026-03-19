@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.annotations.DoNotStrip
 data class Index(
     val directActions: List<Item>,
     val rules: List<Item>,
+    val codeLibraries: List<Item>? = null,
     val updateTimeMillis: Long
 )
 

@@ -556,6 +556,7 @@
   "ui.da.params.is.required": "Required",
   "ui.feat.label.da": "Direct Action",
   "ui.feat.label.rule": "Rule",
+  "ui.feat.label.code_library": "Code Library",
   "ui.feat.label.toggles": "Toggle",
   "ui.feat.label.discover": "Discover",
   "ui.discover.select.source": "Select source",

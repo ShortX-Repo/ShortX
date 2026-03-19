@@ -14,6 +14,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
 import tornaco.apps.shortx.core.BuildProp.SHORTX_DISCOVERY_DEFAULT_ONLINE_REPO_URL
+import tornaco.apps.shortx.core.proto.common.CodeLibraryItem
+import tornaco.apps.shortx.core.proto.common.CodeType
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.shortXProtoVersion
@@ -57,6 +59,26 @@ sealed interface DiscoverRepo {
 data class DiscoverData(
     val rules: List<RuleUM> = emptyList(),
     val das: List<DirectActionUM> = emptyList(),
+    val codeLibraries: List<DiscoverCodeLibraryUM> = emptyList(),
+)
+
+data class DiscoverCodeLibraryUM(
+    val id: String,
+    val title: String,
+    val titlePinyin: String,
+    val description: String,
+    val updateTime: String,
+    val createTime: String,
+    val type: CodeType = CodeType.UNRECOGNIZED,
+    val icon: String = Remix.Development.code_line,
+    val iconColor: ULong,
+    val versionCode: Long = 0L,
+    val author: String = "ShortX",
+    val isOnlineItem: Boolean = false,
+    val url: String? = null,
+    val item: CodeLibraryItem? = null,
+    val isInstalled: Boolean = false,
+    val hasUpdate: Boolean = false,
 )
 
 data class DiscoverState(
@@ -206,8 +228,49 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                     }
                 }
             }
+            val codeLibraryUMs = withContext(Dispatchers.IO) {
+                content.codeLibraries.mapNotNull { item ->
+                    runCatching {
+                        val installedItem = shortXManager.getCodeLibraryItemById(item.id)
+                        DiscoverCodeLibraryUM(
+                            id = item.id,
+                            title = item.name,
+                            titlePinyin = Pinyin.toPinyin(item.name, "").lowercase(),
+                            description = item.description.fallbackOnEmpty(item.name),
+                            createTime = FuzzyDateTimeFormatter.getTimeAgo(
+                                context,
+                                Date(item.createdAt)
+                            ),
+                            updateTime = FuzzyDateTimeFormatter.getTimeAgo(
+                                context,
+                                Date(item.updatedAt)
+                            ),
+                            type = item.type,
+                            icon = codeIconName(item.type),
+                            iconColor = codeIconColor(item.type),
+                            author = "ShortX",
+                            item = item,
+                            isInstalled = installedItem != null,
+                            hasUpdate = installedItem != null && installedItem.updatedAt < item.updatedAt,
+                        )
+                    }.getOrElse {
+                        logger.e(it, "codeLibraryToDiscoverUM")
+                        null
+                    }
+                }
+            }
             logger.d("loadPrebuiltData done.")
-            updateState { copy(data = LoadState.Success(DiscoverData(ruleUMs, daUMs))) }
+            updateState {
+                copy(
+                    data = LoadState.Success(
+                        DiscoverData(
+                            rules = ruleUMs,
+                            das = daUMs,
+                            codeLibraries = codeLibraryUMs,
+                        )
+                    )
+                )
+            }
         }.onFailure {
             logger.e(it, "loadPrebuiltData error")
             if (it !is CancellationException) updateState { copy(data = LoadState.Error(it)) }
@@ -291,11 +354,71 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                     hasAnyParameter = false
                 )
             }
+            val codeLibraries = index.codeLibraries.orEmpty().filter { code ->
+                val requireVersion = code.requireMinShortXProtoVersion
+                (requireVersion == null || currentProtoVersion >= requireVersion).also {
+                    if (!it) {
+                        logger.w("CodeLibrary ${code.title} is not compatible with current ShortX version, require version: $requireVersion, current version: $currentProtoVersion")
+                    }
+                }
+            }.sortedByDescending { it.updateTimeMillis }.map {
+                val installedCodeOrNull = shortXManager.getCodeLibraryItemById(it.id)
+                DiscoverCodeLibraryUM(
+                    id = it.id,
+                    title = it.title,
+                    titlePinyin = Pinyin.toPinyin(it.title, "").lowercase(),
+                    description = it.description.fallbackOnEmpty(it.title),
+                    createTime = FuzzyDateTimeFormatter.getTimeAgo(
+                        context,
+                        Date(it.updateTimeMillis)
+                    ),
+                    updateTime = FuzzyDateTimeFormatter.getTimeAgo(
+                        context,
+                        Date(it.updateTimeMillis)
+                    ),
+                    type = CodeType.UNRECOGNIZED,
+                    icon = it.icon ?: Remix.Development.code_line,
+                    iconColor = it.iconColor?.let { iconColor -> colorFromHex(iconColor) }?.value
+                        ?: codeIconColor(CodeType.UNRECOGNIZED),
+                    versionCode = it.versionCode,
+                    author = it.author.fallbackOnEmpty("ShortX"),
+                    isOnlineItem = true,
+                    url = inflateOnlineFileUrl(url, it.fileUrl, "code"),
+                    isInstalled = installedCodeOrNull != null,
+                    hasUpdate = installedCodeOrNull != null && installedCodeOrNull.updatedAt < it.updateTimeMillis,
+                )
+            }
             logger.d("loadOnlineData done $url")
-            updateState { copy(data = LoadState.Success(DiscoverData(rules, das))) }
+            updateState {
+                copy(
+                    data = LoadState.Success(
+                        DiscoverData(
+                            rules = rules,
+                            das = das,
+                            codeLibraries = codeLibraries,
+                        )
+                    )
+                )
+            }
         }.onFailure {
             logger.e(it, "loadOnlineData error")
             if (it !is CancellationException) updateState { copy(data = LoadState.Error(it)) }
         }
+    }
+}
+
+private fun codeIconName(type: CodeType): String {
+    return when (type) {
+        CodeType.CodeType_MVEL -> Remix.Development.code_line
+        CodeType.CodeType_JAVASCRIPT -> Remix.Logos.vuejs_line
+        else -> Remix.Development.code_line
+    }
+}
+
+private fun codeIconColor(type: CodeType): ULong {
+    return when (type) {
+        CodeType.CodeType_MVEL -> colorFromHex("#6750A4").value
+        CodeType.CodeType_JAVASCRIPT -> colorFromHex("#FF9800").value
+        else -> colorFromHex("#607D8B").value
     }
 }

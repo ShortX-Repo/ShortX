@@ -54,6 +54,8 @@ import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.newIntent
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
 import tornaco.apps.shortx.ui.base.ConfirmDialog
+import tornaco.apps.shortx.ui.base.LoadError
+import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
@@ -94,14 +96,25 @@ class CodeLibraryEditorActivity : BaseActivity() {
         val typeString = intent.getStringExtra(EXTRA_CODE_TYPE)
         val type = typeString?.let { CodeType.valueOf(it) }
 
-        CodeLibraryEditorScreen(item, type)
+        CodeLibraryEditorScreen(
+            initialItem = item,
+            initialType = type,
+        ) {
+            finish()
+        }
     }
 }
 
 @Composable
 fun CodeLibraryEditorScreen(
     initialItem: CodeLibraryItem? = null,
-    initialType: CodeType? = null
+    importItem: CodeLibraryItem? = null,
+    initialType: CodeType? = null,
+    url: String? = null,
+    screenTitle: String? = null,
+    saveIconName: String? = null,
+    closeAfterSave: Boolean = false,
+    onBack: () -> Unit
 ) {
     val vm = hiltViewModel<CodeLibraryEditorViewModel>()
     val state by vm.state.collectAsState()
@@ -117,11 +130,12 @@ fun CodeLibraryEditorScreen(
 
     var showUnsavedChangesDialog by remember { mutableStateOf(false) }
 
-    LaunchedEffect(vm) {
-        if (initialItem != null) {
-            vm.initWithItem(initialItem)
-        } else if (initialType != null) {
-            vm.createNewItem(initialType)
+    LaunchedEffect(vm, initialItem, importItem, initialType, url) {
+        when {
+            url != null -> vm.initFromUrl(url)
+            importItem != null -> vm.initForImportItem(importItem)
+            initialItem != null -> vm.initWithItem(initialItem)
+            initialType != null -> vm.createNewItem(initialType)
         }
     }
 
@@ -140,7 +154,7 @@ fun CodeLibraryEditorScreen(
             }
 
             is CodeLibraryEditorSideEffect.NavigateBack -> {
-                (context as? CodeLibraryEditorActivity)?.finish()
+                onBack()
             }
         }
     }
@@ -159,7 +173,7 @@ fun CodeLibraryEditorScreen(
         data = Unit,
         messageHint = { "您有未保存的更改，确定要离开吗？" },
         onConfirm = {
-            (context as? CodeLibraryEditorActivity)?.finish()
+            onBack()
         }
     )
 
@@ -200,25 +214,54 @@ fun CodeLibraryEditorScreen(
                 topBar = {
                     CodeLibraryEditorTopBar(
                         state = state,
-                        onSave = { vm.save() },
+                        screenTitle = screenTitle,
+                        saveIconName = saveIconName,
+                        onSave = {
+                            vm.save()
+                            if (closeAfterSave) {
+                                onBack()
+                            }
+                        },
                         onExecute = { vm.execute() },
                         onBack = {
                             if (state.hasUnsavedChanges) {
                                 showUnsavedChangesDialog = true
                             } else {
-                                (context as? CodeLibraryEditorActivity)?.finish()
+                                onBack()
                             }
                         }
                     )
                 }
             ) { paddingValues ->
-                CodeLibraryEditorContent(
-                    modifier = Modifier.padding(paddingValues),
-                    state = state,
-                    onNameChange = { vm.updateName(it) },
-                    onDescriptionChange = { vm.updateDescription(it) },
-                    onEditCode = launchCodeEditor
-                )
+                when (state.onlineCodeLoadState) {
+                    is LoadState.Error -> {
+                        LoadError(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(paddingValues)
+                        ) {
+                            vm.initFromUrl(url)
+                        }
+                    }
+
+                    LoadState.Loading -> {
+                        Loading(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(paddingValues)
+                        )
+                    }
+
+                    is LoadState.Success -> {
+                        CodeLibraryEditorContent(
+                            modifier = Modifier.padding(paddingValues),
+                            state = state,
+                            onNameChange = { vm.updateName(it) },
+                            onDescriptionChange = { vm.updateDescription(it) },
+                            onEditCode = launchCodeEditor
+                        )
+                    }
+                }
             }
         }
     }
@@ -227,6 +270,8 @@ fun CodeLibraryEditorScreen(
 @Composable
 private fun CodeLibraryEditorTopBar(
     state: CodeLibraryEditorState,
+    screenTitle: String?,
+    saveIconName: String?,
     onSave: () -> Unit,
     onExecute: () -> Unit,
     onBack: () -> Unit
@@ -235,7 +280,7 @@ private fun CodeLibraryEditorTopBar(
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = if (state.isNewItem) "新建代码" else "编辑代码",
+                    text = screenTitle ?: if (state.isNewItem) "新建代码" else "编辑代码",
                     style = MaterialTheme.typography.titleLarge
                 )
             }
@@ -264,15 +309,26 @@ private fun CodeLibraryEditorTopBar(
                 onClick = onSave,
                 enabled = state.canSave
             ) {
-                Icon(
-                    imageVector = Icons.Default.Save,
-                    contentDescription = "保存",
-                    tint = if (state.canSave) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    }
-                )
+                if (saveIconName == null) {
+                    Icon(
+                        imageVector = Icons.Default.Save,
+                        contentDescription = "保存",
+                        tint = if (state.canSave) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        }
+                    )
+                } else {
+                    RemixIcon(
+                        remixName = saveIconName,
+                        tint = if (state.canSave) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        }
+                    )
+                }
             }
         }
     )
