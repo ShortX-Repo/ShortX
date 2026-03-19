@@ -439,7 +439,7 @@ fun SettingsScreen(
 private fun ProtoVersion() {
     Text(
         modifier = Modifier.padding(horizontal = 16.dp),
-        text = "Proto version: $shortXProtoVersion",
+        text = "Proto version: $shortXProtoVersion bpok edition",
         style = MaterialTheme.typography.bodySmall.copy(
             fontSize = 11.sp,
             fontStyle = FontStyle.Italic
