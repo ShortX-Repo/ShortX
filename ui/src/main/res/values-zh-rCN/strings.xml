@@ -11,4 +11,5 @@
     </string>
 
     <string name="ui_create_shortcut">指令快捷方式</string>
+    <string name="ui_share_viewer">ShortX指令/代码导入</string>
 </resources>

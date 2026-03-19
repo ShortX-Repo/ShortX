@@ -94,7 +94,8 @@
         <activity
             android:name="tornaco.apps.shortx.ui.share.ViewerActivity"
             android:excludeFromRecents="true"
-            android:exported="true">
+            android:exported="true"
+            android:label="@string/ui_share_viewer">
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

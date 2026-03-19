@@ -15,4 +15,5 @@
         3. Please check if your Google account is logged in correctly
     </string>
     <string name="ui_create_shortcut">Pick shortcut</string>
+    <string name="ui_share_viewer">ShortX shared file viewer</string>
 </resources>
