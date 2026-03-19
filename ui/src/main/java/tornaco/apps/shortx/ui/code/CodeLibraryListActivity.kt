@@ -99,12 +99,14 @@ class CodeLibraryListActivity : BaseActivity() {
 
     @Composable
     override fun Content() {
-        CodeLibraryListScreen()
+        CodeLibraryListScreen(back = {
+            finish()
+        })
     }
 }
 
 @Composable
-fun CodeLibraryListScreen() {
+fun CodeLibraryListScreen(back: () -> Unit) {
     val vm = hiltViewModel<CodeLibraryListViewModel>()
     val state by vm.state.collectAsState()
     val context = LocalContext.current
@@ -161,7 +163,6 @@ fun CodeLibraryListScreen() {
 
     ShortXTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-
             Scaffold(
                 topBar = {
                     CodeLibraryTopBar(
@@ -178,6 +179,9 @@ fun CodeLibraryListScreen() {
                         onClearSelection = {
                             vm.clearSelection()
                         },
+                        back = {
+                            back()
+                        }
                     )
                 },
                 floatingActionButton = {
@@ -219,7 +223,7 @@ fun CodeLibraryListScreen() {
                             )
                         } else {
                             vm.codeLibraryItemToShareString(item)?.let {
-                                shareDialogState.show(item.name, it)
+                                shareDialogState.show(item.name, it, filePrefix = "Code")
                             }
                         }
                     }
@@ -236,6 +240,7 @@ private fun CodeLibraryTopBar(
     onFilterClick: () -> Unit,
     onDeleteSelected: () -> Unit,
     onClearSelection: () -> Unit,
+    back: () -> Unit,
 ) {
     var showSearch by remember { mutableStateOf(false) }
 
@@ -271,6 +276,12 @@ private fun CodeLibraryTopBar(
             if (state.isSelectionMode) {
                 IconButton(onClick = onClearSelection) {
                     Icon(Icons.Default.Clear, contentDescription = "取消选择")
+                }
+            } else {
+                IconButton(onClick = {
+                    back()
+                }) {
+                    RemixIcon(remixName = Remix.System.close_line)
                 }
             }
         },

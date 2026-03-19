@@ -12,14 +12,21 @@ import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 import java.io.File
 
+private const val DEFAULT_SHARE_FILE_PREFIX = "ShortX"
 
 class ShareDialogState(val shareName: String) : CommonDialogState() {
     var content: String = ""
     var objectTitle: String = ""
+    var filePrefix: String = DEFAULT_SHARE_FILE_PREFIX
 
-    fun show(objectTitle: String, content: String) {
+    fun show(
+        objectTitle: String,
+        content: String,
+        filePrefix: String = DEFAULT_SHARE_FILE_PREFIX
+    ) {
         this.content = content
         this.objectTitle = objectTitle
+        this.filePrefix = filePrefix
         show()
     }
 }
@@ -49,12 +56,12 @@ fun ShareDialog(state: ShareDialogState) {
             }
 
             ListItem(title = i18N["ui.common.share.file"]) {
-                shareAsFile(context, state.objectTitle, state.content)
+                shareAsFile(context, state.objectTitle, state.content, state.filePrefix)
                 state.dismiss()
             }
 
             ListItem(title = i18N["ui.common.share.save.file"]) {
-                saveAsFile(context, state.objectTitle, state.content).let {
+                saveAsFile(context, state.objectTitle, state.content, state.filePrefix).let {
                     Toast.makeText(
                         context,
                         i18N["ui.common.save.success.to", mapOf("path" to "${it.first}${File.separator}${it.second}")],
@@ -67,10 +74,15 @@ fun ShareDialog(state: ShareDialogState) {
     }
 }
 
-fun shareAsFile(context: Context, title: String, text: String) {
+fun shareAsFile(
+    context: Context,
+    title: String,
+    text: String,
+    filePrefix: String = DEFAULT_SHARE_FILE_PREFIX
+) {
     val file = File(
         context.filesDir,
-        generateShareFileName(title)
+        generateShareFileName(title, filePrefix)
     )
     file.writeText(text)
     val uri = FileProvider.getUriForFile(context, "tornaco.apps.shortx", file)
@@ -80,12 +92,17 @@ fun shareAsFile(context: Context, title: String, text: String) {
     context.startActivity(Intent.createChooser(shareIntent, "ShortX"))
 }
 
-fun saveAsFile(context: Context, title: String, text: String): Pair<String, String> {
+fun saveAsFile(
+    context: Context,
+    title: String,
+    text: String,
+    filePrefix: String = DEFAULT_SHARE_FILE_PREFIX
+): Pair<String, String> {
     return runCatching {
         val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
         val file = File(
             dir,
-            generateShareFileName(title)
+            generateShareFileName(title, filePrefix)
         )
         file.writeText(text)
         dir.name to file.name
@@ -96,12 +113,15 @@ fun saveAsFile(context: Context, title: String, text: String): Pair<String, Stri
             requireNotNull(context.getExternalFilesDir(null)) { "Can not getExternalFilesDir" }
         val file = File(
             extDir,
-            generateShareFileName(title)
+            generateShareFileName(title, filePrefix)
         )
         file.writeText(text)
         extDir.name to file.name
     }
 }
 
-private fun generateShareFileName(title: String) =
-    "ShortX-${title.replace("""[^a-zA-Z0-9\u4e00-\u9fa5._-]""".toRegex(), "_")}.txt"
+private fun generateShareFileName(
+    title: String,
+    filePrefix: String = DEFAULT_SHARE_FILE_PREFIX
+) =
+    "${filePrefix}-${title.replace("""[^a-zA-Z0-9\u4e00-\u9fa5._-]""".toRegex(), "_")}.txt"
