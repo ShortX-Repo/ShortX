@@ -508,16 +508,14 @@ private fun generalSettings(
             }
         ),
 
-        if (BuildPropInternal.APP_IS_DEBUG) {
-            Preference.TextPreference(
-                icon = Remix.Development.code_fill,
-                title = LocalI18N.current["ui.code.library.title"],
-                summary = LocalI18N.current["ui.code.library.summary"],
-                onClick = {
-                    CodeLibraryListActivity.start(context)
-                }
-            )
-        } else null,
+        Preference.TextPreference(
+            icon = Remix.Development.code_fill,
+            title = LocalI18N.current["ui.code.library.title"],
+            summary = LocalI18N.current["ui.code.library.summary"],
+            onClick = {
+                CodeLibraryListActivity.start(context)
+            }
+        ),
 
         Preference.TextPreference(
             icon = Remix.Communication.message_fill,
