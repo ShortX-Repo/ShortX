@@ -18,6 +18,7 @@ import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.common.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
+import tornaco.apps.shortx.core.proto.fact.ScreenCorner
 import tornaco.apps.shortx.core.proto.fact.ProximitySensorState
 import tornaco.apps.shortx.core.proto.fact.SensorValueTrend
 import tornaco.apps.shortx.core.proto.fact.SunRise
@@ -53,6 +54,7 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
         Fact.AnyActivityStopped::class -> i18n["ui.fact.activity.stopped"] to i18n["ui.fact.activity.started.any"]
         Fact.AnyActivityDestroyed::class -> i18n["ui.fact.activity.destroyed"] to i18n["ui.fact.activity.started.any"]
         Fact.EdgeGesture::class -> i18n["ui.fact.edge.gesture"] to null
+        Fact.CornerSwipeToCenter::class -> i18n["ui.fact.corner.swipe.to.center"] to null
         Fact.ScreenGesture::class -> i18n["ui.fact.screen.gesture"] to null
         Fact.CombineKeyEvent::class -> i18n["ui.action.inject.combine.keycode"] to null
         Fact.KeyEvent::class -> i18n["ui.fact.key.event"] to null
@@ -421,6 +423,12 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
                     + fact.isIntercept.select(
                 i18N["ui.fact.key.event.adv.is.intercept.mode"], ""
             ),
+            i18N.gestureDisabledMessageOrNull()
+        )
+
+        is Fact.CornerSwipeToCenter -> listOfNotNull(
+            i18N["ui.fact.corner.swipe.to.center"],
+            i18N[fact.corner.displayNameKey()],
             i18N.gestureDisabledMessageOrNull()
         )
 
@@ -1130,6 +1138,16 @@ fun Gesture.displayNameKey(): String {
 fun Edge.displayNameKey(): String {
     val prefix = "ui.fact.edge"
     return "$prefix.${name.lowercase(Locale.ENGLISH)}"
+}
+
+fun ScreenCorner.displayNameKey(): String {
+    return when (this) {
+        ScreenCorner.CornerTopLeft -> "ui.fact.corner.topleft"
+        ScreenCorner.CornerTopRight -> "ui.fact.corner.topright"
+        ScreenCorner.CornerBottomLeft -> "ui.fact.corner.bottomleft"
+        ScreenCorner.CornerBottomRight -> "ui.fact.corner.bottomright"
+        else -> "ui.fact.corner.topleft"
+    }
 }
 
 fun KeyGesture.displayNameKey(): String {

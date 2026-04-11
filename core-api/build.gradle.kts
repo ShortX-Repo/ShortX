@@ -110,6 +110,10 @@ protobuf {
     }
 }
 
+tasks.named("compileKotlin") {
+    dependsOn("generateProto")
+}
+
 tasks.named<Javadoc>("javadoc") {
     include("**/proto/action/**")
     // core/src/main/java/tornaco/apps/shortx/core/rule/script

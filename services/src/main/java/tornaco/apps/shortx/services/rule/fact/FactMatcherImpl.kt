@@ -45,6 +45,7 @@ import tornaco.apps.shortx.core.proto.fact.ChargerUnplug
 import tornaco.apps.shortx.core.proto.fact.ClipboardContentChanged
 import tornaco.apps.shortx.core.proto.fact.CombineKeyEvent
 import tornaco.apps.shortx.core.proto.fact.ConnectedWifiSignalLevelChanged
+import tornaco.apps.shortx.core.proto.fact.CornerSwipeToCenter
 import tornaco.apps.shortx.core.proto.fact.CpuAvgAvailability
 import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
@@ -439,6 +440,12 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
                     actualN.customRect == ruleN.customRect
 
             gestureMatches && (edgeMatches || customRectMatches)
+        }
+
+        register(CornerSwipeToCenter::class.java) { actual, rule ->
+            val actualN = actual as CornerSwipeToCenter
+            val ruleN = rule as CornerSwipeToCenter
+            actualN.corner == ruleN.corner
         }
 
         register(ScreenGesture::class.java) { actual, rule ->

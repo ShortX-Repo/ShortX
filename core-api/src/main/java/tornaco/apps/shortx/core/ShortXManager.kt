@@ -52,6 +52,7 @@ import tornaco.apps.shortx.core.proto.common.WifiConfig
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.core.proto.fact.Edge
+import tornaco.apps.shortx.core.proto.fact.CornerSwipeToCenter
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.MethodHook
 import tornaco.apps.shortx.core.proto.func.`Function` as ShortXFunction
@@ -694,6 +695,12 @@ class ShortXManager(val service: IShortX) {
     fun fireEdgeGesture(edgeGesture: EdgeGesture) {
         invokeService(Unit) {
             fireEdgeGesture(ByteArrayWrapper(edgeGesture.toByteArray()))
+        }
+    }
+
+    fun fireCornerSwipeToCenter(cornerSwipeToCenter: CornerSwipeToCenter) {
+        invokeService(Unit) {
+            fireCornerSwipeToCenter(ByteArrayWrapper(cornerSwipeToCenter.toByteArray()))
         }
     }
 

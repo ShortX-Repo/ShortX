@@ -100,6 +100,7 @@ import tornaco.apps.shortx.core.proto.fact.BTDisconnectedFrom
 import tornaco.apps.shortx.core.proto.fact.BatteryTemperatureChanged
 import tornaco.apps.shortx.core.proto.fact.CombineKeyEvent
 import tornaco.apps.shortx.core.proto.fact.ConnectedWifiSignalLevelChanged
+import tornaco.apps.shortx.core.proto.fact.CornerSwipeToCenter
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen
@@ -178,6 +179,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         HasFoundPointsByColor::class,
         TextFromScreenNodeMatches::class,
         EdgeGesture::class,
+        CornerSwipeToCenter::class,
         ScreenGesture::class,
 
         LaunchAppByPkg::class,

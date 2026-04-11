@@ -142,6 +142,18 @@ message EdgeGesture {
   bool isDisabled = 101;
 }
 
+message CornerSwipeToCenter {
+  ScreenCorner corner = 1;
+  int32 downX = 2;
+  int32 downY = 3;
+
+  string tag = 97;
+  CustomContextDataKey customContextDataKey = 98;
+  string note = 99;
+  string id = 100;
+  bool isDisabled = 101;
+}
+
 message ScreenGesture {
   Gesture gesture = 1;
   repeated AppPkg constraintFrontApps = 2;
@@ -173,6 +185,13 @@ enum Edge {
   BottomCenter = 13;
   BottomRight = 14;
   BottomAll = 15;
+}
+
+enum ScreenCorner {
+  CornerTopLeft = 0;
+  CornerTopRight = 1;
+  CornerBottomLeft = 2;
+  CornerBottomRight = 3;
 }
 
 enum Gesture {

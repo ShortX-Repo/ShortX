@@ -20,6 +20,7 @@ import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.common.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
+import tornaco.apps.shortx.core.proto.fact.ScreenCorner
 import tornaco.apps.shortx.core.proto.fact.MethodHookConstraintParamsCount
 import tornaco.apps.shortx.core.proto.fact.MethodHookConstraintParamsType
 import tornaco.apps.shortx.core.proto.fact.MethodHookConstraintReturnType
@@ -326,6 +327,33 @@ sealed interface Fact : Parcelable {
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList(),
         val customRect: tornaco.apps.shortx.core.proto.common.Rect? = null,
+        override val note: String = "",
+        override val isDisabled: Boolean = false,
+        override val tag: String = "",
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val id: String = defaultNewFactId(),
+    ) : Fact {
+
+        override fun clone(
+            id: String,
+            note: String,
+            tag: String,
+            isDisabled: Boolean,
+            customContextDataKey: CustomContextDataKey
+        ): Fact {
+            return copy(
+                id = id,
+                note = note,
+                tag = tag,
+                isDisabled = isDisabled,
+                customContextDataKey = customContextDataKey
+            )
+        }
+    }
+
+    @Parcelize
+    data class CornerSwipeToCenter(
+        val corner: ScreenCorner,
         override val note: String = "",
         override val isDisabled: Boolean = false,
         override val tag: String = "",

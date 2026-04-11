@@ -90,6 +90,9 @@ class Detector(
             service.getSwipeDistanceThresholdDp()._dp
         )
 
+    private val cornerSwipeToCenterDetector =
+        CornerSwipeToCenterDetector(context, service)
+
     init {
         service.obsGestureSettingsChanged {
             setSwipeDistanceThresholdDp(service.getSwipeDistanceThresholdDp())
@@ -238,6 +241,9 @@ class Detector(
     fun consumeEvent(event: MotionEvent): Boolean? {
         if (event.isTouchEvent) {
             if (gestureDetector.onTouchEvent(event)) {
+                return true
+            }
+            if (cornerSwipeToCenterDetector.onTouchEvent(event)) {
                 return true
             }
             if (pointerEventListener.onPointerEvent(event)) {

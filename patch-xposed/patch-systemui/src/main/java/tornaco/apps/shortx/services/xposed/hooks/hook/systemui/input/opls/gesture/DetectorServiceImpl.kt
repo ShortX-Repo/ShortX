@@ -17,9 +17,11 @@ import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AppPkgList
+import tornaco.apps.shortx.core.proto.fact.CornerSwipeToCenter
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.Gesture
+import tornaco.apps.shortx.core.proto.fact.ScreenCorner
 import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.rule.DAObserver
 import tornaco.apps.shortx.core.rule.IPkgSetObserver
@@ -51,6 +53,7 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
     private var afterUserDataChangedObs: () -> Unit = {}
 
     override val enabledEdgeGestures = mutableSetOf<EdgeGesture>()
+    override val enabledCornerSwipeToCenterFacts = mutableSetOf<CornerSwipeToCenter>()
     private val interceptMotionPortRects = mutableListOf<RectF>()
     private val interceptMotionLandRects = mutableListOf<RectF>()
 
@@ -62,7 +65,7 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
     val shouldDetectMotion
         get() = !isRuleFeatureDisabled
                 && isGestureEnabledQuick
-                && enabledEdgeGestures.isNotEmpty()
+                && (enabledEdgeGestures.isNotEmpty() || enabledCornerSwipeToCenterFacts.isNotEmpty())
                 && (requiredFrontAppAny || requiredFrontAppMatchQuick)
 
     private var isGestureEnabledQuick = false
@@ -238,6 +241,25 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         return res
     }
 
+    override fun handleCornerSwipeToCenterEvent(
+        corner: ScreenCorner,
+        downX: Float,
+        downY: Float,
+    ): Boolean {
+        val shouldFire = enabledCornerSwipeToCenterFacts.any {
+            !it.isDisabled && it.corner == corner
+        }
+        if (!shouldFire) return false
+
+        val data = CornerSwipeToCenter.newBuilder()
+            .setCorner(corner)
+            .setDownX(downX.roundToInt())
+            .setDownY(downY.roundToInt())
+            .build()
+        shortx.fireCornerSwipeToCenter(data)
+        return true
+    }
+
     private fun onEdgeGestureEvent(
         area: DetectedArea,
         gesture: Gesture,
@@ -319,12 +341,14 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         interceptMotionPortRects.clear()
         interceptMotionLandRects.clear()
         enabledEdgeGestures.clear()
+        enabledCornerSwipeToCenterFacts.clear()
         requiredFrontApps.clear()
 
         // 使用临时集合来收集数据，避免频繁的clear/add操作
         val tempPortRects = mutableListOf<RectF>()
         val tempLandRects = mutableListOf<RectF>()
         val tempEnabledFacts = mutableSetOf<EdgeGesture>()
+        val tempEnabledCornerFacts = mutableSetOf<CornerSwipeToCenter>()
         val tempRequiredApps = mutableSetOf<AppPkg>()
 
         // Reset.
@@ -386,12 +410,24 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
                             tempRequiredApps.addAll(pkgSetApps)
                         }
                     }
+                    return@forEach
+                }
+
+                val isCornerSwipeToCenter = protoFact is_ CornerSwipeToCenter::class.java
+                if (isCornerSwipeToCenter) {
+                    val cornerSwipe = protoFact unpack_ CornerSwipeToCenter::class.java
+                    if (!cornerSwipe.isDisabled) {
+                        tempEnabledCornerFacts.add(cornerSwipe)
+                        requiredFrontAppAny = true
+                        requiredFrontAppMatchQuick = true
+                    }
                 }
             }
         }
 
         // 一次性更新所有集合
         enabledEdgeGestures.addAll(tempEnabledFacts)
+        enabledCornerSwipeToCenterFacts.addAll(tempEnabledCornerFacts)
         interceptMotionLandRects.addAll(tempLandRects)
         interceptMotionPortRects.addAll(tempPortRects)
         requiredFrontApps.addAll(tempRequiredApps)
@@ -399,6 +435,7 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         checkFrontAppPkg("updateQuickCheckDataOnRuleChange")
 
         logger.d("updateQuickCheckDataOnRuleChange, enabledEdgeGestures: $enabledEdgeGestures")
+        logger.d("updateQuickCheckDataOnRuleChange, enabledCornerSwipeToCenterFacts: $enabledCornerSwipeToCenterFacts")
         logger.d("updateQuickCheckDataOnRuleChange, interceptMotionLandRects: $interceptMotionLandRects")
         logger.d("updateQuickCheckDataOnRuleChange, interceptMotionPortRects: $interceptMotionPortRects")
         logger.d("updateQuickCheckDataOnRuleChange, requiredFrontApps: $requiredFrontApps")

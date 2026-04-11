@@ -36,6 +36,7 @@ import tornaco.apps.shortx.core.proto.fact.ChargerUnplug
 import tornaco.apps.shortx.core.proto.fact.ClipboardContentChanged
 import tornaco.apps.shortx.core.proto.fact.CombineKeyEvent
 import tornaco.apps.shortx.core.proto.fact.ConnectedWifiSignalLevelChanged
+import tornaco.apps.shortx.core.proto.fact.CornerSwipeToCenter
 import tornaco.apps.shortx.core.proto.fact.CpuAvgAvailability
 import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
@@ -202,6 +203,17 @@ fun Fact.toProtoFact(
             customRect?.let { builder.setCustomRect(it) }
             
             builder.build()
+        }
+
+        is Fact.CornerSwipeToCenter -> {
+            CornerSwipeToCenter.newBuilder()
+                .setCorner(corner)
+                .setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
+                .setTag(overrideTag ?: tag)
+                .setCustomContextDataKey(customContextDataKey)
+                .build()
         }
 
         is Fact.ScreenGesture -> {

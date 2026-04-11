@@ -9,6 +9,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.core.text.isDigitsOnly
 import tornaco.apps.shortx.core.alarm.toLocalTime
 import tornaco.apps.shortx.core.proto.fact.Gesture
+import tornaco.apps.shortx.core.proto.fact.ScreenCorner
 import tornaco.apps.shortx.core.proto.fact.SunRise
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.select
@@ -96,6 +97,17 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
             shortXManager.showEdgeHint(listOf(it))
         })
     EdgeGestureSelector(edgeGestureSelectorState)
+
+    val cornerSwipeToCenterMenuState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.fact.corner.swipe.to.center"],
+        menuItems = ScreenCorner.entries.filter { it != ScreenCorner.UNRECOGNIZED }.map {
+            MenuDialogItem(it.name, title = LocalI18N.current[it.displayNameKey()])
+        },
+        onItemSelected = { _, id ->
+            val corner = ScreenCorner.valueOf(id)
+            addFact(Fact.CornerSwipeToCenter(corner))
+        })
+    MenuDialog(state = cornerSwipeToCenterMenuState)
 
     val screenGestureMenuState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.fact.screen.gesture"],
@@ -297,6 +309,15 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
             Fact.EdgeGesture::class -> {
                 edgeGestureSelectorState.show(source.getFactAs())
+                true
+            }
+
+            Fact.CornerSwipeToCenter::class -> {
+                cornerSwipeToCenterMenuState.show(
+                    currentSelection = listOfNotNull(
+                        source.getFactAs<Fact.CornerSwipeToCenter>()?.corner?.name
+                    )
+                )
                 true
             }
 

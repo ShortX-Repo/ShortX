@@ -475,6 +475,13 @@ object ContextDataMapping {
     }
 
     @DoNotStrip
+    enum class CornerSwipeToCenter(val description: String) {
+        eventX("The screen.x of the motion event"),
+        eventY("The screen.y of the motion event"),
+        corner("The triggered screen corner"),
+    }
+
+    @DoNotStrip
     enum class CpuAvgAvailability(val description: String) {
         latestAvgAvailabilityPercent("The latest average CPU availability percent."),
         pastNMillisAvgAvailabilityPercent("The past N-millisecond average CPU availability percent."),

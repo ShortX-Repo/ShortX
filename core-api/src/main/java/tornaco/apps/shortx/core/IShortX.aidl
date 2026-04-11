@@ -410,6 +410,7 @@ interface IShortX {
 
     boolean shouldFireEdgeGesture(int edge, int gesture);
     void fireEdgeGesture(in ByteArrayWrapper data);
+    void fireCornerSwipeToCenter(in ByteArrayWrapper data);
 
     boolean shouldFireScreenGesture(int gesture, int x, int y);
     void fireScreenGesture(int gesture, int x, int y);

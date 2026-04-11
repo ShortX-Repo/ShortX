@@ -15,6 +15,7 @@
 .kotlin/
 out/
 /github.properties
+/patch-magisk/bridge/bin/
 # Common build directories
 **/build/
 **/bin/

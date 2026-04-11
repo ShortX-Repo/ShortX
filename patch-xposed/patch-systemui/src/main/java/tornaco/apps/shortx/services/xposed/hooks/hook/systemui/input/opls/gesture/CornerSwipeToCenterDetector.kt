@@ -1,0 +1,136 @@
+package tornaco.apps.shortx.services.xposed.hooks.hook.systemui.input.opls.gesture
+
+import android.content.Context
+import android.view.MotionEvent
+import tornaco.apps.shortx.core.proto.fact.ScreenCorner
+import tornaco.apps.shortx.core.util._dp
+import tornaco.apps.shortx.core.util.screenSize
+import kotlin.math.cos
+import kotlin.math.hypot
+
+class CornerSwipeToCenterDetector(
+    private val context: Context,
+    private val service: DetectorService,
+) {
+    companion object {
+        private const val CORNER_REGION_RADIUS_RATIO = 0.18f
+        private const val CORNER_SWIPE_MAX_ANGLE_DEVIATION_DEG = 30f
+        private const val CORNER_SWIPE_MIN_DISTANCE_DP = 72
+        private val MIN_DIRECTION_DOT =
+            cos(Math.toRadians(CORNER_SWIPE_MAX_ANGLE_DEVIATION_DEG.toDouble())).toFloat()
+    }
+
+    private var trackedPointerId = MotionEvent.INVALID_POINTER_ID
+    private var trackedCorner: ScreenCorner? = null
+    private var downX = 0f
+    private var downY = 0f
+    private var hasTriggered = false
+
+    fun onTouchEvent(event: MotionEvent): Boolean {
+        when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                reset()
+                trackedPointerId = event.getPointerId(event.actionIndex)
+                downX = event.x
+                downY = event.y
+                trackedCorner = detectCorner(downX, downY)
+            }
+
+            MotionEvent.ACTION_MOVE -> {
+                val corner = trackedCorner ?: return false
+                if (hasTriggered) return false
+
+                val pointerIndex = event.findPointerIndex(trackedPointerId)
+                if (pointerIndex < 0) {
+                    reset()
+                    return false
+                }
+
+                val moveX = event.getX(pointerIndex)
+                val moveY = event.getY(pointerIndex)
+                val deltaX = moveX - downX
+                val deltaY = moveY - downY
+                val distance = hypot(deltaX.toDouble(), deltaY.toDouble()).toFloat()
+                if (distance < CORNER_SWIPE_MIN_DISTANCE_DP._dp) {
+                    return false
+                }
+
+                val (expectedX, expectedY) = expectedDirection(corner)
+                val normalizedX = deltaX / distance
+                val normalizedY = deltaY / distance
+                val dot = normalizedX * expectedX + normalizedY * expectedY
+                if (dot < MIN_DIRECTION_DOT) {
+                    return false
+                }
+
+                val handled = service.handleCornerSwipeToCenterEvent(corner, downX, downY)
+                hasTriggered = handled
+                return handled
+            }
+
+            MotionEvent.ACTION_UP,
+            MotionEvent.ACTION_CANCEL -> {
+                reset()
+            }
+
+            MotionEvent.ACTION_POINTER_UP -> {
+                val pointerId = event.getPointerId(event.actionIndex)
+                if (pointerId == trackedPointerId) {
+                    reset()
+                }
+            }
+        }
+        return false
+    }
+
+    private fun detectCorner(x: Float, y: Float): ScreenCorner? {
+        val enabledCorners = service.enabledCornerSwipeToCenterFacts
+            .asSequence()
+            .filter { !it.isDisabled }
+            .map { it.corner }
+            .toSet()
+        if (enabledCorners.isEmpty()) return null
+
+        val screenSize = context.screenSize()
+        val width = screenSize.x.toFloat()
+        val height = screenSize.y.toFloat()
+        val radius = minOf(width, height) * CORNER_REGION_RADIUS_RATIO
+        val radiusSquare = radius * radius
+
+        return enabledCorners.firstOrNull { corner ->
+            val (cornerX, cornerY) = cornerPoint(corner, width, height)
+            val dx = x - cornerX
+            val dy = y - cornerY
+            dx * dx + dy * dy <= radiusSquare
+        }
+    }
+
+    private fun expectedDirection(corner: ScreenCorner): Pair<Float, Float> {
+        val normalized = 0.70710677f
+        return when (corner) {
+            ScreenCorner.CornerTopLeft -> normalized to normalized
+            ScreenCorner.CornerTopRight -> -normalized to normalized
+            ScreenCorner.CornerBottomLeft -> normalized to -normalized
+            ScreenCorner.CornerBottomRight -> -normalized to -normalized
+            else -> 0f to 0f
+        }
+    }
+
+    private fun cornerPoint(corner: ScreenCorner, width: Float, height: Float): Pair<Float, Float> {
+        return when (corner) {
+            ScreenCorner.CornerTopLeft -> 0f to 0f
+            ScreenCorner.CornerTopRight -> width to 0f
+            ScreenCorner.CornerBottomLeft -> 0f to height
+            ScreenCorner.CornerBottomRight -> width to height
+            else -> 0f to 0f
+        }
+    }
+
+    private fun reset() {
+        trackedPointerId = MotionEvent.INVALID_POINTER_ID
+        trackedCorner = null
+        downX = 0f
+        downY = 0f
+        hasTriggered = false
+    }
+}

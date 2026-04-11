@@ -13,6 +13,7 @@ val allFactClasses = listOf(
     Fact.ActivityStopped::class,
     Fact.ActivityDestroyed::class,
     Fact.EdgeGesture::class,
+    Fact.CornerSwipeToCenter::class,
     Fact.ScreenGesture::class,
 
     Fact.ScreenOn::class,

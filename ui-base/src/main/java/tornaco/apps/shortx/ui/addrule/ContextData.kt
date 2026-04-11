@@ -245,6 +245,10 @@ fun KClass<out Fact>.factContextData(customContextDataKey: CustomContextDataKey 
             dats<ContextDataMapping.EdgeGesture>(customContextDataKey)
         }
 
+        Fact.CornerSwipeToCenter::class -> {
+            dats<ContextDataMapping.CornerSwipeToCenter>(customContextDataKey)
+        }
+
         Fact.CpuAvgAvailability::class -> {
             dats<ContextDataMapping.CpuAvgAvailability>(customContextDataKey)
         }

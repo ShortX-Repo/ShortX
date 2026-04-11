@@ -68,6 +68,7 @@ import tornaco.apps.shortx.core.proto.common.UserInfo
 import tornaco.apps.shortx.core.proto.common.WebDavProfile
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
+import tornaco.apps.shortx.core.proto.fact.CornerSwipeToCenter
 import tornaco.apps.shortx.core.proto.fact.DeepLinkCall
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
@@ -1717,6 +1718,20 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                 mapOf(
                     ContextDataMapping.ScreenGesture.eventX.name to protoModel.downX,
                     ContextDataMapping.ScreenGesture.eventY.name to protoModel.downY,
+                )
+            }
+        }
+
+        override fun fireCornerSwipeToCenter(data: ByteArrayWrapper) {
+            val protoModel = CornerSwipeToCenter.parseFrom(data.byteData)
+            logger.w("fireCornerSwipeToCenter - $protoModel")
+            val fact = CornerSwipeToCenter.newBuilder(protoModel)
+                .build()
+            shortXContext.rule.publishFact("fireCornerSwipeToCenter", fact) {
+                mapOf(
+                    ContextDataMapping.CornerSwipeToCenter.eventX.name to protoModel.downX,
+                    ContextDataMapping.CornerSwipeToCenter.eventY.name to protoModel.downY,
+                    ContextDataMapping.CornerSwipeToCenter.corner.name to protoModel.corner.name,
                 )
             }
         }
