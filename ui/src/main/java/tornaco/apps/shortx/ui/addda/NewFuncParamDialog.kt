@@ -79,7 +79,10 @@ fun rememberNewFuncParameterState(
 }
 
 @Composable
-fun NewFunctionParameterDialog(state: NewFuncParameterState) {
+fun NewFunctionParameterDialog(
+    state: NewFuncParameterState,
+    i18nKeyPrefix: String = "ui.da.params"
+) {
     if (state.isShowing) {
         ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
             ShortXTheme {
@@ -89,7 +92,7 @@ fun NewFunctionParameterDialog(state: NewFuncParameterState) {
                     Scaffold(modifier = Modifier, topBar = {
                         ShortXTopAppBar(
                             modifier = Modifier,
-                            title = { Text(text = LocalI18N.current["ui.da.params"]) },
+                            title = { Text(text = LocalI18N.current[i18nKeyPrefix]) },
                             navigationIcon = {
                                 IconButton(onClick = {
                                     state.dismiss()
@@ -131,7 +134,7 @@ fun NewFunctionParameterDialog(state: NewFuncParameterState) {
 
                                 FieldTitle(
                                     modifier = Modifier.padding(vertical = 12.dp),
-                                    text = LocalI18N.current["ui.da.params.name"]
+                                    text = LocalI18N.current["$i18nKeyPrefix.name"]
                                 )
                                 SmallSpacer()
                                 ShortXTextField(
@@ -156,7 +159,7 @@ fun NewFunctionParameterDialog(state: NewFuncParameterState) {
                                     ).show()
                                 }) {
                                     UnderlineSmallText(
-                                        text = LocalI18N.current["ui.da.params.access.example", mapOf(
+                                        text = LocalI18N.current["$i18nKeyPrefix.access.example", mapOf(
                                             "arg" to "$FUNC_PARAM_REF_PREFIX${state.name}"
                                         )]
                                     )
@@ -164,7 +167,7 @@ fun NewFunctionParameterDialog(state: NewFuncParameterState) {
 
                                 FieldTitle(
                                     modifier = Modifier.padding(vertical = 12.dp),
-                                    text = LocalI18N.current["ui.da.params.default.value"]
+                                    text = LocalI18N.current["$i18nKeyPrefix.default.value"]
                                 )
                                 MediumSpacer()
                                 ShortXTextField(
@@ -205,7 +208,7 @@ fun NewFunctionParameterDialog(state: NewFuncParameterState) {
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    FieldTitle(text = LocalI18N.current["ui.da.params.is.required"])
+                                    FieldTitle(text = LocalI18N.current["$i18nKeyPrefix.is.required"])
                                     ShortXSwitch(checked = state.isRequired, onCheckedChange = {
                                         state.isRequired = it
                                     })

@@ -216,6 +216,7 @@ fun AddFunctionScreen(
 
                 FuncParamList(
                     params = state.parameters,
+                    i18nKeyPrefix = "ui.function.params",
                     add = { param, override -> vm.addParameter(param, override) },
                     remove = { vm.removeParameter(it) }
                 )

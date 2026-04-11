@@ -167,10 +167,10 @@ private fun ExecuteFunctionSelector(dialogState: ExecuteFunctionDialogState) {
                         AnimatedVisibility(visible = state.parameterInputs.isNotEmpty()) {
                             Column {
                                 FieldTitleWithTip(
-                                    text = i18n["ui.da.params"],
+                                    text = i18n["ui.function.params"],
                                     tipText = i18n[
-                                        "ui.da.params.description",
-                                        mapOf("arg" to "$FUNC_PARAM_REF_PREFIX${i18n["ui.da.params.name"]}")
+                                        "ui.function.params.description",
+                                        mapOf("arg" to "$FUNC_PARAM_REF_PREFIX${i18n["ui.function.params.name"]}")
                                     ]
                                 )
                                 TinySpacer()
@@ -205,12 +205,12 @@ private fun ExecuteFunctionParams(
 
         ListItem(
             titleLines = listOf(
-                LocalI18N.current["ui.da.params.name"] + " " + input.name,
-                LocalI18N.current["ui.da.params.value"] + " " + input.value,
+                LocalI18N.current["ui.function.params.name"] + " " + input.name,
+                LocalI18N.current["ui.function.params.value"] + " " + input.value,
             ),
             action1 = {
                 if (param?.isRequired == true) {
-                    OutlineBadge(text = LocalI18N.current["ui.da.params.is.required"])
+                    OutlineBadge(text = LocalI18N.current["ui.function.params.is.required"])
                 }
             },
             icon = {

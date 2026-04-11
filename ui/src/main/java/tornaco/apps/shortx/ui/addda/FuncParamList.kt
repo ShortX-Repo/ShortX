@@ -18,29 +18,32 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 @Composable
 fun FuncParamList(
     params: List<FuncParameter>,
+    i18nKeyPrefix: String = "ui.da.params",
     add: (FuncParameter, override: Boolean) -> Unit,
     remove: (FuncParameter) -> Unit
 ) {
     MediumTitleWithTip(
-        text = LocalI18N.current["ui.da.params"],
-        tipText = LocalI18N.current["ui.da.params.description",
-            mapOf("arg" to "${FUNC_PARAM_REF_PREFIX}${LocalI18N.current["ui.da.params.name"]}")]
+        text = LocalI18N.current[i18nKeyPrefix],
+        tipText = LocalI18N.current[
+            "$i18nKeyPrefix.description",
+            mapOf("arg" to "${FUNC_PARAM_REF_PREFIX}${LocalI18N.current["$i18nKeyPrefix.name"]}")
+        ]
     )
     val editFuncState = rememberNewFuncParameterState {
         add(it, true)
     }
-    NewFunctionParameterDialog(state = editFuncState)
+    NewFunctionParameterDialog(state = editFuncState, i18nKeyPrefix = i18nKeyPrefix)
 
     params.forEach { funcParameter ->
         ListItem(
             titleLines = listOfNotNull(
                 funcParameter.name,
-                LocalI18N.current["ui.da.params.default.value"] + " ${funcParameter.defaultValue}",
+                LocalI18N.current["$i18nKeyPrefix.default.value"] + " ${funcParameter.defaultValue}",
                 funcParameter.comments.takeIf { it.isNotBlank() }
             ),
             action1 = {
                 if (funcParameter.isRequired) {
-                    OutlineBadge(text = LocalI18N.current["ui.da.params.is.required"])
+                    OutlineBadge(text = LocalI18N.current["$i18nKeyPrefix.is.required"])
                     StandardSpacer()
                 }
                 IconButton(onClick = {
@@ -62,7 +65,7 @@ fun FuncParamList(
     val addFuncState = rememberNewFuncParameterState {
         add(it, false)
     }
-    NewFunctionParameterDialog(state = addFuncState)
+    NewFunctionParameterDialog(state = addFuncState, i18nKeyPrefix = i18nKeyPrefix)
 
     Button(onClick = {
         addFuncState.show()
