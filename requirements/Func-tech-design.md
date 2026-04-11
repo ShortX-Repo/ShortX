@@ -257,10 +257,42 @@
 - services actor 实现
 - i18n 文案
 - 图标映射
-
 3. 若未来支持多类型返回值，需要重新设计 FuncReturnValue 与上下文中的值承载方式。
 
-十二、建议实施顺序
+十二、已落地实现差异
+
+以下内容用于记录当前实现相对上文“建议方案”的实际落地差异，便于后续维护时快速对齐。
+
+1. 函数入口与页面组织
+- 已落地为独立的 FunctionListActivity 与 AddFunctionActivity。
+- 入口目前接在 Settings 页面和 Suggested Navigation 中，而不是主列表页内嵌子页面。
+
+2. ExecuteFunction 编辑器形态
+- 已实现为全屏对话式编辑器 ExecuteFunctionSelectorDialog。
+- 没有新增独立 Activity，复用了当前动作选择器中常见的 dialog selector 模式。
+
+3. 删除引用扫描范围
+- 实际实现不只扫描规则、Direct Action、其他函数的顶层 actions。
+- 还会扫描 rule/direct-action 的 quit actions、hook actions，以及常见嵌套动作容器中的子动作。
+- 当前覆盖的嵌套动作包括 ShowOverlay/ShowFloatWindow/ShowSideBar、ShowStatusBarChip、ShowAlertDialog、IfThenElse、SwitchCase、WhileLoop、ForEach、ForEachPkgSet、BiometricVerify、WebSocketConnect、PostNotification、ShowPPN。
+
+4. 运行时额外保护
+- ExecuteFunction 在建议的默认参数补齐基础上，额外实现了递归调用保护。
+- 在参数合并完成后，会对 required 参数做缺失校验；若缺少必填参数，会直接报错。
+
+5. 错误处理文案
+- 函数不存在的运行时错误文案已经统一为 “Function not found, please set again”。
+- UI 侧对应也复用了同一语义的 i18n key 进行展示。
+
+6. 函数编辑页保存规则
+- 当前实现不会在名称为空时自动兜底生成名称。
+- 保存前会直接校验“名称必填”，未填写时拒绝保存并提示。
+
+7. 当前未完成项
+- 文档中的手工验收项依赖可用 Android 设备或模拟器。
+- 若环境中没有设备，118-120 只能保持待办，不能用编译通过替代手工验收。
+
+十三、建议实施顺序
 
 1. 扩展 Functions.proto，增加 Function 与 FunctionList。
 2. 扩展 AIDL 和 ShortXManager 的函数 CRUD 接口。
@@ -273,7 +305,7 @@
 9. 增加删除引用提示。
 10. 增加测试。
 
-十三、测试建议
+十四、测试建议
 
 1. 单元测试
 - 参数默认值覆盖
