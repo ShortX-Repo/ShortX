@@ -14,6 +14,18 @@
 - Uses custom AIDL generation from `buildSrc`.
 - Compiles protobuf models for actions, rules, facts, settings, and related data.
 
+## Interface Update Workflow
+
+If you edit AIDL or protobuf files in `core-api`, do not rely on compile alone to refresh generated sources. Run these tasks first:
+
+1. `./gradlew :core-api:generateAidlFiles`
+2. `./gradlew :core-api:generateProto`
+
+Then run compile validation, for example:
+
+1. `./gradlew :core-api:compileKotlin`
+2. add `:services:compileKotlin` or other affected modules when the contract change crosses module boundaries.
+
 ## Key Source Areas
 
 - `core-api/src/main/java/tornaco/apps/shortx/core/IShortX.aidl`

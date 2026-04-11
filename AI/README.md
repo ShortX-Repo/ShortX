@@ -2,6 +2,15 @@
 
 This folder contains module-by-module reading notes generated from the repository structure, build files, and key source entry points.
 
+## Development Note
+
+When changing AIDL or protobuf definitions in `core-api`, regenerate sources before compile validation:
+
+1. `./gradlew :core-api:generateAidlFiles`
+2. `./gradlew :core-api:generateProto`
+
+Then run the relevant compile task such as `./gradlew :core-api:compileKotlin` or module-specific validation.
+
 ## Structure
 
 - `build/`: build infrastructure and generated asset modules
