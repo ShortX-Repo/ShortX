@@ -4,6 +4,7 @@ package tornaco.apps.shortx.ui.function
 
 import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
@@ -62,6 +63,13 @@ fun FunctionListScreen(back: () -> Unit) {
         ActivityResultContracts.StartActivityForResult()
     ) {
         vm.loadState()
+    }
+
+    LaunchedEffect(state.promptMessage) {
+        state.promptMessage?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            vm.consumePromptMessage()
+        }
     }
 
     val deleteDialogState = rememberConfirmDialogState()

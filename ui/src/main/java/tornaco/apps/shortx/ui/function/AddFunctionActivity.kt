@@ -113,7 +113,22 @@ fun AddFunctionScreen(
             }
 
             is AddFunctionEffect.AddParamFailNameExists -> {
-                Toast.makeText(context, "${it.name} already exists", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    i18n["ui.function.param.exists", mapOf("name" to it.name)],
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            AddFunctionEffect.FunctionNameRequired -> {
+                Toast.makeText(context, i18n["ui.function.name.required"], Toast.LENGTH_SHORT)
+                    .show()
+            }
+
+            AddFunctionEffect.FunctionDeleteNotFound -> {
+                Toast.makeText(context, i18n["ui.function.delete.not.found"], Toast.LENGTH_SHORT)
+                    .show()
+                back(false)
             }
         }
     }

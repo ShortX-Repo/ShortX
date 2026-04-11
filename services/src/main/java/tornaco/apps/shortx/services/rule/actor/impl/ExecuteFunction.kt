@@ -13,6 +13,8 @@ import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.services.rule.actor.impl.util.runSubActions
 
 private const val CONTEXT_ACTIVE_FUNCTION_IDS = "__activeFunctionIds"
+private const val ERROR_FUNCTION_NOT_FOUND = "Function not found, please set again"
+private const val ERROR_REQUIRED_PARAM_MISSING = "Missing required function parameter"
 
 object ExecuteFunction : Actor {
     override fun actionsCanHandle(): Class<out Message> {
@@ -22,7 +24,7 @@ object ExecuteFunction : Actor {
     override suspend fun handle(params: HandleParams) = with(params) {
         val data = action unpack_ tornaco.apps.shortx.core.proto.action.ExecuteFunction::class.java
         val function = requireNotNull(shortXContext.rule.getFunctionById(data.functionId)) {
-            "Function not found: ${data.functionId}"
+            ERROR_FUNCTION_NOT_FOUND
         }
 
         val activeFunctionIds = (contextData.get(CONTEXT_ACTIVE_FUNCTION_IDS) as? List<*>)
@@ -56,6 +58,16 @@ object ExecuteFunction : Actor {
             }
         } + parameterInputs
         logger.logOnDebug("allParameters: ${allParameters.map { it.toLogString() }}")
+
+        val missingRequiredParams = function.parametersList.filter { parameter ->
+            parameter.isRequired && allParameters.none { input ->
+                input.name == parameter.name && input.value.isNotBlank()
+            }
+        }.map { it.name }
+
+        require(missingRequiredParams.isEmpty()) {
+            "$ERROR_REQUIRED_PARAM_MISSING: ${missingRequiredParams.joinToString()}"
+        }
 
         val functionContext = ContextData.obtain(
             contextData.map.mapValues { it.value ?: "" } + mapOf(

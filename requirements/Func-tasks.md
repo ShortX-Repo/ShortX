@@ -130,22 +130,22 @@
 
 十一、动作选择器、文案与图标
 
-- [ ] 93. 在动作分类中加入 ExecuteFunction。
-- [ ] 94. 在动作分类中加入 SetFunctionReturnValue。
-- [ ] 95. 为 ExecuteFunction 增加 i18n key。
-- [ ] 96. 为 SetFunctionReturnValue 增加 i18n key。
-- [ ] 97. 为函数列表页与函数编辑页补齐 i18n 文案。
-- [ ] 98. 为 ExecuteFunction 选择一个合适图标。
-- [ ] 99. 为 SetFunctionReturnValue 选择一个合适图标。
-- [ ] 100. 更新 action mapper、icon mapper、标题 mapper。
+- [x] 93. 在动作分类中加入 ExecuteFunction。
+- [x] 94. 在动作分类中加入 SetFunctionReturnValue。
+- [x] 95. 为 ExecuteFunction 增加 i18n key。
+- [x] 96. 为 SetFunctionReturnValue 增加 i18n key。
+- [x] 97. 为函数列表页与函数编辑页补齐 i18n 文案。
+- [x] 98. 为 ExecuteFunction 选择一个合适图标。
+- [x] 99. 为 SetFunctionReturnValue 选择一个合适图标。
+- [x] 100. 更新 action mapper、icon mapper、标题 mapper。
 
 十二、校验与错误处理
 
-- [ ] 101. 在函数编辑页实现“名称必填”校验。
-- [ ] 102. 在函数编辑页实现“同一函数内参数名不重复”校验。
-- [ ] 103. 在 ExecuteFunction 运行时对必填参数缺失场景补校验。
-- [ ] 104. 为函数不存在错误增加统一错误文案。
-- [ ] 105. 为删除不存在函数的场景增加容错提示。
+- [x] 101. 在函数编辑页实现“名称必填”校验。
+- [x] 102. 在函数编辑页实现“同一函数内参数名不重复”校验。
+- [x] 103. 在 ExecuteFunction 运行时对必填参数缺失场景补校验。
+- [x] 104. 为函数不存在错误增加统一错误文案。
+- [x] 105. 为删除不存在函数的场景增加容错提示。
 
 十三、测试
 

@@ -41,6 +41,7 @@ data class FunctionItemUiModel(
 data class FunctionListState(
     val functions: List<FunctionItemUiModel> = emptyList(),
     val pendingDelete: PendingDeleteFunction? = null,
+    val promptMessage: String? = null,
 )
 
 @HiltViewModel
@@ -67,8 +68,19 @@ class FunctionListViewModel @Inject constructor(@ApplicationContext context: Con
 
     fun deleteFunction(id: String) {
         viewModelScope.launch {
+            if (shortXManager.getFunctionById(id) == null) {
+                updateState {
+                    copy(
+                        pendingDelete = null,
+                        promptMessage = i18N["ui.function.delete.not.found"]
+                    )
+                }
+                loadState()
+                return@launch
+            }
+
             shortXManager.deleteFunction(id)
-            updateState { copy(pendingDelete = null) }
+            updateState { copy(pendingDelete = null, promptMessage = null) }
             loadState()
         }
     }
@@ -88,6 +100,10 @@ class FunctionListViewModel @Inject constructor(@ApplicationContext context: Con
 
     fun dismissDelete() {
         updateState { copy(pendingDelete = null) }
+    }
+
+    fun consumePromptMessage() {
+        updateState { copy(promptMessage = null) }
     }
 
     fun confirmDeletePending() {

@@ -13,7 +13,6 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.ShortXContextViewModelWithEffect
-import java.util.Date
 import java.util.UUID
 import javax.inject.Inject
 import tornaco.apps.shortx.core.proto.func.`Function` as ShortXFunction
@@ -36,6 +35,8 @@ sealed interface AddFunctionEffect {
     data class FunctionSaved(val functionId: String) : AddFunctionEffect
     data class FunctionDeleted(val functionId: String) : AddFunctionEffect
     data class AddParamFailNameExists(val name: String) : AddFunctionEffect
+    data object FunctionNameRequired : AddFunctionEffect
+    data object FunctionDeleteNotFound : AddFunctionEffect
 }
 
 @HiltViewModel
@@ -93,13 +94,18 @@ class AddFunctionViewModel @Inject constructor(@ApplicationContext context: Cont
 
     fun save() {
         viewModelScope.launch {
+            if (state.value.name.isBlank()) {
+                postSideEffect(AddFunctionEffect.FunctionNameRequired)
+                return@launch
+            }
+
             val protoActions = actionContentStateHandler.state.value.actions.map {
                 it.toProtoAction().pack_()
             }
 
             val function = ShortXFunction.newBuilder()
                 .setId(state.value.id)
-                .setName(state.value.name.fallbackOnEmpty(Date().toString()))
+                .setName(state.value.name)
                 .setReturnType(state.value.returnType)
                 .addAllParameters(state.value.parameters)
                 .addAllActions(protoActions)
@@ -114,6 +120,10 @@ class AddFunctionViewModel @Inject constructor(@ApplicationContext context: Cont
 
     fun delete(functionId: String) {
         viewModelScope.launch {
+            if (shortx.getFunctionById(functionId) == null) {
+                postSideEffect(AddFunctionEffect.FunctionDeleteNotFound)
+                return@launch
+            }
             shortx.deleteFunction(functionId)
             postSideEffect(AddFunctionEffect.FunctionDeleted(functionId))
         }
