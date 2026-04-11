@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import tornaco.apps.shortx.core.context.ContextDataMapping.asAccessExample
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addda.FuncParamList
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
@@ -41,8 +42,10 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.ShortXTextField
+import tornaco.apps.shortx.ui.base.UnderlineSmallText
 import tornaco.apps.shortx.ui.base.handleSideEffect
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
+import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 @AndroidEntryPoint
 class AddFunctionActivity : BaseActivity() {
@@ -227,6 +230,26 @@ fun AddFunctionScreen(
                     onValueChange = { vm.setResultContextDataKey(it) },
                     showSymbolButton = false,
                 )
+                state.resultContextDataKey.takeIf { it.isNotBlank() }?.let { resultContextDataKey ->
+                    val accessExample = resultContextDataKey.asAccessExample()
+                    Spacer(modifier = Modifier.size(8.dp))
+                    androidx.compose.material3.TextButton(onClick = {
+                        ClipboardUtils.copyToClipboard(
+                            context,
+                            "functionResultContextKey",
+                            accessExample
+                        )
+                        Toast.makeText(
+                            context,
+                            i18n["ui.common.copied.to.clipboard"],
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }) {
+                        UnderlineSmallText(
+                            text = i18n["ui.context.data.example", mapOf("eg" to accessExample)]
+                        )
+                    }
+                }
 
                 SectionSpacer()
 

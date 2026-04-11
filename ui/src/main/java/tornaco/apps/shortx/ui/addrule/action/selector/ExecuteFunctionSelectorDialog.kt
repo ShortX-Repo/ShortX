@@ -25,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
@@ -34,6 +35,7 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.CommonDialogState
+import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
 import tornaco.apps.shortx.ui.base.FieldTitleWithTip
 import tornaco.apps.shortx.ui.base.InputValidateResult
 import tornaco.apps.shortx.ui.base.LargeSpacer
@@ -48,6 +50,7 @@ import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.function.AddFunctionActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 class ExecuteFunctionDialogState(
@@ -89,10 +92,17 @@ private fun ExecuteFunctionSelector(dialogState: ExecuteFunctionDialogState) {
     val vm = hiltViewModel<ExecuteFunctionSelectorViewModel>()
     val state by vm.state.collectAsState()
     val i18n = LocalI18N.current
+    val context = LocalContext.current
 
     LaunchedEffect(vm, dialogState.currentSettings) {
         vm.initFrom(dialogState.currentSettings)
     }
+
+    DisposableEffectWithLifeCycle(
+        onResume = {
+            vm.refreshSelectedFunction()
+        }
+    )
 
     ShortXTheme {
         Surface(
@@ -150,6 +160,11 @@ private fun ExecuteFunctionSelector(dialogState: ExecuteFunctionDialogState) {
                                     ColoredIcon(size = 36.dp) {
                                         RemixIcon(remixName = imageVectorForAction(action = Action.ExecuteFunction::class))
                                     }
+                                },
+                                onClick = {
+                                    context.startActivity(
+                                        AddFunctionActivity.editIntent(context, state.functionId)
+                                    )
                                 }
                             )
                         }

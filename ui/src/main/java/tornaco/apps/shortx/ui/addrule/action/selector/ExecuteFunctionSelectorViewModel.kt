@@ -26,72 +26,83 @@ class ExecuteFunctionSelectorViewModel @Inject constructor(@ApplicationContext c
         context, { ExecuteFunctionSelectorState() }
     ) {
 
+    private fun mergeParameterInputs(
+        parameters: List<FuncParameter>,
+        currentInputs: List<FuncParameterInput>
+    ): List<FuncParameterInput> {
+        return currentInputs.toMutableList().apply {
+            addAll(parameters.filterNot { parameter ->
+                val name = parameter.name
+                any { input -> input.name == name }
+            }.map { it.asDefaultInput() })
+            removeIf { input -> parameters.none { parameter -> parameter.name == input.name } }
+        }
+    }
+
+    private fun updateStateForFunction(
+        functionId: String,
+        fallbackName: String?,
+        currentInputs: List<FuncParameterInput>
+    ) {
+        val function = shortXManager.getFunctionById(functionId)
+        if (function == null) {
+            updateState {
+                copy(
+                    functionId = functionId,
+                    name = fallbackName,
+                    parameters = emptyList(),
+                    parameterInputs = currentInputs,
+                    loadErrorMessage = i18N.get(
+                        key = "ui.action.execute.function.not.found",
+                        fallback = "Function not found, please set again"
+                    )
+                )
+            }
+            return
+        }
+
+        updateState {
+            copy(
+                functionId = function.id,
+                name = function.name,
+                parameters = function.parametersList,
+                parameterInputs = mergeParameterInputs(function.parametersList, currentInputs),
+                loadErrorMessage = null
+            )
+        }
+    }
+
     fun initFrom(settings: Action.ExecuteFunction?) {
         if (settings == null) {
             resetState()
             return
         }
 
-        val function = shortXManager.getFunctionById(settings.functionId)
-        if (function == null) {
-            updateState {
-                copy(
-                    functionId = settings.functionId,
-                    name = settings.name,
-                    parameterInputs = settings.parameterInputs,
-                    parameters = emptyList(),
-                    loadErrorMessage = i18N.get(
-                        key = "ui.action.execute.function.not.found",
-                        fallback = "Function not found, please set again"
-                    )
-                )
-            }
-            return
-        }
-
-        updateState {
-            copy(
-                functionId = function.id,
-                name = function.name,
-                parameters = function.parametersList,
-                parameterInputs = settings.parameterInputs.toMutableList().apply {
-                    addAll(function.parametersList.filterNot { parameter ->
-                        val name = parameter.name
-                        any { input -> input.name == name }
-                    }.map { it.asDefaultInput() })
-                },
-                loadErrorMessage = null
-            )
-        }
+        updateStateForFunction(
+            functionId = settings.functionId,
+            fallbackName = settings.name,
+            currentInputs = settings.parameterInputs
+        )
     }
 
     fun selectFunction(functionId: String) {
-        val function = shortXManager.getFunctionById(functionId)
-        if (function == null) {
-            updateState {
-                copy(
-                    functionId = functionId,
-                    name = null,
-                    parameters = emptyList(),
-                    parameterInputs = emptyList(),
-                    loadErrorMessage = i18N.get(
-                        key = "ui.action.execute.function.not.found",
-                        fallback = "Function not found, please set again"
-                    )
-                )
-            }
-            return
-        }
+        updateStateForFunction(
+            functionId = functionId,
+            fallbackName = null,
+            currentInputs = emptyList()
+        )
+    }
 
-        updateState {
-            copy(
-                functionId = function.id,
-                name = function.name,
-                parameters = function.parametersList,
-                parameterInputs = function.parametersList.map { it.asDefaultInput() },
-                loadErrorMessage = null
-            )
-        }
+    fun refreshSelectedFunction() {
+        val currentState = state.value
+        val functionId = currentState.functionId
+        if (functionId.isBlank()) return
+
+        updateStateForFunction(
+            functionId = functionId,
+            fallbackName = currentState.name,
+            currentInputs = currentState.parameterInputs
+        )
     }
 
     fun updateParamInput(update: FuncParameterInput) {
