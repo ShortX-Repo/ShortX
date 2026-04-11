@@ -21,7 +21,6 @@ class CornerSwipeToCenterDetector(
         private const val GESTURE_HINT_SHOW_DISTANCE_DP = 12
         private const val GESTURE_HINT_MAX_VISUAL_DISTANCE_DP = 72
         private const val GESTURE_HINT_READY_PROGRESS = 0.72f
-        private const val GESTURE_HINT_ANCHOR_INSET_DP = 26
         private val MIN_DIRECTION_DOT =
             cos(Math.toRadians(CORNER_SWIPE_MAX_ANGLE_DEVIATION_DEG.toDouble())).toFloat()
         private val MIN_HINT_DIRECTION_DOT =
@@ -133,8 +132,8 @@ class CornerSwipeToCenterDetector(
         gestureHintController.onGestureProgress(
             GestureHintModel(
                 token = trackedToken,
-                anchorX = hintAnchorX(corner),
-                anchorY = hintAnchorY(corner),
+                anchorX = downX,
+                anchorY = downY,
                 directionX = expectedDirection(corner).first,
                 directionY = expectedDirection(corner).second,
                 progress = progress,
@@ -185,20 +184,6 @@ class CornerSwipeToCenterDetector(
             ScreenCorner.CornerBottomRight -> width to height
             else -> 0f to 0f
         }
-    }
-
-    private fun hintAnchorX(corner: ScreenCorner): Float {
-        val screenSize = context.screenSize()
-        val direction = expectedDirection(corner)
-        return cornerPoint(corner, screenSize.x.toFloat(), screenSize.y.toFloat()).first +
-                direction.first * GESTURE_HINT_ANCHOR_INSET_DP._dp
-    }
-
-    private fun hintAnchorY(corner: ScreenCorner): Float {
-        val screenSize = context.screenSize()
-        val direction = expectedDirection(corner)
-        return cornerPoint(corner, screenSize.x.toFloat(), screenSize.y.toFloat()).second +
-                direction.second * GESTURE_HINT_ANCHOR_INSET_DP._dp
     }
 
     private fun reset() {
