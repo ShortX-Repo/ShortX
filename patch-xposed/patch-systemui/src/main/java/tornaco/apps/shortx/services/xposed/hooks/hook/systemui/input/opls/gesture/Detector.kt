@@ -90,8 +90,10 @@ class Detector(
             service.getSwipeDistanceThresholdDp()._dp
         )
 
+    private val gestureHintController = GestureHintController(context)
+
     private val cornerSwipeToCenterDetector =
-        CornerSwipeToCenterDetector(context, service)
+        CornerSwipeToCenterDetector(context, service, gestureHintController)
 
     init {
         service.obsGestureSettingsChanged {
@@ -115,6 +117,7 @@ class Detector(
         screenSize = context.screenSize().apply {
             logger.w("onConfigurationChanged, screenSize: $this")
         }
+        gestureHintController.onConfigurationChanged()
         // 屏幕配置变化时清除缓存
         invalidateCache()
     }
