@@ -72,6 +72,7 @@ When adding or changing product translations, update the checked-in JSON assets 
 
 - [traces/notification-rule-flow.md](traces/notification-rule-flow.md)
 - [traces/method-hook-flow.md](traces/method-hook-flow.md)
+- [traces/edge-gesture-ui-service-patch-flow.md](traces/edge-gesture-ui-service-patch-flow.md)
 
 ## Support
 
