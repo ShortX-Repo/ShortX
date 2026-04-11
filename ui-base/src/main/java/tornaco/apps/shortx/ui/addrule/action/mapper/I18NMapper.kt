@@ -240,6 +240,14 @@ fun labelAndDescriptionForActionSelector(
         Action.ShowPPN::class -> i18N["ui.action.show.ppn"] to null
         Action.RemovePPN::class -> i18N["ui.action.remove.ppn"] to null
         Action.FromDA::class -> i18N["ui.action.from.da"] to null
+        Action.ExecuteFunction::class -> i18N.get(
+            key = "ui.action.execute.function",
+            fallback = "Execute function"
+        ) to null
+        Action.SetFunctionReturnValue::class -> i18N.get(
+            key = "ui.action.set.function.return.value",
+            fallback = "Set function return value"
+        ) to null
         Action.FindAndClickViewByText::class -> i18N["ui.action.find.click.view.by.text"] to null
         Action.FindAndClickViewById::class -> i18N["ui.action.find.click.view.by.id"] to null
         Action.FindAndClickMatchedView::class -> i18N["ui.action.find.click.view.matched"] to i18N["ui.action.find.click.view.matched.description"]
@@ -767,6 +775,36 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                     add(i18N["ui.action.from.da.not.found"] + "${PREFIX_MD_ICON}${Remix.System.alert_fill}")
                 }
             }
+        }
+
+        is Action.ExecuteFunction -> {
+            mutableListOf(
+                i18N.get(
+                    key = "ui.action.execute.function",
+                    fallback = "Execute function"
+                )
+            ).apply {
+                if (action.name != null) {
+                    add(action.name)
+                } else {
+                    add(
+                        i18N.get(
+                            key = "ui.action.execute.function.not.found",
+                            fallback = "Function not found, please set again"
+                        ) + "${PREFIX_MD_ICON}${Remix.System.alert_fill}"
+                    )
+                }
+            }
+        }
+
+        is Action.SetFunctionReturnValue -> {
+            listOf(
+                i18N.get(
+                    key = "ui.action.set.function.return.value",
+                    fallback = "Set function return value"
+                ),
+                action.value
+            )
         }
 
         is Action.FindAndClickViewByText -> {

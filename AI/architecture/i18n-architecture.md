@@ -66,6 +66,12 @@ Important behavior:
 - files are sorted before loading
 - later-loaded files can override earlier keys
 
+Development note:
+
+- when adding new user-facing i18n keys, put them in the checked-in files under `ui/src/main/assets/i18n/`
+- do not rely on fallback strings in code as the final source of truth for product text
+- keep the locale files aligned at least for `en-US`, `zh-CN`, and `zh-TW`
+
 This means the translation set can be split across multiple JSON files instead of one giant file.
 
 ## UI-Side Implementation

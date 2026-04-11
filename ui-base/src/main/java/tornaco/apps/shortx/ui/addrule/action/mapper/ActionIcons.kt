@@ -317,6 +317,14 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Editor.link
         }
 
+        Action.ExecuteFunction::class -> {
+            Remix.System.function_fill
+        }
+
+        Action.SetFunctionReturnValue::class -> {
+            Remix.Editor.text
+        }
+
         Action.FindAndClickViewByText::class -> {
             Remix.Business.window_2_fill
         }

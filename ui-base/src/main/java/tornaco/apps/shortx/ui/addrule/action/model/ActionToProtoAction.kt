@@ -22,6 +22,7 @@ import tornaco.apps.shortx.core.proto.action.DisplayImage
 import tornaco.apps.shortx.core.proto.action.DownloadFile
 import tornaco.apps.shortx.core.proto.action.EnableUniversalCopy
 import tornaco.apps.shortx.core.proto.action.EnableViewIdViewer
+import tornaco.apps.shortx.core.proto.action.ExecuteFunction
 import tornaco.apps.shortx.core.proto.action.ExecuteJS
 import tornaco.apps.shortx.core.proto.action.ExecuteMVEL
 import tornaco.apps.shortx.core.proto.action.ExpandNotification
@@ -95,6 +96,7 @@ import tornaco.apps.shortx.core.proto.action.SetDNDEnabled
 import tornaco.apps.shortx.core.proto.action.SetDarkModeEnabled
 import tornaco.apps.shortx.core.proto.action.SetDataEnabled
 import tornaco.apps.shortx.core.proto.action.SetFlashLightEnabled
+import tornaco.apps.shortx.core.proto.action.SetFunctionReturnValue
 import tornaco.apps.shortx.core.proto.action.SetHotSpotEnabled
 import tornaco.apps.shortx.core.proto.action.SetLocationEnabled
 import tornaco.apps.shortx.core.proto.action.SetMasterSync
@@ -1017,6 +1019,27 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setDaId(daId)
                 .setNote(overrideNote ?: note)
                 .addAllFuncParameterInputs(parameterInputs)
+                .build()
+        }
+
+        is Action.ExecuteFunction -> {
+            ExecuteFunction.newBuilder().setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setFunctionId(functionId)
+                .setNote(overrideNote ?: note)
+                .addAllFuncParameterInputs(parameterInputs)
+                .build()
+        }
+
+        is Action.SetFunctionReturnValue -> {
+            SetFunctionReturnValue.newBuilder().setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setValue(value)
+                .setNote(overrideNote ?: note)
                 .build()
         }
 

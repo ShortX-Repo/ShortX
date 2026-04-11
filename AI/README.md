@@ -11,6 +11,8 @@ When changing AIDL or protobuf definitions in `core-api`, regenerate sources bef
 
 Then run the relevant compile task such as `./gradlew :core-api:compileKotlin` or module-specific validation.
 
+When adding or changing product translations, update the checked-in JSON assets under `ui/src/main/assets/i18n/` instead of only changing code-side fallback text.
+
 ## Structure
 
 - `build/`: build infrastructure and generated asset modules

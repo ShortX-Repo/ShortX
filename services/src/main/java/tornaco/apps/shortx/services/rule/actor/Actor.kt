@@ -345,6 +345,14 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.FromDA
     },
+    ExecuteFunction {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ExecuteFunction
+    },
+    SetFunctionReturnValue {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.SetFunctionReturnValue
+    },
     FindAndClickViewByText {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.FindAndClickViewByText

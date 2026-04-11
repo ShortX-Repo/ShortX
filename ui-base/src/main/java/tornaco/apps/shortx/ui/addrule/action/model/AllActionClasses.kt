@@ -77,6 +77,8 @@ val allActionClasses = listOf(
     Action.MapNav::class,
     Action.MapQueryBus::class,
     Action.FromDA::class,
+    Action.ExecuteFunction::class,
+    Action.SetFunctionReturnValue::class,
     Action.FindAndClickViewByText::class,
     Action.FindAndClickViewById::class,
     Action.FindAndClickMatchedView::class,

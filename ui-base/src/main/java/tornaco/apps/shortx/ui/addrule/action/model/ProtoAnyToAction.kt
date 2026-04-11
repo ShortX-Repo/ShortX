@@ -1215,6 +1215,35 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.ExecuteFunction::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.action.ExecuteFunction::class.java
+            val function = shortXManager.getFunctionById(data.functionId)
+            Action.ExecuteFunction(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                functionId = data.functionId,
+                name = function?.name,
+                parameterInputs = data.funcParameterInputsList ?: emptyList(),
+                parameters = function?.parametersList ?: emptyList()
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.SetFunctionReturnValue::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.SetFunctionReturnValue::class.java
+            Action.SetFunctionReturnValue(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                value = data.value,
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.FindAndClickViewByText::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.action.FindAndClickViewByText::class.java

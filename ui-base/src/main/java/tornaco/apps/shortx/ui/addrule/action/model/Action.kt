@@ -2527,6 +2527,63 @@ sealed interface Action : Parcelable {
     }
 
     @Parcelize
+    data class ExecuteFunction(
+        override val id: String = defaultNewActionId(),
+        override val isEnabled: Boolean = true,
+        override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val contextData: List<ContextData> = emptyList(),
+        override val note: String = "",
+        val functionId: String,
+        val name: String?,
+        val parameterInputs: List<FuncParameterInput>,
+        val parameters: List<FuncParameter>
+    ) : Action {
+        override fun clone(
+            id: String,
+            note: String,
+            isEnabled: Boolean,
+            actionOnError: ActionOnError,
+            contextData: List<ContextData>
+        ): Action {
+            return this.copy(
+                id = id,
+                note = note,
+                isEnabled = isEnabled,
+                actionOnError = actionOnError,
+                contextData = contextData
+            )
+        }
+    }
+
+    @Parcelize
+    data class SetFunctionReturnValue(
+        override val id: String = defaultNewActionId(),
+        override val isEnabled: Boolean = true,
+        override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val contextData: List<ContextData> = emptyList(),
+        override val note: String = "",
+        val value: String,
+    ) : Action {
+        override fun clone(
+            id: String,
+            note: String,
+            isEnabled: Boolean,
+            actionOnError: ActionOnError,
+            contextData: List<ContextData>
+        ): Action {
+            return this.copy(
+                id = id,
+                note = note,
+                isEnabled = isEnabled,
+                actionOnError = actionOnError,
+                contextData = contextData
+            )
+        }
+    }
+
+    @Parcelize
     data class FindAndClickViewByText(
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,

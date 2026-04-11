@@ -57,38 +57,38 @@
 
 五、动作模型与转换
 
-- [ ] 38. 在 ui-base 的 Action sealed model 中新增 Action.ExecuteFunction。
-- [ ] 39. 在 ui-base 的 Action sealed model 中新增 Action.SetFunctionReturnValue。
-- [ ] 40. 为 Action.ExecuteFunction 定义 UI 侧字段结构。
-- [ ] 41. 为 Action.SetFunctionReturnValue 定义 UI 侧字段结构。
-- [ ] 42. 在 ProtoAnyToAction 中增加 ExecuteFunction 到 UI Action 的转换。
-- [ ] 43. 在 ProtoAnyToAction 中增加 SetFunctionReturnValue 到 UI Action 的转换。
-- [ ] 44. 在 ActionToProtoAction 中增加 UI Action.ExecuteFunction 到 proto 的转换。
-- [ ] 45. 在 ActionToProtoAction 中增加 UI Action.SetFunctionReturnValue 到 proto 的转换。
-- [ ] 46. 为这两个新动作补齐 clone/复制行为。
+- [x] 38. 在 ui-base 的 Action sealed model 中新增 Action.ExecuteFunction。
+- [x] 39. 在 ui-base 的 Action sealed model 中新增 Action.SetFunctionReturnValue。
+- [x] 40. 为 Action.ExecuteFunction 定义 UI 侧字段结构。
+- [x] 41. 为 Action.SetFunctionReturnValue 定义 UI 侧字段结构。
+- [x] 42. 在 ProtoAnyToAction 中增加 ExecuteFunction 到 UI Action 的转换。
+- [x] 43. 在 ProtoAnyToAction 中增加 SetFunctionReturnValue 到 UI Action 的转换。
+- [x] 44. 在 ActionToProtoAction 中增加 UI Action.ExecuteFunction 到 proto 的转换。
+- [x] 45. 在 ActionToProtoAction 中增加 UI Action.SetFunctionReturnValue 到 proto 的转换。
+- [x] 46. 为这两个新动作补齐 clone/复制行为。
 
 六、执行函数运行时
 
-- [ ] 47. 在 services actor 层新增 ExecuteFunction actor 实现类。
-- [ ] 48. 在 ActionEvaluatorImpl 中注册 ExecuteFunction 的处理分支。
-- [ ] 49. 在 ExecuteFunction actor 中按 functionId 读取函数。
-- [ ] 50. 在函数不存在时返回明确错误。
-- [ ] 51. 为 ExecuteFunction 增加默认参数与调用参数合并逻辑。
-- [ ] 52. 复用现有 FuncParameter.asDefaultInput 生成默认参数输入。
-- [ ] 53. 构造函数执行专用的上下文数据对象。
-- [ ] 54. 在函数执行开始前初始化 funcReturnValue 为空字符串。
-- [ ] 55. 顺序执行函数内部动作列表。
-- [ ] 56. 函数执行结束后读取 funcReturnValue 并作为结果返回。
-- [ ] 57. 评估是否需要防止函数递归调用；若需要，补保护逻辑。
+- [x] 47. 在 services actor 层新增 ExecuteFunction actor 实现类。
+- [x] 48. 在 ActionEvaluatorImpl 中注册 ExecuteFunction 的处理分支。
+- [x] 49. 在 ExecuteFunction actor 中按 functionId 读取函数。
+- [x] 50. 在函数不存在时返回明确错误。
+- [x] 51. 为 ExecuteFunction 增加默认参数与调用参数合并逻辑。
+- [x] 52. 复用现有 FuncParameter.asDefaultInput 生成默认参数输入。
+- [x] 53. 构造函数执行专用的上下文数据对象。
+- [x] 54. 在函数执行开始前初始化 funcReturnValue 为空字符串。
+- [x] 55. 顺序执行函数内部动作列表。
+- [x] 56. 函数执行结束后读取 funcReturnValue 并作为结果返回。
+- [x] 57. 评估是否需要防止函数递归调用；若需要，补保护逻辑。
 
 七、设置返回值运行时
 
-- [ ] 58. 在 services actor 层新增 SetFunctionReturnValue actor 实现类。
-- [ ] 59. 在 ActionEvaluatorImpl 中注册 SetFunctionReturnValue 的处理分支。
-- [ ] 60. 在执行时先对 value 做参数替换。
-- [ ] 61. 在执行时再做上下文变量展开。
-- [ ] 62. 将最终字符串写入 funcReturnValue。
-- [ ] 63. 确认重复执行时会覆盖上一次返回值。
+- [x] 58. 在 services actor 层新增 SetFunctionReturnValue actor 实现类。
+- [x] 59. 在 ActionEvaluatorImpl 中注册 SetFunctionReturnValue 的处理分支。
+- [x] 60. 在执行时先对 value 做参数替换。
+- [x] 61. 在执行时再做上下文变量展开。
+- [x] 62. 将最终字符串写入 funcReturnValue。
+- [x] 63. 确认重复执行时会覆盖上一次返回值。
 
 八、函数列表与编辑页面
 
