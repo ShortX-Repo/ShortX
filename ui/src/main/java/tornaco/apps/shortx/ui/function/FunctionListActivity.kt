@@ -18,9 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -34,7 +31,6 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
-import tornaco.apps.shortx.core.proto.func.`Function` as ShortXFunction
 
 @AndroidEntryPoint
 class FunctionListActivity : BaseActivity() {
@@ -68,17 +64,59 @@ fun FunctionListScreen(back: () -> Unit) {
         vm.loadState()
     }
 
-    var deletingFunction by remember { mutableStateOf<ShortXFunction?>(null) }
     val deleteDialogState = rememberConfirmDialogState()
+    val pendingDelete = state.pendingDelete
+    LaunchedEffect(pendingDelete) {
+        if (pendingDelete != null) {
+            deleteDialogState.show()
+        }
+    }
+    LaunchedEffect(deleteDialogState.isShowing) {
+        if (!deleteDialogState.isShowing && pendingDelete != null) {
+            vm.dismissDelete()
+        }
+    }
     ConfirmDialog(
         title = "ui.common.delete",
         state = deleteDialogState,
-        data = deletingFunction,
+        data = pendingDelete,
         messageHint = {
-            i18n["ui.delete.dialog.confirm", mapOf("wht" to (it?.name ?: ""))]
+            buildString {
+                append(i18n["ui.delete.dialog.confirm", mapOf("wht" to (it?.function?.name ?: ""))])
+
+                val refs = it?.references
+                if (refs?.hasReferences == true) {
+                    append("\n\n")
+                    append(i18n["ui.function.delete.referenced"])
+
+                    if (refs.ruleTitles.isNotEmpty()) {
+                        append("\n")
+                        append(i18n["ui.function.delete.references.rules"])
+                        append(": ")
+                        append(refs.ruleTitles.joinToString())
+                    }
+
+                    if (refs.directActionTitles.isNotEmpty()) {
+                        append("\n")
+                        append(i18n["ui.function.delete.references.direct.actions"])
+                        append(": ")
+                        append(refs.directActionTitles.joinToString())
+                    }
+
+                    if (refs.functionNames.isNotEmpty()) {
+                        append("\n")
+                        append(i18n["ui.function.delete.references.functions"])
+                        append(": ")
+                        append(refs.functionNames.joinToString())
+                    }
+
+                    append("\n\n")
+                    append(i18n["ui.function.delete.references.continue"])
+                }
+            }
         },
         onConfirm = {
-            it?.id?.let(vm::deleteFunction)
+            vm.confirmDeletePending()
         }
     )
 
@@ -120,8 +158,7 @@ fun FunctionListScreen(back: () -> Unit) {
                         },
                         action1 = {
                             IconButton(onClick = {
-                                deletingFunction = function.raw
-                                deleteDialogState.show()
+                                vm.prepareDelete(function.raw)
                             }) {
                                 RemixIcon(Remix.System.delete_bin_2_line)
                             }
