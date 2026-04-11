@@ -84,6 +84,7 @@ import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.DirectActionSetsStore
 import tornaco.apps.shortx.services.data.DirectActionSettingsStore
+import tornaco.apps.shortx.services.data.FunctionSettingsStore
 import tornaco.apps.shortx.services.data.GlobalVarStore
 import tornaco.apps.shortx.services.data.RuleSetsStore
 import tornaco.apps.shortx.services.data.RuleSettingsStore
@@ -127,6 +128,9 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     }
     private val dasSettingsStore: DirectActionSettingsStore by lazy {
         DirectActionSettingsStore(systemServiceScope)
+    }
+    private val functionSettingsStore: FunctionSettingsStore by lazy {
+        FunctionSettingsStore(systemServiceScope)
     }
 
     private val toggleSettingsStore by lazy {
@@ -295,6 +299,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
         ruleSettingsStore.readBlocking()
         dasSettingsStore.readBlocking()
+        functionSettingsStore.readBlocking()
         toggleSettingsStore.readBlocking()
         globalVarStore.readBlocking()
         ruleSetsStore.readBlocking()
@@ -770,30 +775,29 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     fun getDirectActionCount() = dasSettingsStore.getDirectActionCount()
 
-    private fun functionManagementNotImplemented(): Nothing {
-        throw UnsupportedOperationException(
-            "Function management is not implemented yet. Complete function store tasks first."
-        )
-    }
-
     fun addFunction(function: ShortXFunction) {
-        logger.w("addFunction is not implemented yet: ${function.id}")
-        functionManagementNotImplemented()
+        logger.d("addFunction: ${function.id}")
+        functionSettingsStore.addFunction(function)
     }
 
     fun deleteFunction(id: String) {
-        logger.w("deleteFunction is not implemented yet: $id")
-        functionManagementNotImplemented()
+        val existing = functionSettingsStore.getFunctionById(id)
+        if (existing != null) {
+            logger.d("deleteFunction: $id")
+            functionSettingsStore.deleteFunction(id)
+        } else {
+            logger.e("deleteFunction, function not found: $id")
+        }
     }
 
     fun getFunctionById(id: String): ShortXFunction? {
-        logger.w("getFunctionById is not implemented yet: $id")
-        return functionManagementNotImplemented()
+        logger.logOnDebug { "getFunctionById: $id" }
+        return functionSettingsStore.getFunctionById(id)
     }
 
     fun getAllFunctions(): List<ShortXFunction> {
-        logger.w("getAllFunctions is not implemented yet")
-        return functionManagementNotImplemented()
+        logger.logOnDebug { "getAllFunctions" }
+        return functionSettingsStore.getAllFunctions()
     }
 
     fun executeDirectionActionById(

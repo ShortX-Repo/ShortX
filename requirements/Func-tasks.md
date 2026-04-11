@@ -36,24 +36,24 @@
 
 三、函数存储层
 
-- [ ] 23. 新增函数配置 store 类，职责对齐 DirectActionSettingsStore。
-- [ ] 24. 让 store 底层读写 FunctionList。
-- [ ] 25. 为 store 增加 getAllFunctions 方法。
-- [ ] 26. 为 store 增加 getFunctionById 方法。
-- [ ] 27. 为 store 增加 addFunction 方法。
-- [ ] 28. 为 store 增加 deleteFunction 方法。
-- [ ] 29. 为 addFunction 实现“同 ID 覆盖更新”逻辑。
-- [ ] 30. 为 store 增加空数据初始化与兼容旧版本处理。
+- [x] 23. 新增函数配置 store 类，职责对齐 DirectActionSettingsStore。
+- [x] 24. 让 store 底层读写 FunctionList。
+- [x] 25. 为 store 增加 getAllFunctions 方法。
+- [x] 26. 为 store 增加 getFunctionById 方法。
+- [x] 27. 为 store 增加 addFunction 方法。
+- [x] 28. 为 store 增加 deleteFunction 方法。
+- [x] 29. 为 addFunction 实现“同 ID 覆盖更新”逻辑。
+- [x] 30. 为 store 增加空数据初始化与兼容旧版本处理。
 
 四、服务端管理逻辑
 
-- [ ] 31. 在 services 层接入函数 store。
-- [ ] 32. 在 RuleService 或对应服务类中实现 addFunction。
-- [ ] 33. 在 RuleService 或对应服务类中实现 deleteFunction。
-- [ ] 34. 在 RuleService 或对应服务类中实现 getFunctionById。
-- [ ] 35. 在 RuleService 或对应服务类中实现 getAllFunctions。
-- [ ] 36. 为 deleteFunction 增加“函数不存在”日志或错误处理。
-- [ ] 37. 为函数管理接口增加基础调试日志。
+- [x] 31. 在 services 层接入函数 store。
+- [x] 32. 在 RuleService 或对应服务类中实现 addFunction。
+- [x] 33. 在 RuleService 或对应服务类中实现 deleteFunction。
+- [x] 34. 在 RuleService 或对应服务类中实现 getFunctionById。
+- [x] 35. 在 RuleService 或对应服务类中实现 getAllFunctions。
+- [x] 36. 为 deleteFunction 增加“函数不存在”日志或错误处理。
+- [x] 37. 为函数管理接口增加基础调试日志。
 
 五、动作模型与转换
 
