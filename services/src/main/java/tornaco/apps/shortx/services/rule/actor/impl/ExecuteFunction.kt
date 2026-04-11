@@ -90,6 +90,10 @@ object ExecuteFunction : Actor {
                 else -> FuncReturnValue.newBuilder().setValue("").build()
             }
             contextData.override(GenericContextData.CONTEXT_FUNC_RETURN_VALUE, returnValue)
+            val resultContextDataKey = function.getResultContextDataKey()
+            if (resultContextDataKey.isNotBlank()) {
+                contextData.override(resultContextDataKey, returnValue.value)
+            }
             Actor.Res(returnValue.value)
         } finally {
             functionContext.recycle()

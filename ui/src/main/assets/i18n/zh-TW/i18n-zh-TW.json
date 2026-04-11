@@ -1250,6 +1250,8 @@
   "ui.global.var.desc": "查看和管理全局變數",
   "ui.function.name": "名稱",
   "ui.function.return.type": "返回類型",
+  "ui.function.result.context.key": "返回值上下文 key",
+  "ui.function.result.context.key.description": "函數執行結束後，會把返回值自動寫入這個 key 對應的自訂上下文變數。留空表示不寫入。",
   "ui.function.desc": "管理和編輯自定義函數",
   "ui.function.empty": "還沒有函數",
   "ui.function.summary": "返回 {type} | {params} 個參數 | {actions} 個動作",

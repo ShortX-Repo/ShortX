@@ -1250,6 +1250,8 @@
   "ui.global.var.desc": "查看和管理全局变量",
   "ui.function.name": "名称",
   "ui.function.return.type": "返回类型",
+  "ui.function.result.context.key": "返回值上下文 key",
+  "ui.function.result.context.key.description": "函数执行结束后，会把返回值自动写入这个 key 对应的自定义上下文变量。留空表示不写入。",
   "ui.function.desc": "管理和编辑自定义函数",
   "ui.function.empty": "还没有函数",
   "ui.function.summary": "返回 {type} | {params} 个参数 | {actions} 个动作",

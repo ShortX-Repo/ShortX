@@ -1251,6 +1251,8 @@
   "ui.global.var.desc": "Manage and view global variables",
   "ui.function.name": "Name",
   "ui.function.return.type": "Return type",
+  "ui.function.result.context.key": "Return context key",
+  "ui.function.result.context.key.description": "After the function finishes, its return value will be written automatically to the custom context variable identified by this key. Leave it empty to disable this.",
   "ui.function.desc": "Manage and edit custom functions",
   "ui.function.empty": "No functions yet",
   "ui.function.summary": "Return {type} | {params} params | {actions} actions",

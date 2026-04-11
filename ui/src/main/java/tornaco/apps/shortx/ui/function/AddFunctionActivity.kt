@@ -34,6 +34,7 @@ import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
 import tornaco.apps.shortx.ui.base.ConfirmDialog
 import tornaco.apps.shortx.ui.base.FieldTitle
+import tornaco.apps.shortx.ui.base.FieldTitleWithTip
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -209,6 +210,21 @@ fun AddFunctionScreen(
                     value = state.returnType,
                     readOnly = true,
                     onValueChange = {},
+                    showSymbolButton = false,
+                )
+
+                LargeSpacer()
+
+                FieldTitleWithTip(
+                    text = LocalI18N.current["ui.function.result.context.key"],
+                    tipText = LocalI18N.current["ui.function.result.context.key.description"]
+                )
+                Spacer(modifier = Modifier.size(8.dp))
+                ShortXTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = state.resultContextDataKey,
+                    readOnly = readOnly,
+                    onValueChange = { vm.setResultContextDataKey(it) },
                     showSymbolButton = false,
                 )
 

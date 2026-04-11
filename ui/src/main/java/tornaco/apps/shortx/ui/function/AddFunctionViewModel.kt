@@ -23,6 +23,7 @@ data class AddFunctionState(
     val id: String = defaultNewFunctionId(),
     val name: String = "",
     val returnType: String = "string",
+    val resultContextDataKey: String = "",
     val parameters: List<FuncParameter> = emptyList(),
     val actions: List<Action> = emptyList(),
     val createTime: Long = System.currentTimeMillis(),
@@ -84,6 +85,14 @@ class AddFunctionViewModel @Inject constructor(@ApplicationContext context: Cont
         }
     }
 
+    fun setResultContextDataKey(key: String) {
+        if (key != state.value.resultContextDataKey) {
+            updateState {
+                copy(resultContextDataKey = key, functionChanged = true)
+            }
+        }
+    }
+
     fun removeParameter(parameter: FuncParameter) {
         updateState {
             copy(parameters = parameters.toMutableList().apply {
@@ -107,6 +116,7 @@ class AddFunctionViewModel @Inject constructor(@ApplicationContext context: Cont
                 .setId(state.value.id)
                 .setName(state.value.name)
                 .setReturnType(state.value.returnType)
+                .setResultContextDataKey(state.value.resultContextDataKey.trim())
                 .addAllParameters(state.value.parameters)
                 .addAllActions(protoActions)
                 .setCreateTime(state.value.createTime)
@@ -146,6 +156,7 @@ class AddFunctionViewModel @Inject constructor(@ApplicationContext context: Cont
                         id = it.id,
                         name = it.name,
                         returnType = it.returnType.fallbackOnEmpty("string"),
+                        resultContextDataKey = it.resultContextDataKey,
                         parameters = it.parametersList,
                         actions = actionContentStateHandler.actions,
                         createTime = it.createTime,

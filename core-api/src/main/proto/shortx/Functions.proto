@@ -31,6 +31,7 @@ message Function {
   repeated google.protobuf.Any actions = 5;
   int64 createTime = 6;
   int64 lastUpdateTime = 7;
+  string resultContextDataKey = 8;
 }
 
 message FunctionList {
