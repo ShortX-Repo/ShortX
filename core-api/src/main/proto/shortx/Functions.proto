@@ -4,6 +4,8 @@ option java_package = "tornaco.apps.shortx.core.proto.func";
 option java_outer_classname = "OuterFunc";
 option java_multiple_files = true;
 
+import "google/protobuf/any.proto";
+
 message FuncParameter {
   string name = 1;
   string defaultValue = 2;
@@ -18,4 +20,19 @@ message FuncParameterInput {
 
 message FuncReturnValue {
   string value = 1;
+}
+
+message Function {
+  string id = 1;
+  string name = 2;
+  // Current requirement fixes the return type to string.
+  string returnType = 3;
+  repeated FuncParameter parameters = 4;
+  repeated google.protobuf.Any actions = 5;
+  int64 createTime = 6;
+  int64 lastUpdateTime = 7;
+}
+
+message FunctionList {
+  repeated Function functions = 1;
 }

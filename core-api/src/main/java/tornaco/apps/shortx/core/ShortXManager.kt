@@ -54,6 +54,7 @@ import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.MethodHook
+import tornaco.apps.shortx.core.proto.func.`Function` as ShortXFunction
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.plugins.ShortXPlugin
@@ -439,6 +440,39 @@ class ShortXManager(val service: IShortX) {
     fun getDirectActionCount(): Int {
         return invokeService(0) {
             directActionCount
+        }
+    }
+
+    fun addFunction(function: ShortXFunction) {
+        invokeService(Unit) {
+            addFunction(ByteArrayWrapper(function.toByteArray()))
+        }
+    }
+
+    fun deleteFunction(id: String) {
+        invokeService(Unit) {
+            deleteFunction(id)
+        }
+    }
+
+    fun getFunctionById(id: String): ShortXFunction? {
+        return invokeService(null) {
+            getFunctionById(id)?.byteData?.let {
+                ShortXFunction.parseFrom(it)
+            }
+        }
+    }
+
+    fun getAllFunctions(): List<ShortXFunction> {
+        return invokeService(emptyList()) {
+            getAllFunctions().mapNotNull {
+                runCatching {
+                    ShortXFunction.parseFrom(it.byteData)
+                }.getOrElse { err ->
+                    managerLogger.e(err, "Error parse Function.")
+                    null
+                }
+            }
         }
     }
 

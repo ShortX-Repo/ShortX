@@ -46,6 +46,7 @@ import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
 import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.factsAndQuitFacts
+import tornaco.apps.shortx.core.proto.func.`Function` as ShortXFunction
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.getTypeUrl
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
@@ -768,6 +769,32 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     }
 
     fun getDirectActionCount() = dasSettingsStore.getDirectActionCount()
+
+    private fun functionManagementNotImplemented(): Nothing {
+        throw UnsupportedOperationException(
+            "Function management is not implemented yet. Complete function store tasks first."
+        )
+    }
+
+    fun addFunction(function: ShortXFunction) {
+        logger.w("addFunction is not implemented yet: ${function.id}")
+        functionManagementNotImplemented()
+    }
+
+    fun deleteFunction(id: String) {
+        logger.w("deleteFunction is not implemented yet: $id")
+        functionManagementNotImplemented()
+    }
+
+    fun getFunctionById(id: String): ShortXFunction? {
+        logger.w("getFunctionById is not implemented yet: $id")
+        return functionManagementNotImplemented()
+    }
+
+    fun getAllFunctions(): List<ShortXFunction> {
+        logger.w("getAllFunctions is not implemented yet")
+        return functionManagementNotImplemented()
+    }
 
     fun executeDirectionActionById(
         context: EvaluateContext,

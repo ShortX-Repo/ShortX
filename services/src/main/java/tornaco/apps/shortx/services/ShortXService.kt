@@ -75,6 +75,7 @@ import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.proto.fact.MethodHook
 import tornaco.apps.shortx.core.proto.fact.ScreenGesture
 import tornaco.apps.shortx.core.proto.feature.AppFeature
+import tornaco.apps.shortx.core.proto.func.`Function` as ShortXFunction
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
@@ -417,6 +418,31 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             return shortXContext.rule.getDirectActionById(id)?.let {
                 ByteArrayWrapper(it.toByteArray())
             }
+        }
+
+        override fun addFunction(function: ByteArrayWrapper) {
+            enforceCallingPermissions()
+            v(context) {
+                shortXContext.rule.addFunction(ShortXFunction.parseFrom(function.byteData))
+            }
+        }
+
+        override fun deleteFunction(id: String) {
+            shortXContext.rule.deleteFunction(id)
+        }
+
+        override fun getFunctionById(id: String): ByteArrayWrapper? {
+            return shortXContext.rule.getFunctionById(id)?.let {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun getAllFunctions(): List<ByteArrayWrapper> {
+            return v(context) {
+                shortXContext.rule.getAllFunctions().map {
+                    ByteArrayWrapper(it.toByteArray())
+                }
+            } ?: emptyList()
         }
 
         override fun getAllDirectAction(

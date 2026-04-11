@@ -847,6 +847,27 @@ message FromDA {
   string id = 100;
 }
 
+message ExecuteFunction {
+  string functionId = 1;
+  repeated FuncParameterInput funcParameterInputs = 2;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message SetFunctionReturnValue {
+  string value = 1;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message FindAndClickViewByText {
   string text = 1;
   bool isRegex = 2;

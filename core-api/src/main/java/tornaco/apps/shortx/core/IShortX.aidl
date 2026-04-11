@@ -68,6 +68,14 @@ interface IShortX {
 
     // Direct Actions end
 
+    // Functions start
+    void addFunction(in ByteArrayWrapper function);
+    void deleteFunction(String id);
+    ByteArrayWrapper getFunctionById(String id);
+    List<ByteArrayWrapper> getAllFunctions();
+
+    // Functions end
+
     List<ByteArrayWrapper> getActionEvaluateRecords();
     List<ByteArrayWrapper> getConditionEvaluateRecords();
     List<ByteArrayWrapper> getFactPublishRecords();

@@ -8,31 +8,31 @@
 
 一、协议与数据模型
 
-- [ ] 1. 在 core-api/src/main/proto/shortx/Functions.proto 中新增 Function message。
-- [ ] 2. 为 Function 增加 id、name、returnType、parameters、actions、createTime、lastUpdateTime 字段。
-- [ ] 3. 在 core-api/src/main/proto/shortx/Functions.proto 中新增 FunctionList message。
-- [ ] 4. 为 Function.actions 增加 google.protobuf.Any 依赖并确认 proto import 正确。
-- [ ] 5. 将 Function.returnType 默认约定为 string，并在文档或常量中固定该约定。
-- [ ] 6. 在 core-api/src/main/proto/shortx/Actions.proto 中新增 ExecuteFunction message。
-- [ ] 7. 为 ExecuteFunction 增加 functionId 字段。
-- [ ] 8. 为 ExecuteFunction 增加 repeated FuncParameterInput funcParameterInputs 字段。
-- [ ] 9. 为 ExecuteFunction 补齐 customContextDataKey、actionOnError、isDisabled、note、id 通用字段。
-- [ ] 10. 在 core-api/src/main/proto/shortx/Actions.proto 中新增 SetFunctionReturnValue message。
-- [ ] 11. 为 SetFunctionReturnValue 增加 value 字段。
-- [ ] 12. 为 SetFunctionReturnValue 补齐 customContextDataKey、actionOnError、isDisabled、note、id 通用字段。
-- [ ] 13. 重新生成 proto 相关产物并确认工程可编译。
+- [x] 1. 在 core-api/src/main/proto/shortx/Functions.proto 中新增 Function message。
+- [x] 2. 为 Function 增加 id、name、returnType、parameters、actions、createTime、lastUpdateTime 字段。
+- [x] 3. 在 core-api/src/main/proto/shortx/Functions.proto 中新增 FunctionList message。
+- [x] 4. 为 Function.actions 增加 google.protobuf.Any 依赖并确认 proto import 正确。
+- [x] 5. 将 Function.returnType 默认约定为 string，并在文档或常量中固定该约定。
+- [x] 6. 在 core-api/src/main/proto/shortx/Actions.proto 中新增 ExecuteFunction message。
+- [x] 7. 为 ExecuteFunction 增加 functionId 字段。
+- [x] 8. 为 ExecuteFunction 增加 repeated FuncParameterInput funcParameterInputs 字段。
+- [x] 9. 为 ExecuteFunction 补齐 customContextDataKey、actionOnError、isDisabled、note、id 通用字段。
+- [x] 10. 在 core-api/src/main/proto/shortx/Actions.proto 中新增 SetFunctionReturnValue message。
+- [x] 11. 为 SetFunctionReturnValue 增加 value 字段。
+- [x] 12. 为 SetFunctionReturnValue 补齐 customContextDataKey、actionOnError、isDisabled、note、id 通用字段。
+- [x] 13. 重新生成 proto 相关产物并确认工程可编译。
 
 二、AIDL 与管理接口
 
-- [ ] 14. 在 AIDL 接口中新增 addFunction(Function function) 方法。
-- [ ] 15. 在 AIDL 接口中新增 deleteFunction(String id) 方法。
-- [ ] 16. 在 AIDL 接口中新增 getFunctionById(String id) 方法。
-- [ ] 17. 在 AIDL 接口中新增 getAllFunctions() 方法。
-- [ ] 18. 在 ShortXManager 中新增 addFunction 包装方法。
-- [ ] 19. 在 ShortXManager 中新增 deleteFunction 包装方法。
-- [ ] 20. 在 ShortXManager 中新增 getFunctionById 包装方法。
-- [ ] 21. 在 ShortXManager 中新增 getAllFunctions 包装方法。
-- [ ] 22. 检查 binder 传输的 proto 类型是否需要额外序列化处理。
+- [x] 14. 在 AIDL 接口中新增 addFunction(in ByteArrayWrapper function) 方法，并通过 ByteArrayWrapper 传输序列化后的 Function。
+- [x] 15. 在 AIDL 接口中新增 deleteFunction(String id) 方法。
+- [x] 16. 在 AIDL 接口中新增 getFunctionById(String id) 方法，返回序列化后的 ByteArrayWrapper。
+- [x] 17. 在 AIDL 接口中新增 getAllFunctions() 方法，返回序列化后的 ByteArrayWrapper 列表。
+- [x] 18. 在 ShortXManager 中新增 addFunction 包装方法。
+- [x] 19. 在 ShortXManager 中新增 deleteFunction 包装方法。
+- [x] 20. 在 ShortXManager 中新增 getFunctionById 包装方法。
+- [x] 21. 在 ShortXManager 中新增 getAllFunctions 包装方法。
+- [x] 22. 检查 binder 传输的 proto 类型是否需要额外序列化处理，并确认继续沿用 ByteArrayWrapper 方案。
 
 三、函数存储层
 
