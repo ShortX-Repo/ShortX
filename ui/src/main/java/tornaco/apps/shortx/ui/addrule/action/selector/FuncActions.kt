@@ -12,7 +12,10 @@ import tornaco.apps.shortx.ui.addrule.base.ActionCategory
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.base.rememberCategoryState
+import tornaco.apps.shortx.ui.base.InputValidateResult
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.TextInputDialog
+import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 
@@ -24,13 +27,33 @@ fun funcActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
     }
     MatchRegexSelectorDialog(state = matchRegexSelectorState)
 
+    val executeFunctionSelectorState = rememberExecuteFunctionDialogState {
+        addAction(it)
+    }
+    ExecuteFunctionSelectorDialog(state = executeFunctionSelectorState)
+
     val replaceRegexState = rememberReplaceRegexState {
         addAction(it)
     }
     ReplaceRegexSelectorDialog(state = replaceRegexState)
 
+    val setFunctionReturnValueState = rememberTextInputState(
+        title = LocalI18N.current["ui.action.set.function.return.value"],
+        message = null,
+        inputValidator = { InputValidateResult.OK },
+        onSelected = {
+            addAction(Action.SetFunctionReturnValue(value = it))
+        }
+    )
+    TextInputDialog(state = setFunctionReturnValueState)
+
     return { source ->
         when (source.clazz) {
+            Action.ExecuteFunction::class -> {
+                executeFunctionSelectorState.show(source.getActionAs())
+                true
+            }
+
             Action.MatchRegex::class -> {
                 matchRegexSelectorState.show(source.getActionAs())
                 true
@@ -38,6 +61,11 @@ fun funcActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
 
             Action.ReplaceRegex::class -> {
                 replaceRegexState.show(source.getActionAs())
+                true
+            }
+
+            Action.SetFunctionReturnValue::class -> {
+                setFunctionReturnValueState.show(source.getActionAs<Action.SetFunctionReturnValue>()?.value)
                 true
             }
 
@@ -58,6 +86,8 @@ fun FuncActions(
     val i18N = LocalI18N.current
 
     val actionItems = listOf(
+        Action.ExecuteFunction::class,
+        Action.SetFunctionReturnValue::class,
         Action.MatchRegex::class,
         Action.ReplaceRegex::class,
     ).map {

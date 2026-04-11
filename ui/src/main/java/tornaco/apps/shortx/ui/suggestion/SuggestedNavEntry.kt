@@ -33,6 +33,7 @@ import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.SplitLines
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
+import tornaco.apps.shortx.ui.function.FunctionListActivity
 import tornaco.apps.shortx.ui.gvar.GlobalVarListActivity
 import tornaco.apps.shortx.ui.pkgset.PkgSetListActivity
 import tornaco.apps.shortx.ui.record.EvaRecordActivity
@@ -41,6 +42,7 @@ import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsScreenDialog
 
 enum class SuggestedNav(val labelKey: String) {
     GlobalVar("ui.global.var.title"),
+    Functions("ui.action.functions"),
     PkgSet("ui.pkg.set.title"),
     DanmuSettings("ui.settings.danmu"),
     ShowPointerLocation("ui.common.show.pointer.location"),
@@ -83,6 +85,7 @@ fun SuggestedNavEntry() {
                     onClick = {
                         when (it) {
                             SuggestedNav.GlobalVar -> GlobalVarListActivity.start(context)
+                            SuggestedNav.Functions -> FunctionListActivity.start(context)
                             SuggestedNav.PkgSet -> PkgSetListActivity.start(context)
                             SuggestedNav.DanmuSettings -> DanmuUISettingsActivity.start(context)
                             SuggestedNav.ShowPointerLocation -> {

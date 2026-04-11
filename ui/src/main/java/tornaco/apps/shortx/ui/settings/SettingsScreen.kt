@@ -102,6 +102,7 @@ fun SettingsScreen(
     back: () -> Unit,
     goToPkgSetList: () -> Unit,
     goToGV: () -> Unit,
+    goToFunctionList: () -> Unit,
     goToDanmuUISettings: () -> Unit,
     goToStatusBarClipUISettings: () -> Unit,
     goToEvaRecord: () -> Unit,
@@ -363,6 +364,7 @@ fun SettingsScreen(
                                 vm = vm,
                                 goToPkgSetList = goToPkgSetList,
                                 goToGV = goToGV,
+                                goToFunctionList = goToFunctionList,
                                 goToDanmuUISettings = goToDanmuUISettings,
                                 goToStatusBarClipUISettings = goToStatusBarClipUISettings,
                             )
@@ -475,6 +477,7 @@ private fun generalSettings(
     vm: SettingsViewModel,
     goToPkgSetList: () -> Unit,
     goToGV: () -> Unit,
+    goToFunctionList: () -> Unit,
     goToDanmuUISettings: () -> Unit,
     goToStatusBarClipUISettings: () -> Unit,
 ): List<Preference> {
@@ -505,6 +508,15 @@ private fun generalSettings(
             summary = LocalI18N.current["ui.global.var.desc"],
             onClick = {
                 goToGV()
+            }
+        ),
+
+        Preference.TextPreference(
+            icon = Remix.System.function_fill,
+            title = LocalI18N.current["ui.action.functions"],
+            summary = LocalI18N.current["ui.function.desc"],
+            onClick = {
+                goToFunctionList()
             }
         ),
 

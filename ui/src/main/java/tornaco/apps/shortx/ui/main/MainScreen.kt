@@ -38,6 +38,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextDisplayActivity
 import tornaco.apps.shortx.ui.discover.DiscoverScreen
 import tornaco.apps.shortx.ui.featoggle.FeatureToggleActivity
+import tornaco.apps.shortx.ui.function.FunctionListActivity
 import tornaco.apps.shortx.ui.gesture.GestureRecordListActivity
 import tornaco.apps.shortx.ui.gvar.GlobalVarListActivity
 import tornaco.apps.shortx.ui.main.da.DirectActionListScreen
@@ -120,6 +121,9 @@ fun HomeScreen() {
                         },
                         goToGV = {
                             GlobalVarListActivity.start(context)
+                        },
+                        goToFunctionList = {
+                            FunctionListActivity.start(context)
                         },
                         goToDanmuUISettings = {
                             DanmuUISettingsActivity.start(context)

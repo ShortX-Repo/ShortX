@@ -139,6 +139,12 @@
             android:name="tornaco.apps.shortx.ui.addda.AddDirectActionActivity"
             android:exported="false" />
         <activity
+            android:name="tornaco.apps.shortx.ui.function.FunctionListActivity"
+            android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.function.AddFunctionActivity"
+            android:exported="false" />
+        <activity
             android:name="tornaco.apps.shortx.ui.subscribe.SubscribeActivity"
             android:exported="false" />
         <activity

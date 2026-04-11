@@ -92,31 +92,31 @@
 
 八、函数列表与编辑页面
 
-- [ ] 64. 新增函数列表页面入口。
-- [ ] 65. 在函数列表页加载 getAllFunctions 数据。
-- [ ] 66. 在函数列表页展示函数名称与基本信息。
-- [ ] 67. 为函数列表页增加“新建函数”入口。
-- [ ] 68. 为函数列表项增加“查看/编辑函数”入口。
-- [ ] 69. 为函数列表项增加“删除函数”入口。
-- [ ] 70. 新增函数编辑页 ViewModel。
-- [ ] 71. 在函数编辑页状态中增加 id、name、returnType、parameters、actions、时间戳字段。
-- [ ] 72. 在函数编辑页复用现有 FuncParamList。
-- [ ] 73. 在函数编辑页复用现有参数编辑对话框 NewFunctionParameterDialog。
-- [ ] 74. 在函数编辑页复用现有 ActionContent 动作编排能力。
-- [ ] 75. 在函数编辑页实现保存逻辑。
-- [ ] 76. 在函数编辑页实现读取已有函数逻辑。
-- [ ] 77. 在函数编辑页把 returnType 固定展示为 string。
+- [x] 64. 新增函数列表页面入口。
+- [x] 65. 在函数列表页加载 getAllFunctions 数据。
+- [x] 66. 在函数列表页展示函数名称与基本信息。
+- [x] 67. 为函数列表页增加“新建函数”入口。
+- [x] 68. 为函数列表项增加“查看/编辑函数”入口。
+- [x] 69. 为函数列表项增加“删除函数”入口。
+- [x] 70. 新增函数编辑页 ViewModel。
+- [x] 71. 在函数编辑页状态中增加 id、name、returnType、parameters、actions、时间戳字段。
+- [x] 72. 在函数编辑页复用现有 FuncParamList。
+- [x] 73. 在函数编辑页复用现有参数编辑对话框 NewFunctionParameterDialog。
+- [x] 74. 在函数编辑页复用现有 ActionContent 动作编排能力。
+- [x] 75. 在函数编辑页实现保存逻辑。
+- [x] 76. 在函数编辑页实现读取已有函数逻辑。
+- [x] 77. 在函数编辑页把 returnType 固定展示为 string。
 
 九、执行函数动作编辑器
 
-- [ ] 78. 新增 ExecuteFunctionSelectorState。
-- [ ] 79. 新增 ExecuteFunctionSelectorDialog 或对应编辑器 UI。
-- [ ] 80. 为执行函数动作提供函数选择器。
-- [ ] 81. 选择函数后加载其参数定义。
-- [ ] 82. 按参数定义生成 FuncParameterInput 编辑项。
-- [ ] 83. 支持用户修改每个参数输入值。
-- [ ] 84. 进入编辑已有 ExecuteFunction 动作时正确回填 functionId 与参数值。
-- [ ] 85. 选择函数不存在或加载失败时展示错误提示。
+- [x] 78. 新增 ExecuteFunctionSelectorState。
+- [x] 79. 新增 ExecuteFunctionSelectorDialog 或对应编辑器 UI。
+- [x] 80. 为执行函数动作提供函数选择器。
+- [x] 81. 选择函数后加载其参数定义。
+- [x] 82. 按参数定义生成 FuncParameterInput 编辑项。
+- [x] 83. 支持用户修改每个参数输入值。
+- [x] 84. 进入编辑已有 ExecuteFunction 动作时正确回填 functionId 与参数值。
+- [x] 85. 选择函数不存在或加载失败时展示错误提示。
 
 十、删除引用提示
 
