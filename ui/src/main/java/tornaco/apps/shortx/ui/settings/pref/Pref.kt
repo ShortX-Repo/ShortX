@@ -40,6 +40,9 @@ private val UI_COLORFUL_CARD =
 private val UI_EXPERIMENTAL =
     booleanPreferencesKey("ui_experimental")
 
+private val UI_COLLAPSED_SETTINGS_CATEGORIES =
+    stringSetPreferencesKey("ui_collapsed_settings_categories")
+
 private val UI_ONLY_SHOW_ENABLED =
     booleanPreferencesKey("ui_only_show_enabled")
 
@@ -125,6 +128,10 @@ class Pref(val context: Context) {
 
     val uiExperimental: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[UI_EXPERIMENTAL] ?: false
+    }
+
+    val collapsedSettingsCategories: Flow<Set<String>> = context.dataStore.data.map { preferences ->
+        preferences[UI_COLLAPSED_SETTINGS_CATEGORIES] ?: emptySet()
     }
 
     val uiOnlyShowEnabled: Flow<Boolean> = context.dataStore.data.map { preferences ->
@@ -226,6 +233,12 @@ class Pref(val context: Context) {
     suspend fun enableUiExperimental(value: Boolean) {
         context.dataStore.edit { settings ->
             settings[UI_EXPERIMENTAL] = value
+        }
+    }
+
+    suspend fun setCollapsedSettingsCategories(categories: Set<String>) {
+        context.dataStore.edit { settings ->
+            settings[UI_COLLAPSED_SETTINGS_CATEGORIES] = categories
         }
     }
 

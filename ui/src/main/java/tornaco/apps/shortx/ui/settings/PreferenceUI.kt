@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.settings
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -44,7 +46,11 @@ import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.thenIf
 
 @Composable
-fun PreferenceUi(preferences: List<Preference>) {
+fun PreferenceUi(
+    preferences: List<Preference>,
+    collapsedCategories: Set<String> = emptySet(),
+    onToggleCategory: (String) -> Unit = {}
+) {
     splitListByCategory(preferences).forEach { group ->
         val firstPrefIndex = group.indexOfFirst { !it.isDecor }
         val lastPrefIndex = group.indexOfLast { !it.isDecor }
@@ -81,7 +87,11 @@ fun PreferenceUi(preferences: List<Preference>) {
                             !pref.isDecor
                         )
                 ) {
-                    PreferenceUi(preference = pref)
+                    PreferenceUi(
+                        preference = pref,
+                        collapsedCategories = collapsedCategories,
+                        onToggleCategory = onToggleCategory
+                    )
                 }
                 SmallSpacer()
             }
@@ -112,7 +122,11 @@ private fun splitListByCategory(list: List<Preference>): List<List<Preference>> 
 
 
 @Composable
-private fun PreferenceUi(preference: Preference) {
+private fun PreferenceUi(
+    preference: Preference,
+    collapsedCategories: Set<String>,
+    onToggleCategory: (String) -> Unit,
+) {
     when (preference) {
         is Preference.SwitchPreference -> {
             SwitchPreferenceUi(preference = preference)
@@ -128,7 +142,11 @@ private fun PreferenceUi(preference: Preference) {
 
         is Preference.Category -> {
             StandardSpacer()
-            CategoryUi(preference = preference)
+            CategoryUi(
+                preference = preference,
+                isCollapsed = collapsedCategories.contains(preference.title),
+                onToggleCategory = onToggleCategory
+            )
         }
 
         is Preference.ExpandablePreference -> {
@@ -138,10 +156,34 @@ private fun PreferenceUi(preference: Preference) {
 }
 
 @Composable
-private fun CategoryUi(preference: Preference.Category) {
-    Column {
-        CategoryTitle(title = preference.title)
-        TinySpacer()
+private fun CategoryUi(
+    preference: Preference.Category,
+    isCollapsed: Boolean,
+    onToggleCategory: (String) -> Unit,
+) {
+    val arrowRotation by animateFloatAsState(
+        targetValue = if (isCollapsed) 0f else 180f,
+        label = "settingsCategoryArrowRotation"
+    )
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .clickable { onToggleCategory(preference.title) }
+            .padding(horizontal = 4.dp, vertical = 2.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column {
+            CategoryTitle(title = preference.title)
+            TinySpacer()
+        }
+        IconButton(onClick = { onToggleCategory(preference.title) }) {
+            RemixIcon(
+                modifier = Modifier.rotate(arrowRotation),
+                remixName = Remix.Arrows.arrow_down_s_line
+            )
+        }
     }
 }
 
@@ -160,7 +202,11 @@ private fun ExpandablePreferenceUi(preference: Preference.ExpandablePreference) 
         }, expandContent = {
             Column {
                 preference.preferences.forEach {
-                    PreferenceUi(it)
+                    PreferenceUi(
+                        preference = it,
+                        collapsedCategories = emptySet(),
+                        onToggleCategory = {}
+                    )
                 }
             }
         })

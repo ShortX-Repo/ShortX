@@ -74,6 +74,7 @@ import tornaco.apps.shortx.ui.base.LocalUiSettings
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.OutlineBadge
+import tornaco.apps.shortx.ui.base.SearchBar
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
@@ -83,6 +84,7 @@ import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.fontFamilyProductSansBold
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
+import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.code.CodeLibraryListActivity
@@ -357,7 +359,7 @@ fun SettingsScreen(
                         }
                     )
 
-                    PreferenceUi(mutableListOf<Preference>().apply {
+                    val allPreferences = mutableListOf<Preference>().apply {
                         addAll(
                             generalSettings(
                                 state = state,
@@ -424,7 +426,64 @@ fun SettingsScreen(
                                 viewPrivacyStatement = viewPrivacyStatement,
                             )
                         )
-                    })
+                    }
+
+                    val categoryTitles = remember(allPreferences) {
+                        extractSettingsCategoryTitles(allPreferences).toSet()
+                    }
+                    val searchableCount = remember(allPreferences) {
+                        allPreferences.count { !it.isDecor && it !is Preference.Category }
+                    }
+                    val searchBarState = rememberSearchBarState(itemCount = searchableCount)
+                    val isSearching = searchBarState.keyword.isNotBlank()
+                    val visiblePreferences = remember(
+                        allPreferences,
+                        searchBarState.keyword,
+                        state.collapsedCategories,
+                    ) {
+                        filterSettingsPreferences(
+                            preferences = allPreferences,
+                            keyword = searchBarState.keyword,
+                            collapsedCategories = state.collapsedCategories,
+                        )
+                    }
+                    val hasVisibleEntries = remember(visiblePreferences) {
+                        visiblePreferences.any { !it.isDecor && it !is Preference.Category }
+                    }
+
+                    SearchBar(
+                        searchBarState = searchBarState,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                    SmallSpacer()
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        TextButton(onClick = { vm.expandAllSettingsCategories() }) {
+                            Text(text = i18N["ui.common.expand.all"])
+                        }
+                        TextButton(onClick = { vm.collapseAllSettingsCategories(categoryTitles) }) {
+                            Text(text = i18N["ui.common.collapse.all"])
+                        }
+                    }
+
+                    if (hasVisibleEntries) {
+                        PreferenceUi(
+                            preferences = visiblePreferences,
+                            collapsedCategories = if (isSearching) emptySet() else state.collapsedCategories,
+                            onToggleCategory = { vm.toggleSettingsCategoryCollapsed(it) }
+                        )
+                    } else {
+                        Text(
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp),
+                            text = i18N["ui.settings.search.empty"],
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
                     StandardSpacer()
                     SubscriptionStatus(subscribeState)
 
@@ -468,6 +527,58 @@ private fun SubscriptionStatus(mainState: LVLStateHolder.State) {
                 Text(text = LocalI18N.current["ui.subscription.subscribed"], fontSize = 12.5.sp)
             }
         }
+    }
+}
+
+private fun extractSettingsCategoryTitles(preferences: List<Preference>): List<String> {
+    return preferences.mapNotNull {
+        (it as? Preference.Category)?.title
+    }
+}
+
+private fun filterSettingsPreferences(
+    preferences: List<Preference>,
+    keyword: String,
+    collapsedCategories: Set<String>,
+): List<Preference> {
+    val groups = mutableListOf<MutableList<Preference>>()
+    var currentGroup = mutableListOf<Preference>()
+
+    preferences.forEach { preference ->
+        if (preference is Preference.Category && currentGroup.isNotEmpty()) {
+            groups.add(currentGroup)
+            currentGroup = mutableListOf()
+        }
+        currentGroup.add(preference)
+    }
+    if (currentGroup.isNotEmpty()) {
+        groups.add(currentGroup)
+    }
+
+    if (keyword.isBlank()) {
+        return groups.flatMap { group ->
+            val category = group.firstOrNull() as? Preference.Category ?: return@flatMap group
+            if (collapsedCategories.contains(category.title)) {
+                listOf(category)
+            } else {
+                group
+            }
+        }
+    }
+
+    val normalizedKeyword = keyword.trim().lowercase()
+    return groups.flatMap { group ->
+        val category = group.firstOrNull() as? Preference.Category ?: return@flatMap group
+        val matched = group.drop(1).filter { pref ->
+            !pref.isDecor && buildString {
+                append(pref.title)
+                pref.summary?.let {
+                    append('\n')
+                    append(it)
+                }
+            }.lowercase().contains(normalizedKeyword)
+        }
+        if (matched.isEmpty()) emptyList() else listOf(category) + matched
     }
 }
 

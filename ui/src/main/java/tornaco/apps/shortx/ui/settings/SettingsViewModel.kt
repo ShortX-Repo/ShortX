@@ -62,7 +62,8 @@ data class SettingsState(
     val customSUPath: String? = null,
     val sensorUsages: List<SensorUsage> = emptyList(),
     val ocrEngine: OCREngine = OCREngine.OCREngine_Paddle,
-    val extApp: App? = null
+    val extApp: App? = null,
+    val collapsedCategories: Set<String> = emptySet()
 )
 
 sealed interface BackupResult {
@@ -189,6 +190,12 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 updateState { copy(dynamicColor = it) }
             }
         }
+        viewModelScope.launch {
+            pref.collapsedSettingsCategories.collectLatest {
+                logger.d("collapsedSettingsCategories changed: $it")
+                updateState { copy(collapsedCategories = it) }
+            }
+        }
     }
 
     fun setDynamicColor(dynamic: Boolean) {
@@ -200,6 +207,27 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
     fun setColorfulCard(color: Boolean) {
         viewModelScope.launch {
             pref.enableColorfulCard(color)
+        }
+    }
+
+    fun toggleSettingsCategoryCollapsed(title: String) {
+        viewModelScope.launch {
+            val updated = state.value.collapsedCategories.toMutableSet().apply {
+                if (!add(title)) remove(title)
+            }
+            pref.setCollapsedSettingsCategories(updated)
+        }
+    }
+
+    fun collapseAllSettingsCategories(categories: Set<String>) {
+        viewModelScope.launch {
+            pref.setCollapsedSettingsCategories(categories)
+        }
+    }
+
+    fun expandAllSettingsCategories() {
+        viewModelScope.launch {
+            pref.setCollapsedSettingsCategories(emptySet())
         }
     }
 
