@@ -87,6 +87,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             val data = this unpack_ tornaco.apps.shortx.core.proto.fact.CornerSwipeToCenter::class.java
             Fact.CornerSwipeToCenter(
                 corner = data.corner,
+                enableGestureHint = data.enableGestureHint,
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
                 isDisabled = data.isDisabled,

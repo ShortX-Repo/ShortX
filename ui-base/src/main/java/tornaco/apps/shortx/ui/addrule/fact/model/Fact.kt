@@ -354,6 +354,7 @@ sealed interface Fact : Parcelable {
     @Parcelize
     data class CornerSwipeToCenter(
         val corner: ScreenCorner,
+        val enableGestureHint: Boolean = true,
         override val note: String = "",
         override val isDisabled: Boolean = false,
         override val tag: String = "",

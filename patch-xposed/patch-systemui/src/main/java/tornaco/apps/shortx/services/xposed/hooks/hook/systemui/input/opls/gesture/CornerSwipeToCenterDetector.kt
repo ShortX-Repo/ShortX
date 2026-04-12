@@ -109,6 +109,16 @@ class CornerSwipeToCenterDetector(
 
     private fun handleGestureHint(corner: ScreenCorner, distance: Float, dot: Float) {
         if (trackedToken == 0L) return
+        val shouldShowHint = service.enabledCornerSwipeToCenterFacts.any {
+            !it.isDisabled && it.corner == corner && it.enableGestureHint
+        }
+        if (!shouldShowHint) {
+            if (hasHintShown) {
+                gestureHintController.onGestureCancel(trackedToken)
+                hasHintShown = false
+            }
+            return
+        }
         val showThresholdPx = GESTURE_HINT_SHOW_DISTANCE_DP._dp.toFloat()
         if (distance < showThresholdPx) {
             return

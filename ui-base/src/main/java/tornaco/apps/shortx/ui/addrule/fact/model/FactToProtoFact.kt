@@ -208,6 +208,7 @@ fun Fact.toProtoFact(
         is Fact.CornerSwipeToCenter -> {
             CornerSwipeToCenter.newBuilder()
                 .setCorner(corner)
+                .setEnableGestureHint(enableGestureHint)
                 .setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
                 .setIsDisabled(isDisabled)

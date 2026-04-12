@@ -73,12 +73,12 @@ class GestureHintView(context: Context) : View(context) {
         val arrowStrokeWidth = lerp(2.4f * dp1, 3.4f * dp1, progress)
         val chevronHalfLength = lerp(5.5f * dp1, 8.5f * dp1, progress)
         val headSpread = when (model.state) {
-            GestureHintState.Ready -> lerp(0.52f, 0.42f, progress)
-            GestureHintState.Success -> 0.40f
+            GestureHintState.Ready -> lerp(0.96f, 0.88f, progress)
+            GestureHintState.Success -> 0.84f
             else -> 0f
         }
         val effectiveHeadSpread = if (headSpread == 0f) {
-            lerp(0.58f, 0.48f, progress)
+            lerp(1.02f, 0.94f, progress)
         } else {
             headSpread
         }

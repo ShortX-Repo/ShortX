@@ -26,10 +26,12 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.FixedPeriodSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.OnOffAnyStateSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.PeriodSelector
+import tornaco.apps.shortx.ui.addrule.fact.selector.CornerSwipeToCenterSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.WifiSSIDSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAdvancedKeyEventSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAlarmSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberBTDeviceSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberCornerSwipeToCenterSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberEdgeGestureSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberFixedInPeriodSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberKeyEventSelectorState
@@ -98,16 +100,10 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
         })
     EdgeGestureSelector(edgeGestureSelectorState)
 
-    val cornerSwipeToCenterMenuState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.fact.corner.swipe.to.center"],
-        menuItems = ScreenCorner.entries.filter { it != ScreenCorner.UNRECOGNIZED }.map {
-            MenuDialogItem(it.name, title = LocalI18N.current[it.displayNameKey()])
-        },
-        onItemSelected = { _, id ->
-            val corner = ScreenCorner.valueOf(id)
-            addFact(Fact.CornerSwipeToCenter(corner))
-        })
-    MenuDialog(state = cornerSwipeToCenterMenuState)
+    val cornerSwipeToCenterSelectorState = rememberCornerSwipeToCenterSelectorState(
+        selected = { addFact(it) }
+    )
+    CornerSwipeToCenterSelector(cornerSwipeToCenterSelectorState)
 
     val screenGestureMenuState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.fact.screen.gesture"],
@@ -313,11 +309,7 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
             }
 
             Fact.CornerSwipeToCenter::class -> {
-                cornerSwipeToCenterMenuState.show(
-                    currentSelection = listOfNotNull(
-                        source.getFactAs<Fact.CornerSwipeToCenter>()?.corner?.name
-                    )
-                )
+                cornerSwipeToCenterSelectorState.show(source.getFactAs())
                 true
             }
 

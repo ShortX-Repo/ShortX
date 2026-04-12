@@ -429,6 +429,7 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         is Fact.CornerSwipeToCenter -> listOfNotNull(
             i18N["ui.fact.corner.swipe.to.center"],
             i18N[fact.corner.displayNameKey()],
+            (!fact.enableGestureHint).select(i18N["ui.fact.corner.gesture.indicator.disabled"], null),
             i18N.gestureDisabledMessageOrNull()
         )
 

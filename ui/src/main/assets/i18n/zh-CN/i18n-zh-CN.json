@@ -296,6 +296,8 @@
   "ui.fact.corner.topright": "右上角",
   "ui.fact.corner.bottomleft": "左下角",
   "ui.fact.corner.bottomright": "右下角",
+  "ui.fact.corner.gesture.indicator": "手势指示器",
+  "ui.fact.corner.gesture.indicator.disabled": "指示器关闭",
   "ui.fact.edge.bottomleft": "底 左",
   "ui.fact.edge.bottomcenter": "底 中间",
   "ui.fact.edge.bottomright": "底 右",

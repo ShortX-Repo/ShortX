@@ -298,6 +298,8 @@
   "ui.fact.corner.topright": "Top right corner",
   "ui.fact.corner.bottomleft": "Bottom left corner",
   "ui.fact.corner.bottomright": "Bottom right corner",
+  "ui.fact.corner.gesture.indicator": "Gesture indicator",
+  "ui.fact.corner.gesture.indicator.disabled": "Indicator off",
   "ui.fact.edge.bottomleft": "Bottom left",
   "ui.fact.edge.bottomcenter": "Bottom center",
   "ui.fact.edge.bottomright": "Bottom right",
