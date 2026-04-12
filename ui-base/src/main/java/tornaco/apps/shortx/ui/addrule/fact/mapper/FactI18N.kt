@@ -434,6 +434,7 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
             i18N["ui.fact.corner.swipe.to.center"],
             i18N[fact.corner.displayNameKey()],
             (!fact.enableGestureHint).select(i18N["ui.fact.corner.gesture.indicator.disabled"], null),
+            fact.isIntercept.select(i18N["ui.fact.key.event.adv.is.intercept.mode"], null),
             i18N.gestureDisabledMessageOrNull()
         )
 

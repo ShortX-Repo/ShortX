@@ -44,6 +44,9 @@ class CornerSwipeToCenterSelectorState(
     private var _enableGestureHint by mutableStateOf(true)
     val enableGestureHint get() = _enableGestureHint
 
+    private var _isIntercept by mutableStateOf(false)
+    val isIntercept get() = _isIntercept
+
     fun setCorner(corner: ScreenCorner) {
         _corner = corner
     }
@@ -52,11 +55,16 @@ class CornerSwipeToCenterSelectorState(
         _enableGestureHint = enable
     }
 
+    fun setIsIntercept(isIntercept: Boolean) {
+        _isIntercept = isIntercept
+    }
+
     fun confirm() {
         selected(
             Fact.CornerSwipeToCenter(
                 corner = corner,
                 enableGestureHint = enableGestureHint,
+                isIntercept = isIntercept,
             )
         )
         dismiss()
@@ -65,6 +73,7 @@ class CornerSwipeToCenterSelectorState(
     fun show(fact: Fact.CornerSwipeToCenter? = null) {
         _corner = fact?.corner ?: ScreenCorner.CornerTopLeft
         _enableGestureHint = fact?.enableGestureHint ?: true
+        _isIntercept = fact?.isIntercept ?: false
         show()
     }
 }
@@ -117,6 +126,18 @@ fun CornerSwipeToCenterSelector(state: CornerSwipeToCenterSelectorState) {
                         ShortXSwitch(
                             checked = state.enableGestureHint,
                             onCheckedChange = { state.setEnableGestureHint(it) }
+                        )
+                    }
+                    StandardSpacer()
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        FieldTitle(text = i18n["ui.fact.key.event.adv.is.intercept.mode"])
+                        ShortXSwitch(
+                            checked = state.isIntercept,
+                            onCheckedChange = { state.setIsIntercept(it) }
                         )
                     }
                 }

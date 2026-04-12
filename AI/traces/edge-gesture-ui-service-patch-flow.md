@@ -53,6 +53,7 @@ That selector builds a UI-side `Fact.EdgeGesture` model with fields such as:
 - `edge`
 - `gesture`
 - `isIntercept`
+- `enableGestureHint`
 - `apps`
 - `pkgSets`
 - `customRect`
@@ -72,6 +73,7 @@ The selector also configures:
 
 - gesture type such as `SingleTap`, `DoubleTap`, `LongTap`, or directional swipe
 - whether the area should intercept motion
+- whether swipe-type edge gestures should show the runtime indicator
 - optional front-app restriction through app list or package sets
 
 The selector can call:
@@ -229,6 +231,7 @@ From patch into services:
 - `downX`
 - `downY`
 - `isTriggerCustom`
+- `enableGestureHint`
 
 This same proto serves two roles:
 
@@ -377,11 +380,14 @@ In the current tree it supports:
 - `SwipeFromBottom`
 - `SwipeFromLeft`
 - `SwipeFromRight`
+- `CornerSwipeToCenter`
 
 Area detection is based on:
 
 - predefined edge geometry from `Area.kt`, or
 - exact `customRect`
+
+For corner swipes, `Detector` also delegates the same input stream to `CornerSwipeToCenterDetector`, which uses corner-circle hit testing, diagonal direction validation toward the screen center, and the shared gesture-hint overlay controller.
 
 `Detector` caches portrait and landscape rectangles derived from enabled rule facts so hit testing stays cheap.
 
@@ -412,6 +418,56 @@ Its responsibilities are:
 - fire a runtime `EdgeGesture` back to the service when a match occurs
 
 This is where UI-configured rule facts become patch-runtime detection configuration.
+
+### 14.1 What `isIntercept` really means
+
+The `isIntercept` field does not mean “trigger first, then block SystemUI later”.
+
+Its actual runtime meaning is:
+
+1. during cache rebuild, convert this rule's hot area into an intercept geometry cache
+2. if a raw touch stream starts in that cache, let the input monitor call `pilferPointers()` before final recognition succeeds
+
+The concrete path is:
+
+1. `EdgeGestureSelectDialog.kt` writes `isIntercept`
+2. `FactToProtoFact.kt` serializes it into `Facts.proto::EdgeGesture`
+3. `DetectorServiceImpl.updateQuickCheckDataOnRuleChange()` scans enabled rules
+4. facts with `isIntercept == true` are converted into `interceptMotionPortRects` and `interceptMotionLandRects`
+5. `InputMonitorInstaller.kt` checks `service.shouldStealMotionEvent(it)` when `detector.consumeEvent(...)` has not yet consumed the stream
+6. if true, `InputMonitorHelper.pilferPointers()` steals the active pointer stream
+
+So intercept mode is a pre-recognition fast path based on geometry, not on the eventual fact matcher result.
+
+### 14.2 Current edge intercept semantics are intentionally coarse
+
+The current implementation is optimized for cheap quick checks inside SystemUI.
+
+Because of that, the intercept cache stores only region geometry. It does not encode:
+
+1. gesture subtype
+2. per-region front-app constraint metadata
+3. later-stage recognition state
+
+This means current edge intercept mode should be understood as:
+
+1. if input starts in an intercept-enabled hot region, ShortX may steal first
+2. detailed gesture matching still happens later in the normal fire path
+
+This distinction matters when designing corner-gesture intercept mode.
+
+### 14.3 Corner gestures currently do not support intercept mode
+
+`CornerSwipeToCenter` is now part of the detector and service cache, but there is still no corner-specific intercept cache in `DetectorServiceImpl`.
+
+So corner gestures currently support:
+
+1. fact enablement
+2. recognition
+3. runtime publication
+4. optional gesture indicator
+
+But not early pointer stealing.
 
 ## Part 6: Runtime Trigger Back Into Services
 

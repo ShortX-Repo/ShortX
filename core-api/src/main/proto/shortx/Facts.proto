@@ -148,6 +148,7 @@ message CornerSwipeToCenter {
   int32 downX = 2;
   int32 downY = 3;
   bool enableGestureHint = 4;
+  optional bool isIntercept = 5;
 
   string tag = 97;
   CustomContextDataKey customContextDataKey = 98;

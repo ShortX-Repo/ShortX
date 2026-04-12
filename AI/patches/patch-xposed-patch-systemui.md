@@ -141,8 +141,17 @@ The current repository state supports:
 - `SwipeFromBottom`
 - `SwipeFromLeft`
 - `SwipeFromRight`
+- `CornerSwipeToCenter`
 
-There is no separate diagonal or corner-swipe detector in the current `patch-systemui` tree.
+The detector stack is no longer edge-only.
+
+`Detector.kt` now coordinates:
+
+1. `GestureDetector` for tap-like edge gestures.
+2. `SystemGesturesPointerEventListener` for edge swipes.
+3. `CornerSwipeToCenterDetector` for diagonal corner-to-center swipes.
+
+It also owns the shared gesture-hint pipeline through `GestureHintController`, `EdgeGestureHintDetector`, and the corner detector's hint callbacks.
 
 ### Tap Detection
 
@@ -281,6 +290,30 @@ This code intentionally distinguishes between two caches derived from rules:
 The second cache only includes rules with `isIntercept == true`.
 
 This separation matters because a rule can define a gesture without requiring pointer interception, and vice versa the system can preemptively steal a stream in an intercept region before the final recognition result is produced.
+
+In runtime order the behavior is:
+
+1. `InputMonitorInstaller` forwards the raw event into `Detector.consumeEvent(...)`.
+2. If recognition fully handles the gesture, the monitor calls `pilferPointers()` and returns consumed.
+3. If recognition did not yet consume the stream, `DetectorServiceImpl.shouldStealMotionEvent(...)` still gets a chance to steal it.
+4. If the current touch point lies in an intercept cache region, `pilferPointers()` is called even before final recognition succeeds.
+
+So edge intercept mode is an early stream-ownership decision, not a post-trigger side effect.
+
+Another important detail is that the current intercept cache is geometry-oriented. It stores hot regions only. It does not encode gesture subtype or per-region app constraints. App filtering still exists, but only through the coarser `shouldDetectMotion` quick check.
+
+### Corner Gesture State Versus Edge Intercept State
+
+`CornerSwipeToCenter` currently participates in:
+
+1. enabled-fact caching
+2. gesture recognition
+3. runtime fact firing
+4. gesture hint display gating
+
+But it does not yet participate in the intercept cache used by `shouldStealMotionEvent(...)`.
+
+That means the current corner gesture can fire and can show visual feedback, but it cannot proactively steal the pointer stream the way edge gestures can when `isIntercept == true`.
 
 ### Building Rule-Derived Caches
 

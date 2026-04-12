@@ -89,6 +89,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.CornerSwipeToCenter(
                 corner = data.corner,
                 enableGestureHint = data.enableGestureHint,
+                isIntercept = data.hasIsIntercept() && data.isIntercept,
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
                 isDisabled = data.isDisabled,
