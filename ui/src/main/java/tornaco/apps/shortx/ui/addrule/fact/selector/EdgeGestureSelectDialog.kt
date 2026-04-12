@@ -51,6 +51,7 @@ import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.base.AppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.base.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.mapper.displayNameKey
+import tornaco.apps.shortx.ui.addrule.fact.mapper.supportsGestureIndicator
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.CommonDialogState
@@ -80,6 +81,7 @@ data class EdgeGestureSelectDialogResult(
     val apps: List<App>,
     val pkgSet: List<PkgSet>,
     val customRect: Rect? = null,
+    val enableGestureHint: Boolean = true,
 )
 
 class EdgeGestureSelectorState(
@@ -89,6 +91,7 @@ class EdgeGestureSelectorState(
     var edge by mutableStateOf(Edge.BottomRight)
     var gesture by mutableStateOf(Gesture.DoubleTap)
     var isIntercept by mutableStateOf(false)
+    var enableGestureHint by mutableStateOf(true)
     var customRect by mutableStateOf<Rect?>(null)
     var useCustomRect by mutableStateOf(false)
     var rectInputText by mutableStateOf("")
@@ -101,6 +104,7 @@ class EdgeGestureSelectorState(
         this.edge = data?.edge ?: Edge.BottomRight
         this.gesture = data?.gesture ?: Gesture.SingleTap
         this.isIntercept = data?.isIntercept ?: false
+        this.enableGestureHint = data?.enableGestureHint ?: true
         this.customRect = data?.customRect
         this.useCustomRect = data?.customRect != null
 
@@ -149,7 +153,8 @@ class EdgeGestureSelectorState(
             isIntercept = isIntercept,
             apps = apps,
             pkgSet = pkgSets,
-            customRect = if (useCustomRect) customRect else null
+            customRect = if (useCustomRect) customRect else null,
+            enableGestureHint = enableGestureHint
         )
     }
 }
@@ -399,6 +404,26 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                             }
 
                             StandardSpacer()
+                            AnimatedVisibility(visible = state.gesture.supportsGestureIndicator()) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    FieldTitle(text = i18N["ui.fact.edge.gesture.indicator"])
+                                    ShortXSwitch(
+                                        checked = state.enableGestureHint,
+                                        onCheckedChange = {
+                                            state.enableGestureHint = it
+                                        }
+                                    )
+                                }
+                            }
+
+                            if (state.gesture.supportsGestureIndicator()) {
+                                StandardSpacer()
+                            }
+
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically,

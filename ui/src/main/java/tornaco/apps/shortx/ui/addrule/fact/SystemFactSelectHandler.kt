@@ -91,7 +91,8 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
                     isIntercept = eg.isIntercept,
                     apps = eg.apps,
                     pkgSets = eg.pkgSet,
-                    customRect = eg.customRect
+                    customRect = eg.customRect,
+                    enableGestureHint = eg.enableGestureHint
                 )
             )
         },

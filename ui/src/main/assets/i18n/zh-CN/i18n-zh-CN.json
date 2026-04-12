@@ -1436,6 +1436,8 @@
   "ui.fact.edge.gesture.select.area.tip": "提示：点击按钮在屏幕上选择触发区域",
   "ui.fact.edge.gesture.show.selected.area": "显示选中区域",
   "ui.fact.edge.gesture.custom.rect.description": "自定义区域 ({left}, {top}) - ({right}, {bottom})",
+  "ui.fact.edge.gesture.indicator": "手势指示器",
+  "ui.fact.edge.gesture.indicator.disabled": "指示器已关闭",
   "ui.code.library.title": "代码库",
   "ui.code.library.summary": "管理MVEL和JavaScript代码片段",
   "ui.code.library.list.title": "代码库",

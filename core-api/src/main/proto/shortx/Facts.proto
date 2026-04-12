@@ -134,6 +134,7 @@ message EdgeGesture {
 
   // For matcher.
   bool isTriggerCustom = 9;
+  optional bool enableGestureHint = 10;
 
   string tag = 97;
   CustomContextDataKey customContextDataKey = 98;

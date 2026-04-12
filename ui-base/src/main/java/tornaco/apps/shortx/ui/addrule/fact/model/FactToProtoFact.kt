@@ -190,6 +190,7 @@ fun Fact.toProtoFact(
                 .setEdge(edge)
                 .setGesture(gesture)
                 .setIsIntercept(isIntercept)
+                .setEnableGestureHint(enableGestureHint)
                 .addAllApps(apps.map {
                     AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
                 })

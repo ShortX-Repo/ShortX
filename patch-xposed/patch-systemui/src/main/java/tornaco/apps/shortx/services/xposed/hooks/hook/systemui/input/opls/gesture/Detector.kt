@@ -92,6 +92,9 @@ class Detector(
 
     private val gestureHintController = GestureHintController(context)
 
+    private val edgeGestureHintDetector =
+        EdgeGestureHintDetector(service, gestureHintController, ::detectArea)
+
     private val cornerSwipeToCenterDetector =
         CornerSwipeToCenterDetector(context, service, gestureHintController)
 
@@ -179,7 +182,9 @@ class Detector(
     private fun handleSwipeEvent(downX: Float, downY: Float, gestureEvent: Gesture): Boolean {
         val areas = detectArea(downX, downY)
         if (areas.isEmpty()) return false
-        return handleEdgeGestureEvent(areas, gestureEvent, downX, downY)
+        val handled = handleEdgeGestureEvent(areas, gestureEvent, downX, downY)
+        edgeGestureHintDetector.onEdgeGestureTriggered(areas, gestureEvent, handled)
+        return handled
     }
 
     private fun handleTapEvent(motionEvent: MotionEvent, gestureEvent: Gesture): Boolean {
@@ -243,6 +248,7 @@ class Detector(
 
     fun consumeEvent(event: MotionEvent): Boolean? {
         if (event.isTouchEvent) {
+            edgeGestureHintDetector.onTouchEvent(event)
             if (gestureDetector.onTouchEvent(event)) {
                 return true
             }

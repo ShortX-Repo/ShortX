@@ -423,6 +423,10 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
                     + fact.isIntercept.select(
                 i18N["ui.fact.key.event.adv.is.intercept.mode"], ""
             ),
+            (!fact.enableGestureHint && fact.gesture.supportsGestureIndicator()).select(
+                i18N["ui.fact.edge.gesture.indicator.disabled"],
+                null
+            ),
             i18N.gestureDisabledMessageOrNull()
         )
 
@@ -1148,6 +1152,17 @@ fun ScreenCorner.displayNameKey(): String {
         ScreenCorner.CornerBottomLeft -> "ui.fact.corner.bottomleft"
         ScreenCorner.CornerBottomRight -> "ui.fact.corner.bottomright"
         else -> "ui.fact.corner.topleft"
+    }
+}
+
+fun Gesture.supportsGestureIndicator(): Boolean {
+    return when (this) {
+        Gesture.SwipeFromTop,
+        Gesture.SwipeFromBottom,
+        Gesture.SwipeFromLeft,
+        Gesture.SwipeFromRight -> true
+
+        else -> false
     }
 }
 
