@@ -26,6 +26,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -39,8 +40,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -74,6 +77,7 @@ import tornaco.apps.shortx.ui.base.LocalUiSettings
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.OutlineBadge
+import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
@@ -158,6 +162,123 @@ fun SettingsScreen(
             }
             MenuDialog(state = guideSelectorDialogState)
 
+            val props = LocalShortXProps.current
+            val pickFileLauncher = rememberLauncherForActivityResult(
+                ActivityResultContracts.GetContent()
+            ) { fileUri ->
+                if (fileUri != null) {
+                    vm.restoreFrom(fileUri, props.firstOrNull())
+                }
+            }
+
+            val deleteDialogState = rememberConfirmDialogState()
+            val resetDataMessageHint = LocalI18N.current[
+                "ui.delete.dialog.confirm",
+                mapOf("wht" to LocalI18N.current["ui.settings.data.reset.dialog.hint"])
+            ]
+            ConfirmDialog(
+                title = LocalI18N.current["ui.settings.data.reset.title"],
+                state = deleteDialogState,
+                data = "",
+                messageHint = { resetDataMessageHint },
+                onConfirm = {
+                    vm.resetData()
+                }
+            )
+
+            val allPreferences = mutableListOf<Preference>().apply {
+                addAll(
+                    generalSettings(
+                        state = state,
+                        mainState = subscribeState,
+                        vm = vm,
+                        goToPkgSetList = goToPkgSetList,
+                        goToGV = goToGV,
+                        goToFunctionList = goToFunctionList,
+                        goToDanmuUISettings = goToDanmuUISettings,
+                        goToStatusBarClipUISettings = goToStatusBarClipUISettings,
+                    )
+                )
+                addAll(
+                    recordSettings(
+                        state = state,
+                        mainState = subscribeState,
+                        vm = vm,
+                        goToEvaRecord = goToEvaRecord,
+                        goToAudioRecord = goToAudioRecord,
+                        goToGestureRecord = goToGestureRecord,
+                    )
+                )
+                addAll(
+                    systemSettings(
+                        state = state,
+                        mainState = subscribeState,
+                        vm = vm,
+                    )
+                )
+                addAll(
+                    engineSettings(
+                        state = state,
+                        mainState = subscribeState,
+                        vm = vm,
+                        manageShortcutApps = manageShortcutApps,
+                        goToWebdavProfile = goToWebdavProfile
+                    )
+                )
+                addAll(
+                    miscSettings(
+                        state = state,
+                        mainState = subscribeState,
+                        vm = vm,
+                        goToFeatToggle = goToFeatToggle
+                    )
+                )
+                addAll(
+                    dataSettings(
+                        state = state,
+                        mainState = subscribeState,
+                        vm = vm,
+                        pickRestoreFile = {
+                            pickFileLauncher.launch("application/zip")
+                        }, resetData = {
+                            deleteDialogState.show()
+                        })
+                )
+                addAll(shareSettings(state = state, vm = vm))
+                addAll(devSettings(state = state, vm = vm))
+                addAll(
+                    aboutSettings(
+                        state = state,
+                        viewOpenSourceLicense = viewOpenSourceLicense,
+                        viewPrivacyStatement = viewPrivacyStatement,
+                    )
+                )
+            }
+
+            val categoryTitles = remember(allPreferences) {
+                extractSettingsCategoryTitles(allPreferences).toSet()
+            }
+            val searchableCount = remember(allPreferences) {
+                allPreferences.count { !it.isDecor && it !is Preference.Category }
+            }
+            val searchBarState = rememberSearchBarState(itemCount = searchableCount)
+            var isSearchToolsVisible by remember { mutableStateOf(false) }
+            val isSearching = searchBarState.keyword.isNotBlank()
+            val visiblePreferences = remember(
+                allPreferences,
+                searchBarState.keyword,
+                state.collapsedCategories,
+            ) {
+                filterSettingsPreferences(
+                    preferences = allPreferences,
+                    keyword = searchBarState.keyword,
+                    collapsedCategories = state.collapsedCategories,
+                )
+            }
+            val hasVisibleEntries = remember(visiblePreferences) {
+                visiblePreferences.any { !it.isDecor && it !is Preference.Category }
+            }
+
             val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
             Scaffold(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -199,6 +320,22 @@ fun SettingsScreen(
                                 LinkText(text = LocalI18N.current["ui.user.guide"]) {
                                     guideSelectorDialogState.show()
                                 }
+                            }
+                        },
+                        actions = {
+                            IconButton(onClick = {
+                                if (isSearchToolsVisible) {
+                                    searchBarState.inputKeyword("")
+                                }
+                                isSearchToolsVisible = !isSearchToolsVisible
+                            }) {
+                                RemixIcon(
+                                    remixName = if (isSearchToolsVisible) {
+                                        Remix.System.close_line
+                                    } else {
+                                        Remix.System.search_2_line
+                                    }
+                                )
                             }
                         }
                     )
@@ -339,135 +476,28 @@ fun SettingsScreen(
                         }
                     }
 
-                    val props = LocalShortXProps.current
-                    val pickFileLauncher = rememberLauncherForActivityResult(
-                        ActivityResultContracts.GetContent()
-                    ) { fileUri ->
-                        if (fileUri != null) {
-                            vm.restoreFrom(fileUri, props.firstOrNull())
-                        }
-                    }
-
-                    val deleteDialogState = rememberConfirmDialogState()
-                    ConfirmDialog(
-                        title = LocalI18N.current["ui.settings.data.reset.title"],
-                        state = deleteDialogState,
-                        data = "",
-                        messageHint = { i18N["ui.delete.dialog.confirm", mapOf("wht" to i18N["ui.settings.data.reset.dialog.hint"])] },
-                        onConfirm = {
-                            vm.resetData()
-                        }
-                    )
-
-                    val allPreferences = mutableListOf<Preference>().apply {
-                        addAll(
-                            generalSettings(
-                                state = state,
-                                mainState = subscribeState,
-                                vm = vm,
-                                goToPkgSetList = goToPkgSetList,
-                                goToGV = goToGV,
-                                goToFunctionList = goToFunctionList,
-                                goToDanmuUISettings = goToDanmuUISettings,
-                                goToStatusBarClipUISettings = goToStatusBarClipUISettings,
+                    AnimatedVisibility(visible = isSearchToolsVisible) {
+                        Column {
+                            SearchBar(
+                                searchBarState = searchBarState,
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                autoFocus = true,
                             )
-                        )
-                        addAll(
-                            recordSettings(
-                                state = state,
-                                mainState = subscribeState,
-                                vm = vm,
-                                goToEvaRecord = goToEvaRecord,
-                                goToAudioRecord = goToAudioRecord,
-                                goToGestureRecord = goToGestureRecord,
-                            )
-                        )
-                        addAll(
-                            systemSettings(
-                                state = state,
-                                mainState = subscribeState,
-                                vm = vm,
-                            )
-                        )
-                        addAll(
-                            engineSettings(
-                                state = state,
-                                mainState = subscribeState,
-                                vm = vm,
-                                manageShortcutApps = manageShortcutApps,
-                                goToWebdavProfile = goToWebdavProfile
-                            )
-                        )
-                        addAll(
-                            miscSettings(
-                                state = state,
-                                mainState = subscribeState,
-                                vm = vm,
-                                goToFeatToggle = goToFeatToggle
-                            )
-                        )
-                        addAll(
-                            dataSettings(
-                                state = state,
-                                mainState = subscribeState,
-                                vm = vm,
-                                pickRestoreFile = {
-                                    pickFileLauncher.launch("application/zip")
-                                }, resetData = {
-                                    deleteDialogState.show()
-                                })
-                        )
-                        addAll(shareSettings(state = state, vm = vm))
-                        addAll(devSettings(state = state, vm = vm))
-                        addAll(
-                            aboutSettings(
-                                state = state,
-                                viewOpenSourceLicense = viewOpenSourceLicense,
-                                viewPrivacyStatement = viewPrivacyStatement,
-                            )
-                        )
-                    }
-
-                    val categoryTitles = remember(allPreferences) {
-                        extractSettingsCategoryTitles(allPreferences).toSet()
-                    }
-                    val searchableCount = remember(allPreferences) {
-                        allPreferences.count { !it.isDecor && it !is Preference.Category }
-                    }
-                    val searchBarState = rememberSearchBarState(itemCount = searchableCount)
-                    val isSearching = searchBarState.keyword.isNotBlank()
-                    val visiblePreferences = remember(
-                        allPreferences,
-                        searchBarState.keyword,
-                        state.collapsedCategories,
-                    ) {
-                        filterSettingsPreferences(
-                            preferences = allPreferences,
-                            keyword = searchBarState.keyword,
-                            collapsedCategories = state.collapsedCategories,
-                        )
-                    }
-                    val hasVisibleEntries = remember(visiblePreferences) {
-                        visiblePreferences.any { !it.isDecor && it !is Preference.Category }
-                    }
-
-                    SearchBar(
-                        searchBarState = searchBarState,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-                    SmallSpacer()
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp),
-                        horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        TextButton(onClick = { vm.expandAllSettingsCategories() }) {
-                            Text(text = i18N["ui.common.expand.all"])
-                        }
-                        TextButton(onClick = { vm.collapseAllSettingsCategories(categoryTitles) }) {
-                            Text(text = i18N["ui.common.collapse.all"])
+                            SmallSpacer()
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp),
+                                horizontalArrangement = Arrangement.End,
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                TextButton(onClick = { vm.expandAllSettingsCategories() }) {
+                                    Text(text = i18N["ui.common.expand.all"])
+                                }
+                                TextButton(onClick = { vm.collapseAllSettingsCategories(categoryTitles) }) {
+                                    Text(text = i18N["ui.common.collapse.all"])
+                                }
+                            }
                         }
                     }
 
