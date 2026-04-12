@@ -36,6 +36,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 
 class CornerSwipeToCenterSelectorState(
+    private val showCornerHint: (ScreenCorner) -> Unit,
     private val selected: (Fact.CornerSwipeToCenter) -> Unit,
 ) : CommonDialogState() {
     private var _corner by mutableStateOf(ScreenCorner.CornerTopLeft)
@@ -59,6 +60,10 @@ class CornerSwipeToCenterSelectorState(
         _isIntercept = isIntercept
     }
 
+    fun previewCorner(corner: ScreenCorner) {
+        showCornerHint(corner)
+    }
+
     fun confirm() {
         selected(
             Fact.CornerSwipeToCenter(
@@ -80,9 +85,10 @@ class CornerSwipeToCenterSelectorState(
 
 @Composable
 fun rememberCornerSwipeToCenterSelectorState(
+    showCornerHint: (ScreenCorner) -> Unit,
     selected: (Fact.CornerSwipeToCenter) -> Unit,
 ): CornerSwipeToCenterSelectorState {
-    return remember { CornerSwipeToCenterSelectorState(selected) }
+    return remember { CornerSwipeToCenterSelectorState(showCornerHint, selected) }
 }
 
 @Composable
@@ -150,7 +156,10 @@ fun CornerSwipeToCenterSelector(state: CornerSwipeToCenterSelectorState) {
                                 labelLines = listOf(i18n[it.displayNameKey()])
                             )
                         },
-                    onSelect = { state.setCorner(it.data) }
+                    onSelect = {
+                        state.setCorner(it.data)
+                        state.previewCorner(it.data)
+                    }
                 )
             }
         }

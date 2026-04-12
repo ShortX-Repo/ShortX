@@ -399,6 +399,10 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.gesture.showEdgeHint(edgeNumber.toList())
         }
 
+        override fun showCornerHint(cornerNumber: IntArray) {
+            shortXContext.gesture.showCornerHint(cornerNumber.toList())
+        }
+
         override fun showScreenRectHint(rect: ByteArrayWrapper) {
             val model = Rect.parseFrom(rect.byteData)
             shortXContext.gesture.showScreenRectHint(model)

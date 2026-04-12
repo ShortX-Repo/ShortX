@@ -14,6 +14,7 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import com.android.internal.R
 import tornaco.apps.shortx.core.proto.common.Rect
+import tornaco.apps.shortx.core.proto.fact.ScreenCorner
 import tornaco.apps.shortx.core.proto.toAndroidRect
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
@@ -22,13 +23,16 @@ import tornaco.apps.shortx.services.gesture.HotSeat
 import tornaco.apps.shortx.services.gesture.getRect
 import util.Reflections
 
+private const val CORNER_REGION_RADIUS_RATIO = 0.18f
+
 @SuppressLint("ViewConstructor")
 class GuideLineView(
     context: Context,
     hotSeats: List<HotSeat>,
     areaSize: Int,
     areaLengthScale: Float,
-    customRects: List<Rect>
+    customRects: List<Rect>,
+    cornerHints: List<ScreenCorner> = emptyList()
 ) :
     FrameLayout(context) {
 
@@ -41,7 +45,7 @@ class GuideLineView(
 
     init {
         addView(
-            Guideline(context, hotSeats, areaSize, areaLengthScale, customRects),
+            Guideline(context, hotSeats, areaSize, areaLengthScale, customRects, cornerHints),
             LayoutParams.MATCH_PARENT,
             LayoutParams.MATCH_PARENT
         )
@@ -97,7 +101,8 @@ class GuideLineView(
         private val hotSeats: List<HotSeat>,
         private val areaSize: Int,
         private val areaLengthScale: Float,
-        private val customRects: List<Rect>
+        private val customRects: List<Rect>,
+        private val cornerHints: List<ScreenCorner>
     ) :
         View(context) {
         private val screenSize by lazy {
@@ -115,6 +120,16 @@ class GuideLineView(
                 isAntiAlias = true
                 color = Color.GREEN
                 alpha = 64
+            }
+        }
+
+        private val strokePaint by lazy {
+            Paint().apply {
+                isAntiAlias = true
+                style = Paint.Style.STROKE
+                strokeWidth = 4f * resources.displayMetrics.density
+                color = Color.WHITE
+                alpha = 180
             }
         }
 
@@ -138,6 +153,32 @@ class GuideLineView(
                 canvas.drawRect(it.toAndroidRect(), paint.apply {
                     color = Color.RED
                 })
+            }
+
+            val width = screenSize.x.toFloat()
+            val height = screenSize.y.toFloat()
+            val radius = minOf(width, height) * CORNER_REGION_RADIUS_RATIO
+            cornerHints.forEachIndexed { index, corner ->
+                val center = when (corner) {
+                    ScreenCorner.CornerTopLeft -> 0f to 0f
+                    ScreenCorner.CornerTopRight -> width to 0f
+                    ScreenCorner.CornerBottomLeft -> 0f to height
+                    ScreenCorner.CornerBottomRight -> width to height
+                    else -> 0f to 0f
+                }
+                val cx = center.first
+                val cy = center.second
+                val fillColor = when (index % 4) {
+                    0 -> Color.parseColor("#66EF5350")
+                    1 -> Color.parseColor("#6642A5F5")
+                    2 -> Color.parseColor("#6666BB6A")
+                    else -> Color.parseColor("#66FFA726")
+                }
+                canvas.drawCircle(cx, cy, radius, paint.apply {
+                    style = Paint.Style.FILL
+                    color = fillColor
+                })
+                canvas.drawCircle(cx, cy, radius, strokePaint)
             }
         }
     }

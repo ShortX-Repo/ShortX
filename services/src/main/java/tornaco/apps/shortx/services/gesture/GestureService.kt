@@ -14,6 +14,7 @@ import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.Rect
 import tornaco.apps.shortx.core.proto.fact.Edge
+import tornaco.apps.shortx.core.proto.fact.ScreenCorner
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.action.emptyByteArrayWrapper
 import tornaco.apps.shortx.core.util.RemoteCallbackListExt
@@ -56,6 +57,10 @@ class GestureService(shortXContext: ShortXContext) :
 
     fun showEdgeHint(edgeNumber: List<Int>) {
         showGideLineViewForArea(edgeNumber.mapNotNull { Edge.forNumber(it) })
+    }
+
+    fun showCornerHint(cornerNumber: List<Int>) {
+        showGuideLineViewForCorner(cornerNumber.mapNotNull { ScreenCorner.forNumber(it) })
     }
 
     fun showScreenRectHint(rect: Rect) {
@@ -103,6 +108,28 @@ class GestureService(shortXContext: ShortXContext) :
                     0f,
                     rects
                 ).apply { attach() }
+            showingHints.add(guideLineView)
+            delay(GUIDELINE_VIEW_SHOWN_TIME)
+            guideLineView.detach()
+            showingHints.remove(guideLineView)
+        }
+    }
+
+    private fun showGuideLineViewForCorner(corners: List<ScreenCorner>) {
+        systemServiceScope.launchSafety("showGuideLineViewForCorner") {
+            showingHints.forEach { hint ->
+                kotlin.runCatching { hint.detach() }.onFailure { logger.e(it, "detach fail") }
+            }
+            showingHints.clear()
+
+            val guideLineView = GuideLineView(
+                context,
+                emptyList(),
+                0,
+                0f,
+                emptyList(),
+                corners
+            ).apply { attach() }
             showingHints.add(guideLineView)
             delay(GUIDELINE_VIEW_SHOWN_TIME)
             guideLineView.detach()

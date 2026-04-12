@@ -102,6 +102,9 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     EdgeGestureSelector(edgeGestureSelectorState)
 
     val cornerSwipeToCenterSelectorState = rememberCornerSwipeToCenterSelectorState(
+        showCornerHint = {
+            shortXManager.showCornerHint(listOf(it))
+        },
         selected = { addFact(it) }
     )
     CornerSwipeToCenterSelector(cornerSwipeToCenterSelectorState)

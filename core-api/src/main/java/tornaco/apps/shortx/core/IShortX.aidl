@@ -98,6 +98,8 @@ interface IShortX {
     Bitmap getAppIcon(String pkgName, int userId);
     // UI end
 
+    void showCornerHint(in int[] cornerNumber);
+
     // List with rule id or DA id
     List<String> getActiveJobs();
     void cancelJobs(in List<String> jobs);

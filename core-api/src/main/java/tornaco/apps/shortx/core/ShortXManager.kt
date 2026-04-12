@@ -51,6 +51,7 @@ import tornaco.apps.shortx.core.proto.common.WebDavProfile
 import tornaco.apps.shortx.core.proto.common.WifiConfig
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
+import tornaco.apps.shortx.core.proto.fact.ScreenCorner
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.CornerSwipeToCenter
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
@@ -363,6 +364,12 @@ class ShortXManager(val service: IShortX) {
     fun showEdgeHint(edge: List<Edge>) {
         invokeService(Unit) {
             showEdgeHint(edge.map { it.number }.toIntArray())
+        }
+    }
+
+    fun showCornerHint(corners: List<ScreenCorner>) {
+        invokeService(Unit) {
+            showCornerHint(corners.map { it.number }.toIntArray())
         }
     }
 
