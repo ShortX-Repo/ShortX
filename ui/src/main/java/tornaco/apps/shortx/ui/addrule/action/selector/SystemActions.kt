@@ -55,6 +55,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.rememberVibratePatternSelect
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberWifiSSIDSelectorState
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
+import tornaco.apps.shortx.ui.base.ConfirmDialog
 import tornaco.apps.shortx.ui.base.InputValidateResult
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MenuDialog
@@ -62,6 +63,7 @@ import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.SelectionDialog
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TipDialog
+import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberSelectionDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
@@ -220,6 +222,17 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     )
     MenuDialog(state = currentLocationProviderDialogState)
 
+    val currentLocationInfoNoticeDialogState = rememberConfirmDialogState()
+    ConfirmDialog(
+        title = "ui.action.get.current.location.info",
+        state = currentLocationInfoNoticeDialogState,
+        data = Unit,
+        messageHint = { i18N["ui.action.current.location.notice"] },
+        onConfirm = {
+            currentLocationProviderDialogState.show()
+        }
+    )
+
     var currentLocationAddressProviderPreference by remember {
         mutableStateOf(CurrentLocationProviderPreference.CurrentLocationProviderPreference_Auto)
     }
@@ -253,6 +266,17 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
         }
     )
     MenuDialog(state = currentLocationAddressProviderDialogState)
+
+    val currentLocationAddressNoticeDialogState = rememberConfirmDialogState()
+    ConfirmDialog(
+        title = "ui.action.get.current.location.address",
+        state = currentLocationAddressNoticeDialogState,
+        data = Unit,
+        messageHint = { i18N["ui.action.current.location.notice"] },
+        onConfirm = {
+            currentLocationAddressProviderDialogState.show()
+        }
+    )
 
     val vibratePatternDialogState = rememberVibratePatternSelectorState(selected = {
         addAction(it)
@@ -467,7 +491,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 currentLocationProviderPreference = current?.providerPreference
                     ?: CurrentLocationProviderPreference.CurrentLocationProviderPreference_Auto
                 currentLocationTimeoutMillis = current?.timeoutMillis ?: 3000L
-                currentLocationProviderDialogState.show()
+                currentLocationInfoNoticeDialogState.show()
                 true
             }
 
@@ -476,7 +500,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 currentLocationAddressProviderPreference = current?.providerPreference
                     ?: CurrentLocationProviderPreference.CurrentLocationProviderPreference_Auto
                 currentLocationAddressTimeoutMillis = current?.timeoutMillis ?: 3000L
-                currentLocationAddressProviderDialogState.show()
+                currentLocationAddressNoticeDialogState.show()
                 true
             }
 
