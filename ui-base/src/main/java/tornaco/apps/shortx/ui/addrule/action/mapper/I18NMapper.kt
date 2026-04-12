@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
 import tornaco.apps.shortx.core.proto.action.ContextMenuAction
+import tornaco.apps.shortx.core.proto.action.CurrentLocationProviderPreference
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.proto.action.MediaPlaybackAction
 import tornaco.apps.shortx.core.proto.action.NavType
@@ -65,7 +66,7 @@ fun labelAndDescriptionForActionSelector(
         }
 
         Action.GetCurrentLocationInfo::class -> {
-            i18N["ui.action.get.current.location.info"] to null
+            i18N["ui.action.get.current.location.info"] to i18N["ui.action.get.current.location.info.description"]
         }
 
         Action.WriteClipboard::class -> {
@@ -1084,7 +1085,8 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
 
         is Action.GetCurrentLocationInfo -> listOf(
             i18N["ui.action.get.current.location.info"],
-            i18N["ui.action.get.current.location.info.description"]
+            i18N[action.providerPreference.labelKey()],
+            "${action.timeoutMillis}ms"
         )
 
         is Action.SetAPMModeEnabled -> listOf(
@@ -1497,6 +1499,24 @@ fun ScreenRotateDegree.actionLabelKey(): String {
 
 fun ContextMenuAction.toAndroidContextMenuActionLabelKey(): String {
     return "ui.action.perform.context.menu.action.${this.name.lowercase()}"
+}
+
+fun CurrentLocationProviderPreference.labelKey(): String {
+    return when (this) {
+        CurrentLocationProviderPreference.CurrentLocationProviderPreference_Auto -> {
+            "ui.action.get.current.location.info.provider.auto"
+        }
+
+        CurrentLocationProviderPreference.CurrentLocationProviderPreference_NetworkFirst -> {
+            "ui.action.get.current.location.info.provider.network.first"
+        }
+
+        CurrentLocationProviderPreference.CurrentLocationProviderPreference_GpsFirst -> {
+            "ui.action.get.current.location.info.provider.gps.first"
+        }
+
+        CurrentLocationProviderPreference.UNRECOGNIZED -> "N/A"
+    }
 }
 
 fun CoroutineContext.labelKey(): String {

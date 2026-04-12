@@ -1936,7 +1936,16 @@ message GetScreenOnTime {
   string id = 100;
 }
 
+enum CurrentLocationProviderPreference {
+  CurrentLocationProviderPreference_Auto = 0;
+  CurrentLocationProviderPreference_NetworkFirst = 1;
+  CurrentLocationProviderPreference_GpsFirst = 2;
+}
+
 message GetCurrentLocationInfo {
+  CurrentLocationProviderPreference providerPreference = 1;
+  int64 timeoutMillis = 2;
+
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;

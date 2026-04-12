@@ -46,7 +46,10 @@
 ### Current Location Action / 当前位置信息动作
 - 新增系统动作“获取当前位置信息”，执行后会把当前 `latitude`、`longitude`、`provider`、`accuracy` 写入上下文数据。 / Added a new system action "Get current location info" that writes the current `latitude`, `longitude`, `provider`, and `accuracy` into context data.
 - 该动作可在规则、直达动作和函数内部复用；如果函数需要返回位置结果，可以继续配合已有的“设置函数返回值”动作使用。 / This action can be reused in rules, direct actions, and functions; if a function needs to return location data, it can be combined with the existing "Set function return value" action.
-- 同时补充了定位权限声明；如果运行时尚未授权，新动作会明确报错而不是静默返回空值。 / Added location permission declarations as well; if runtime permission has not been granted yet, the new action now fails explicitly instead of silently returning an empty value.
+- 服务侧定位逻辑运行在系统进程，不依赖应用 manifest 里的定位权限声明，因此没有引入额外权限配置。 / The location lookup runs in the system-process service side and does not rely on location permissions declared in the app manifest, so no extra manifest permission was added.
+- 为该动作新增了可选配置：定位源偏好（自动 / 优先网络 / 优先 GPS）和定位超时毫秒数；会优先按配置尝试实时定位，超时后再回退到最近一次已知位置。 / Added optional configuration for this action: provider preference (auto / prefer network / prefer GPS) and timeout in milliseconds; it now tries live location using the configured preference first and falls back to the last known location on timeout.
+- 为排查拿不到位置的问题，补充了关键调试日志，覆盖动作启动参数、启用的 provider、实时定位回调、超时回退和 last-known 路径。 / Added focused diagnostic logs for location lookup failures, covering action input parameters, enabled providers, live location callbacks, timeout fallback, and the last-known-location path.
+- 进一步把内部定位异常改成直接抛错结束动作：例如 `isProviderEnabled`、`getCurrentLocation`、`getLastKnownLocation`、`getProviders(true)` 失败时，不再只记日志后继续回退，而是直接返回明确错误，便于用户在动作失败时看到具体原因。 / Tightened internal error handling so location-internal failures now abort the action immediately: when `isProviderEnabled`, `getCurrentLocation`, `getLastKnownLocation`, or `getProviders(true)` fails, the action no longer just logs and continues fallback, but instead returns a clear failure reason to the user.
 
 ### Method Hook Related Functionality / 函数 Hook 相关功能
 - 补充了函数 Hook 日志页相关能力，复用共享日志列表组件统一承接日志交互。 / Added method-hook related log-page capability by reusing the shared log list component for consistent log interactions.

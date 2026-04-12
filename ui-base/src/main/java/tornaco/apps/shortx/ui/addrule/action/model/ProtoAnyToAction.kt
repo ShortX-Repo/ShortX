@@ -79,7 +79,9 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 actionOnError = data.actionOnError,
                 customContextDataKey = data.customContextDataKey,
                 id = data.id,
-                note = data.note
+                note = data.note,
+                providerPreference = data.providerPreference,
+                timeoutMillis = data.timeoutMillis
             )
         }
 

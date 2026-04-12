@@ -5,10 +5,14 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import okhttp3.internal.toLongOrDefault
 import tornaco.apps.shortx.core.BuildPropInternal
+import tornaco.apps.shortx.core.proto.action.CurrentLocationProviderPreference
 import tornaco.apps.shortx.core.proto.action.MediaPlaybackAction
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.OnOffToggle
@@ -181,6 +185,40 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
         }
     )
     MenuDialog(state = screenTimeDialogState)
+
+    var currentLocationProviderPreference by remember {
+        mutableStateOf(CurrentLocationProviderPreference.CurrentLocationProviderPreference_Auto)
+    }
+    var currentLocationTimeoutMillis by remember { mutableStateOf(3000L) }
+
+    val currentLocationTimeoutDialogState = rememberTextInputState(
+        title = i18N["ui.action.get.current.location.info.timeout"],
+        message = i18N["ui.action.get.current.location.info.timeout.message"],
+        onSelected = {
+            currentLocationTimeoutMillis = it.toLongOrDefault(currentLocationTimeoutMillis)
+            addAction(
+                Action.GetCurrentLocationInfo(
+                    providerPreference = currentLocationProviderPreference,
+                    timeoutMillis = currentLocationTimeoutMillis
+                )
+            )
+        }
+    )
+    TextInputDialog(state = currentLocationTimeoutDialogState)
+
+    val currentLocationProviderDialogState = rememberMenuDialogState<String>(
+        title = i18N["ui.action.get.current.location.info.provider"],
+        menuItems = CurrentLocationProviderPreference.entries
+            .filterNot { it == CurrentLocationProviderPreference.UNRECOGNIZED }
+            .map {
+                MenuDialogItem(id = it.name, title = i18N[it.labelKey()])
+            },
+        onItemSelected = { _, id ->
+            currentLocationProviderPreference = CurrentLocationProviderPreference.valueOf(id)
+            currentLocationTimeoutDialogState.show(currentLocationTimeoutMillis.toString())
+        }
+    )
+    MenuDialog(state = currentLocationProviderDialogState)
 
     val vibratePatternDialogState = rememberVibratePatternSelectorState(selected = {
         addAction(it)
@@ -391,7 +429,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
             }
 
             Action.GetCurrentLocationInfo::class -> {
-                addAction(Action.GetCurrentLocationInfo())
+                val current = source.getActionAs<Action.GetCurrentLocationInfo>()
+                currentLocationProviderPreference = current?.providerPreference
+                    ?: CurrentLocationProviderPreference.CurrentLocationProviderPreference_Auto
+                currentLocationTimeoutMillis = current?.timeoutMillis ?: 3000L
+                currentLocationProviderDialogState.show()
                 true
             }
 

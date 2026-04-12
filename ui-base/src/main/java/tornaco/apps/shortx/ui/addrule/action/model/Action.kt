@@ -8,6 +8,7 @@ import shortx.plugin.wrapper.ParamsDataWrapper
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
 import tornaco.apps.shortx.core.proto.action.ContextMenuAction
+import tornaco.apps.shortx.core.proto.action.CurrentLocationProviderPreference
 import tornaco.apps.shortx.core.proto.action.DialogMenuItem
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.proto.action.MediaPlaybackAction
@@ -3005,6 +3006,9 @@ sealed interface Action : Parcelable {
             customContextDataKey
         ),
         override val note: String = "",
+        val providerPreference: CurrentLocationProviderPreference =
+            CurrentLocationProviderPreference.CurrentLocationProviderPreference_Auto,
+        val timeoutMillis: Long = 3000L,
     ) : Action {
         override fun clone(
             id: String,
