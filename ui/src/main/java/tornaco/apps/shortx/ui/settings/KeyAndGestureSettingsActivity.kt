@@ -38,6 +38,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.proto.fact.Edge
+import tornaco.apps.shortx.core.proto.fact.ScreenCorner
 import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.BaseActivity
@@ -88,6 +89,8 @@ class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@Application
                     gestureAreaSize = shortXManager.getGestureAreaSize(),
                     swipeDistanceThreshold = shortXManager.getSwipeDistanceThresholdDp(),
                     swipeLengthScale = shortXManager.getSwipeLengthScale(),
+                    cornerGestureAreaRatioPercent = shortXManager.getCornerGestureRegionRadiusRatioPercent(),
+                    cornerGestureMinSwipeDistanceDp = shortXManager.getCornerGestureMinSwipeDistanceDp(),
                     isEdgeGestureEnabled = shortXManager.isAppFeatureEnabled(AppFeature.AppFeature_EdgeGesture.number),
                     isKeyEventEnabled = shortXManager.isAppFeatureEnabled(AppFeature.AppFeature_KeyEvent.number),
                     keyDetectorLongPressTimeoutMS = shortXManager.getKeyDetectorLongPressTimeoutMS()
@@ -127,6 +130,23 @@ class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@Application
         }
     }
 
+    fun setCornerGestureRegionRadiusRatioPercent(percent: Int) {
+        viewModelScope.launch {
+            shortXManager.setCornerGestureRegionRadiusRatioPercent(percent)
+            shortXManager.showCornerHint(
+                ScreenCorner.entries.filter { it != ScreenCorner.UNRECOGNIZED }
+            )
+            loadState()
+        }
+    }
+
+    fun setCornerGestureMinSwipeDistanceDp(dp: Int) {
+        viewModelScope.launch {
+            shortXManager.setCornerGestureMinSwipeDistanceDp(dp)
+            loadState()
+        }
+    }
+
     fun setGestureFeatureEnabled(enabled: Boolean) {
         viewModelScope.launch {
             shortXManager.setAppFeatureEnabled(AppFeature.AppFeature_EdgeGesture.number, enabled)
@@ -153,6 +173,8 @@ data class KeyAndGestureSettings(
     val gestureAreaSize: Int = 0,
     val swipeDistanceThreshold: Int = 0,
     val swipeLengthScale: Float = 0f,
+    val cornerGestureAreaRatioPercent: Int = 18,
+    val cornerGestureMinSwipeDistanceDp: Int = 72,
     val isEdgeGestureEnabled: Boolean = false,
     val isKeyEventEnabled: Boolean = false,
     // Key
@@ -256,6 +278,32 @@ fun KeyAndGestureSettingsActivity.EdgeGestureSettingsSelector() {
                                 .background(color = MaterialTheme.colorScheme.primary)
                         )
                     }
+                    LargeSpacer()
+
+                    SmallTitle(text = LocalI18N.current["ui.settings.corner.gesture.size"])
+                    MediumSpacer()
+                    Text(text = "${state.cornerGestureAreaRatioPercent}%")
+                    TipRow(LocalI18N.current["ui.settings.corner.gesture.size.description"])
+                    StandardSpacer()
+                    Slider(
+                        valueRange = 6f..40f,
+                        value = state.cornerGestureAreaRatioPercent.toFloat(),
+                        onValueChange = {
+                            vm.setCornerGestureRegionRadiusRatioPercent(it.roundToInt())
+                        })
+                    LargeSpacer()
+
+                    SmallTitle(text = LocalI18N.current["ui.settings.corner.gesture.swipe.distance"])
+                    MediumSpacer()
+                    Text(text = "${state.cornerGestureMinSwipeDistanceDp} dp")
+                    TipRow(LocalI18N.current["ui.settings.corner.gesture.swipe.distance.description"])
+                    StandardSpacer()
+                    Slider(
+                        valueRange = 24f..200f,
+                        value = state.cornerGestureMinSwipeDistanceDp.toFloat(),
+                        onValueChange = {
+                            vm.setCornerGestureMinSwipeDistanceDp(it.roundToInt())
+                        })
                     LargeSpacer()
 
                     SectionSpacer()

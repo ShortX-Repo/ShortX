@@ -102,6 +102,12 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
         data object SwipeDistanceThresholdDp :
             IntSettings(key = "SwipeDistanceThresholdDp", defaultValue = { 24 })
 
+        data object CornerGestureRegionRadiusRatioPercent :
+            IntSettings(key = "CornerGestureRegionRadiusRatioPercent", defaultValue = { 18 })
+
+        data object CornerGestureMinSwipeDistanceDp :
+            IntSettings(key = "CornerGestureMinSwipeDistanceDp", defaultValue = { 72 })
+
         data object KeyDetectorLongPressTimeoutMS :
             IntSettings(key = "KeyDetectorLongPressTimeoutMS", defaultValue = { 499 })
 

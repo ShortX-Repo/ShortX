@@ -128,7 +128,8 @@ class GestureService(shortXContext: ShortXContext) :
                 0,
                 0f,
                 emptyList(),
-                corners
+                corners,
+                getCornerGestureRegionRadiusRatio()
             ).apply { attach() }
             showingHints.add(guideLineView)
             delay(GUIDELINE_VIEW_SHOWN_TIME)
@@ -190,6 +191,28 @@ class GestureService(shortXContext: ShortXContext) :
 
     fun setSwipeDistanceThresholdDp(thr: Int) {
         store.write(Settings.IntSettings.SwipeDistanceThresholdDp, thr)
+        notifyGestureSettingsChanged()
+    }
+
+    fun getCornerGestureRegionRadiusRatio(): Float =
+        (store.read(Settings.IntSettings.CornerGestureRegionRadiusRatioPercent).coerceIn(6, 40)) / 100f
+
+    fun setCornerGestureRegionRadiusRatioPercent(percent: Int) {
+        store.write(
+            Settings.IntSettings.CornerGestureRegionRadiusRatioPercent,
+            percent.coerceIn(6, 40)
+        )
+        notifyGestureSettingsChanged()
+    }
+
+    fun getCornerGestureRegionRadiusRatioPercent(): Int =
+        (getCornerGestureRegionRadiusRatio() * 100).toInt()
+
+    fun getCornerGestureMinSwipeDistanceDp(): Int =
+        store.read(Settings.IntSettings.CornerGestureMinSwipeDistanceDp).coerceIn(24, 200)
+
+    fun setCornerGestureMinSwipeDistanceDp(dp: Int) {
+        store.write(Settings.IntSettings.CornerGestureMinSwipeDistanceDp, dp.coerceIn(24, 200))
         notifyGestureSettingsChanged()
     }
 

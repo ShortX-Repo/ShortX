@@ -16,7 +16,6 @@ class CornerSwipeToCenterDetector(
     companion object {
         private const val CORNER_SWIPE_MAX_ANGLE_DEVIATION_DEG = 30f
         private const val CORNER_HINT_MAX_ANGLE_DEVIATION_DEG = 50f
-        private const val CORNER_SWIPE_MIN_DISTANCE_DP = 72
         private const val GESTURE_HINT_SHOW_DISTANCE_DP = 12
         private const val GESTURE_HINT_MAX_VISUAL_DISTANCE_DP = 72
         private const val GESTURE_HINT_READY_PROGRESS = 0.72f
@@ -70,7 +69,7 @@ class CornerSwipeToCenterDetector(
 
                 handleGestureHint(corner, distance, dot)
 
-                if (distance < CORNER_SWIPE_MIN_DISTANCE_DP._dp) {
+                if (distance < service.getCornerSwipeMinDistanceDp()._dp) {
                     return false
                 }
                 if (dot < MIN_DIRECTION_DOT) {
@@ -163,9 +162,10 @@ class CornerSwipeToCenterDetector(
         val screenSize = context.screenSize()
         val width = screenSize.x.toFloat()
         val height = screenSize.y.toFloat()
+        val radiusRatio = service.getCornerGestureRegionRadiusRatio()
 
         return enabledCorners.firstOrNull { corner ->
-            CornerSwipeToCenterGeometry.contains(corner, x, y, width, height)
+            CornerSwipeToCenterGeometry.contains(corner, x, y, width, height, radiusRatio)
         }
     }
 

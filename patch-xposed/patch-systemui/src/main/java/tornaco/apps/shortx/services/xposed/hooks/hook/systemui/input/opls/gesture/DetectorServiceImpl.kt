@@ -45,6 +45,9 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
     private var swipeDistanceThresholdDp: Int = 24
     private var gestureAreaWidthDp: Int = 28
     private var gestureLengthScale: Float = 1f
+    private var cornerGestureRegionRadiusRatio: Float =
+        CornerSwipeToCenterGeometry.DEFAULT_CORNER_REGION_RADIUS_RATIO
+    private var cornerSwipeMinDistanceDp: Int = 72
 
     var isGestureRecording: Boolean = false
         private set
@@ -188,6 +191,9 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         swipeDistanceThresholdDp = shortx.getSwipeDistanceThresholdDp()
         gestureAreaWidthDp = shortx.getGestureAreaSize()
         gestureLengthScale = shortx.getSwipeLengthScale()
+        cornerGestureRegionRadiusRatio =
+            shortx.getCornerGestureRegionRadiusRatioPercent().coerceIn(6, 40) / 100f
+        cornerSwipeMinDistanceDp = shortx.getCornerGestureMinSwipeDistanceDp().coerceIn(24, 200)
         isGestureRecording = shortx.isGestureRecording()
         GlobalSettings.isEdgeGestureEnabled =
             shortx.isAppFeatureEnabled(AppFeature.AppFeature_EdgeGesture.number)
@@ -199,6 +205,8 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         logger.w("swipeDistanceThresholdDp: $swipeDistanceThresholdDp")
         logger.w("gestureAreaWidthDp: $gestureAreaWidthDp")
         logger.w("gestureLengthScale: $gestureLengthScale")
+        logger.w("cornerGestureRegionRadiusRatio: $cornerGestureRegionRadiusRatio")
+        logger.w("cornerSwipeMinDistanceDp: $cornerSwipeMinDistanceDp")
         logger.w("isGestureRecording: $isGestureRecording")
         logger.logOnDebug("isGestureEnabledQuick: $isGestureEnabledQuick")
         logger.logOnDebug("isEdgeGestureEnabled: ${GlobalSettings.isEdgeGestureEnabled}")
@@ -216,6 +224,14 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
 
     override fun getGestureLengthScale(): Float {
         return gestureLengthScale
+    }
+
+    override fun getCornerGestureRegionRadiusRatio(): Float {
+        return cornerGestureRegionRadiusRatio
+    }
+
+    override fun getCornerSwipeMinDistanceDp(): Int {
+        return cornerSwipeMinDistanceDp
     }
 
     override fun obsGestureSettingsChanged(obs: () -> Unit) {
@@ -348,7 +364,8 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
                 x,
                 y,
                 width,
-                height
+                height,
+                getCornerGestureRegionRadiusRatio()
             )
         }
     }

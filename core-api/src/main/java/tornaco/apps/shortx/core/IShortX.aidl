@@ -463,4 +463,8 @@ interface IShortX {
     // Recently added AIDL interfaces
     void showCornerHint(in int[] cornerNumber);
     void fireCornerSwipeToCenter(in ByteArrayWrapper data);
+    int getCornerGestureRegionRadiusRatioPercent();
+    void setCornerGestureRegionRadiusRatioPercent(int percent);
+    int getCornerGestureMinSwipeDistanceDp();
+    void setCornerGestureMinSwipeDistanceDp(int dp);
 }

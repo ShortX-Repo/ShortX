@@ -23,8 +23,6 @@ import tornaco.apps.shortx.services.gesture.HotSeat
 import tornaco.apps.shortx.services.gesture.getRect
 import util.Reflections
 
-private const val CORNER_REGION_RADIUS_RATIO = 0.18f
-
 @SuppressLint("ViewConstructor")
 class GuideLineView(
     context: Context,
@@ -32,7 +30,8 @@ class GuideLineView(
     areaSize: Int,
     areaLengthScale: Float,
     customRects: List<Rect>,
-    cornerHints: List<ScreenCorner> = emptyList()
+    cornerHints: List<ScreenCorner> = emptyList(),
+    cornerRegionRadiusRatio: Float = 0.18f
 ) :
     FrameLayout(context) {
 
@@ -45,7 +44,15 @@ class GuideLineView(
 
     init {
         addView(
-            Guideline(context, hotSeats, areaSize, areaLengthScale, customRects, cornerHints),
+            Guideline(
+                context,
+                hotSeats,
+                areaSize,
+                areaLengthScale,
+                customRects,
+                cornerHints,
+                cornerRegionRadiusRatio
+            ),
             LayoutParams.MATCH_PARENT,
             LayoutParams.MATCH_PARENT
         )
@@ -102,7 +109,8 @@ class GuideLineView(
         private val areaSize: Int,
         private val areaLengthScale: Float,
         private val customRects: List<Rect>,
-        private val cornerHints: List<ScreenCorner>
+        private val cornerHints: List<ScreenCorner>,
+        private val cornerRegionRadiusRatio: Float
     ) :
         View(context) {
         private val screenSize by lazy {
@@ -157,7 +165,7 @@ class GuideLineView(
 
             val width = screenSize.x.toFloat()
             val height = screenSize.y.toFloat()
-            val radius = minOf(width, height) * CORNER_REGION_RADIUS_RATIO
+            val radius = minOf(width, height) * cornerRegionRadiusRatio
             cornerHints.forEachIndexed { index, corner ->
                 val center = when (corner) {
                     ScreenCorner.CornerTopLeft -> 0f to 0f

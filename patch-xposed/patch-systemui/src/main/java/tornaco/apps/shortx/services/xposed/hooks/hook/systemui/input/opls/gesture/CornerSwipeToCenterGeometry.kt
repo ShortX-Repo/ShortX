@@ -3,14 +3,25 @@ package tornaco.apps.shortx.services.xposed.hooks.hook.systemui.input.opls.gestu
 import tornaco.apps.shortx.core.proto.fact.ScreenCorner
 
 object CornerSwipeToCenterGeometry {
-    const val CORNER_REGION_RADIUS_RATIO = 0.18f
+    const val DEFAULT_CORNER_REGION_RADIUS_RATIO = 0.18f
 
-    fun radius(width: Float, height: Float): Float {
-        return minOf(width, height) * CORNER_REGION_RADIUS_RATIO
+    fun radius(
+        width: Float,
+        height: Float,
+        radiusRatio: Float = DEFAULT_CORNER_REGION_RADIUS_RATIO
+    ): Float {
+        return minOf(width, height) * radiusRatio
     }
 
-    fun contains(corner: ScreenCorner, x: Float, y: Float, width: Float, height: Float): Boolean {
-        val radius = radius(width, height)
+    fun contains(
+        corner: ScreenCorner,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        radiusRatio: Float = DEFAULT_CORNER_REGION_RADIUS_RATIO
+    ): Boolean {
+        val radius = radius(width, height, radiusRatio)
         val radiusSquare = radius * radius
         val (cornerX, cornerY) = cornerPoint(corner, width, height)
         val dx = x - cornerX

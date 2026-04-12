@@ -22,6 +22,8 @@ interface DetectorService {
     fun getSwipeDistanceThresholdDp(): Int
     fun getGestureAreaWidthDp(): Int
     fun getGestureLengthScale(): Float
+    fun getCornerGestureRegionRadiusRatio(): Float
+    fun getCornerSwipeMinDistanceDp(): Int
 
     fun obsGestureSettingsChanged(obs: () -> Unit)
     fun obsConfigChanged(obs: () -> Unit)

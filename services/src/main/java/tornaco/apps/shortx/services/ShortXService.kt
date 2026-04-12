@@ -903,6 +903,22 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.gesture.setSwipeDistanceThresholdDp(dp)
         }
 
+        override fun getCornerGestureRegionRadiusRatioPercent(): Int {
+            return shortXContext.gesture.getCornerGestureRegionRadiusRatioPercent()
+        }
+
+        override fun setCornerGestureRegionRadiusRatioPercent(percent: Int) {
+            shortXContext.gesture.setCornerGestureRegionRadiusRatioPercent(percent)
+        }
+
+        override fun getCornerGestureMinSwipeDistanceDp(): Int {
+            return shortXContext.gesture.getCornerGestureMinSwipeDistanceDp()
+        }
+
+        override fun setCornerGestureMinSwipeDistanceDp(dp: Int) {
+            shortXContext.gesture.setCornerGestureMinSwipeDistanceDp(dp)
+        }
+
         override fun log(message: String?, redirectTo: String?) {
             if (redirectTo.isNullOrBlank()) {
                 logger.i("EXTERNAL: $message")

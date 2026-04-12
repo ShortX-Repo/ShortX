@@ -1152,6 +1152,30 @@ class ShortXManager(val service: IShortX) {
         }
     }
 
+    fun getCornerGestureRegionRadiusRatioPercent(): Int {
+        return invokeService(0) {
+            getCornerGestureRegionRadiusRatioPercent()
+        }
+    }
+
+    fun setCornerGestureRegionRadiusRatioPercent(percent: Int) {
+        invokeService(Unit) {
+            setCornerGestureRegionRadiusRatioPercent(percent)
+        }
+    }
+
+    fun getCornerGestureMinSwipeDistanceDp(): Int {
+        return invokeService(0) {
+            getCornerGestureMinSwipeDistanceDp()
+        }
+    }
+
+    fun setCornerGestureMinSwipeDistanceDp(dp: Int) {
+        invokeService(Unit) {
+            setCornerGestureMinSwipeDistanceDp(dp)
+        }
+    }
+
     fun hasHookFlags(flag: String): Boolean {
         return invokeService(false) { hasHookFlags(flag) }
     }
