@@ -95,6 +95,7 @@ class HttpLogActivity : BaseActivity() {
                             },
                             actions = {
                                 MenuActions(
+                                    logs = state.logs,
                                     clearLogs = { viewModel.clearLogs() },
                                     scrollToTop = {
                                         scope.launch {
