@@ -16,6 +16,7 @@ android {
 
     defaultConfig {
         consumerProguardFiles("consumer-rules.pro")
+        manifestPlaceholders["AMAP_API_KEY"] = Configs["amap.api.key"] ?: ""
     }
 
     setPublishNonDefault(true)
@@ -135,6 +136,8 @@ dependencies {
     implementation(libs.touchimageview)
     implementation(libs.androidx.paging.runtime.ktx)
     implementation(libs.androidx.paging.compose)
+
+    implementation("com.amap.api:location:6.5.1")
 
     compileOnly(files("${project.rootDir.path}/patch-xposed/patch-main/libs/libxposed-api.jar"))
     implementation(files("${project.rootDir.path}/patch-xposed/patch-main/libs/libxposed-service.jar"))

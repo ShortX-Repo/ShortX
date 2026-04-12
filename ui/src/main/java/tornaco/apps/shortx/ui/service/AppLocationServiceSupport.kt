@@ -1,20 +1,18 @@
 package tornaco.apps.shortx.ui.service
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
-import android.location.Address
-import android.location.Geocoder
-import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
-import android.os.Build
+import android.os.Handler
 import android.os.Looper
 import androidx.core.content.ContextCompat
+import com.amap.api.location.AMapLocation
+import com.amap.api.location.AMapLocationClient
+import com.amap.api.location.AMapLocationClientOption
+import com.amap.api.location.AMapLocationClientOption.AMapLocationMode
+import com.amap.apis.utils.core.api.AMapUtilCoreApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withTimeoutOrNull
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.action.CurrentLocationProviderPreference
 import tornaco.apps.shortx.core.proto.common.CurrentLocationAddressData
@@ -22,29 +20,34 @@ import tornaco.apps.shortx.core.proto.common.CurrentLocationInfoData
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.action.wrap
 import tornaco.apps.shortx.core.util.Logger
-import java.util.Locale
 import java.util.concurrent.Executors
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 internal object AppLocationServiceSupport {
-    private const val DEFAULT_TIMEOUT_MILLIS = 3000L
+    private const val DEFAULT_TIMEOUT_MILLIS = 10000L
 
     private val logger = Logger("AppLocationService")
     private val executors = Executors.newCachedThreadPool()
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     fun getCurrentLocationInfo(
-        context: Context,
+        service: AppLocationService,
         requestId: String,
         receiver: SynchronousResultReceiver,
         requestData: ByteArrayWrapper,
     ) {
         executors.execute {
             runCatching {
-                val request = tornaco.apps.shortx.core.proto.action.GetCurrentLocationInfo.parseFrom(requestData.byteData)
+                val request =
+                    tornaco.apps.shortx.core.proto.action.GetCurrentLocationInfo.parseFrom(
+                        requestData.byteData
+                    )
                 logger.d("getCurrentLocationInfo requestId=$requestId, providerPreference=${request.providerPreference}, timeoutMillis=${request.timeoutMillis}")
                 val location = runBlocking {
-                    currentLocation(
-                        context = context,
+                    currentAMapLocation(
+                        context = service.applicationContext,
+                        needAddress = false,
                         providerPreference = request.providerPreference,
                         timeoutMillis = request.timeoutMillis,
                         logPrefix = "AppLocationService#getCurrentLocationInfo",
@@ -53,7 +56,7 @@ internal object AppLocationServiceSupport {
                 val result = CurrentLocationInfoData.newBuilder()
                     .setLatitude(location.latitude)
                     .setLongitude(location.longitude)
-                    .setProvider(location.provider.orEmpty())
+                    .setProvider(locationProvider(location))
                     .setAccuracy(location.accuracy)
                     .build()
                 receiver.send(result.toByteArray().wrap())
@@ -65,35 +68,38 @@ internal object AppLocationServiceSupport {
     }
 
     fun getCurrentLocationAddress(
-        context: Context,
+        service: AppLocationService,
         requestId: String,
         receiver: SynchronousResultReceiver,
         requestData: ByteArrayWrapper,
     ) {
         executors.execute {
             runCatching {
-                val request = tornaco.apps.shortx.core.proto.action.GetCurrentLocationAddress.parseFrom(requestData.byteData)
+                val request =
+                    tornaco.apps.shortx.core.proto.action.GetCurrentLocationAddress.parseFrom(
+                        requestData.byteData
+                    )
                 logger.d("getCurrentLocationAddress requestId=$requestId, providerPreference=${request.providerPreference}, timeoutMillis=${request.timeoutMillis}")
                 val location = runBlocking {
-                    currentLocation(
-                        context = context,
+                    currentAMapLocation(
+                        context = service.applicationContext,
+                        needAddress = true,
                         providerPreference = request.providerPreference,
                         timeoutMillis = request.timeoutMillis,
                         logPrefix = "AppLocationService#getCurrentLocationAddress",
                     )
                 }
-                val address = reverseGeocode(context, location)
                 val result = CurrentLocationAddressData.newBuilder()
-                    .setAddressLine(buildAddressLine(address))
-                    .setCountryName(address.countryName.orEmpty())
-                    .setAdminArea(address.adminArea.orEmpty())
-                    .setSubAdminArea(address.subAdminArea.orEmpty())
-                    .setLocality(address.locality.orEmpty())
-                    .setSubLocality(address.subLocality.orEmpty())
-                    .setThoroughfare(address.thoroughfare.orEmpty())
-                    .setSubThoroughfare(address.subThoroughfare.orEmpty())
-                    .setPostalCode(address.postalCode.orEmpty())
-                    .setFeatureName(address.featureName.orEmpty())
+                    .setAddressLine(location.address.orEmpty())
+                    .setCountryName(location.country.orEmpty())
+                    .setAdminArea(location.province.orEmpty())
+                    .setSubAdminArea(location.city.orEmpty())
+                    .setLocality(location.city.orEmpty())
+                    .setSubLocality(location.district.orEmpty())
+                    .setThoroughfare(location.street.orEmpty())
+                    .setSubThoroughfare(location.streetNum.orEmpty())
+                    .setPostalCode("")
+                    .setFeatureName(location.aoiName.orEmpty())
                     .build()
                 receiver.send(result.toByteArray().wrap())
             }.onFailure {
@@ -103,212 +109,155 @@ internal object AppLocationServiceSupport {
         }
     }
 
-    @SuppressLint("MissingPermission")
-    private suspend fun currentLocation(
+    private suspend fun currentAMapLocation(
         context: Context,
+        needAddress: Boolean,
         providerPreference: CurrentLocationProviderPreference,
         timeoutMillis: Long,
         logPrefix: String,
-    ): Location {
+    ): AMapLocation {
         ensureLocationPermissions(context, logPrefix)
-        val locationManager =
-            context.getSystemService(Context.LOCATION_SERVICE) as? LocationManager ?: fail(
-                "$logPrefix: LocationManager unavailable"
-            )
-
-        val providers = getEnabledProviders(locationManager, providerPreference, logPrefix)
         val effectiveTimeout = timeoutMillis.takeIf { it > 0 } ?: DEFAULT_TIMEOUT_MILLIS
-        logger.d("$logPrefix providerPreference=$providerPreference, effectiveTimeout=$effectiveTimeout, enabledProviders=$providers")
+        initAMapPrivacy(context)
+        ensureAMapApiKeyConfigured(context, logPrefix)
 
-        if (providers.isEmpty()) {
-            fail("$logPrefix: no enabled providers for preference=$providerPreference")
-        }
+        logger.d("$logPrefix using AMap SDK, providerPreference=$providerPreference, effectiveTimeout=$effectiveTimeout, needAddress=$needAddress")
 
-        val currentLocation = withTimeoutOrNull(effectiveTimeout) {
-            for (provider in providers) {
-                logger.d("$logPrefix requesting current location from provider=$provider")
-                val location = requestCurrentLocationCompat(
-                    context = context,
-                    locationManager = locationManager,
-                    provider = provider,
-                    logPrefix = logPrefix,
-                )
-                if (location != null) {
-                    logger.d("$logPrefix current location resolved by provider=$provider")
-                    return@withTimeoutOrNull location
-                }
-                logger.d("$logPrefix provider=$provider returned null location, continue to next provider")
-            }
-            null
-        }
-
-        if (currentLocation != null) {
-            return currentLocation
-        }
-
-        logger.e("$logPrefix current location timed out or all providers returned null, fallback to last known location")
-        return bestLastKnownLocation(locationManager, providers, logPrefix)
-            ?: fail("$logPrefix: current location unavailable, and no last known location available")
-    }
-
-    @SuppressLint("MissingPermission")
-    private suspend fun requestCurrentLocationCompat(
-        context: Context,
-        locationManager: LocationManager,
-        provider: String,
-        logPrefix: String,
-    ): Location? {
         return suspendCancellableCoroutine { continuation ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                runCatching {
-                    locationManager.getCurrentLocation(provider, null, context.mainExecutor) {
-                        if (continuation.isActive) {
-                            logger.d("$logPrefix current location callback from provider=$provider, location=${it?.let { loc -> "${loc.latitude},${loc.longitude},acc=${loc.accuracy}" } ?: "null"}")
-                            continuation.resume(it)
+            var locationClient: AMapLocationClient? = null
+
+            fun cleanup() {
+                mainHandler.post {
+                    val client = locationClient ?: return@post
+                    runCatching { client.stopLocation() }
+                    runCatching { client.onDestroy() }
+                    locationClient = null
+                }
+            }
+
+            fun resumeFailure(message: String, cause: Throwable? = null) {
+                cleanup()
+                val error = if (cause != null) {
+                    logger.e(cause, message)
+                    IllegalStateException(message, cause)
+                } else {
+                    logger.e(message)
+                    IllegalStateException(message)
+                }
+                if (continuation.isActive) {
+                    continuation.resumeWithException(error)
+                }
+            }
+
+            continuation.invokeOnCancellation {
+                cleanup()
+            }
+
+            mainHandler.post {
+                if (!continuation.isActive) {
+                    return@post
+                }
+
+                val client = try {
+                    AMapLocationClient(context)
+                } catch (e: Exception) {
+                    resumeFailure("$logPrefix: failed to create AMapLocationClient", e)
+                    return@post
+                }
+                locationClient = client
+
+                val locationOption = AMapLocationClientOption().apply {
+                    locationMode = when (providerPreference) {
+                        CurrentLocationProviderPreference.CurrentLocationProviderPreference_GpsFirst -> {
+                            AMapLocationMode.Device_Sensors
+                        }
+
+                        CurrentLocationProviderPreference.CurrentLocationProviderPreference_NetworkFirst -> {
+                            AMapLocationMode.Battery_Saving
+                        }
+
+                        CurrentLocationProviderPreference.CurrentLocationProviderPreference_Auto,
+                        CurrentLocationProviderPreference.UNRECOGNIZED -> {
+                            AMapLocationMode.Hight_Accuracy
                         }
                     }
-                }.onFailure {
-                    fail("$logPrefix: getCurrentLocation failed for provider=$provider", it)
+                    isOnceLocation = true
+                    isOnceLocationLatest = true
+                    isNeedAddress = needAddress
+                    httpTimeOut = effectiveTimeout
+                    interval = effectiveTimeout
+                    isMockEnable = false
+                    setLocationCacheEnable(false)
                 }
-            } else {
-                val listener = object : LocationListener {
-                    override fun onLocationChanged(location: Location) {
-                        logger.d("$logPrefix single update callback from provider=$provider, location=${location.latitude},${location.longitude},acc=${location.accuracy}")
-                        runCatching { locationManager.removeUpdates(this) }
-                        if (continuation.isActive) {
-                            continuation.resume(location)
-                        }
+
+                client.setLocationOption(locationOption)
+                client.setLocationListener { aMapLocation ->
+                    if (!continuation.isActive) {
+                        cleanup()
+                        return@setLocationListener
+                    }
+                    if (aMapLocation == null) {
+                        resumeFailure("$logPrefix: AMap returned null location result")
+                        return@setLocationListener
+                    }
+                    if (aMapLocation.errorCode == 0) {
+                        logger.d(
+                            "$logPrefix AMap success: lat=${aMapLocation.latitude}, lng=${aMapLocation.longitude}, accuracy=${aMapLocation.accuracy}, locationType=${aMapLocation.locationType}, provider=${locationProvider(aMapLocation)}"
+                        )
+                        cleanup()
+                        continuation.resume(aMapLocation)
+                    } else {
+                        resumeFailure(
+                            message = "$logPrefix: AMap location failed, errorCode=${aMapLocation.errorCode}, errorInfo=${aMapLocation.errorInfo}, locationDetail=${aMapLocation.locationDetail.orEmpty()}"
+                        )
                     }
                 }
-                continuation.invokeOnCancellation {
-                    runCatching { locationManager.removeUpdates(listener) }
-                }
-                runCatching {
-                    locationManager.requestSingleUpdate(provider, listener, Looper.getMainLooper())
-                }.onFailure {
-                    runCatching { locationManager.removeUpdates(listener) }
-                    fail("$logPrefix: requestSingleUpdate failed for provider=$provider", it)
-                }
+                logger.d("$logPrefix AMap startLocation")
+                client.startLocation()
             }
         }
     }
 
-    @SuppressLint("MissingPermission")
-    private fun bestLastKnownLocation(
-        locationManager: LocationManager,
-        preferredProviders: List<String>,
-        logPrefix: String,
-    ): Location? {
-        logger.d("$logPrefix checking last known location with preferredProviders=$preferredProviders")
-        preferredProviders.firstNotNullOfOrNull { provider ->
-            runCatching { locationManager.getLastKnownLocation(provider) }
-                .onFailure {
-                    fail("$logPrefix: getLastKnownLocation failed for preferred provider=$provider", it)
-                }
-                .getOrNull()
-        }?.let {
-            logger.d("$logPrefix preferred last known location hit, provider=${it.provider.orEmpty()}, lat=${it.latitude}, lng=${it.longitude}, accuracy=${it.accuracy}")
-            return it
+    private fun locationProvider(location: AMapLocation): String {
+        return when (location.locationType) {
+            AMapLocation.LOCATION_TYPE_GPS -> "amap:gps"
+            AMapLocation.LOCATION_TYPE_SAME_REQ -> "amap:cache"
+            AMapLocation.LOCATION_TYPE_FIX_CACHE -> "amap:fused-cache"
+            AMapLocation.LOCATION_TYPE_WIFI -> "amap:wifi"
+            AMapLocation.LOCATION_TYPE_CELL -> "amap:cell"
+            AMapLocation.LOCATION_TYPE_OFFLINE -> "amap:offline"
+            else -> "amap:${location.locationType}"
         }
-
-        val fallbackProviders = runCatching { locationManager.getProviders(true) }
-            .onFailure {
-                fail("$logPrefix: getProviders(true) failed while checking fallback providers", it)
-            }
-            .getOrDefault(emptyList())
-            .filterNot { it in preferredProviders }
-        logger.d("$logPrefix checking fallback last known providers=$fallbackProviders")
-        return fallbackProviders.firstNotNullOfOrNull { provider ->
-            runCatching { locationManager.getLastKnownLocation(provider) }
-                .onFailure {
-                    fail("$logPrefix: getLastKnownLocation failed for fallback provider=$provider", it)
-                }
-                .getOrNull()
-        }?.also {
-            logger.d("$logPrefix fallback last known location hit, provider=${it.provider.orEmpty()}, lat=${it.latitude}, lng=${it.longitude}, accuracy=${it.accuracy}")
-        }
-    }
-
-    private fun getEnabledProviders(
-        locationManager: LocationManager,
-        providerPreference: CurrentLocationProviderPreference,
-        logPrefix: String,
-    ): List<String> {
-        val providerOrder = when (providerPreference) {
-            CurrentLocationProviderPreference.CurrentLocationProviderPreference_GpsFirst -> {
-                listOf(LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER)
-            }
-
-            CurrentLocationProviderPreference.CurrentLocationProviderPreference_Auto,
-            CurrentLocationProviderPreference.CurrentLocationProviderPreference_NetworkFirst,
-            CurrentLocationProviderPreference.UNRECOGNIZED -> {
-                listOf(LocationManager.NETWORK_PROVIDER, LocationManager.GPS_PROVIDER)
-            }
-        }
-        return providerOrder.filter { provider ->
-            runCatching { locationManager.isProviderEnabled(provider) }
-                .onFailure {
-                    fail("$logPrefix: isProviderEnabled failed for provider=$provider", it)
-                }
-                .getOrDefault(false)
-        }.also {
-            logger.d("$logPrefix providerOrder=$providerOrder, enabledProviders=$it")
-        }
-    }
-
-    private fun reverseGeocode(context: Context, location: Location): Address {
-        if (!Geocoder.isPresent()) {
-            fail("AppLocationService#getCurrentLocationAddress: Geocoder is not present")
-        }
-
-        logger.d("AppLocationService#getCurrentLocationAddress reverseGeocode: lat=${location.latitude}, lng=${location.longitude}, locale=${Locale.getDefault()}")
-        val geocoder = Geocoder(context, Locale.getDefault())
-        val results = runCatching {
-            geocoder.getFromLocation(location.latitude, location.longitude, 1).orEmpty()
-        }.getOrElse {
-            fail("AppLocationService#getCurrentLocationAddress: reverse geocode failed", it)
-        }
-
-        return results.firstOrNull()
-            ?: fail("AppLocationService#getCurrentLocationAddress: reverse geocode returned no address result")
-    }
-
-    private fun buildAddressLine(address: Address): String {
-        if (address.maxAddressLineIndex >= 0) {
-            return (0..address.maxAddressLineIndex).joinToString(" ") {
-                address.getAddressLine(it).orEmpty()
-            }.trim()
-        }
-        return listOfNotNull(
-            address.countryName,
-            address.adminArea,
-            address.subAdminArea,
-            address.locality,
-            address.subLocality,
-            address.thoroughfare,
-            address.subThoroughfare,
-            address.featureName,
-            address.postalCode,
-        ).joinToString(" ").trim()
     }
 
     private fun ensureLocationPermissions(context: Context, logPrefix: String) {
-        val hasFineLocation = ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-        ) == PackageManager.PERMISSION_GRANTED
-        if (!hasFineLocation) {
-            fail("$logPrefix: ACCESS_FINE_LOCATION is not granted for ShortX app")
+        val fine =
+            ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+        if (fine != PackageManager.PERMISSION_GRANTED) {
+            fail("$logPrefix: No ACCESS_FINE_LOCATION permission")
         }
+        // 不再强制要求后台定位权限
+    }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val hasBackgroundLocation = ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_BACKGROUND_LOCATION,
-            ) == PackageManager.PERMISSION_GRANTED
-            if (!hasBackgroundLocation) {
-                fail("$logPrefix: ACCESS_BACKGROUND_LOCATION is not granted for ShortX app, please allow all the time in app settings")
-            }
+    private fun initAMapPrivacy(context: Context) {
+        runCatching {
+            AMapLocationClient.updatePrivacyShow(context, true, true)
+            AMapLocationClient.updatePrivacyAgree(context, true)
+            AMapUtilCoreApi.setCollectInfoEnable(true)
+        }.onFailure {
+            fail("AMap privacy initialization failed", it)
+        }
+    }
+
+    private fun ensureAMapApiKeyConfigured(context: Context, logPrefix: String) {
+        val appInfo = runCatching {
+            context.packageManager.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
+        }.getOrElse {
+            fail("$logPrefix: unable to read application meta-data", it)
+        }
+        val apiKey = appInfo.metaData?.getString("com.amap.api.v2.apikey").orEmpty()
+        if (apiKey.isBlank()) {
+            fail("$logPrefix: AMap API key is missing, please configure amap.api.key in local.properties or gradle.properties")
         }
     }
 

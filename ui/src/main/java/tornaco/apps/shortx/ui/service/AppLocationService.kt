@@ -17,7 +17,7 @@ class AppLocationService : Service() {
             requestData: ByteArrayWrapper,
         ) {
             AppLocationServiceSupport.getCurrentLocationInfo(
-                context = applicationContext,
+                service = this@AppLocationService,
                 requestId = requestId,
                 receiver = receiver,
                 requestData = requestData,
@@ -30,7 +30,7 @@ class AppLocationService : Service() {
             requestData: ByteArrayWrapper,
         ) {
             AppLocationServiceSupport.getCurrentLocationAddress(
-                context = applicationContext,
+                service = this@AppLocationService,
                 requestId = requestId,
                 receiver = receiver,
                 requestData = requestData,
