@@ -1232,6 +1232,16 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .build()
         }
 
+        is Action.GetCurrentLocationInfo -> {
+            tornaco.apps.shortx.core.proto.action.GetCurrentLocationInfo.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .build()
+        }
+
         is Action.WriteClipboard -> {
             WriteClipboard.newBuilder()
                 .setId(overrideId ?: id)

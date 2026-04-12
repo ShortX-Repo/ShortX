@@ -64,6 +64,10 @@ fun labelAndDescriptionForActionSelector(
             i18N["ui.action.read.clipboard"] to null
         }
 
+        Action.GetCurrentLocationInfo::class -> {
+            i18N["ui.action.get.current.location.info"] to null
+        }
+
         Action.WriteClipboard::class -> {
             i18N["ui.action.write.clipboard"] to null
         }
@@ -1076,6 +1080,11 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.GetScreenOnTime -> listOf(
             i18N["ui.common.get"] + i18N["ui.fact.screen.on.time"],
             i18N[action.from.factLabelKey()]
+        )
+
+        is Action.GetCurrentLocationInfo -> listOf(
+            i18N["ui.action.get.current.location.info"],
+            i18N["ui.action.get.current.location.info.description"]
         )
 
         is Action.SetAPMModeEnabled -> listOf(

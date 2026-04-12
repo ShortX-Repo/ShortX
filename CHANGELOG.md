@@ -43,6 +43,11 @@
 - 新增“可用内存”条件，可按 MB 配置整数比较，例如“小于 512MB”。 / Added an available-memory condition with integer comparison in MB, for example "less than 512MB".
 - 同时修复了整型条件编辑器之前默认把输入截断到 100 的限制，使大于 100 的阈值条件也能正常配置。 / Also fixed the generic integer-condition editor so values are no longer always capped at 100, allowing thresholds above 100 to be configured correctly.
 
+### Current Location Action / 当前位置信息动作
+- 新增系统动作“获取当前位置信息”，执行后会把当前 `latitude`、`longitude`、`provider`、`accuracy` 写入上下文数据。 / Added a new system action "Get current location info" that writes the current `latitude`, `longitude`, `provider`, and `accuracy` into context data.
+- 该动作可在规则、直达动作和函数内部复用；如果函数需要返回位置结果，可以继续配合已有的“设置函数返回值”动作使用。 / This action can be reused in rules, direct actions, and functions; if a function needs to return location data, it can be combined with the existing "Set function return value" action.
+- 同时补充了定位权限声明；如果运行时尚未授权，新动作会明确报错而不是静默返回空值。 / Added location permission declarations as well; if runtime permission has not been granted yet, the new action now fails explicitly instead of silently returning an empty value.
+
 ### Method Hook Related Functionality / 函数 Hook 相关功能
 - 补充了函数 Hook 日志页相关能力，复用共享日志列表组件统一承接日志交互。 / Added method-hook related log-page capability by reusing the shared log list component for consistent log interactions.
 - 现在函数 Hook 日志页与 JS 日志页、HTTP 日志页保持同一套复制与分享行为。 / Method-hook log pages now share the same copy and share interactions as JS log and HTTP log pages.

@@ -186,6 +186,14 @@ object ContextDataMapping {
     }
 
     @DoNotStrip
+    enum class GetCurrentLocationInfo(val description: String) {
+        latitude("Latitude of the current location"),
+        longitude("Longitude of the current location"),
+        provider("Provider of the current location"),
+        accuracy("Accuracy of the current location in meters"),
+    }
+
+    @DoNotStrip
     enum class AreaScreenshot(val description: String) {
         screenshotFilePath("The file path of the screenshot"),
         screenshotFileUri("The file uri of the screenshot"),

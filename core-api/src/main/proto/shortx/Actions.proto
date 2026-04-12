@@ -1936,6 +1936,14 @@ message GetScreenOnTime {
   string id = 100;
 }
 
+message GetCurrentLocationInfo {
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message WebDavList {
   string profileId = 1;
   string url = 2;

@@ -41,6 +41,8 @@
   "ui.conditions.service.running": "服務正在執行",
   "ui.conditions.has.audio.focus": "程式正在播放音訊",
   "ui.conditions.screen.on": "螢幕亮着",
+  "ui.action.get.current.location.info": "取得目前位置資訊",
+  "ui.action.get.current.location.info.description": "讀取目前經緯度、定位來源與精度，並寫入上下文資料",
   "ui.fact.cpu.availability": "CPU可用状态",
   "ui.fact.sun.rise.set": "日出日落",
   "ui.fact.sun.rise.set.rise": "日出",

@@ -36,6 +36,8 @@
   "ui.conditions.eva.context.var": "Check context var",
   "ui.conditions.eva.local.var": "Check local var",
   "ui.conditions.screen.on": "Screen is ON",
+  "ui.action.get.current.location.info": "Get current location info",
+  "ui.action.get.current.location.info.description": "Read the current latitude, longitude, provider and accuracy into context data",
   "ui.fact.cpu.availability": "CPU availability",
   "ui.fact.sun.rise.set": "Sun rise/set",
   "ui.fact.sun.rise.set.rise": "Sun rise",

@@ -390,6 +390,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.GetCurrentLocationInfo::class -> {
+                addAction(Action.GetCurrentLocationInfo())
+                true
+            }
+
             Action.WriteClipboard::class -> {
                 writeClipboardSelectorDialogState.show(source.getActionAs<Action.WriteClipboard>()?.text)
                 true
@@ -655,6 +660,7 @@ fun SystemActions(
         Action.DisconnectCurrentWifi::class,
         Action.SetMasterSync::class,
         Action.SendSMS::class,
+        Action.GetCurrentLocationInfo::class,
         Action.GetScreenOnTime::class,
     ).map {
         SelectorItem(
