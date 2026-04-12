@@ -16,7 +16,6 @@ android {
 
     defaultConfig {
         consumerProguardFiles("consumer-rules.pro")
-        manifestPlaceholders["AMAP_API_KEY"] = Configs["amap.api.key"] ?: ""
     }
 
     setPublishNonDefault(true)
@@ -24,9 +23,11 @@ android {
     productFlavors {
         create("row") {
             dimension = "market"
+            manifestPlaceholders["AMAP_API_KEY"] = Configs.flavorValue("amap.api.key", tornaco.project.android.shortx.Flavor.ROW) ?: ""
         }
         create("prc") {
             dimension = "market"
+            manifestPlaceholders["AMAP_API_KEY"] = Configs.flavorValue("amap.api.key", tornaco.project.android.shortx.Flavor.PRC) ?: ""
         }
     }
 

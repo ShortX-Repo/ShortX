@@ -43,6 +43,11 @@ object Configs {
         return v.ifBlank { null }
     }
 
+    fun flavorValue(key: String, flavor: Flavor = sxFlavor): String? {
+        val flavorKey = "$key.${flavor.name.lowercase()}"
+        return get(flavorKey) ?: get(key)
+    }
+
     fun Project.keyStoreAlias(): String {
         return Configs["keyAlias"] ?: this.findProperty("keyAlias")?.toString() ?: ""
     }

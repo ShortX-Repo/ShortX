@@ -257,7 +257,7 @@ internal object AppLocationServiceSupport {
         }
         val apiKey = appInfo.metaData?.getString("com.amap.api.v2.apikey").orEmpty()
         if (apiKey.isBlank()) {
-            fail("$logPrefix: AMap API key is missing, please configure amap.api.key in local.properties or gradle.properties")
+            fail("$logPrefix: AMap API key is missing, please configure amap.api.key.row / amap.api.key.prc in local.properties or gradle.properties, or provide amap.api.key as a shared fallback")
         }
     }
 
