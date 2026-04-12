@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -215,96 +217,108 @@ fun KeyAndGestureSettingsActivity.EdgeGestureSettingsSelector() {
         ) {
             SwitchBar(
                 isChecked = state.isEdgeGestureEnabled,
-                text = LocalI18N.current["ui.settings.edge.gesture"],
+                text = LocalI18N.current["ui.settings.touch.gesture"],
                 onCheckChange = {
                     vm.setGestureFeatureEnabled(it)
                 })
             MediumSpacer()
-            TipRow(LocalI18N.current["ui.settings.edge.gesture.disable"])
+            TipRow(LocalI18N.current["ui.settings.touch.gesture.disable"])
             StandardSpacer()
 
             AnimatedVisibility(state.isEdgeGestureEnabled) {
                 Column {
-                    LargeTitle(text = LocalI18N.current["ui.settings.edge.gesture"])
-                    StandardSpacer()
-
-                    SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.size"])
+                    LargeTitle(text = LocalI18N.current["ui.settings.touch.gesture"])
                     MediumSpacer()
-                    Text(text = state.gestureAreaSize.toString())
-                    Slider(
-                        valueRange = 1f..150f,
-                        value = state.gestureAreaSize.toFloat(),
-                        onValueChange = {
-                            vm.setAreaSize(it.roundToInt())
-                        })
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(state.gestureAreaSize.dp)
-                            .clip(ShortXCardRoundedCornerShapeXL)
-                            .background(color = MaterialTheme.colorScheme.primary)
-                    )
+                    TipRow(LocalI18N.current["ui.settings.touch.gesture.summary"])
                     LargeSpacer()
 
-                    SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.area.length"])
-                    MediumSpacer()
-                    Text(text = state.swipeLengthScale.toString())
-                    Slider(
-                        valueRange = 0f..1f,
-                        value = state.swipeLengthScale,
-                        onValueChange = {
-                            vm.setSwipeLengthScale(it)
-                        })
-                    LargeSpacer()
-
-                    SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.swipe.distance"])
-                    MediumSpacer()
-                    Text(text = state.swipeDistanceThreshold.toString())
-                    Slider(
-                        valueRange = 1f..300f,
-                        value = state.swipeDistanceThreshold.toFloat(),
-                        onValueChange = {
-                            vm.setSwipeDistanceThreshold(it.roundToInt())
-                        })
-
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "\uD83D\uDC46")
-                        StandardSpacer()
+                    GestureSettingCard(
+                        title = LocalI18N.current["ui.settings.edge.gesture.group.title"],
+                        summary = LocalI18N.current["ui.settings.edge.gesture.group.summary"]
+                    ) {
+                        SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.size"])
+                        MediumSpacer()
+                        Text(text = state.gestureAreaSize.toString())
+                        Slider(
+                            valueRange = 1f..150f,
+                            value = state.gestureAreaSize.toFloat(),
+                            onValueChange = {
+                                vm.setAreaSize(it.roundToInt())
+                            })
                         Spacer(
                             modifier = Modifier
-                                .width(state.swipeDistanceThreshold.dp)
-                                .height(6.dp)
+                                .fillMaxWidth()
+                                .height(state.gestureAreaSize.dp)
                                 .clip(ShortXCardRoundedCornerShapeXL)
                                 .background(color = MaterialTheme.colorScheme.primary)
                         )
+                        LargeSpacer()
+
+                        SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.area.length"])
+                        MediumSpacer()
+                        Text(text = state.swipeLengthScale.toString())
+                        Slider(
+                            valueRange = 0f..1f,
+                            value = state.swipeLengthScale,
+                            onValueChange = {
+                                vm.setSwipeLengthScale(it)
+                            })
+                        LargeSpacer()
+
+                        SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.swipe.distance"])
+                        MediumSpacer()
+                        Text(text = state.swipeDistanceThreshold.toString())
+                        Slider(
+                            valueRange = 1f..300f,
+                            value = state.swipeDistanceThreshold.toFloat(),
+                            onValueChange = {
+                                vm.setSwipeDistanceThreshold(it.roundToInt())
+                            })
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(text = "\uD83D\uDC46")
+                            StandardSpacer()
+                            Spacer(
+                                modifier = Modifier
+                                    .width(state.swipeDistanceThreshold.dp)
+                                    .height(6.dp)
+                                    .clip(ShortXCardRoundedCornerShapeXL)
+                                    .background(color = MaterialTheme.colorScheme.primary)
+                            )
+                        }
                     }
+
                     LargeSpacer()
 
-                    SmallTitle(text = LocalI18N.current["ui.settings.corner.gesture.size"])
-                    MediumSpacer()
-                    Text(text = "${state.cornerGestureAreaRatioPercent}%")
-                    TipRow(LocalI18N.current["ui.settings.corner.gesture.size.description"])
-                    StandardSpacer()
-                    Slider(
-                        valueRange = 6f..40f,
-                        value = state.cornerGestureAreaRatioPercent.toFloat(),
-                        onValueChange = {
-                            vm.setCornerGestureRegionRadiusRatioPercent(it.roundToInt())
-                        })
-                    LargeSpacer()
+                    GestureSettingCard(
+                        title = LocalI18N.current["ui.settings.corner.gesture.group.title"],
+                        summary = LocalI18N.current["ui.settings.corner.gesture.group.summary"]
+                    ) {
+                        SmallTitle(text = LocalI18N.current["ui.settings.corner.gesture.size"])
+                        MediumSpacer()
+                        Text(text = "${state.cornerGestureAreaRatioPercent}%")
+                        TipRow(LocalI18N.current["ui.settings.corner.gesture.size.description"])
+                        StandardSpacer()
+                        Slider(
+                            valueRange = 6f..40f,
+                            value = state.cornerGestureAreaRatioPercent.toFloat(),
+                            onValueChange = {
+                                vm.setCornerGestureRegionRadiusRatioPercent(it.roundToInt())
+                            })
+                        LargeSpacer()
 
-                    SmallTitle(text = LocalI18N.current["ui.settings.corner.gesture.swipe.distance"])
-                    MediumSpacer()
-                    Text(text = "${state.cornerGestureMinSwipeDistanceDp} dp")
-                    TipRow(LocalI18N.current["ui.settings.corner.gesture.swipe.distance.description"])
-                    StandardSpacer()
-                    Slider(
-                        valueRange = 24f..200f,
-                        value = state.cornerGestureMinSwipeDistanceDp.toFloat(),
-                        onValueChange = {
-                            vm.setCornerGestureMinSwipeDistanceDp(it.roundToInt())
-                        })
-                    LargeSpacer()
+                        SmallTitle(text = LocalI18N.current["ui.settings.corner.gesture.swipe.distance"])
+                        MediumSpacer()
+                        Text(text = "${state.cornerGestureMinSwipeDistanceDp} dp")
+                        TipRow(LocalI18N.current["ui.settings.corner.gesture.swipe.distance.description"])
+                        StandardSpacer()
+                        Slider(
+                            valueRange = 24f..200f,
+                            value = state.cornerGestureMinSwipeDistanceDp.toFloat(),
+                            onValueChange = {
+                                vm.setCornerGestureMinSwipeDistanceDp(it.roundToInt())
+                            })
+                    }
 
                     SectionSpacer()
                     SectionSpacer()
@@ -349,3 +363,26 @@ val Edge.isAll
     get() = listOf(Edge.BottomAll, Edge.TopAll, Edge.LeftAll, Edge.RightAll).contains(
         this
     )
+
+@Composable
+private fun GestureSettingCard(
+    title: String,
+    summary: String,
+    content: @Composable () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = ShortXCardRoundedCornerShapeXL,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
+        )
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            SmallTitle(text = title)
+            MediumSpacer()
+            TipRow(summary)
+            LargeSpacer()
+            content()
+        }
+    }
+}
