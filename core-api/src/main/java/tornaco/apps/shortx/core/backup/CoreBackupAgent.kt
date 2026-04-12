@@ -6,6 +6,7 @@ import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.store.BaseCodeLibraryStore
 import tornaco.apps.shortx.core.store.BaseDirectActionSetsStore
 import tornaco.apps.shortx.core.store.BaseDirectActionSettingsStore
+import tornaco.apps.shortx.core.store.BaseFunctionSettingsStore
 import tornaco.apps.shortx.core.store.BaseGestureRecordsStore
 import tornaco.apps.shortx.core.store.BaseGlobalVarStore
 import tornaco.apps.shortx.core.store.BasePkgSetsStore
@@ -95,6 +96,12 @@ open class CoreBackupAgent(private val settings: BackupSettings) {
             gestureSetStore.addAllGestureRecords(records = allGestures, write = false)
             gestureSetStore.write()
 
+            // Functions
+            val allFunctions = shortX.getAllFunctions()
+            val functionStore = BaseFunctionSettingsStore(this, File(backupTempDir, FUNCTION_FILE_NAME))
+            functionStore.addFunctions(functions = allFunctions, write = false)
+            functionStore.write()
+
             // Meta
             val metaFile = File(backupTempDir, META_FILE_NAME)
             val meta = "${settings.versionCode}"
@@ -142,6 +149,10 @@ open class CoreBackupAgent(private val settings: BackupSettings) {
             shortX.getAllDASets(false).forEach {
                 logger.w("Delete da set: ${it.title}")
                 shortX.deleteDASet(it.id)
+            }
+            shortX.getAllFunctions().forEach {
+                logger.w("Delete function: ${it.name}")
+                shortX.deleteFunction(it.id)
             }
             shortX.clearEvaluateRecords()
         }

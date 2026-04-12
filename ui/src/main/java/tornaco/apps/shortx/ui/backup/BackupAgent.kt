@@ -11,6 +11,7 @@ import tornaco.apps.shortx.core.backup.CODE_LIBRARY_FILE_NAME
 import tornaco.apps.shortx.core.backup.CoreBackupAgent
 import tornaco.apps.shortx.core.backup.DA_FILE_NAME
 import tornaco.apps.shortx.core.backup.DA_SET_FILE_NAME
+import tornaco.apps.shortx.core.backup.FUNCTION_FILE_NAME
 import tornaco.apps.shortx.core.backup.GESTURE_RECORD_FILE_NAME
 import tornaco.apps.shortx.core.backup.GV_FILE_NAME
 import tornaco.apps.shortx.core.backup.META_FILE_NAME
@@ -23,6 +24,7 @@ import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
+import tornaco.apps.shortx.core.proto.func.Function as ShortXFunction
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.Rule
@@ -33,6 +35,7 @@ import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.store.BaseCodeLibraryStore
 import tornaco.apps.shortx.core.store.BaseDirectActionSetsStore
 import tornaco.apps.shortx.core.store.BaseDirectActionSettingsStore
+import tornaco.apps.shortx.core.store.BaseFunctionSettingsStore
 import tornaco.apps.shortx.core.store.BaseGestureRecordsStore
 import tornaco.apps.shortx.core.store.BaseGlobalVarStore
 import tornaco.apps.shortx.core.store.BasePkgSetsStore
@@ -140,6 +143,10 @@ class BackupAgent(private val context: Context) : CoreBackupAgent(
                 logger.d("restore, add gesture: ${it.label}")
                 shortX.addGestureRecord(it)
             }
+            content.functions.forEach {
+                logger.d("restore, add function: ${it.name}")
+                shortX.addFunction(it)
+            }
         }
     }
 
@@ -226,6 +233,16 @@ class BackupAgent(private val context: Context) : CoreBackupAgent(
             gesturesStore.read()
             val gestures = gesturesStore.getAllGestureRecords()
 
+            // Functions
+            val functionsPb = File(tmpExtractedFile, FUNCTION_FILE_NAME)
+            val functions = if (functionsPb.exists()) {
+                val functionsStore = BaseFunctionSettingsStore(this, functionsPb)
+                functionsStore.read()
+                functionsStore.getAllFunctions()
+            } else {
+                emptyList()
+            }
+
             // Clean up.
             tmpExtractedFile.deleteRecursively()
             tmpZipFile.deleteRecursively()
@@ -239,7 +256,8 @@ class BackupAgent(private val context: Context) : CoreBackupAgent(
                 gvs = gvs,
                 daSets = daSets,
                 ruleSets = ruleSets,
-                gestures = gestures
+                gestures = gestures,
+                functions = functions
             )
         }
     }
@@ -270,4 +288,5 @@ data class BackupPackageContent(
     val daSets: List<DirectActionSet>,
     val ruleSets: List<RuleSet>,
     val gestures: List<GestureRecord>,
+    val functions: List<ShortXFunction> = emptyList(),
 )
