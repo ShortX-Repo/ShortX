@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.proto.condition.AppHasTaskByPkg
 import tornaco.apps.shortx.core.proto.condition.AppHasWindowFocus
 import tornaco.apps.shortx.core.proto.condition.AppIsNotRunning
 import tornaco.apps.shortx.core.proto.condition.AppIsRunning
+import tornaco.apps.shortx.core.proto.condition.AvailableMemory
 import tornaco.apps.shortx.core.proto.condition.BatteryPercent
 import tornaco.apps.shortx.core.proto.condition.ChargeState
 import tornaco.apps.shortx.core.proto.condition.ConnectedWifiSignal
@@ -353,6 +354,18 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setIsDisabled(isDisabled)
                 .setCustomContextDataKey(customContextDataKey)
                 .setValue(value)
+                .setOp(op)
+                .build()
+        }
+
+        is Condition.AvailableMemory -> {
+            AvailableMemory.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .setIsDisabled(isDisabled)
+                .setCustomContextDataKey(customContextDataKey)
+                .setValueMb(valueMb)
                 .setOp(op)
                 .build()
         }

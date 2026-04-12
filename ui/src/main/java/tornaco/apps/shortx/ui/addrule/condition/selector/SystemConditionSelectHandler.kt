@@ -53,6 +53,7 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     val batteryPercentDialog = rememberIntOpSelectorState(
         title = LocalI18N.current["ui.conditions.battery.percent"],
         valueTitle = LocalI18N.current["ui.conditions.battery.percent.value"],
+        maxValue = 100,
         evaluate = {
             val res = shortXManager.evaluateCondition(
                 context = EvaluateContext.newBuilder()
@@ -70,11 +71,32 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     }
     IntOpSelectorDialog(state = batteryPercentDialog)
 
+    val availableMemoryDialog = rememberIntOpSelectorState(
+        title = LocalI18N.current["ui.conditions.memory.available"],
+        valueTitle = LocalI18N.current["ui.conditions.memory.available.value"],
+        evaluate = {
+            val res = shortXManager.evaluateCondition(
+                context = EvaluateContext.newBuilder()
+                    .setSrcId(UUID.randomUUID().toString())
+                    .setSrcEvent(ContextSrcEvent.ContextSrc_ExecuteOnDAEditor)
+                    .setSrcTitle("Testing available memory")
+                    .build(),
+                condition = Condition.AvailableMemory(valueMb = it.value, op = it.op)
+                    .toProtoCondition().pack_()
+            )
+            res?.toString() ?: "FAIL TO EVALUATE"
+        }
+    ) {
+        addCondition(Condition.AvailableMemory(valueMb = it.value, op = it.op))
+    }
+    IntOpSelectorDialog(state = availableMemoryDialog)
+
     val wifiSignalSelectorState = rememberIntOpSelectorState(
         title = LocalI18N.current["ui.conditions.wifi.signal"],
         valueTitle = LocalI18N.current["ui.conditions.wifi.signal.level", mapOf(
             "max" to shortXManager.getMaxSignalLevel().toString()
         )],
+        maxValue = shortXManager.getMaxSignalLevel(),
         evaluate = {
             val res = shortXManager.evaluateCondition(
                 context = EvaluateContext.newBuilder()
@@ -342,6 +364,13 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
             Condition.BatteryPercent::class -> {
                 batteryPercentDialog.show(source.getConditionAs<Condition.BatteryPercent>()?.let {
                     IntOpSelectorRes(it.value, it.op)
+                })
+                true
+            }
+
+            Condition.AvailableMemory::class -> {
+                availableMemoryDialog.show(source.getConditionAs<Condition.AvailableMemory>()?.let {
+                    IntOpSelectorRes(it.valueMb, it.op)
                 })
                 true
             }

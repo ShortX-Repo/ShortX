@@ -11,6 +11,7 @@ val allConditionClasses = listOf(
     Condition.EvaluateLocalVar::class,
     Condition.EvaluateScreenOnTime::class,
     Condition.BatteryPercent::class,
+    Condition.AvailableMemory::class,
     Condition.AppIsRunning::class,
     Condition.AppIsNotRunning::class,
     Condition.AppHasAudioFocus::class,

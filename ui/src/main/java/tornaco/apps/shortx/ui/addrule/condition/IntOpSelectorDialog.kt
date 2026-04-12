@@ -55,6 +55,7 @@ data class IntOpSelectorRes(val value: Int, val op: IntOp)
 class IntOpSelectorState(
     val title: String,
     val valueTitle: String,
+    val maxValue: Int? = null,
     val evaluate: (IntOpSelectorRes) -> String,
     val onSelected: (IntOpSelectorRes) -> Unit
 ) : CommonDialogState() {
@@ -80,8 +81,10 @@ class IntOpSelectorState(
     }
 
     fun inputValue(value: String) {
+        val parsedValue = value.toIntOrNull() ?: 0
         _currentValue = _currentValue.copy(
-            value = minOf(100, value.toIntOrNull() ?: 0)
+            value = maxValue?.let { max -> parsedValue.coerceIn(0, max) }
+                ?: parsedValue.coerceAtLeast(0)
         )
         setOutput("")
     }
@@ -107,11 +110,12 @@ class IntOpSelectorState(
 fun rememberIntOpSelectorState(
     title: String,
     valueTitle: String,
+    maxValue: Int? = null,
     evaluate: (IntOpSelectorRes) -> String,
     onSelected: (IntOpSelectorRes) -> Unit
 ): IntOpSelectorState {
     return remember {
-        IntOpSelectorState(title, valueTitle, evaluate, onSelected)
+        IntOpSelectorState(title, valueTitle, maxValue, evaluate, onSelected)
     }
 }
 

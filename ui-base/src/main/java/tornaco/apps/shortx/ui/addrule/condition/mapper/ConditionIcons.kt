@@ -72,6 +72,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.Device.battery_2_fill
         }
 
+        Condition.AvailableMemory::class -> {
+            Remix.Device.database_2_line
+        }
+
         Condition.ChargeState::class -> {
             Remix.Device.battery_charge_line
         }

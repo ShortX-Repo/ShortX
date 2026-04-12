@@ -755,6 +755,34 @@ sealed interface Condition : Parcelable {
     }
 
     @Parcelize
+    data class AvailableMemory(
+        val valueMb: Int,
+        val op: IntOp,
+
+        override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val note: String = "",
+        override val id: String = defaultNewConditionId()
+    ) : Condition {
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            isDisabled: Boolean,
+            customContextDataKey: CustomContextDataKey
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                isDisabled = isDisabled,
+                customContextDataKey = customContextDataKey
+            )
+        }
+    }
+
+    @Parcelize
     data class ConnectedWifiSignal(
         val level: Int,
         val op: IntOp,

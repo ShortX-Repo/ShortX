@@ -97,6 +97,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             )
         }
 
+        Condition.AvailableMemory::class -> {
+            listOf(
+                i18N["ui.conditions.memory.available"]
+            )
+        }
+
         Condition.ChargeState::class -> {
             listOf(
                 i18N["ui.conditions.charge.state"]
@@ -440,6 +446,13 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
             listOf(
                 i18N["ui.conditions.battery.percent"],
                 "${condition.op.toDisplayName()} ${condition.value}%"
+            )
+        }
+
+        is Condition.AvailableMemory -> {
+            listOf(
+                i18N["ui.conditions.memory.available"],
+                "${condition.op.toDisplayName()} ${condition.valueMb}MB"
             )
         }
 

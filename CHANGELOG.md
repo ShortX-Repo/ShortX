@@ -40,6 +40,8 @@
 ### Condition Selector Improvements / Condition 选择器优化
 - 对 Condition 选择器应用了同样的分类与过滤改造。 / Applied the same selector treatment to the Condition selector.
 - 增加顶部分类过滤栏，并把条件重组为 UI、Apps、Screen & time、Connectivity & state、Devices & hardware、System events、Advanced & misc 等更清晰的分组。 / Added a top category filter row and regrouped conditions into clearer categories such as UI, Apps, Screen & time, Connectivity & state, Devices & hardware, System events, and Advanced & misc.
+- 新增“可用内存”条件，可按 MB 配置整数比较，例如“小于 512MB”。 / Added an available-memory condition with integer comparison in MB, for example "less than 512MB".
+- 同时修复了整型条件编辑器之前默认把输入截断到 100 的限制，使大于 100 的阈值条件也能正常配置。 / Also fixed the generic integer-condition editor so values are no longer always capped at 100, allowing thresholds above 100 to be configured correctly.
 
 ### Method Hook Related Functionality / 函数 Hook 相关功能
 - 补充了函数 Hook 日志页相关能力，复用共享日志列表组件统一承接日志交互。 / Added method-hook related log-page capability by reusing the shared log list component for consistent log interactions.

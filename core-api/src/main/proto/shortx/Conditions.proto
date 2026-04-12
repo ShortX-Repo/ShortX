@@ -103,6 +103,17 @@ message BatteryPercent {
   string id = 100;
 }
 
+message AvailableMemory {
+  int32 valueMb = 1;
+  IntOp op = 2;
+
+  CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message ConnectedWifiSignal {
   int32 level = 1;
   IntOp op = 2;

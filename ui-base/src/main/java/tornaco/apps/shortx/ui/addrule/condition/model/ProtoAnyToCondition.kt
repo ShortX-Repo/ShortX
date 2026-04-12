@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.proto.condition.AppHasTaskByPkg
 import tornaco.apps.shortx.core.proto.condition.AppHasWindowFocus
 import tornaco.apps.shortx.core.proto.condition.AppIsNotRunning
 import tornaco.apps.shortx.core.proto.condition.AppIsRunning
+import tornaco.apps.shortx.core.proto.condition.AvailableMemory
 import tornaco.apps.shortx.core.proto.condition.BatteryPercent
 import tornaco.apps.shortx.core.proto.condition.ChargeState
 import tornaco.apps.shortx.core.proto.condition.ConnectedWifiSignal
@@ -342,6 +343,19 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 customContextDataKey = data.customContextDataKey,
                 op = data.op,
                 value = data.value
+            )
+        }
+
+        this is_ AvailableMemory::class.java -> {
+            val data = this unpack_ AvailableMemory::class.java
+            Condition.AvailableMemory(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
+                customContextDataKey = data.customContextDataKey,
+                op = data.op,
+                valueMb = data.valueMb
             )
         }
 

@@ -80,6 +80,7 @@ fun SystemConditions(
 
     val deviceConditions = listOf(
         Condition.BatteryPercent::class,
+        Condition.AvailableMemory::class,
         Condition.ChargeState::class,
         Condition.PlugState::class,
         Condition.RequireBTDeviceFound::class,
