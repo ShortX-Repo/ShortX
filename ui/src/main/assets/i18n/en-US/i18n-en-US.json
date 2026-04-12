@@ -15,6 +15,7 @@
   "ui.fact.category.power": "Power & peripherals",
   "ui.fact.category.system": "System events",
   "ui.fact.category.advanced": "Advanced & misc",
+  "ui.condition.category.device": "Devices & hardware",
   "ui.conditions.title": "Conditions",
   "ui.conditions.title.optional": "Conditions (optional)",
   "ui.conditions.add": "Add Conditions",

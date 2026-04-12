@@ -15,6 +15,7 @@
   "ui.fact.category.power": "电源与外设",
   "ui.fact.category.system": "系统事件",
   "ui.fact.category.advanced": "高级与其它",
+  "ui.condition.category.device": "设备与硬件",
   "ui.conditions.title": "条件",
   "ui.conditions.title.optional": "条件（可选）",
   "ui.conditions.add": "添加条件",
