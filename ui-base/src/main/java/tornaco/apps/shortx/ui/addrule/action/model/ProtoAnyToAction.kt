@@ -85,6 +85,20 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.GetCurrentLocationAddress::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.GetCurrentLocationAddress::class.java
+            Action.GetCurrentLocationAddress(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                providerPreference = data.providerPreference,
+                timeoutMillis = data.timeoutMillis
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.ReadClipboard::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.ReadClipboard::class.java
             Action.ReadClipboard(

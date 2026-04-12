@@ -120,6 +120,26 @@ message Location {
   string longitude = 2;
 }
 
+message CurrentLocationInfoData {
+  double latitude = 1;
+  double longitude = 2;
+  string provider = 3;
+  float accuracy = 4;
+}
+
+message CurrentLocationAddressData {
+  string addressLine = 1;
+  string countryName = 2;
+  string adminArea = 3;
+  string subAdminArea = 4;
+  string locality = 5;
+  string subLocality = 6;
+  string thoroughfare = 7;
+  string subThoroughfare = 8;
+  string postalCode = 9;
+  string featureName = 10;
+}
+
 message UserInfo {
   string name = 1;
   int32 userId = 2;

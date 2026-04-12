@@ -220,6 +220,40 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     )
     MenuDialog(state = currentLocationProviderDialogState)
 
+    var currentLocationAddressProviderPreference by remember {
+        mutableStateOf(CurrentLocationProviderPreference.CurrentLocationProviderPreference_Auto)
+    }
+    var currentLocationAddressTimeoutMillis by remember { mutableStateOf(3000L) }
+
+    val currentLocationAddressTimeoutDialogState = rememberTextInputState(
+        title = i18N["ui.action.get.current.location.address.timeout"],
+        message = i18N["ui.action.get.current.location.address.timeout.message"],
+        onSelected = {
+            currentLocationAddressTimeoutMillis = it.toLongOrDefault(currentLocationAddressTimeoutMillis)
+            addAction(
+                Action.GetCurrentLocationAddress(
+                    providerPreference = currentLocationAddressProviderPreference,
+                    timeoutMillis = currentLocationAddressTimeoutMillis
+                )
+            )
+        }
+    )
+    TextInputDialog(state = currentLocationAddressTimeoutDialogState)
+
+    val currentLocationAddressProviderDialogState = rememberMenuDialogState<String>(
+        title = i18N["ui.action.get.current.location.address.provider"],
+        menuItems = CurrentLocationProviderPreference.entries
+            .filterNot { it == CurrentLocationProviderPreference.UNRECOGNIZED }
+            .map {
+                MenuDialogItem(id = it.name, title = i18N[it.labelKey()])
+            },
+        onItemSelected = { _, id ->
+            currentLocationAddressProviderPreference = CurrentLocationProviderPreference.valueOf(id)
+            currentLocationAddressTimeoutDialogState.show(currentLocationAddressTimeoutMillis.toString())
+        }
+    )
+    MenuDialog(state = currentLocationAddressProviderDialogState)
+
     val vibratePatternDialogState = rememberVibratePatternSelectorState(selected = {
         addAction(it)
     })
@@ -434,6 +468,15 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                     ?: CurrentLocationProviderPreference.CurrentLocationProviderPreference_Auto
                 currentLocationTimeoutMillis = current?.timeoutMillis ?: 3000L
                 currentLocationProviderDialogState.show()
+                true
+            }
+
+            Action.GetCurrentLocationAddress::class -> {
+                val current = source.getActionAs<Action.GetCurrentLocationAddress>()
+                currentLocationAddressProviderPreference = current?.providerPreference
+                    ?: CurrentLocationProviderPreference.CurrentLocationProviderPreference_Auto
+                currentLocationAddressTimeoutMillis = current?.timeoutMillis ?: 3000L
+                currentLocationAddressProviderDialogState.show()
                 true
             }
 
@@ -703,6 +746,7 @@ fun SystemActions(
         Action.SetMasterSync::class,
         Action.SendSMS::class,
         Action.GetCurrentLocationInfo::class,
+        Action.GetCurrentLocationAddress::class,
         Action.GetScreenOnTime::class,
     ).map {
         SelectorItem(

@@ -69,6 +69,10 @@ fun labelAndDescriptionForActionSelector(
             i18N["ui.action.get.current.location.info"] to i18N["ui.action.get.current.location.info.description"]
         }
 
+        Action.GetCurrentLocationAddress::class -> {
+            i18N["ui.action.get.current.location.address"] to i18N["ui.action.get.current.location.address.description"]
+        }
+
         Action.WriteClipboard::class -> {
             i18N["ui.action.write.clipboard"] to null
         }
@@ -1085,6 +1089,12 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
 
         is Action.GetCurrentLocationInfo -> listOf(
             i18N["ui.action.get.current.location.info"],
+            i18N[action.providerPreference.labelKey()],
+            "${action.timeoutMillis}ms"
+        )
+
+        is Action.GetCurrentLocationAddress -> listOf(
+            i18N["ui.action.get.current.location.address"],
             i18N[action.providerPreference.labelKey()],
             "${action.timeoutMillis}ms"
         )

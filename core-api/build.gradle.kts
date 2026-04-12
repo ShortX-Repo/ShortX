@@ -58,6 +58,11 @@ buildConfig {
     )
     buildConfigField(
         "String",
+        "APP_LOCATION_SERVICE_NAME",
+        "\"tornaco.apps.shortx.ui.service.AppLocationService\""
+    )
+    buildConfigField(
+        "String",
         "APP_MAIN_ACTIVITY",
         "\"tornaco.apps.shortx.ui.main.MainActivity\""
     )

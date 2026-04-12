@@ -1953,6 +1953,17 @@ message GetCurrentLocationInfo {
   string id = 100;
 }
 
+message GetCurrentLocationAddress {
+  CurrentLocationProviderPreference providerPreference = 1;
+  int64 timeoutMillis = 2;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message WebDavList {
   string profileId = 1;
   string url = 2;

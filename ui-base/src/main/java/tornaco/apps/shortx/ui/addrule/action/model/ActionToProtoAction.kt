@@ -37,6 +37,7 @@ import tornaco.apps.shortx.core.proto.action.ForEach
 import tornaco.apps.shortx.core.proto.action.ForEachPkgSet
 import tornaco.apps.shortx.core.proto.action.FromDA
 import tornaco.apps.shortx.core.proto.action.GetScreenOnTime
+import tornaco.apps.shortx.core.proto.action.GetCurrentLocationAddress
 import tornaco.apps.shortx.core.proto.action.GetTextFromScreenNode
 import tornaco.apps.shortx.core.proto.action.HideFloatWindow
 import tornaco.apps.shortx.core.proto.action.HideOverlayButton
@@ -1243,6 +1244,18 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setTimeoutMillis(timeoutMillis)
                 .build()
         }
+
+            is Action.GetCurrentLocationAddress -> {
+                GetCurrentLocationAddress.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setProviderPreference(providerPreference)
+                .setTimeoutMillis(timeoutMillis)
+                .build()
+            }
 
         is Action.WriteClipboard -> {
             WriteClipboard.newBuilder()

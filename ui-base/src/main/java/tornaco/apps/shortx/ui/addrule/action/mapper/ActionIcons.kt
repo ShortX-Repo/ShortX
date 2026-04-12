@@ -365,6 +365,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.UserAndFaces.user_location_fill
         }
 
+        Action.GetCurrentLocationAddress::class -> {
+            Remix.UserAndFaces.user_location_fill
+        }
+
         Action.WriteClipboard::class -> {
             Remix.Document.clipboard_fill
         }

@@ -194,6 +194,20 @@ object ContextDataMapping {
     }
 
     @DoNotStrip
+    enum class GetCurrentLocationAddress(val description: String) {
+        addressLine("Full address line of the current location"),
+        countryName("Country name of the current location"),
+        adminArea("Admin area of the current location"),
+        subAdminArea("Sub-admin area of the current location"),
+        locality("Locality of the current location"),
+        subLocality("Sub-locality of the current location"),
+        thoroughfare("Thoroughfare of the current location"),
+        subThoroughfare("Sub-thoroughfare of the current location"),
+        postalCode("Postal code of the current location"),
+        featureName("Feature name of the current location"),
+    }
+
+    @DoNotStrip
     enum class AreaScreenshot(val description: String) {
         screenshotFilePath("The file path of the screenshot"),
         screenshotFileUri("The file uri of the screenshot"),

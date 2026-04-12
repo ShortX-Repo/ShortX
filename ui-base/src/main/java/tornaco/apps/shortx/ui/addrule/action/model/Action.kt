@@ -3028,6 +3028,37 @@ sealed interface Action : Parcelable {
     }
 
     @Parcelize
+    data class GetCurrentLocationAddress(
+        override val id: String = defaultNewActionId(),
+        override val isEnabled: Boolean = true,
+        override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val contextData: List<ContextData> = dats<ContextDataMapping.GetCurrentLocationAddress>(
+            customContextDataKey
+        ),
+        override val note: String = "",
+        val providerPreference: CurrentLocationProviderPreference =
+            CurrentLocationProviderPreference.CurrentLocationProviderPreference_Auto,
+        val timeoutMillis: Long = 3000L,
+    ) : Action {
+        override fun clone(
+            id: String,
+            note: String,
+            isEnabled: Boolean,
+            actionOnError: ActionOnError,
+            contextData: List<ContextData>
+        ): Action {
+            return this.copy(
+                id = id,
+                note = note,
+                isEnabled = isEnabled,
+                actionOnError = actionOnError,
+                contextData = contextData
+            )
+        }
+    }
+
+    @Parcelize
     data class WriteClipboard(
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,

@@ -89,6 +89,7 @@ val allActionClasses = listOf(
     Action.SwitchCase::class,
     Action.ReadClipboard::class,
     Action.GetCurrentLocationInfo::class,
+    Action.GetCurrentLocationAddress::class,
     Action.WriteClipboard::class,
     Action.GetTextFromScreenNode::class,
     Action.CreatePkgSet::class,

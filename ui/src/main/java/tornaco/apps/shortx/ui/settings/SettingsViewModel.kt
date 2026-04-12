@@ -1,9 +1,12 @@
 package tornaco.apps.shortx.ui.settings
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Environment
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -46,6 +49,9 @@ data class SettingsState(
     val hasAudioRecord: Boolean = false,
     val shareAuthor: Author? = null,
     val enableHttpChucker: Boolean = false,
+    val hasApproximateLocationPermission: Boolean = false,
+    val hasPreciseLocationPermission: Boolean = false,
+    val hasBackgroundLocationPermission: Boolean = false,
     val shellEngineEnabled: Boolean = false,
     val mvelEngineEnabled: Boolean = false,
     val smsEngineEnabled: Boolean = false,
@@ -128,6 +134,13 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 shellEngineEnabled = shortXManager.isRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_SHELL),
                 mvelEngineEnabled = shortXManager.isRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_MVEL),
                 smsEngineEnabled = shortXManager.isRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_SMS),
+                hasApproximateLocationPermission = hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION),
+                hasPreciseLocationPermission = hasPermission(Manifest.permission.ACCESS_FINE_LOCATION),
+                hasBackgroundLocationPermission = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                    hasPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                } else {
+                    true
+                },
                 hasAudioRecord = shortXManager.getAllAudioRecordFiles().isNotEmpty(),
                 ruleFeatureEnabled = shortXManager.isRuleFeatureEnabled(),
                 isPostNByApp = shortXManager.isPostNByAppEnabled(),
@@ -280,6 +293,20 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
         }
     }
 
+    fun refreshLocationPermissionState() {
+        updateState {
+            copy(
+                hasApproximateLocationPermission = hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION),
+                hasPreciseLocationPermission = hasPermission(Manifest.permission.ACCESS_FINE_LOCATION),
+                hasBackgroundLocationPermission = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                    hasPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                } else {
+                    true
+                },
+            )
+        }
+    }
+
     fun backup(fileName: String) {
         viewModelScope.launch {
             kotlin.runCatching {
@@ -400,5 +427,9 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
             shortXManager.setOCREngine(ocrEngine)
             updateState { copy(ocrEngine = shortXManager.getOCREngine()) }
         }
+    }
+
+    private fun hasPermission(permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
     }
 }

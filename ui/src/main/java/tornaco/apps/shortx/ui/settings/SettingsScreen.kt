@@ -5,6 +5,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Environment
+import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -926,10 +927,48 @@ private fun systemSettings(
     mainState: LVLStateHolder.State,
     vm: SettingsViewModel,
 ): List<Preference> {
+    val context = LocalContext.current
     val i18N = LocalI18N.current
     val badge = if (mainState.isSubscribed) {
         null
     } else i18N["ui.subscription.subscribed.only"]
+
+    val foregroundLocationPermissionRequester = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) {
+        vm.refreshLocationPermissionState()
+    }
+    val backgroundLocationPermissionRequester = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {
+        vm.refreshLocationPermissionState()
+    }
+
+    val openAppDetailsSettings = {
+        context.startActivity(
+            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.fromParts("package", context.packageName, null)
+            }
+        )
+    }
+
+    val locationPermissionSummary = when {
+        !state.hasApproximateLocationPermission && !state.hasPreciseLocationPermission -> {
+            i18N["ui.settings.location.permission.summary.denied"]
+        }
+
+        !state.hasPreciseLocationPermission -> {
+            i18N["ui.settings.location.permission.summary.approximate"]
+        }
+
+        OsUtils.isQOrAbove() && !state.hasBackgroundLocationPermission -> {
+            i18N["ui.settings.location.permission.summary.foreground.only"]
+        }
+
+        else -> {
+            i18N["ui.settings.location.permission.summary.granted"]
+        }
+    }
 
     val subscribeDialogState = rememberShortXBottomSheetState()
     FeatureAccessDialog(subscribeDialogState)
@@ -947,6 +986,34 @@ private fun systemSettings(
                     vm.toggleQSTileOpt()
                 } else {
                     subscribeDialogState.show()
+                }
+            }
+        ),
+        Preference.TextPreference(
+            icon = Remix.Map.map_pin_user_fill,
+            title = i18N["ui.settings.location.permission"],
+            summary = locationPermissionSummary,
+            hasLongSummary = true,
+            onClick = {
+                when {
+                    !state.hasApproximateLocationPermission || !state.hasPreciseLocationPermission -> {
+                        foregroundLocationPermissionRequester.launch(
+                            arrayOf(
+                                Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION,
+                            )
+                        )
+                    }
+
+                    OsUtils.isQOrAbove() && !state.hasBackgroundLocationPermission -> {
+                        if (OsUtils.isQ()) {
+                            backgroundLocationPermissionRequester.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                        } else {
+                            openAppDetailsSettings()
+                        }
+                    }
+
+                    else -> openAppDetailsSettings()
                 }
             }
         )
