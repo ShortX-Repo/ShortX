@@ -68,14 +68,6 @@ interface IShortX {
 
     // Direct Actions end
 
-    // Functions start
-    void addFunction(in ByteArrayWrapper function);
-    void deleteFunction(String id);
-    ByteArrayWrapper getFunctionById(String id);
-    List<ByteArrayWrapper> getAllFunctions();
-
-    // Functions end
-
     List<ByteArrayWrapper> getActionEvaluateRecords();
     List<ByteArrayWrapper> getConditionEvaluateRecords();
     List<ByteArrayWrapper> getFactPublishRecords();
@@ -97,8 +89,6 @@ interface IShortX {
 
     Bitmap getAppIcon(String pkgName, int userId);
     // UI end
-
-    void showCornerHint(in int[] cornerNumber);
 
     // List with rule id or DA id
     List<String> getActiveJobs();
@@ -412,7 +402,6 @@ interface IShortX {
 
     boolean shouldFireEdgeGesture(int edge, int gesture);
     void fireEdgeGesture(in ByteArrayWrapper data);
-    void fireCornerSwipeToCenter(in ByteArrayWrapper data);
 
     boolean shouldFireScreenGesture(int gesture, int x, int y);
     void fireScreenGesture(int gesture, int x, int y);
@@ -462,4 +451,16 @@ interface IShortX {
     int getCodeLibraryItemCount();
     String executeCodeLibraryItem(String id, int context);
     // Code Library end
+
+    // Functions start
+    void addFunction(in ByteArrayWrapper function);
+    void deleteFunction(String id);
+    ByteArrayWrapper getFunctionById(String id);
+    List<ByteArrayWrapper> getAllFunctions();
+
+    // Functions end
+
+    // Recently added AIDL interfaces
+    void showCornerHint(in int[] cornerNumber);
+    void fireCornerSwipeToCenter(in ByteArrayWrapper data);
 }
