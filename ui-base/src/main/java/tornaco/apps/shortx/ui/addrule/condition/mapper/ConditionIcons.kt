@@ -96,6 +96,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.System.time_fill
         }
 
+        Condition.CalendarDayMatch::class -> {
+            Remix.Business.calendar_check_fill
+        }
+
         Condition.RequireWifiConnected::class -> {
             Remix.Device.wifi_fill
         }

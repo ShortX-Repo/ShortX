@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.proto.condition.BatteryPercent
 import tornaco.apps.shortx.core.proto.condition.ChargeState
 import tornaco.apps.shortx.core.proto.condition.ConnectedWifiSignal
 import tornaco.apps.shortx.core.proto.condition.CurrentActivity
+import tornaco.apps.shortx.core.proto.condition.CalendarDayMatch
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgListByPkg
 import tornaco.apps.shortx.core.proto.condition.EvaluateContextVar
@@ -432,6 +433,16 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setIsDisabled(isDisabled)
                 .setCustomContextDataKey(customContextDataKey)
                 .setRange(range)
+                .build()
+        }
+        is Condition.CalendarDayMatch -> {
+            CalendarDayMatch.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .setIsDisabled(isDisabled)
+                .setCustomContextDataKey(customContextDataKey)
+                .setDayType(dayType)
                 .build()
         }
 

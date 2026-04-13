@@ -296,6 +296,24 @@ message TimeInRange {
   string id = 100;
 }
 
+enum CalendarDayType {
+  AnyDay = 0;
+  WorkdayOnly = 1;
+  HolidayOnly = 2;
+  WeekendOnly = 3;
+  TransferWorkdayOnly = 4;
+}
+
+message CalendarDayMatch {
+  CalendarDayType dayType = 1;
+
+  CustomContextDataKey customContextDataKey = 97;
+  bool isDisabled = 96;
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message ChargeState {
   bool requireIsCharge = 1;
 

@@ -141,6 +141,10 @@ enum class PrebuiltCond : CondProvider {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.TimeInRange
     },
+    CalendarDayMatch {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.CalendarDayMatch
+    },
     RequireWifiConnected {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.RequireWifiConnected

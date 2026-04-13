@@ -14,6 +14,7 @@ import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.common.TimeOfADayRange
 import tornaco.apps.shortx.core.proto.common.TimeUnit
+import tornaco.apps.shortx.core.proto.condition.CalendarDayType
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOp
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOpPayload
 import tornaco.apps.shortx.core.proto.condition.PlugType
@@ -867,6 +868,33 @@ sealed interface Condition : Parcelable {
     @Parcelize
     data class TimeInRange(
         val range: TimeOfADayRange,
+
+        override val isInvert: Boolean = false,
+        override val isDisabled: Boolean = false,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val note: String = "",
+        override val id: String = defaultNewConditionId()
+    ) : Condition {
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            isDisabled: Boolean,
+            customContextDataKey: CustomContextDataKey
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                isDisabled = isDisabled,
+                customContextDataKey = customContextDataKey
+            )
+        }
+    }
+
+    @Parcelize
+    data class CalendarDayMatch(
+        val dayType: CalendarDayType,
 
         override val isInvert: Boolean = false,
         override val isDisabled: Boolean = false,

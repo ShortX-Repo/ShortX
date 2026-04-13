@@ -5,6 +5,7 @@ import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.QSTileState
 import tornaco.apps.shortx.core.proto.common.RingerMode
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
+import tornaco.apps.shortx.core.proto.condition.CalendarDayType
 import tornaco.apps.shortx.core.proto.condition.PlugType
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
@@ -118,6 +119,24 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
         addCondition(Condition.TimeInRange(range = it))
     })
     TimeOfADayRangeSelector(state = timeInRangeSelectorState)
+
+    val calendarDayMatchSelectDialogState = rememberSelectionDialogState(
+        title = LocalI18N.current["ui.conditions.calendar.day.match"],
+        message = null,
+        selectionLabel2Ids = listOf(
+            CalendarDayType.AnyDay,
+            CalendarDayType.WorkdayOnly,
+            CalendarDayType.HolidayOnly,
+            CalendarDayType.WeekendOnly,
+            CalendarDayType.TransferWorkdayOnly,
+        ).map {
+            LocalI18N.current[it.labelKey()] to it.name
+        },
+        onSelect = {
+            addCondition(Condition.CalendarDayMatch(dayType = CalendarDayType.valueOf(it)))
+        }
+    )
+    SelectionDialog(state = calendarDayMatchSelectDialogState)
 
     val chargeStateSelectorState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.conditions.charge.state"],
@@ -421,6 +440,11 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
 
             Condition.TimeInRange::class -> {
                 timeInRangeSelectorState.show(source.getConditionAs<Condition.TimeInRange>()?.range)
+                true
+            }
+
+            Condition.CalendarDayMatch::class -> {
+                calendarDayMatchSelectDialogState.show()
                 true
             }
 

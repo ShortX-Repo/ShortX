@@ -5,6 +5,7 @@ import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.common.timeOfADayRangeToString
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.QSTileState
+import tornaco.apps.shortx.core.proto.condition.CalendarDayType
 import tornaco.apps.shortx.core.proto.condition.TheXXTimeTodayScope
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.rule.toDisplayName
@@ -130,6 +131,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
         Condition.TimeInRange::class -> {
             listOf(
                 i18N["ui.conditions.time.in.range"]
+            )
+        }
+
+        Condition.CalendarDayMatch::class -> {
+            listOf(
+                i18N["ui.conditions.calendar.day.match"]
             )
         }
 
@@ -480,6 +487,13 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
             )
         }
 
+        is Condition.CalendarDayMatch -> {
+            listOf(
+                i18N["ui.conditions.calendar.day.match"],
+                i18N[condition.dayType.labelKey()]
+            )
+        }
+
         is Condition.ConnectedWifiSignal -> {
             listOf(
                 i18N["ui.conditions.wifi.signal"],
@@ -785,5 +799,16 @@ fun TheXXTimeTodayScope.labelKey(): String {
         TheXXTimeTodayScope.ThisWeek -> "ui.conditions.the.xx.time.within.this.week"
         TheXXTimeTodayScope.ThisMonth -> "ui.conditions.the.xx.time.within.this.month"
         TheXXTimeTodayScope.UNRECOGNIZED -> "UNKNOWN"
+    }
+}
+
+fun CalendarDayType.labelKey(): String {
+    return when (this) {
+        CalendarDayType.AnyDay -> "ui.conditions.calendar.day.type.any"
+        CalendarDayType.WorkdayOnly -> "ui.conditions.calendar.day.type.workday"
+        CalendarDayType.HolidayOnly -> "ui.conditions.calendar.day.type.holiday"
+        CalendarDayType.WeekendOnly -> "ui.conditions.calendar.day.type.weekend"
+        CalendarDayType.TransferWorkdayOnly -> "ui.conditions.calendar.day.type.transfer.workday"
+        CalendarDayType.UNRECOGNIZED -> "UNKNOWN"
     }
 }

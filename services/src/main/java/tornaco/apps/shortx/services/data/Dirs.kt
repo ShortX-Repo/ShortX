@@ -18,6 +18,7 @@ object Dirs {
     fun methodHookDir() = File(baseServerCacheDir(), "hook")
     fun backupCacheDir() = File(baseServerCacheDir(), "backup")
     fun pluginCacheDir() = File(baseServerCacheDir(), "plugin")
+    fun workdayCacheDir() = File(baseServerCacheDir(), "workday")
     fun screenshotCacheDir() = File(baseServerCacheDir(), "screenshot")
     fun dexCacheDir() = File(baseServerCacheDir(), "dex_${Build.VERSION.SDK_INT}")
     private fun ruleCacheDir() = File(baseServerCacheDir(), "rule")

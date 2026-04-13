@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.proto.condition.BatteryPercent
 import tornaco.apps.shortx.core.proto.condition.ChargeState
 import tornaco.apps.shortx.core.proto.condition.ConnectedWifiSignal
 import tornaco.apps.shortx.core.proto.condition.CurrentActivity
+import tornaco.apps.shortx.core.proto.condition.CalendarDayMatch
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgListByPkg
 import tornaco.apps.shortx.core.proto.condition.EvaluateContextVar
@@ -405,6 +406,17 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 isDisabled = data.isDisabled,
                 customContextDataKey = data.customContextDataKey,
                 range = data.range
+            )
+        }
+        this is_ CalendarDayMatch::class.java -> {
+            val data = this unpack_ CalendarDayMatch::class.java
+            Condition.CalendarDayMatch(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+                isDisabled = data.isDisabled,
+                customContextDataKey = data.customContextDataKey,
+                dayType = data.dayType
             )
         }
 

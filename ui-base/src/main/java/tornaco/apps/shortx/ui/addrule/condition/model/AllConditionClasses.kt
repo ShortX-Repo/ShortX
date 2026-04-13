@@ -20,6 +20,7 @@ val allConditionClasses = listOf(
     Condition.ScreenIsOn::class,
     Condition.VPNIsConnected::class,
     Condition.TimeInRange::class,
+    Condition.CalendarDayMatch::class,
     Condition.ChargeState::class,
     Condition.PlugState::class,
     Condition.RequireWifiConnected::class,
