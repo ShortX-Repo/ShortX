@@ -80,6 +80,8 @@ class CEComposeBinding(
                 "->",
                 "{",
                 "}",
+                "[",
+                "]",
                 "(",
                 ")",
                 ",",
@@ -91,7 +93,7 @@ class CEComposeBinding(
                 "-",
                 "*",
                 "/"
-            ), arrayOf("=", "\t", "{}", "}", "(", ")", ",", ".", ";", "\"", "?", "+", "-", "*", "/")
+            ), arrayOf("=", "\t", "{}", "}", "[]", "]", "(", ")", ",", ".", ";", "\"", "?", "+", "-", "*", "/")
         )
         inputView.forEachButton {
             it.typeface = typeface
