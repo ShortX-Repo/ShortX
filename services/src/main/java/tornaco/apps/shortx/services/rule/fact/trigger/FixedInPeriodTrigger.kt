@@ -60,6 +60,11 @@ class FixedInPeriodTrigger(
                     .setEnd(targetFact.end)
                     .setFixedBy(targetFact.fixedBy)
                     .setRepeat(targetFact.repeat)
+                    .apply {
+                        if (targetFact.hasWorkdayFilter()) {
+                            setWorkdayFilter(targetFact.workdayFilter)
+                        }
+                    }
                     .setId(factId).build(),
                 initialContextDataLazy = { emptyMap() }
             )

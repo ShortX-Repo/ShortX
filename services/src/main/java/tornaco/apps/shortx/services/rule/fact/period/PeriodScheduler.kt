@@ -28,6 +28,8 @@ import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.alarmManager
+import tornaco.apps.shortx.services.calendar.workday.WorkdayRepository
+import tornaco.apps.shortx.services.calendar.workday.WorkdayResolver
 import java.time.Duration
 
 class RandomInPeriodScheduler(
@@ -37,6 +39,7 @@ class RandomInPeriodScheduler(
 ) {
     private val logger = Logger("RandomInPeriodScheduler")
     private val alarmManager get() = context.alarmManager
+    private val workdayResolver by lazy { WorkdayResolver(WorkdayRepository(context)) }
 
     private val idToListeners = mutableMapOf<String, OnAlarmListener>()
 
@@ -47,9 +50,9 @@ class RandomInPeriodScheduler(
             cancel(rule, period, "Before schedule.")
 
             val triggerOffset = if (isForRepeat) {
-                period.getTriggerTimeOffsetForRepeat()
+                period.getTriggerTimeOffsetForRepeat(dateFilter = period.workdayDateFilter())
             } else {
-                period.getTriggerTimeOffset()
+                period.getTriggerTimeOffset(dateFilter = period.workdayDateFilter())
             }
 
             if (triggerOffset <= 0) {
@@ -89,5 +92,22 @@ class RandomInPeriodScheduler(
         }
     }.onFailure {
         logger.e(it, "RandomInPeriodScheduler cancel error")
+    }
+
+    private fun RandomInPeriod.workdayDateFilter(): ((java.time.LocalDate) -> Boolean)? {
+        if (!hasWorkdayFilter()) {
+            return null
+        }
+
+        val dayType = workdayFilter.dayType
+        if (dayType == tornaco.apps.shortx.core.proto.condition.CalendarDayType.AnyDay
+            || dayType == tornaco.apps.shortx.core.proto.condition.CalendarDayType.UNRECOGNIZED
+        ) {
+            return null
+        }
+
+        return { date ->
+            workdayResolver.resolve(date).matches(dayType)
+        }
     }
 }

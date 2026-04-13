@@ -31,9 +31,12 @@ import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.alarm.toLocalTime
 import tornaco.apps.shortx.core.common.sortedDays
 import tornaco.apps.shortx.core.common.toTimeOfADay
+import tornaco.apps.shortx.core.proto.condition.CalendarDayType
 import tornaco.apps.shortx.core.proto.fact.RepeatDays
 import tornaco.apps.shortx.core.proto.fact.WeekDay
+import tornaco.apps.shortx.core.proto.fact.WorkdayFilter
 import tornaco.apps.shortx.core.util.DateUtils
+import tornaco.apps.shortx.ui.addrule.condition.mapper.labelKey as calendarDayTypeLabelKey
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.CommonDialogState
@@ -54,6 +57,7 @@ class RandomInPeriodSelectorState(
     var end: LocalTime? by mutableStateOf(null)
 
     var repeat by mutableStateOf(emptyList<WeekDay>())
+    var dayType by mutableStateOf(CalendarDayType.AnyDay)
 
     val isValid
         get() = run {
@@ -98,6 +102,7 @@ class RandomInPeriodSelectorState(
         this.start = current?.start?.toLocalTime()
         this.end = current?.end?.toLocalTime()
         this.repeat = current?.repeatDays?.sortedDays ?: emptyList()
+        this.dayType = current?.workdayFilter?.dayType ?: CalendarDayType.AnyDay
         show()
     }
 }
@@ -126,7 +131,8 @@ fun PeriodSelector(state: RandomInPeriodSelectorState) {
                             repeatDays = RepeatDays
                                 .newBuilder()
                                 .addAllDays(state.repeat)
-                                .build()
+                                .build(),
+                            workdayFilter = state.dayType.toWorkdayFilterOrDefault()
                         )
                     )
                     state.dismiss()
@@ -161,6 +167,10 @@ private fun PeriodContent(state: RandomInPeriodSelectorState) {
             repeat = state.repeat,
             addRepeat = { state.addRepeat(it) },
             removeRepeat = { state.removeRepeat(it) })
+        CalendarDayTypeSelector(
+            selected = state.dayType,
+            onSelected = { state.dayType = it }
+        )
 
         AnimatedVisibility(state.errorMessages.isNotEmpty()) {
             Column {
@@ -264,5 +274,57 @@ fun RepeatSelector(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun CalendarDayTypeSelector(
+    selected: CalendarDayType,
+    onSelected: (CalendarDayType) -> Unit,
+) {
+    Column(
+        modifier = Modifier.padding(bottom = 32.dp),
+        horizontalAlignment = Alignment.Start
+    ) {
+        FieldTitle(text = LocalI18N.current["ui.conditions.calendar.day.match"])
+        StandardSpacer()
+        Row(
+            modifier = Modifier.horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            listOf(
+                CalendarDayType.AnyDay,
+                CalendarDayType.WorkdayOnly,
+                CalendarDayType.HolidayOnly,
+                CalendarDayType.WeekendOnly,
+                CalendarDayType.TransferWorkdayOnly,
+            ).forEach { dayType ->
+                val isSelected = selected == dayType
+                Text(
+                    text = LocalI18N.current[dayType.calendarDayTypeLabelKey()],
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(
+                            color = if (isSelected) {
+                                MaterialTheme.colorScheme.primaryContainer
+                            } else {
+                                ColorDefaults.backgroundSurfaceColor()
+                            }
+                        )
+                        .clickable { onSelected(dayType) }
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = W600)
+                )
+            }
+        }
+    }
+}
+
+private fun CalendarDayType.toWorkdayFilterOrDefault(): WorkdayFilter {
+    return if (this == CalendarDayType.AnyDay || this == CalendarDayType.UNRECOGNIZED) {
+        WorkdayFilter.getDefaultInstance()
+    } else {
+        WorkdayFilter.newBuilder().setDayType(this).build()
     }
 }

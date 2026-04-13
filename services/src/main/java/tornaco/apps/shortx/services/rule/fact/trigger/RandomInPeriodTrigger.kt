@@ -58,7 +58,13 @@ class RandomInPeriodTrigger(
                     .setId(factId)
                     .setStart(targetFact.start)
                     .setEnd(targetFact.end)
-                    .setRepeat(targetFact.repeat).build(),
+                    .setRepeat(targetFact.repeat)
+                    .apply {
+                        if (targetFact.hasWorkdayFilter()) {
+                            setWorkdayFilter(targetFact.workdayFilter)
+                        }
+                    }
+                    .build(),
                 initialContextDataLazy = { emptyMap() }
             )
 

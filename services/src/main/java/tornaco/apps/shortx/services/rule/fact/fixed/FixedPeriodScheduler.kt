@@ -27,6 +27,8 @@ import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.alarmManager
+import tornaco.apps.shortx.services.calendar.workday.WorkdayRepository
+import tornaco.apps.shortx.services.calendar.workday.WorkdayResolver
 import java.time.Duration
 
 class FixedInPeriodScheduler(
@@ -36,6 +38,7 @@ class FixedInPeriodScheduler(
 ) {
     private val logger = Logger("FixedInPeriodScheduler")
     private val alarmManager get() = context.alarmManager
+    private val workdayResolver by lazy { WorkdayResolver(WorkdayRepository(context)) }
 
     private val idToListeners = mutableMapOf<String, OnAlarmListener>()
 
@@ -44,7 +47,7 @@ class FixedInPeriodScheduler(
         // Cancel anyway
         cancel(rule, alarm, "Before schedule.")
 
-        val triggerOffset = alarm.getTriggerTimeOffset()
+        val triggerOffset = alarm.getTriggerTimeOffset(dateFilter = alarm.workdayDateFilter())
 
         if (triggerOffset <= 0) {
             logger.w("FixedInPeriodScheduler, skip this alarm since offset < 0, maybe we have missed this alarm and it has no repeat")
@@ -84,5 +87,22 @@ class FixedInPeriodScheduler(
         }
     }.onFailure {
         logger.e(it, "FixedInPeriodScheduler cancel error")
+    }
+
+    private fun FixedInPeriod.workdayDateFilter(): ((java.time.LocalDate) -> Boolean)? {
+        if (!hasWorkdayFilter()) {
+            return null
+        }
+
+        val dayType = workdayFilter.dayType
+        if (dayType == tornaco.apps.shortx.core.proto.condition.CalendarDayType.AnyDay
+            || dayType == tornaco.apps.shortx.core.proto.condition.CalendarDayType.UNRECOGNIZED
+        ) {
+            return null
+        }
+
+        return { date ->
+            workdayResolver.resolve(date).matches(dayType)
+        }
     }
 }

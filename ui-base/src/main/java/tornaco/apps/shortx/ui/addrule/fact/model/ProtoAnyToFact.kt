@@ -169,6 +169,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.Alarm(
                 timeOfADay = data.triggerAt,
                 repeatDays = data.repeat,
+                workdayFilter = if (data.hasWorkdayFilter()) data.workdayFilter else tornaco.apps.shortx.core.proto.fact.WorkdayFilter.getDefaultInstance(),
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
@@ -183,6 +184,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 start = data.start,
                 end = data.end,
                 repeatDays = data.repeat,
+                workdayFilter = if (data.hasWorkdayFilter()) data.workdayFilter else tornaco.apps.shortx.core.proto.fact.WorkdayFilter.getDefaultInstance(),
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
@@ -198,6 +200,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 end = data.end,
                 repeatDays = data.repeat,
                 fixedBy = data.fixedBy.toFixedBy() ?: FixedSetting.Times(0),
+                workdayFilter = if (data.hasWorkdayFilter()) data.workdayFilter else tornaco.apps.shortx.core.proto.fact.WorkdayFilter.getDefaultInstance(),
                 id = data.id,
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,

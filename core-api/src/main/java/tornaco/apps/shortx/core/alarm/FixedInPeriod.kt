@@ -29,43 +29,15 @@ import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.Logger
-import java.util.Calendar
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.Date
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.toJavaDuration
 
 private val logger = Logger("FixedInPeriodExt")
-
-val FixedInPeriod.triggerDateToday: Date
-    get() {
-        val current = Date()
-        val start = JCalendar.getInstance().apply {
-            time = Date()
-            set(JCalendar.HOUR_OF_DAY, start.hour)
-            set(JCalendar.MINUTE, start.minutes)
-            set(JCalendar.SECOND, start.seconds)
-        }.time
-
-        val end = JCalendar.getInstance().apply {
-            time = Date()
-            set(JCalendar.HOUR_OF_DAY, end.hour)
-            set(JCalendar.MINUTE, end.minutes)
-            set(JCalendar.SECOND, end.seconds)
-        }.time
-
-        val timeSegments = getTriggerTimeSegments(fixedBy, start, end)
-        logger.i("timeSegments: $timeSegments")
-
-        val triggerTimeFromSegments = getNextTriggerTimeFromSegments(Date(), timeSegments)
-        logger.i("getTriggerTimeFromSegments: $triggerTimeFromSegments")
-
-        return triggerTimeFromSegments.also {
-            logger.d("triggerDateToday, current: $current")
-            logger.d("triggerDateToday, start: $start")
-            logger.d("triggerDateToday, end: $end")
-            logger.d("triggerDateToday, trigger: $it")
-        }
-    }
+private const val MAX_SCHEDULE_LOOKAHEAD_DAYS = 370
 
 fun getTriggerTimeSegments(
     fixedBy: ProtoAny,
@@ -125,47 +97,84 @@ fun getTriggerTimeSegmentsByTimes(
 
 
 fun FixedInPeriod.getTriggerTimeOffset(): Long {
-    val triggerDateToday = triggerDateToday
-    val timeMillisOffset = (triggerDateToday.time - System.currentTimeMillis())
-    val nextTriggerDayOfWeekOffset = getNextTriggerDayOfWeekOffset(triggerDateToday)
-    return timeMillisOffset + (nextTriggerDayOfWeekOffset * 24 * 60 * 60 * 1000)
+    return getTriggerTimeOffset(now = LocalDateTime.now())
 }
 
-fun FixedInPeriod.getNextTriggerDayOfWeekOffset(triggerDateToday: Date): Int {
-    // No repeat
-    if (repeat.isNo) {
-        return 0
+fun FixedInPeriod.getTriggerTimeOffset(
+    dateFilter: ((LocalDate) -> Boolean)? = null,
+    now: LocalDateTime = LocalDateTime.now(),
+): Long {
+    val nextTrigger = nextTriggerDateTime(now, dateFilter) ?: return -1L
+    return java.time.Duration.between(now, nextTrigger).toMillis()
+}
+
+internal fun FixedInPeriod.nextTriggerDateTime(now: LocalDateTime): LocalDateTime? {
+    return nextTriggerDateTime(now, null)
+}
+
+internal fun FixedInPeriod.nextTriggerDateTime(
+    now: LocalDateTime,
+    dateFilter: ((LocalDate) -> Boolean)? = null,
+): LocalDateTime? {
+    val today = now.toLocalDate()
+    for (dayOffset in 0..MAX_SCHEDULE_LOOKAHEAD_DAYS) {
+        if (repeat.isNo && dayOffset > 0) {
+            break
+        }
+
+        val candidateDate = today.plusDays(dayOffset.toLong())
+        if (!repeat.isNo && !repeat.matchesDate(candidateDate)) {
+            continue
+        }
+        if (dateFilter != null && !dateFilter(candidateDate)) {
+            continue
+        }
+
+        val segments = triggerDateTimesOn(candidateDate)
+        val nextTrigger = if (dayOffset == 0) {
+            segments.firstOrNull { it.isAfter(now) }
+        } else {
+            segments.firstOrNull()
+        }
+
+        if (nextTrigger != null) {
+            return nextTrigger
+        }
     }
 
-    val todayWeekToday =
-        Calendar.getInstance().apply { time = Date() }.get(Calendar.DAY_OF_WEEK)
-    logger.d("todayWeekToday: $todayWeekToday")
-    logger.d("repeat.sortedDays: ${repeat.sortedDays}")
+    return null
+}
 
-    // Today will trigger
-    val hasRepeatToday =
-        repeat.sortedDays.firstOrNull { it.toCalendarInt() == todayWeekToday } != null
-    val isCurrentBeforeTodayTriggerTime = System.currentTimeMillis() < triggerDateToday.time
-    if (hasRepeatToday && isCurrentBeforeTodayTriggerTime) {
-        return 0
-    }
+internal fun FixedInPeriod.triggerDateTimesOn(date: LocalDate): List<LocalDateTime> {
+    val zoneId = ZoneId.systemDefault()
+    val startDate = Date.from(
+        date.atTime(start.hour, start.minutes, start.seconds)
+            .atZone(zoneId)
+            .toInstant()
+    )
+    val endDate = Date.from(
+        date.atTime(end.hour, end.minutes, end.seconds)
+            .atZone(zoneId)
+            .toInstant()
+    )
 
-    // Today will not, find next day
-    val nextRepeatDay =
-        repeat.sortedDays.firstOrNull { it.toCalendarInt() > todayWeekToday }
-    logger.d("nextRepeatDay: $nextRepeatDay")
-    return if (nextRepeatDay != null) {
-        // nextDayOffsetFromToday
-        nextRepeatDay.toCalendarInt() - todayWeekToday
-    } else {
-        // This is last day of repeat, just find the min one.
-        // 1 2 3 4 5 6 7
-        // 5 -> 1 = 3 = 7 - 5 + 1
-        // 3 -> 2 = 6 = 7 - 3 + 2
-        val minRepeatDay = repeat.sortedDays.minBy { it.toCalendarInt() }.toCalendarInt()
-        // nextWeekDayOffset
-        7 - todayWeekToday + minRepeatDay
-    }
+    return getTriggerTimeSegments(fixedBy, startDate, endDate)
+        .map { LocalDateTime.ofInstant(it.toInstant(), zoneId) }
+}
+
+private fun tornaco.apps.shortx.core.proto.fact.RepeatDays.matchesDate(date: LocalDate): Boolean {
+    return sortedDays.any { it.toJavaDayOfWeek() == date.dayOfWeek }
+}
+
+private fun tornaco.apps.shortx.core.proto.fact.WeekDay.toJavaDayOfWeek() = when (this) {
+    tornaco.apps.shortx.core.proto.fact.WeekDay.SUNDAY -> java.time.DayOfWeek.SUNDAY
+    tornaco.apps.shortx.core.proto.fact.WeekDay.SATURDAY -> java.time.DayOfWeek.SATURDAY
+    tornaco.apps.shortx.core.proto.fact.WeekDay.FRIDAY -> java.time.DayOfWeek.FRIDAY
+    tornaco.apps.shortx.core.proto.fact.WeekDay.THURSDAY -> java.time.DayOfWeek.THURSDAY
+    tornaco.apps.shortx.core.proto.fact.WeekDay.WEDNESDAY -> java.time.DayOfWeek.WEDNESDAY
+    tornaco.apps.shortx.core.proto.fact.WeekDay.TUESDAY -> java.time.DayOfWeek.TUESDAY
+    tornaco.apps.shortx.core.proto.fact.WeekDay.MONDAY -> java.time.DayOfWeek.MONDAY
+    else -> java.time.DayOfWeek.MONDAY
 }
 
 sealed interface FixedSetting : Parcelable {

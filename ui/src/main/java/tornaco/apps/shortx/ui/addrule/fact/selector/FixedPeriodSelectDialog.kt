@@ -34,12 +34,15 @@ import tornaco.apps.shortx.core.alarm.toProto
 import tornaco.apps.shortx.core.common.ofTodayDate
 import tornaco.apps.shortx.core.common.sortedDays
 import tornaco.apps.shortx.core.common.toTimeOfADay
+import tornaco.apps.shortx.core.proto.condition.CalendarDayType
 import tornaco.apps.shortx.core.proto.fact.RepeatDays
 import tornaco.apps.shortx.core.proto.fact.WeekDay
+import tornaco.apps.shortx.core.proto.fact.WorkdayFilter
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.ui.addrule.fact.mapper.label
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
+import tornaco.apps.shortx.ui.addrule.fact.selector.CalendarDayTypeSelector
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
@@ -68,6 +71,7 @@ class FixedInPeriodSelectorState(
     var end: LocalTime? by mutableStateOf(null)
     var repeat by mutableStateOf(emptyList<WeekDay>())
     var fixedSetting: FixedSetting? by mutableStateOf(null)
+    var dayType by mutableStateOf(CalendarDayType.AnyDay)
 
     val isValid
         get() = run {
@@ -117,6 +121,7 @@ class FixedInPeriodSelectorState(
         this.end = current?.end?.toLocalTime()
         this.repeat = current?.repeatDays?.sortedDays ?: emptyList()
         this.fixedSetting = current?.fixedBy
+        this.dayType = current?.workdayFilter?.dayType ?: CalendarDayType.AnyDay
         show()
     }
 }
@@ -154,7 +159,8 @@ fun FixedPeriodSelector(state: FixedInPeriodSelectorState) {
                                                     repeatDays = RepeatDays
                                                         .newBuilder()
                                                         .addAllDays(state.repeat)
-                                                        .build()
+                                                        .build(),
+                                                    workdayFilter = state.dayType.toWorkdayFilterOrDefault()
                                                 )
                                             )
                                             state.dismiss()
@@ -215,6 +221,10 @@ private fun PeriodContent(state: FixedInPeriodSelectorState) {
             repeat = state.repeat,
             addRepeat = { state.addRepeat(it) },
             removeRepeat = { state.removeRepeat(it) })
+        CalendarDayTypeSelector(
+            selected = state.dayType,
+            onSelected = { state.dayType = it }
+        )
 
         AnimatedVisibility(state.errorMessages.isNotEmpty()) {
             Column {
@@ -224,6 +234,14 @@ private fun PeriodContent(state: FixedInPeriodSelectorState) {
                 }
             }
         }
+    }
+}
+
+private fun CalendarDayType.toWorkdayFilterOrDefault(): WorkdayFilter {
+    return if (this == CalendarDayType.AnyDay || this == CalendarDayType.UNRECOGNIZED) {
+        WorkdayFilter.getDefaultInstance()
+    } else {
+        WorkdayFilter.newBuilder().setDayType(this).build()
     }
 }
 

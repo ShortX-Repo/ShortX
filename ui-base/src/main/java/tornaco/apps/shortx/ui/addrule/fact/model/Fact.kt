@@ -31,6 +31,7 @@ import tornaco.apps.shortx.core.proto.fact.RepeatDays
 import tornaco.apps.shortx.core.proto.fact.SensorValueTrend
 import tornaco.apps.shortx.core.proto.fact.SunRise
 import tornaco.apps.shortx.core.proto.fact.ValueConstraints
+import tornaco.apps.shortx.core.proto.fact.WorkdayFilter
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
@@ -549,7 +550,8 @@ sealed interface Fact : Parcelable {
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
         val timeOfADay: TimeOfADay,
-        val repeatDays: RepeatDays
+        val repeatDays: RepeatDays,
+        val workdayFilter: WorkdayFilter = WorkdayFilter.getDefaultInstance(),
     ) : Fact {
         override fun clone(
             id: String,
@@ -578,7 +580,8 @@ sealed interface Fact : Parcelable {
         override val id: String = defaultNewFactId(),
         val start: TimeOfADay,
         val end: TimeOfADay,
-        val repeatDays: RepeatDays
+        val repeatDays: RepeatDays,
+        val workdayFilter: WorkdayFilter = WorkdayFilter.getDefaultInstance(),
     ) : Fact {
         override fun clone(
             id: String,
@@ -608,7 +611,8 @@ sealed interface Fact : Parcelable {
         val start: TimeOfADay,
         val end: TimeOfADay,
         val fixedBy: FixedSetting,
-        val repeatDays: RepeatDays
+        val repeatDays: RepeatDays,
+        val workdayFilter: WorkdayFilter = WorkdayFilter.getDefaultInstance(),
     ) : Fact {
         override fun clone(
             id: String,

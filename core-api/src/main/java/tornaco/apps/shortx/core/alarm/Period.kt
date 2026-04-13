@@ -19,137 +19,96 @@ package tornaco.apps.shortx.core.alarm
 
 import tornaco.apps.shortx.core.common.sortedDays
 import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
-import tornaco.apps.shortx.core.util.Logger
-import java.util.Calendar
-import java.util.Date
+import java.time.Duration
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
 
-private val logger = Logger("RandomInPeriodExt")
-
-typealias JCalendar = java.util.Calendar
-
-val RandomInPeriod.triggerDateToday: Date
-    get() {
-        val current = Date()
-        val start = JCalendar.getInstance().apply {
-            time = Date()
-            set(JCalendar.HOUR_OF_DAY, start.hour)
-            set(JCalendar.MINUTE, start.minutes)
-            set(JCalendar.SECOND, start.seconds)
-        }.time
-
-        val end = JCalendar.getInstance().apply {
-            time = Date()
-            set(JCalendar.HOUR_OF_DAY, end.hour)
-            set(JCalendar.MINUTE, end.minutes)
-            set(JCalendar.SECOND, end.seconds)
-        }.time
-
-        val startTime = if (current >= end) {
-            // Missed today.
-            start.time
-        } else {
-            maxOf(current.time, start.time)
-        }
-
-        val randomTime = (startTime..end.time).random()
-        return Date(randomTime).also {
-            logger.d("triggerDateToday, current: $current")
-            logger.d("triggerDateToday, start: $start")
-            logger.d("triggerDateToday, end: $end")
-            logger.d("triggerDateToday, rand: $it")
-        }
-    }
+private const val MAX_SCHEDULE_LOOKAHEAD_DAYS = 370
 
 
-val RandomInPeriod.triggerDateForRepeat: Date
-    get() {
-        val start = JCalendar.getInstance().apply {
-            time = Date()
-            set(JCalendar.HOUR_OF_DAY, start.hour)
-            set(JCalendar.MINUTE, start.minutes)
-            set(JCalendar.SECOND, start.seconds)
-        }.time
-
-        val end = JCalendar.getInstance().apply {
-            time = Date()
-            set(JCalendar.HOUR_OF_DAY, end.hour)
-            set(JCalendar.MINUTE, end.minutes)
-            set(JCalendar.SECOND, end.seconds)
-        }.time
-
-        val randomTime = (start.time..end.time).random()
-        return Date(randomTime).also {
-            logger.d("triggerDateForRepeat, start: $start")
-            logger.d("triggerDateForRepeat, end: $end")
-            logger.d("triggerDateForRepeat, rand: $it")
-        }
-    }
-
-
-fun RandomInPeriod.getTriggerTimeOffset(): Long {
-    val dateToday = triggerDateToday
-    val timeMillisOffset = (dateToday.time - System.currentTimeMillis())
-    val nextTriggerDayOfWeekOffset = getNextTriggerDayOfWeekOffset(dateToday)
-    return timeMillisOffset + (nextTriggerDayOfWeekOffset * 24 * 60 * 60 * 1000)
+fun RandomInPeriod.getTriggerTimeOffset(
+    dateFilter: ((LocalDate) -> Boolean)? = null,
+    now: LocalDateTime = LocalDateTime.now(),
+): Long {
+    return getTriggerTimeOffsetInternal(
+        dateFilter = dateFilter,
+        now = now,
+        startDayOffset = 0,
+    )
 }
 
-fun RandomInPeriod.getTriggerTimeOffsetForRepeat(): Long {
-    val repeatDate = triggerDateForRepeat
-    val timeMillisOffset = (repeatDate.time - System.currentTimeMillis())
-    val nextTriggerDayOfWeekOffset = getNextTriggerDayOfWeekOffsetForRepeat()
-    return timeMillisOffset + (nextTriggerDayOfWeekOffset * 24 * 60 * 60 * 1000)
+fun RandomInPeriod.getTriggerTimeOffsetForRepeat(
+    dateFilter: ((LocalDate) -> Boolean)? = null,
+    now: LocalDateTime = LocalDateTime.now(),
+): Long {
+    return getTriggerTimeOffsetInternal(
+        dateFilter = dateFilter,
+        now = now,
+        startDayOffset = 1,
+    )
 }
 
-fun RandomInPeriod.getNextTriggerDayOfWeekOffset(triggerDateToday: Date): Int {
-    // No repeat
-    if (repeat.isNo) {
-        return 0
+private fun RandomInPeriod.getTriggerTimeOffsetInternal(
+    dateFilter: ((LocalDate) -> Boolean)?,
+    now: LocalDateTime,
+    startDayOffset: Int,
+): Long {
+    val today = now.toLocalDate()
+    for (dayOffset in startDayOffset..MAX_SCHEDULE_LOOKAHEAD_DAYS) {
+        if (repeat.isNo && dayOffset > 0) {
+            break
+        }
+
+        val candidateDate = today.plusDays(dayOffset.toLong())
+        if (!repeat.isNo && !repeat.matchesDate(candidateDate)) {
+            continue
+        }
+        if (dateFilter != null && !dateFilter(candidateDate)) {
+            continue
+        }
+
+        val candidateDateTime = randomTriggerDateOn(candidateDate, now, dayOffset == 0) ?: continue
+        if (!candidateDateTime.isAfter(now)) {
+            continue
+        }
+
+        return Duration.between(now, candidateDateTime).toMillis()
     }
 
-    val todayWeekToday =
-        Calendar.getInstance().apply { time = Date() }.get(Calendar.DAY_OF_WEEK)
-
-    // Today will trigger
-    val hasRepeatToday =
-        repeat.sortedDays.firstOrNull { it.toCalendarInt() == todayWeekToday } != null
-    val isCurrentBeforeTodayTriggerTime = System.currentTimeMillis() < triggerDateToday.time
-    if (hasRepeatToday && isCurrentBeforeTodayTriggerTime) {
-        return 0
-    }
-
-    // Today will not, find next day
-    val nextRepeatDay = repeat.sortedDays.firstOrNull { it.toCalendarInt() > todayWeekToday }
-    return if (nextRepeatDay != null) {
-        // nextDayOffsetFromToday
-        nextRepeatDay.toCalendarInt() - todayWeekToday
-    } else {
-        // This is last day of repeat, just find the min one.
-        // 1 2 3 4 5 6 7
-        // 5 -> 1 = 3 = 7 - 5 + 1
-        // 3 -> 2 = 6 = 7 - 3 + 2
-        val minRepeatDay = repeat.sortedDays.minBy { it.toCalendarInt() }.toCalendarInt()
-        // nextWeekDayOffset
-        7 - todayWeekToday + minRepeatDay
-    }
+    return -1L
 }
 
-
-fun RandomInPeriod.getNextTriggerDayOfWeekOffsetForRepeat(): Int {
-    val todayWeekToday =
-        Calendar.getInstance().apply { time = Date() }.get(Calendar.DAY_OF_WEEK)
-
-    // Today will not, find next day
-    val nextRepeatDay = repeat.sortedDays.firstOrNull { it.toCalendarInt() > todayWeekToday }
-    return if (nextRepeatDay != null) {
-        // nextDayOffsetFromToday
-        nextRepeatDay.toCalendarInt() - todayWeekToday
-    } else {
-        // This is last day of repeat, just find the min one.
-        // 1 2 3 4 5 6 7
-        // 5 -> 1 = 3 = 7 - 5 + 1
-        // 3 -> 2 = 6 = 7 - 3 + 2
-        val minRepeatDay = repeat.sortedDays.minBy { it.toCalendarInt() }.toCalendarInt()
-        // nextWeekDayOffset
-        7 - todayWeekToday + minRepeatDay
+private fun RandomInPeriod.randomTriggerDateOn(
+    date: LocalDate,
+    now: LocalDateTime,
+    clampToNow: Boolean,
+): LocalDateTime? {
+    val zoneId = ZoneId.systemDefault()
+    val startDateTime = date.atTime(start.hour, start.minutes, start.seconds)
+    val endDateTime = date.atTime(end.hour, end.minutes, end.seconds)
+    val effectiveStart = if (clampToNow && now.isAfter(startDateTime)) now else startDateTime
+    if (!endDateTime.isAfter(effectiveStart)) {
+        return null
     }
+
+    val startMillis = effectiveStart.atZone(zoneId).toInstant().toEpochMilli()
+    val endMillis = endDateTime.atZone(zoneId).toInstant().toEpochMilli()
+    val randomMillis = (startMillis..endMillis).random()
+    return LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(randomMillis), zoneId)
+}
+
+private fun tornaco.apps.shortx.core.proto.fact.RepeatDays.matchesDate(date: LocalDate): Boolean {
+    return sortedDays.any { it.toJavaDayOfWeek() == date.dayOfWeek }
+}
+
+private fun tornaco.apps.shortx.core.proto.fact.WeekDay.toJavaDayOfWeek() = when (this) {
+    tornaco.apps.shortx.core.proto.fact.WeekDay.SUNDAY -> java.time.DayOfWeek.SUNDAY
+    tornaco.apps.shortx.core.proto.fact.WeekDay.SATURDAY -> java.time.DayOfWeek.SATURDAY
+    tornaco.apps.shortx.core.proto.fact.WeekDay.FRIDAY -> java.time.DayOfWeek.FRIDAY
+    tornaco.apps.shortx.core.proto.fact.WeekDay.THURSDAY -> java.time.DayOfWeek.THURSDAY
+    tornaco.apps.shortx.core.proto.fact.WeekDay.WEDNESDAY -> java.time.DayOfWeek.WEDNESDAY
+    tornaco.apps.shortx.core.proto.fact.WeekDay.TUESDAY -> java.time.DayOfWeek.TUESDAY
+    tornaco.apps.shortx.core.proto.fact.WeekDay.MONDAY -> java.time.DayOfWeek.MONDAY
+    else -> java.time.DayOfWeek.MONDAY
 }

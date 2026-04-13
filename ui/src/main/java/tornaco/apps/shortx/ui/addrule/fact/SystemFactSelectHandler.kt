@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.core.text.isDigitsOnly
 import tornaco.apps.shortx.core.alarm.toLocalTime
+import tornaco.apps.shortx.core.proto.condition.CalendarDayType
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.proto.fact.ScreenCorner
 import tornaco.apps.shortx.core.proto.fact.SunRise
@@ -121,7 +122,13 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     MenuDialog(state = screenGestureMenuState)
 
     val timeOfADaySelector = rememberAlarmSelectorState { alarm ->
-        addFact(Fact.Alarm(timeOfADay = alarm.triggerAt, repeatDays = alarm.repeat))
+        addFact(
+            Fact.Alarm(
+                timeOfADay = alarm.triggerAt,
+                repeatDays = alarm.repeat,
+                workdayFilter = if (alarm.hasWorkdayFilter()) alarm.workdayFilter else tornaco.apps.shortx.core.proto.fact.WorkdayFilter.getDefaultInstance()
+            )
+        )
     }
     AlarmSelector(timeOfADaySelector)
 
@@ -352,11 +359,11 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
             }
 
             Fact.Alarm::class -> {
-
-                val localTime =
-                    source.getFactAs<Fact.Alarm>()?.timeOfADay?.toLocalTime() ?: LocalTime.now()
-                val repeat = source.getFactAs<Fact.Alarm>()?.repeatDays?.daysList ?: emptyList()
-                timeOfADaySelector.show(localTime, repeat)
+                val currentAlarm = source.getFactAs<Fact.Alarm>()
+                val localTime = currentAlarm?.timeOfADay?.toLocalTime() ?: LocalTime.now()
+                val repeat = currentAlarm?.repeatDays?.daysList ?: emptyList()
+                val dayType = currentAlarm?.workdayFilter?.dayType ?: CalendarDayType.AnyDay
+                timeOfADaySelector.show(localTime, repeat, dayType)
                 true
             }
 

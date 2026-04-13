@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,15 +28,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight.Companion.W600
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.common.toTimeOfADay
+import tornaco.apps.shortx.core.proto.condition.CalendarDayType
 import tornaco.apps.shortx.core.proto.common.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.Alarm
 import tornaco.apps.shortx.core.proto.fact.RepeatDays
 import tornaco.apps.shortx.core.proto.fact.WeekDay
+import tornaco.apps.shortx.core.proto.fact.WorkdayFilter
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.fact.mapper.toDisplayTime
 import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DialogTitle
+import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
@@ -49,13 +53,16 @@ class AlarmSelectorState(
 ) : CommonDialogState() {
     var time: LocalTime by mutableStateOf(LocalTime.now())
     var repeat by mutableStateOf(emptyList<WeekDay>())
+    var dayType by mutableStateOf(CalendarDayType.AnyDay)
 
     fun show(
         initialTime: LocalTime,
         initialRepeat: List<WeekDay>,
+        initialDayType: CalendarDayType,
     ) {
         this.time = initialTime
         this.repeat = initialRepeat
+        this.dayType = initialDayType
 
         super.show()
     }
@@ -106,6 +113,9 @@ fun AlarmSelector(state: AlarmSelectorState) {
                                 .addAllDays(state.repeat)
                                 .build()
                         )
+                        .apply {
+                            state.dayType.toWorkdayFilterOrNull()?.let { setWorkdayFilter(it) }
+                        }
                         .build()
                 )
                 state.dismiss()
@@ -121,7 +131,9 @@ fun AlarmSelector(state: AlarmSelectorState) {
 @Composable
 fun AlarmContent(state: AlarmSelectorState) {
     Column(
-        verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val startSelectState = rememberTimePickerDialogState(
             initialHour = state.time.hour,
@@ -143,6 +155,10 @@ fun AlarmContent(state: AlarmSelectorState) {
 
         SectionSpacer()
         RepeatSelector(state)
+        CalendarDayTypeSelector(
+            selected = state.dayType,
+            onSelected = { state.dayType = it }
+        )
     }
 }
 
@@ -199,4 +215,11 @@ private fun RepeatSelector(state: AlarmSelectorState) {
             }
         }
     }
+}
+
+private fun CalendarDayType.toWorkdayFilterOrNull(): WorkdayFilter? {
+    if (this == CalendarDayType.AnyDay || this == CalendarDayType.UNRECOGNIZED) {
+        return null
+    }
+    return WorkdayFilter.newBuilder().setDayType(this).build()
 }

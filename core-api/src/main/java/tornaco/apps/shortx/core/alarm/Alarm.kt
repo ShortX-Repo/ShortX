@@ -23,19 +23,14 @@ import tornaco.apps.shortx.core.proto.fact.Alarm
 import tornaco.apps.shortx.core.proto.fact.RepeatDays
 import tornaco.apps.shortx.core.proto.fact.WeekDay
 import java.time.Duration
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 import kotlin.math.abs
 
-val Alarm.triggerDateToday: Date
-    get() = android.icu.util.Calendar.getInstance().apply {
-        time = Date()
-        set(android.icu.util.Calendar.HOUR_OF_DAY, triggerAt.hour)
-        set(android.icu.util.Calendar.MINUTE, triggerAt.minutes)
-        set(android.icu.util.Calendar.SECOND, triggerAt.seconds)
-    }.time
+private const val MAX_SCHEDULE_LOOKAHEAD_DAYS = 370
 
 val RepeatDays.isNo: Boolean get() = sortedDays.isEmpty()
 val RepeatDays.isEveryDay
@@ -51,16 +46,6 @@ val RepeatDays.isEveryDay
         )
     )
 
-fun RepeatDays.isRepeatToday(): Boolean {
-    val today = Calendar.getInstance().apply {
-        time = Date()
-    }.get(Calendar.DAY_OF_WEEK)
-
-    return sortedDays.firstOrNull {
-        it.toCalendarInt() == today
-    } != null
-}
-
 
 fun WeekDay.toCalendarInt() = when (this) {
     WeekDay.SUNDAY -> Calendar.SUNDAY
@@ -75,43 +60,48 @@ fun WeekDay.toCalendarInt() = when (this) {
     }
 }
 
-fun Alarm.getTriggerTimeOffset(): Long {
-    val timeMillisOffset = (triggerDateToday.time - System.currentTimeMillis())
-    val nextTriggerDayOfWeekOffset = getNextTriggerDayOfWeekOffset()
-    return timeMillisOffset + (nextTriggerDayOfWeekOffset * 24 * 60 * 60 * 1000)
+fun Alarm.getTriggerTimeOffset(
+    dateFilter: ((LocalDate) -> Boolean)? = null,
+    now: LocalDateTime = LocalDateTime.now(),
+): Long {
+    val today = now.toLocalDate()
+    for (dayOffset in 0..MAX_SCHEDULE_LOOKAHEAD_DAYS) {
+        if (repeat.isNo && dayOffset > 0) {
+            break
+        }
+
+        val candidateDate = today.plusDays(dayOffset.toLong())
+        if (!repeat.isNo && !repeat.matchesDate(candidateDate)) {
+            continue
+        }
+        if (dateFilter != null && !dateFilter(candidateDate)) {
+            continue
+        }
+
+        val candidateDateTime = candidateDate.atTime(triggerAt.hour, triggerAt.minutes, triggerAt.seconds)
+        if (!candidateDateTime.isAfter(now)) {
+            continue
+        }
+
+        return Duration.between(now, candidateDateTime).toMillis()
+    }
+
+    return -1L
 }
 
-fun Alarm.getNextTriggerDayOfWeekOffset(): Int {
-    // No repeat
-    if (repeat.isNo) {
-        return 0
-    }
+private fun RepeatDays.matchesDate(date: LocalDate): Boolean {
+    return sortedDays.any { it.toJavaDayOfWeek() == date.dayOfWeek }
+}
 
-    val todayWeekToday =
-        Calendar.getInstance().apply { time = Date() }.get(Calendar.DAY_OF_WEEK)
-
-    // Today will trigger
-    val hasRepeatToday =
-        repeat.sortedDays.firstOrNull { it.toCalendarInt() == todayWeekToday } != null
-    val isCurrentBeforeTodayTriggerTime = System.currentTimeMillis() < triggerDateToday.time
-    if (hasRepeatToday && isCurrentBeforeTodayTriggerTime) {
-        return 0
-    }
-
-    // Today will not, find next day
-    val nextRepeatDay = repeat.sortedDays.firstOrNull { it.toCalendarInt() > todayWeekToday }
-    return if (nextRepeatDay != null) {
-        // nextDayOffsetFromToday
-        nextRepeatDay.toCalendarInt() - todayWeekToday
-    } else {
-        // This is last day of repeat, just find the min one.
-        // 1 2 3 4 5 6 7
-        // 5 -> 1 = 3 = 7 - 5 + 1
-        // 3 -> 2 = 6 = 7 - 3 + 2
-        val minRepeatDay = repeat.sortedDays.minBy { it.toCalendarInt() }.toCalendarInt()
-        // nextWeekDayOffset
-        7 - todayWeekToday + minRepeatDay
-    }
+private fun WeekDay.toJavaDayOfWeek() = when (this) {
+    WeekDay.SUNDAY -> java.time.DayOfWeek.SUNDAY
+    WeekDay.SATURDAY -> java.time.DayOfWeek.SATURDAY
+    WeekDay.FRIDAY -> java.time.DayOfWeek.FRIDAY
+    WeekDay.THURSDAY -> java.time.DayOfWeek.THURSDAY
+    WeekDay.WEDNESDAY -> java.time.DayOfWeek.WEDNESDAY
+    WeekDay.TUESDAY -> java.time.DayOfWeek.TUESDAY
+    WeekDay.MONDAY -> java.time.DayOfWeek.MONDAY
+    else -> java.time.DayOfWeek.MONDAY
 }
 
 

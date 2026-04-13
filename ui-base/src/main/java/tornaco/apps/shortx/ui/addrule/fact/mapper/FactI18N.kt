@@ -11,6 +11,7 @@ import tornaco.apps.shortx.core.common.sortedDays
 import tornaco.apps.shortx.core.compat.AppOpsManagerCompat
 import tornaco.apps.shortx.core.ops.opsLabelKey
 import tornaco.apps.shortx.core.platform.PackageNames.mediaProviderPackages
+import tornaco.apps.shortx.core.proto.condition.CalendarDayType
 import tornaco.apps.shortx.core.proto.common.KeyGesture
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.ScreenOnTimeStartFrom
@@ -23,6 +24,7 @@ import tornaco.apps.shortx.core.proto.fact.ProximitySensorState
 import tornaco.apps.shortx.core.proto.fact.SensorValueTrend
 import tornaco.apps.shortx.core.proto.fact.SunRise
 import tornaco.apps.shortx.core.proto.fact.WeekDay
+import tornaco.apps.shortx.core.proto.fact.WorkdayFilter
 import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.toDisplayName
@@ -31,6 +33,7 @@ import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.select
+import tornaco.apps.shortx.ui.addrule.condition.mapper.labelKey as calendarDayTypeLabelKey
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -475,7 +478,7 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         is Fact.SystemReady -> listOf(i18N["ui.fact.system.ready"])
 
         is Fact.Alarm -> {
-            listOf(
+            listOfNotNull(
                 i18N["ui.fact.time.of.a.day.at", mapOf("time" to fact.timeOfADay.toDisplayTime())],
                 if (fact.repeatDays.isNo) {
                     i18N["ui.fact.time.of.a.day.repeat.at", mapOf(
@@ -492,12 +495,13 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
                         ) {
                             getLongLabelForWeekDay(weekDay = it, i18n = i18N)
                         })]
-                }
+                },
+                fact.workdayFilter.labelLineOrNull(i18N)
             )
         }
 
         is Fact.RandomInPeriod -> {
-            listOf(
+            listOfNotNull(
                 i18N["ui.fact.time.of.a.day.random"],
                 i18N["ui.fact.time.of.a.day.random.at", mapOf("time" to fact.start.toDisplayTime() + " - " + fact.end.toDisplayTime())],
                 if (fact.repeatDays.isNo) {
@@ -515,12 +519,13 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
                         ) {
                             getLongLabelForWeekDay(weekDay = it, i18n = i18N)
                         })]
-                }
+                },
+                fact.workdayFilter.labelLineOrNull(i18N)
             )
         }
 
         is Fact.FixedInPeriod -> {
-            listOf(
+            listOfNotNull(
                 i18N["ui.fact.time.of.a.day.fixed"],
                 i18N["ui.fact.time.of.a.day.at", mapOf("time" to fact.start.toDisplayTime() + " - " + fact.end.toDisplayTime())],
                 fact.fixedBy.label(i18N),
@@ -539,7 +544,8 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
                         ) {
                             getLongLabelForWeekDay(weekDay = it, i18n = i18N)
                         })]
-                }
+                },
+                fact.workdayFilter.labelLineOrNull(i18N)
             )
         }
 
@@ -1134,6 +1140,13 @@ fun SunRise.factLabelKey(): String {
         SunRise.SunRise_Set -> "ui.fact.sun.rise.set.set"
         SunRise.UNRECOGNIZED -> "N/A"
     }
+}
+
+private fun WorkdayFilter.labelLineOrNull(i18N: I18N): String? {
+    if (dayType == CalendarDayType.AnyDay || dayType == CalendarDayType.UNRECOGNIZED) {
+        return null
+    }
+    return i18N["ui.conditions.calendar.day.match"] + ": " + i18N[dayType.calendarDayTypeLabelKey()]
 }
 
 fun Gesture.displayNameKey(): String {

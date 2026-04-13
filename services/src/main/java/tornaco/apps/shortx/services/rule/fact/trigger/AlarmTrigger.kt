@@ -100,6 +100,11 @@ class AlarmTrigger(
                 reason = "onAlarm",
                 fact = Alarm.newBuilder().setTriggerAt(targetFact.triggerAt)
                     .setRepeat(targetFact.repeat)
+                    .apply {
+                        if (targetFact.hasWorkdayFilter()) {
+                            setWorkdayFilter(targetFact.workdayFilter)
+                        }
+                    }
                     .setId(factId).build(),
                 initialContextDataLazy = { emptyMap() }
             )

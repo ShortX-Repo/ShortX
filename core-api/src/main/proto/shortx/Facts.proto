@@ -253,6 +253,7 @@ message FixedInPeriod {
 
   RepeatDays repeat = 3;
   google.protobuf.Any fixedBy = 4;
+  WorkdayFilter workdayFilter = 5;
 
   string tag = 97;
   CustomContextDataKey customContextDataKey = 98;

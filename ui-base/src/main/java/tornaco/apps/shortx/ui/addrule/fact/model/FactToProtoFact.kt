@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.fact.model
 
 import tornaco.apps.shortx.core.alarm.toProto
+import tornaco.apps.shortx.core.proto.condition.CalendarDayType
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.fact.APMStatusChanged
 import tornaco.apps.shortx.core.proto.fact.AccelerometerSensor
@@ -266,28 +267,38 @@ fun Fact.toProtoFact(
         }
 
         is Fact.Alarm -> {
-            Alarm.newBuilder()
+            val builder = Alarm.newBuilder()
                 .setRepeat(repeatDays)
                 .setTriggerAt(timeOfADay)
                 .setId(overrideId ?: id).setNote(overrideNote ?: note)
                 .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
-                .build()
+
+            if (workdayFilter.dayType != CalendarDayType.AnyDay && workdayFilter.dayType != CalendarDayType.UNRECOGNIZED) {
+                builder.setWorkdayFilter(workdayFilter)
+            }
+
+            builder.build()
         }
 
         is Fact.RandomInPeriod -> {
-            RandomInPeriod.newBuilder()
+            val builder = RandomInPeriod.newBuilder()
                 .setRepeat(repeatDays)
                 .setStart(start)
                 .setEnd(end)
                 .setId(overrideId ?: id).setNote(overrideNote ?: note)
                 .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
-                .build()
+
+            if (workdayFilter.dayType != CalendarDayType.AnyDay && workdayFilter.dayType != CalendarDayType.UNRECOGNIZED) {
+                builder.setWorkdayFilter(workdayFilter)
+            }
+
+            builder.build()
         }
 
         is Fact.FixedInPeriod -> {
-            FixedInPeriod.newBuilder()
+            val builder = FixedInPeriod.newBuilder()
                 .setRepeat(repeatDays)
                 .setStart(start)
                 .setEnd(end)
@@ -295,7 +306,12 @@ fun Fact.toProtoFact(
                 .setId(overrideId ?: id).setNote(overrideNote ?: note)
                 .setIsDisabled(isDisabled).setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
-                .build()
+
+            if (workdayFilter.dayType != CalendarDayType.AnyDay && workdayFilter.dayType != CalendarDayType.UNRECOGNIZED) {
+                builder.setWorkdayFilter(workdayFilter)
+            }
+
+            builder.build()
         }
 
         is Fact.AppBecomeBackground -> {
