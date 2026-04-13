@@ -33,6 +33,7 @@ interface IShortX {
     void setLogDebugEnable(boolean enable);
     boolean isLogDebugEnable();
     String getLogDir();
+    String updateWorkdayCalendarCache(String payload);
     boolean hasFatalError();
     void writeLogsTo(in ParcelFileDescriptor pfd);
 

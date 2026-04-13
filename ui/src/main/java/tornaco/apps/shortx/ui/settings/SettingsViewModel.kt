@@ -269,10 +269,7 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 }
 
                 withContext(Dispatchers.IO) {
-                    val cacheDir = resolveWorkdayCacheDir()
-                    cacheDir.mkdirs()
-                    deleteLegacyWorkdayCacheFiles(cacheDir)
-                    File(cacheDir, WORKDAY_CACHE_FILE_NAME).writeText(payload)
+                    shortXManager.updateWorkdayCalendarCache(payload)
                 }
 
                 val missingYears = targetYears - refreshedYears
@@ -521,21 +518,6 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
         val root = Json.parseToJsonElement(payload).jsonObject
         val years = root["Years"]?.jsonObject ?: error("Missing Years")
         return years.keys.mapNotNull { it.toIntOrNull() }.toSet()
-    }
-
-    private fun deleteLegacyWorkdayCacheFiles(cacheDir: File) {
-        cacheDir.listFiles()?.forEach { file ->
-            if (file.isFile && file.extension == "json" && file.name != WORKDAY_CACHE_FILE_NAME) {
-                runCatching { file.delete() }
-                    .onFailure { logger.e(it, "Failed to delete stale workday cache file: ${file.absolutePath}") }
-            }
-        }
-    }
-
-    private fun resolveWorkdayCacheDir(): File {
-        val logDir = File(shortXManager.getLogDir())
-        val baseDir = logDir.parentFile ?: error("Unable to resolve base server dir")
-        return File(baseDir, "cache/workday/CN")
     }
 
     fun exportLogs() {

@@ -78,6 +78,7 @@ import tornaco.apps.shortx.core.proto.fact.ScreenGesture
 import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.proto.func.`Function` as ShortXFunction
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
+import tornaco.apps.shortx.services.calendar.workday.WorkdayRepository
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.ActionAsyncMode
@@ -306,6 +307,22 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun getLogDir(): String {
             return Dirs.baseServerLogDir().absolutePath
+        }
+
+        override fun updateWorkdayCalendarCache(payload: String): String {
+            val cacheDir = File(Dirs.workdayCacheDir(), "CN").apply {
+                mkdirs()
+            }
+            cacheDir.listFiles()?.forEach { file ->
+                if (file.isFile && file.extension == "json" && file.name != "holidayAPI.json") {
+                    runCatching { file.delete() }
+                        .onFailure { logger.e(it, "Failed to delete stale workday cache file: ${file.absolutePath}") }
+                }
+            }
+            val file = File(cacheDir, "holidayAPI.json")
+            file.writeText(payload)
+            WorkdayRepository.invalidateAll()
+            return file.absolutePath
         }
 
         override fun hasFatalError(): Boolean {

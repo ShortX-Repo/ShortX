@@ -214,6 +214,12 @@ class ShortXManager(val service: IShortX) {
         }
     }
 
+    fun updateWorkdayCalendarCache(payload: String): String {
+        return invokeService("") {
+            updateWorkdayCalendarCache(payload)
+        }
+    }
+
     fun hasFatalError(): Boolean {
         return invokeService(false) {
             hasFatalError()

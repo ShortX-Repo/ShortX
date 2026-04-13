@@ -19,6 +19,12 @@ class WorkdayRepository(
         private const val UNIFIED_FILE_NAME = "holidayAPI.json"
 
         private val yearCache = mutableMapOf<Int, WorkdayYearData?>()
+
+        fun invalidateAll() {
+            synchronized(yearCache) {
+                yearCache.clear()
+            }
+        }
     }
 
     override fun getYear(year: Int): WorkdayYearData? {
