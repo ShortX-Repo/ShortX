@@ -14,12 +14,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.PlayArrow
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Stop
-import androidx.compose.material3.AssistChip
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -54,7 +54,6 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.TextDisplayActivity
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.composeLogger
-import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
@@ -72,6 +71,7 @@ fun ShellCommandEditorActivity.ShellCommandEditor(
     val outputTitle = LocalI18N.current["ui.action.shell"]
     val context = LocalContext.current
     var ceComposeBinding by remember { mutableStateOf<CEComposeBinding?>(null) }
+    var moreMenuExpanded by remember { mutableStateOf(false) }
 
     val vm = hiltViewModel<ShellCommandEditorViewModel>()
     LaunchedEffect(vm) {
@@ -97,88 +97,95 @@ fun ShellCommandEditorActivity.ShellCommandEditor(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
             Scaffold(modifier = Modifier, topBar = {
-                Column {
-                    ShortXTopAppBar(
-                        modifier = Modifier,
-                        title = {
-                            Text(LocalI18N.current["ui.action.shell"])
-                        },
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                cancelAndFinish()
-                            }) {
-                                RemixIcon(remixName = Remix.System.close_line)
-                            }
-                        },
-                        actions = {
-                            if (state.isExecuting) {
-                                Box(modifier = Modifier, contentAlignment = Alignment.Center) {
-                                    Loading(modifier = Modifier.size(24.dp))
-                                }
-                            }
-
-                            IconButton(onClick = {
-                                setResultAndFinish(
-                                    Action.ShellCommand(
-                                        command = state.command,
-                                        singleShot = state.isSingleShot
-                                    )
+                ShortXTopAppBar(
+                    modifier = Modifier,
+                    title = {
+                        Text("")
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            cancelAndFinish()
+                        }) {
+                            RemixIcon(remixName = Remix.System.close_line)
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = {
+                            setResultAndFinish(
+                                Action.ShellCommand(
+                                    command = state.command,
+                                    singleShot = state.isSingleShot
                                 )
-                            }) {
-                                Icon(imageVector = Icons.Outlined.Check, contentDescription = "Done")
-                            }
-                        },
-                    )
-                    EditorToolsBar {
-                        FilterChip(
-                            selected = state.isSingleShot,
-                            onClick = {
-                                vm.setSingleShot(!state.isSingleShot)
-                            },
-                            label = {
-                                Text(LocalI18N.current["ui.action.shell.single.shot"])
-                            }
-                        )
-
-                        AssistChip(label = {
-                            Text(
-                                LocalI18N.current[
-                                    if (state.isExecuting) "ui.common.stop" else "ui.common.run"
-                                ]
                             )
-                        }, leadingIcon = {
+                        }) {
                             Icon(
-                                imageVector = if (state.isExecuting) Icons.Outlined.Stop else Icons.Outlined.PlayArrow,
-                                contentDescription = if (state.isExecuting) "Stop" else "Evaluate"
+                                imageVector = Icons.Outlined.Check,
+                                contentDescription = "Done"
                             )
-                        }, onClick = {
+                        }
+
+                        IconButton(onClick = {
                             if (state.isExecuting) {
                                 vm.stopExecute()
                             } else {
                                 vm.execute()
                             }
-                        })
+                        }) {
+                            if (state.isExecuting) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Stop,
+                                    contentDescription = LocalI18N.current["ui.common.stop"]
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Outlined.PlayArrow,
+                                    contentDescription = LocalI18N.current["ui.common.run"]
+                                )
+                            }
+                        }
 
-                        AssistChip(label = {
-                            Text(LocalI18N.current["ui.code.editor.search"])
-                        }, leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Outlined.Search,
-                                contentDescription = "Search and replace"
-                            )
-                        }, onClick = {
-                            ceComposeBinding?.toggleSearchPanel()
-                        })
-                    }
-                }
+                        Box {
+                            IconButton(onClick = { moreMenuExpanded = true }) {
+                                Icon(
+                                    imageVector = Icons.Outlined.MoreVert,
+                                    contentDescription = "More actions"
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = moreMenuExpanded,
+                                onDismissRequest = { moreMenuExpanded = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text(LocalI18N.current["ui.action.shell.single.shot"]) },
+                                    onClick = {
+                                        moreMenuExpanded = false
+                                        vm.setSingleShot(!state.isSingleShot)
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(LocalI18N.current["ui.code.editor.wordwrap"]) },
+                                    onClick = {
+                                        moreMenuExpanded = false
+                                        ceComposeBinding?.toggleWordwrap()
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(LocalI18N.current["ui.code.editor.whitespace"]) },
+                                    onClick = {
+                                        moreMenuExpanded = false
+                                        ceComposeBinding?.toggleNonPrintable()
+                                    }
+                                )
+                            }
+                        }
+                    },
+                )
             }) { paddingValues ->
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues),
                 ) {
-                    val subscribeState by LVLStateHolder.collectAsState()
-
                     if (!state.isInSystemUI) {
                         Box(modifier = Modifier.padding(horizontal = 8.dp)) {
                             TipBody(text = LocalI18N.current["ui.action.shell.summary"])
@@ -191,10 +198,13 @@ fun ShellCommandEditorActivity.ShellCommandEditor(
                                 .apply {
                                     CEComposeBinding(
                                         binding = this,
-                                        showToolbar = subscribeState.isSubscribed,
+                                        showToolbar = true,
                                         initialText = currentAction?.command ?: "",
                                         languageScopeName = "source.shell",
-                                        autoCompleteEnabled = false
+                                        autoCompleteEnabled = false,
+                                        showWordwrapInBottomBar = false,
+                                        showNonPrintableInBottomBar = false,
+                                        footerTitle = outputTitle
                                     ) {
                                         composeLogger.logOnDebug("Content change: $it")
                                         vm.updateCommand(it)

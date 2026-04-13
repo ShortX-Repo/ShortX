@@ -17,6 +17,12 @@
       "name": "shell",
       "scopeName": "source.shell",
       "languageConfiguration": "textmate/shell/language-configuration.json"
+    },
+    {
+      "grammar": "textmate/mvel/syntaxes/mvel.tmLanguage.json",
+      "name": "mvel",
+      "scopeName": "source.mvel",
+      "languageConfiguration": "textmate/mvel/language-configuration.json"
     }
   ]
 }

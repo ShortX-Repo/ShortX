@@ -1,0 +1,132 @@
+{
+  "name": "MVEL",
+  "scopeName": "source.mvel",
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#constants"
+    },
+    {
+      "include": "#types"
+    },
+    {
+      "include": "#numbers"
+    },
+    {
+      "include": "#functions"
+    },
+    {
+      "include": "#properties"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.mvel",
+          "match": "//.*$"
+        },
+        {
+          "name": "comment.block.mvel",
+          "begin": "/\\*",
+          "end": "\\*/"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.mvel",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "match": "\\\\.",
+              "name": "constant.character.escape.mvel"
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.single.mvel",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            {
+              "match": "\\\\.",
+              "name": "constant.character.escape.mvel"
+            }
+          ]
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.mvel",
+          "match": "\\b(?:if|else|foreach|for|while|do|until|unless|switch|case|default|break|continue|return|throw|try|catch|finally|with)\\b"
+        },
+        {
+          "name": "keyword.operator.word.mvel",
+          "match": "\\b(?:new|import|in|contains|instanceof|isdef|soundslike|strsim|empty|null)\\b"
+        },
+        {
+          "name": "storage.type.mvel",
+          "match": "\\b(?:def|var)\\b"
+        }
+      ]
+    },
+    "constants": {
+      "patterns": [
+        {
+          "name": "constant.language.mvel",
+          "match": "\\b(?:true|false|nil|this)\\b"
+        }
+      ]
+    },
+    "types": {
+      "patterns": [
+        {
+          "name": "support.class.mvel",
+          "match": "\\b(?:boolean|byte|char|short|int|long|float|double|void|String|Object|List|Set|Map|Integer|Long|Float|Double|Boolean)\\b"
+        },
+        {
+          "name": "entity.name.type.mvel",
+          "match": "\\b[A-Z][A-Za-z0-9_$]*(?:\\$[A-Z][A-Za-z0-9_$]*)*\\b"
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.mvel",
+          "match": "\\b(?:0[xX][0-9a-fA-F]+|\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?[fFdDlL]?)\\b"
+        }
+      ]
+    },
+    "functions": {
+      "patterns": [
+        {
+          "name": "entity.name.function.mvel",
+          "match": "\\b([A-Za-z_][A-Za-z0-9_]*)\\s*(?=\\()"
+        }
+      ]
+    },
+    "properties": {
+      "patterns": [
+        {
+          "name": "variable.other.property.mvel",
+          "match": "(?<=\\.)[A-Za-z_][A-Za-z0-9_]*\\b"
+        }
+      ]
+    }
+  },
+  "uuid": "a9c4f1b8-31de-44be-bf47-4f821db2287f"
+}

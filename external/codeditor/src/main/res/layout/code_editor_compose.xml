@@ -137,12 +137,14 @@
                 android:padding="8dp"
                 android:src="@drawable/ic_code_editor_undo" />
 
-            <androidx.appcompat.widget.AppCompatButton
+            <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/btn_search_toggle"
-                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/search_panel" />
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/search_panel"
+                android:padding="8dp"
+                android:src="@android:drawable/ic_menu_search" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_wordwrap"

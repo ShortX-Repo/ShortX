@@ -37,6 +37,9 @@ class CEComposeBinding(
     private val initialText: String,
     private val languageScopeName: String? = null,
     private val autoCompleteEnabled: Boolean = false,
+    private val showWordwrapInBottomBar: Boolean = true,
+    private val showNonPrintableInBottomBar: Boolean = true,
+    private val footerTitle: String? = null,
     private val onContentChange: (String) -> Unit = {}
 ) {
     companion object {
@@ -172,6 +175,8 @@ class CEComposeBinding(
 
         binding.editorTools.isVisible = true
         binding.editorActionBar.isVisible = showToolbar
+        binding.btnWordwrap.isVisible = showWordwrapInBottomBar
+        binding.btnNonPrintable.isVisible = showNonPrintableInBottomBar
 
         ensureTextMateRegistryPrepared()
 
@@ -220,6 +225,38 @@ class CEComposeBinding(
             binding.searchEditor.setText("")
             binding.replaceEditor.setText("")
             binding.editor.searcher.stopSearch()
+        }
+        updateFeatureState()
+        updatePositionText()
+    }
+
+    fun undo() {
+        if (binding.editor.canUndo()) {
+            binding.editor.undo()
+            updateBtnState()
+            updatePositionText()
+        }
+    }
+
+    fun redo() {
+        if (binding.editor.canRedo()) {
+            binding.editor.redo()
+            updateBtnState()
+            updatePositionText()
+        }
+    }
+
+    fun toggleWordwrap() {
+        binding.editor.isWordwrap = !binding.editor.isWordwrap
+        updateFeatureState()
+    }
+
+    fun toggleNonPrintable() {
+        showNonPrintable = !showNonPrintable
+        binding.editor.nonPrintablePaintingFlags = if (showNonPrintable) {
+            DEFAULT_NON_PRINTABLE_FLAGS
+        } else {
+            0
         }
         updateFeatureState()
         updatePositionText()
@@ -417,6 +454,9 @@ class CEComposeBinding(
             } else {
                 text += "(${idx + 1} of $matchText)"
             }
+        }
+        footerTitle?.takeIf { it.isNotBlank() }?.let {
+            text = "$it  |  $text"
         }
         binding.positionDisplay.text = text
     }

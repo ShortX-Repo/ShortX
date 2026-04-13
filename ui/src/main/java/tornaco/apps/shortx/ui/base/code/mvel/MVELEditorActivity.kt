@@ -16,9 +16,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.PlayArrow
-import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.AssistChip
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -27,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -60,13 +62,11 @@ import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.TextDisplayActivity
-import tornaco.apps.shortx.ui.base.code.EditorToolsBar
 import tornaco.apps.shortx.ui.base.code.ParcelableCode
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.code.CodeLibSelectorActivity
 import tornaco.apps.shortx.ui.code.popupCodeLibraryItemResult
 import tornaco.apps.shortx.ui.composeLogger
-import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.BrowserUtils
 
@@ -85,6 +85,7 @@ fun MVELEditorActivity.MVELEditor(
     val outputTitle = LocalI18N.current["ui.title.mvel"]
     val context = LocalContext.current
     var ceComposeBinding by remember { mutableStateOf<CEComposeBinding?>(null) }
+    var moreMenuExpanded by remember { mutableStateOf(false) }
 
     val vm = hiltViewModel<MVELEditorViewModel>()
     val codeLibSelectorLauncher = rememberLauncherForActivityResult(
@@ -139,107 +140,137 @@ fun MVELEditorActivity.MVELEditor(
             )
             MenuDialog(state = contextMenuState)
             Scaffold(modifier = Modifier, topBar = {
-                Column {
-                    ShortXTopAppBar(
-                        modifier = Modifier,
-                        title = {
-                            Text(text = "MVEL")
-                        },
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                cancelAndFinish()
-                            }) {
-                                RemixIcon(remixName = Remix.System.close_line)
-                            }
-                        },
-                        actions = {
-                            IconButton(onClick = {
-                                setResultAndFinish(
-                                    ParcelableCode(
-                                        expression = state.expression,
-                                        coroutineContext = state.coroutineContext
-                                    )
-                                )
-                            }) {
-                                Icon(imageVector = Icons.Outlined.Check, contentDescription = "Done")
-                            }
-                        },
-                    )
-                    EditorToolsBar {
-                        AssistChip(label = {
+                ShortXTopAppBar(
+                    modifier = Modifier,
+                    title = {
+                        TextButton(onClick = {
+                            contextMenuState.show()
+                        }) {
                             Text(
                                 LocalI18N.current[state.coroutineContext.labelKey()],
                                 maxLines = 1
                             )
-                        }, onClick = {
-                            contextMenuState.show()
-                        })
+                        }
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            cancelAndFinish()
+                        }) {
+                            RemixIcon(remixName = Remix.System.close_line)
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = {
+                            setResultAndFinish(
+                                ParcelableCode(
+                                    expression = state.expression,
+                                    coroutineContext = state.coroutineContext
+                                )
+                            )
+                        }) {
+                            Icon(
+                                imageVector = Icons.Outlined.Check,
+                                contentDescription = "Done"
+                            )
+                        }
 
-                        AssistChip(label = {
-                            Text(LocalI18N.current["ui.common.run"])
-                        }, leadingIcon = {
+                        IconButton(
+                            enabled = !state.isExecuting,
+                            onClick = {
+                                vm.execute()
+                            }
+                        ) {
                             if (state.isExecuting) {
-                                Loading(modifier = Modifier.size(18.dp))
+                                Box(modifier = Modifier, contentAlignment = Alignment.Center) {
+                                    Loading(modifier = Modifier.size(20.dp))
+                                }
                             } else {
                                 Icon(
                                     imageVector = Icons.Outlined.PlayArrow,
-                                    contentDescription = "Evaluate"
+                                    contentDescription = LocalI18N.current["ui.common.run"]
                                 )
                             }
-                        }, onClick = {
-                            if (!state.isExecuting) {
-                                vm.execute()
-                            }
-                        })
+                        }
 
-                        AssistChip(label = {
-                            Text(LocalI18N.current["ui.code.editor.search"])
-                        }, leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Outlined.Search,
-                                contentDescription = "Search and replace"
-                            )
-                        }, onClick = {
-                            ceComposeBinding?.toggleSearchPanel()
-                        })
-
-                        AssistChip(label = {
-                            Text(LocalI18N.current["ui.common.select"])
-                        }, leadingIcon = {
-                            RemixIcon(remixName = Remix.Development.code_line)
-                        }, onClick = {
-                            codeLibSelectorLauncher.launch(
-                                CodeLibSelectorActivity.newIntent(
-                                    context = context,
-                                    codeType = CodeType.CodeType_MVEL
+                        Box {
+                            IconButton(onClick = { moreMenuExpanded = true }) {
+                                Icon(
+                                    imageVector = Icons.Outlined.MoreVert,
+                                    contentDescription = "More actions"
                                 )
-                            )
-                        })
-
-                        AssistChip(label = {
-                            Text(LocalI18N.current["ui.user.guide"])
-                        }, onClick = {
-                            BrowserUtils.launch(context, BuildProp.WIKI_URL_MVEL)
-                        })
-                    }
-                }
+                            }
+                            DropdownMenu(
+                                expanded = moreMenuExpanded,
+                                onDismissRequest = { moreMenuExpanded = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            LocalI18N.current[state.coroutineContext.labelKey()],
+                                            maxLines = 1
+                                        )
+                                    },
+                                    onClick = {
+                                        moreMenuExpanded = false
+                                        contextMenuState.show()
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(LocalI18N.current["ui.code.editor.from.code.library"]) },
+                                    onClick = {
+                                        moreMenuExpanded = false
+                                        codeLibSelectorLauncher.launch(
+                                            CodeLibSelectorActivity.newIntent(
+                                                context = context,
+                                                codeType = CodeType.CodeType_MVEL
+                                            )
+                                        )
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(LocalI18N.current["ui.user.guide"]) },
+                                    onClick = {
+                                        moreMenuExpanded = false
+                                        BrowserUtils.launch(context, BuildProp.WIKI_URL_MVEL)
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(LocalI18N.current["ui.code.editor.wordwrap"]) },
+                                    onClick = {
+                                        moreMenuExpanded = false
+                                        ceComposeBinding?.toggleWordwrap()
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(LocalI18N.current["ui.code.editor.whitespace"]) },
+                                    onClick = {
+                                        moreMenuExpanded = false
+                                        ceComposeBinding?.toggleNonPrintable()
+                                    }
+                                )
+                            }
+                        }
+                    },
+                )
             }) { paddingValues ->
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues),
                 ) {
-                    val subscribeState by LVLStateHolder.collectAsState()
-
                     AndroidViewBinding(
                         factory = { inflater: LayoutInflater, parent: ViewGroup, attachToParent: Boolean ->
                             CodeEditorComposeBinding.inflate(inflater, parent, attachToParent)
                                 .apply {
                                     CEComposeBinding(
                                         binding = this,
-                                        showToolbar = subscribeState.isSubscribed,
+                                        showToolbar = true,
                                         initialText = currentAction?.expression ?: "",
-                                        autoCompleteEnabled = false
+                                        languageScopeName = "source.mvel",
+                                        autoCompleteEnabled = false,
+                                        showWordwrapInBottomBar = false,
+                                        showNonPrintableInBottomBar = false,
+                                        footerTitle = "MVEL"
                                     ) {
                                         composeLogger.logOnDebug("Content change: $it")
                                         vm.updateExpression(it)

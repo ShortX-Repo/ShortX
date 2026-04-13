@@ -16,9 +16,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.PlayArrow
-import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.AssistChip
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -57,14 +59,12 @@ import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.TextDisplayActivity
-import tornaco.apps.shortx.ui.base.code.EditorToolsBar
 import tornaco.apps.shortx.ui.base.code.ParcelableCode
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.code.CodeLibSelectorActivity
 import tornaco.apps.shortx.ui.code.popupCodeLibraryItemResult
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.settings.log.js.JSLogActivity
-import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
@@ -82,6 +82,7 @@ fun JSEditorActivity.ExecuteJSEditor(
     val outputTitle = LocalI18N.current["ui.title.js"]
     val context = LocalContext.current
     var ceComposeBinding by remember { mutableStateOf<CEComposeBinding?>(null) }
+    var moreMenuExpanded by remember { mutableStateOf(false) }
 
     val vm = hiltViewModel<JSEditorViewModel>()
     val codeLibSelectorLauncher = rememberLauncherForActivityResult(
@@ -135,107 +136,129 @@ fun JSEditorActivity.ExecuteJSEditor(
             )
             MenuDialog(state = contextMenuState)
             Scaffold(modifier = Modifier, topBar = {
-                Column {
-                    ShortXTopAppBar(
-                        modifier = Modifier,
-                        title = {
-                            Text(text = "JS")
-                        },
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                cancelAndFinish()
-                            }) {
-                                RemixIcon(remixName = Remix.System.close_line)
-                            }
-                        },
-                        actions = {
-                            IconButton(onClick = {
-                                setResultAndFinish(
-                                    ParcelableCode(
-                                        expression = state.expression,
-                                        coroutineContext = state.coroutineContext
-                                    )
-                                )
-                            }) {
-                                Icon(imageVector = Icons.Outlined.Check, contentDescription = "Done")
-                            }
-                        },
-                    )
-                    EditorToolsBar {
-                        AssistChip(label = {
-                            Text(LocalI18N.current[state.coroutineContext.labelKey()])
-                        }, onClick = {
+                ShortXTopAppBar(
+                    modifier = Modifier,
+                    title = {
+                        TextButton(onClick = {
                             contextMenuState.show()
-                        })
+                        }) {
+                            Text(LocalI18N.current[state.coroutineContext.labelKey()])
+                        }
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            cancelAndFinish()
+                        }) {
+                            RemixIcon(remixName = Remix.System.close_line)
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = {
+                            setResultAndFinish(
+                                ParcelableCode(
+                                    expression = state.expression,
+                                    coroutineContext = state.coroutineContext
+                                )
+                            )
+                        }) {
+                            Icon(
+                                imageVector = Icons.Outlined.Check,
+                                contentDescription = "Done"
+                            )
+                        }
 
-                        AssistChip(label = {
-                            Text(LocalI18N.current["ui.common.run"])
-                        }, leadingIcon = {
+                        IconButton(
+                            enabled = !state.isExecuting,
+                            onClick = {
+                                vm.execute()
+                            }
+                        ) {
                             if (state.isExecuting) {
-                                Loading(modifier = Modifier.size(18.dp))
+                                Box(modifier = Modifier, contentAlignment = Alignment.Center) {
+                                    Loading(modifier = Modifier.size(20.dp))
+                                }
                             } else {
                                 Icon(
                                     imageVector = Icons.Outlined.PlayArrow,
-                                    contentDescription = "Evaluate"
+                                    contentDescription = LocalI18N.current["ui.common.run"]
                                 )
                             }
-                        }, onClick = {
-                            if (!state.isExecuting) {
-                                vm.execute()
-                            }
-                        })
+                        }
 
-                        AssistChip(label = {
-                            Text(LocalI18N.current["ui.code.editor.search"])
-                        }, leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Outlined.Search,
-                                contentDescription = "Search and replace"
-                            )
-                        }, onClick = {
-                            ceComposeBinding?.toggleSearchPanel()
-                        })
-
-                        AssistChip(label = {
-                            Text(LocalI18N.current["ui.common.select"])
-                        }, leadingIcon = {
-                            RemixIcon(remixName = Remix.Development.code_line)
-                        }, onClick = {
-                            codeLibSelectorLauncher.launch(
-                                CodeLibSelectorActivity.newIntent(
-                                    context = context,
-                                    codeType = CodeType.CodeType_JAVASCRIPT
+                        Box {
+                            IconButton(onClick = { moreMenuExpanded = true }) {
+                                Icon(
+                                    imageVector = Icons.Outlined.MoreVert,
+                                    contentDescription = "More actions"
                                 )
-                            )
-                        })
-
-                        AssistChip(label = {
-                            Text(LocalI18N.current["ui.code.editor.log"])
-                        }, leadingIcon = {
-                            RemixIcon(remixName = Remix.Document.file_text_line)
-                        }, onClick = {
-                            JSLogActivity.Starter.start(context)
-                        })
-                    }
-                }
+                            }
+                            DropdownMenu(
+                                expanded = moreMenuExpanded,
+                                onDismissRequest = { moreMenuExpanded = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text(LocalI18N.current[state.coroutineContext.labelKey()]) },
+                                    onClick = {
+                                        moreMenuExpanded = false
+                                        contextMenuState.show()
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(LocalI18N.current["ui.code.editor.from.code.library"]) },
+                                    onClick = {
+                                        moreMenuExpanded = false
+                                        codeLibSelectorLauncher.launch(
+                                            CodeLibSelectorActivity.newIntent(
+                                                context = context,
+                                                codeType = CodeType.CodeType_JAVASCRIPT
+                                            )
+                                        )
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(LocalI18N.current["ui.code.editor.wordwrap"]) },
+                                    onClick = {
+                                        moreMenuExpanded = false
+                                        ceComposeBinding?.toggleWordwrap()
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(LocalI18N.current["ui.code.editor.whitespace"]) },
+                                    onClick = {
+                                        moreMenuExpanded = false
+                                        ceComposeBinding?.toggleNonPrintable()
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(LocalI18N.current["ui.code.editor.log"]) },
+                                    onClick = {
+                                        moreMenuExpanded = false
+                                        JSLogActivity.Starter.start(context)
+                                    }
+                                )
+                            }
+                        }
+                    },
+                )
             }) { paddingValues ->
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues),
                 ) {
-                    val subscribeState by LVLStateHolder.collectAsState()
-
                     AndroidViewBinding(
                         factory = { inflater: LayoutInflater, parent: ViewGroup, attachToParent: Boolean ->
                             CodeEditorComposeBinding.inflate(inflater, parent, attachToParent)
                                 .apply {
                                     CEComposeBinding(
                                         binding = this,
-                                        showToolbar = subscribeState.isSubscribed,
+                                        showToolbar = true,
                                         initialText = currentAction?.expression ?: "",
                                         languageScopeName = "source.js",
-                                        autoCompleteEnabled = false
+                                        autoCompleteEnabled = false,
+                                        showWordwrapInBottomBar = false,
+                                        showNonPrintableInBottomBar = false,
+                                        footerTitle = "JS"
                                     ) {
                                         composeLogger.logOnDebug("Content change: $it")
                                         vm.updateExpression(it)
