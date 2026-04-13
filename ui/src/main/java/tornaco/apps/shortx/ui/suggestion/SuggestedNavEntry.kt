@@ -14,11 +14,13 @@ import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import org.orbitmvi.orbit.compose.collectAsState as orbitCollectAsState
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
@@ -33,10 +35,13 @@ import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.SplitLines
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
+import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.function.FunctionListActivity
 import tornaco.apps.shortx.ui.gvar.GlobalVarListActivity
 import tornaco.apps.shortx.ui.pkgset.PkgSetListActivity
 import tornaco.apps.shortx.ui.record.EvaRecordActivity
+import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsActivity
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsScreenDialog
 
@@ -54,6 +59,7 @@ enum class SuggestedNav(val labelKey: String) {
 
 @Composable
 fun SuggestedNavEntry() {
+    val subscribeState by LVLStateHolder.orbitCollectAsState()
     Column {
         SplitLines(modifier = Modifier.padding(vertical = 30.dp))
 
@@ -77,6 +83,9 @@ fun SuggestedNavEntry() {
             val danmuSettingsScreenState = rememberCommonDialogState()
             DanmuUISettingsScreenDialog(state = danmuSettingsScreenState)
 
+            val subscribeDialogState = rememberShortXBottomSheetState()
+            FeatureAccessDialog(state = subscribeDialogState)
+
             val regexTestDialog = rememberRegexTestState()
             RegexTestDialog(state = regexTestDialog)
 
@@ -85,7 +94,13 @@ fun SuggestedNavEntry() {
                     onClick = {
                         when (it) {
                             SuggestedNav.GlobalVar -> GlobalVarListActivity.start(context)
-                            SuggestedNav.Functions -> FunctionListActivity.start(context)
+                            SuggestedNav.Functions -> {
+                                if (subscribeState.isSubscribed) {
+                                    FunctionListActivity.start(context)
+                                } else {
+                                    subscribeDialogState.show()
+                                }
+                            }
                             SuggestedNav.PkgSet -> PkgSetListActivity.start(context)
                             SuggestedNav.DanmuSettings -> DanmuUISettingsActivity.start(context)
                             SuggestedNav.ShowPointerLocation -> {

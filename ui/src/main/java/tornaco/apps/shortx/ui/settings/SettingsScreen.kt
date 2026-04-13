@@ -657,8 +657,12 @@ private fun generalSettings(
             icon = Remix.System.function_fill,
             title = LocalI18N.current["ui.action.functions"],
             summary = LocalI18N.current["ui.function.desc"],
+            badge = badge,
             onClick = {
-                goToFunctionList()
+                mainState.isSubscribed.select(
+                    { goToFunctionList() },
+                    { subscribeDialogState.show() }
+                )
             }
         ),
 

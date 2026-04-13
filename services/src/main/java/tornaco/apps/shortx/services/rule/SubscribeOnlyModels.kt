@@ -19,6 +19,9 @@ import tornaco.apps.shortx.core.proto.action.FindImagePosition
 import tornaco.apps.shortx.core.proto.action.FindPointsByColor
 import tornaco.apps.shortx.core.proto.action.ForEach
 import tornaco.apps.shortx.core.proto.action.ForEachPkgSet
+import tornaco.apps.shortx.core.proto.action.ExecuteFunction
+import tornaco.apps.shortx.core.proto.action.GetCurrentLocationAddress
+import tornaco.apps.shortx.core.proto.action.GetCurrentLocationInfo
 import tornaco.apps.shortx.core.proto.action.GetScreenOnTime
 import tornaco.apps.shortx.core.proto.action.GetTextFromScreenNode
 import tornaco.apps.shortx.core.proto.action.HttpRequest
@@ -40,6 +43,7 @@ import tornaco.apps.shortx.core.proto.action.ReplaceRegex
 import tornaco.apps.shortx.core.proto.action.ScrollViewTo
 import tornaco.apps.shortx.core.proto.action.SelectScreenArea
 import tornaco.apps.shortx.core.proto.action.SendSMS
+import tornaco.apps.shortx.core.proto.action.SetFunctionReturnValue
 import tornaco.apps.shortx.core.proto.action.SetAppEnabled
 import tornaco.apps.shortx.core.proto.action.SetAppEnabledByPkg
 import tornaco.apps.shortx.core.proto.action.SetAppSuspend
@@ -221,6 +225,10 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         ShowClipboardView::class,
         Toggle5G::class,
         SendSMS::class,
+        GetCurrentLocationInfo::class,
+        GetCurrentLocationAddress::class,
+        ExecuteFunction::class,
+        SetFunctionReturnValue::class,
         SwitchCase::class,
         MatchRegex::class,
         ReplaceRegex::class,

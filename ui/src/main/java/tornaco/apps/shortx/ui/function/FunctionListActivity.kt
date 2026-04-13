@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import org.orbitmvi.orbit.compose.collectAsState as orbitCollectAsState
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ConfirmDialog
@@ -31,7 +32,10 @@ import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
+import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
+import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 
 @AndroidEntryPoint
 class FunctionListActivity : BaseActivity() {
@@ -52,8 +56,18 @@ class FunctionListActivity : BaseActivity() {
 fun FunctionListScreen(back: () -> Unit) {
     val vm = hiltViewModel<FunctionListViewModel>()
     val state by vm.state.collectAsState()
+    val subscribeState by LVLStateHolder.orbitCollectAsState()
     val context = LocalContext.current
     val i18n = LocalI18N.current
+
+    val subscribeDialogState = rememberShortXBottomSheetState()
+    FeatureAccessDialog(state = subscribeDialogState)
+
+    LaunchedEffect(subscribeState.isSubscribed) {
+        if (!subscribeState.isSubscribed) {
+            subscribeDialogState.show()
+        }
+    }
 
     LaunchedEffect(vm) {
         vm.loadState()
@@ -133,7 +147,11 @@ fun FunctionListScreen(back: () -> Unit) {
         onBackPressed = back,
         actions = {
             IconButton(onClick = {
-                editorLauncher.launch(AddFunctionActivity.createIntent(context))
+                if (subscribeState.isSubscribed) {
+                    editorLauncher.launch(AddFunctionActivity.createIntent(context))
+                } else {
+                    subscribeDialogState.show()
+                }
             }) {
                 RemixIcon(Remix.System.add_line)
             }
@@ -172,7 +190,11 @@ fun FunctionListScreen(back: () -> Unit) {
                             }
                         },
                         onClick = {
-                            editorLauncher.launch(AddFunctionActivity.editIntent(context, function.id))
+                            if (subscribeState.isSubscribed) {
+                                editorLauncher.launch(AddFunctionActivity.editIntent(context, function.id))
+                            } else {
+                                subscribeDialogState.show()
+                            }
                         }
                     )
                 }
