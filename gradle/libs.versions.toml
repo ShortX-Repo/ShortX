@@ -33,7 +33,6 @@ espresso-core = "3.6.1"
 androidx-junit = "1.2.1"
 appcompat = "1.7.1"
 browser = "1.8.0"
-codeview = "1.3.9"
 compose-material = "1.8.3"
 compose-material3 = "1.4.0-alpha18"
 compose-material-icons = "1.7.8"
@@ -69,6 +68,7 @@ swiperefreshlayout = "1.1.0"
 okhttp3-integration = "4.16.0"
 rxjava = "2.2.21"
 compose-markdown = "0.5.4"
+desugar-jdk-libs = "2.1.5"
 
 [plugins]
 agp-lib = { id = "com.android.library", version.ref = "agp" }
@@ -110,6 +110,7 @@ firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 luckycatlabs-sunrisesunsetcalculator = { module = "com.luckycatlabs:SunriseSunsetCalculator", version.ref = "sunrisesunsetcalculator-version" }
 compose-markdown = { module = "com.github.jeziellago:compose-markdown", version.ref = "compose-markdown" }
 rxjava = { module = "io.reactivex.rxjava2:rxjava", version.ref = "rxjava" }
+desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar-jdk-libs" }
 
 rang-vikalp = { module = "io.ak1:rang-vikalp", version.ref = "rang-vikalp" }
 tinypinyin = { module = "com.github.promeg:tinypinyin", version.ref = "tinypinyin" }
@@ -139,8 +140,6 @@ accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 browser = { module = "androidx.browser:browser", version.ref = "browser" }
-# https://github.com/AmrDeveloper/CodeView
-codeview = { module = "io.github.amrdeveloper:codeview", version.ref = "codeview" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converter-gson" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
 core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "core-splashscreen" }

@@ -14,6 +14,16 @@ plugins {
 android {
     namespace = "${Configs.sxPackageName}.ui"
 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+        isCoreLibraryDesugaringEnabled = true
+    }
+
+    kotlinOptions {
+        jvmTarget = "21"
+    }
+
     defaultConfig {
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -93,8 +103,6 @@ dependencies {
 
     implementation(libs.chucker)
 
-    implementation(libs.codeview)
-
     // https://github.com/LibChecker/LibChecker-Rules-Bundle
     implementation(libs.libchecker.rules.bundle)
     implementation(libs.room.runtime)
@@ -166,6 +174,8 @@ dependencies {
     testImplementation(libs.androidx.test.runner)
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotest.property)
+
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 }
 
 configurations.all {

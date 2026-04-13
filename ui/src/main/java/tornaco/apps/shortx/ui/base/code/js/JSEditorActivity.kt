@@ -10,7 +10,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -18,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -56,8 +56,8 @@ import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
-import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextDisplayActivity
+import tornaco.apps.shortx.ui.base.code.EditorToolsBar
 import tornaco.apps.shortx.ui.base.code.ParcelableCode
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.code.CodeLibSelectorActivity
@@ -118,91 +118,106 @@ fun JSEditorActivity.ExecuteJSEditor(
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
-            Scaffold(modifier = Modifier, topBar = {
-                ShortXTopAppBar(
-                    modifier = Modifier,
-                    title = {
-                        val contextMenuState = rememberMenuDialogState<CoroutineContext>(
-                            title = LocalI18N.current["ui.common.coroutine.context"],
-                            menuItems = CoroutineContext.entries.filterNot { it == CoroutineContext.UNRECOGNIZED }
-                                .map {
-                                    MenuDialogItem(
-                                        id = it.name,
-                                        title = LocalI18N.current[it.labelKey()],
-                                        summary = LocalI18N.current[it.summaryKey()]
-                                    )
-                                },
-                            onItemSelected = { _, id ->
-                                val type = CoroutineContext.valueOf(id)
-                                vm.setCoroutineContext(type)
-                            }
+            val contextMenuState = rememberMenuDialogState<CoroutineContext>(
+                title = LocalI18N.current["ui.common.coroutine.context"],
+                menuItems = CoroutineContext.entries.filterNot { it == CoroutineContext.UNRECOGNIZED }
+                    .map {
+                        MenuDialogItem(
+                            id = it.name,
+                            title = LocalI18N.current[it.labelKey()],
+                            summary = LocalI18N.current[it.summaryKey()]
                         )
-                        MenuDialog(state = contextMenuState)
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                    },
+                onItemSelected = { _, id ->
+                    val type = CoroutineContext.valueOf(id)
+                    vm.setCoroutineContext(type)
+                }
+            )
+            MenuDialog(state = contextMenuState)
+            Scaffold(modifier = Modifier, topBar = {
+                Column {
+                    ShortXTopAppBar(
+                        modifier = Modifier,
+                        title = {
                             Text(text = "JS")
-                            StandardSpacer()
-                            AssistChip(label = {
-                                Text(LocalI18N.current[state.coroutineContext.labelKey()])
-                            }, onClick = {
-                                contextMenuState.show()
-                            })
-                        }
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            cancelAndFinish()
-                        }) {
-                            RemixIcon(remixName = Remix.System.close_line)
-                        }
-                    },
-                    actions = {
-                        if (!state.isExecuting) {
-                            IconButton(
-                                onClick = {
-                                    vm.execute()
-                                }) {
+                        },
+                        navigationIcon = {
+                            IconButton(onClick = {
+                                cancelAndFinish()
+                            }) {
+                                RemixIcon(remixName = Remix.System.close_line)
+                            }
+                        },
+                        actions = {
+                            IconButton(onClick = {
+                                setResultAndFinish(
+                                    ParcelableCode(
+                                        expression = state.expression,
+                                        coroutineContext = state.coroutineContext
+                                    )
+                                )
+                            }) {
+                                Icon(imageVector = Icons.Outlined.Check, contentDescription = "Done")
+                            }
+                        },
+                    )
+                    EditorToolsBar {
+                        AssistChip(label = {
+                            Text(LocalI18N.current[state.coroutineContext.labelKey()])
+                        }, onClick = {
+                            contextMenuState.show()
+                        })
+
+                        AssistChip(label = {
+                            Text(LocalI18N.current["ui.common.run"])
+                        }, leadingIcon = {
+                            if (state.isExecuting) {
+                                Loading(modifier = Modifier.size(18.dp))
+                            } else {
                                 Icon(
                                     imageVector = Icons.Outlined.PlayArrow,
                                     contentDescription = "Evaluate"
                                 )
                             }
-                        }
-
-                        if (state.isExecuting) {
-                            Box(modifier = Modifier, contentAlignment = Alignment.Center) {
-                                Loading(modifier = Modifier.size(28.dp))
+                        }, onClick = {
+                            if (!state.isExecuting) {
+                                vm.execute()
                             }
-                        }
+                        })
 
-                        IconButton(onClick = {
+                        AssistChip(label = {
+                            Text(LocalI18N.current["ui.code.editor.search"])
+                        }, leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Search,
+                                contentDescription = "Search and replace"
+                            )
+                        }, onClick = {
+                            ceComposeBinding?.toggleSearchPanel()
+                        })
+
+                        AssistChip(label = {
+                            Text(LocalI18N.current["ui.common.select"])
+                        }, leadingIcon = {
+                            RemixIcon(remixName = Remix.Development.code_line)
+                        }, onClick = {
                             codeLibSelectorLauncher.launch(
                                 CodeLibSelectorActivity.newIntent(
                                     context = context,
                                     codeType = CodeType.CodeType_JAVASCRIPT
                                 )
                             )
-                        }) {
-                            RemixIcon(remixName = Remix.Development.code_line)
-                        }
+                        })
 
-                        IconButton(onClick = {
-                            JSLogActivity.Starter.start(context)
-                        }) {
+                        AssistChip(label = {
+                            Text(LocalI18N.current["ui.code.editor.log"])
+                        }, leadingIcon = {
                             RemixIcon(remixName = Remix.Document.file_text_line)
-                        }
-
-                        IconButton(onClick = {
-                            setResultAndFinish(
-                                ParcelableCode(
-                                    expression = state.expression,
-                                    coroutineContext = state.coroutineContext
-                                )
-                            )
-                        }) {
-                            Icon(imageVector = Icons.Outlined.Check, contentDescription = "Done")
-                        }
-                    },
-                )
+                        }, onClick = {
+                            JSLogActivity.Starter.start(context)
+                        })
+                    }
+                }
             }) { paddingValues ->
                 Column(
                     modifier = Modifier
@@ -218,7 +233,9 @@ fun JSEditorActivity.ExecuteJSEditor(
                                     CEComposeBinding(
                                         binding = this,
                                         showToolbar = subscribeState.isSubscribed,
-                                        initialText = currentAction?.expression ?: ""
+                                        initialText = currentAction?.expression ?: "",
+                                        languageScopeName = "source.js",
+                                        autoCompleteEnabled = false
                                     ) {
                                         composeLogger.logOnDebug("Content change: $it")
                                         vm.updateExpression(it)

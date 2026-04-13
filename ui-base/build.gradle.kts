@@ -74,7 +74,6 @@ dependencies {
 
     implementation(libs.browser)
 
-    implementation(libs.codeview)
     implementation(libs.tinypinyin)
 
     implementation(libs.compose.markdown)

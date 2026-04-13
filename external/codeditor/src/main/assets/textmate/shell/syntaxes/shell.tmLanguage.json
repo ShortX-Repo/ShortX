@@ -1,0 +1,133 @@
+{
+  "name": "Shell Script",
+  "scopeName": "source.shell",
+  "patterns": [
+    {
+      "include": "#shebang"
+    },
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#variables"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#numbers"
+    },
+    {
+      "include": "#commands"
+    }
+  ],
+  "repository": {
+    "shebang": {
+      "patterns": [
+        {
+          "name": "comment.line.shebang.shell",
+          "match": "\\A#!.*$"
+        }
+      ]
+    },
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.number-sign.shell",
+          "match": "(?<!\\$)#.*$"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.shell",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "match": "\\\\.",
+              "name": "constant.character.escape.shell"
+            },
+            {
+              "include": "#variables"
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.single.shell",
+          "begin": "'",
+          "end": "'"
+        },
+        {
+          "name": "string.interpolated.backtick.shell",
+          "begin": "`",
+          "end": "`",
+          "patterns": [
+            {
+              "include": "$self"
+            }
+          ]
+        }
+      ]
+    },
+    "variables": {
+      "patterns": [
+        {
+          "name": "variable.other.braced.shell",
+          "match": "\\$\\{[^}]+\\}"
+        },
+        {
+          "name": "variable.other.positional.shell",
+          "match": "\\$(?:[@*#?$!_]|\\d+)"
+        },
+        {
+          "name": "variable.other.named.shell",
+          "match": "\\$[A-Za-z_][A-Za-z0-9_]*"
+        },
+        {
+          "name": "meta.subshell.shell",
+          "begin": "\\$\\(",
+          "end": "\\)",
+          "patterns": [
+            {
+              "include": "$self"
+            }
+          ]
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.shell",
+          "match": "\\b(?:if|then|elif|else|fi|for|do|done|while|until|case|esac|in|select|function|time|coproc)\\b"
+        },
+        {
+          "name": "support.function.builtin.shell",
+          "match": "\\b(?:alias|bg|bind|break|builtin|cd|command|compgen|complete|declare|dirs|disown|echo|eval|exec|exit|export|false|fc|getopts|hash|help|history|jobs|kill|let|local|logout|popd|printf|pushd|pwd|read|readonly|return|set|shift|source|test|times|trap|true|type|typeset|ulimit|umask|unalias|unset|wait)\\b"
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.shell",
+          "match": "\\b\\d+\\b"
+        }
+      ]
+    },
+    "commands": {
+      "patterns": [
+        {
+          "name": "entity.name.function.shell",
+          "match": "(?<=^|[;&|()])\\s*[A-Za-z_./-][A-Za-z0-9_./-]*(?=\\s|$)"
+        }
+      ]
+    }
+  },
+  "uuid": "8d2e8d84-3fd1-48bf-b1b2-6fd7652d6001"
+}

@@ -15,15 +15,23 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.Stop
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -43,7 +51,6 @@ import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
-import tornaco.apps.shortx.ui.base.SwitchColumn
 import tornaco.apps.shortx.ui.base.TextDisplayActivity
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.composeLogger
@@ -64,6 +71,7 @@ fun ShellCommandEditorActivity.ShellCommandEditor(
 ) {
     val outputTitle = LocalI18N.current["ui.action.shell"]
     val context = LocalContext.current
+    var ceComposeBinding by remember { mutableStateOf<CEComposeBinding?>(null) }
 
     val vm = hiltViewModel<ShellCommandEditorViewModel>()
     LaunchedEffect(vm) {
@@ -80,69 +88,89 @@ fun ShellCommandEditorActivity.ShellCommandEditor(
 
     val state by vm.collectAsState()
 
+    LaunchedEffect(state.command) {
+        ceComposeBinding?.updateText(state.command)
+    }
+
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
             Scaffold(modifier = Modifier, topBar = {
-                ShortXTopAppBar(
-                    modifier = Modifier,
-                    title = {
-                        SwitchColumn(
-                            text = LocalI18N.current["ui.action.shell.single.shot"],
-                            tip = LocalI18N.current["ui.action.shell.single.shot.description"],
-                            isChecked = state.isSingleShot
-                        ) {
-                            vm.setSingleShot(it)
-                        }
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            cancelAndFinish()
-                        }) {
-                            RemixIcon(remixName = Remix.System.close_line)
-                        }
-                    },
-                    actions = {
-                        if (!state.isExecuting) {
-                            IconButton(
-                                onClick = {
-                                    vm.execute()
-                                }) {
-                                Icon(
-                                    imageVector = Icons.Outlined.PlayArrow,
-                                    contentDescription = "Evaluate"
-                                )
+                Column {
+                    ShortXTopAppBar(
+                        modifier = Modifier,
+                        title = {
+                            Text(LocalI18N.current["ui.action.shell"])
+                        },
+                        navigationIcon = {
+                            IconButton(onClick = {
+                                cancelAndFinish()
+                            }) {
+                                RemixIcon(remixName = Remix.System.close_line)
                             }
-                        }
-
-                        if (state.isExecuting) {
-                            Box(modifier = Modifier, contentAlignment = Alignment.Center) {
-                                Loading(modifier = Modifier.size(28.dp))
-
-                                IconButton(onClick = {
-                                    vm.stopExecute()
-                                }) {
-                                    RemixIcon(
-                                        remixName = Remix.Media.stop_circle_line,
-                                        tint = MaterialTheme.colorScheme.error
-                                    )
+                        },
+                        actions = {
+                            if (state.isExecuting) {
+                                Box(modifier = Modifier, contentAlignment = Alignment.Center) {
+                                    Loading(modifier = Modifier.size(24.dp))
                                 }
                             }
-                        }
 
-                        IconButton(onClick = {
-                            setResultAndFinish(
-                                Action.ShellCommand(
-                                    command = state.command,
-                                    singleShot = state.isSingleShot
+                            IconButton(onClick = {
+                                setResultAndFinish(
+                                    Action.ShellCommand(
+                                        command = state.command,
+                                        singleShot = state.isSingleShot
+                                    )
                                 )
+                            }) {
+                                Icon(imageVector = Icons.Outlined.Check, contentDescription = "Done")
+                            }
+                        },
+                    )
+                    EditorToolsBar {
+                        FilterChip(
+                            selected = state.isSingleShot,
+                            onClick = {
+                                vm.setSingleShot(!state.isSingleShot)
+                            },
+                            label = {
+                                Text(LocalI18N.current["ui.action.shell.single.shot"])
+                            }
+                        )
+
+                        AssistChip(label = {
+                            Text(
+                                LocalI18N.current[
+                                    if (state.isExecuting) "ui.common.stop" else "ui.common.run"
+                                ]
                             )
-                        }) {
-                            Icon(imageVector = Icons.Outlined.Check, contentDescription = "Done")
-                        }
-                    },
-                )
+                        }, leadingIcon = {
+                            Icon(
+                                imageVector = if (state.isExecuting) Icons.Outlined.Stop else Icons.Outlined.PlayArrow,
+                                contentDescription = if (state.isExecuting) "Stop" else "Evaluate"
+                            )
+                        }, onClick = {
+                            if (state.isExecuting) {
+                                vm.stopExecute()
+                            } else {
+                                vm.execute()
+                            }
+                        })
+
+                        AssistChip(label = {
+                            Text(LocalI18N.current["ui.code.editor.search"])
+                        }, leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Search,
+                                contentDescription = "Search and replace"
+                            )
+                        }, onClick = {
+                            ceComposeBinding?.toggleSearchPanel()
+                        })
+                    }
+                }
             }) { paddingValues ->
                 Column(
                     modifier = Modifier
@@ -164,22 +192,24 @@ fun ShellCommandEditorActivity.ShellCommandEditor(
                                     CEComposeBinding(
                                         binding = this,
                                         showToolbar = subscribeState.isSubscribed,
-                                        initialText = currentAction?.command ?: ""
+                                        initialText = currentAction?.command ?: "",
+                                        languageScopeName = "source.shell",
+                                        autoCompleteEnabled = false
                                     ) {
                                         composeLogger.logOnDebug("Content change: $it")
                                         vm.updateCommand(it)
-                                    }.onCreate()
+                                    }.also {
+                                        ceComposeBinding = it
+                                        it.onCreate()
+                                    }
                                 }
                         },
                         modifier = Modifier
                             .fillMaxSize()
                             .imePadding(),
                         onRelease = {
-                            CEComposeBinding(
-                                binding = this,
-                                showToolbar = subscribeState.isSubscribed,
-                                initialText = ""
-                            ).onDestroy()
+                            ceComposeBinding?.onDestroy()
+                            ceComposeBinding = null
                         }
                     )
                 }

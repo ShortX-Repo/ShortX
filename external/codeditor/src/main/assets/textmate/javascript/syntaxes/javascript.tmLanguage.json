@@ -1,0 +1,134 @@
+{
+  "name": "JavaScript",
+  "scopeName": "source.js",
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#regex"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#constants"
+    },
+    {
+      "include": "#numbers"
+    },
+    {
+      "include": "#functions"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.js",
+          "match": "//.*$"
+        },
+        {
+          "name": "comment.block.js",
+          "begin": "/\\*",
+          "end": "\\*/"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.js",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "match": "\\\\.",
+              "name": "constant.character.escape.js"
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.single.js",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            {
+              "match": "\\\\.",
+              "name": "constant.character.escape.js"
+            }
+          ]
+        },
+        {
+          "name": "string.template.js",
+          "begin": "`",
+          "end": "`",
+          "patterns": [
+            {
+              "match": "\\\\.",
+              "name": "constant.character.escape.js"
+            },
+            {
+              "name": "meta.interpolation.js",
+              "begin": "\\$\\{",
+              "end": "\\}",
+              "patterns": [
+                {
+                  "include": "$self"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "regex": {
+      "patterns": [
+        {
+          "name": "string.regexp.js",
+          "match": "(?x)(?<=[=(:[,!&|?]|return\\s|=>\\s)/(?:\\\\.|\\[(?:\\\\.|[^\\]])*\\]|[^/\\n\\\\])+/[dgimsuvy]*"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.js",
+          "match": "\\b(?:if|else|switch|case|default|for|while|do|break|continue|return|throw|try|catch|finally)\\b"
+        },
+        {
+          "name": "storage.type.js",
+          "match": "\\b(?:const|let|var|function|class|extends|import|export|from|async|await|new|yield|typeof|instanceof|void|delete|in|of|get|set|static)\\b"
+        }
+      ]
+    },
+    "constants": {
+      "patterns": [
+        {
+          "name": "constant.language.js",
+          "match": "\\b(?:true|false|null|undefined|NaN|Infinity|this|super)\\b"
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.js",
+          "match": "\\b(?:0[xX][0-9a-fA-F]+|0[bB][01]+|0[oO][0-7]+|\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)n?\\b"
+        }
+      ]
+    },
+    "functions": {
+      "patterns": [
+        {
+          "name": "entity.name.function.js",
+          "match": "\\b([A-Za-z_$][\\w$]*)\\s*(?=\\()"
+        }
+      ]
+    }
+  },
+  "uuid": "6a8e0d3e-5f76-49b7-8f1d-0a1b8a1ac001"
+}

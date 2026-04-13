@@ -1,7 +1,11 @@
 package io.github.rosemoe.sora.app
 
 import android.graphics.Typeface
+import android.view.MenuItem
+import android.widget.PopupMenu
+import androidx.core.widget.doAfterTextChanged
 import androidx.core.view.isVisible
+import io.github.rosemoe.sora.app.R
 import io.github.rosemoe.sora.app.databinding.CodeEditorComposeBinding
 import io.github.rosemoe.sora.event.ContentChangeEvent
 import io.github.rosemoe.sora.event.EditorKeyEvent
@@ -16,22 +20,48 @@ import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
 import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
+import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.text.LineSeparator
 import io.github.rosemoe.sora.widget.CodeEditor
+import io.github.rosemoe.sora.widget.EditorSearcher.SearchOptions
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import io.github.rosemoe.sora.widget.getComponent
 import io.github.rosemoe.sora.widget.subscribeEvent
 import org.eclipse.tm4e.core.registry.IThemeSource
+import java.util.regex.PatternSyntaxException
 
 
 class CEComposeBinding(
     private val binding: CodeEditorComposeBinding,
     private val showToolbar: Boolean,
     private val initialText: String,
+    private val languageScopeName: String? = null,
+    private val autoCompleteEnabled: Boolean = false,
     private val onContentChange: (String) -> Unit = {}
 ) {
+    companion object {
+        private const val DEFAULT_NON_PRINTABLE_FLAGS =
+            CodeEditor.FLAG_DRAW_WHITESPACE_LEADING or
+                CodeEditor.FLAG_DRAW_LINE_SEPARATOR or
+                CodeEditor.FLAG_DRAW_WHITESPACE_IN_SELECTION
+
+        private val textMateRegistryLock = Any()
+
+        @Volatile
+        private var fileProviderRegistered = false
+
+        @Volatile
+        private var themesLoaded = false
+
+        @Volatile
+        private var languagesLoaded = false
+    }
+
     private val context get() = binding.root.context
     private var isApplyingExternalText = false
+    private var showNonPrintable = true
+    private var searchOptions = SearchOptions(SearchOptions.TYPE_NORMAL, true)
+    private lateinit var searchMenu: PopupMenu
 
     fun onCreate() {
         val inputView = binding.symbolInput
@@ -63,14 +93,16 @@ class CEComposeBinding(
         inputView.forEachButton {
             it.typeface = typeface
         }
+
+        configureSearch()
+
         binding.editor.apply {
             typefaceText = typeface
             props.stickyScroll = true
             isWordwrap = true
             setLineSpacing(2f, 1.1f)
             setTextSize(14f)
-            nonPrintablePaintingFlags =
-                CodeEditor.FLAG_DRAW_WHITESPACE_LEADING or CodeEditor.FLAG_DRAW_LINE_SEPARATOR or CodeEditor.FLAG_DRAW_WHITESPACE_IN_SELECTION
+            nonPrintablePaintingFlags = DEFAULT_NON_PRINTABLE_FLAGS
             // Update display dynamically
             subscribeEvent<SelectionChangeEvent> { _, _ -> updatePositionText() }
             subscribeEvent<PublishSearchResultEvent> { _, _ -> updatePositionText() }
@@ -96,6 +128,9 @@ class CEComposeBinding(
                 .setEnabledAnimation(true)
         }
 
+        binding.btnSearchToggle.setOnClickListener {
+            toggleSearchPanel()
+        }
         binding.btnUndo.setOnClickListener {
             if (binding.editor.canUndo()) {
                 binding.editor.undo()
@@ -106,25 +141,51 @@ class CEComposeBinding(
                 binding.editor.redo()
             }
         }
+        binding.btnWordwrap.setOnClickListener {
+            binding.editor.isWordwrap = !binding.editor.isWordwrap
+            updateFeatureState()
+        }
+        binding.btnNonPrintable.setOnClickListener {
+            showNonPrintable = !showNonPrintable
+            binding.editor.nonPrintablePaintingFlags = if (showNonPrintable) {
+                DEFAULT_NON_PRINTABLE_FLAGS
+            } else {
+                0
+            }
+            updateFeatureState()
+        }
+        binding.btnSearchPrev.setOnClickListener {
+            navigateSearch(previous = true)
+        }
+        binding.btnSearchNext.setOnClickListener {
+            navigateSearch(previous = false)
+        }
+        binding.btnReplace.setOnClickListener {
+            replaceCurrent()
+        }
+        binding.btnReplaceAll.setOnClickListener {
+            replaceAll()
+        }
+        binding.searchOptions.setOnClickListener {
+            searchMenu.show()
+        }
 
-        binding.editorTools.isVisible = showToolbar
+        binding.editorTools.isVisible = true
+        binding.editorActionBar.isVisible = showToolbar
 
-
-        loadDefaultThemes()
-        loadDefaultLanguages()
+        ensureTextMateRegistryPrepared()
 
         ensureTextmateTheme()
 
-        val editor = binding.editor
-        val language = TextMateLanguage.create(
-            "source.java", true
+        binding.editor.setEditorLanguage(
+            languageScopeName?.takeIf { it.isNotBlank() }?.let {
+                TextMateLanguage.create(it, autoCompleteEnabled)
+            } ?: EmptyLanguage()
         )
 
-        editor.setEditorLanguage(language)
-
-        // Load file here.
         setEditorText(initialText)
 
+        updateFeatureState()
         updatePositionText()
 
         switchThemeIfRequired(context, binding.editor)
@@ -149,49 +210,142 @@ class CEComposeBinding(
         updatePositionText()
     }
 
+    fun toggleSearchPanel() {
+        val willShow = !binding.searchPanel.isVisible
+        binding.searchPanel.isVisible = willShow
+        if (willShow) {
+            binding.searchEditor.requestFocus()
+            binding.searchEditor.setSelection(binding.searchEditor.text?.length ?: 0)
+        } else {
+            binding.searchEditor.setText("")
+            binding.replaceEditor.setText("")
+            binding.editor.searcher.stopSearch()
+        }
+        updateFeatureState()
+        updatePositionText()
+    }
+
     private fun updateBtnState() {
         binding.btnUndo.isEnabled = binding.editor.canUndo()
         binding.btnRedo.isEnabled = binding.editor.canRedo()
     }
 
-    private /*suspend*/ fun loadDefaultThemes() /*= withContext(Dispatchers.IO)*/ {
-        //add assets file provider
-        FileProviderRegistry.getInstance().addFileProvider(
-            AssetsFileResolver(
-                context.assets
-            )
-        )
+    private fun updateFeatureState() {
+        binding.btnSearchToggle.alpha = if (binding.searchPanel.isVisible) 1f else 0.6f
+        binding.btnWordwrap.alpha = if (binding.editor.isWordwrap) 1f else 0.6f
+        binding.btnNonPrintable.alpha = if (showNonPrintable) 1f else 0.6f
+    }
 
-        val themes = arrayOf("darcula", "abyss", "quietlight", "solarized_drak")
-        val themeRegistry = ThemeRegistry.getInstance()
-        themes.forEach { name ->
-            val path = "textmate/$name.json"
-            themeRegistry.loadTheme(
-                ThemeModel(
-                    IThemeSource.fromInputStream(
-                        FileProviderRegistry.getInstance().tryGetInputStream(path), path, null
-                    ), name
-                ).apply {
-                    if (name != "quietlight") {
-                        isDark = true
-                    }
-                }
-            )
+    private fun configureSearch() {
+        binding.searchEditor.doAfterTextChanged {
+            tryCommitSearch()
         }
 
-        themeRegistry.setTheme("quietlight")
+        searchMenu = PopupMenu(context, binding.searchOptions)
+        searchMenu.inflate(R.menu.menu_search_options)
+        searchMenu.setOnMenuItemClickListener { item ->
+            item.isChecked = !item.isChecked
+            when (item.itemId) {
+                R.id.search_option_regex -> {
+                    if (item.isChecked) {
+                        searchMenu.menu.findItem(R.id.search_option_whole_word)?.isChecked = false
+                    }
+                }
+
+                R.id.search_option_whole_word -> {
+                    if (item.isChecked) {
+                        searchMenu.menu.findItem(R.id.search_option_regex)?.isChecked = false
+                    }
+                }
+            }
+            searchOptions = buildSearchOptions(searchMenu.menu.findItem(R.id.search_option_match_case))
+            tryCommitSearch()
+            true
+        }
     }
 
-    private /*suspend*/ fun loadDefaultLanguages() /*= withContext(Dispatchers.Main)*/ {
-        GrammarRegistry.getInstance().loadGrammars("textmate/languages.json")
+    private fun buildSearchOptions(matchCaseItem: MenuItem?): SearchOptions {
+        val ignoreCase = matchCaseItem?.isChecked != true
+        val type = when {
+            searchMenu.menu.findItem(R.id.search_option_regex)?.isChecked == true -> SearchOptions.TYPE_REGULAR_EXPRESSION
+            searchMenu.menu.findItem(R.id.search_option_whole_word)?.isChecked == true -> SearchOptions.TYPE_WHOLE_WORD
+            else -> SearchOptions.TYPE_NORMAL
+        }
+        return SearchOptions(type, ignoreCase)
     }
 
-    private fun ensureTextmateTheme() {
-        val editor = binding.editor
-        var editorColorScheme = editor.colorScheme
-        if (editorColorScheme !is TextMateColorScheme) {
-            editorColorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
-            editor.colorScheme = editorColorScheme
+    private fun tryCommitSearch() {
+        val query = binding.searchEditor.text?.toString().orEmpty()
+        if (query.isEmpty()) {
+            binding.editor.searcher.stopSearch()
+            updatePositionText()
+            return
+        }
+        try {
+            binding.editor.searcher.search(query, searchOptions)
+        } catch (_: PatternSyntaxException) {
+        }
+    }
+
+    private fun navigateSearch(previous: Boolean) {
+        try {
+            if (previous) {
+                binding.editor.searcher.gotoPrevious()
+            } else {
+                binding.editor.searcher.gotoNext()
+            }
+        } catch (_: IllegalStateException) {
+        }
+    }
+
+    private fun replaceCurrent() {
+        try {
+            binding.editor.searcher.replaceThis(binding.replaceEditor.text?.toString().orEmpty())
+        } catch (_: IllegalStateException) {
+        }
+    }
+
+    private fun replaceAll() {
+        try {
+            binding.editor.searcher.replaceAll(binding.replaceEditor.text?.toString().orEmpty())
+        } catch (_: IllegalStateException) {
+        }
+    }
+
+    private fun ensureTextMateRegistryPrepared() {
+        synchronized(textMateRegistryLock) {
+            if (!fileProviderRegistered) {
+                FileProviderRegistry.getInstance().addFileProvider(
+                    AssetsFileResolver(context.assets)
+                )
+                fileProviderRegistered = true
+            }
+
+            if (!themesLoaded) {
+                val themes = arrayOf("darcula", "abyss", "quietlight", "solarized_drak")
+                val themeRegistry = ThemeRegistry.getInstance()
+                themes.forEach { name ->
+                    val path = "textmate/$name.json"
+                    themeRegistry.loadTheme(
+                        ThemeModel(
+                            IThemeSource.fromInputStream(
+                                FileProviderRegistry.getInstance().tryGetInputStream(path), path, null
+                            ), name
+                        ).apply {
+                            if (name != "quietlight") {
+                                isDark = true
+                            }
+                        }
+                    )
+                }
+                themeRegistry.setTheme("quietlight")
+                themesLoaded = true
+            }
+
+            if (!languagesLoaded) {
+                GrammarRegistry.getInstance().loadGrammars("textmate/languages.json")
+                languagesLoaded = true
+            }
         }
     }
 
@@ -267,6 +421,15 @@ class CEComposeBinding(
         binding.positionDisplay.text = text
     }
 
+    private fun ensureTextmateTheme() {
+        val editor = binding.editor
+        var editorColorScheme = editor.colorScheme
+        if (editorColorScheme !is TextMateColorScheme) {
+            editorColorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
+            editor.colorScheme = editorColorScheme
+        }
+    }
+
     private fun escapeIfNecessary(c: Char): String {
         return when (c) {
             '\n' -> "\\n"
@@ -279,6 +442,7 @@ class CEComposeBinding(
 
 
     fun onDestroy() {
+        binding.editor.searcher.stopSearch()
         binding.editor.release()
     }
 }

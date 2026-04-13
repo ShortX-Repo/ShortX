@@ -8,6 +8,16 @@ plugins {
 android {
     namespace = "io.github.rosemoe.sora.app"
 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+        isCoreLibraryDesugaringEnabled = true
+    }
+
+    kotlinOptions {
+        jvmTarget = "21"
+    }
+
     defaultConfig {
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -25,10 +35,11 @@ android {
 }
 
 dependencies {
-    implementation(platform("io.github.Rosemoe.sora-editor:bom:0.22.2"))
-    implementation("io.github.Rosemoe.sora-editor:editor")
-    implementation("io.github.Rosemoe.sora-editor:language-java")
-    implementation("io.github.Rosemoe.sora-editor:language-textmate")
+    implementation(platform("io.github.rosemoe:editor-bom:0.24.4"))
+    implementation("io.github.rosemoe:editor")
+    implementation("io.github.rosemoe:language-java")
+    implementation("io.github.rosemoe:language-textmate")
+    implementation("io.github.rosemoe:oniguruma-native")
 
     implementation(libs.appcompat)
     implementation(libs.material)
@@ -36,4 +47,6 @@ dependencies {
     // Note: Do not upgrade this lib, ComposeOverlay.
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.activity.compose)
+
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 }

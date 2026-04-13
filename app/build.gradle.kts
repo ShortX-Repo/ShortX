@@ -27,6 +27,16 @@ if (Configs.sxFlavor == Flavor.ROW) {
 android {
     namespace = Configs.sxPackageName
 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+        isCoreLibraryDesugaringEnabled = true
+    }
+
+    kotlinOptions {
+        jvmTarget = "21"
+    }
+
     signingConfigs {
         create("release") {
             Configs.KeyStorePath.also {
@@ -166,6 +176,8 @@ dependencies {
     androidTestImplementation(libs.compose.ui.test.junit4)
     androidTestImplementation(libs.uiautomator)
     androidTestImplementation(libs.kotest.assertions.core)
+
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 }
 
 

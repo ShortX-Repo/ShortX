@@ -384,13 +384,6 @@ class CEActivity : AppCompatActivity() {
                 editor.text.getColumnCount(editor.text.lineCount - 1)
             )
 
-            R.id.move_up -> editor.moveSelectionUp()
-            R.id.move_down -> editor.moveSelectionDown()
-            R.id.home -> editor.moveSelectionHome()
-            R.id.end -> editor.moveSelectionEnd()
-            R.id.move_left -> editor.moveSelectionLeft()
-            R.id.move_right -> editor.moveSelectionRight()
-
             R.id.search_panel_st -> {
                 if (binding.searchPanel.visibility == View.GONE) {
                     binding.apply {
