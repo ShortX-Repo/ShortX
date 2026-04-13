@@ -18,9 +18,11 @@ import tornaco.apps.shortx.core.backup.META_FILE_NAME
 import tornaco.apps.shortx.core.backup.PKGSET_FILE_NAME
 import tornaco.apps.shortx.core.backup.RULE_FILE_NAME
 import tornaco.apps.shortx.core.backup.RULE_SET_FILE_NAME
+import tornaco.apps.shortx.core.backup.STATUS_BAR_TILE_FILE_NAME
 import tornaco.apps.shortx.core.backup.TOGGLE_FILE_NAME
 import tornaco.apps.shortx.core.proto.common.CodeLibraryItem
 import tornaco.apps.shortx.core.proto.common.GestureRecord
+import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
@@ -41,6 +43,7 @@ import tornaco.apps.shortx.core.store.BaseGlobalVarStore
 import tornaco.apps.shortx.core.store.BasePkgSetsStore
 import tornaco.apps.shortx.core.store.BaseRuleSetsStore
 import tornaco.apps.shortx.core.store.BaseRuleSettingsStore
+import tornaco.apps.shortx.core.store.BaseStatusBarSettingsStore
 import tornaco.apps.shortx.core.store.BaseToggleSettingsStore
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.ZipUtils
@@ -147,6 +150,10 @@ class BackupAgent(private val context: Context) : CoreBackupAgent(
                 logger.d("restore, add function: ${it.name}")
                 shortX.addFunction(it)
             }
+            content.statusBarTiles.forEach {
+                logger.d("restore, update status bar tile: ${it.tile}")
+                shortX.updateStatusBarTileSetting(it)
+            }
         }
     }
 
@@ -243,6 +250,16 @@ class BackupAgent(private val context: Context) : CoreBackupAgent(
                 emptyList()
             }
 
+            // Status bar tiles
+            val statusBarTilePb = File(tmpExtractedFile, STATUS_BAR_TILE_FILE_NAME)
+            val statusBarTiles = if (statusBarTilePb.exists()) {
+                val statusBarTileStore = BaseStatusBarSettingsStore(this, statusBarTilePb)
+                statusBarTileStore.read()
+                statusBarTileStore.getAllSettings()
+            } else {
+                emptyList()
+            }
+
             // Clean up.
             tmpExtractedFile.deleteRecursively()
             tmpZipFile.deleteRecursively()
@@ -257,7 +274,8 @@ class BackupAgent(private val context: Context) : CoreBackupAgent(
                 daSets = daSets,
                 ruleSets = ruleSets,
                 gestures = gestures,
-                functions = functions
+                functions = functions,
+                statusBarTiles = statusBarTiles
             )
         }
     }
@@ -289,4 +307,5 @@ data class BackupPackageContent(
     val ruleSets: List<RuleSet>,
     val gestures: List<GestureRecord>,
     val functions: List<ShortXFunction> = emptyList(),
+    val statusBarTiles: List<StatusBarTileSetting> = emptyList(),
 )

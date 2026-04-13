@@ -1137,6 +1137,8 @@
   "ui.settings.sb.used": "Used by {title}",
   "ui.settings.sb.bond.to.toggle": "Bond QS tile",
   "ui.settings.sb.bond.to.toggle.pick": "Pick tile",
+  "ui.settings.sb.bond.to.toggle.unbind": "Unbind",
+  "ui.settings.sb.restore.default.style": "Restore default label and icon",
   "ui.settings.sb.tile.opt": "QS tile opt",
   "ui.settings.sb.tile.opt.summary": "Try to optimize the response speed of the QS tile click, you need to select the System UI scope, if you find that the optimization is not work, please report the problem and the log file to the developer",
   "ui.settings.dynamic.shortcut": "Global dynamic shortcut",

@@ -160,6 +160,9 @@ private fun TileSettings(back: () -> Unit, onTileClick: (StatusBarTile) -> Unit)
                                 },
                                 setIcon = { tile, newName ->
                                     vm.setIcon(tile, newName)
+                                },
+                                restoreDefaultStyle = { tile ->
+                                    vm.restoreDefaultStyle(tile)
                                 })
                         }
 
@@ -190,6 +193,7 @@ private fun TileItem(
     onClick: () -> Unit,
     rename: (StatusBarTile, String) -> Unit,
     setIcon: (StatusBarTile, String) -> Unit,
+    restoreDefaultStyle: (StatusBarTile) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -291,6 +295,7 @@ private fun TileItem(
             items = listOf(
                 DropdownItem(listOf(LocalI18N.current["ui.common.rename"]), "rename"),
                 DropdownItem(listOf(LocalI18N.current["ui.common.icon"]), "icon"),
+                DropdownItem(listOf(LocalI18N.current["ui.settings.sb.restore.default.style"]), "restore-default-style"),
             ),
             onSelect = {
                 if (it.data == "rename") {
@@ -304,6 +309,9 @@ private fun TileItem(
                             MDIconSelectorActivity::class.java
                         )
                     )
+                }
+                if (it.data == "restore-default-style") {
+                    restoreDefaultStyle(tile.tile)
                 }
             })
     }

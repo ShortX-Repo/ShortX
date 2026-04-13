@@ -19,6 +19,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -351,21 +352,28 @@ private fun ToggleContent(
     val context = LocalContext.current
     FieldTitle(text = LocalI18N.current["ui.settings.sb.bond.to.toggle"])
     SmallSpacer()
-    FilledTonalButton(onClick = {
-        qsTileSelectState.launch(
-            TileSettingsActivity.intent(
-                context,
-                true
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        FilledTonalButton(onClick = {
+            qsTileSelectState.launch(
+                TileSettingsActivity.intent(
+                    context,
+                    true
+                )
             )
-        )
-    }) {
-        Text(
-            text = if (addToggleState.bondToTile == null) {
-                LocalI18N.current["ui.settings.sb.bond.to.toggle.pick"]
-            } else {
-                addToggleState.bondToTile.label
+        }) {
+            Text(
+                text = if (addToggleState.bondToTile == null) {
+                    LocalI18N.current["ui.settings.sb.bond.to.toggle.pick"]
+                } else {
+                    addToggleState.bondToTile.label
+                }
+            )
+        }
+        if (addToggleState.bondToTile != null) {
+            TextButton(onClick = { vm.unbindQSTile() }) {
+                Text(LocalI18N.current["ui.settings.sb.bond.to.toggle.unbind"])
             }
-        )
+        }
     }
 
     SectionSpacer()

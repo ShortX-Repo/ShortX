@@ -107,6 +107,12 @@ class AddToggleViewModel @Inject constructor(@ApplicationContext context: Contex
         }
     }
 
+    fun unbindQSTile() {
+        updateState {
+            copy(bondToTile = null, toggleChanged = true)
+        }
+    }
+
     // Save with token to check subscribe state.
     fun save(token: String?) {
         logger.logOnDebug("save with token: ${token?.maskAll()}")

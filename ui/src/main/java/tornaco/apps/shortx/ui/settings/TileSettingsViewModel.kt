@@ -14,6 +14,7 @@ import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.core.settings.defaultStatusBarTileSetting
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.main.model.ToggleUM
@@ -103,5 +104,15 @@ class TileSettingsViewModel @Inject constructor(@ApplicationContext context: Con
             val updated = StatusBarTileSetting.newBuilder(it).setIconName(icon).build()
             shortXManager.updateStatusBarTileSetting(updated)
         }
+    }
+
+    fun restoreDefaultStyle(tile: StatusBarTile) {
+        val current = shortXManager.getStatusBarTileSettingsByNumber(tile.number)
+        val default = defaultStatusBarTileSetting(tile)
+        val updated = StatusBarTileSetting.newBuilder(current)
+            .setLabel(default.label)
+            .setIconName(default.iconName)
+            .build()
+        shortXManager.updateStatusBarTileSetting(updated)
     }
 }

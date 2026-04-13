@@ -12,7 +12,10 @@ import tornaco.apps.shortx.core.store.BaseGlobalVarStore
 import tornaco.apps.shortx.core.store.BasePkgSetsStore
 import tornaco.apps.shortx.core.store.BaseRuleSetsStore
 import tornaco.apps.shortx.core.store.BaseRuleSettingsStore
+import tornaco.apps.shortx.core.store.BaseStatusBarSettingsStore
 import tornaco.apps.shortx.core.store.BaseToggleSettingsStore
+import tornaco.apps.shortx.core.settings.defaultStatusBarTileSetting
+import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.ZipUtils
@@ -102,6 +105,13 @@ open class CoreBackupAgent(private val settings: BackupSettings) {
             functionStore.addFunctions(functions = allFunctions, write = false)
             functionStore.write()
 
+            // Status bar tiles
+            val allStatusBarTiles = shortX.getAllStatusBarTileSettings()
+            val statusBarTileStore =
+                BaseStatusBarSettingsStore(this, File(backupTempDir, STATUS_BAR_TILE_FILE_NAME))
+            statusBarTileStore.addAllSettings(records = allStatusBarTiles, write = false)
+            statusBarTileStore.write()
+
             // Meta
             val metaFile = File(backupTempDir, META_FILE_NAME)
             val meta = "${settings.versionCode}"
@@ -153,6 +163,10 @@ open class CoreBackupAgent(private val settings: BackupSettings) {
             shortX.getAllFunctions().forEach {
                 logger.w("Delete function: ${it.name}")
                 shortX.deleteFunction(it.id)
+            }
+            StatusBarTile.entries.filterNot { it == StatusBarTile.UNRECOGNIZED }.forEach {
+                logger.w("Reset tile setting: $it")
+                shortX.updateStatusBarTileSetting(defaultStatusBarTileSetting(it))
             }
             shortX.clearEvaluateRecords()
         }
