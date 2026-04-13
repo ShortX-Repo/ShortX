@@ -257,3 +257,5 @@
 
 -dontwarn android.accessibilityservice.GestureDescription$MotionEventGenerator
 -dontwarn android.view.accessibility.AccessibilityCache
+
+-dontwarn kotlin.Cloneable$DefaultImpls

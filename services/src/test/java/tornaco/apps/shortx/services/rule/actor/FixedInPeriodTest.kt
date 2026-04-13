@@ -3,12 +3,12 @@ package tornaco.apps.shortx.services.rule.actor
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import tornaco.apps.shortx.core.alarm.JCalendar
 import tornaco.apps.shortx.core.alarm.getNextTriggerTimeFromSegments
 import tornaco.apps.shortx.core.alarm.getTriggerTimeSegmentsByInterval
 import tornaco.apps.shortx.core.alarm.getTriggerTimeSegmentsByTimes
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.logAdapter
+import java.util.Calendar as JCalendar
 import java.util.Date
 import kotlin.time.Duration.Companion.minutes
 

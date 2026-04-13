@@ -16,6 +16,10 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.ISensorUsageListener
 import tornaco.apps.shortx.core.RuleEngineNames
@@ -30,6 +34,9 @@ import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.theme.ThemePref
 import java.io.File
+import java.time.Instant
+import java.time.Year
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 data class SettingsState(
@@ -63,7 +70,13 @@ data class SettingsState(
     val sensorUsages: List<SensorUsage> = emptyList(),
     val ocrEngine: OCREngine = OCREngine.OCREngine_Paddle,
     val extApp: App? = null,
-    val collapsedCategories: Set<String> = emptySet()
+    val collapsedCategories: Set<String> = emptySet(),
+    val isWorkdayRefreshing: Boolean = false,
+    val workdayRefreshStatus: String = "",
+    val workdayRefreshError: String = "",
+    val workdayRefreshAt: String = "",
+    val workdayRefreshYears: Set<String> = emptySet(),
+    val workdayRefreshSource: String = "",
 )
 
 sealed interface BackupResult {
@@ -81,10 +94,25 @@ sealed interface ExportLogResult {
     data class Failed(val error: String) : ExportLogResult
 }
 
+sealed interface WorkdayRefreshResult {
+    data class Success(
+        val refreshedYears: Set<String>,
+        val missingYears: Set<String>,
+    ) : WorkdayRefreshResult
+
+    data class Failed(val error: String) : WorkdayRefreshResult
+}
+
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class SettingsViewModel @Inject constructor(@ApplicationContext context: Context) :
     ShortXContextViewModel<SettingsState>(context, { SettingsState() }) {
+    companion object {
+        private const val WORKDAY_SOURCE_URL = "https://raw.githubusercontent.com/lanceliao/china-holiday-calender/master/holidayAPI.json"
+        private const val WORKDAY_CACHE_FILE_NAME = "holidayAPI.json"
+        private const val WORKDAY_REFRESH_STATUS_SUCCESS = "success"
+        private const val WORKDAY_REFRESH_STATUS_FAILED = "failed"
+    }
 
     private val _backupPerformed = MutableSharedFlow<BackupResult>()
     val backupPerformed = _backupPerformed.asSharedFlow()
@@ -94,6 +122,9 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
 
     private val _logExportPerformed = MutableSharedFlow<ExportLogResult>()
     val logExportPerformed = _logExportPerformed.asSharedFlow()
+
+    private val _workdayRefreshPerformed = MutableSharedFlow<WorkdayRefreshResult>()
+    val workdayRefreshPerformed = _workdayRefreshPerformed.asSharedFlow()
 
     private val pref by lazy { Pref(context) }
     private val themePref by lazy { ThemePref(context) }
@@ -195,6 +226,80 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 logger.d("collapsedSettingsCategories changed: $it")
                 updateState { copy(collapsedCategories = it) }
             }
+        }
+        viewModelScope.launch {
+            pref.workdayRefreshStatus.collectLatest {
+                updateState { copy(workdayRefreshStatus = it) }
+            }
+        }
+        viewModelScope.launch {
+            pref.workdayRefreshError.collectLatest {
+                updateState { copy(workdayRefreshError = it) }
+            }
+        }
+        viewModelScope.launch {
+            pref.workdayRefreshAt.collectLatest {
+                updateState { copy(workdayRefreshAt = it) }
+            }
+        }
+        viewModelScope.launch {
+            pref.workdayRefreshYears.collectLatest {
+                updateState { copy(workdayRefreshYears = it) }
+            }
+        }
+        viewModelScope.launch {
+            pref.workdayRefreshSource.collectLatest {
+                updateState { copy(workdayRefreshSource = it.ifBlank { WORKDAY_SOURCE_URL }) }
+            }
+        }
+    }
+
+    fun refreshWorkdayCalendar() {
+        if (state.value.isWorkdayRefreshing) return
+
+        viewModelScope.launch {
+            updateState { copy(isWorkdayRefreshing = true) }
+            kotlin.runCatching {
+                val targetYears = setOf(Year.now().value, Year.now().value + 1)
+                val payload = withContext(Dispatchers.IO) { downloadWorkdayPayload() }
+                val availableYears = availableWorkdayYears(payload)
+                val refreshedYears = targetYears.intersect(availableYears)
+                if (refreshedYears.isEmpty()) {
+                    error("Source does not contain ${targetYears.joinToString()}")
+                }
+
+                withContext(Dispatchers.IO) {
+                    val cacheDir = resolveWorkdayCacheDir()
+                    cacheDir.mkdirs()
+                    deleteLegacyWorkdayCacheFiles(cacheDir)
+                    File(cacheDir, WORKDAY_CACHE_FILE_NAME).writeText(payload)
+                }
+
+                val missingYears = targetYears - refreshedYears
+                val refreshedAt = Instant.now().toString()
+                pref.setWorkdayRefreshSuccess(
+                    refreshedAt = refreshedAt,
+                    years = refreshedYears.map(Int::toString).toSet(),
+                    sourceUrl = WORKDAY_SOURCE_URL,
+                    status = WORKDAY_REFRESH_STATUS_SUCCESS,
+                )
+                _workdayRefreshPerformed.emit(
+                    WorkdayRefreshResult.Success(
+                        refreshedYears = refreshedYears.map(Int::toString).toSet(),
+                        missingYears = missingYears.map(Int::toString).toSet(),
+                    )
+                )
+            }.onFailure {
+                logger.e(it, "refreshWorkdayCalendar")
+                val error = it.message ?: "UNKNOWN ERR"
+                pref.setWorkdayRefreshFailure(
+                    sourceUrl = WORKDAY_SOURCE_URL,
+                    status = WORKDAY_REFRESH_STATUS_FAILED,
+                    error = error,
+                )
+                _workdayRefreshPerformed.emit(WorkdayRefreshResult.Failed(error))
+            }
+            updateState { copy(isWorkdayRefreshing = false) }
         }
     }
 
@@ -394,6 +499,43 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
         viewModelScope.launch {
             pref.setIgnoreFrameworkUpdate(value)
         }
+    }
+
+    private fun downloadWorkdayPayload(): String {
+        val client = OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .build()
+        val request = Request.Builder().url(WORKDAY_SOURCE_URL).get().build()
+        client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) {
+                error("HTTP ${response.code}")
+            }
+            return response.body?.string()?.takeIf { it.isNotBlank() }
+                ?: error("Empty response body")
+        }
+    }
+
+    private fun availableWorkdayYears(payload: String): Set<Int> {
+        val root = Json.parseToJsonElement(payload).jsonObject
+        val years = root["Years"]?.jsonObject ?: error("Missing Years")
+        return years.keys.mapNotNull { it.toIntOrNull() }.toSet()
+    }
+
+    private fun deleteLegacyWorkdayCacheFiles(cacheDir: File) {
+        cacheDir.listFiles()?.forEach { file ->
+            if (file.isFile && file.extension == "json" && file.name != WORKDAY_CACHE_FILE_NAME) {
+                runCatching { file.delete() }
+                    .onFailure { logger.e(it, "Failed to delete stale workday cache file: ${file.absolutePath}") }
+            }
+        }
+    }
+
+    private fun resolveWorkdayCacheDir(): File {
+        val logDir = File(shortXManager.getLogDir())
+        val baseDir = logDir.parentFile ?: error("Unable to resolve base server dir")
+        return File(baseDir, "cache/workday/CN")
     }
 
     fun exportLogs() {

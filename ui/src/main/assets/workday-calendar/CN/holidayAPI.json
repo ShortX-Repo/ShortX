@@ -1,0 +1,86 @@
+{
+  "Name": "ShuYZ中国节假日",
+  "Version": "1.0",
+  "Generated": "20251104T235904Z",
+  "Timezone": "Asia/Shanghai",
+  "Author": "ShuYZ.com",
+  "URL": "https://github.com/lanceliao/china-holiday-calender",
+  "Years": {
+    "2026": [
+      {
+        "Name": "元旦",
+        "StartDate": "2026-01-01",
+        "EndDate": "2026-01-03",
+        "Duration": 3,
+        "CompDays": [
+          "2026-01-04"
+        ],
+        "URL": "https://www.gov.cn/zhengce/content/202511/content_7047090.htm",
+        "Memo": "一、元旦：1月1日（周四）至3日（周六）放假调休，共3天。1月4日（周日）上班。"
+      },
+      {
+        "Name": "春节",
+        "StartDate": "2026-02-15",
+        "EndDate": "2026-02-23",
+        "Duration": 9,
+        "CompDays": [
+          "2026-02-14",
+          "2026-02-28"
+        ],
+        "URL": "https://www.gov.cn/zhengce/content/202511/content_7047090.htm",
+        "Memo": "二、春节：2月15日（农历腊月二十八、周日）至23日（农历正月初七、周一）放假调休，共9天。2月14日（周六）、2月28日（周六）上班。"
+      },
+      {
+        "Name": "清明节",
+        "StartDate": "2026-04-04",
+        "EndDate": "2026-04-06",
+        "Duration": 3,
+        "CompDays": [],
+        "URL": "https://www.gov.cn/zhengce/content/202511/content_7047090.htm",
+        "Memo": "三、清明节：4月4日（周六）至6日（周一）放假，共3天。"
+      },
+      {
+        "Name": "劳动节",
+        "StartDate": "2026-05-01",
+        "EndDate": "2026-05-05",
+        "Duration": 5,
+        "CompDays": [
+          "2026-05-09"
+        ],
+        "URL": "https://www.gov.cn/zhengce/content/202511/content_7047090.htm",
+        "Memo": "四、劳动节：5月1日（周五）至5日（周二）放假调休，共5天。5月9日（周六）上班。"
+      },
+      {
+        "Name": "端午节",
+        "StartDate": "2026-06-19",
+        "EndDate": "2026-06-21",
+        "Duration": 3,
+        "CompDays": [],
+        "URL": "https://www.gov.cn/zhengce/content/202511/content_7047090.htm",
+        "Memo": "五、端午节：6月19日（周五）至21日（周日）放假，共3天。"
+      },
+      {
+        "Name": "中秋节",
+        "StartDate": "2026-09-25",
+        "EndDate": "2026-09-27",
+        "Duration": 3,
+        "CompDays": [],
+        "URL": "https://www.gov.cn/zhengce/content/202511/content_7047090.htm",
+        "Memo": "六、中秋节：9月25日（周五）至27日（周日）放假，共3天。"
+      },
+      {
+        "Name": "国庆节",
+        "StartDate": "2026-10-01",
+        "EndDate": "2026-10-07",
+        "Duration": 7,
+        "CompDays": [
+          "2026-09-20",
+          "2026-10-10"
+        ],
+        "URL": "https://www.gov.cn/zhengce/content/202511/content_7047090.htm",
+        "Memo": "七、国庆节：10月1日（周四）至7日（周三）放假调休，共7天。9月20日（周日）、10月10日（周六）上班。"
+      }
+    ],
+    "2027": []
+  }
+}

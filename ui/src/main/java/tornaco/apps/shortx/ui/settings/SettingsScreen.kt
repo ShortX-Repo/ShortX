@@ -476,6 +476,43 @@ fun SettingsScreen(
                         }
                     }
 
+                    LaunchedEffect(vm) {
+                        vm.workdayRefreshPerformed.collectLatest {
+                            when (it) {
+                                is WorkdayRefreshResult.Success -> {
+                                    scope.launch {
+                                        val message = if (it.missingYears.isEmpty()) {
+                                            i18N[
+                                                "ui.settings.data.workday.updated",
+                                                mapOf("years" to it.refreshedYears.sorted().joinToString())
+                                            ]
+                                        } else {
+                                            i18N[
+                                                "ui.settings.data.workday.updated.missing",
+                                                mapOf(
+                                                    "years" to it.refreshedYears.sorted().joinToString(),
+                                                    "missing" to it.missingYears.sorted().joinToString()
+                                                )
+                                            ]
+                                        }
+                                        snackbarHostState.showSnackbar(message)
+                                    }
+                                }
+
+                                is WorkdayRefreshResult.Failed -> {
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar(
+                                            i18N[
+                                                "ui.settings.data.workday.refresh.failed",
+                                                mapOf("err" to it.error)
+                                            ]
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     AnimatedVisibility(visible = isSearchToolsVisible) {
                         Column {
                             SearchBar(
@@ -858,8 +895,53 @@ private fun dataSettings(
     val subscribeDialogState = rememberShortXBottomSheetState()
     FeatureAccessDialog(subscribeDialogState)
 
+    val i18N = LocalI18N.current
+    val workdaySummary = buildString {
+        if (state.isWorkdayRefreshing) {
+            append(i18N["ui.settings.data.workday.refreshing"])
+        } else if (state.workdayRefreshStatus == "failed" && state.workdayRefreshError.isNotBlank()) {
+            append(
+                i18N[
+                    "ui.settings.data.workday.refresh.failed",
+                    mapOf("err" to state.workdayRefreshError)
+                ]
+            )
+        } else if (state.workdayRefreshStatus == "success") {
+            append(i18N["ui.settings.data.workday.summary.updated"])
+        } else {
+            append(i18N["ui.settings.data.workday.summary"])
+        }
+        if (state.workdayRefreshYears.isNotEmpty()) {
+            append('\n')
+            append(i18N["ui.settings.data.workday.cached.years"])
+            append(' ')
+            append(state.workdayRefreshYears.sorted().joinToString())
+        }
+        state.workdayRefreshAt.ifBlank { null }?.let {
+            append('\n')
+            append(i18N["ui.settings.data.workday.last.success"])
+            append(' ')
+            append(formatWorkdayRefreshTime(it))
+        }
+        state.workdayRefreshSource.ifBlank { null }?.let {
+            append('\n')
+            append(i18N["ui.settings.data.workday.source"])
+            append(' ')
+            append(it)
+        }
+    }
+
     return listOf(
         Preference.Category(LocalI18N.current["ui.settings.data"]),
+        Preference.TextPreference(
+            icon = Remix.System.refresh_fill,
+            title = LocalI18N.current["ui.settings.data.workday.title"],
+            summary = workdaySummary,
+            hasLongSummary = true,
+            onClick = {
+                vm.refreshWorkdayCalendar()
+            }
+        ),
         Preference.TextPreference(
             icon = Remix.Device.save_3_fill,
             title = LocalI18N.current["ui.settings.data.backup.title"],
@@ -894,6 +976,10 @@ private fun dataSettings(
             ),
         ),
     )
+}
+
+private fun formatWorkdayRefreshTime(value: String): String {
+    return value.replace('T', ' ').substringBefore('.').removeSuffix("Z")
 }
 
 

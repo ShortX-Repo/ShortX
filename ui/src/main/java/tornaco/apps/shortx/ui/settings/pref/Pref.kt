@@ -25,6 +25,11 @@ private val INSTALL_FAKE_SERVICE_KEY = booleanPreferencesKey("install_fake_servi
 private val PRIVACY_STATEMENT_ACCEPTED_KEY =
     booleanPreferencesKey("privacy_statement_accepted${BuildPropInternal.APP_VERSION_CODE}")
 private val IGNORE_FRAMEWORK_UPDATE = booleanPreferencesKey("ignore_framework_update")
+private val WORKDAY_REFRESH_STATUS = stringPreferencesKey("workday_refresh_status")
+private val WORKDAY_REFRESH_ERROR = stringPreferencesKey("workday_refresh_error")
+private val WORKDAY_REFRESH_AT = stringPreferencesKey("workday_refresh_at")
+private val WORKDAY_REFRESH_YEARS = stringSetPreferencesKey("workday_refresh_years")
+private val WORKDAY_REFRESH_SOURCE = stringPreferencesKey("workday_refresh_source")
 
 private val RECENT_SELECTED_ACTIONS = stringPreferencesKey("recent_selected_actions")
 
@@ -112,6 +117,26 @@ class Pref(val context: Context) {
 
     val ignoreFrameworkUpdate: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[IGNORE_FRAMEWORK_UPDATE] ?: false
+    }
+
+    val workdayRefreshStatus: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[WORKDAY_REFRESH_STATUS] ?: ""
+    }
+
+    val workdayRefreshError: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[WORKDAY_REFRESH_ERROR] ?: ""
+    }
+
+    val workdayRefreshAt: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[WORKDAY_REFRESH_AT] ?: ""
+    }
+
+    val workdayRefreshYears: Flow<Set<String>> = context.dataStore.data.map { preferences ->
+        preferences[WORKDAY_REFRESH_YEARS] ?: emptySet()
+    }
+
+    val workdayRefreshSource: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[WORKDAY_REFRESH_SOURCE] ?: ""
     }
 
     val uiShowDetailedDAItemContent: Flow<Boolean> = context.dataStore.data.map { preferences ->
@@ -251,6 +276,33 @@ class Pref(val context: Context) {
     suspend fun setIgnoreFrameworkUpdate(value: Boolean) {
         context.dataStore.edit { settings ->
             settings[IGNORE_FRAMEWORK_UPDATE] = value
+        }
+    }
+
+    suspend fun setWorkdayRefreshSuccess(
+        refreshedAt: String,
+        years: Set<String>,
+        sourceUrl: String,
+        status: String,
+    ) {
+        context.dataStore.edit { settings ->
+            settings[WORKDAY_REFRESH_AT] = refreshedAt
+            settings[WORKDAY_REFRESH_YEARS] = years
+            settings[WORKDAY_REFRESH_SOURCE] = sourceUrl
+            settings[WORKDAY_REFRESH_STATUS] = status
+            settings[WORKDAY_REFRESH_ERROR] = ""
+        }
+    }
+
+    suspend fun setWorkdayRefreshFailure(
+        sourceUrl: String,
+        status: String,
+        error: String,
+    ) {
+        context.dataStore.edit { settings ->
+            settings[WORKDAY_REFRESH_SOURCE] = sourceUrl
+            settings[WORKDAY_REFRESH_STATUS] = status
+            settings[WORKDAY_REFRESH_ERROR] = error
         }
     }
 

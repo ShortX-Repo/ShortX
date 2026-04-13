@@ -16,7 +16,7 @@ class WorkdayRepository(
         private val logger = Logger("WorkdayRepository")
         private const val REGION = "CN"
         private const val ASSET_PREFIX = "workday-calendar"
-        private const val CACHE_PREFIX = "workday-calendar"
+        private const val UNIFIED_FILE_NAME = "holidayAPI.json"
 
         private val yearCache = mutableMapOf<Int, WorkdayYearData?>()
     }
@@ -53,7 +53,7 @@ class WorkdayRepository(
     }
 
     private fun loadFromCache(year: Int): WorkdayYearData? {
-        val file = File(Dirs.workdayCacheDir(), "$REGION/$year.json").apply {
+        val file = File(Dirs.workdayCacheDir(), "$REGION/$UNIFIED_FILE_NAME").apply {
             parentFile?.mkdirs()
         }
         if (!file.exists() || !file.isFile) {
@@ -61,7 +61,7 @@ class WorkdayRepository(
             return null
         }
         logger.i("Loading cached workday file for year=$year from ${file.absolutePath}")
-        return runCatching { parser.parse(file.readText()) }
+        return runCatching { parser.parse(file.readText(), requestedYear = year) }
             .onFailure {
                 logger.e(it, "Failed to parse cached workday file for year=$year")
             }
@@ -70,11 +70,11 @@ class WorkdayRepository(
 
     private fun loadFromAssets(year: Int): WorkdayYearData? {
         val appContext = appContext() ?: return null
-        val path = "$ASSET_PREFIX/$REGION/$year.json"
+        val path = "$ASSET_PREFIX/$REGION/$UNIFIED_FILE_NAME"
         logger.i("Loading bundled workday asset for year=$year from $path")
         return runCatching {
             appContext.assets.open(path).use { input ->
-                parser.parse(input.bufferedReader().readText())
+                parser.parse(input.bufferedReader().readText(), requestedYear = year)
             }
         }.onFailure {
             logger.e(it, "Failed to load bundled workday asset for year=$year from $path")

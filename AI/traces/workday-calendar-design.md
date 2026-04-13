@@ -29,17 +29,17 @@ The requested product capability is:
 
 ### Data source requirement
 
-The external source should be compatible with the `holiday-calendar` dataset, for example:
+The external source should use the `lanceliao/china-holiday-calender` dataset, for example:
 
-1. `https://app.unpkg.com/holiday-calendar@1.3.3/files/data/CN/2026.json`
+1. `https://raw.githubusercontent.com/lanceliao/china-holiday-calender/master/holidayAPI.json`
 
 Observed source shape:
 
-1. top-level `year`
-2. top-level `region`
-3. `dates[]`
-4. each date item contains `date`, `name`, `name_cn`, `name_en`, `type`
-5. relevant `type` values include `public_holiday` and `transfer_workday`
+1. top-level metadata such as `Name`, `Version`, `Generated`, `Timezone`, `Author`, `URL`
+2. `Years.{year}[]`
+3. each holiday item contains `Name`, `StartDate`, `EndDate`, `Duration`, `CompDays`, `URL`, `Memo`
+4. `StartDate..EndDate` should be expanded into holiday dates for the requested year
+5. `CompDays[]` should be mapped to `transfer_workday`
 
 ### In-scope behavior
 

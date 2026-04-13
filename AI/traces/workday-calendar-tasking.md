@@ -15,7 +15,7 @@ This tasking follows the design in [AI/traces/workday-calendar-design.md](AI/tra
 ## Phase 2: Runtime Calendar Layer
 
 - [ ] Create a `services/.../calendar/workday/` package under `services`.
-- [ ] Implement `WorkdayJsonParser` for the `holiday-calendar` payload shape.
+- [ ] Implement `WorkdayJsonParser` for the `china-holiday-calender` payload shape, while keeping compatibility with bundled legacy single-year assets.
 - [ ] Implement `WorkdayRepository` with bundled asset loading.
 - [ ] Implement local cache lookup that overrides bundled assets when valid refreshed data exists.
 - [ ] Implement `WorkdayResolver` with precedence for `transfer_workday` over weekend fallback.
