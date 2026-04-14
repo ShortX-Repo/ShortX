@@ -25,6 +25,31 @@ class WorkdayRepository(
                 yearCache.clear()
             }
         }
+
+        fun cacheRegionDir(): File {
+            return File(Dirs.workdayCacheDir(), REGION).apply {
+                if (!exists()) {
+                    mkdirs()
+                }
+            }
+        }
+
+        fun cacheFile(): File {
+            return File(cacheRegionDir(), UNIFIED_FILE_NAME)
+        }
+    }
+
+    fun updateCachedPayload(payload: String): File {
+        return WorkdayCacheStore.updateCachedPayload(
+            cacheDir = cacheRegionDir(),
+            payload = payload,
+            onInvalidate = ::invalidateAll,
+            logInfo = logger::i,
+            logDebug = logger::d,
+            logError = { message, throwable ->
+                if (throwable == null) logger.e(message) else logger.e(throwable, message)
+            },
+        )
     }
 
     override fun getYear(year: Int): WorkdayYearData? {
@@ -59,9 +84,7 @@ class WorkdayRepository(
     }
 
     private fun loadFromCache(year: Int): WorkdayYearData? {
-        val file = File(Dirs.workdayCacheDir(), "$REGION/$UNIFIED_FILE_NAME").apply {
-            parentFile?.mkdirs()
-        }
+        val file = cacheFile()
         if (!file.exists() || !file.isFile) {
             logger.d("No cached workday file for year=$year at ${file.absolutePath}")
             return null

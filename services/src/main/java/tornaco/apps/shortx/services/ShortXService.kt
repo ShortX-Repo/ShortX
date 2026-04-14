@@ -310,19 +310,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         }
 
         override fun updateWorkdayCalendarCache(payload: String): String {
-            val cacheDir = File(Dirs.workdayCacheDir(), "CN").apply {
-                mkdirs()
-            }
-            cacheDir.listFiles()?.forEach { file ->
-                if (file.isFile && file.extension == "json" && file.name != "holidayAPI.json") {
-                    runCatching { file.delete() }
-                        .onFailure { logger.e(it, "Failed to delete stale workday cache file: ${file.absolutePath}") }
-                }
-            }
-            val file = File(cacheDir, "holidayAPI.json")
-            file.writeText(payload)
-            WorkdayRepository.invalidateAll()
-            return file.absolutePath
+            return WorkdayRepository(context).updateCachedPayload(payload).absolutePath
         }
 
         override fun hasFatalError(): Boolean {
