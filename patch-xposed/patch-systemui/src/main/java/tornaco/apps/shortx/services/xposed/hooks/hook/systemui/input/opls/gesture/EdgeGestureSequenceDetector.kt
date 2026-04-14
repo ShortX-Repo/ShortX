@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.proto.fact.EdgeGestureStep
 import tornaco.apps.shortx.core.proto.fact.EdgeGestureStepType
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.util._dp
+import kotlin.math.acos
 import kotlin.math.cos
 import kotlin.math.hypot
 
@@ -145,10 +146,12 @@ class EdgeGestureSequenceDetector(
         elapsedRealtime = elapsedRealtime,
         dpToPx = dpToPx,
         hintSink = hintSink,
-        debugLog = {},
+        debugLog = tornaco.apps.shortx.core.util.Logger("EdgeGestureSequence")::d,
     )
 
     companion object {
+        private const val DIAG_PREFIX = "[SX_EDGE_DIAG]"
+
         // 纯 JVM 测试路径不直接依赖 MotionEvent 常量，所以这里保留一份本地副本。
         private const val INVALID_POINTER_ID = -1
         private const val ACTION_UP = 1
@@ -167,7 +170,7 @@ class EdgeGestureSequenceDetector(
         private const val CHILD_SWIPE_MIN_DISTANCE_DP = 72
 
         // 方向允许有一定偏斜；例如 SwipeLeft 不要求完全水平，只要夹角在容差内即可。
-        private const val CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG = 30f
+        private const val CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG = 35f
         private val MIN_DIRECTION_DOT =
             cos(Math.toRadians(CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG.toDouble())).toFloat()
     }
@@ -198,7 +201,8 @@ class EdgeGestureSequenceDetector(
     private val hoverRunnable = Runnable {
         if (!isTracking()) return@Runnable
         if (elapsedRealtime() - startedAtElapsed > STEP_TIMEOUT_MS) {
-            cancelTracking()
+            debugLog("$DIAG_PREFIX hoverRunnable timeout: stepIndex=$currentStepIndex, elapsed=${elapsedRealtime() - startedAtElapsed}ms")
+            cancelTracking("hoverRunnable timeout")
             return@Runnable
         }
         val hoverCandidates = candidates.filter {
@@ -207,9 +211,11 @@ class EdgeGestureSequenceDetector(
         if (hoverCandidates.isEmpty()) return@Runnable
         val distance = distanceFromAnchor(latestX, latestY)
         if (distance <= dpToPx(HOVER_RADIUS_DP).toFloat()) {
+            debugLog("$DIAG_PREFIX hover matched: stepIndex=$currentStepIndex, distance=$distance, radiusPx=${dpToPx(HOVER_RADIUS_DP)}")
             advanceCandidates(hoverCandidates, hoverCandidates.first().rule.getChildSteps(currentStepIndex))
         } else {
-            cancelTracking()
+            debugLog("$DIAG_PREFIX hover cancel: stepIndex=$currentStepIndex, distance=$distance, radiusPx=${dpToPx(HOVER_RADIUS_DP)}")
+            cancelTracking("hover moved out of radius")
         }
     }
 
@@ -223,7 +229,7 @@ class EdgeGestureSequenceDetector(
         candidates: List<EdgeGestureSequenceCandidate>,
     ): Boolean {
         if (candidates.isEmpty()) return false
-        cancelTracking()
+        cancelTracking("restart tracking")
         this.trackedPointerId = pointerId
         this.primaryGesture = primaryGesture
         this.downX = downX
@@ -239,7 +245,9 @@ class EdgeGestureSequenceDetector(
         scheduleHoverIfNeeded()
         // 一进入二段识别，就先把当前目标步骤的提示显示出来。
         emitCurrentStepHint()
-        debugLog("startTracking: primary=$primaryGesture, candidates=${candidates.size}, anchor=($anchorX,$anchorY)")
+        debugLog(
+            "$DIAG_PREFIX startTracking: primary=$primaryGesture, candidates=${candidates.size}, anchor=($anchorX,$anchorY), down=($downX,$downY), rules=${formatCandidates(candidates)}"
+        )
         return true
     }
 
@@ -253,13 +261,15 @@ class EdgeGestureSequenceDetector(
             ACTION_MOVE -> {
                 val pointerIndex = event.findPointerIndex(trackedPointerId)
                 if (pointerIndex < 0) {
-                    cancelTracking()
+                    debugLog("$DIAG_PREFIX cancel: tracked pointer missing, pointerId=$trackedPointerId")
+                    cancelTracking("tracked pointer missing")
                     return false
                 }
                 latestX = event.getX(pointerIndex)
                 latestY = event.getY(pointerIndex)
                 if (elapsedRealtime() - startedAtElapsed > STEP_TIMEOUT_MS) {
-                    cancelTracking()
+                    debugLog("$DIAG_PREFIX step timeout: stepIndex=$currentStepIndex, elapsed=${elapsedRealtime() - startedAtElapsed}ms")
+                    cancelTracking("step timeout")
                     return true
                 }
 
@@ -270,9 +280,13 @@ class EdgeGestureSequenceDetector(
                         it.rule.getChildStepsOrNull(currentStepIndex)?.type == EdgeGestureStepType.Hover
                     }
                     if (hoverOnly && distanceFromAnchor(latestX, latestY) > dpToPx(HOVER_RADIUS_DP).toFloat()) {
-                        cancelTracking()
+                        debugLog(
+                            "$DIAG_PREFIX hover-only cancel: stepIndex=$currentStepIndex, distance=${distanceFromAnchor(latestX, latestY)}, radiusPx=${dpToPx(HOVER_RADIUS_DP)}"
+                        )
+                        cancelTracking("hover-only moved out of radius")
                         return true
                     }
+                    logDirectionalMiss()
                     return true
                 }
                 val matchedCandidates = candidates.filter {
@@ -284,14 +298,14 @@ class EdgeGestureSequenceDetector(
 
             ACTION_UP,
             ACTION_CANCEL -> {
-                cancelTracking()
+                cancelTracking("pointer up/cancel")
                 return true
             }
 
             ACTION_POINTER_UP -> {
                 val pointerId = event.getPointerId(event.actionIndex)
                 if (pointerId == trackedPointerId) {
-                    cancelTracking()
+                    cancelTracking("tracked pointer pointer-up")
                     return true
                 }
             }
@@ -304,6 +318,10 @@ class EdgeGestureSequenceDetector(
     }
 
     fun cancelTracking() {
+        cancelTracking("manual")
+    }
+
+    private fun cancelTracking(reason: String) {
         val wasTracking = isTracking()
         scheduler.removeCallbacks(hoverRunnable)
         trackedPointerId = INVALID_POINTER_ID
@@ -319,6 +337,7 @@ class EdgeGestureSequenceDetector(
         candidates = emptyList()
         matchedSteps.clear()
         if (wasTracking) {
+            debugLog("$DIAG_PREFIX cancelTracking: reason=$reason")
             hintSink.onSequenceCancelled()
         }
     }
@@ -331,6 +350,7 @@ class EdgeGestureSequenceDetector(
 
         // 当前步骤只要存在 Hover 候选，就挂一个延时检查；真正是否成功还会再校验半径。
         if (hasHoverCandidate) {
+            debugLog("$DIAG_PREFIX scheduleHoverIfNeeded: stepIndex=$currentStepIndex, delayMs=$HOVER_DURATION_MS")
             scheduler.postDelayed(hoverRunnable, HOVER_DURATION_MS)
         }
     }
@@ -359,6 +379,9 @@ class EdgeGestureSequenceDetector(
         matchedStep: EdgeGestureStep,
     ) {
         matchedSteps.add(matchedStep)
+        debugLog(
+            "$DIAG_PREFIX advanceCandidates: matched=${matchedStep.type}, stepIndex=$currentStepIndex, matchedSteps=${matchedSteps.map { it.type }}, matchedCandidates=${matchedCandidates.size}"
+        )
 
         val completedCandidates = matchedCandidates.filter {
             it.rule.childStepsCount == currentStepIndex + 1
@@ -376,12 +399,18 @@ class EdgeGestureSequenceDetector(
             startedAtElapsed = elapsedRealtime()
             scheduleHoverIfNeeded()
             emitCurrentStepHint()
+            debugLog(
+                "$DIAG_PREFIX advanceCandidates: continue stepIndex=$currentStepIndex, nextStep=${currentHintStep()?.type}, pending=${formatCandidates(pendingCandidates)}"
+            )
             return
         }
 
         completedCandidates
             .distinctBy { it.area }
             .forEach {
+                debugLog(
+                    "$DIAG_PREFIX fire sequence: area=${it.area}, gesture=${requireNotNull(primaryGesture)}, childSteps=${matchedSteps.map { step -> step.type }}"
+                )
                 service.fireEdgeGestureSequence(
                     area = it.area,
                     gesture = requireNotNull(primaryGesture),
@@ -466,6 +495,29 @@ class EdgeGestureSequenceDetector(
         // 如果规则分叉到了不同的下一步，这里宁可不画，也不误导用户。
         if (currentStepTypes.size != 1) return null
         return EdgeGestureStep.newBuilder().setType(currentStepTypes.single()).build()
+    }
+
+    private fun logDirectionalMiss() {
+        val step = currentHintStep() ?: return
+        if (step.type == EdgeGestureStepType.Hover) return
+        val direction = directionFor(step.type) ?: return
+        val deltaX = latestX - anchorX
+        val deltaY = latestY - anchorY
+        val distance = hypot(deltaX.toDouble(), deltaY.toDouble()).toFloat()
+        val minDistancePx = dpToPx(CHILD_SWIPE_MIN_DISTANCE_DP).toFloat()
+        val normalizedX = if (distance > 0f) deltaX / distance else 0f
+        val normalizedY = if (distance > 0f) deltaY / distance else 0f
+        val dot = normalizedX * direction.first + normalizedY * direction.second
+        val angleDeg = Math.toDegrees(acos(dot.coerceIn(-1f, 1f).toDouble()))
+        debugLog(
+            "$DIAG_PREFIX directional miss: stepIndex=$currentStepIndex, expected=${step.type}, distance=$distance/$minDistancePx, dot=$dot/$MIN_DIRECTION_DOT, angleDeg=$angleDeg/$CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG, anchor=($anchorX,$anchorY), latest=($latestX,$latestY)"
+        )
+    }
+
+    private fun formatCandidates(candidates: List<EdgeGestureSequenceCandidate>): String {
+        return candidates.joinToString(prefix = "[", postfix = "]") {
+            "{area=${it.area}, childSteps=${it.rule.childStepsList.map { step -> step.type }}}"
+        }
     }
 
     private fun distanceFromAnchor(x: Float, y: Float): Float {

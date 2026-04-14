@@ -41,6 +41,10 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
     private val shortx by lazy { shortXManager }
     private val logger = Logger("DetectorService")
 
+    companion object {
+        private const val DIAG_PREFIX = "[SX_EDGE_DIAG]"
+    }
+
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob())
 
     private var swipeDistanceThresholdDp: Int = 24
@@ -265,7 +269,10 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         areas: List<DetectedArea>,
         gestureEvent: Gesture,
     ): List<EdgeGestureSequenceCandidate> {
-        return areas.flatMap { area ->
+        val allSequenceRules = enabledEdgeGestures.filter {
+            !it.isDisabled && it.gesture == gestureEvent && it.childStepsCount > 0
+        }
+        val matched = areas.flatMap { area ->
             enabledEdgeGestures.filter { enabledGesture ->
                 !enabledGesture.isDisabled &&
                     enabledGesture.gesture == gestureEvent &&
@@ -275,6 +282,10 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
                 EdgeGestureSequenceCandidate(area = area, rule = it)
             }
         }
+        logger.logOnDebug(
+            "$DIAG_PREFIX findMatchingEdgeGestureSequences: gesture=$gestureEvent, areas=$areas, totalSequenceRules=${allSequenceRules.size}, matched=${matched.map { candidate -> "${candidate.area}:${candidate.rule.childStepsList.map { it.type }}" }}"
+        )
+        return matched
     }
 
     override fun fireEdgeGestureSequence(
@@ -299,6 +310,7 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
             .setDownX(downX.roundToInt())
             .setDownY(downY.roundToInt())
             .build()
+        logger.d("$DIAG_PREFIX fireEdgeGestureSequence: area=$area, gesture=$gesture, childSteps=${childSteps.map { it.type }}, down=($downX,$downY)")
         shortx.fireEdgeGesture(data)
         return true
     }

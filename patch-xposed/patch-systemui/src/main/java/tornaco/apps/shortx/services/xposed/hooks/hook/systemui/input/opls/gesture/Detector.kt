@@ -8,6 +8,7 @@ import android.os.Handler
 import android.view.GestureDetector
 import android.view.MotionEvent
 import tornaco.apps.shortx.core.BuildPropInternal
+import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.common.Rect
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
@@ -24,6 +25,7 @@ class Detector(
 ) {
     companion object {
         const val LOGV = BuildPropInternal.APP_IS_DEBUG
+        private const val DIAG_PREFIX = "[SX_EDGE_DIAG]"
     }
 
     private val logger = Logger("GestureDetector")
@@ -204,7 +206,14 @@ class Detector(
 
     private fun handleSwipeEvent(downX: Float, downY: Float, gestureEvent: Gesture): Boolean {
         val areas = detectArea(downX, downY)
-        if (areas.isEmpty()) return false
+        if (areas.isEmpty()) {
+            logger.logOnDebug("$DIAG_PREFIX handleSwipeEvent: no area matched for $gestureEvent at ($downX,$downY)")
+            return false
+        }
+        val sequenceCandidates = service.findMatchingEdgeGestureSequences(areas, gestureEvent)
+        logger.logOnDebug(
+            "$DIAG_PREFIX handleSwipeEvent: gesture=$gestureEvent, areas=$areas, down=($downX,$downY), anchor=($lastTouchX,$lastTouchY), sequenceCandidates=${sequenceCandidates.map { it.rule.childStepsList.map { step -> step.type } }}"
+        )
         val sequenceHandled = sequenceDetector.startTracking(
             pointerId = activePointerId,
             primaryGesture = gestureEvent,
@@ -212,7 +221,7 @@ class Detector(
             downY = downY,
             anchorX = lastTouchX,
             anchorY = lastTouchY,
-            candidates = service.findMatchingEdgeGestureSequences(areas, gestureEvent),
+            candidates = sequenceCandidates,
         )
         val handled = handleEdgeGestureEvent(areas, gestureEvent, downX, downY) || sequenceHandled
         if (sequenceHandled) {
@@ -220,6 +229,7 @@ class Detector(
         } else {
             edgeGestureHintDetector.onEdgeGestureTriggered(areas, gestureEvent, handled)
         }
+        logger.logOnDebug("$DIAG_PREFIX handleSwipeEvent result: gesture=$gestureEvent, handled=$handled, sequenceHandled=$sequenceHandled")
         return handled
     }
 
@@ -286,6 +296,9 @@ class Detector(
         if (event.isTouchEvent) {
             when (event.actionMasked) {
                 MotionEvent.ACTION_DOWN -> {
+                    if (sequenceDetector.isTracking()) {
+                        logger.logOnDebug("$DIAG_PREFIX consumeEvent ACTION_DOWN while sequence tracking, cancel previous sequence")
+                    }
                     activePointerId = event.getPointerId(event.actionIndex)
                     lastTouchX = event.x
                     lastTouchY = event.y
@@ -302,10 +315,20 @@ class Detector(
 
                 MotionEvent.ACTION_UP,
                 MotionEvent.ACTION_CANCEL -> {
+                    if (sequenceDetector.isTracking()) {
+                        logger.logOnDebug(
+                            "$DIAG_PREFIX consumeEvent ${actionName(event.actionMasked)}: x=${event.x}, y=${event.y}, activePointerId=$activePointerId"
+                        )
+                    }
                     activePointerId = MotionEvent.INVALID_POINTER_ID
                 }
 
                 MotionEvent.ACTION_POINTER_UP -> {
+                    if (sequenceDetector.isTracking()) {
+                        logger.logOnDebug(
+                            "$DIAG_PREFIX consumeEvent ACTION_POINTER_UP: actionPointerId=${event.getPointerId(event.actionIndex)}, activePointerId=$activePointerId"
+                        )
+                    }
                     if (event.getPointerId(event.actionIndex) == activePointerId) {
                         activePointerId = MotionEvent.INVALID_POINTER_ID
                     }
@@ -313,6 +336,14 @@ class Detector(
             }
 
             edgeGestureHintDetector.onTouchEvent(event)
+            if (sequenceDetector.isTracking() && event.actionMasked == MotionEvent.ACTION_MOVE) {
+                val pointerIndex = event.findPointerIndex(activePointerId)
+                if (pointerIndex >= 0) {
+                    logger.logOnDebug(
+                        "$DIAG_PREFIX consumeEvent ACTION_MOVE: x=${event.getX(pointerIndex)}, y=${event.getY(pointerIndex)}, anchor=($lastTouchX,$lastTouchY), activePointerId=$activePointerId"
+                    )
+                }
+            }
             if (sequenceDetector.onTouchEvent(event)) {
                 return true
             }
@@ -327,6 +358,17 @@ class Detector(
             }
         }
         return null
+    }
+
+    private fun actionName(actionMasked: Int): String {
+        return when (actionMasked) {
+            MotionEvent.ACTION_DOWN -> "ACTION_DOWN"
+            MotionEvent.ACTION_MOVE -> "ACTION_MOVE"
+            MotionEvent.ACTION_UP -> "ACTION_UP"
+            MotionEvent.ACTION_CANCEL -> "ACTION_CANCEL"
+            MotionEvent.ACTION_POINTER_UP -> "ACTION_POINTER_UP"
+            else -> "ACTION_$actionMasked"
+        }
     }
 
     fun dump() {
