@@ -39,6 +39,19 @@ private const val GUIDELINE_VIEW_SHOWN_TIME = 6000L
 
 class GestureService(shortXContext: ShortXContext) :
     SystemService(shortXContext, "GestureService") {
+    companion object {
+        const val EDGE_GESTURE_SEQUENCE_STEP_TIMEOUT_MS_MIN = 300
+        const val EDGE_GESTURE_SEQUENCE_STEP_TIMEOUT_MS_MAX = 2000
+        const val EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MIN = 100
+        const val EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MAX = 1200
+        const val EDGE_GESTURE_SEQUENCE_HOVER_RADIUS_DP_MIN = 8
+        const val EDGE_GESTURE_SEQUENCE_HOVER_RADIUS_DP_MAX = 96
+        const val EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MIN_DISTANCE_DP_MIN = 24
+        const val EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MIN_DISTANCE_DP_MAX = 200
+        const val EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG_MIN = 10
+        const val EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG_MAX = 60
+    }
+
     private val gestureRecordStore by lazy {
         GestureRecordsStore(systemServiceScope)
     }
@@ -213,6 +226,96 @@ class GestureService(shortXContext: ShortXContext) :
 
     fun setCornerGestureMinSwipeDistanceDp(dp: Int) {
         store.write(Settings.IntSettings.CornerGestureMinSwipeDistanceDp, dp.coerceIn(24, 200))
+        notifyGestureSettingsChanged()
+    }
+
+    fun getEdgeGestureSequenceStepTimeoutMs(): Int =
+        store.read(Settings.IntSettings.EdgeGestureSequenceStepTimeoutMs)
+            .coerceIn(
+                EDGE_GESTURE_SEQUENCE_STEP_TIMEOUT_MS_MIN,
+                EDGE_GESTURE_SEQUENCE_STEP_TIMEOUT_MS_MAX
+            )
+
+    fun setEdgeGestureSequenceStepTimeoutMs(timeoutMs: Int) {
+        store.write(
+            Settings.IntSettings.EdgeGestureSequenceStepTimeoutMs,
+            timeoutMs.coerceIn(
+                EDGE_GESTURE_SEQUENCE_STEP_TIMEOUT_MS_MIN,
+                EDGE_GESTURE_SEQUENCE_STEP_TIMEOUT_MS_MAX
+            )
+        )
+        notifyGestureSettingsChanged()
+    }
+
+    fun getEdgeGestureSequenceHoverDurationMs(): Int =
+        store.read(Settings.IntSettings.EdgeGestureSequenceHoverDurationMs)
+            .coerceIn(
+                EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MIN,
+                EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MAX
+            )
+
+    fun setEdgeGestureSequenceHoverDurationMs(durationMs: Int) {
+        store.write(
+            Settings.IntSettings.EdgeGestureSequenceHoverDurationMs,
+            durationMs.coerceIn(
+                EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MIN,
+                EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MAX
+            )
+        )
+        notifyGestureSettingsChanged()
+    }
+
+    fun getEdgeGestureSequenceHoverRadiusDp(): Int =
+        store.read(Settings.IntSettings.EdgeGestureSequenceHoverRadiusDp)
+            .coerceIn(
+                EDGE_GESTURE_SEQUENCE_HOVER_RADIUS_DP_MIN,
+                EDGE_GESTURE_SEQUENCE_HOVER_RADIUS_DP_MAX
+            )
+
+    fun setEdgeGestureSequenceHoverRadiusDp(radiusDp: Int) {
+        store.write(
+            Settings.IntSettings.EdgeGestureSequenceHoverRadiusDp,
+            radiusDp.coerceIn(
+                EDGE_GESTURE_SEQUENCE_HOVER_RADIUS_DP_MIN,
+                EDGE_GESTURE_SEQUENCE_HOVER_RADIUS_DP_MAX
+            )
+        )
+        notifyGestureSettingsChanged()
+    }
+
+    fun getEdgeGestureSequenceChildSwipeMinDistanceDp(): Int =
+        store.read(Settings.IntSettings.EdgeGestureSequenceChildSwipeMinDistanceDp)
+            .coerceIn(
+                EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MIN_DISTANCE_DP_MIN,
+                EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MIN_DISTANCE_DP_MAX
+            )
+
+    fun setEdgeGestureSequenceChildSwipeMinDistanceDp(distanceDp: Int) {
+        store.write(
+            Settings.IntSettings.EdgeGestureSequenceChildSwipeMinDistanceDp,
+            distanceDp.coerceIn(
+                EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MIN_DISTANCE_DP_MIN,
+                EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MIN_DISTANCE_DP_MAX
+            )
+        )
+        notifyGestureSettingsChanged()
+    }
+
+    fun getEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(): Int =
+        store.read(Settings.IntSettings.EdgeGestureSequenceChildSwipeMaxAngleDeviationDeg)
+            .coerceIn(
+                EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG_MIN,
+                EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG_MAX
+            )
+
+    fun setEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(angleDeg: Int) {
+        store.write(
+            Settings.IntSettings.EdgeGestureSequenceChildSwipeMaxAngleDeviationDeg,
+            angleDeg.coerceIn(
+                EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG_MIN,
+                EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG_MAX
+            )
+        )
         notifyGestureSettingsChanged()
     }
 

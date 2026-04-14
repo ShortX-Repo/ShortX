@@ -62,6 +62,17 @@ import java.math.RoundingMode
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
+private const val EDGE_GESTURE_SEQUENCE_STEP_TIMEOUT_MS_MIN = 300
+private const val EDGE_GESTURE_SEQUENCE_STEP_TIMEOUT_MS_MAX = 2000
+private const val EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MIN = 100
+private const val EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MAX = 1200
+private const val EDGE_GESTURE_SEQUENCE_HOVER_RADIUS_DP_MIN = 8
+private const val EDGE_GESTURE_SEQUENCE_HOVER_RADIUS_DP_MAX = 96
+private const val EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MIN_DISTANCE_DP_MIN = 24
+private const val EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MIN_DISTANCE_DP_MAX = 200
+private const val EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG_MIN = 10
+private const val EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG_MAX = 60
+
 @AndroidEntryPoint
 class KeyAndGestureSettingsActivity : BaseActivity() {
     companion object {
@@ -93,6 +104,11 @@ class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@Application
                     swipeLengthScale = shortXManager.getSwipeLengthScale(),
                     cornerGestureAreaRatioPercent = shortXManager.getCornerGestureRegionRadiusRatioPercent(),
                     cornerGestureMinSwipeDistanceDp = shortXManager.getCornerGestureMinSwipeDistanceDp(),
+                    edgeGestureSequenceStepTimeoutMs = shortXManager.getEdgeGestureSequenceStepTimeoutMs(),
+                    edgeGestureSequenceHoverDurationMs = shortXManager.getEdgeGestureSequenceHoverDurationMs(),
+                    edgeGestureSequenceHoverRadiusDp = shortXManager.getEdgeGestureSequenceHoverRadiusDp(),
+                    edgeGestureSequenceChildSwipeMinDistanceDp = shortXManager.getEdgeGestureSequenceChildSwipeMinDistanceDp(),
+                    edgeGestureSequenceChildSwipeMaxAngleDeviationDeg = shortXManager.getEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(),
                     isEdgeGestureEnabled = shortXManager.isAppFeatureEnabled(AppFeature.AppFeature_EdgeGesture.number),
                     isKeyEventEnabled = shortXManager.isAppFeatureEnabled(AppFeature.AppFeature_KeyEvent.number),
                     keyDetectorLongPressTimeoutMS = shortXManager.getKeyDetectorLongPressTimeoutMS()
@@ -149,6 +165,41 @@ class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@Application
         }
     }
 
+    fun setEdgeGestureSequenceStepTimeoutMs(timeoutMs: Int) {
+        viewModelScope.launch {
+            shortXManager.setEdgeGestureSequenceStepTimeoutMs(timeoutMs)
+            loadState()
+        }
+    }
+
+    fun setEdgeGestureSequenceHoverDurationMs(durationMs: Int) {
+        viewModelScope.launch {
+            shortXManager.setEdgeGestureSequenceHoverDurationMs(durationMs)
+            loadState()
+        }
+    }
+
+    fun setEdgeGestureSequenceHoverRadiusDp(radiusDp: Int) {
+        viewModelScope.launch {
+            shortXManager.setEdgeGestureSequenceHoverRadiusDp(radiusDp)
+            loadState()
+        }
+    }
+
+    fun setEdgeGestureSequenceChildSwipeMinDistanceDp(distanceDp: Int) {
+        viewModelScope.launch {
+            shortXManager.setEdgeGestureSequenceChildSwipeMinDistanceDp(distanceDp)
+            loadState()
+        }
+    }
+
+    fun setEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(angleDeg: Int) {
+        viewModelScope.launch {
+            shortXManager.setEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(angleDeg)
+            loadState()
+        }
+    }
+
     fun setGestureFeatureEnabled(enabled: Boolean) {
         viewModelScope.launch {
             shortXManager.setAppFeatureEnabled(AppFeature.AppFeature_EdgeGesture.number, enabled)
@@ -177,6 +228,11 @@ data class KeyAndGestureSettings(
     val swipeLengthScale: Float = 0f,
     val cornerGestureAreaRatioPercent: Int = 18,
     val cornerGestureMinSwipeDistanceDp: Int = 72,
+    val edgeGestureSequenceStepTimeoutMs: Int = 700,
+    val edgeGestureSequenceHoverDurationMs: Int = 300,
+    val edgeGestureSequenceHoverRadiusDp: Int = 24,
+    val edgeGestureSequenceChildSwipeMinDistanceDp: Int = 72,
+    val edgeGestureSequenceChildSwipeMaxAngleDeviationDeg: Int = 35,
     val isEdgeGestureEnabled: Boolean = false,
     val isKeyEventEnabled: Boolean = false,
     // Key
@@ -286,6 +342,77 @@ fun KeyAndGestureSettingsActivity.EdgeGestureSettingsSelector() {
                                     .background(color = MaterialTheme.colorScheme.primary)
                             )
                         }
+                    }
+
+                    LargeSpacer()
+
+                    GestureSettingCard(
+                        title = LocalI18N.current["ui.settings.edge.gesture.sub.group.title"],
+                        summary = LocalI18N.current["ui.settings.edge.gesture.sub.group.summary"]
+                    ) {
+                        SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.sub.step.timeout"])
+                        MediumSpacer()
+                        Text(text = "${state.edgeGestureSequenceStepTimeoutMs} ms")
+                        TipRow(LocalI18N.current["ui.settings.edge.gesture.sub.step.timeout.description"])
+                        StandardSpacer()
+                        Slider(
+                            valueRange = EDGE_GESTURE_SEQUENCE_STEP_TIMEOUT_MS_MIN.toFloat()..EDGE_GESTURE_SEQUENCE_STEP_TIMEOUT_MS_MAX.toFloat(),
+                            value = state.edgeGestureSequenceStepTimeoutMs.toFloat(),
+                            onValueChange = {
+                                vm.setEdgeGestureSequenceStepTimeoutMs(it.roundToInt())
+                            })
+                        LargeSpacer()
+
+                        SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.sub.hover.duration"])
+                        MediumSpacer()
+                        Text(text = "${state.edgeGestureSequenceHoverDurationMs} ms")
+                        TipRow(LocalI18N.current["ui.settings.edge.gesture.sub.hover.duration.description"])
+                        StandardSpacer()
+                        Slider(
+                            valueRange = EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MIN.toFloat()..EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MAX.toFloat(),
+                            value = state.edgeGestureSequenceHoverDurationMs.toFloat(),
+                            onValueChange = {
+                                vm.setEdgeGestureSequenceHoverDurationMs(it.roundToInt())
+                            })
+                        LargeSpacer()
+
+                        SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.sub.hover.radius"])
+                        MediumSpacer()
+                        Text(text = "${state.edgeGestureSequenceHoverRadiusDp} dp")
+                        TipRow(LocalI18N.current["ui.settings.edge.gesture.sub.hover.radius.description"])
+                        StandardSpacer()
+                        Slider(
+                            valueRange = EDGE_GESTURE_SEQUENCE_HOVER_RADIUS_DP_MIN.toFloat()..EDGE_GESTURE_SEQUENCE_HOVER_RADIUS_DP_MAX.toFloat(),
+                            value = state.edgeGestureSequenceHoverRadiusDp.toFloat(),
+                            onValueChange = {
+                                vm.setEdgeGestureSequenceHoverRadiusDp(it.roundToInt())
+                            })
+                        LargeSpacer()
+
+                        SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.sub.child.swipe.distance"])
+                        MediumSpacer()
+                        Text(text = "${state.edgeGestureSequenceChildSwipeMinDistanceDp} dp")
+                        TipRow(LocalI18N.current["ui.settings.edge.gesture.sub.child.swipe.distance.description"])
+                        StandardSpacer()
+                        Slider(
+                            valueRange = EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MIN_DISTANCE_DP_MIN.toFloat()..EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MIN_DISTANCE_DP_MAX.toFloat(),
+                            value = state.edgeGestureSequenceChildSwipeMinDistanceDp.toFloat(),
+                            onValueChange = {
+                                vm.setEdgeGestureSequenceChildSwipeMinDistanceDp(it.roundToInt())
+                            })
+                        LargeSpacer()
+
+                        SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.sub.child.swipe.angle"])
+                        MediumSpacer()
+                        Text(text = "${state.edgeGestureSequenceChildSwipeMaxAngleDeviationDeg}°")
+                        TipRow(LocalI18N.current["ui.settings.edge.gesture.sub.child.swipe.angle.description"])
+                        StandardSpacer()
+                        Slider(
+                            valueRange = EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG_MIN.toFloat()..EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG_MAX.toFloat(),
+                            value = state.edgeGestureSequenceChildSwipeMaxAngleDeviationDeg.toFloat(),
+                            onValueChange = {
+                                vm.setEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(it.roundToInt())
+                            })
                     }
 
                     LargeSpacer()

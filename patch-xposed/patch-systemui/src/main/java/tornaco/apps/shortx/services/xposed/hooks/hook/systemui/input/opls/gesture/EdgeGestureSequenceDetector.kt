@@ -158,21 +158,6 @@ class EdgeGestureSequenceDetector(
         private const val ACTION_MOVE = 2
         private const val ACTION_CANCEL = 3
         private const val ACTION_POINTER_UP = 6
-
-        // 每一步子手势都必须在这个超时时间内完成，否则整个 sequence 失效。
-        private const val STEP_TIMEOUT_MS = 700L
-
-        // Hover 不是系统 hover，而是手指按住不离开，在小范围内停留这么久即算成功。
-        private const val HOVER_DURATION_MS = 300L
-        private const val HOVER_RADIUS_DP = 24
-
-        // 二段滑动至少要达到这个位移，避免轻微抖动被识别成下一步。
-        private const val CHILD_SWIPE_MIN_DISTANCE_DP = 72
-
-        // 方向允许有一定偏斜；例如 SwipeLeft 不要求完全水平，只要夹角在容差内即可。
-        private const val CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG = 35f
-        private val MIN_DIRECTION_DOT =
-            cos(Math.toRadians(CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG.toDouble())).toFloat()
     }
 
     // 当前正在跟踪的那根手指。sequence 必须沿用同一触摸流，换指或抬起都直接取消。
@@ -200,7 +185,7 @@ class EdgeGestureSequenceDetector(
     // Hover 步骤用延时回调收口，避免每次 move 都手动比较停留时长。
     private val hoverRunnable = Runnable {
         if (!isTracking()) return@Runnable
-        if (elapsedRealtime() - startedAtElapsed > STEP_TIMEOUT_MS) {
+        if (elapsedRealtime() - startedAtElapsed > stepTimeoutMs()) {
             debugLog("$DIAG_PREFIX hoverRunnable timeout: stepIndex=$currentStepIndex, elapsed=${elapsedRealtime() - startedAtElapsed}ms")
             cancelTracking("hoverRunnable timeout")
             return@Runnable
@@ -210,11 +195,11 @@ class EdgeGestureSequenceDetector(
         }
         if (hoverCandidates.isEmpty()) return@Runnable
         val distance = distanceFromAnchor(latestX, latestY)
-        if (distance <= dpToPx(HOVER_RADIUS_DP).toFloat()) {
-            debugLog("$DIAG_PREFIX hover matched: stepIndex=$currentStepIndex, distance=$distance, radiusPx=${dpToPx(HOVER_RADIUS_DP)}")
+        if (distance <= hoverRadiusPx()) {
+            debugLog("$DIAG_PREFIX hover matched: stepIndex=$currentStepIndex, distance=$distance, radiusPx=${hoverRadiusPx()}")
             advanceCandidates(hoverCandidates, hoverCandidates.first().rule.getChildSteps(currentStepIndex))
         } else {
-            debugLog("$DIAG_PREFIX hover cancel: stepIndex=$currentStepIndex, distance=$distance, radiusPx=${dpToPx(HOVER_RADIUS_DP)}")
+            debugLog("$DIAG_PREFIX hover cancel: stepIndex=$currentStepIndex, distance=$distance, radiusPx=${hoverRadiusPx()}")
             cancelTracking("hover moved out of radius")
         }
     }
@@ -267,7 +252,7 @@ class EdgeGestureSequenceDetector(
                 }
                 latestX = event.getX(pointerIndex)
                 latestY = event.getY(pointerIndex)
-                if (elapsedRealtime() - startedAtElapsed > STEP_TIMEOUT_MS) {
+                if (elapsedRealtime() - startedAtElapsed > stepTimeoutMs()) {
                     debugLog("$DIAG_PREFIX step timeout: stepIndex=$currentStepIndex, elapsed=${elapsedRealtime() - startedAtElapsed}ms")
                     cancelTracking("step timeout")
                     return true
@@ -279,9 +264,9 @@ class EdgeGestureSequenceDetector(
                     val hoverOnly = candidates.all {
                         it.rule.getChildStepsOrNull(currentStepIndex)?.type == EdgeGestureStepType.Hover
                     }
-                    if (hoverOnly && distanceFromAnchor(latestX, latestY) > dpToPx(HOVER_RADIUS_DP).toFloat()) {
+                    if (hoverOnly && distanceFromAnchor(latestX, latestY) > hoverRadiusPx()) {
                         debugLog(
-                            "$DIAG_PREFIX hover-only cancel: stepIndex=$currentStepIndex, distance=${distanceFromAnchor(latestX, latestY)}, radiusPx=${dpToPx(HOVER_RADIUS_DP)}"
+                            "$DIAG_PREFIX hover-only cancel: stepIndex=$currentStepIndex, distance=${distanceFromAnchor(latestX, latestY)}, radiusPx=${hoverRadiusPx()}"
                         )
                         cancelTracking("hover-only moved out of radius")
                         return true
@@ -350,8 +335,8 @@ class EdgeGestureSequenceDetector(
 
         // 当前步骤只要存在 Hover 候选，就挂一个延时检查；真正是否成功还会再校验半径。
         if (hasHoverCandidate) {
-            debugLog("$DIAG_PREFIX scheduleHoverIfNeeded: stepIndex=$currentStepIndex, delayMs=$HOVER_DURATION_MS")
-            scheduler.postDelayed(hoverRunnable, HOVER_DURATION_MS)
+            debugLog("$DIAG_PREFIX scheduleHoverIfNeeded: stepIndex=$currentStepIndex, delayMs=${hoverDurationMs()}")
+            scheduler.postDelayed(hoverRunnable, hoverDurationMs())
         }
     }
 
@@ -359,7 +344,7 @@ class EdgeGestureSequenceDetector(
         val deltaX = x - anchorX
         val deltaY = y - anchorY
         val distance = hypot(deltaX.toDouble(), deltaY.toDouble()).toFloat()
-        if (distance < dpToPx(CHILD_SWIPE_MIN_DISTANCE_DP)) return null
+        if (distance < childSwipeMinDistancePx()) return null
         val normalizedX = deltaX / distance
         val normalizedY = deltaY / distance
         return candidates.asSequence()
@@ -369,7 +354,7 @@ class EdgeGestureSequenceDetector(
                 val dot = normalizedX * direction.first + normalizedY * direction.second
 
                 // 用点积做方向判断：越接近 1 越同向，低于阈值就认为偏得太多。
-                if (dot >= MIN_DIRECTION_DOT) step else null
+                if (dot >= minDirectionDot()) step else null
             }
             .firstOrNull()
     }
@@ -455,7 +440,7 @@ class EdgeGestureSequenceDetector(
         when (step.type) {
             EdgeGestureStepType.Hover -> {
                 // Hover 用时间推进 progress，而不是位移。
-                val progress = (elapsedRealtime() - startedAtElapsed).toFloat() / HOVER_DURATION_MS
+                val progress = (elapsedRealtime() - startedAtElapsed).toFloat() / hoverDurationMs()
                 hintSink.onStepHint(
                     anchorX = anchorX,
                     anchorY = anchorY,
@@ -471,7 +456,7 @@ class EdgeGestureSequenceDetector(
                 val deltaX = latestX - anchorX
                 val deltaY = latestY - anchorY
                 val distance = hypot(deltaX.toDouble(), deltaY.toDouble()).toFloat()
-                val readyDistance = dpToPx(CHILD_SWIPE_MIN_DISTANCE_DP).toFloat()
+                val readyDistance = childSwipeMinDistancePx()
                 val normalizedX = if (distance > 0f) deltaX / distance else 0f
                 val normalizedY = if (distance > 0f) deltaY / distance else 0f
                 val dot = normalizedX * direction.first + normalizedY * direction.second
@@ -480,7 +465,7 @@ class EdgeGestureSequenceDetector(
                     anchorY = anchorY,
                     step = step,
                     progress = (distance / readyDistance).coerceIn(0.12f, 1f),
-                    isReady = distance >= readyDistance && dot >= MIN_DIRECTION_DOT,
+                    isReady = distance >= readyDistance && dot >= minDirectionDot(),
                 )
             }
         }
@@ -504,15 +489,30 @@ class EdgeGestureSequenceDetector(
         val deltaX = latestX - anchorX
         val deltaY = latestY - anchorY
         val distance = hypot(deltaX.toDouble(), deltaY.toDouble()).toFloat()
-        val minDistancePx = dpToPx(CHILD_SWIPE_MIN_DISTANCE_DP).toFloat()
+        val minDistancePx = childSwipeMinDistancePx()
         val normalizedX = if (distance > 0f) deltaX / distance else 0f
         val normalizedY = if (distance > 0f) deltaY / distance else 0f
         val dot = normalizedX * direction.first + normalizedY * direction.second
         val angleDeg = Math.toDegrees(acos(dot.coerceIn(-1f, 1f).toDouble()))
         debugLog(
-            "$DIAG_PREFIX directional miss: stepIndex=$currentStepIndex, expected=${step.type}, distance=$distance/$minDistancePx, dot=$dot/$MIN_DIRECTION_DOT, angleDeg=$angleDeg/$CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG, anchor=($anchorX,$anchorY), latest=($latestX,$latestY)"
+            "$DIAG_PREFIX directional miss: stepIndex=$currentStepIndex, expected=${step.type}, distance=$distance/$minDistancePx, dot=$dot/${minDirectionDot()}, angleDeg=$angleDeg/${childSwipeMaxAngleDeviationDeg()}, anchor=($anchorX,$anchorY), latest=($latestX,$latestY)"
         )
     }
+
+    private fun stepTimeoutMs(): Long = service.getEdgeGestureSequenceStepTimeoutMs().toLong()
+
+    private fun hoverDurationMs(): Long = service.getEdgeGestureSequenceHoverDurationMs().toLong()
+
+    private fun hoverRadiusPx(): Float = dpToPx(service.getEdgeGestureSequenceHoverRadiusDp()).toFloat()
+
+    private fun childSwipeMinDistancePx(): Float =
+        dpToPx(service.getEdgeGestureSequenceChildSwipeMinDistanceDp()).toFloat()
+
+    private fun childSwipeMaxAngleDeviationDeg(): Float =
+        service.getEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg().toFloat()
+
+    private fun minDirectionDot(): Float =
+        cos(Math.toRadians(childSwipeMaxAngleDeviationDeg().toDouble())).toFloat()
 
     private fun formatCandidates(candidates: List<EdgeGestureSequenceCandidate>): String {
         return candidates.joinToString(prefix = "[", postfix = "]") {

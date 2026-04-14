@@ -1182,6 +1182,66 @@ class ShortXManager(val service: IShortX) {
         }
     }
 
+    fun getEdgeGestureSequenceStepTimeoutMs(): Int {
+        return invokeService(700) {
+            getEdgeGestureSequenceStepTimeoutMs()
+        }
+    }
+
+    fun setEdgeGestureSequenceStepTimeoutMs(timeoutMs: Int) {
+        invokeService(Unit) {
+            setEdgeGestureSequenceStepTimeoutMs(timeoutMs)
+        }
+    }
+
+    fun getEdgeGestureSequenceHoverDurationMs(): Int {
+        return invokeService(300) {
+            getEdgeGestureSequenceHoverDurationMs()
+        }
+    }
+
+    fun setEdgeGestureSequenceHoverDurationMs(durationMs: Int) {
+        invokeService(Unit) {
+            setEdgeGestureSequenceHoverDurationMs(durationMs)
+        }
+    }
+
+    fun getEdgeGestureSequenceHoverRadiusDp(): Int {
+        return invokeService(24) {
+            getEdgeGestureSequenceHoverRadiusDp()
+        }
+    }
+
+    fun setEdgeGestureSequenceHoverRadiusDp(radiusDp: Int) {
+        invokeService(Unit) {
+            setEdgeGestureSequenceHoverRadiusDp(radiusDp)
+        }
+    }
+
+    fun getEdgeGestureSequenceChildSwipeMinDistanceDp(): Int {
+        return invokeService(72) {
+            getEdgeGestureSequenceChildSwipeMinDistanceDp()
+        }
+    }
+
+    fun setEdgeGestureSequenceChildSwipeMinDistanceDp(distanceDp: Int) {
+        invokeService(Unit) {
+            setEdgeGestureSequenceChildSwipeMinDistanceDp(distanceDp)
+        }
+    }
+
+    fun getEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(): Int {
+        return invokeService(35) {
+            getEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg()
+        }
+    }
+
+    fun setEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(angleDeg: Int) {
+        invokeService(Unit) {
+            setEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(angleDeg)
+        }
+    }
+
     fun hasHookFlags(flag: String): Boolean {
         return invokeService(false) { hasHookFlags(flag) }
     }

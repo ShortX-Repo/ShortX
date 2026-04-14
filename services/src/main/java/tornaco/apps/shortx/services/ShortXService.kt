@@ -936,6 +936,46 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.gesture.setCornerGestureMinSwipeDistanceDp(dp)
         }
 
+        override fun getEdgeGestureSequenceStepTimeoutMs(): Int {
+            return shortXContext.gesture.getEdgeGestureSequenceStepTimeoutMs()
+        }
+
+        override fun setEdgeGestureSequenceStepTimeoutMs(timeoutMs: Int) {
+            shortXContext.gesture.setEdgeGestureSequenceStepTimeoutMs(timeoutMs)
+        }
+
+        override fun getEdgeGestureSequenceHoverDurationMs(): Int {
+            return shortXContext.gesture.getEdgeGestureSequenceHoverDurationMs()
+        }
+
+        override fun setEdgeGestureSequenceHoverDurationMs(durationMs: Int) {
+            shortXContext.gesture.setEdgeGestureSequenceHoverDurationMs(durationMs)
+        }
+
+        override fun getEdgeGestureSequenceHoverRadiusDp(): Int {
+            return shortXContext.gesture.getEdgeGestureSequenceHoverRadiusDp()
+        }
+
+        override fun setEdgeGestureSequenceHoverRadiusDp(radiusDp: Int) {
+            shortXContext.gesture.setEdgeGestureSequenceHoverRadiusDp(radiusDp)
+        }
+
+        override fun getEdgeGestureSequenceChildSwipeMinDistanceDp(): Int {
+            return shortXContext.gesture.getEdgeGestureSequenceChildSwipeMinDistanceDp()
+        }
+
+        override fun setEdgeGestureSequenceChildSwipeMinDistanceDp(distanceDp: Int) {
+            shortXContext.gesture.setEdgeGestureSequenceChildSwipeMinDistanceDp(distanceDp)
+        }
+
+        override fun getEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(): Int {
+            return shortXContext.gesture.getEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg()
+        }
+
+        override fun setEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(angleDeg: Int) {
+            shortXContext.gesture.setEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(angleDeg)
+        }
+
         override fun log(message: String?, redirectTo: String?) {
             if (redirectTo.isNullOrBlank()) {
                 logger.i("EXTERNAL: $message")

@@ -238,6 +238,11 @@ class EdgeGestureSequenceDetectorTest {
         override fun getGestureLengthScale(): Float = 1f
         override fun getCornerGestureRegionRadiusRatio(): Float = 0.18f
         override fun getCornerSwipeMinDistanceDp(): Int = 72
+        override fun getEdgeGestureSequenceStepTimeoutMs(): Int = 700
+        override fun getEdgeGestureSequenceHoverDurationMs(): Int = 300
+        override fun getEdgeGestureSequenceHoverRadiusDp(): Int = 24
+        override fun getEdgeGestureSequenceChildSwipeMinDistanceDp(): Int = 72
+        override fun getEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(): Int = 35
         override fun obsGestureSettingsChanged(obs: () -> Unit) = Unit
         override fun obsConfigChanged(obs: () -> Unit) = Unit
         override fun obsUserDataChanged(obs: () -> Unit) = Unit
