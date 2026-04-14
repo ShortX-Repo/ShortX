@@ -89,6 +89,7 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
                 Fact.EdgeGesture(
                     edge = eg.edge,
                     gesture = eg.gesture,
+                    childSteps = eg.childSteps,
                     isIntercept = eg.isIntercept,
                     apps = eg.apps,
                     pkgSets = eg.pkgSet,

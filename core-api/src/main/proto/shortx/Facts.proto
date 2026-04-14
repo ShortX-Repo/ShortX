@@ -120,8 +120,24 @@ message ChargerUnplug {
   bool isDisabled = 101;
 }
 
+enum EdgeGestureStepType {
+  SwipeLeft = 0;
+  SwipeRight = 1;
+  SwipeUp = 2;
+  SwipeDown = 3;
+  Hover = 4;
+  SingleTapStep = 5;
+  DoubleTapStep = 6;
+  LongTapStep = 7;
+}
+
+message EdgeGestureStep {
+  EdgeGestureStepType type = 1;
+}
+
 message EdgeGesture {
   Edge edge = 1;
+  // Legacy one-step gesture field. Keep for backward compatibility.
   Gesture gesture = 2;
   bool isIntercept = 3;
   repeated AppPkg apps = 4;
@@ -135,6 +151,7 @@ message EdgeGesture {
   // For matcher.
   bool isTriggerCustom = 9;
   optional bool enableGestureHint = 10;
+  repeated EdgeGestureStep childSteps = 11;
 
   string tag = 97;
   CustomContextDataKey customContextDataKey = 98;

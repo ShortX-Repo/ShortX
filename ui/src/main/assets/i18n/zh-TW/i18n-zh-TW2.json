@@ -22,5 +22,15 @@
   "ui.action.find.color.rect.input.label": "輸入座標 (left top right bottom)",
   "ui.action.find.color.rect.input.error": "格式錯誤，請輸入四個數字，用空格分隔",
   "ui.fact.edge.gesture.rect.input.label": "輸入座標 (left top right bottom)",
-  "ui.fact.edge.gesture.rect.input.error": "格式錯誤，請輸入四個數字，用空格分隔"
+  "ui.fact.edge.gesture.rect.input.error": "格式錯誤，請輸入四個數字，用空格分隔",
+  "ui.fact.edge.gesture.child.gesture": "二級子手勢",
+  "ui.fact.edge.gesture.child.gesture.none": "不設定二級子手勢",
+  "ui.fact.edge.gesture.child.swipeleft": "向左滑動",
+  "ui.fact.edge.gesture.child.swiperight": "向右滑動",
+  "ui.fact.edge.gesture.child.swipeup": "向上滑動",
+  "ui.fact.edge.gesture.child.swipedown": "向下滑動",
+  "ui.fact.edge.gesture.child.hover": "懸停",
+  "ui.fact.edge.gesture.child.singletap": "單按",
+  "ui.fact.edge.gesture.child.doubletap": "雙按",
+  "ui.fact.edge.gesture.child.longtap": "長按"
 }

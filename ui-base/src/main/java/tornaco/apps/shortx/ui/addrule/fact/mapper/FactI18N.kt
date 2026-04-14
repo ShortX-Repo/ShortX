@@ -34,6 +34,7 @@ import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.condition.mapper.labelKey as calendarDayTypeLabelKey
+import tornaco.apps.shortx.ui.addrule.fact.model.EdgeGestureStepModel
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -422,6 +423,9 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
             }
                     + " "
                     + i18N[fact.gesture.displayNameKey()]
+                    + fact.childSteps.joinToString(separator = "", prefix = "") {
+                " -> " + i18N[it.displayNameKey()]
+            }
                     + " "
                     + fact.isIntercept.select(
                 i18N["ui.fact.key.event.adv.is.intercept.mode"], ""
@@ -1151,6 +1155,11 @@ private fun WorkdayFilter.labelLineOrNull(i18N: I18N): String? {
 
 fun Gesture.displayNameKey(): String {
     val prefix = "ui.fact.edge.gesture"
+    return "$prefix.${name.lowercase(Locale.ENGLISH)}"
+}
+
+fun EdgeGestureStepModel.displayNameKey(): String {
+    val prefix = "ui.fact.edge.gesture.child"
     return "$prefix.${name.lowercase(Locale.ENGLISH)}"
 }
 

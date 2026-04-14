@@ -2,13 +2,32 @@ package tornaco.apps.shortx.services.xposed.hooks.hook.systemui.input.opls.gestu
 
 import tornaco.apps.shortx.core.proto.fact.CornerSwipeToCenter
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
+import tornaco.apps.shortx.core.proto.fact.EdgeGestureStep
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.proto.fact.ScreenCorner
+
+data class EdgeGestureSequenceCandidate(
+    val area: DetectedArea,
+    val rule: EdgeGesture,
+)
 
 interface DetectorService {
     fun handleEdgeGestureEvent(
         areas: List<DetectedArea>,
         gestureEvent: Gesture,
+        downX: Float,
+        downY: Float,
+    ): Boolean
+
+    fun findMatchingEdgeGestureSequences(
+        areas: List<DetectedArea>,
+        gestureEvent: Gesture,
+    ): List<EdgeGestureSequenceCandidate>
+
+    fun fireEdgeGestureSequence(
+        area: DetectedArea,
+        gesture: Gesture,
+        childSteps: List<EdgeGestureStep>,
         downX: Float,
         downY: Float,
     ): Boolean

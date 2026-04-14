@@ -52,6 +52,7 @@ import tornaco.apps.shortx.ui.addrule.base.AppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.base.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.mapper.displayNameKey
 import tornaco.apps.shortx.ui.addrule.fact.mapper.supportsGestureIndicator
+import tornaco.apps.shortx.ui.addrule.fact.model.EdgeGestureStepModel
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.CommonDialogState
@@ -77,11 +78,20 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 data class EdgeGestureSelectDialogResult(
     val edge: Edge,
     val gesture: Gesture,
+    val childSteps: List<EdgeGestureStepModel>,
     val isIntercept: Boolean,
     val apps: List<App>,
     val pkgSet: List<PkgSet>,
     val customRect: Rect? = null,
     val enableGestureHint: Boolean = true,
+)
+
+private val supportedChildGestureSteps = listOf(
+    EdgeGestureStepModel.SwipeLeft,
+    EdgeGestureStepModel.SwipeRight,
+    EdgeGestureStepModel.SwipeUp,
+    EdgeGestureStepModel.SwipeDown,
+    EdgeGestureStepModel.Hover,
 )
 
 class EdgeGestureSelectorState(
@@ -96,6 +106,7 @@ class EdgeGestureSelectorState(
     var useCustomRect by mutableStateOf(false)
     var rectInputText by mutableStateOf("")
 
+    val childSteps = mutableStateListOf<EdgeGestureStepModel>()
     val apps = mutableStateListOf<App>()
     val pkgSets = mutableStateListOf<PkgSet>()
 
@@ -107,6 +118,8 @@ class EdgeGestureSelectorState(
         this.enableGestureHint = data?.enableGestureHint ?: true
         this.customRect = data?.customRect
         this.useCustomRect = data?.customRect != null
+        this.childSteps.clear()
+        this.childSteps.addAll(data?.childSteps ?: emptyList())
 
         // 初始化输入框文本
         this.rectInputText = data?.customRect?.let { rect ->
@@ -150,6 +163,7 @@ class EdgeGestureSelectorState(
         return EdgeGestureSelectDialogResult(
             edge = edge,
             gesture = gesture,
+            childSteps = childSteps.toList(),
             isIntercept = isIntercept,
             apps = apps,
             pkgSet = pkgSets,
@@ -173,6 +187,7 @@ fun rememberEdgeGestureSelectorState(
 fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
     if (state.isShowing) {
         val context = LocalContext.current
+        var childStepEditIndex by remember { mutableStateOf<Int?>(null) }
 
         // Activity launcher for selecting screen area
         val screenRectPickerLauncher = rememberLauncherForActivityResult(
@@ -399,11 +414,100 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                         },
                                     onSelect = {
                                         state.gesture = it.data
+                                        if (!state.gesture.supportsGestureIndicator()) {
+                                            state.childSteps.clear()
+                                        }
                                     }
                                 )
                             }
 
                             StandardSpacer()
+                            AnimatedVisibility(visible = state.gesture.supportsGestureIndicator()) {
+                                Column {
+                                    Box {
+                                        val dropdownState = rememberDropdownSelectorState()
+                                        Column {
+                                            FieldTitle(
+                                                modifier = Modifier.padding(vertical = 12.dp),
+                                                text = i18N["ui.fact.edge.gesture.child.gesture"]
+                                            )
+
+                                            if (state.childSteps.isEmpty()) {
+                                                ListItem(
+                                                    title = i18N["ui.fact.edge.gesture.child.gesture.none"],
+                                                    action1 = {
+                                                        TextButton(onClick = {
+                                                            childStepEditIndex = null
+                                                            dropdownState.open()
+                                                        }) {
+                                                            Text(i18N["ui.common.add"])
+                                                        }
+                                                    },
+                                                    onClick = {
+                                                        childStepEditIndex = null
+                                                        dropdownState.open()
+                                                    }
+                                                )
+                                            } else {
+                                                state.childSteps.forEachIndexed { index, step ->
+                                                    ListItem(
+                                                        title = "${index + 1}. ${i18N[step.displayNameKey()]}",
+                                                        action1 = {
+                                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                                TextButton(onClick = {
+                                                                    childStepEditIndex = index
+                                                                    dropdownState.open()
+                                                                }) {
+                                                                    Text(i18N["ui.common.edit"])
+                                                                }
+                                                                TextButton(onClick = {
+                                                                    state.childSteps.removeAt(index)
+                                                                }) {
+                                                                    Text(i18N["ui.common.delete"])
+                                                                }
+                                                            }
+                                                        },
+                                                        onClick = {
+                                                            childStepEditIndex = index
+                                                            dropdownState.open()
+                                                        }
+                                                    )
+                                                }
+
+                                                TextButton(
+                                                    onClick = {
+                                                        childStepEditIndex = null
+                                                        dropdownState.open()
+                                                    },
+                                                    modifier = Modifier.fillMaxWidth()
+                                                ) {
+                                                    Text(i18N["ui.common.add"])
+                                                }
+                                            }
+                                        }
+                                        DropdownSelector(
+                                            state = dropdownState,
+                                            items = supportedChildGestureSteps.map {
+                                                DropdownItem(
+                                                    labelLines = listOf(i18N[it.displayNameKey()]),
+                                                    data = it
+                                                )
+                                            },
+                                            onSelect = { item ->
+                                                val editIndex = childStepEditIndex
+                                                if (editIndex == null) {
+                                                    state.childSteps.add(item.data)
+                                                } else {
+                                                    state.childSteps[editIndex] = item.data
+                                                }
+                                                childStepEditIndex = null
+                                            }
+                                        )
+                                    }
+
+                                    StandardSpacer()
+                                }
+                            }
                             AnimatedVisibility(visible = state.gesture.supportsGestureIndicator()) {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),

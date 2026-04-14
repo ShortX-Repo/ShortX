@@ -98,6 +98,16 @@ class EdgeGestureHintDetector(
         gestureHintController.onGestureSuccess(trackedToken)
     }
 
+    fun onEdgeGestureSequenceStarted(areas: List<DetectedArea>, gesture: Gesture) {
+        if (trackedToken == 0L || hasTriggered) return
+        val matches = areas.any { area ->
+            trackedAreas.any { trackedArea -> trackedArea == area } && hasHintEnabledSwipeRule(area, gesture)
+        }
+        if (!matches) return
+        gestureHintController.onGestureCancel(trackedToken)
+        reset()
+    }
+
     private fun handleGestureHint(distance: Float, candidate: HintCandidate?) {
         if (trackedToken == 0L) return
         val showThresholdPx = GESTURE_HINT_SHOW_DISTANCE_DP._dp.toFloat()

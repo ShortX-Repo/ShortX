@@ -21,6 +21,7 @@ import tornaco.apps.shortx.core.proto.common.AppPkgList
 import tornaco.apps.shortx.core.proto.fact.CornerSwipeToCenter
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
+import tornaco.apps.shortx.core.proto.fact.EdgeGestureStep
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.proto.fact.ScreenCorner
 import tornaco.apps.shortx.core.proto.feature.AppFeature
@@ -260,6 +261,48 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         return res
     }
 
+    override fun findMatchingEdgeGestureSequences(
+        areas: List<DetectedArea>,
+        gestureEvent: Gesture,
+    ): List<EdgeGestureSequenceCandidate> {
+        return areas.flatMap { area ->
+            enabledEdgeGestures.filter { enabledGesture ->
+                !enabledGesture.isDisabled &&
+                    enabledGesture.gesture == gestureEvent &&
+                    enabledGesture.childStepsCount > 0 &&
+                    areaMatchesRule(area, enabledGesture)
+            }.map {
+                EdgeGestureSequenceCandidate(area = area, rule = it)
+            }
+        }
+    }
+
+    override fun fireEdgeGestureSequence(
+        area: DetectedArea,
+        gesture: Gesture,
+        childSteps: List<EdgeGestureStep>,
+        downX: Float,
+        downY: Float,
+    ): Boolean {
+        val data = EdgeGesture.newBuilder()
+            .setGesture(gesture)
+            .addAllChildSteps(childSteps)
+            .apply {
+                if (area is DetectedArea.PredefinedEdge) {
+                    setEdge(area.edge)
+                    setIsTriggerCustom(false)
+                } else if (area is DetectedArea.CustomRect) {
+                    setCustomRect(area.rect)
+                    setIsTriggerCustom(true)
+                }
+            }
+            .setDownX(downX.roundToInt())
+            .setDownY(downY.roundToInt())
+            .build()
+        shortx.fireEdgeGesture(data)
+        return true
+    }
+
     override fun handleCornerSwipeToCenterEvent(
         corner: ScreenCorner,
         downX: Float,
@@ -309,25 +352,30 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
     private fun shouldFireEdgeGesture(area: DetectedArea, gesture: Gesture): Boolean {
         // 检查enabledEdgeGestures中是否包含匹配的EdgeGesture
         return enabledEdgeGestures.any { enabledGesture ->
+            if (enabledGesture.childStepsCount > 0) {
+                return@any false
+            }
             // 首先检查gesture是否匹配，不匹配则提前返回false
             if (enabledGesture.gesture != gesture) {
                 return@any false
             }
 
             // gesture匹配后再检查区域是否匹配
-            when (area) {
-                is DetectedArea.PredefinedEdge -> {
-                    // 对于预定义边缘，检查edge是否匹配且customRect为默认值
-                    enabledGesture.edge == area.edge &&
-                            (enabledGesture.customRect == null || enabledGesture.customRect == tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance())
-                }
+            areaMatchesRule(area, enabledGesture)
+        }
+    }
 
-                is DetectedArea.CustomRect -> {
-                    // 对于自定义矩形，检查customRect是否匹配
-                    enabledGesture.customRect != null &&
-                            enabledGesture.customRect != tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance() &&
-                            enabledGesture.customRect == area.rect
-                }
+    private fun areaMatchesRule(area: DetectedArea, rule: EdgeGesture): Boolean {
+        return when (area) {
+            is DetectedArea.PredefinedEdge -> {
+                rule.edge == area.edge &&
+                    (!rule.hasCustomRect() || rule.customRect == tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance())
+            }
+
+            is DetectedArea.CustomRect -> {
+                rule.hasCustomRect() &&
+                    rule.customRect != tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance() &&
+                    rule.customRect == area.rect
             }
         }
     }

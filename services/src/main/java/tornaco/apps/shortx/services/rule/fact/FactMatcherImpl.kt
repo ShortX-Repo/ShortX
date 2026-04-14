@@ -428,18 +428,21 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
             val ruleN = (rule as EdgeGesture)
 
             val gestureMatches = actualN.gesture == ruleN.gesture
-            val isDefaultRect = { rect: Rect -> rect == Rect.getDefaultInstance() }
-            val isValidEdge = { edge: Edge -> edge != Edge.UNRECOGNIZED }
+            val childStepsMatch = actualN.childStepsList == ruleN.childStepsList
+            val actualUsesCustomRect = actualN.hasCustomRect()
+            val ruleUsesCustomRect = ruleN.hasCustomRect()
 
-            val edgeMatches = isDefaultRect(actualN.customRect) &&
-                    isDefaultRect(ruleN.customRect) &&
-                    isValidEdge(actualN.edge) &&
-                    actualN.edge == ruleN.edge
+            val edgeMatches = !actualUsesCustomRect &&
+                !ruleUsesCustomRect &&
+                actualN.edge != Edge.UNRECOGNIZED &&
+                ruleN.edge != Edge.UNRECOGNIZED &&
+                actualN.edge == ruleN.edge
 
-            val customRectMatches = !isDefaultRect(actualN.customRect) &&
-                    actualN.customRect == ruleN.customRect
+            val customRectMatches = actualUsesCustomRect &&
+                ruleUsesCustomRect &&
+                actualN.customRect == ruleN.customRect
 
-            gestureMatches && (edgeMatches || customRectMatches)
+            gestureMatches && childStepsMatch && (edgeMatches || customRectMatches)
         }
 
         register(CornerSwipeToCenter::class.java) { actual, rule ->

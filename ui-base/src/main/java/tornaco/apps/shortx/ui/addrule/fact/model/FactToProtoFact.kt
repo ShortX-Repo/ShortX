@@ -43,6 +43,7 @@ import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DeepLinkCall
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
+import tornaco.apps.shortx.core.proto.fact.EdgeGestureStep
 import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.fact.FlashLightStatusChanged
 import tornaco.apps.shortx.core.proto.fact.GlobalVarChanged
@@ -192,6 +193,9 @@ fun Fact.toProtoFact(
                 .setGesture(gesture)
                 .setIsIntercept(isIntercept)
                 .setEnableGestureHint(enableGestureHint)
+                .addAllChildSteps(childSteps.map {
+                    EdgeGestureStep.newBuilder().setType(it.toProtoType()).build()
+                })
                 .addAllApps(apps.map {
                     AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
                 })

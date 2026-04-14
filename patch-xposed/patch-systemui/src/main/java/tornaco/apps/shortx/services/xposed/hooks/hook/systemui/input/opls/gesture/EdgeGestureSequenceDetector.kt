@@ -1,0 +1,488 @@
+package tornaco.apps.shortx.services.xposed.hooks.hook.systemui.input.opls.gesture
+
+import android.os.Handler
+import android.os.SystemClock
+import android.view.MotionEvent
+import tornaco.apps.shortx.core.proto.fact.EdgeGestureStep
+import tornaco.apps.shortx.core.proto.fact.EdgeGestureStepType
+import tornaco.apps.shortx.core.proto.fact.Gesture
+import tornaco.apps.shortx.core.util._dp
+import kotlin.math.cos
+import kotlin.math.hypot
+
+interface GestureSequenceScheduler {
+    fun removeCallbacks(runnable: Runnable)
+    fun postDelayed(runnable: Runnable, delayMillis: Long): Boolean
+}
+
+interface GestureSequencePointerEvent {
+    val actionMasked: Int
+    val actionIndex: Int
+    fun findPointerIndex(pointerId: Int): Int
+    fun getX(pointerIndex: Int): Float
+    fun getY(pointerIndex: Int): Float
+    fun getPointerId(pointerIndex: Int): Int
+}
+
+interface EdgeGestureSequenceHintSink {
+    fun onStepHint(
+        anchorX: Float,
+        anchorY: Float,
+        step: EdgeGestureStep,
+        progress: Float,
+        isReady: Boolean,
+    )
+
+    fun onSequenceSuccess()
+    fun onSequenceCancelled()
+}
+
+private object NoOpEdgeGestureSequenceHintSink : EdgeGestureSequenceHintSink {
+    override fun onStepHint(
+        anchorX: Float,
+        anchorY: Float,
+        step: EdgeGestureStep,
+        progress: Float,
+        isReady: Boolean,
+    ) = Unit
+
+    override fun onSequenceSuccess() = Unit
+    override fun onSequenceCancelled() = Unit
+}
+
+private class AndroidGestureSequenceScheduler(
+    private val handler: Handler,
+) : GestureSequenceScheduler {
+    override fun removeCallbacks(runnable: Runnable) {
+        handler.removeCallbacks(runnable)
+    }
+
+    override fun postDelayed(runnable: Runnable, delayMillis: Long): Boolean {
+        return handler.postDelayed(runnable, delayMillis)
+    }
+}
+
+private class AndroidGestureSequencePointerEvent(
+    private val event: MotionEvent,
+) : GestureSequencePointerEvent {
+    override val actionMasked: Int
+        get() = event.actionMasked
+
+    override val actionIndex: Int
+        get() = event.actionIndex
+
+    override fun findPointerIndex(pointerId: Int): Int = event.findPointerIndex(pointerId)
+    override fun getX(pointerIndex: Int): Float = event.getX(pointerIndex)
+    override fun getY(pointerIndex: Int): Float = event.getY(pointerIndex)
+    override fun getPointerId(pointerIndex: Int): Int = event.getPointerId(pointerIndex)
+}
+
+class EdgeGestureSequenceDetector(
+    private val scheduler: GestureSequenceScheduler,
+    private val service: DetectorService,
+    private val elapsedRealtime: () -> Long,
+    private val dpToPx: (Int) -> Int,
+    private val hintSink: EdgeGestureSequenceHintSink,
+    private val debugLog: (String) -> Unit,
+) {
+    constructor(handler: Handler, service: DetectorService) : this(
+        scheduler = AndroidGestureSequenceScheduler(handler),
+        service = service,
+        elapsedRealtime = SystemClock::elapsedRealtime,
+        dpToPx = { it._dp },
+        hintSink = NoOpEdgeGestureSequenceHintSink,
+        debugLog = tornaco.apps.shortx.core.util.Logger("EdgeGestureSequence")::d,
+    )
+
+    constructor(
+        scheduler: GestureSequenceScheduler,
+        service: DetectorService,
+    ) : this(
+        scheduler = scheduler,
+        service = service,
+        elapsedRealtime = SystemClock::elapsedRealtime,
+        dpToPx = { it._dp },
+        hintSink = NoOpEdgeGestureSequenceHintSink,
+        debugLog = {},
+    )
+
+    constructor(
+        scheduler: GestureSequenceScheduler,
+        service: DetectorService,
+        elapsedRealtime: () -> Long,
+    ) : this(
+        scheduler = scheduler,
+        service = service,
+        elapsedRealtime = elapsedRealtime,
+        dpToPx = { it._dp },
+        hintSink = NoOpEdgeGestureSequenceHintSink,
+        debugLog = {},
+    )
+
+    constructor(
+        scheduler: GestureSequenceScheduler,
+        service: DetectorService,
+        elapsedRealtime: () -> Long,
+        dpToPx: (Int) -> Int,
+    ) : this(
+        scheduler = scheduler,
+        service = service,
+        elapsedRealtime = elapsedRealtime,
+        dpToPx = dpToPx,
+        hintSink = NoOpEdgeGestureSequenceHintSink,
+        debugLog = {},
+    )
+
+    constructor(
+        scheduler: GestureSequenceScheduler,
+        service: DetectorService,
+        elapsedRealtime: () -> Long,
+        dpToPx: (Int) -> Int,
+        hintSink: EdgeGestureSequenceHintSink,
+    ) : this(
+        scheduler = scheduler,
+        service = service,
+        elapsedRealtime = elapsedRealtime,
+        dpToPx = dpToPx,
+        hintSink = hintSink,
+        debugLog = {},
+    )
+
+    companion object {
+        // 纯 JVM 测试路径不直接依赖 MotionEvent 常量，所以这里保留一份本地副本。
+        private const val INVALID_POINTER_ID = -1
+        private const val ACTION_UP = 1
+        private const val ACTION_MOVE = 2
+        private const val ACTION_CANCEL = 3
+        private const val ACTION_POINTER_UP = 6
+
+        // 每一步子手势都必须在这个超时时间内完成，否则整个 sequence 失效。
+        private const val STEP_TIMEOUT_MS = 700L
+
+        // Hover 不是系统 hover，而是手指按住不离开，在小范围内停留这么久即算成功。
+        private const val HOVER_DURATION_MS = 300L
+        private const val HOVER_RADIUS_DP = 24
+
+        // 二段滑动至少要达到这个位移，避免轻微抖动被识别成下一步。
+        private const val CHILD_SWIPE_MIN_DISTANCE_DP = 72
+
+        // 方向允许有一定偏斜；例如 SwipeLeft 不要求完全水平，只要夹角在容差内即可。
+        private const val CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG = 30f
+        private val MIN_DIRECTION_DOT =
+            cos(Math.toRadians(CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG.toDouble())).toFloat()
+    }
+
+    // 当前正在跟踪的那根手指。sequence 必须沿用同一触摸流，换指或抬起都直接取消。
+    private var trackedPointerId = INVALID_POINTER_ID
+    private var primaryGesture: Gesture? = null
+    private var downX = 0f
+    private var downY = 0f
+
+    // anchor 表示“当前这一步”开始计算位移的起点。
+    // 每匹配完一步，anchor 会推进到最新位置，下一步从这里继续判断。
+    private var anchorX = 0f
+    private var anchorY = 0f
+    private var latestX = 0f
+    private var latestY = 0f
+
+    // 当前步骤开始的时间，而不是整个 sequence 的开始时间。
+    private var startedAtElapsed = 0L
+    private var currentStepIndex = 0
+
+    // candidates 表示“到当前步骤为止仍然可能匹配成功”的规则集合。
+    // 每命中一步都会收缩一次，直到只剩下完成项或全部淘汰。
+    private var candidates: List<EdgeGestureSequenceCandidate> = emptyList()
+    private val matchedSteps = mutableListOf<EdgeGestureStep>()
+
+    // Hover 步骤用延时回调收口，避免每次 move 都手动比较停留时长。
+    private val hoverRunnable = Runnable {
+        if (!isTracking()) return@Runnable
+        if (elapsedRealtime() - startedAtElapsed > STEP_TIMEOUT_MS) {
+            cancelTracking()
+            return@Runnable
+        }
+        val hoverCandidates = candidates.filter {
+            it.rule.getChildStepsOrNull(currentStepIndex)?.type == EdgeGestureStepType.Hover
+        }
+        if (hoverCandidates.isEmpty()) return@Runnable
+        val distance = distanceFromAnchor(latestX, latestY)
+        if (distance <= dpToPx(HOVER_RADIUS_DP).toFloat()) {
+            advanceCandidates(hoverCandidates, hoverCandidates.first().rule.getChildSteps(currentStepIndex))
+        } else {
+            cancelTracking()
+        }
+    }
+
+    fun startTracking(
+        pointerId: Int,
+        primaryGesture: Gesture,
+        downX: Float,
+        downY: Float,
+        anchorX: Float,
+        anchorY: Float,
+        candidates: List<EdgeGestureSequenceCandidate>,
+    ): Boolean {
+        if (candidates.isEmpty()) return false
+        cancelTracking()
+        this.trackedPointerId = pointerId
+        this.primaryGesture = primaryGesture
+        this.downX = downX
+        this.downY = downY
+        this.anchorX = anchorX
+        this.anchorY = anchorY
+        this.latestX = anchorX
+        this.latestY = anchorY
+        this.startedAtElapsed = elapsedRealtime()
+        this.candidates = candidates
+        this.currentStepIndex = 0
+        this.matchedSteps.clear()
+        scheduleHoverIfNeeded()
+        // 一进入二段识别，就先把当前目标步骤的提示显示出来。
+        emitCurrentStepHint()
+        debugLog("startTracking: primary=$primaryGesture, candidates=${candidates.size}, anchor=($anchorX,$anchorY)")
+        return true
+    }
+
+    fun onTouchEvent(event: MotionEvent): Boolean {
+        return onTouchEvent(AndroidGestureSequencePointerEvent(event))
+    }
+
+    fun onTouchEvent(event: GestureSequencePointerEvent): Boolean {
+        if (!isTracking()) return false
+        when (event.actionMasked) {
+            ACTION_MOVE -> {
+                val pointerIndex = event.findPointerIndex(trackedPointerId)
+                if (pointerIndex < 0) {
+                    cancelTracking()
+                    return false
+                }
+                latestX = event.getX(pointerIndex)
+                latestY = event.getY(pointerIndex)
+                if (elapsedRealtime() - startedAtElapsed > STEP_TIMEOUT_MS) {
+                    cancelTracking()
+                    return true
+                }
+
+                // hint 是连续更新的，用户在做当前步骤时可以实时看到进度和 ready 状态。
+                updateCurrentStepHint()
+                val matchedStep = findMatchedDirectionalStep(latestX, latestY) ?: run {
+                    val hoverOnly = candidates.all {
+                        it.rule.getChildStepsOrNull(currentStepIndex)?.type == EdgeGestureStepType.Hover
+                    }
+                    if (hoverOnly && distanceFromAnchor(latestX, latestY) > dpToPx(HOVER_RADIUS_DP).toFloat()) {
+                        cancelTracking()
+                        return true
+                    }
+                    return true
+                }
+                val matchedCandidates = candidates.filter {
+                    it.rule.getChildStepsOrNull(currentStepIndex)?.type == matchedStep.type
+                }
+                advanceCandidates(matchedCandidates, matchedStep)
+                return true
+            }
+
+            ACTION_UP,
+            ACTION_CANCEL -> {
+                cancelTracking()
+                return true
+            }
+
+            ACTION_POINTER_UP -> {
+                val pointerId = event.getPointerId(event.actionIndex)
+                if (pointerId == trackedPointerId) {
+                    cancelTracking()
+                    return true
+                }
+            }
+        }
+        return true
+    }
+
+    fun isTracking(): Boolean {
+        return trackedPointerId != INVALID_POINTER_ID && candidates.isNotEmpty() && primaryGesture != null
+    }
+
+    fun cancelTracking() {
+        val wasTracking = isTracking()
+        scheduler.removeCallbacks(hoverRunnable)
+        trackedPointerId = INVALID_POINTER_ID
+        primaryGesture = null
+        downX = 0f
+        downY = 0f
+        anchorX = 0f
+        anchorY = 0f
+        latestX = 0f
+        latestY = 0f
+        startedAtElapsed = 0L
+        currentStepIndex = 0
+        candidates = emptyList()
+        matchedSteps.clear()
+        if (wasTracking) {
+            hintSink.onSequenceCancelled()
+        }
+    }
+
+    private fun scheduleHoverIfNeeded() {
+        scheduler.removeCallbacks(hoverRunnable)
+        val hasHoverCandidate = candidates.any {
+            it.rule.getChildStepsOrNull(currentStepIndex)?.type == EdgeGestureStepType.Hover
+        }
+
+        // 当前步骤只要存在 Hover 候选，就挂一个延时检查；真正是否成功还会再校验半径。
+        if (hasHoverCandidate) {
+            scheduler.postDelayed(hoverRunnable, HOVER_DURATION_MS)
+        }
+    }
+
+    private fun findMatchedDirectionalStep(x: Float, y: Float): EdgeGestureStep? {
+        val deltaX = x - anchorX
+        val deltaY = y - anchorY
+        val distance = hypot(deltaX.toDouble(), deltaY.toDouble()).toFloat()
+        if (distance < dpToPx(CHILD_SWIPE_MIN_DISTANCE_DP)) return null
+        val normalizedX = deltaX / distance
+        val normalizedY = deltaY / distance
+        return candidates.asSequence()
+            .mapNotNull { candidate ->
+                val step = candidate.rule.getChildStepsOrNull(currentStepIndex) ?: return@mapNotNull null
+                val direction = directionFor(step.type) ?: return@mapNotNull null
+                val dot = normalizedX * direction.first + normalizedY * direction.second
+
+                // 用点积做方向判断：越接近 1 越同向，低于阈值就认为偏得太多。
+                if (dot >= MIN_DIRECTION_DOT) step else null
+            }
+            .firstOrNull()
+    }
+
+    private fun advanceCandidates(
+        matchedCandidates: List<EdgeGestureSequenceCandidate>,
+        matchedStep: EdgeGestureStep,
+    ) {
+        matchedSteps.add(matchedStep)
+
+        val completedCandidates = matchedCandidates.filter {
+            it.rule.childStepsCount == currentStepIndex + 1
+        }
+        val pendingCandidates = matchedCandidates.filter {
+            it.rule.childStepsCount > currentStepIndex + 1
+        }
+
+        if (pendingCandidates.isNotEmpty()) {
+            // 还有后续步骤时，不立即触发事实，而是推进到下一步继续跟踪。
+            candidates = pendingCandidates
+            currentStepIndex += 1
+            anchorX = latestX
+            anchorY = latestY
+            startedAtElapsed = elapsedRealtime()
+            scheduleHoverIfNeeded()
+            emitCurrentStepHint()
+            return
+        }
+
+        completedCandidates
+            .distinctBy { it.area }
+            .forEach {
+                service.fireEdgeGestureSequence(
+                    area = it.area,
+                    gesture = requireNotNull(primaryGesture),
+                    childSteps = matchedSteps.toList(),
+                    downX = downX,
+                    downY = downY,
+                )
+            }
+        hintSink.onSequenceSuccess()
+        clearTrackingState()
+    }
+
+    private fun clearTrackingState() {
+        scheduler.removeCallbacks(hoverRunnable)
+        trackedPointerId = INVALID_POINTER_ID
+        primaryGesture = null
+        downX = 0f
+        downY = 0f
+        anchorX = 0f
+        anchorY = 0f
+        latestX = 0f
+        latestY = 0f
+        startedAtElapsed = 0L
+        currentStepIndex = 0
+        candidates = emptyList()
+        matchedSteps.clear()
+    }
+
+    private fun emitCurrentStepHint() {
+        val step = currentHintStep() ?: return
+        hintSink.onStepHint(
+            anchorX = anchorX,
+            anchorY = anchorY,
+            step = step,
+            progress = if (step.type == EdgeGestureStepType.Hover) 0.28f else 0.12f,
+            isReady = false,
+        )
+    }
+
+    private fun updateCurrentStepHint() {
+        val step = currentHintStep() ?: return
+        when (step.type) {
+            EdgeGestureStepType.Hover -> {
+                // Hover 用时间推进 progress，而不是位移。
+                val progress = (elapsedRealtime() - startedAtElapsed).toFloat() / HOVER_DURATION_MS
+                hintSink.onStepHint(
+                    anchorX = anchorX,
+                    anchorY = anchorY,
+                    step = step,
+                    progress = progress.coerceIn(0.12f, 1f),
+                    isReady = progress >= 1f,
+                )
+            }
+
+            else -> {
+                // 方向步骤用“朝目标方向移动了多远”来表达当前进度。
+                val direction = directionFor(step.type) ?: return
+                val deltaX = latestX - anchorX
+                val deltaY = latestY - anchorY
+                val distance = hypot(deltaX.toDouble(), deltaY.toDouble()).toFloat()
+                val readyDistance = dpToPx(CHILD_SWIPE_MIN_DISTANCE_DP).toFloat()
+                val normalizedX = if (distance > 0f) deltaX / distance else 0f
+                val normalizedY = if (distance > 0f) deltaY / distance else 0f
+                val dot = normalizedX * direction.first + normalizedY * direction.second
+                hintSink.onStepHint(
+                    anchorX = anchorX,
+                    anchorY = anchorY,
+                    step = step,
+                    progress = (distance / readyDistance).coerceIn(0.12f, 1f),
+                    isReady = distance >= readyDistance && dot >= MIN_DIRECTION_DOT,
+                )
+            }
+        }
+    }
+
+    private fun currentHintStep(): EdgeGestureStep? {
+        val currentStepTypes = candidates.mapNotNull {
+            it.rule.getChildStepsOrNull(currentStepIndex)?.type
+        }.distinct()
+
+        // 只有当前剩余候选在“下一步类型”上一致时，hint 才有明确方向。
+        // 如果规则分叉到了不同的下一步，这里宁可不画，也不误导用户。
+        if (currentStepTypes.size != 1) return null
+        return EdgeGestureStep.newBuilder().setType(currentStepTypes.single()).build()
+    }
+
+    private fun distanceFromAnchor(x: Float, y: Float): Float {
+        return hypot((x - anchorX).toDouble(), (y - anchorY).toDouble()).toFloat()
+    }
+
+    private fun directionFor(type: EdgeGestureStepType): Pair<Float, Float>? {
+        return when (type) {
+            EdgeGestureStepType.SwipeLeft -> -1f to 0f
+            EdgeGestureStepType.SwipeRight -> 1f to 0f
+            EdgeGestureStepType.SwipeUp -> 0f to -1f
+            EdgeGestureStepType.SwipeDown -> 0f to 1f
+            else -> null
+        }
+    }
+
+    private fun tornaco.apps.shortx.core.proto.fact.EdgeGesture.getChildStepsOrNull(index: Int): EdgeGestureStep? {
+        return if (childStepsCount > index) getChildSteps(index) else null
+    }
+}

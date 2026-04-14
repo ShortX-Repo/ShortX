@@ -95,8 +95,31 @@ class Detector(
     private val edgeGestureHintDetector =
         EdgeGestureHintDetector(service, gestureHintController, ::detectArea)
 
+    private val edgeGestureSequenceHintReporter =
+        EdgeGestureSequenceHintReporter(gestureHintController)
+
     private val cornerSwipeToCenterDetector =
         CornerSwipeToCenterDetector(context, service, gestureHintController)
+
+    private var activePointerId = MotionEvent.INVALID_POINTER_ID
+    private var lastTouchX = 0f
+    private var lastTouchY = 0f
+
+    private val sequenceDetector = EdgeGestureSequenceDetector(
+        scheduler = object : GestureSequenceScheduler {
+            override fun removeCallbacks(runnable: Runnable) {
+                handler.removeCallbacks(runnable)
+            }
+
+            override fun postDelayed(runnable: Runnable, delayMillis: Long): Boolean {
+                return handler.postDelayed(runnable, delayMillis)
+            }
+        },
+        service = service,
+        elapsedRealtime = android.os.SystemClock::elapsedRealtime,
+        dpToPx = { it._dp },
+        hintSink = edgeGestureSequenceHintReporter,
+    )
 
     init {
         service.obsGestureSettingsChanged {
@@ -182,8 +205,21 @@ class Detector(
     private fun handleSwipeEvent(downX: Float, downY: Float, gestureEvent: Gesture): Boolean {
         val areas = detectArea(downX, downY)
         if (areas.isEmpty()) return false
-        val handled = handleEdgeGestureEvent(areas, gestureEvent, downX, downY)
-        edgeGestureHintDetector.onEdgeGestureTriggered(areas, gestureEvent, handled)
+        val sequenceHandled = sequenceDetector.startTracking(
+            pointerId = activePointerId,
+            primaryGesture = gestureEvent,
+            downX = downX,
+            downY = downY,
+            anchorX = lastTouchX,
+            anchorY = lastTouchY,
+            candidates = service.findMatchingEdgeGestureSequences(areas, gestureEvent),
+        )
+        val handled = handleEdgeGestureEvent(areas, gestureEvent, downX, downY) || sequenceHandled
+        if (sequenceHandled) {
+            edgeGestureHintDetector.onEdgeGestureSequenceStarted(areas, gestureEvent)
+        } else {
+            edgeGestureHintDetector.onEdgeGestureTriggered(areas, gestureEvent, handled)
+        }
         return handled
     }
 
@@ -248,7 +284,38 @@ class Detector(
 
     fun consumeEvent(event: MotionEvent): Boolean? {
         if (event.isTouchEvent) {
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    activePointerId = event.getPointerId(event.actionIndex)
+                    lastTouchX = event.x
+                    lastTouchY = event.y
+                    sequenceDetector.cancelTracking()
+                }
+
+                MotionEvent.ACTION_MOVE -> {
+                    val pointerIndex = event.findPointerIndex(activePointerId)
+                    if (pointerIndex >= 0) {
+                        lastTouchX = event.getX(pointerIndex)
+                        lastTouchY = event.getY(pointerIndex)
+                    }
+                }
+
+                MotionEvent.ACTION_UP,
+                MotionEvent.ACTION_CANCEL -> {
+                    activePointerId = MotionEvent.INVALID_POINTER_ID
+                }
+
+                MotionEvent.ACTION_POINTER_UP -> {
+                    if (event.getPointerId(event.actionIndex) == activePointerId) {
+                        activePointerId = MotionEvent.INVALID_POINTER_ID
+                    }
+                }
+            }
+
             edgeGestureHintDetector.onTouchEvent(event)
+            if (sequenceDetector.onTouchEvent(event)) {
+                return true
+            }
             if (gestureDetector.onTouchEvent(event)) {
                 return true
             }

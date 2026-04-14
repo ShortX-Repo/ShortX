@@ -22,5 +22,15 @@
   "ui.action.find.color.rect.input.label": "Input coordinates (left top right bottom)",
   "ui.action.find.color.rect.input.error": "Format error, please input four numbers separated by spaces",
   "ui.fact.edge.gesture.rect.input.label": "Input coordinates (left top right bottom)",
-  "ui.fact.edge.gesture.rect.input.error": "Format error, please input four numbers separated by spaces"
+  "ui.fact.edge.gesture.rect.input.error": "Format error, please input four numbers separated by spaces",
+  "ui.fact.edge.gesture.child.gesture": "Secondary gesture",
+  "ui.fact.edge.gesture.child.gesture.none": "No secondary gesture",
+  "ui.fact.edge.gesture.child.swipeleft": "Swipe left",
+  "ui.fact.edge.gesture.child.swiperight": "Swipe right",
+  "ui.fact.edge.gesture.child.swipeup": "Swipe up",
+  "ui.fact.edge.gesture.child.swipedown": "Swipe down",
+  "ui.fact.edge.gesture.child.hover": "Hover",
+  "ui.fact.edge.gesture.child.singletap": "Single tap",
+  "ui.fact.edge.gesture.child.doubletap": "Double tap",
+  "ui.fact.edge.gesture.child.longtap": "Long tap"
 }

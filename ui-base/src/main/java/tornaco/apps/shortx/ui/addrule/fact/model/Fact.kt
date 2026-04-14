@@ -20,6 +20,7 @@ import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.common.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
+import tornaco.apps.shortx.core.proto.fact.EdgeGestureStepType
 import tornaco.apps.shortx.core.proto.fact.ScreenCorner
 import tornaco.apps.shortx.core.proto.fact.MethodHookConstraintParamsCount
 import tornaco.apps.shortx.core.proto.fact.MethodHookConstraintParamsType
@@ -42,6 +43,44 @@ import tornaco.apps.shortx.ui.addrule.factContextData
 import java.util.UUID
 
 fun defaultNewFactId() = "F-" + UUID.randomUUID().toString()
+
+enum class EdgeGestureStepModel {
+    SwipeLeft,
+    SwipeRight,
+    SwipeUp,
+    SwipeDown,
+    Hover,
+    SingleTap,
+    DoubleTap,
+    LongTap,
+}
+
+fun EdgeGestureStepType.toModel(): EdgeGestureStepModel {
+    return when (this) {
+        EdgeGestureStepType.SwipeLeft -> EdgeGestureStepModel.SwipeLeft
+        EdgeGestureStepType.SwipeRight -> EdgeGestureStepModel.SwipeRight
+        EdgeGestureStepType.SwipeUp -> EdgeGestureStepModel.SwipeUp
+        EdgeGestureStepType.SwipeDown -> EdgeGestureStepModel.SwipeDown
+        EdgeGestureStepType.Hover -> EdgeGestureStepModel.Hover
+        EdgeGestureStepType.SingleTapStep -> EdgeGestureStepModel.SingleTap
+        EdgeGestureStepType.DoubleTapStep -> EdgeGestureStepModel.DoubleTap
+        EdgeGestureStepType.LongTapStep -> EdgeGestureStepModel.LongTap
+        EdgeGestureStepType.UNRECOGNIZED -> EdgeGestureStepModel.SwipeUp
+    }
+}
+
+fun EdgeGestureStepModel.toProtoType(): EdgeGestureStepType {
+    return when (this) {
+        EdgeGestureStepModel.SwipeLeft -> EdgeGestureStepType.SwipeLeft
+        EdgeGestureStepModel.SwipeRight -> EdgeGestureStepType.SwipeRight
+        EdgeGestureStepModel.SwipeUp -> EdgeGestureStepType.SwipeUp
+        EdgeGestureStepModel.SwipeDown -> EdgeGestureStepType.SwipeDown
+        EdgeGestureStepModel.Hover -> EdgeGestureStepType.Hover
+        EdgeGestureStepModel.SingleTap -> EdgeGestureStepType.SingleTapStep
+        EdgeGestureStepModel.DoubleTap -> EdgeGestureStepType.DoubleTapStep
+        EdgeGestureStepModel.LongTap -> EdgeGestureStepType.LongTapStep
+    }
+}
 
 sealed interface Fact : Parcelable {
     val id: String
@@ -324,6 +363,7 @@ sealed interface Fact : Parcelable {
     data class EdgeGesture(
         val edge: Edge,
         val gesture: Gesture,
+        val childSteps: List<EdgeGestureStepModel> = emptyList(),
         val isIntercept: Boolean,
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList(),
