@@ -8,4 +8,5 @@ data class GestureHintModel(
     val directionY: Float,
     val progress: Float,
     val state: GestureHintState,
+    val showArrow: Boolean = true,
 )

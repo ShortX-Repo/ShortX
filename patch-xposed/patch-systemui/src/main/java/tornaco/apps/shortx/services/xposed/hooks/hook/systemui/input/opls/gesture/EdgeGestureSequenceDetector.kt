@@ -203,6 +203,10 @@ class EdgeGestureSequenceDetector(
             cancelTracking("hover moved out of radius")
         }
     }
+    private data class DirectionalStepCandidate(
+        val step: EdgeGestureStep,
+        val dot: Float,
+    )
 
     fun startTracking(
         pointerId: Int,
@@ -341,10 +345,19 @@ class EdgeGestureSequenceDetector(
     }
 
     private fun findMatchedDirectionalStep(x: Float, y: Float): EdgeGestureStep? {
+        return findBestDirectionalCandidate(x, y, requireThreshold = true)?.step
+    }
+
+    private fun findBestDirectionalCandidate(
+        x: Float,
+        y: Float,
+        requireThreshold: Boolean,
+    ): DirectionalStepCandidate? {
         val deltaX = x - anchorX
         val deltaY = y - anchorY
         val distance = hypot(deltaX.toDouble(), deltaY.toDouble()).toFloat()
-        if (distance < childSwipeMinDistancePx()) return null
+        if (distance <= 0f) return null
+        if (requireThreshold && distance < childSwipeMinDistancePx()) return null
         val normalizedX = deltaX / distance
         val normalizedY = deltaY / distance
         return candidates.asSequence()
@@ -354,9 +367,10 @@ class EdgeGestureSequenceDetector(
                 val dot = normalizedX * direction.first + normalizedY * direction.second
 
                 // 用点积做方向判断：越接近 1 越同向，低于阈值就认为偏得太多。
-                if (dot >= minDirectionDot()) step else null
+                if (requireThreshold && dot < minDirectionDot()) return@mapNotNull null
+                DirectionalStepCandidate(step = step, dot = dot)
             }
-            .firstOrNull()
+            .maxByOrNull { it.dot }
     }
 
     private fun advanceCandidates(
@@ -425,7 +439,7 @@ class EdgeGestureSequenceDetector(
     }
 
     private fun emitCurrentStepHint() {
-        val step = currentHintStep() ?: return
+        val step = resolveHintStep(anchorX, anchorY) ?: return
         hintSink.onStepHint(
             anchorX = anchorX,
             anchorY = anchorY,
@@ -436,7 +450,7 @@ class EdgeGestureSequenceDetector(
     }
 
     private fun updateCurrentStepHint() {
-        val step = currentHintStep() ?: return
+        val step = resolveHintStep(latestX, latestY) ?: return
         when (step.type) {
             EdgeGestureStepType.Hover -> {
                 // Hover 用时间推进 progress，而不是位移。
@@ -482,8 +496,16 @@ class EdgeGestureSequenceDetector(
         return EdgeGestureStep.newBuilder().setType(currentStepTypes.single()).build()
     }
 
+    private fun resolveHintStep(x: Float, y: Float): EdgeGestureStep? {
+        return currentHintStep() ?: findBestDirectionalCandidate(
+            x = x,
+            y = y,
+            requireThreshold = false,
+        )?.step
+    }
+
     private fun logDirectionalMiss() {
-        val step = currentHintStep() ?: return
+        val step = resolveHintStep(latestX, latestY) ?: return
         if (step.type == EdgeGestureStepType.Hover) return
         val direction = directionFor(step.type) ?: return
         val deltaX = latestX - anchorX

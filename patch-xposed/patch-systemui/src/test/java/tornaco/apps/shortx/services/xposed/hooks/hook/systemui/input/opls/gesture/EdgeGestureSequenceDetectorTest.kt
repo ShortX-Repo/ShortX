@@ -132,6 +132,97 @@ class EdgeGestureSequenceDetectorTest {
         detector.isTracking() shouldBe false
     }
 
+    @Test
+    fun should_keep_hint_visible_for_best_direction_when_child_steps_diverge() {
+        val scheduler = FakeScheduler()
+        val service = FakeDetectorService()
+        val clock = FakeClock()
+        val hintSink = FakeHintSink()
+        val detector = EdgeGestureSequenceDetector(
+            scheduler = scheduler,
+            service = service,
+            elapsedRealtime = clock::now,
+            dpToPx = ::identityDpToPx,
+            hintSink = hintSink,
+            debugLog = {},
+        )
+        val candidates = listOf(
+            EdgeGestureSequenceCandidate(
+                area = DetectedArea.PredefinedEdge(Edge.RightCenter),
+                rule = EdgeGesture.newBuilder()
+                    .setEdge(Edge.RightCenter)
+                    .setGesture(Gesture.SwipeFromBottom)
+                    .addChildSteps(step(EdgeGestureStepType.SwipeLeft))
+                    .build()
+            ),
+            EdgeGestureSequenceCandidate(
+                area = DetectedArea.PredefinedEdge(Edge.RightCenter),
+                rule = EdgeGesture.newBuilder()
+                    .setEdge(Edge.RightCenter)
+                    .setGesture(Gesture.SwipeFromBottom)
+                    .addChildSteps(step(EdgeGestureStepType.SwipeDown))
+                    .build()
+            )
+        )
+
+        detector.startTracking(
+            pointerId = 1,
+            primaryGesture = Gesture.SwipeFromBottom,
+            downX = 500f,
+            downY = 1000f,
+            anchorX = 500f,
+            anchorY = 1000f,
+            candidates = candidates,
+        ) shouldBe true
+
+        hintSink.stepHints shouldHaveSize 0
+        detector.onTouchEvent(moveEvent(pointerId = 1, x = 460f, y = 990f)) shouldBe true
+
+        hintSink.stepHints.size shouldBe 1
+        hintSink.stepHints.last().type shouldBe EdgeGestureStepType.SwipeLeft
+    }
+
+    @Test
+    fun should_choose_best_matching_direction_when_multiple_candidates_pass_threshold() {
+        val scheduler = FakeScheduler()
+        val service = FakeDetectorService(childSwipeMaxAngleDeviationDeg = 60)
+        val clock = FakeClock()
+        val detector = EdgeGestureSequenceDetector(scheduler, service, clock::now, ::identityDpToPx)
+        val candidates = listOf(
+            EdgeGestureSequenceCandidate(
+                area = DetectedArea.PredefinedEdge(Edge.RightCenter),
+                rule = EdgeGesture.newBuilder()
+                    .setEdge(Edge.RightCenter)
+                    .setGesture(Gesture.SwipeFromBottom)
+                    .addChildSteps(step(EdgeGestureStepType.SwipeLeft))
+                    .build()
+            ),
+            EdgeGestureSequenceCandidate(
+                area = DetectedArea.PredefinedEdge(Edge.RightCenter),
+                rule = EdgeGesture.newBuilder()
+                    .setEdge(Edge.RightCenter)
+                    .setGesture(Gesture.SwipeFromBottom)
+                    .addChildSteps(step(EdgeGestureStepType.SwipeDown))
+                    .build()
+            )
+        )
+
+        detector.startTracking(
+            pointerId = 1,
+            primaryGesture = Gesture.SwipeFromBottom,
+            downX = 500f,
+            downY = 1000f,
+            anchorX = 500f,
+            anchorY = 1000f,
+            candidates = candidates,
+        ) shouldBe true
+
+        detector.onTouchEvent(moveEvent(pointerId = 1, x = 400f, y = 1058f)) shouldBe true
+
+        service.firedEvents shouldHaveSize 1
+        service.firedEvents.single().childSteps.map { it.type } shouldBe listOf(EdgeGestureStepType.SwipeLeft)
+    }
+
     private fun moveEvent(pointerId: Int, x: Float, y: Float): GestureSequencePointerEvent =
         FakePointerEvent(
             actionMasked = ACTION_MOVE,
@@ -193,7 +284,27 @@ class EdgeGestureSequenceDetectorTest {
         override fun getPointerId(pointerIndex: Int): Int = pointerId
     }
 
-    private class FakeDetectorService : DetectorService {
+    private class FakeHintSink : EdgeGestureSequenceHintSink {
+        val stepHints = mutableListOf<EdgeGestureStep>()
+
+        override fun onStepHint(
+            anchorX: Float,
+            anchorY: Float,
+            step: EdgeGestureStep,
+            progress: Float,
+            isReady: Boolean,
+        ) {
+            stepHints += step
+        }
+
+        override fun onSequenceSuccess() = Unit
+
+        override fun onSequenceCancelled() = Unit
+    }
+
+    private class FakeDetectorService(
+        private val childSwipeMaxAngleDeviationDeg: Int = 35,
+    ) : DetectorService {
         data class FiredEvent(
             val area: DetectedArea,
             val gesture: Gesture,
@@ -242,7 +353,7 @@ class EdgeGestureSequenceDetectorTest {
         override fun getEdgeGestureSequenceHoverDurationMs(): Int = 300
         override fun getEdgeGestureSequenceHoverRadiusDp(): Int = 24
         override fun getEdgeGestureSequenceChildSwipeMinDistanceDp(): Int = 72
-        override fun getEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(): Int = 35
+        override fun getEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(): Int = childSwipeMaxAngleDeviationDeg
         override fun obsGestureSettingsChanged(obs: () -> Unit) = Unit
         override fun obsConfigChanged(obs: () -> Unit) = Unit
         override fun obsUserDataChanged(obs: () -> Unit) = Unit

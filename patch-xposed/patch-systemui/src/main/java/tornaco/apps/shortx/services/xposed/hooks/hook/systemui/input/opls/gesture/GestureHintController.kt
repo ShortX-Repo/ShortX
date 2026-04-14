@@ -27,6 +27,7 @@ class GestureHintController(private val context: Context) {
     private var currentModel: GestureHintModel? = null
     private var dismissAnimator: ValueAnimator? = null
     private var successAnimator: ValueAnimator? = null
+    private var idleBreathAnimator: ValueAnimator? = null
 
     fun onGestureProgress(model: GestureHintModel) {
         runOnMain {
@@ -34,6 +35,7 @@ class GestureHintController(private val context: Context) {
             ensureAttached()
             activeToken = model.token
             currentModel = model
+            updateIdleBreathing(model)
             view?.render(model)
             if (view?.alpha != 1f) {
                 view?.animate()?.cancel()
@@ -85,6 +87,7 @@ class GestureHintController(private val context: Context) {
             clearState()
             return
         }
+        stopIdleBreathing()
         successAnimator?.cancel()
         dismissAnimator?.cancel()
         dismissAnimator = ValueAnimator.ofFloat(view?.alpha ?: 1f, 0f).apply {
@@ -131,6 +134,29 @@ class GestureHintController(private val context: Context) {
         isAttached = false
         activeToken = null
         currentModel = null
+    }
+
+    private fun updateIdleBreathing(model: GestureHintModel) {
+        if (model.showArrow) {
+            stopIdleBreathing()
+            return
+        }
+        if (idleBreathAnimator != null) return
+        idleBreathAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
+            duration = 1100L
+            repeatCount = ValueAnimator.INFINITE
+            repeatMode = ValueAnimator.REVERSE
+            addUpdateListener {
+                view?.setIdlePulse(it.animatedValue as Float)
+            }
+            start()
+        }
+    }
+
+    private fun stopIdleBreathing() {
+        idleBreathAnimator?.cancel()
+        idleBreathAnimator = null
+        view?.setIdlePulse(0f)
     }
 
     private fun createLayoutParams(): WindowManager.LayoutParams {

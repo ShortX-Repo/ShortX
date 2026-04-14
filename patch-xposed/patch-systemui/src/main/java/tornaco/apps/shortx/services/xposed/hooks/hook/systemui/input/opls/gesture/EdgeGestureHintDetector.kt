@@ -47,6 +47,9 @@ class EdgeGestureHintDetector(
                 downY = event.y
                 trackedAreas = detectAreas(downX, downY).filter(::hasHintEnabledSwipeRule)
                 trackedToken = if (trackedAreas.isNotEmpty()) nextToken++ else 0L
+                if (trackedToken != 0L) {
+                    showStartIndicator()
+                }
             }
 
             MotionEvent.ACTION_MOVE -> {
@@ -145,9 +148,25 @@ class EdgeGestureHintDetector(
                 directionY = candidate.directionY,
                 progress = progress,
                 state = state,
+                showArrow = false,
             )
         )
         hasHintShown = true
+    }
+
+    private fun showStartIndicator() {
+        gestureHintController.onGestureProgress(
+            GestureHintModel(
+                token = trackedToken,
+                anchorX = downX,
+                anchorY = downY,
+                directionX = 0f,
+                directionY = 0f,
+                progress = 0.18f,
+                state = GestureHintState.Candidate,
+                showArrow = false,
+            )
+        )
     }
 
     private fun findBestCandidate(deltaX: Float, deltaY: Float, distance: Float): HintCandidate? {
