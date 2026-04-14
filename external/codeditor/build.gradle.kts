@@ -47,6 +47,7 @@ dependencies {
     // Note: Do not upgrade this lib, ComposeOverlay.
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.activity.compose)
+    implementation(project(":external:icons"))
 
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 }

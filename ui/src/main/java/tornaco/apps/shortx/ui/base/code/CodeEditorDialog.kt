@@ -16,7 +16,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.PlayArrow
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -175,15 +174,6 @@ fun CodeEditor(
 
                         AnimatedVisibility(visible = state.isExecuting) {
                             Loading(modifier = Modifier.size(24.dp))
-                        }
-
-                        IconButton(onClick = {
-                            ceComposeBinding?.toggleSearchPanel()
-                        }) {
-                            Icon(
-                                imageVector = Icons.Outlined.Search,
-                                contentDescription = "Search and replace"
-                            )
                         }
 
                         IconButton(onClick = {

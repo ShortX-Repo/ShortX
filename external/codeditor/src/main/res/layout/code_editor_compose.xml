@@ -121,65 +121,75 @@
         android:elevation="2dp"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/editor_action_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?colorSurface"
-            android:gravity="center|start"
-            android:orientation="horizontal">
-
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/btn_undo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:padding="8dp"
-                android:src="@drawable/ic_code_editor_undo" />
-
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/btn_search_toggle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:contentDescription="@string/search_panel"
-                android:padding="8dp"
-                android:src="@android:drawable/ic_menu_search" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_wordwrap"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/wordwrap" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_non_printable"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/show_non_printable" />
-
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/btn_redo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:padding="8dp"
-                android:src="@drawable/ic_code_editor_redo" />
-
-        </LinearLayout>
-
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:background="?colorSurface"
             android:scrollbars="none">
 
-            <io.github.rosemoe.sora.widget.SymbolInputView
-                android:id="@+id/symbol_input"
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="48dp" />
+                android:layout_height="48dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/editor_action_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:gravity="center_vertical|start"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btn_undo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:contentDescription="@string/undo"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_code_editor_undo" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btn_redo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:contentDescription="@string/redo"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_code_editor_redo" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btn_search_toggle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:contentDescription="@string/search_panel"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_remix_search_2_line"
+                        app:tint="?attr/colorControlNormal" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_wordwrap"
+                        style="?android:attr/buttonBarButtonStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/wordwrap" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_non_printable"
+                        style="?android:attr/buttonBarButtonStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/show_non_printable" />
+
+                </LinearLayout>
+
+                <io.github.rosemoe.sora.widget.SymbolInputView
+                    android:id="@+id/symbol_input"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp" />
+
+            </LinearLayout>
 
         </HorizontalScrollView>
 
