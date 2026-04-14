@@ -12,6 +12,7 @@ class CornerSwipeToCenterDetector(
     private val context: Context,
     private val service: DetectorService,
     private val gestureHintController: GestureHintController,
+    private val gestureHapticController: GestureHapticController,
 ) {
     companion object {
         private const val CORNER_SWIPE_MAX_ANGLE_DEVIATION_DEG = 30f
@@ -42,7 +43,10 @@ class CornerSwipeToCenterDetector(
                 downX = event.x
                 downY = event.y
                 trackedCorner = detectCorner(downX, downY)
-                trackedToken = if (trackedCorner != null) nextToken++ else 0L
+                trackedToken = if (trackedCorner != null && hasFeedbackEnabled(trackedCorner!!)) nextToken++ else 0L
+                if (trackedToken != 0L && trackedCorner != null && hasHapticEnabled(trackedCorner!!)) {
+                    gestureHapticController.onGestureCandidate(trackedToken)
+                }
             }
 
             MotionEvent.ACTION_MOVE -> {
@@ -78,6 +82,9 @@ class CornerSwipeToCenterDetector(
 
                 val handled = service.handleCornerSwipeToCenterEvent(corner, downX, downY)
                 if (handled) {
+                    if (hasHapticEnabled(corner)) {
+                        gestureHapticController.onGestureSuccess(trackedToken)
+                    }
                     gestureHintController.onGestureSuccess(trackedToken)
                 }
                 hasTriggered = handled
@@ -137,6 +144,9 @@ class CornerSwipeToCenterDetector(
         } else {
             GestureHintState.Showing
         }
+        if (state == GestureHintState.Ready && hasHapticEnabled(corner)) {
+            gestureHapticController.onGestureReady(trackedToken)
+        }
         gestureHintController.onGestureProgress(
             GestureHintModel(
                 token = trackedToken,
@@ -185,6 +195,7 @@ class CornerSwipeToCenterDetector(
     }
 
     private fun reset() {
+        gestureHapticController.onGestureCancel(trackedToken)
         trackedToken = 0L
         trackedPointerId = MotionEvent.INVALID_POINTER_ID
         trackedCorner = null
@@ -192,5 +203,17 @@ class CornerSwipeToCenterDetector(
         downY = 0f
         hasTriggered = false
         hasHintShown = false
+    }
+
+    private fun hasHapticEnabled(corner: ScreenCorner): Boolean {
+        return service.enabledCornerSwipeToCenterFacts.any {
+            !it.isDisabled && it.corner == corner && it.enableGestureHaptic
+        }
+    }
+
+    private fun hasFeedbackEnabled(corner: ScreenCorner): Boolean {
+        return service.enabledCornerSwipeToCenterFacts.any {
+            !it.isDisabled && it.corner == corner && (it.enableGestureHint || it.enableGestureHaptic)
+        }
     }
 }

@@ -333,6 +333,8 @@
   "ui.fact.corner.bottomright": "右下角",
   "ui.fact.corner.gesture.indicator": "手勢指示器",
   "ui.fact.corner.gesture.indicator.disabled": "指示器關閉",
+  "ui.fact.corner.gesture.haptic": "回饋震動",
+  "ui.fact.corner.gesture.haptic.disabled": "震動回饋關閉",
   "ui.fact.edge.bottomleft": "底 左",
   "ui.fact.edge.bottomcenter": "底 中間",
   "ui.fact.edge.bottomright": "底 右",
@@ -1520,5 +1522,7 @@
   "ui.fact.edge.gesture.show.selected.area": "顯示選中區域",
   "ui.fact.edge.gesture.custom.rect.description": "自訂區域 ({left}, {top}) - ({right}, {bottom})",
   "ui.fact.edge.gesture.indicator": "手勢指示器",
-  "ui.fact.edge.gesture.indicator.disabled": "指示器已關閉"
+  "ui.fact.edge.gesture.indicator.disabled": "指示器已關閉",
+  "ui.fact.edge.gesture.haptic": "回饋震動",
+  "ui.fact.edge.gesture.haptic.disabled": "震動回饋已關閉"
 }

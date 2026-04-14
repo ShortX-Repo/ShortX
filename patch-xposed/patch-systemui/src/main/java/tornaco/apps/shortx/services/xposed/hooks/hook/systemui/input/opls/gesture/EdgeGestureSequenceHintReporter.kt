@@ -5,9 +5,11 @@ import tornaco.apps.shortx.core.proto.fact.EdgeGestureStepType
 
 class EdgeGestureSequenceHintReporter(
     private val gestureHintController: GestureHintController,
+    private val gestureHapticController: GestureHapticController,
 ) : EdgeGestureSequenceHintSink {
     private var nextToken = 10_000L
     private var activeToken: Long? = null
+    private var activeHapticEnabled: Boolean = false
 
     override fun onStepHint(
         anchorX: Float,
@@ -15,8 +17,16 @@ class EdgeGestureSequenceHintReporter(
         step: EdgeGestureStep,
         progress: Float,
         isReady: Boolean,
+        hapticEnabled: Boolean,
     ) {
         val token = activeToken ?: nextToken++.also { activeToken = it }
+        activeHapticEnabled = activeHapticEnabled || hapticEnabled
+        if (hapticEnabled) {
+            gestureHapticController.onGestureCandidate(token)
+            if (isReady) {
+                gestureHapticController.onGestureReady(token)
+            }
+        }
         val (directionX, directionY) = directionFor(step.type)
         gestureHintController.onGestureProgress(
             GestureHintModel(
@@ -33,12 +43,18 @@ class EdgeGestureSequenceHintReporter(
 
     override fun onSequenceSuccess() {
         activeToken?.let(gestureHintController::onGestureSuccess)
+        if (activeHapticEnabled) {
+            activeToken?.let(gestureHapticController::onGestureSuccess)
+        }
         activeToken = null
+        activeHapticEnabled = false
     }
 
     override fun onSequenceCancelled() {
         gestureHintController.onGestureCancel(activeToken)
+        gestureHapticController.onGestureCancel(activeToken)
         activeToken = null
+        activeHapticEnabled = false
     }
 
     private fun directionFor(type: EdgeGestureStepType): Pair<Float, Float> {

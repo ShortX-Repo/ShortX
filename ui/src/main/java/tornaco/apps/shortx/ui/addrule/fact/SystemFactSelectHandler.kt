@@ -94,7 +94,8 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
                     apps = eg.apps,
                     pkgSets = eg.pkgSet,
                     customRect = eg.customRect,
-                    enableGestureHint = eg.enableGestureHint
+                    enableGestureHint = eg.enableGestureHint,
+                    enableGestureHaptic = eg.enableGestureHaptic,
                 )
             )
         },

@@ -25,6 +25,10 @@ class GestureHintView(context: Context) : View(context) {
         style = Paint.Style.FILL
     }
 
+    private val ringPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+    }
+
     private val arrowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeCap = Paint.Cap.ROUND
@@ -77,8 +81,14 @@ class GestureHintView(context: Context) : View(context) {
         val idleBreathRadius = if (model.showArrow) 0f else idlePulse * 2.2f * dp1
         val circleRadius = lerp(20._dp.toFloat(), 28._dp.toFloat(), progress) + successPulse * 2.5f * dp1 + idleBreathRadius
         val highlightRadius = circleRadius * 0.78f
+        val ringRadius = if (model.showArrow) {
+            0f
+        } else {
+            circleRadius + lerp(4._dp.toFloat(), 12._dp.toFloat(), idlePulse)
+        }
         val arrowLength = lerp(12._dp.toFloat(), 17._dp.toFloat(), progress) + successPulse * dp2
         val arrowStrokeWidth = lerp(2.4f * dp1, 3.4f * dp1, progress)
+        val ringStrokeWidth = lerp(1.6f * dp1, 3.2f * dp1, 1f - idlePulse)
         val chevronHalfLength = lerp(5.5f * dp1, 8.5f * dp1, progress)
         val headSpread = when (model.state) {
             GestureHintState.Ready -> lerp(0.96f, 0.88f, progress)
@@ -126,12 +136,20 @@ class GestureHintView(context: Context) : View(context) {
             GestureHintState.Ready -> blendColor(0xFF23486F.toInt(), 0xFF1D4F86.toInt(), progress)
             GestureHintState.Success -> 0xFF1D4F86.toInt()
         }
+        val baseRingColor = when (model.state) {
+            GestureHintState.Candidate -> 0xFFB9D2F4.toInt()
+            GestureHintState.Showing -> 0xFFAFCBF3.toInt()
+            GestureHintState.Ready -> 0xFF9EC4F7.toInt()
+            GestureHintState.Success -> 0xFF8BB8F3.toInt()
+        }
 
         arrowPaint.strokeWidth = arrowStrokeWidth
+        ringPaint.strokeWidth = ringStrokeWidth
         shadowPaint.color = withAlpha(Color.argb(52, 20, 32, 48), max(24, effectiveAlpha / 4))
         circlePaint.color = withAlpha(baseCircleColor, effectiveAlpha)
         circleHighlightPaint.color = withAlpha(baseHighlightColor, max(100, effectiveAlpha - 28))
         arrowPaint.color = withAlpha(baseArrowColor, effectiveAlpha)
+        ringPaint.color = withAlpha(baseRingColor, ((1f - idlePulse) * 120f + 24f).toInt())
 
         val centerX = model.anchorX + dirX * circleOffset
         val centerY = model.anchorY + dirY * circleOffset
@@ -148,6 +166,9 @@ class GestureHintView(context: Context) : View(context) {
         arrowPath.lineTo(rightTailX, rightTailY)
 
         canvas.drawCircle(centerX + dp2, centerY + dp2, circleRadius, shadowPaint)
+        if (!model.showArrow) {
+            canvas.drawCircle(centerX, centerY, ringRadius, ringPaint)
+        }
         canvas.drawCircle(centerX, centerY, circleRadius, circlePaint)
         canvas.drawCircle(centerX, centerY, highlightRadius, circleHighlightPaint)
         if (model.showArrow && model.state != GestureHintState.Candidate) {

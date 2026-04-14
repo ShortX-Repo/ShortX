@@ -10,6 +10,7 @@ import kotlin.math.hypot
 class EdgeGestureHintDetector(
     private val service: DetectorService,
     private val gestureHintController: GestureHintController,
+    private val gestureHapticController: GestureHapticController,
     private val detectAreas: (Float, Float) -> List<DetectedArea>,
 ) {
     companion object {
@@ -27,6 +28,8 @@ class EdgeGestureHintDetector(
         val directionX: Float,
         val directionY: Float,
         val dot: Float,
+        val hintEnabled: Boolean,
+        val hapticEnabled: Boolean,
     )
 
     private var nextToken = 1L
@@ -45,8 +48,11 @@ class EdgeGestureHintDetector(
                 trackedPointerId = event.getPointerId(event.actionIndex)
                 downX = event.x
                 downY = event.y
-                trackedAreas = detectAreas(downX, downY).filter(::hasHintEnabledSwipeRule)
+                trackedAreas = detectAreas(downX, downY).filter(::hasFeedbackEnabledSwipeRule)
                 trackedToken = if (trackedAreas.isNotEmpty()) nextToken++ else 0L
+                if (trackedToken != 0L && trackedAreas.any(::hasHapticEnabledSwipeRule)) {
+                    gestureHapticController.onGestureCandidate(trackedToken)
+                }
                 if (trackedToken != 0L) {
                     showStartIndicator()
                 }
@@ -94,17 +100,22 @@ class EdgeGestureHintDetector(
     fun onEdgeGestureTriggered(areas: List<DetectedArea>, gesture: Gesture, handled: Boolean) {
         if (!handled || trackedToken == 0L || hasTriggered) return
         val matches = areas.any { area ->
-            trackedAreas.any { trackedArea -> trackedArea == area } && hasHintEnabledSwipeRule(area, gesture)
+            trackedAreas.any { trackedArea -> trackedArea == area } && hasFeedbackEnabledSwipeRule(area, gesture)
         }
         if (!matches) return
         hasTriggered = true
+        if (areas.any { area ->
+                trackedAreas.any { trackedArea -> trackedArea == area } && hasHapticEnabledSwipeRule(area, gesture)
+            }) {
+            gestureHapticController.onGestureSuccess(trackedToken)
+        }
         gestureHintController.onGestureSuccess(trackedToken)
     }
 
     fun onEdgeGestureSequenceStarted(areas: List<DetectedArea>, gesture: Gesture) {
         if (trackedToken == 0L || hasTriggered) return
         val matches = areas.any { area ->
-            trackedAreas.any { trackedArea -> trackedArea == area } && hasHintEnabledSwipeRule(area, gesture)
+            trackedAreas.any { trackedArea -> trackedArea == area } && hasFeedbackEnabledSwipeRule(area, gesture)
         }
         if (!matches) return
         gestureHintController.onGestureCancel(trackedToken)
@@ -139,22 +150,31 @@ class EdgeGestureHintDetector(
         } else {
             GestureHintState.Showing
         }
-        gestureHintController.onGestureProgress(
-            GestureHintModel(
-                token = trackedToken,
-                anchorX = downX,
-                anchorY = downY,
-                directionX = candidate.directionX,
-                directionY = candidate.directionY,
-                progress = progress,
-                state = state,
-                showArrow = false,
+        if (candidate.hapticEnabled && state == GestureHintState.Ready) {
+            gestureHapticController.onGestureReady(trackedToken)
+        }
+        if (candidate.hintEnabled) {
+            gestureHintController.onGestureProgress(
+                GestureHintModel(
+                    token = trackedToken,
+                    anchorX = downX,
+                    anchorY = downY,
+                    directionX = candidate.directionX,
+                    directionY = candidate.directionY,
+                    progress = progress,
+                    state = state,
+                    showArrow = false,
+                )
             )
-        )
-        hasHintShown = true
+            hasHintShown = true
+        } else if (hasHintShown) {
+            gestureHintController.onGestureCancel(trackedToken)
+            hasHintShown = false
+        }
     }
 
     private fun showStartIndicator() {
+        if (!trackedAreas.any(::hasHintEnabledSwipeRule)) return
         gestureHintController.onGestureProgress(
             GestureHintModel(
                 token = trackedToken,
@@ -180,7 +200,7 @@ class EdgeGestureHintDetector(
                     .asSequence()
                     .filter { rule ->
                         !rule.isDisabled &&
-                                rule.isGestureHintEnabled() &&
+                                rule.isGestureFeedbackEnabled() &&
                                 rule.gesture.supportsGestureIndicator() &&
                                 areaMatchesRule(area, rule)
                     }
@@ -190,11 +210,44 @@ class EdgeGestureHintDetector(
                                 directionX = directionX,
                                 directionY = directionY,
                                 dot = normalizedX * directionX + normalizedY * directionY,
+                                hintEnabled = rule.isGestureHintEnabled(),
+                                hapticEnabled = rule.isGestureHapticEnabled(),
                             )
                         }
                     }
             }
+            .groupBy { it.directionX to it.directionY }
+            .values
+            .map { grouped ->
+                val first = grouped.first()
+                HintCandidate(
+                    directionX = first.directionX,
+                    directionY = first.directionY,
+                    dot = first.dot,
+                    hintEnabled = grouped.any { it.hintEnabled },
+                    hapticEnabled = grouped.any { it.hapticEnabled },
+                )
+            }
             .maxByOrNull { it.dot }
+    }
+
+    private fun hasFeedbackEnabledSwipeRule(area: DetectedArea): Boolean {
+        return service.enabledEdgeGestures.any { rule ->
+            !rule.isDisabled &&
+                    rule.isGestureFeedbackEnabled() &&
+                    rule.gesture.supportsGestureIndicator() &&
+                    areaMatchesRule(area, rule)
+        }
+    }
+
+    private fun hasFeedbackEnabledSwipeRule(area: DetectedArea, gesture: Gesture): Boolean {
+        return service.enabledEdgeGestures.any { rule ->
+            !rule.isDisabled &&
+                    rule.isGestureFeedbackEnabled() &&
+                    rule.gesture == gesture &&
+                    rule.gesture.supportsGestureIndicator() &&
+                    areaMatchesRule(area, rule)
+        }
     }
 
     private fun hasHintEnabledSwipeRule(area: DetectedArea): Boolean {
@@ -206,10 +259,19 @@ class EdgeGestureHintDetector(
         }
     }
 
-    private fun hasHintEnabledSwipeRule(area: DetectedArea, gesture: Gesture): Boolean {
+    private fun hasHapticEnabledSwipeRule(area: DetectedArea): Boolean {
         return service.enabledEdgeGestures.any { rule ->
             !rule.isDisabled &&
-                    rule.isGestureHintEnabled() &&
+                    rule.isGestureHapticEnabled() &&
+                    rule.gesture.supportsGestureIndicator() &&
+                    areaMatchesRule(area, rule)
+        }
+    }
+
+    private fun hasHapticEnabledSwipeRule(area: DetectedArea, gesture: Gesture): Boolean {
+        return service.enabledEdgeGestures.any { rule ->
+            !rule.isDisabled &&
+                    rule.isGestureHapticEnabled() &&
                     rule.gesture == gesture &&
                     rule.gesture.supportsGestureIndicator() &&
                     areaMatchesRule(area, rule)
@@ -257,7 +319,16 @@ class EdgeGestureHintDetector(
         return hasEnableGestureHint() && enableGestureHint
     }
 
+    private fun EdgeGesture.isGestureHapticEnabled(): Boolean {
+        return hasEnableGestureHaptic() && enableGestureHaptic
+    }
+
+    private fun EdgeGesture.isGestureFeedbackEnabled(): Boolean {
+        return isGestureHintEnabled() || isGestureHapticEnabled()
+    }
+
     private fun reset() {
+        gestureHapticController.onGestureCancel(trackedToken)
         trackedToken = 0L
         trackedPointerId = MotionEvent.INVALID_POINTER_ID
         trackedAreas = emptyList()

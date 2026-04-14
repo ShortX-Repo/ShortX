@@ -45,6 +45,9 @@ class CornerSwipeToCenterSelectorState(
     private var _enableGestureHint by mutableStateOf(true)
     val enableGestureHint get() = _enableGestureHint
 
+    private var _enableGestureHaptic by mutableStateOf(false)
+    val enableGestureHaptic get() = _enableGestureHaptic
+
     private var _isIntercept by mutableStateOf(false)
     val isIntercept get() = _isIntercept
 
@@ -54,6 +57,10 @@ class CornerSwipeToCenterSelectorState(
 
     fun setEnableGestureHint(enable: Boolean) {
         _enableGestureHint = enable
+    }
+
+    fun setEnableGestureHaptic(enable: Boolean) {
+        _enableGestureHaptic = enable
     }
 
     fun setIsIntercept(isIntercept: Boolean) {
@@ -69,6 +76,7 @@ class CornerSwipeToCenterSelectorState(
             Fact.CornerSwipeToCenter(
                 corner = corner,
                 enableGestureHint = enableGestureHint,
+                enableGestureHaptic = enableGestureHaptic,
                 isIntercept = isIntercept,
             )
         )
@@ -78,6 +86,7 @@ class CornerSwipeToCenterSelectorState(
     fun show(fact: Fact.CornerSwipeToCenter? = null) {
         _corner = fact?.corner ?: ScreenCorner.CornerTopLeft
         _enableGestureHint = fact?.enableGestureHint ?: true
+        _enableGestureHaptic = fact?.enableGestureHaptic ?: false
         _isIntercept = fact?.isIntercept ?: false
         show()
     }
@@ -132,6 +141,18 @@ fun CornerSwipeToCenterSelector(state: CornerSwipeToCenterSelectorState) {
                         ShortXSwitch(
                             checked = state.enableGestureHint,
                             onCheckedChange = { state.setEnableGestureHint(it) }
+                        )
+                    }
+                    StandardSpacer()
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        FieldTitle(text = i18n["ui.fact.corner.gesture.haptic"])
+                        ShortXSwitch(
+                            checked = state.enableGestureHaptic,
+                            onCheckedChange = { state.setEnableGestureHaptic(it) }
                         )
                     }
                     StandardSpacer()

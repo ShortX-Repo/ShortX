@@ -84,6 +84,7 @@ data class EdgeGestureSelectDialogResult(
     val pkgSet: List<PkgSet>,
     val customRect: Rect? = null,
     val enableGestureHint: Boolean = true,
+    val enableGestureHaptic: Boolean = false,
 )
 
 private val supportedChildGestureSteps = listOf(
@@ -102,6 +103,7 @@ class EdgeGestureSelectorState(
     var gesture by mutableStateOf(Gesture.DoubleTap)
     var isIntercept by mutableStateOf(false)
     var enableGestureHint by mutableStateOf(true)
+    var enableGestureHaptic by mutableStateOf(false)
     var customRect by mutableStateOf<Rect?>(null)
     var useCustomRect by mutableStateOf(false)
     var rectInputText by mutableStateOf("")
@@ -116,6 +118,7 @@ class EdgeGestureSelectorState(
         this.gesture = data?.gesture ?: Gesture.SingleTap
         this.isIntercept = data?.isIntercept ?: false
         this.enableGestureHint = data?.enableGestureHint ?: true
+        this.enableGestureHaptic = data?.enableGestureHaptic ?: false
         this.customRect = data?.customRect
         this.useCustomRect = data?.customRect != null
         this.childSteps.clear()
@@ -168,7 +171,8 @@ class EdgeGestureSelectorState(
             apps = apps,
             pkgSet = pkgSets,
             customRect = if (useCustomRect) customRect else null,
-            enableGestureHint = enableGestureHint
+            enableGestureHint = enableGestureHint,
+            enableGestureHaptic = enableGestureHaptic,
         )
     }
 }
@@ -525,6 +529,20 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                             }
 
                             if (state.gesture.supportsGestureIndicator()) {
+                                StandardSpacer()
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    FieldTitle(text = i18N["ui.fact.edge.gesture.haptic"])
+                                    ShortXSwitch(
+                                        checked = state.enableGestureHaptic,
+                                        onCheckedChange = {
+                                            state.enableGestureHaptic = it
+                                        }
+                                    )
+                                }
                                 StandardSpacer()
                             }
 

@@ -193,6 +193,7 @@ fun Fact.toProtoFact(
                 .setGesture(gesture)
                 .setIsIntercept(isIntercept)
                 .setEnableGestureHint(enableGestureHint)
+                .setEnableGestureHaptic(enableGestureHaptic)
                 .addAllChildSteps(childSteps.map {
                     EdgeGestureStep.newBuilder().setType(it.toProtoType()).build()
                 })
@@ -215,6 +216,7 @@ fun Fact.toProtoFact(
             CornerSwipeToCenter.newBuilder()
                 .setCorner(corner)
                 .setEnableGestureHint(enableGestureHint)
+                .setEnableGestureHaptic(enableGestureHaptic)
                 .setIsIntercept(isIntercept)
                 .setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)

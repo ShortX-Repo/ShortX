@@ -78,6 +78,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 pkgSets = models.second,
                 customRect = if (data.hasCustomRect()) data.customRect else null,
                 enableGestureHint = data.hasEnableGestureHint() && data.enableGestureHint,
+                enableGestureHaptic = data.hasEnableGestureHaptic() && data.enableGestureHaptic,
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
                 isDisabled = data.isDisabled,
@@ -90,6 +91,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.CornerSwipeToCenter(
                 corner = data.corner,
                 enableGestureHint = data.enableGestureHint,
+                enableGestureHaptic = data.enableGestureHaptic,
                 isIntercept = data.hasIsIntercept() && data.isIntercept,
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,

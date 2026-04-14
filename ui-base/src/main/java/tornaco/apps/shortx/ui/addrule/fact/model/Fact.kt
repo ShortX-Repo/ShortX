@@ -369,6 +369,7 @@ sealed interface Fact : Parcelable {
         val pkgSets: List<PkgSet> = emptyList(),
         val customRect: tornaco.apps.shortx.core.proto.common.Rect? = null,
         val enableGestureHint: Boolean = true,
+        val enableGestureHaptic: Boolean = false,
         override val note: String = "",
         override val isDisabled: Boolean = false,
         override val tag: String = "",
@@ -397,6 +398,7 @@ sealed interface Fact : Parcelable {
     data class CornerSwipeToCenter(
         val corner: ScreenCorner,
         val enableGestureHint: Boolean = true,
+        val enableGestureHaptic: Boolean = false,
         val isIntercept: Boolean = false,
         override val note: String = "",
         override val isDisabled: Boolean = false,

@@ -94,14 +94,16 @@ class Detector(
 
     private val gestureHintController = GestureHintController(context)
 
+    private val gestureHapticController = GestureHapticController(context)
+
     private val edgeGestureHintDetector =
-        EdgeGestureHintDetector(service, gestureHintController, ::detectArea)
+        EdgeGestureHintDetector(service, gestureHintController, gestureHapticController, ::detectArea)
 
     private val edgeGestureSequenceHintReporter =
-        EdgeGestureSequenceHintReporter(gestureHintController)
+        EdgeGestureSequenceHintReporter(gestureHintController, gestureHapticController)
 
     private val cornerSwipeToCenterDetector =
-        CornerSwipeToCenterDetector(context, service, gestureHintController)
+        CornerSwipeToCenterDetector(context, service, gestureHintController, gestureHapticController)
 
     private var activePointerId = MotionEvent.INVALID_POINTER_ID
     private var lastTouchX = 0f

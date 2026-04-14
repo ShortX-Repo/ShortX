@@ -152,6 +152,7 @@ message EdgeGesture {
   bool isTriggerCustom = 9;
   optional bool enableGestureHint = 10;
   repeated EdgeGestureStep childSteps = 11;
+  optional bool enableGestureHaptic = 12;
 
   string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
@@ -166,6 +167,7 @@ message CornerSwipeToCenter {
   int32 downY = 3;
   bool enableGestureHint = 4;
   optional bool isIntercept = 5;
+  bool enableGestureHaptic = 6;
 
   string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
