@@ -154,17 +154,9 @@ fun JSEditorActivity.ExecuteJSEditor(
                     },
                     actions = {
                         IconButton(onClick = {
-                            setResultAndFinish(
-                                ParcelableCode(
-                                    expression = state.expression,
-                                    coroutineContext = state.coroutineContext
-                                )
-                            )
+                            JSLogActivity.Starter.start(context)
                         }) {
-                            Icon(
-                                imageVector = Icons.Outlined.Check,
-                                contentDescription = "Done"
-                            )
+                            RemixIcon(remixName = Remix.Document.file_text_line)
                         }
 
                         IconButton(
@@ -183,6 +175,20 @@ fun JSEditorActivity.ExecuteJSEditor(
                                     contentDescription = LocalI18N.current["ui.common.run"]
                                 )
                             }
+                        }
+
+                        IconButton(onClick = {
+                            setResultAndFinish(
+                                ParcelableCode(
+                                    expression = state.expression,
+                                    coroutineContext = state.coroutineContext
+                                )
+                            )
+                        }) {
+                            Icon(
+                                imageVector = Icons.Outlined.Check,
+                                contentDescription = "Done"
+                            )
                         }
 
                         Box {
