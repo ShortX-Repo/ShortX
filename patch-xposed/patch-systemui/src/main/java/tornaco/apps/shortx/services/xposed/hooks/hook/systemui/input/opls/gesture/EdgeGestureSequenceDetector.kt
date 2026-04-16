@@ -185,22 +185,6 @@ class EdgeGestureSequenceDetector(
     private var candidates: List<EdgeGestureSequenceCandidate> = emptyList()
     private val matchedSteps = mutableListOf<EdgeGestureStep>()
 
-    // Hover 步骤用延时回调收口，避免每次 move 都手动比较停留时长。
-    private val hoverRunnable = Runnable {
-        if (!isTracking()) return@Runnable
-        val hoverCandidates = candidates.filter {
-            it.rule.getChildStepsOrNull(currentStepIndex)?.type == EdgeGestureStepType.Hover
-        }
-        if (hoverCandidates.isEmpty()) return@Runnable
-        val distance = distanceFromAnchor(latestX, latestY)
-        if (distance <= hoverRadiusPx()) {
-            debugLog("$DIAG_PREFIX hover matched: stepIndex=$currentStepIndex, distance=$distance, radiusPx=${hoverRadiusPx()}")
-            advanceCandidates(hoverCandidates, hoverCandidates.first().rule.getChildSteps(currentStepIndex))
-        } else {
-            debugLog("$DIAG_PREFIX hover cancel: stepIndex=$currentStepIndex, distance=$distance, radiusPx=${hoverRadiusPx()}")
-            cancelTracking("hover moved out of radius")
-        }
-    }
     private data class DirectionalStepCandidate(
         val step: EdgeGestureStep,
         val dot: Float,
@@ -229,7 +213,6 @@ class EdgeGestureSequenceDetector(
         this.candidates = candidates
         this.currentStepIndex = 0
         this.matchedSteps.clear()
-        scheduleHoverIfNeeded()
         // 一进入二段识别，就先把当前目标步骤的提示显示出来。
         emitCurrentStepHint()
         debugLog(
@@ -278,15 +261,28 @@ class EdgeGestureSequenceDetector(
                 return true
             }
 
-            ACTION_UP,
+            ACTION_UP -> {
+                updateLatestCoordinatesForTrackedPointer(event)
+                if (tryCompleteHoverOnPointerRelease()) {
+                    return true
+                }
+                cancelTracking("pointer up")
+                return true
+            }
+
             ACTION_CANCEL -> {
-                cancelTracking("pointer up/cancel")
+                cancelTracking("pointer cancel")
                 return true
             }
 
             ACTION_POINTER_UP -> {
                 val pointerId = event.getPointerId(event.actionIndex)
                 if (pointerId == trackedPointerId) {
+                    latestX = event.getX(event.actionIndex)
+                    latestY = event.getY(event.actionIndex)
+                    if (tryCompleteHoverOnPointerRelease()) {
+                        return true
+                    }
                     cancelTracking("tracked pointer pointer-up")
                     return true
                 }
@@ -305,7 +301,6 @@ class EdgeGestureSequenceDetector(
 
     private fun cancelTracking(reason: String) {
         val wasTracking = isTracking()
-        scheduler.removeCallbacks(hoverRunnable)
         trackedPointerId = INVALID_POINTER_ID
         primaryGesture = null
         downX = 0f
@@ -321,19 +316,6 @@ class EdgeGestureSequenceDetector(
         if (wasTracking) {
             debugLog("$DIAG_PREFIX cancelTracking: reason=$reason")
             hintSink.onSequenceCancelled()
-        }
-    }
-
-    private fun scheduleHoverIfNeeded() {
-        scheduler.removeCallbacks(hoverRunnable)
-        val hasHoverCandidate = candidates.any {
-            it.rule.getChildStepsOrNull(currentStepIndex)?.type == EdgeGestureStepType.Hover
-        }
-
-        // 当前步骤只要存在 Hover 候选，就挂一个延时检查；真正是否成功还会再校验半径。
-        if (hasHoverCandidate) {
-            debugLog("$DIAG_PREFIX scheduleHoverIfNeeded: stepIndex=$currentStepIndex, delayMs=${hoverDurationMs()}")
-            scheduler.postDelayed(hoverRunnable, hoverDurationMs())
         }
     }
 
@@ -389,7 +371,6 @@ class EdgeGestureSequenceDetector(
             anchorX = latestX
             anchorY = latestY
             startedAtElapsed = elapsedRealtime()
-            scheduleHoverIfNeeded()
             emitCurrentStepHint()
             debugLog(
                 "$DIAG_PREFIX advanceCandidates: continue stepIndex=$currentStepIndex, nextStep=${currentHintStep()?.type}, pending=${formatCandidates(pendingCandidates)}"
@@ -416,7 +397,6 @@ class EdgeGestureSequenceDetector(
     }
 
     private fun clearTrackingState() {
-        scheduler.removeCallbacks(hoverRunnable)
         trackedPointerId = INVALID_POINTER_ID
         primaryGesture = null
         downX = 0f
@@ -429,6 +409,42 @@ class EdgeGestureSequenceDetector(
         currentStepIndex = 0
         candidates = emptyList()
         matchedSteps.clear()
+    }
+
+    private fun updateLatestCoordinatesForTrackedPointer(event: GestureSequencePointerEvent) {
+        val pointerIndex = event.findPointerIndex(trackedPointerId)
+        if (pointerIndex >= 0) {
+            latestX = event.getX(pointerIndex)
+            latestY = event.getY(pointerIndex)
+        }
+    }
+
+    private fun tryCompleteHoverOnPointerRelease(): Boolean {
+        val hoverCandidates = candidates.filter {
+            it.rule.getChildStepsOrNull(currentStepIndex)?.type == EdgeGestureStepType.Hover
+        }
+        if (hoverCandidates.isEmpty()) return false
+
+        val elapsed = elapsedRealtime() - startedAtElapsed
+        val distance = distanceFromAnchor(latestX, latestY)
+        if (elapsed < hoverDurationMs()) {
+            debugLog(
+                "$DIAG_PREFIX hover release miss: stepIndex=$currentStepIndex, elapsed=$elapsed/${hoverDurationMs()}, distance=$distance, radiusPx=${hoverRadiusPx()}"
+            )
+            return false
+        }
+        if (distance > hoverRadiusPx()) {
+            debugLog(
+                "$DIAG_PREFIX hover release cancel: stepIndex=$currentStepIndex, elapsed=$elapsed/${hoverDurationMs()}, distance=$distance, radiusPx=${hoverRadiusPx()}"
+            )
+            return false
+        }
+
+        debugLog(
+            "$DIAG_PREFIX hover release matched: stepIndex=$currentStepIndex, elapsed=$elapsed/${hoverDurationMs()}, distance=$distance, radiusPx=${hoverRadiusPx()}"
+        )
+        advanceCandidates(hoverCandidates, hoverCandidates.first().rule.getChildSteps(currentStepIndex))
+        return true
     }
 
     private fun emitCurrentStepHint() {

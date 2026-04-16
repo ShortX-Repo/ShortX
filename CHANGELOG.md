@@ -3,6 +3,7 @@
 ## 2026-04-16
 
 ### Edge Gesture Sub-Gesture Runtime / 边缘手势子手势运行时调整
+- 进一步调整 `Hover` 子手势语义：达到停留时长后不再在按住过程中立即触发，而是仅在同一触摸流抬手时根据停留时长和位移半径结算是否成功。 / Refined the `Hover` child-gesture semantics so reaching the hover duration no longer fires immediately while the finger is still down; success is now decided only when that same touch stream is released, based on both hold duration and movement radius.
 - 调整 `patch-systemui` 的子手势 sequence detector，移除了主手势成功后等待子手势的自动超时；现在只要用户不松手，就会持续等待后续子手势。 / Updated the `patch-systemui` child-gesture sequence detector to remove the automatic timeout while waiting after the primary edge gesture; the detector now keeps waiting for the next step as long as the finger remains down.
 - 为该行为补充了聚焦单元测试，覆盖“长时间等待但未松手后仍能成功触发方向型子手势”的场景。 / Added focused unit coverage for the case where the user waits a long time without lifting the finger and can still successfully trigger a directional child gesture.
 - 调整 sequence 提示器样式：方向型子手势继续使用箭头提示，`Hover` 子手势改为停留环形提示，使等待态更容易理解。 / Refined the sequence hint presentation so directional child gestures keep the arrow indicator while `Hover` now uses a hold-ring indicator, making the waiting state easier to understand.
