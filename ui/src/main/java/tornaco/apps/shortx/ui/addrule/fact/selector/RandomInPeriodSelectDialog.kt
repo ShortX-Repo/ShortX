@@ -318,6 +318,8 @@ fun CalendarDayTypeSelector(
                 )
             }
         }
+        StandardSpacer()
+        CalendarDayTypeExplanation()
     }
 }
 

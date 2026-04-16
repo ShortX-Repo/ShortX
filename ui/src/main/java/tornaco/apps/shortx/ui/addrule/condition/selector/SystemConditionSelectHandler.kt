@@ -32,6 +32,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.BTDeviceSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.OnOffAnyStateSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.QSTileSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.WifiSSIDSelectorDialog
+import tornaco.apps.shortx.ui.addrule.fact.selector.calendarDayTypeDetailsText
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberBTDeviceSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberOnOffAnyStateSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberQSTileSelectorState
@@ -122,7 +123,7 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
 
     val calendarDayMatchSelectDialogState = rememberSelectionDialogState(
         title = LocalI18N.current["ui.conditions.calendar.day.match"],
-        message = null,
+        message = calendarDayTypeDetailsText(LocalI18N.current),
         selectionLabel2Ids = listOf(
             CalendarDayType.AnyDay,
             CalendarDayType.WorkdayOnly,
