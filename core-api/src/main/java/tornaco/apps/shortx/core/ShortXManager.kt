@@ -1182,18 +1182,6 @@ class ShortXManager(val service: IShortX) {
         }
     }
 
-    fun getEdgeGestureSequenceStepTimeoutMs(): Int {
-        return invokeService(700) {
-            getEdgeGestureSequenceStepTimeoutMs()
-        }
-    }
-
-    fun setEdgeGestureSequenceStepTimeoutMs(timeoutMs: Int) {
-        invokeService(Unit) {
-            setEdgeGestureSequenceStepTimeoutMs(timeoutMs)
-        }
-    }
-
     fun getEdgeGestureSequenceHoverDurationMs(): Int {
         return invokeService(300) {
             getEdgeGestureSequenceHoverDurationMs()

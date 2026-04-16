@@ -53,7 +53,6 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
     private var cornerGestureRegionRadiusRatio: Float =
         CornerSwipeToCenterGeometry.DEFAULT_CORNER_REGION_RADIUS_RATIO
     private var cornerSwipeMinDistanceDp: Int = 72
-    private var edgeGestureSequenceStepTimeoutMs: Int = 700
     private var edgeGestureSequenceHoverDurationMs: Int = 300
     private var edgeGestureSequenceHoverRadiusDp: Int = 24
     private var edgeGestureSequenceChildSwipeMinDistanceDp: Int = 72
@@ -204,7 +203,6 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         cornerGestureRegionRadiusRatio =
             shortx.getCornerGestureRegionRadiusRatioPercent().coerceIn(6, 40) / 100f
         cornerSwipeMinDistanceDp = shortx.getCornerGestureMinSwipeDistanceDp().coerceIn(24, 200)
-        edgeGestureSequenceStepTimeoutMs = shortx.getEdgeGestureSequenceStepTimeoutMs()
         edgeGestureSequenceHoverDurationMs = shortx.getEdgeGestureSequenceHoverDurationMs()
         edgeGestureSequenceHoverRadiusDp = shortx.getEdgeGestureSequenceHoverRadiusDp()
         edgeGestureSequenceChildSwipeMinDistanceDp =
@@ -224,7 +222,6 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         logger.w("gestureLengthScale: $gestureLengthScale")
         logger.w("cornerGestureRegionRadiusRatio: $cornerGestureRegionRadiusRatio")
         logger.w("cornerSwipeMinDistanceDp: $cornerSwipeMinDistanceDp")
-        logger.w("edgeGestureSequenceStepTimeoutMs: $edgeGestureSequenceStepTimeoutMs")
         logger.w("edgeGestureSequenceHoverDurationMs: $edgeGestureSequenceHoverDurationMs")
         logger.w("edgeGestureSequenceHoverRadiusDp: $edgeGestureSequenceHoverRadiusDp")
         logger.w("edgeGestureSequenceChildSwipeMinDistanceDp: $edgeGestureSequenceChildSwipeMinDistanceDp")
@@ -254,10 +251,6 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
 
     override fun getCornerSwipeMinDistanceDp(): Int {
         return cornerSwipeMinDistanceDp
-    }
-
-    override fun getEdgeGestureSequenceStepTimeoutMs(): Int {
-        return edgeGestureSequenceStepTimeoutMs
     }
 
     override fun getEdgeGestureSequenceHoverDurationMs(): Int {

@@ -37,6 +37,7 @@ class EdgeGestureSequenceHintReporter(
                 directionY = directionY,
                 progress = progress.coerceIn(0f, 1f),
                 state = if (isReady) GestureHintState.Ready else GestureHintState.Showing,
+                showArrow = step.type != EdgeGestureStepType.Hover,
             )
         )
     }

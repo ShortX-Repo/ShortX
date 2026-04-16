@@ -43,7 +43,6 @@ interface DetectorService {
     fun getGestureLengthScale(): Float
     fun getCornerGestureRegionRadiusRatio(): Float
     fun getCornerSwipeMinDistanceDp(): Int
-    fun getEdgeGestureSequenceStepTimeoutMs(): Int
     fun getEdgeGestureSequenceHoverDurationMs(): Int
     fun getEdgeGestureSequenceHoverRadiusDp(): Int
     fun getEdgeGestureSequenceChildSwipeMinDistanceDp(): Int

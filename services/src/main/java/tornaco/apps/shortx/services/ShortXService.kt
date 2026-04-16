@@ -924,14 +924,6 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.gesture.setCornerGestureMinSwipeDistanceDp(dp)
         }
 
-        override fun getEdgeGestureSequenceStepTimeoutMs(): Int {
-            return shortXContext.gesture.getEdgeGestureSequenceStepTimeoutMs()
-        }
-
-        override fun setEdgeGestureSequenceStepTimeoutMs(timeoutMs: Int) {
-            shortXContext.gesture.setEdgeGestureSequenceStepTimeoutMs(timeoutMs)
-        }
-
         override fun getEdgeGestureSequenceHoverDurationMs(): Int {
             return shortXContext.gesture.getEdgeGestureSequenceHoverDurationMs()
         }

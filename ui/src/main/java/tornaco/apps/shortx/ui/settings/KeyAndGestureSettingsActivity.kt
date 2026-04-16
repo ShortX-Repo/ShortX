@@ -104,7 +104,6 @@ class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@Application
                     swipeLengthScale = shortXManager.getSwipeLengthScale(),
                     cornerGestureAreaRatioPercent = shortXManager.getCornerGestureRegionRadiusRatioPercent(),
                     cornerGestureMinSwipeDistanceDp = shortXManager.getCornerGestureMinSwipeDistanceDp(),
-                    edgeGestureSequenceStepTimeoutMs = shortXManager.getEdgeGestureSequenceStepTimeoutMs(),
                     edgeGestureSequenceHoverDurationMs = shortXManager.getEdgeGestureSequenceHoverDurationMs(),
                     edgeGestureSequenceHoverRadiusDp = shortXManager.getEdgeGestureSequenceHoverRadiusDp(),
                     edgeGestureSequenceChildSwipeMinDistanceDp = shortXManager.getEdgeGestureSequenceChildSwipeMinDistanceDp(),
@@ -165,13 +164,6 @@ class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@Application
         }
     }
 
-    fun setEdgeGestureSequenceStepTimeoutMs(timeoutMs: Int) {
-        viewModelScope.launch {
-            shortXManager.setEdgeGestureSequenceStepTimeoutMs(timeoutMs)
-            loadState()
-        }
-    }
-
     fun setEdgeGestureSequenceHoverDurationMs(durationMs: Int) {
         viewModelScope.launch {
             shortXManager.setEdgeGestureSequenceHoverDurationMs(durationMs)
@@ -228,7 +220,6 @@ data class KeyAndGestureSettings(
     val swipeLengthScale: Float = 0f,
     val cornerGestureAreaRatioPercent: Int = 18,
     val cornerGestureMinSwipeDistanceDp: Int = 72,
-    val edgeGestureSequenceStepTimeoutMs: Int = 700,
     val edgeGestureSequenceHoverDurationMs: Int = 300,
     val edgeGestureSequenceHoverRadiusDp: Int = 24,
     val edgeGestureSequenceChildSwipeMinDistanceDp: Int = 72,
@@ -350,19 +341,6 @@ fun KeyAndGestureSettingsActivity.EdgeGestureSettingsSelector() {
                         title = LocalI18N.current["ui.settings.edge.gesture.sub.group.title"],
                         summary = LocalI18N.current["ui.settings.edge.gesture.sub.group.summary"]
                     ) {
-                        SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.sub.step.timeout"])
-                        MediumSpacer()
-                        Text(text = "${state.edgeGestureSequenceStepTimeoutMs} ms")
-                        TipRow(LocalI18N.current["ui.settings.edge.gesture.sub.step.timeout.description"])
-                        StandardSpacer()
-                        Slider(
-                            valueRange = EDGE_GESTURE_SEQUENCE_STEP_TIMEOUT_MS_MIN.toFloat()..EDGE_GESTURE_SEQUENCE_STEP_TIMEOUT_MS_MAX.toFloat(),
-                            value = state.edgeGestureSequenceStepTimeoutMs.toFloat(),
-                            onValueChange = {
-                                vm.setEdgeGestureSequenceStepTimeoutMs(it.roundToInt())
-                            })
-                        LargeSpacer()
-
                         SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.sub.hover.duration"])
                         MediumSpacer()
                         Text(text = "${state.edgeGestureSequenceHoverDurationMs} ms")

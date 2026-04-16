@@ -5,6 +5,7 @@
 1. 本清单基于 AI/traces/edge-gesture-sub-gesture-design.md 拆分。
 2. 默认以“先兼容旧一段式规则，再增量扩展子手势序列”的顺序实施。
 3. 第一阶段 UI 只要求支持一个子手势，但内部模型按可扩展序列设计。
+4. 最新需求调整为：主手势成功后等待子手势不设置自动超时，但需要在等待阶段展示提示器。
 
 一、协议与数据模型
 
@@ -47,51 +48,56 @@
 - [ ] 26. 实现一级主手势成功后进入下一步等待窗口的逻辑。
 - [ ] 27. 实现方向型子手势的最小距离和方向点积判定逻辑。
 - [ ] 28. 实现 Hover 子手势的半径与持续时间判定逻辑。
-- [ ] 29. 实现超时失败逻辑。
+- [ ] 29. 实现主手势成功后无自动超时的等待逻辑。
 - [ ] 30. 实现抬手或 pointer 丢失后的取消逻辑。
+- [ ] 31. 区分“等待阶段无超时”与 `Hover` 步骤自身时长判定，避免二者混淆。
 
 六、Detector 集成
 
-- [ ] 31. 在 patch-systemui/.../gesture/Detector.kt 中集成 EdgeGestureSequenceDetector。
-- [ ] 32. 明确 sequence detector 与当前 GestureDetector / SystemGesturesPointerEventListener 的执行顺序。
-- [ ] 33. 对 legacy 一段式规则保留当前即时触发路径。
-- [ ] 34. 对 sequence 规则改为由 sequence detector 接管后续识别。
+- [ ] 32. 在 patch-systemui/.../gesture/Detector.kt 中集成 EdgeGestureSequenceDetector。
+- [ ] 33. 明确 sequence detector 与当前 GestureDetector / SystemGesturesPointerEventListener 的执行顺序。
+- [ ] 34. 对 legacy 一段式规则保留当前即时触发路径。
+- [ ] 35. 对 sequence 规则改为由 sequence detector 接管后续识别。
 
 七、DetectorService 与 quick-check 数据
 
-- [ ] 35. 在 DetectorServiceImpl.kt 中保留 enabledEdgeGestures 作为完整 EdgeGesture 规则缓存。
-- [ ] 36. 明确 quick-check 阶段如何区分 legacy one-step 规则与 sequence 规则。
-- [ ] 37. 为 sequence 规则新增最终派发方法，例如 handleEdgeGestureSequenceEvent(...)
-- [ ] 38. 构造 runtime EdgeGesture proto 时写入原 `gesture` 与 childSteps。
-- [ ] 39. 保持现有 intercept cache 仅由主热区决定。
+- [ ] 36. 在 DetectorServiceImpl.kt 中保留 enabledEdgeGestures 作为完整 EdgeGesture 规则缓存。
+- [ ] 37. 明确 quick-check 阶段如何区分 legacy one-step 规则与 sequence 规则。
+- [ ] 38. 为 sequence 规则新增最终派发方法，例如 handleEdgeGestureSequenceEvent(...)
+- [ ] 39. 构造 runtime EdgeGesture proto 时写入原 `gesture` 与 childSteps。
+- [ ] 40. 保持现有 intercept cache 仅由主热区决定。
 
 八、services 侧事实发布与匹配
 
-- [ ] 40. 评估 ShortXService.fireEdgeGesture(...) 是否需要调整 runtime EdgeGesture 的解析和发布逻辑。
-- [ ] 41. 在 FactMatcherImpl 中扩展 EdgeGesture 匹配逻辑，使其支持 `gesture + childSteps` 序列比较。
-- [ ] 42. 保持 legacy `gesture` 字段规则与 runtime event 的兼容匹配。
-- [ ] 43. 确保 sequence 规则只在整段成功后发布最终 fact，不发布中间 fact。
+- [ ] 41. 评估 ShortXService.fireEdgeGesture(...) 是否需要调整 runtime EdgeGesture 的解析和发布逻辑。
+- [ ] 42. 在 FactMatcherImpl 中扩展 EdgeGesture 匹配逻辑，使其支持 `gesture + childSteps` 序列比较。
+- [ ] 43. 保持 legacy `gesture` 字段规则与 runtime event 的兼容匹配。
+- [ ] 44. 确保 sequence 规则只在整段成功后发布最终 fact，不发布中间 fact。
 
 九、手势提示器
 
-- [ ] 44. 评估现有 EdgeGestureHintDetector 是否需要扩展以显示“已进入子手势阶段”。
-- [ ] 45. 第一阶段至少保证 sequence 检测不破坏现有 hint 行为。
-- [ ] 46. 如实现多阶段视觉反馈，补充新的 hint 状态与展示文案。
+- [ ] 45. 为主手势成功后的等待阶段设计并实现一个轻量提示器。
+- [ ] 46. 提示器至少表达“等待子手势”状态，并能区分方向型步骤与 `Hover` 步骤。
+- [ ] 47. 评估现有 EdgeGestureHintDetector / hint controller 是否扩展复用，避免新造独立显示栈。
+- [ ] 48. 确保等待态提示器在成功、失败、松手后及时消失。
+- [ ] 49. 如实现多阶段视觉反馈，补充新的 hint 状态与展示文案。
 
 十、测试
 
-- [ ] 47. 为 EdgeGesture child step 的 proto <-> UI model 双向转换增加单元测试。
-- [ ] 48. 为 sequence detector 的方向型步骤成功与失败增加单元测试。
-- [ ] 49. 为 Hover 步骤的时间阈值与位移阈值增加单元测试。
-- [ ] 50. 为 step timeout / finger up cancel 增加单元测试。
-- [ ] 51. 为 EdgeGesture matcher 的 legacy 与 sequence 两种路径增加单元测试。
-- [ ] 52. 手工验证：无子手势规则仍然正常工作。
-- [ ] 53. 手工验证：主手势 + 下滑子手势成功触发。
-- [ ] 54. 手工验证：主手势 + 悬停子手势成功触发。
-- [ ] 55. 手工验证：方向错误、超时、抬手不会误触发。
+- [ ] 50. 为 EdgeGesture child step 的 proto <-> UI model 双向转换增加单元测试。
+- [ ] 51. 为 sequence detector 的方向型步骤成功与失败增加单元测试。
+- [ ] 52. 为 Hover 步骤的时间阈值与位移阈值增加单元测试。
+- [ ] 53. 为“长时间等待但未松手”场景增加单元测试，确保不会因等待时长自动失败。
+- [ ] 54. 为 finger up cancel 增加单元测试。
+- [ ] 55. 为 EdgeGesture matcher 的 legacy 与 sequence 两种路径增加单元测试。
+- [ ] 56. 手工验证：无子手势规则仍然正常工作。
+- [ ] 57. 手工验证：主手势后长时间保持按下，再触发方向型子手势，规则仍能成功触发。
+- [ ] 58. 手工验证：主手势 + 悬停子手势成功触发。
+- [ ] 59. 手工验证：方向错误、抬手不会误触发。
+- [ ] 60. 手工验证：等待态提示器在成功、失败、松手后表现正确。
 
 十一、收尾与文档回写
 
-- [ ] 56. 根据最终实现回写 AI/traces/edge-gesture-sub-gesture-design.md 中的差异。
-- [ ] 57. 如协议字段落地时有调整，回写 requirements/EdgeGestureSubGesture.md。
-- [ ] 58. 补充最终运行链路说明，说明 legacy one-step 与 sequence rule 的分流关系。
+- [ ] 61. 根据最终实现回写 AI/traces/edge-gesture-sub-gesture-design.md 中的差异。
+- [ ] 62. 如协议字段落地时有调整，回写 requirements/EdgeGestureSubGesture.md。
+- [ ] 63. 补充最终运行链路说明，说明 legacy one-step 与 sequence rule 的分流关系。

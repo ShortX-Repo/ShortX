@@ -133,6 +133,43 @@ class EdgeGestureSequenceDetectorTest {
     }
 
     @Test
+    fun should_keep_waiting_for_directional_child_step_without_timeout() {
+        val scheduler = FakeScheduler()
+        val service = FakeDetectorService()
+        val clock = FakeClock()
+        val detector = EdgeGestureSequenceDetector(scheduler, service, clock::now, ::identityDpToPx)
+        val area = DetectedArea.PredefinedEdge(Edge.LeftCenter)
+        val candidates = listOf(
+            EdgeGestureSequenceCandidate(
+                area = area,
+                rule = EdgeGesture.newBuilder()
+                    .setEdge(Edge.LeftCenter)
+                    .setGesture(Gesture.SwipeFromLeft)
+                    .addChildSteps(step(EdgeGestureStepType.SwipeUp))
+                    .build()
+            )
+        )
+
+        detector.startTracking(
+            pointerId = 1,
+            primaryGesture = Gesture.SwipeFromLeft,
+            downX = 20f,
+            downY = 400f,
+            anchorX = 80f,
+            anchorY = 400f,
+            candidates = candidates,
+        ) shouldBe true
+
+        clock.advanceBy(5_000)
+
+        detector.isTracking() shouldBe true
+        detector.onTouchEvent(moveEvent(pointerId = 1, x = 80f, y = 280f)) shouldBe true
+
+        service.firedEvents shouldHaveSize 1
+        service.firedEvents.single().childSteps.map { it.type } shouldBe listOf(EdgeGestureStepType.SwipeUp)
+    }
+
+    @Test
     fun should_keep_hint_visible_for_best_direction_when_child_steps_diverge() {
         val scheduler = FakeScheduler()
         val service = FakeDetectorService()
@@ -350,7 +387,6 @@ class EdgeGestureSequenceDetectorTest {
         override fun getGestureLengthScale(): Float = 1f
         override fun getCornerGestureRegionRadiusRatio(): Float = 0.18f
         override fun getCornerSwipeMinDistanceDp(): Int = 72
-        override fun getEdgeGestureSequenceStepTimeoutMs(): Int = 700
         override fun getEdgeGestureSequenceHoverDurationMs(): Int = 300
         override fun getEdgeGestureSequenceHoverRadiusDp(): Int = 24
         override fun getEdgeGestureSequenceChildSwipeMinDistanceDp(): Int = 72

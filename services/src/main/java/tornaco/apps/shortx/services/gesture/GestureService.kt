@@ -40,8 +40,6 @@ private const val GUIDELINE_VIEW_SHOWN_TIME = 6000L
 class GestureService(shortXContext: ShortXContext) :
     SystemService(shortXContext, "GestureService") {
     companion object {
-        const val EDGE_GESTURE_SEQUENCE_STEP_TIMEOUT_MS_MIN = 300
-        const val EDGE_GESTURE_SEQUENCE_STEP_TIMEOUT_MS_MAX = 2000
         const val EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MIN = 100
         const val EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MAX = 1200
         const val EDGE_GESTURE_SEQUENCE_HOVER_RADIUS_DP_MIN = 8
@@ -226,24 +224,6 @@ class GestureService(shortXContext: ShortXContext) :
 
     fun setCornerGestureMinSwipeDistanceDp(dp: Int) {
         store.write(Settings.IntSettings.CornerGestureMinSwipeDistanceDp, dp.coerceIn(24, 200))
-        notifyGestureSettingsChanged()
-    }
-
-    fun getEdgeGestureSequenceStepTimeoutMs(): Int =
-        store.read(Settings.IntSettings.EdgeGestureSequenceStepTimeoutMs)
-            .coerceIn(
-                EDGE_GESTURE_SEQUENCE_STEP_TIMEOUT_MS_MIN,
-                EDGE_GESTURE_SEQUENCE_STEP_TIMEOUT_MS_MAX
-            )
-
-    fun setEdgeGestureSequenceStepTimeoutMs(timeoutMs: Int) {
-        store.write(
-            Settings.IntSettings.EdgeGestureSequenceStepTimeoutMs,
-            timeoutMs.coerceIn(
-                EDGE_GESTURE_SEQUENCE_STEP_TIMEOUT_MS_MIN,
-                EDGE_GESTURE_SEQUENCE_STEP_TIMEOUT_MS_MAX
-            )
-        )
         notifyGestureSettingsChanged()
     }
 

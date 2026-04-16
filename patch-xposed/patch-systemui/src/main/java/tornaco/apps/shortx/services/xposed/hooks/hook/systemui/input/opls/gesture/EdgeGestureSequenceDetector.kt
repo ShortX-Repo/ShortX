@@ -176,6 +176,7 @@ class EdgeGestureSequenceDetector(
     private var latestY = 0f
 
     // 当前步骤开始的时间，而不是整个 sequence 的开始时间。
+    // 仅用于 Hover 这类需要持续时长的步骤，不用于等待下一步时的自动超时取消。
     private var startedAtElapsed = 0L
     private var currentStepIndex = 0
 
@@ -187,11 +188,6 @@ class EdgeGestureSequenceDetector(
     // Hover 步骤用延时回调收口，避免每次 move 都手动比较停留时长。
     private val hoverRunnable = Runnable {
         if (!isTracking()) return@Runnable
-        if (elapsedRealtime() - startedAtElapsed > stepTimeoutMs()) {
-            debugLog("$DIAG_PREFIX hoverRunnable timeout: stepIndex=$currentStepIndex, elapsed=${elapsedRealtime() - startedAtElapsed}ms")
-            cancelTracking("hoverRunnable timeout")
-            return@Runnable
-        }
         val hoverCandidates = candidates.filter {
             it.rule.getChildStepsOrNull(currentStepIndex)?.type == EdgeGestureStepType.Hover
         }
@@ -258,11 +254,6 @@ class EdgeGestureSequenceDetector(
                 }
                 latestX = event.getX(pointerIndex)
                 latestY = event.getY(pointerIndex)
-                if (elapsedRealtime() - startedAtElapsed > stepTimeoutMs()) {
-                    debugLog("$DIAG_PREFIX step timeout: stepIndex=$currentStepIndex, elapsed=${elapsedRealtime() - startedAtElapsed}ms")
-                    cancelTracking("step timeout")
-                    return true
-                }
 
                 // hint 是连续更新的，用户在做当前步骤时可以实时看到进度和 ready 状态。
                 updateCurrentStepHint()
@@ -531,8 +522,6 @@ class EdgeGestureSequenceDetector(
             "$DIAG_PREFIX directional miss: stepIndex=$currentStepIndex, expected=${step.type}, distance=$distance/$minDistancePx, dot=$dot/${minDirectionDot()}, angleDeg=$angleDeg/${childSwipeMaxAngleDeviationDeg()}, anchor=($anchorX,$anchorY), latest=($latestX,$latestY)"
         )
     }
-
-    private fun stepTimeoutMs(): Long = service.getEdgeGestureSequenceStepTimeoutMs().toLong()
 
     private fun hoverDurationMs(): Long = service.getEdgeGestureSequenceHoverDurationMs().toLong()
 

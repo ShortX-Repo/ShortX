@@ -95,6 +95,8 @@ private val supportedChildGestureSteps = listOf(
     EdgeGestureStepModel.Hover,
 )
 
+private const val MAX_CHILD_STEP_COUNT = 1
+
 class EdgeGestureSelectorState(
     val showEdgeHint: (Edge) -> Unit,
     val selected: (EdgeGestureSelectDialogResult) -> Unit
@@ -122,7 +124,7 @@ class EdgeGestureSelectorState(
         this.customRect = data?.customRect
         this.useCustomRect = data?.customRect != null
         this.childSteps.clear()
-        this.childSteps.addAll(data?.childSteps ?: emptyList())
+        this.childSteps.addAll((data?.childSteps ?: emptyList()).take(MAX_CHILD_STEP_COUNT))
 
         // 初始化输入框文本
         this.rectInputText = data?.customRect?.let { rect ->
@@ -166,7 +168,7 @@ class EdgeGestureSelectorState(
         return EdgeGestureSelectDialogResult(
             edge = edge,
             gesture = gesture,
-            childSteps = childSteps.toList(),
+            childSteps = childSteps.toList().take(MAX_CHILD_STEP_COUNT),
             isIntercept = isIntercept,
             apps = apps,
             pkgSet = pkgSets,
@@ -477,16 +479,6 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                                         }
                                                     )
                                                 }
-
-                                                TextButton(
-                                                    onClick = {
-                                                        childStepEditIndex = null
-                                                        dropdownState.open()
-                                                    },
-                                                    modifier = Modifier.fillMaxWidth()
-                                                ) {
-                                                    Text(i18N["ui.common.add"])
-                                                }
                                             }
                                         }
                                         DropdownSelector(
@@ -500,7 +492,11 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                             onSelect = { item ->
                                                 val editIndex = childStepEditIndex
                                                 if (editIndex == null) {
-                                                    state.childSteps.add(item.data)
+                                                    if (state.childSteps.isEmpty()) {
+                                                        state.childSteps.add(item.data)
+                                                    } else {
+                                                        state.childSteps[0] = item.data
+                                                    }
                                                 } else {
                                                     state.childSteps[editIndex] = item.data
                                                 }

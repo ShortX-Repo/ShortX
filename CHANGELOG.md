@@ -1,5 +1,20 @@
 # Change Log / 变更日志
 
+## 2026-04-16
+
+### Edge Gesture Sub-Gesture Runtime / 边缘手势子手势运行时调整
+- 调整 `patch-systemui` 的子手势 sequence detector，移除了主手势成功后等待子手势的自动超时；现在只要用户不松手，就会持续等待后续子手势。 / Updated the `patch-systemui` child-gesture sequence detector to remove the automatic timeout while waiting after the primary edge gesture; the detector now keeps waiting for the next step as long as the finger remains down.
+- 为该行为补充了聚焦单元测试，覆盖“长时间等待但未松手后仍能成功触发方向型子手势”的场景。 / Added focused unit coverage for the case where the user waits a long time without lifting the finger and can still successfully trigger a directional child gesture.
+- 调整 sequence 提示器样式：方向型子手势继续使用箭头提示，`Hover` 子手势改为停留环形提示，使等待态更容易理解。 / Refined the sequence hint presentation so directional child gestures keep the arrow indicator while `Hover` now uses a hold-ring indicator, making the waiting state easier to understand.
+- 收口了后端残留的 `StepTimeout` 配置链，移除了不再使用的 AIDL、manager、service 存储与 patch 侧读取路径，避免产品语义与运行时配置继续冲突。 / Removed the obsolete backend `StepTimeout` configuration chain, including unused AIDL, manager, service storage, and patch-side reads, so runtime configuration no longer conflicts with the updated product semantics.
+- 删除了已无代码引用的 `ui.settings.edge.gesture.sub.step.timeout*` 多语言翻译 key，避免 i18n 资产继续保留失效文案。 / Removed the unused `ui.settings.edge.gesture.sub.step.timeout*` translation keys from the checked-in locale assets so obsolete copy no longer remains in i18n data.
+- 收紧了边缘手势选择器的子手势编辑行为，同一个 `EdgeGesture` 触发器现在最多只能配置一个子手势；旧数据进入编辑时也会自动按首个子手势收口。 / Tightened the edge gesture selector so a single `EdgeGesture` trigger can now configure at most one child gesture, and older multi-step edit data is normalized to the first child step when reopened.
+
+### Edge Gesture Sub-Gesture Requirements / 边缘手势子手势需求调整
+- 更新了 `requirements/EdgeGestureSubGesture.md`，将产品语义改为主手势成功后等待子手势不再有自动超时，只要用户不松手就持续等待。 / Updated `requirements/EdgeGestureSubGesture.md` so waiting for a child gesture after the primary edge gesture no longer auto-times out and remains active as long as the user keeps holding.
+- 在需求中新增了等待子手势期间的运行时提示器要求，要求在等待阶段持续向用户提示当前正在等待的子手势。 / Added a runtime indicator requirement for the child-gesture waiting phase so users receive continuous feedback while the system is waiting for the next step.
+- 同步更新了 `requirements/EdgeGestureSubGesture-tech-design.md` 和 `requirements/EdgeGestureSubGesture-tasks.md`，把实现方向改成“等待阶段无超时、Hover 自身仍有时长阈值、补充等待态提示器实现与验证”。 / Updated `requirements/EdgeGestureSubGesture-tech-design.md` and `requirements/EdgeGestureSubGesture-tasks.md` to reflect the new implementation direction: no timeout while waiting for the child gesture, `Hover` still keeps its own duration threshold, and a waiting-state indicator must be implemented and validated.
+
 ## 2026-04-12
 
 ### Documentation and Architecture Notes / 文档与架构说明

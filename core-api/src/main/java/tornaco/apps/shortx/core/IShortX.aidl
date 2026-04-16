@@ -467,8 +467,6 @@ interface IShortX {
     void setCornerGestureRegionRadiusRatioPercent(int percent);
     int getCornerGestureMinSwipeDistanceDp();
     void setCornerGestureMinSwipeDistanceDp(int dp);
-    int getEdgeGestureSequenceStepTimeoutMs();
-    void setEdgeGestureSequenceStepTimeoutMs(int timeoutMs);
     int getEdgeGestureSequenceHoverDurationMs();
     void setEdgeGestureSequenceHoverDurationMs(int durationMs);
     int getEdgeGestureSequenceHoverRadiusDp();
