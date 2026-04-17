@@ -5,15 +5,11 @@ import android.content.res.Configuration
 import android.graphics.RectF
 import android.os.SystemClock
 import android.view.InputEvent
-import android.view.KeyEvent
 import android.view.MotionEvent
-import android.widget.Toast
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
@@ -67,8 +63,6 @@ class GestureService(shortXContext: ShortXContext) :
 
     private var gestureDetector: Detector? = null
 
-    private var onKeyEvent: ((KeyEvent) -> Boolean?)? = null
-
     private var onGestureEvent: ((Pair<Edge, Gesture>) -> Boolean?)? = { false }
 
     private val interceptMotionPortRects = mutableListOf<RectF>()
@@ -111,10 +105,6 @@ class GestureService(shortXContext: ShortXContext) :
         showGideLineViewForRect(listOf(rect))
     }
 
-    fun onKeyEvent(onKeyEvent: (KeyEvent) -> Boolean?) {
-        this.onKeyEvent = onKeyEvent
-    }
-
     fun onGestureEvent(onGestureEvent: (Pair<Edge, Gesture>) -> Boolean?) {
         this.onGestureEvent = onGestureEvent
     }
@@ -128,16 +118,6 @@ class GestureService(shortXContext: ShortXContext) :
                 runBlocking { gestureRecorder.onMotionEvent(input) }
             }
             return filterMotionEvent(input)
-        }
-        if (input is KeyEvent) {
-            if (!arrayOf(
-                    KeyEvent.KEYCODE_HOME,
-                    KeyEvent.KEYCODE_BACK,
-                    KeyEvent.KEYCODE_POWER,
-                ).contains(input.keyCode)
-            ) {
-                return handleKeyEvent(input)
-            }
         }
         return null
     }
@@ -176,28 +156,6 @@ class GestureService(shortXContext: ShortXContext) :
         }
 
         return gestureInterceptRes
-    }
-
-    fun handleKeyEvent(event: KeyEvent): Boolean? {
-        shortXContext.input.updateLastInputKey(event.keyCode, "handleKeyEvent")
-
-        if (event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || event.keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-            if (gesturePlayer.isInjecting) {
-                logger.i("Stop inject gesture since VOL key event.")
-                systemServiceScope.launchSafety("handleKeyEvent") {
-                    gesturePlayer.stopInject()
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context,
-                            i18NIns["ui.action.gesture.record.inject.stopped"],
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                }
-            }
-        }
-
-        return onKeyEvent?.invoke(event)
     }
 
     fun handleGestureEvent(area: Array<Edge>, gestureEvent: Gesture): Boolean {
@@ -335,30 +293,6 @@ class GestureService(shortXContext: ShortXContext) :
         if (gestureRecorder.isRecording) {
             runBlocking { gestureRecorder.onMotionEvent(event) }
         }
-    }
-
-    // Return true, means consumed, should intercept this event.
-    fun interceptKeyBeforeQueueing(event: KeyEvent, interactive: Boolean): Boolean? {
-        // update last key.
-        shortXContext.input.updateLastInputKey(event.keyCode, "handleKeyEvent")
-
-        // Stop play gesture if necessary
-        if (event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || event.keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-            if (gesturePlayer.isInjecting) {
-                logger.w("Stop inject gesture since VOL key event.")
-                systemServiceScope.launchSafety("handleKeyEvent") {
-                    gesturePlayer.stopInject()
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context,
-                            i18NIns["ui.action.gesture.record.inject.stopped"],
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                }
-            }
-        }
-        return shortXContext.rule.interceptKeyBeforeQueueing(event, interactive)
     }
 
     fun getGestureLengthScale(): Float =
