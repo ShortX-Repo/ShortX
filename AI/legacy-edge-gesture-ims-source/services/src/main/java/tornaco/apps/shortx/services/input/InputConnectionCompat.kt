@@ -1,0 +1,13 @@
+package tornaco.apps.shortx.services.input
+
+import tornaco.apps.shortx.services34.input.InputConnectionV34
+
+object InputConnectionCompat {
+    fun commitText(input: Any, text: String) {
+        InputConnectionV34.commitText(input, text)
+    }
+
+    fun performContextMenuAction(input: Any, action: Int) {
+        InputConnectionV34.performContextMenuAction(input, action)
+    }
+}
