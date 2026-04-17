@@ -161,6 +161,7 @@ class ShortXManager(val service: IShortX) {
         const val QUERY_PAGE_SIZE = 2
 
         object HookFlags {
+            const val FLAG_DISABLE_GESTURE_HOOK = "FLAG_DISABLE_GESTURE_HOOK"
         }
 
         object Sensors {

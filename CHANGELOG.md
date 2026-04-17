@@ -1,5 +1,10 @@
 # Change Log / 变更日志
 
+## 2026-04-17
+
+### Legacy IMS Gesture Path Coexistence / 旧版 IMS 手势链路共存
+- 把历史 `InputManagerService.filterInputEvent` 边缘手势链路重新接回 active 代码：恢复了 `patch-main` 的 `filterInputEvent` / `setInputFilterEnabled` hook，补回了 active `GestureService` 的 legacy 输入分发、旧 detector 以及规则变化回调桥接，当前 SystemUI 路径保持不变。 / Reconnected the historical `InputManagerService.filterInputEvent` edge-gesture chain back into the active code: restored the `patch-main` `filterInputEvent` / `setInputFilterEnabled` hook, brought back the active `GestureService` legacy input dispatch, old detector, and rule-change callback bridge, while keeping the current SystemUI path intact.
+
 ## 2026-04-16
 
 ### Edge Gesture Sub-Gesture Runtime / 边缘手势子手势运行时调整
