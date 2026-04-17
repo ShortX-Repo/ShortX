@@ -30,6 +30,7 @@ object InputManagerHook {
         kotlin.runCatching {
             beforeMethod(lpparam.classLoader.inputManagerService(), Methods.filterInputEvent) { param ->
                 val inputEvent = param.args[0] as InputEvent
+                // logger.logOnDebug { "filterInputEvent $inputEvent" }
                 val res = ShortXService.shortXContext.gesture.filterInput(inputEvent)
                 res?.let {
                     logger.logOnDebug { "Set filterInputEvent res: $it" }

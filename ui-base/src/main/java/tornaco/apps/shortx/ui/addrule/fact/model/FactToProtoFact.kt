@@ -217,7 +217,6 @@ fun Fact.toProtoFact(
                 .setCorner(corner)
                 .setEnableGestureHint(enableGestureHint)
                 .setEnableGestureHaptic(enableGestureHaptic)
-                .setIsIntercept(isIntercept)
                 .setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
                 .setIsDisabled(isDisabled)

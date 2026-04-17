@@ -2,6 +2,12 @@
 
 ## 2026-04-17
 
+### Legacy IMS Edge Gesture Sequence Migration / 旧版 IMS 边缘手势序列迁移
+- 把 SystemUI 侧的新式边缘手势二段序列识别思路迁回旧 IMS 路径：旧 `GestureService` 现在可以识别 `childSteps`，`Detector` 支持预定义边缘和 `customRect` 两类区域，并在手势触发时直接按系统 UI 同样的序列候选流程发回规则引擎。 / Migrated the SystemUI-style edge-gesture sequence detection back into the legacy IMS path: the old `GestureService` now recognizes `childSteps`, `Detector` supports both predefined edges and `customRect` areas, and gesture triggering now follows the same sequence-candidate flow before publishing back into the rule engine.
+- 进一步收敛了旧 `GestureService` 的职责，去掉额外的手势回调桥，直接由服务侧按规则引擎的 `shouldFire` / `publishFact` 路径发出普通边缘手势事实，同时保留序列手势的直接发布逻辑。 / Further narrowed the legacy `GestureService` responsibility by removing the extra gesture callback bridge and publishing normal edge-gesture facts directly through the rule engine's `shouldFire` / `publishFact` path, while keeping the direct publish flow for sequence gestures.
+- 删除了旧手势链路里的“拦截模式”分支：`GestureService` 不再维护特殊拦截矩形，边缘手势和四角手势的 selector 也不再暴露对应开关，当前仅保留 InputFilter + 正常手势匹配路径。 / Removed the legacy gesture-chain intercept-mode branch: `GestureService` no longer maintains special intercept rectangles, the edge and corner gesture selectors no longer expose the corresponding switch, and the code now keeps only the InputFilter plus normal gesture-matching path.
+- 进一步删除了服务侧的子手势运行时逻辑：旧 `GestureService` / `Detector` 不再做 `childSteps` 序列跟踪、候选匹配和发布，当前只保留普通边缘手势与自定义矩形触发。 / Further removed the service-side child-gesture runtime logic: the legacy `GestureService` / `Detector` no longer perform `childSteps` sequence tracking, candidate matching, or publishing, and now keep only normal edge gestures plus custom-rect triggering.
+
 ### Legacy IMS Gesture Path Coexistence / 旧版 IMS 手势链路共存
 - 把历史 `InputManagerService.filterInputEvent` 边缘手势链路重新接回 active 代码：恢复了 `patch-main` 的 `filterInputEvent` / `setInputFilterEnabled` hook，补回了 active `GestureService` 的 legacy 输入分发、旧 detector 以及规则变化回调桥接，当前 SystemUI 路径保持不变。 / Reconnected the historical `InputManagerService.filterInputEvent` edge-gesture chain back into the active code: restored the `patch-main` `filterInputEvent` / `setInputFilterEnabled` hook, brought back the active `GestureService` legacy input dispatch, old detector, and rule-change callback bridge, while keeping the current SystemUI path intact.
 

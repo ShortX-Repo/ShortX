@@ -90,7 +90,6 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
                     edge = eg.edge,
                     gesture = eg.gesture,
                     childSteps = eg.childSteps,
-                    isIntercept = eg.isIntercept,
                     apps = eg.apps,
                     pkgSets = eg.pkgSet,
                     customRect = eg.customRect,

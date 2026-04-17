@@ -127,7 +127,8 @@ private fun SystemUIHook.hookSystemUIApp(lpparam: IPackageLoaded.Param, appClass
                     )
                 )
 
-                installInputMonitor(app)
+                // Solution deprecated. Rollback to inputfilter solution.
+                // installInputMonitor(app)
 
                 CustomHookApp.hookApp(
                     lpparam.classLoader,

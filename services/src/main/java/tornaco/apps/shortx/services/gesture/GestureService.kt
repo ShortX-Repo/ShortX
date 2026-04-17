@@ -1,9 +1,5 @@
 package tornaco.apps.shortx.services.gesture
 
-import android.content.Context
-import android.content.res.Configuration
-import android.graphics.RectF
-import android.os.SystemClock
 import android.view.InputEvent
 import android.view.MotionEvent
 import kotlinx.coroutines.CancellationException
@@ -11,6 +7,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.ICallback
+import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.GestureRecord
@@ -31,7 +28,6 @@ import tornaco.apps.shortx.services.data.GestureRecordsStore
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
-import tornaco.apps.shortx.services.input.IMSFunc
 import tornaco.apps.shortx.services.policy.SingleKeyGestureDetector
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.GuideLineView
@@ -45,7 +41,7 @@ import kotlin.math.abs
 private const val GUIDELINE_VIEW_SHOWN_TIME = 6000L
 
 class GestureService(shortXContext: ShortXContext) :
-    SystemService(shortXContext, "GestureService") {
+    SystemService(shortXContext, "GestureService"), DetectorService {
     companion object {
         const val EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MIN = 100
         const val EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MAX = 1200
@@ -63,12 +59,6 @@ class GestureService(shortXContext: ShortXContext) :
 
     private var gestureDetector: Detector? = null
 
-    private var onGestureEvent: ((Pair<Edge, Gesture>) -> Boolean?)? = { false }
-
-    private val interceptMotionPortRects = mutableListOf<RectF>()
-
-    private val interceptMotionLandRects = mutableListOf<RectF>()
-
     private val showingHints: MutableSet<GuideLineView> = mutableSetOf()
 
     private val gestureRecorder by lazy { GestureRecorder(context) }
@@ -81,7 +71,7 @@ class GestureService(shortXContext: ShortXContext) :
         gestureRecordStore.readBlocking()
 
         gestureDetector = Detector(context, handler, this).also {
-            it.dump()
+            runCatching { it.dump() }
         }
 
         systemServiceScope.launchSafety("GestureService.systemReady") {
@@ -90,7 +80,6 @@ class GestureService(shortXContext: ShortXContext) :
             }
         }
 
-        updateShouldInterceptMotionEventRect()
     }
 
     fun showEdgeHint(edgeNumber: List<Int>) {
@@ -103,10 +92,6 @@ class GestureService(shortXContext: ShortXContext) :
 
     fun showScreenRectHint(rect: Rect) {
         showGideLineViewForRect(listOf(rect))
-    }
-
-    fun onGestureEvent(onGestureEvent: (Pair<Edge, Gesture>) -> Boolean?) {
-        this.onGestureEvent = onGestureEvent
     }
 
     fun filterInput(input: InputEvent?): Boolean? {
@@ -128,92 +113,136 @@ class GestureService(shortXContext: ShortXContext) :
             logger.e("gestureDetector is null.")
             return null
         }
-
         val gestureInterceptRes = nonNullGestureDetector.interceptEvent(input)
-
-        val startTimeMillis = SystemClock.elapsedRealtimeNanos()
-        val currentOrientation = context.resources.configuration.orientation
-        val checkRects = if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
-            interceptMotionPortRects
-        } else {
-            interceptMotionLandRects
-        }
-        val anyIntercept = checkRects.any { it.contains(input.x, input.y) }
-        SystemClock.elapsedRealtimeNanos() - startTimeMillis
-        if (anyIntercept) {
-            logger.logOnDebug("filterMotionEvent, intercept MotionEvent: $input")
-            return false
-        }
-
-        if (gestureInterceptRes != null) {
-            if (!gestureInterceptRes) {
-                logger.w("Send ACTION_CANCEL since we interceptEvent!")
-                val eventTime = SystemClock.uptimeMillis()
-                val cancel =
-                    MotionEvent.obtain(eventTime, eventTime, MotionEvent.ACTION_CANCEL, 0f, 0f, 0)
-                IMSFunc.injectInputEvent(cancel)
-            }
-        }
-
         return gestureInterceptRes
     }
 
-    fun handleGestureEvent(area: Array<Edge>, gestureEvent: Gesture): Boolean {
+    override fun enabledEdgeGestures(): Set<EdgeGesture> {
+        val set = mutableSetOf<EdgeGesture>()
+        shortXContext.rule.forEachEnabledFacts { id, it ->
+            if (it is_ EdgeGesture::class.java) {
+                val ck = it unpack_ EdgeGesture::class.java
+                if (!ck.isDisabled) {
+                    set.add(ck)
+                }
+            }
+        }
+        return set
+    }
+
+    override fun handleEdgeGestureEvent(
+        areas: List<DetectedArea>,
+        gestureEvent: Gesture,
+        downX: Float,
+        downY: Float,
+    ): Boolean {
         var res = false
-        area.forEach {
-            val handled = onGestureEvent?.invoke(it to gestureEvent) ?: false
-            if (handled) res = true
+        areas.forEach {
+            val fact = when (it) {
+                is DetectedArea.PredefinedEdge -> EdgeGesture.newBuilder()
+                    .setEdge(it.edge)
+                    .setGesture(gestureEvent)
+                    .build()
+
+                is DetectedArea.CustomRect -> EdgeGesture.newBuilder()
+                    .setCustomRect(it.rect)
+                    .setIsTriggerCustom(true)
+                    .setGesture(gestureEvent)
+                    .build()
+            }
+            logger.logOnDebug { "handleEdgeGestureEvent $fact" }
+            if (shortXContext.rule.shouldFire(fact)) {
+                shortXContext.rule.publishFact("fireEdgeGesture", fact) {
+                    mapOf(
+                        ContextDataMapping.ScreenGesture.eventX.name to downX.toInt(),
+                        ContextDataMapping.ScreenGesture.eventY.name to downY.toInt(),
+                    )
+                }
+                res = true
+            } else {
+                logger.logOnDebug { "handleEdgeGestureEvent, skip fire $fact" }
+            }
         }
         return res
     }
 
-    fun onRuleChanged() {
-        updateShouldInterceptMotionEventRect()
+    fun getEdgeGestureSequenceHoverDurationMs(): Int =
+        store.read(Settings.IntSettings.EdgeGestureSequenceHoverDurationMs)
+            .coerceIn(
+                EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MIN,
+                EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MAX,
+            )
+
+    fun setEdgeGestureSequenceHoverDurationMs(durationMs: Int) {
+        store.write(
+            Settings.IntSettings.EdgeGestureSequenceHoverDurationMs,
+            durationMs.coerceIn(
+                EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MIN,
+                EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MAX,
+            )
+        )
+        notifyGestureSettingsChanged()
     }
 
-    private fun updateShouldInterceptMotionEventRect() {
-        val screenSize = shortXContext.wm.screenSize
-        logger.i("updateShouldInterceptMotionEventRect, screenSize: $screenSize")
-        val portRects = mutableListOf<RectF>()
-        val landRects = mutableListOf<RectF>()
+    fun getEdgeGestureSequenceHoverRadiusDp(): Int =
+        store.read(Settings.IntSettings.EdgeGestureSequenceHoverRadiusDp)
+            .coerceIn(
+                EDGE_GESTURE_SEQUENCE_HOVER_RADIUS_DP_MIN,
+                EDGE_GESTURE_SEQUENCE_HOVER_RADIUS_DP_MAX,
+            )
 
-        shortXContext.rule.getAllEnabledRules().forEach {
-            it.factsList.forEach { protoFact ->
-                val isEG = protoFact is_ EdgeGesture::class.java
-                if (isEG) {
-                    val eg = protoFact unpack_ EdgeGesture::class.java
-                    if (eg.isIntercept) {
-                        portRects.add(
-                            eg.edge.getRect(
-                                isPortrait = true,
-                                screenWidth = screenSize.x.toFloat(),
-                                screenHeight = screenSize.y.toFloat(),
-                                areaSize = getGestureAreaWidthDp()._dp.toFloat(),
-                                areaLengthScale = getGestureLengthScale()
-                            )
-                        )
-                        landRects.add(
-                            eg.edge.getRect(
-                                isPortrait = false,
-                                screenWidth = screenSize.x.toFloat(),
-                                screenHeight = screenSize.y.toFloat(),
-                                areaSize = getGestureAreaWidthDp()._dp.toFloat(),
-                                areaLengthScale = getGestureLengthScale()
-                            )
-                        )
-                    }
-                }
-            }
-        }
+    fun setEdgeGestureSequenceHoverRadiusDp(radiusDp: Int) {
+        store.write(
+            Settings.IntSettings.EdgeGestureSequenceHoverRadiusDp,
+            radiusDp.coerceIn(
+                EDGE_GESTURE_SEQUENCE_HOVER_RADIUS_DP_MIN,
+                EDGE_GESTURE_SEQUENCE_HOVER_RADIUS_DP_MAX,
+            )
+        )
+        notifyGestureSettingsChanged()
+    }
 
-        logger.d("updateShouldInterceptMotionEventRect, portRects: $portRects")
-        logger.d("updateShouldInterceptMotionEventRect, landRects: $landRects")
+    fun getEdgeGestureSequenceChildSwipeMinDistanceDp(): Int =
+        store.read(Settings.IntSettings.EdgeGestureSequenceChildSwipeMinDistanceDp)
+            .coerceIn(
+                EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MIN_DISTANCE_DP_MIN,
+                EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MIN_DISTANCE_DP_MAX,
+            )
 
-        this.interceptMotionLandRects.clear()
-        this.interceptMotionLandRects.addAll(landRects)
+    fun setEdgeGestureSequenceChildSwipeMinDistanceDp(distanceDp: Int) {
+        store.write(
+            Settings.IntSettings.EdgeGestureSequenceChildSwipeMinDistanceDp,
+            distanceDp.coerceIn(
+                EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MIN_DISTANCE_DP_MIN,
+                EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MIN_DISTANCE_DP_MAX,
+            )
+        )
+        notifyGestureSettingsChanged()
+    }
 
-        this.interceptMotionPortRects.clear()
-        this.interceptMotionPortRects.addAll(portRects)
+    fun getEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(): Int =
+        store.read(Settings.IntSettings.EdgeGestureSequenceChildSwipeMaxAngleDeviationDeg)
+            .coerceIn(
+                EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG_MIN,
+                EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG_MAX,
+            )
+
+    fun setEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(angleDeg: Int) {
+        store.write(
+            Settings.IntSettings.EdgeGestureSequenceChildSwipeMaxAngleDeviationDeg,
+            angleDeg.coerceIn(
+                EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG_MIN,
+                EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG_MAX,
+            )
+        )
+        notifyGestureSettingsChanged()
+    }
+
+    // TODO Should obs rule/da/pkgset changed
+    // should obs app state by pkgset.
+    fun onRuleChanged() {
+        logger.logOnDebug { "onRuleChanged" }
+        gestureDetector?.invalidateCache()
     }
 
     private fun showGideLineViewForArea(area: List<Edge>) {
@@ -295,7 +324,7 @@ class GestureService(shortXContext: ShortXContext) :
         }
     }
 
-    fun getGestureLengthScale(): Float =
+    override fun getGestureLengthScale(): Float =
         minOf(store.read(Settings.FloatSettings.GestureAreaLengthScale), 1f)
 
     fun setGestureLengthScale(scale: Float) {
@@ -303,7 +332,7 @@ class GestureService(shortXContext: ShortXContext) :
         notifyGestureSettingsChanged()
     }
 
-    fun getGestureAreaWidthDp(): Int =
+    override fun getGestureAreaWidthDp(): Int =
         maxOf(store.read(Settings.IntSettings.GestureAreaWidthDp), 12)
 
     fun setGestureAreaWidthDp(dp: Int) {
@@ -311,7 +340,7 @@ class GestureService(shortXContext: ShortXContext) :
         notifyGestureSettingsChanged()
     }
 
-    fun getSwipeDistanceThresholdDp(): Int =
+    override fun getSwipeDistanceThresholdDp(): Int =
         maxOf(store.read(Settings.IntSettings.SwipeDistanceThresholdDp), 1)
 
     fun setSwipeDistanceThresholdDp(thr: Int) {
@@ -320,7 +349,8 @@ class GestureService(shortXContext: ShortXContext) :
     }
 
     fun getCornerGestureRegionRadiusRatio(): Float =
-        (store.read(Settings.IntSettings.CornerGestureRegionRadiusRatioPercent).coerceIn(6, 40)) / 100f
+        (store.read(Settings.IntSettings.CornerGestureRegionRadiusRatioPercent)
+            .coerceIn(6, 40)) / 100f
 
     fun setCornerGestureRegionRadiusRatioPercent(percent: Int) {
         store.write(
@@ -341,77 +371,6 @@ class GestureService(shortXContext: ShortXContext) :
         notifyGestureSettingsChanged()
     }
 
-    fun getEdgeGestureSequenceHoverDurationMs(): Int =
-        store.read(Settings.IntSettings.EdgeGestureSequenceHoverDurationMs)
-            .coerceIn(
-                EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MIN,
-                EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MAX
-            )
-
-    fun setEdgeGestureSequenceHoverDurationMs(durationMs: Int) {
-        store.write(
-            Settings.IntSettings.EdgeGestureSequenceHoverDurationMs,
-            durationMs.coerceIn(
-                EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MIN,
-                EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MAX
-            )
-        )
-        notifyGestureSettingsChanged()
-    }
-
-    fun getEdgeGestureSequenceHoverRadiusDp(): Int =
-        store.read(Settings.IntSettings.EdgeGestureSequenceHoverRadiusDp)
-            .coerceIn(
-                EDGE_GESTURE_SEQUENCE_HOVER_RADIUS_DP_MIN,
-                EDGE_GESTURE_SEQUENCE_HOVER_RADIUS_DP_MAX
-            )
-
-    fun setEdgeGestureSequenceHoverRadiusDp(radiusDp: Int) {
-        store.write(
-            Settings.IntSettings.EdgeGestureSequenceHoverRadiusDp,
-            radiusDp.coerceIn(
-                EDGE_GESTURE_SEQUENCE_HOVER_RADIUS_DP_MIN,
-                EDGE_GESTURE_SEQUENCE_HOVER_RADIUS_DP_MAX
-            )
-        )
-        notifyGestureSettingsChanged()
-    }
-
-    fun getEdgeGestureSequenceChildSwipeMinDistanceDp(): Int =
-        store.read(Settings.IntSettings.EdgeGestureSequenceChildSwipeMinDistanceDp)
-            .coerceIn(
-                EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MIN_DISTANCE_DP_MIN,
-                EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MIN_DISTANCE_DP_MAX
-            )
-
-    fun setEdgeGestureSequenceChildSwipeMinDistanceDp(distanceDp: Int) {
-        store.write(
-            Settings.IntSettings.EdgeGestureSequenceChildSwipeMinDistanceDp,
-            distanceDp.coerceIn(
-                EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MIN_DISTANCE_DP_MIN,
-                EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MIN_DISTANCE_DP_MAX
-            )
-        )
-        notifyGestureSettingsChanged()
-    }
-
-    fun getEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(): Int =
-        store.read(Settings.IntSettings.EdgeGestureSequenceChildSwipeMaxAngleDeviationDeg)
-            .coerceIn(
-                EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG_MIN,
-                EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG_MAX
-            )
-
-    fun setEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(angleDeg: Int) {
-        store.write(
-            Settings.IntSettings.EdgeGestureSequenceChildSwipeMaxAngleDeviationDeg,
-            angleDeg.coerceIn(
-                EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG_MIN,
-                EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG_MAX
-            )
-        )
-        notifyGestureSettingsChanged()
-    }
 
     fun getKeyDetectorLongPressTimeoutMS() =
         store.read(Settings.IntSettings.KeyDetectorLongPressTimeoutMS)

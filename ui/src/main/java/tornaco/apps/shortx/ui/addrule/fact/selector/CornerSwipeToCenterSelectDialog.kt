@@ -48,9 +48,6 @@ class CornerSwipeToCenterSelectorState(
     private var _enableGestureHaptic by mutableStateOf(false)
     val enableGestureHaptic get() = _enableGestureHaptic
 
-    private var _isIntercept by mutableStateOf(false)
-    val isIntercept get() = _isIntercept
-
     fun setCorner(corner: ScreenCorner) {
         _corner = corner
     }
@@ -63,10 +60,6 @@ class CornerSwipeToCenterSelectorState(
         _enableGestureHaptic = enable
     }
 
-    fun setIsIntercept(isIntercept: Boolean) {
-        _isIntercept = isIntercept
-    }
-
     fun previewCorner(corner: ScreenCorner) {
         showCornerHint(corner)
     }
@@ -77,7 +70,6 @@ class CornerSwipeToCenterSelectorState(
                 corner = corner,
                 enableGestureHint = enableGestureHint,
                 enableGestureHaptic = enableGestureHaptic,
-                isIntercept = isIntercept,
             )
         )
         dismiss()
@@ -87,7 +79,6 @@ class CornerSwipeToCenterSelectorState(
         _corner = fact?.corner ?: ScreenCorner.CornerTopLeft
         _enableGestureHint = fact?.enableGestureHint ?: true
         _enableGestureHaptic = fact?.enableGestureHaptic ?: false
-        _isIntercept = fact?.isIntercept ?: false
         show()
     }
 }
@@ -156,17 +147,6 @@ fun CornerSwipeToCenterSelector(state: CornerSwipeToCenterSelectorState) {
                         )
                     }
                     StandardSpacer()
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        FieldTitle(text = i18n["ui.fact.key.event.adv.is.intercept.mode"])
-                        ShortXSwitch(
-                            checked = state.isIntercept,
-                            onCheckedChange = { state.setIsIntercept(it) }
-                        )
-                    }
                 }
                 DropdownSelector(
                     state = dropdownState,
