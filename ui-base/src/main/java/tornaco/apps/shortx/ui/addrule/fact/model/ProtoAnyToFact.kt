@@ -73,7 +73,6 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 edge = data.edge,
                 gesture = data.gesture,
                 childSteps = data.childStepsList.map { it.type.toModel() },
-                isIntercept = data.isIntercept,
                 apps = models.first,
                 pkgSets = models.second,
                 customRect = if (data.hasCustomRect()) data.customRect else null,

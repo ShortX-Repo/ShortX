@@ -1,9 +1,6 @@
 package tornaco.apps.shortx.services.gesture.bpok.gesture
 
 import android.content.Context
-import android.content.res.Configuration
-import android.graphics.Point
-import android.graphics.RectF
 import android.os.SystemClock
 import android.view.InputEvent
 import android.view.MotionEvent
@@ -66,10 +63,6 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
 
     override val enabledEdgeGestures = mutableSetOf<EdgeGesture>()
     override val enabledCornerSwipeToCenterFacts = mutableSetOf<CornerSwipeToCenter>()
-    private val interceptCornerSwipeToCenterFacts = mutableSetOf<CornerSwipeToCenter>()
-    private val interceptMotionPortRects = mutableListOf<RectF>()
-    private val interceptMotionLandRects = mutableListOf<RectF>()
-    private var currentScreenSize: Point? = null
 
     private val requiredFrontApps = mutableSetOf<AppPkg>()
     private val currentFrontApps = mutableSetOf<AppPkg>()
@@ -421,64 +414,16 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         }
     }
 
-    fun shouldStealMotionEvent(input: MotionEvent): Boolean {
-        // Check if intercept.
-        val startTimeMillis = SystemClock.elapsedRealtimeNanos()
-        val currentOrientation = context.resources.configuration.orientation
-        val checkRects = if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
-            interceptMotionPortRects
-        } else {
-            interceptMotionLandRects
-        }
-        // onDebugBuild { logger.d("filterMotionEvent, checkRects: $checkRects") }
-        val anyContains = checkRects.any { it.contains(input.x, input.y) }
-        val cornerContains =
-            if (!anyContains) shouldStealCornerSwipeMotionEvent(input.x, input.y) else false
-        val timeTaken = SystemClock.elapsedRealtimeNanos() - startTimeMillis
-        // logger.d("filterMotionEvent, check take time: $timeTaken(nano)")
-        if (anyContains || cornerContains) {
-            logger.logOnDebug("shouldStealMotionEvent, steal MotionEvent: $input")
-            return true
-        }
-        return false
-    }
-
-    private fun shouldStealCornerSwipeMotionEvent(x: Float, y: Float): Boolean {
-        if (interceptCornerSwipeToCenterFacts.isEmpty()) return false
-        val screenSize = currentScreenSize ?: return false
-        val width = screenSize.x.toFloat()
-        val height = screenSize.y.toFloat()
-        return interceptCornerSwipeToCenterFacts.any { cornerSwipe ->
-            !cornerSwipe.isDisabled && CornerSwipeToCenterGeometry.contains(
-                cornerSwipe.corner,
-                x,
-                y,
-                width,
-                height,
-                getCornerGestureRegionRadiusRatio()
-            )
-        }
-    }
-
     private fun updateQuickCheckDataOnRuleChange() {
         val screenSize = shortx.getScreenSize()
-        currentScreenSize = screenSize
         logger.i("updateQuickCheckDataOnRuleChange, screenSize: $screenSize")
 
-        // 复用现有集合而不是创建新的
-        interceptMotionPortRects.clear()
-        interceptMotionLandRects.clear()
         enabledEdgeGestures.clear()
         enabledCornerSwipeToCenterFacts.clear()
-        interceptCornerSwipeToCenterFacts.clear()
         requiredFrontApps.clear()
 
-        // 使用临时集合来收集数据，避免频繁的clear/add操作
-        val tempPortRects = mutableListOf<RectF>()
-        val tempLandRects = mutableListOf<RectF>()
         val tempEnabledFacts = mutableSetOf<EdgeGesture>()
         val tempEnabledCornerFacts = mutableSetOf<CornerSwipeToCenter>()
-        val tempInterceptCornerFacts = mutableSetOf<CornerSwipeToCenter>()
         val tempRequiredApps = mutableSetOf<AppPkg>()
 
         // Reset.
@@ -489,42 +434,6 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
                 val isEG = protoFact is_ EdgeGesture::class.java
                 if (isEG) {
                     val eg = protoFact unpack_ EdgeGesture::class.java
-                    if (!eg.isDisabled && eg.isIntercept) {
-                        // 优先检查是否有自定义矩形区域
-                        if (eg.customRect != null && eg.customRect != tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance()) {
-                            // 使用自定义矩形区域
-                            val customRectF = RectF(
-                                eg.customRect.left.toFloat(),
-                                eg.customRect.top.toFloat(),
-                                eg.customRect.right.toFloat(),
-                                eg.customRect.bottom.toFloat()
-                            )
-                            // 自定义矩形区域在横竖屏下都使用相同的坐标
-                            tempPortRects.add(customRectF)
-                            tempLandRects.add(customRectF)
-                        } else if (eg.edge != Edge.UNRECOGNIZED) {
-                            // 使用预定义的边缘区域计算
-                            tempPortRects.add(
-                                eg.edge.getRect(
-                                    isPortrait = true,
-                                    screenWidth = screenSize.x.toFloat(),
-                                    screenHeight = screenSize.y.toFloat(),
-                                    areaSize = getGestureAreaWidthDp()._dp.toFloat(),
-                                    areaLengthScale = getGestureLengthScale()
-                                )
-                            )
-                            tempLandRects.add(
-                                eg.edge.getRect(
-                                    isPortrait = false,
-                                    screenWidth = screenSize.x.toFloat(),
-                                    screenHeight = screenSize.y.toFloat(),
-                                    areaSize = getGestureAreaWidthDp()._dp.toFloat(),
-                                    areaLengthScale = getGestureLengthScale()
-                                )
-                            )
-                        }
-                    }
-
                     if (!eg.isDisabled) {
                         tempEnabledFacts.add(eg)
 
@@ -548,9 +457,6 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
                     val cornerSwipe = protoFact unpack_ CornerSwipeToCenter::class.java
                     if (!cornerSwipe.isDisabled) {
                         tempEnabledCornerFacts.add(cornerSwipe)
-                        if (cornerSwipe.hasIsIntercept() && cornerSwipe.isIntercept) {
-                            tempInterceptCornerFacts.add(cornerSwipe)
-                        }
                         requiredFrontAppAny = true
                         requiredFrontAppMatchQuick = true
                     }
@@ -561,18 +467,12 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
         // 一次性更新所有集合
         enabledEdgeGestures.addAll(tempEnabledFacts)
         enabledCornerSwipeToCenterFacts.addAll(tempEnabledCornerFacts)
-        interceptCornerSwipeToCenterFacts.addAll(tempInterceptCornerFacts)
-        interceptMotionLandRects.addAll(tempLandRects)
-        interceptMotionPortRects.addAll(tempPortRects)
         requiredFrontApps.addAll(tempRequiredApps)
 
         checkFrontAppPkg("updateQuickCheckDataOnRuleChange")
 
         logger.d("updateQuickCheckDataOnRuleChange, enabledEdgeGestures: $enabledEdgeGestures")
         logger.d("updateQuickCheckDataOnRuleChange, enabledCornerSwipeToCenterFacts: $enabledCornerSwipeToCenterFacts")
-        logger.d("updateQuickCheckDataOnRuleChange, interceptCornerSwipeToCenterFacts: $interceptCornerSwipeToCenterFacts")
-        logger.d("updateQuickCheckDataOnRuleChange, interceptMotionLandRects: $interceptMotionLandRects")
-        logger.d("updateQuickCheckDataOnRuleChange, interceptMotionPortRects: $interceptMotionPortRects")
         logger.d("updateQuickCheckDataOnRuleChange, requiredFrontApps: $requiredFrontApps")
         logger.d("updateQuickCheckDataOnRuleChange, requiredFrontAppMatchQuick: $requiredFrontAppMatchQuick")
         logger.d("updateQuickCheckDataOnRuleChange, requiredFrontAppAny: $requiredFrontAppAny")

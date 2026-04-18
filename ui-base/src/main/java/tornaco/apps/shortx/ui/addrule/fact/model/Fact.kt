@@ -364,7 +364,6 @@ sealed interface Fact : Parcelable {
         val edge: Edge,
         val gesture: Gesture,
         val childSteps: List<EdgeGestureStepModel> = emptyList(),
-        val isIntercept: Boolean = false,
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList(),
         val customRect: tornaco.apps.shortx.core.proto.common.Rect? = null,

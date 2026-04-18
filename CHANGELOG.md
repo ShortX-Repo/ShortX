@@ -1,5 +1,15 @@
 # Change Log / 变更日志
 
+## 2026-04-18
+
+### Services Gesture Intercept Removal / Services 手势拦截模式移除
+- 移除了 `services/src/main/java/tornaco/apps/shortx/services/gesture/` 当前运行时里的早期偷取输入流分支：`ShortXGestureMain` 不再调用 `shouldStealMotionEvent(...)`，本地服务侧只保留正常手势识别消费路径。 / Removed the early input-stealing branch from the active `services/src/main/java/tornaco/apps/shortx/services/gesture/` runtime: `ShortXGestureMain` no longer calls `shouldStealMotionEvent(...)`, so the local services path now keeps only the normal gesture-consumption flow.
+- 同时删除了 `DetectorServiceImpl` 中为边缘手势和四角手势维护的拦截缓存、热区快速判定与相关调试日志，避免 `services` 本地手势链路继续承担拦截模式语义。 / Also removed the interception caches, hot-zone quick checks, and related debug logging for both edge and corner gestures from `DetectorServiceImpl`, so the local `services` gesture path no longer carries intercept-mode semantics.
+
+### Gesture Editor Intercept Entry Removal / 手势编辑器拦截入口移除
+- 移除了手势 Fact 模型和 UI 摘要里的拦截模式配置入口：`Fact.EdgeGesture` 不再携带 `isIntercept`，`FactToProtoFact`/`ProtoAnyToFact` 也不再在编辑态读写该字段，因此规则编辑页不会再展示或保存边缘手势拦截模式。 / Removed the intercept-mode configuration entry from the gesture fact model and UI summaries: `Fact.EdgeGesture` no longer carries `isIntercept`, and `FactToProtoFact`/`ProtoAnyToFact` no longer read or write that field in editor state, so the rule editor no longer exposes or saves edge-gesture intercept mode.
+- 四角手势编辑器保持仅配置角位置、提示和触感反馈；底层 proto 字段暂时保留兼容性定义，以免影响仍在使用该字段的 patch 侧编译，后续可在运行时链路一并清理时再删除。 / The corner-swipe editor remains limited to corner selection, hint, and haptic feedback; the underlying proto field definitions are temporarily kept for compatibility so patch-side code that still references them continues to compile, and they can be removed together with the remaining runtime path later.
+
 ## 2026-04-17
 
 ### Legacy IMS Edge Gesture Sequence Migration / 旧版 IMS 边缘手势序列迁移

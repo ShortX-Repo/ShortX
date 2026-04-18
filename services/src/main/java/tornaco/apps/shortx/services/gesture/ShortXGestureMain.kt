@@ -36,9 +36,6 @@ class ShortXGestureMain(
         if (consumed == true) {
             logger.logOnDebug("pilferPointers. consumed")
             return false
-        } else if (service.shouldStealMotionEvent(event)) {
-            logger.logOnDebug("pilferPointers. steal.")
-            return false
         }
         return null
     }

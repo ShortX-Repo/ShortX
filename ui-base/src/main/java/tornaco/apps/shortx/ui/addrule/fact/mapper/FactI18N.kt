@@ -425,11 +425,7 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
                     + i18N[fact.gesture.displayNameKey()]
                     + fact.childSteps.joinToString(separator = "", prefix = "") {
                 " -> " + i18N[it.displayNameKey()]
-            }
-                    + " "
-                    + fact.isIntercept.select(
-                i18N["ui.fact.key.event.adv.is.intercept.mode"], ""
-            ),
+            },
             (!fact.enableGestureHint && fact.gesture.supportsGestureIndicator()).select(
                 i18N["ui.fact.edge.gesture.indicator.disabled"],
                 null
