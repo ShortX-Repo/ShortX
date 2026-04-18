@@ -1,7 +1,23 @@
-package tornaco.apps.shortx.services.gesture;
+/*
+ * Copyright (C) 2018 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import android.annotation.NonNull;
+package tornaco.apps.shortx.services.gesture.bpok.gesture;
+
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.Region;
 import android.util.Log;
@@ -13,11 +29,14 @@ import java.io.PrintWriter;
 import tornaco.apps.shortx.core.BuildPropInternal;
 import tornaco.apps.shortx.core.util.ScreenUtilsKt;
 
+/**
+ * Listens for system-wide input gestures, firing callbacks when detected.
+ */
 public class SystemGesturesPointerEventListener {
     private static final String TAG = "SystemGestures";
     private static final boolean DEBUG = BuildPropInternal.APP_IS_DEBUG;
     private static final long SWIPE_TIMEOUT_MS = 500;
-    private static final int MAX_TRACKED_POINTERS = 32;
+    private static final int MAX_TRACKED_POINTERS = 32;  // max per input system
     private static final int UNTRACKED_POINTER = -1;
 
     private static final int SWIPE_NONE = 0;
@@ -56,10 +75,45 @@ public class SystemGesturesPointerEventListener {
     }
 
     void onConfigurationChanged() {
+        final Resources r = mContext.getResources();
+
         Point screenSize = ScreenUtilsKt.screenSize(mContext);
         screenWidth = screenSize.x;
         screenHeight = screenSize.y;
         Log.w(TAG, "screenSize: " + screenSize);
+
+//        if (OsUtils.isQOrAbove()) {
+//            final Display display = ScreenUtilsKt.defaultDisplay(mContext);
+//            final DisplayCutout displayCutout = display.getCutout();
+//            if (displayCutout != null) {
+//                // Expand swipe start threshold such that we can catch touches that just start beyond
+//                // the notch area
+//                try {
+//                    int resId = Resources.getSystem().getIdentifier("display_cutout_touchable_region_size", "dimen", "android");
+//                    mDisplayCutoutTouchableRegionSize = r.getDimensionPixelSize(resId);
+//                    Log.w(TAG, "display_cutout_touchable_region_size: " + defaultThreshold);
+//                } catch (Throwable ignored) {
+//                }
+//                final Rect[] bounds = displayCutout.getBoundingRectsAll();
+//                if (bounds[BOUNDS_POSITION_LEFT] != null) {
+//                    mSwipeStartThreshold.left = Math.max(mSwipeStartThreshold.left,
+//                            bounds[BOUNDS_POSITION_LEFT].width() + mDisplayCutoutTouchableRegionSize);
+//                }
+//                if (bounds[BOUNDS_POSITION_TOP] != null) {
+//                    mSwipeStartThreshold.top = Math.max(mSwipeStartThreshold.top,
+//                            bounds[BOUNDS_POSITION_TOP].height() + mDisplayCutoutTouchableRegionSize);
+//                }
+//                if (bounds[BOUNDS_POSITION_RIGHT] != null) {
+//                    mSwipeStartThreshold.right = Math.max(mSwipeStartThreshold.right,
+//                            bounds[BOUNDS_POSITION_RIGHT].width() + mDisplayCutoutTouchableRegionSize);
+//                }
+//                if (bounds[BOUNDS_POSITION_BOTTOM] != null) {
+//                    mSwipeStartThreshold.bottom = Math.max(mSwipeStartThreshold.bottom,
+//                            bounds[BOUNDS_POSITION_BOTTOM].height()
+//                                    + mDisplayCutoutTouchableRegionSize);
+//                }
+//            }
+//        }
         if (DEBUG) Log.d(TAG, "mSwipeDistanceThreshold=" + mSwipeDistanceThreshold);
     }
 
@@ -247,7 +301,7 @@ public class SystemGesturesPointerEventListener {
         return SWIPE_NONE;
     }
 
-    public void dump(@NonNull PrintWriter pw, @NonNull String prefix) {
+    public void dump(PrintWriter pw, String prefix) {
         final String inner = prefix + "  ";
         pw.println(prefix + TAG + ":");
         pw.print(inner);
@@ -303,26 +357,32 @@ public class SystemGesturesPointerEventListener {
 
         @Override
         public void onDown() {
+
         }
 
         @Override
         public void onUpOrCancel() {
+
         }
 
         @Override
         public void onMouseHoverAtTop() {
+
         }
 
         @Override
         public void onMouseHoverAtBottom() {
+
         }
 
         @Override
         public void onMouseLeaveFromEdge() {
+
         }
 
         @Override
         public void onDebug() {
+
         }
     }
 }

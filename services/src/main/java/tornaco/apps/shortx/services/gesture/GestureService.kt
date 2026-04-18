@@ -4,22 +4,16 @@ import android.view.InputEvent
 import android.view.MotionEvent
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.ICallback
-import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.Rect
 import tornaco.apps.shortx.core.proto.fact.Edge
-import tornaco.apps.shortx.core.proto.fact.EdgeGesture
-import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.proto.fact.ScreenCorner
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.action.emptyByteArrayWrapper
-import tornaco.apps.shortx.core.rule.is_
-import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.RemoteCallbackListExt
 import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.services.ShortXContext
@@ -28,6 +22,7 @@ import tornaco.apps.shortx.services.data.GestureRecordsStore
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
+import tornaco.apps.shortx.services.gesture.bpok.gesture.HotSeat
 import tornaco.apps.shortx.services.policy.SingleKeyGestureDetector
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.GuideLineView
@@ -41,7 +36,7 @@ import kotlin.math.abs
 private const val GUIDELINE_VIEW_SHOWN_TIME = 6000L
 
 class GestureService(shortXContext: ShortXContext) :
-    SystemService(shortXContext, "GestureService"), DetectorService {
+    SystemService(shortXContext, "GestureService") {
     companion object {
         const val EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MIN = 100
         const val EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MAX = 1200
@@ -57,7 +52,7 @@ class GestureService(shortXContext: ShortXContext) :
         GestureRecordsStore(systemServiceScope)
     }
 
-    private var gestureDetector: Detector? = null
+    private var gestureDetector: ShortXGestureMain? = null
 
     private val showingHints: MutableSet<GuideLineView> = mutableSetOf()
 
@@ -70,16 +65,7 @@ class GestureService(shortXContext: ShortXContext) :
         super.systemReady()
         gestureRecordStore.readBlocking()
 
-        gestureDetector = Detector(context, handler, this).also {
-            runCatching { it.dump() }
-        }
-
-        systemServiceScope.launchSafety("GestureService.systemReady") {
-            shortXContext.systemSettings.currentConfig.collectLatest {
-                gestureDetector?.onConfigurationChanged()
-            }
-        }
-
+        gestureDetector = ShortXGestureMain(context)
     }
 
     fun showEdgeHint(edgeNumber: List<Int>) {
@@ -113,57 +99,8 @@ class GestureService(shortXContext: ShortXContext) :
             logger.e("gestureDetector is null.")
             return null
         }
-        val gestureInterceptRes = nonNullGestureDetector.interceptEvent(input)
+        val gestureInterceptRes = nonNullGestureDetector.filterMotionEvent(input)
         return gestureInterceptRes
-    }
-
-    override fun enabledEdgeGestures(): Set<EdgeGesture> {
-        val set = mutableSetOf<EdgeGesture>()
-        shortXContext.rule.forEachEnabledFacts { id, it ->
-            if (it is_ EdgeGesture::class.java) {
-                val ck = it unpack_ EdgeGesture::class.java
-                if (!ck.isDisabled) {
-                    set.add(ck)
-                }
-            }
-        }
-        return set
-    }
-
-    override fun handleEdgeGestureEvent(
-        areas: List<DetectedArea>,
-        gestureEvent: Gesture,
-        downX: Float,
-        downY: Float,
-    ): Boolean {
-        var res = false
-        areas.forEach {
-            val fact = when (it) {
-                is DetectedArea.PredefinedEdge -> EdgeGesture.newBuilder()
-                    .setEdge(it.edge)
-                    .setGesture(gestureEvent)
-                    .build()
-
-                is DetectedArea.CustomRect -> EdgeGesture.newBuilder()
-                    .setCustomRect(it.rect)
-                    .setIsTriggerCustom(true)
-                    .setGesture(gestureEvent)
-                    .build()
-            }
-            logger.logOnDebug { "handleEdgeGestureEvent $fact" }
-            if (shortXContext.rule.shouldFire(fact)) {
-                shortXContext.rule.publishFact("fireEdgeGesture", fact) {
-                    mapOf(
-                        ContextDataMapping.ScreenGesture.eventX.name to downX.toInt(),
-                        ContextDataMapping.ScreenGesture.eventY.name to downY.toInt(),
-                    )
-                }
-                res = true
-            } else {
-                logger.logOnDebug { "handleEdgeGestureEvent, skip fire $fact" }
-            }
-        }
-        return res
     }
 
     fun getEdgeGestureSequenceHoverDurationMs(): Int =
@@ -238,11 +175,8 @@ class GestureService(shortXContext: ShortXContext) :
         notifyGestureSettingsChanged()
     }
 
-    // TODO Should obs rule/da/pkgset changed
-    // should obs app state by pkgset.
     fun onRuleChanged() {
         logger.logOnDebug { "onRuleChanged" }
-        gestureDetector?.invalidateCache()
     }
 
     private fun showGideLineViewForArea(area: List<Edge>) {
@@ -324,7 +258,7 @@ class GestureService(shortXContext: ShortXContext) :
         }
     }
 
-    override fun getGestureLengthScale(): Float =
+    fun getGestureLengthScale(): Float =
         minOf(store.read(Settings.FloatSettings.GestureAreaLengthScale), 1f)
 
     fun setGestureLengthScale(scale: Float) {
@@ -332,7 +266,7 @@ class GestureService(shortXContext: ShortXContext) :
         notifyGestureSettingsChanged()
     }
 
-    override fun getGestureAreaWidthDp(): Int =
+    fun getGestureAreaWidthDp(): Int =
         maxOf(store.read(Settings.IntSettings.GestureAreaWidthDp), 12)
 
     fun setGestureAreaWidthDp(dp: Int) {
@@ -340,7 +274,7 @@ class GestureService(shortXContext: ShortXContext) :
         notifyGestureSettingsChanged()
     }
 
-    override fun getSwipeDistanceThresholdDp(): Int =
+    fun getSwipeDistanceThresholdDp(): Int =
         maxOf(store.read(Settings.IntSettings.SwipeDistanceThresholdDp), 1)
 
     fun setSwipeDistanceThresholdDp(thr: Int) {
