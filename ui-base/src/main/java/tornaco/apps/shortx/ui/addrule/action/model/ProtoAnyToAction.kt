@@ -2554,6 +2554,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 threads = data.threads,
                 useSlim = data.useSlim,
                 separator = data.separator,
+                outputType = data.outputType,
             )
         }
 

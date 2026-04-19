@@ -1873,11 +1873,17 @@ message SelectScreenArea {
   string id = 100;
 }
 
+enum OcrDetectOutputType {
+  OcrDetectOutputType_Json = 0;
+  OcrDetectOutputType_Text = 1;
+}
+
 message OcrDetect {
   google.protobuf.Any rectSrc = 1;
   int32 threads = 2;
   bool useSlim = 3;
   string separator = 4;
+  OcrDetectOutputType output_type = 5;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;

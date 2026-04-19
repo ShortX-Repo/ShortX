@@ -14,6 +14,7 @@ import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.proto.action.MediaPlaybackAction
 import tornaco.apps.shortx.core.proto.action.NavType
 import tornaco.apps.shortx.core.proto.action.NotificationButton
+import tornaco.apps.shortx.core.proto.action.OcrDetectOutputType
 import tornaco.apps.shortx.core.proto.action.ScrollViewToLocation
 import tornaco.apps.shortx.core.proto.action.ShowListDialogDataType
 import tornaco.apps.shortx.core.proto.action.WriteGlobalVarOp
@@ -5183,6 +5184,7 @@ sealed interface Action : Parcelable {
         val threads: Int = 4,
         val useSlim: Boolean = false,
         val separator: String = " ",
+        val outputType: OcrDetectOutputType = OcrDetectOutputType.OcrDetectOutputType_Json,
     ) : Action {
         override fun clone(
             id: String,

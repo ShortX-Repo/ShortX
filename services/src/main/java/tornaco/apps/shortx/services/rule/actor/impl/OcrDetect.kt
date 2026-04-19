@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.os.ParcelFileDescriptor
 import com.google.protobuf.Message
+import com.google.protobuf.StringValue
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.context.ContextDataMapping
@@ -13,6 +14,7 @@ import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.os.ScreenCap
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
+import tornaco.apps.shortx.core.proto.action.OcrDetectOutputType
 import tornaco.apps.shortx.core.proto.common.ByteArrayList
 import tornaco.apps.shortx.core.proto.common.OCREngine
 import tornaco.apps.shortx.core.proto.common.RectSourceFullScreen
@@ -28,7 +30,6 @@ import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.data.Dirs
-import tornaco.apps.shortx.services.proto.StringList
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import java.io.File
@@ -53,8 +54,12 @@ object OcrDetect : Actor {
 
         val src = data.rectSrc
 
-        val ocrResult = recognizeText(this, src, shortXContext.ocr.getOCREngine())
-        val ocrResultString = ocrResult.joinToString(data.separator)
+        val ocrResultString = recognizeOcrString(
+            this,
+            src,
+            shortXContext.ocr.getOCREngine(),
+            data.outputType
+        )
 
         params.contextData.add(
             data.customContextDataKey.forKey(ContextDataMapping.OcrDetect.ocrResult.name)
@@ -66,19 +71,20 @@ object OcrDetect : Actor {
         Actor.Res(ocrResultString)
     }
 
-    private suspend fun recognizeText(
+    private suspend fun recognizeOcrString(
         params: HandleParams,
         src: ProtoAny,
-        engine: OCREngine
-    ): List<String> {
+        engine: OCREngine,
+        outputType: OcrDetectOutputType,
+    ): String {
         return with(params) {
-            val ocrResult: List<String> = withSrcBitmap(
+            withSrcBitmap(
                 src,
                 androidContext,
                 evaluateContext,
                 shortXContext
             ) { bitmap ->
-                logger.d("recognizeText, bitmap: $bitmap")
+                logger.d("recognizeOcrString, bitmap: $bitmap, outputType=$outputType")
                 if (BuildPropInternal.APP_IS_DEBUG) {
                     runCatching {
                         saveScreenBitmapToFile(
@@ -89,22 +95,27 @@ object OcrDetect : Actor {
                     }
                 }
                 val receiver = SynchronousResultReceiver.get()
-                bitmap.useSharedPFD {
-                    shortXContext.ocr.requireOCR().recognizeTextJsonPFD(
-                        engine.number,
-                        it,
-                        receiver
-                    )
+                bitmap.useSharedPFD { pfd ->
+                    val ocr = shortXContext.ocr.requireOCR()
+                    when (outputType) {
+                        OcrDetectOutputType.OcrDetectOutputType_Text, OcrDetectOutputType.UNRECOGNIZED ->
+                            ocr.recognizeTextPFD(engine.number, pfd, receiver)
+
+                        OcrDetectOutputType.OcrDetectOutputType_Json ->
+                            ocr.recognizeTextJsonPFD(engine.number, pfd, receiver)
+                    }
                 }
                 val receiverRes =
                     receiver.awaitResultNoInterrupt(Duration.ofSeconds(DETECT_TIMEOUT_S))
                 val byteRes: ByteArrayWrapper? = receiverRes.getValue(null)
-                val stringList: StringList? = byteRes?.let { StringList.parseFrom(it.byteData) }
-                requireNotNull(stringList?.stringsList?.toList()) { "Unable to recognizeText." }
-            }
-            logger.logOnDebug("recognizeText, ocrResult: $ocrResult")
-            ocrResult
+                requireNotNull(byteRes) { "Unable to recognize OCR (empty response)." }
+                decodeOcrPayload(byteRes.byteData)
+            }.also { logger.logOnDebug("recognizeOcrString, result: $it") }
         }
+    }
+
+    private fun decodeOcrPayload(bytes: ByteArray): String {
+        return StringValue.parseFrom(bytes).value
     }
 
     suspend fun findAllContinuousTextPositions(

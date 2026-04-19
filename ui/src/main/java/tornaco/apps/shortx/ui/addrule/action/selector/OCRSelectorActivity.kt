@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import tornaco.apps.shortx.core.proto.action.OcrDetectOutputType
 import tornaco.apps.shortx.core.proto.toAndroidRect
 import tornaco.apps.shortx.core.proto.toProtoRect
 import tornaco.apps.shortx.core.res.Remix
@@ -171,6 +172,62 @@ private fun BaseSelectorActivity<Action.OcrDetect>.Selector(currentAction: Actio
                     )
                 }
             }
+
+            StandardSpacer()
+
+            FieldTitle(text = i18N["ui.action.ocr.output.type"])
+            SmallSpacer()
+            val outputTypeMenuState = rememberMenuDialogState<String>(
+                title = i18N["ui.action.ocr.output.type"],
+                menuItems = listOf(
+                    MenuDialogItem(
+                        id = OcrDetectOutputType.OcrDetectOutputType_Text.name,
+                        title = i18N["ui.action.ocr.output.text"],
+                        summary = i18N["ui.action.ocr.output.text.summary"],
+                    ),
+                    MenuDialogItem(
+                        id = OcrDetectOutputType.OcrDetectOutputType_Json.name,
+                        title = i18N["ui.action.ocr.output.json"],
+                        summary = i18N["ui.action.ocr.output.json.summary"],
+                    ),
+                ),
+                onItemSelected = { _, id ->
+                    when (id) {
+                        OcrDetectOutputType.OcrDetectOutputType_Text.name -> {
+                            vm.setOutputType(OcrDetectOutputType.OcrDetectOutputType_Text)
+                        }
+
+                        OcrDetectOutputType.OcrDetectOutputType_Json.name -> {
+                            vm.setOutputType(OcrDetectOutputType.OcrDetectOutputType_Json)
+                        }
+                    }
+                }
+            )
+            MenuDialog(state = outputTypeMenuState)
+
+            ListItem(
+                icon = {
+                    ColoredIcon {
+                        RemixIcon(remixName = Remix.Document.file_text_line)
+                    }
+                },
+                titleLines = listOf(
+                    i18N["ui.action.ocr.output.type"],
+                    when (state.outputType) {
+                        OcrDetectOutputType.OcrDetectOutputType_Text ->
+                            i18N["ui.action.ocr.output.text"]
+
+                        else -> i18N["ui.action.ocr.output.json"]
+                    },
+                    when (state.outputType) {
+                        OcrDetectOutputType.OcrDetectOutputType_Text ->
+                            i18N["ui.action.ocr.output.text.summary"]
+
+                        else -> i18N["ui.action.ocr.output.json.summary"]
+                    },
+                ),
+                onClick = { outputTypeMenuState.show() }
+            )
 
             StandardSpacer()
 

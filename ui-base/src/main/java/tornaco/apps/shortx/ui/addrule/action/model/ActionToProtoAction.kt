@@ -2256,6 +2256,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setThreads(threads)
                 .setUseSlim(useSlim)
                 .setSeparator(separator)
+                .setOutputType(outputType)
                 .build()
         }
 

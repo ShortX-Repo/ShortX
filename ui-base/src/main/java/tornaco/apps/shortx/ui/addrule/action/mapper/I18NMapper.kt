@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.proto.action.CurrentLocationProviderPreference
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.proto.action.MediaPlaybackAction
 import tornaco.apps.shortx.core.proto.action.NavType
+import tornaco.apps.shortx.core.proto.action.OcrDetectOutputType
 import tornaco.apps.shortx.core.proto.action.ScrollViewToLocation
 import tornaco.apps.shortx.core.proto.common.ActionOnError
 import tornaco.apps.shortx.core.proto.common.AndroidIntentComponentType
@@ -1285,7 +1286,13 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         )
 
         is Action.OcrDetect -> listOfNotNull(
-            i18N["ui.action.ocr.detect"]
+            i18N["ui.action.ocr.detect"],
+            when (action.outputType) {
+                OcrDetectOutputType.OcrDetectOutputType_Text ->
+                    i18N["ui.action.ocr.output.text"]
+
+                else -> i18N["ui.action.ocr.output.json"]
+            }
         )
 
         is Action.ScreenFlash -> listOfNotNull(
