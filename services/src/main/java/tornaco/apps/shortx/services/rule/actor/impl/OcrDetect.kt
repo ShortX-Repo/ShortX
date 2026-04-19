@@ -90,7 +90,7 @@ object OcrDetect : Actor {
                 }
                 val receiver = SynchronousResultReceiver.get()
                 bitmap.useSharedPFD {
-                    shortXContext.ocr.requireOCR().recognizeTextPFD(
+                    shortXContext.ocr.requireOCR().recognizeTextJsonPFD(
                         engine.number,
                         it,
                         receiver

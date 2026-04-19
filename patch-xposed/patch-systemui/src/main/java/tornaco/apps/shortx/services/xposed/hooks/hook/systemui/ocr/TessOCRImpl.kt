@@ -48,10 +48,18 @@ class TessOCRImpl(private val context: Context) : IOCR.Stub() {
         engine: Int,
         bitmap: Bitmap,
     ): String {
+        return recognizeTextInternal(engine, bitmap)
+    }
+
+    private fun recognizeTextInternal(
+        engine: Int,
+        bitmap: Bitmap,
+        methodName: String = "recognizeText"
+    ): String {
         logger.d("recognizeText apiIns: $apiIns")
         val result = (Reflections.callMethod(
             apiIns,
-            "recognizeText",
+            methodName,
             bitmap
         ) as String?)
         logger.d("recognizeText result: $result")
@@ -96,12 +104,21 @@ class TessOCRImpl(private val context: Context) : IOCR.Stub() {
         pfd: ParcelFileDescriptor,
         receiver: SynchronousResultReceiver
     ) {
+        return recognizeTextPFDInternal(engine, pfd, receiver)
+    }
+
+    private fun recognizeTextPFDInternal(
+        engine: Int,
+        pfd: ParcelFileDescriptor,
+        receiver: SynchronousResultReceiver,
+        methodName: String = "recognizeText"
+    ) {
         var bitmap: Bitmap? = null
         val result: String = kotlin.runCatching {
             val fd: FileDescriptor = pfd.fileDescriptor
             bitmap = BitmapFactory.decodeFileDescriptor(fd)
             logger.d("recognizeTextPFD, bitmap: $bitmap")
-            recognizeText(engine, requireNotNull(bitmap) { "bitmap is null." })
+            recognizeTextInternal(engine, requireNotNull(bitmap) { "bitmap is null." }, methodName)
         }.getOrElse {
             logger.e(it, "recognizeTextPFD")
             runCatching { bitmap?.recycle() }
@@ -113,5 +130,20 @@ class TessOCRImpl(private val context: Context) : IOCR.Stub() {
                 StringValue.newBuilder().setValue(result).build().toByteArray()
             )
         )
+    }
+
+    override fun recognizeTextJson(
+        engine: Int,
+        image: Bitmap
+    ): String? {
+        return recognizeTextInternal(engine, image, "recognizeTextJson")
+    }
+
+    override fun recognizeTextJsonPFD(
+        engine: Int,
+        pfd: ParcelFileDescriptor,
+        receiver: SynchronousResultReceiver
+    ) {
+        return recognizeTextPFDInternal(engine, pfd, receiver, "recognizeTextJson")
     }
 }

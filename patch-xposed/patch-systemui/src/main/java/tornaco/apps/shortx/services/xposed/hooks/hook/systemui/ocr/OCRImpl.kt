@@ -56,4 +56,19 @@ class OCRImpl(private val context: Context) : IOCR.Stub() {
     ) {
         getEngine(engine).recognizeTextPFD(engine, pfd, receiver)
     }
+
+    override fun recognizeTextJson(
+        engine: Int,
+        image: Bitmap?
+    ): String? {
+        return getEngine(engine).recognizeTextJson(engine, image)
+    }
+
+    override fun recognizeTextJsonPFD(
+        engine: Int,
+        pfd: ParcelFileDescriptor?,
+        receiver: SynchronousResultReceiver?
+    ) {
+        getEngine(engine).recognizeTextJsonPFD(engine, pfd, receiver)
+    }
 }

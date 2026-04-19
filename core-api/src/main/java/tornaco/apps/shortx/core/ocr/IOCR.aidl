@@ -11,4 +11,7 @@ interface IOCR {
     oneway void findAllContinuousTextPositionsPFD(int engine, in ParcelFileDescriptor pfd, String text, in SynchronousResultReceiver receiver);
     // StringValue
     oneway void recognizeTextPFD(int engine, in ParcelFileDescriptor pfd, in SynchronousResultReceiver receiver);
+
+    String recognizeTextJson(int engine, in Bitmap image);
+    oneway void recognizeTextJsonPFD(int engine, in ParcelFileDescriptor pfd, in SynchronousResultReceiver receiver);
 }
