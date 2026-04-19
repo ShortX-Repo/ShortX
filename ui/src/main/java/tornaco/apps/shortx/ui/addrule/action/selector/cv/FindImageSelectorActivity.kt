@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import tornaco.apps.shortx.core.proto.action.FindImagePositionOutputType
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.ui.addrule.ImagePreviewDialog
@@ -32,6 +33,7 @@ import tornaco.apps.shortx.ui.addrule.action.selector.PhotoSelectorActivity
 import tornaco.apps.shortx.ui.addrule.rememberImagePreviewDialogState
 import tornaco.apps.shortx.ui.base.Base64ImageIcon
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
+import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -41,6 +43,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextDisplayActivity
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
@@ -94,6 +97,62 @@ private fun BaseSelectorActivity<Action.FindImagePosition>.Selector(currentActio
             ImageSourceSelector(state.template, i18N["ui.action.find.image.template"], false) {
                 vm.setTemplate(it)
             }
+
+            StandardSpacer()
+
+            FieldTitle(text = i18N["ui.action.find.image.output.type"])
+            SmallSpacer()
+            val outputTypeMenuState = rememberMenuDialogState<String>(
+                title = i18N["ui.action.find.image.output.type"],
+                menuItems = listOf(
+                    MenuDialogItem(
+                        id = FindImagePositionOutputType.FindImagePositionOutputType_Text.name,
+                        title = i18N["ui.action.find.image.output.text"],
+                        summary = i18N["ui.action.find.image.output.text.summary"],
+                    ),
+                    MenuDialogItem(
+                        id = FindImagePositionOutputType.FindImagePositionOutputType_Json.name,
+                        title = i18N["ui.action.find.image.output.json"],
+                        summary = i18N["ui.action.find.image.output.json.summary"],
+                    ),
+                ),
+                onItemSelected = { _, id ->
+                    when (id) {
+                        FindImagePositionOutputType.FindImagePositionOutputType_Text.name -> {
+                            vm.setOutputType(FindImagePositionOutputType.FindImagePositionOutputType_Text)
+                        }
+
+                        FindImagePositionOutputType.FindImagePositionOutputType_Json.name -> {
+                            vm.setOutputType(FindImagePositionOutputType.FindImagePositionOutputType_Json)
+                        }
+                    }
+                }
+            )
+            MenuDialog(state = outputTypeMenuState)
+
+            ListItem(
+                icon = {
+                    ColoredIcon {
+                        RemixIcon(remixName = Remix.Document.file_text_line)
+                    }
+                },
+                titleLines = listOf(
+                    i18N["ui.action.find.image.output.type"],
+                    when (state.outputType) {
+                        FindImagePositionOutputType.FindImagePositionOutputType_Text ->
+                            i18N["ui.action.find.image.output.text"]
+
+                        else -> i18N["ui.action.find.image.output.json"]
+                    },
+                    when (state.outputType) {
+                        FindImagePositionOutputType.FindImagePositionOutputType_Text ->
+                            i18N["ui.action.find.image.output.text.summary"]
+
+                        else -> i18N["ui.action.find.image.output.json.summary"]
+                    },
+                ),
+                onClick = { outputTypeMenuState.show() }
+            )
         }
     }
 }

@@ -1823,12 +1823,19 @@ message LaunchPinedItem {
   string id = 100;
 }
 
+enum FindImagePositionOutputType {
+  FindImagePositionOutputType_Text = 0;
+  FindImagePositionOutputType_Json = 1;
+}
+
 message FindImagePosition {
   // template
   google.protobuf.Any template = 1;
 
   // image src
   google.protobuf.Any image = 2;
+
+  FindImagePositionOutputType output_type = 3;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;

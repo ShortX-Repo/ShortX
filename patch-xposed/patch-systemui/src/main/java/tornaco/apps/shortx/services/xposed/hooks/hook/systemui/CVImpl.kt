@@ -6,7 +6,10 @@ import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.graphics.Rect
 import android.os.ParcelFileDescriptor
+import com.google.protobuf.StringValue
 import tornaco.apps.shortx.core.cv.ICV
+import tornaco.apps.shortx.core.os.SynchronousResultReceiver
+import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.xposed.hooks.hook.ExtAppClassHelper
 import util.Reflections
@@ -76,6 +79,42 @@ class CVImpl(private val context: Context) : ICV.Stub() {
         runCatching { image.recycle() }
         runCatching { template.recycle() }
         return res
+    }
+
+    override fun findImageJson(image: Bitmap, template: Bitmap): String {
+        return runCatching {
+            logger.d("findImageJson cvApiIns: $cvApiIns")
+            (Reflections.callMethod(cvApiIns, "findImageJson", image, template) as String?)
+                .orEmpty()
+        }.getOrElse {
+            logger.e(it, "findImageJson error")
+            ""
+        }
+    }
+
+    override fun findImageJsonPFD(
+        imagePFD: ParcelFileDescriptor,
+        templatePFD: ParcelFileDescriptor,
+        receiver: SynchronousResultReceiver
+    ) {
+        var image: Bitmap? = null
+        var template: Bitmap? = null
+        val json: String = kotlin.runCatching {
+            image = BitmapFactory.decodeFileDescriptor(imagePFD.fileDescriptor)
+            template = BitmapFactory.decodeFileDescriptor(templatePFD.fileDescriptor)
+            logger.d("findImageJsonPFD, image: $image, template: $template")
+            findImageJson(requireNotNull(image), requireNotNull(template))
+        }.getOrElse {
+            logger.e(it, "findImageJsonPFD")
+            ""
+        }
+        runCatching { image?.recycle() }
+        runCatching { template?.recycle() }
+        receiver.send(
+            ByteArrayWrapper(
+                StringValue.newBuilder().setValue(json).build().toByteArray()
+            )
+        )
     }
 
     override fun findPointsByColorPFD(

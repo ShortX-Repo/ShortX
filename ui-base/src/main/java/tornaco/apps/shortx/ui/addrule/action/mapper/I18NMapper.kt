@@ -9,6 +9,7 @@ import tornaco.apps.shortx.core.proto.action.ContextMenuAction
 import tornaco.apps.shortx.core.proto.action.CurrentLocationProviderPreference
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.proto.action.MediaPlaybackAction
+import tornaco.apps.shortx.core.proto.action.FindImagePositionOutputType
 import tornaco.apps.shortx.core.proto.action.NavType
 import tornaco.apps.shortx.core.proto.action.OcrDetectOutputType
 import tornaco.apps.shortx.core.proto.action.ScrollViewToLocation
@@ -1255,6 +1256,12 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
 
         is Action.FindImagePosition -> listOf(
             i18N["ui.action.find.image"],
+            when (action.outputType) {
+                FindImagePositionOutputType.FindImagePositionOutputType_Json ->
+                    i18N["ui.action.find.image.output.json"]
+
+                else -> i18N["ui.action.find.image.output.text"]
+            },
         )
 
         is Action.FindPointsByColor -> listOf(

@@ -464,6 +464,7 @@ object ContextDataMapping {
         pointX("X offset of the image from screen, or 0 is not found"),
         pointY("Y offset of the image from screen, or 0 is not found"),
         isImageFound("If the image has been found"),
+        findImageJson("JSON string with detailed template-match result when output type is JSON (fields depend on the CV engine)"),
     }
 
     @DoNotStrip

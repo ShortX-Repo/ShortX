@@ -2419,7 +2419,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 id = data.id,
                 note = data.note,
                 template = data.template.toImageSource(),
-                image = data.image.toImageSource()
+                image = data.image.toImageSource(),
+                outputType = data.outputType,
             )
         }
 

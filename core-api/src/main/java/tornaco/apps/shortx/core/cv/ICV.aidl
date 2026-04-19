@@ -8,4 +8,7 @@ interface ICV {
 
     Point findImagePFD(in ParcelFileDescriptor imagePFD, in ParcelFileDescriptor templatePFD);
     List<Point> findPointsByColorPFD(in ParcelFileDescriptor pfd, int color, int threshold, in Rect rect);
+
+    String findImageJson(in Bitmap image, in Bitmap template);
+    oneway void findImageJsonPFD(in ParcelFileDescriptor imagePFD, in ParcelFileDescriptor templatePFD, in SynchronousResultReceiver receiver);
 }

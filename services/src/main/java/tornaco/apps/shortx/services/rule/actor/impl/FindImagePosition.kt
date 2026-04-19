@@ -3,10 +3,14 @@ package tornaco.apps.shortx.services.rule.actor.impl
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Point
+import android.os.ParcelFileDescriptor
 import com.google.protobuf.Message
+import com.google.protobuf.StringValue
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.os.ScreenCap
+import tornaco.apps.shortx.core.os.SynchronousResultReceiver
+import tornaco.apps.shortx.core.proto.action.FindImagePositionOutputType
 import tornaco.apps.shortx.core.proto.common.ImageSourceBase64
 import tornaco.apps.shortx.core.proto.common.ImageSourcePath
 import tornaco.apps.shortx.core.proto.common.ImageSourceScreenshot
@@ -16,6 +20,7 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
+import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.util.powerManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.data.Dirs
@@ -24,8 +29,10 @@ import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.services.rule.actor.impl.OcrDetect.getBitmapFromPath
 import java.io.File
 import java.io.FileOutputStream
+import java.time.Duration
 
 object FindImagePosition : Actor {
+    private const val FIND_IMAGE_TIMEOUT_S = 30L
     override fun actionsCanHandle(): Class<out Message> {
         return tornaco.apps.shortx.core.proto.action.FindImagePosition::class.java
     }
@@ -53,31 +60,84 @@ object FindImagePosition : Actor {
 
         val cv = shortXContext.cv.requireCV()
         logger.d("cv: $cv")
-        val point: Point? = with(OcrDetect) {
-            image.useSharedPFD { imagePFD ->
-                template.useSharedPFD { templatePFD ->
-                    cv.findImagePFD(imagePFD, templatePFD)
-                }
-            }
-        }
-        logger.d("point: $point")
 
-        params.contextData.add(
-            d.customContextDataKey.forKey(ContextDataMapping.FindImagePosition.isImageFound.name)
-                .fallbackOnEmpty { ContextDataMapping.FindImagePosition.isImageFound.name },
-            point != null
-        )
-        point?.let {
-            params.contextData.add(
-                d.customContextDataKey.forKey(ContextDataMapping.FindImagePosition.pointX.name)
-                    .fallbackOnEmpty { ContextDataMapping.FindImagePosition.pointX.name },
-                point.x.toString()
-            )
-            params.contextData.add(
-                d.customContextDataKey.forKey(ContextDataMapping.FindImagePosition.pointY.name)
-                    .fallbackOnEmpty { ContextDataMapping.FindImagePosition.pointY.name },
-                point.y.toString()
-            )
+        when (d.outputType) {
+            FindImagePositionOutputType.FindImagePositionOutputType_Json -> {
+                val receiver = SynchronousResultReceiver.get()
+                val imageFile =
+                    saveScreenBitmapToFile(image, Dirs.baseServerCacheDir(), "find-image-json-i")
+                val templateFile =
+                    saveScreenBitmapToFile(template, Dirs.baseServerCacheDir(), "find-image-json-t")
+                val json: String = try {
+                    ParcelFileDescriptor.open(
+                        imageFile,
+                        ParcelFileDescriptor.MODE_READ_ONLY
+                    ).use { imagePFD ->
+                        ParcelFileDescriptor.open(
+                            templateFile,
+                            ParcelFileDescriptor.MODE_READ_ONLY
+                        ).use { templatePFD ->
+                            cv.findImageJsonPFD(imagePFD, templatePFD, receiver)
+                            val receiverRes =
+                                receiver.awaitResultNoInterrupt(
+                                    Duration.ofSeconds(FIND_IMAGE_TIMEOUT_S)
+                                )
+                            val byteRes: ByteArrayWrapper? = receiverRes.getValue(null)
+                            requireNotNull(byteRes) { "findImageJsonPFD empty response." }
+                            StringValue.parseFrom(byteRes.byteData).value
+                        }
+                    }
+                } finally {
+                    runCatching { imageFile.delete() }
+                    runCatching { templateFile.delete() }
+                }
+                logger.d("findImageJson: $json")
+                params.contextData.add(
+                    d.customContextDataKey.forKey(ContextDataMapping.FindImagePosition.isImageFound.name)
+                        .fallbackOnEmpty { ContextDataMapping.FindImagePosition.isImageFound.name },
+                    json.isNotEmpty()
+                )
+                params.contextData.add(
+                    d.customContextDataKey.forKey(ContextDataMapping.FindImagePosition.findImageJson.name)
+                        .fallbackOnEmpty { ContextDataMapping.FindImagePosition.findImageJson.name },
+                    json
+                )
+            }
+
+            FindImagePositionOutputType.FindImagePositionOutputType_Text,
+            FindImagePositionOutputType.UNRECOGNIZED -> {
+                val point: Point? = with(OcrDetect) {
+                    image.useSharedPFD { imagePFD ->
+                        template.useSharedPFD { templatePFD ->
+                            cv.findImagePFD(imagePFD, templatePFD)
+                        }
+                    }
+                }
+                logger.d("point: $point")
+
+                params.contextData.add(
+                    d.customContextDataKey.forKey(ContextDataMapping.FindImagePosition.isImageFound.name)
+                        .fallbackOnEmpty { ContextDataMapping.FindImagePosition.isImageFound.name },
+                    point != null
+                )
+                point?.let {
+                    params.contextData.add(
+                        d.customContextDataKey.forKey(ContextDataMapping.FindImagePosition.pointX.name)
+                            .fallbackOnEmpty { ContextDataMapping.FindImagePosition.pointX.name },
+                        point.x.toString()
+                    )
+                    params.contextData.add(
+                        d.customContextDataKey.forKey(ContextDataMapping.FindImagePosition.pointY.name)
+                            .fallbackOnEmpty { ContextDataMapping.FindImagePosition.pointY.name },
+                        point.y.toString()
+                    )
+                }
+                params.contextData.add(
+                    d.customContextDataKey.forKey(ContextDataMapping.FindImagePosition.findImageJson.name)
+                        .fallbackOnEmpty { ContextDataMapping.FindImagePosition.findImageJson.name },
+                    ""
+                )
+            }
         }
         Actor.Res.EMPTY
     }

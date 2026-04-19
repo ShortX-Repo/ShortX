@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import tornaco.apps.shortx.core.proto.action.FindImagePositionOutputType
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.ImageSource
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
@@ -14,6 +15,8 @@ data class FindImageSelectorState(
     val id: String = defaultNewActionId(),
     val image: ImageSource = ImageSource.Screenshot,
     val template: ImageSource = ImageSource.NA,
+    val outputType: FindImagePositionOutputType =
+        FindImagePositionOutputType.FindImagePositionOutputType_Text,
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -34,6 +37,7 @@ class FindImageSelectorViewModel @Inject constructor(@ApplicationContext context
                     id = it.id,
                     image = it.image,
                     template = it.template,
+                    outputType = it.outputType,
                 )
             }
         }
@@ -51,13 +55,20 @@ class FindImageSelectorViewModel @Inject constructor(@ApplicationContext context
         }
     }
 
+    fun setOutputType(outputType: FindImagePositionOutputType) {
+        updateState {
+            copy(outputType = outputType)
+        }
+    }
+
     fun toActionOrNull(): Action.FindImagePosition? {
         return state.value.template.takeIf { it != ImageSource.NA }
             ?.let {
                 Action.FindImagePosition(
                     image = state.value.image,
                     template = it,
-                    id = state.value.id
+                    id = state.value.id,
+                    outputType = state.value.outputType,
                 )
             }
     }

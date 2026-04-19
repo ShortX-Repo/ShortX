@@ -2169,6 +2169,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setNote(overrideNote ?: note)
                 .setTemplate(template.toProto())
                 .setImage(image.toProto())
+                .setOutputType(outputType)
                 .build()
         }
 

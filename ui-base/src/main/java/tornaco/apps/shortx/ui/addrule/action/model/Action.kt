@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
 import tornaco.apps.shortx.core.proto.action.ContextMenuAction
 import tornaco.apps.shortx.core.proto.action.CurrentLocationProviderPreference
 import tornaco.apps.shortx.core.proto.action.DialogMenuItem
+import tornaco.apps.shortx.core.proto.action.FindImagePositionOutputType
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.proto.action.MediaPlaybackAction
 import tornaco.apps.shortx.core.proto.action.NavType
@@ -5038,6 +5039,8 @@ sealed interface Action : Parcelable {
 
         val template: ImageSource,
         val image: ImageSource,
+        val outputType: FindImagePositionOutputType =
+            FindImagePositionOutputType.FindImagePositionOutputType_Text,
     ) : Action {
         override fun clone(
             id: String,
