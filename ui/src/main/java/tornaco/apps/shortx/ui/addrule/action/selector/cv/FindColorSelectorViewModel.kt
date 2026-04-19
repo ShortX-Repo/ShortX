@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import tornaco.apps.shortx.core.proto.common.FindPointsByColorOutputType
 import tornaco.apps.shortx.core.proto.common.Rect
 import tornaco.apps.shortx.ui.addrule.action.model.FindPointsByColorConfig
 import tornaco.apps.shortx.ui.addrule.action.model.ImageSource
@@ -14,7 +15,9 @@ data class FindColorSelectorState(
     val image: ImageSource = ImageSource.Screenshot,
     val color: Int = android.graphics.Color.RED,
     val threshold: Int = 0,
-    val rect: Rect = Rect.getDefaultInstance()
+    val rect: Rect = Rect.getDefaultInstance(),
+    val outputType: FindPointsByColorOutputType =
+        FindPointsByColorOutputType.FindPointsByColorOutputType_Text,
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -34,7 +37,8 @@ class FindColorSelectorViewModel @Inject constructor(@ApplicationContext context
                     image = it.image,
                     color = it.color,
                     threshold = it.threshold,
-                    rect = it.rect
+                    rect = it.rect,
+                    outputType = it.outputType,
                 )
             }
         }
@@ -58,12 +62,19 @@ class FindColorSelectorViewModel @Inject constructor(@ApplicationContext context
         }
     }
 
+    fun setOutputType(outputType: FindPointsByColorOutputType) {
+        updateState {
+            copy(outputType = outputType)
+        }
+    }
+
     fun toActionOrNull(): FindPointsByColorConfig {
         return FindPointsByColorConfig(
             image = state.value.image,
             color = state.value.color,
             threshold = state.value.threshold,
             rect = state.value.rect,
+            outputType = state.value.outputType,
         )
     }
 }

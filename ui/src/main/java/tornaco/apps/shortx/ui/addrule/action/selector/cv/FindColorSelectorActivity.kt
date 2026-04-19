@@ -35,21 +35,28 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import tornaco.apps.shortx.core.proto.common.FindPointsByColorOutputType
 import tornaco.apps.shortx.core.proto.toProtoRect
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.action.model.FindPointsByColorConfig
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
+import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.ColorPickerDialog
 import tornaco.apps.shortx.ui.base.ColorPickerDialogState
 import tornaco.apps.shortx.ui.base.FieldTitle
+import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MenuDialog
+import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.gesture.ScreenRectPickerActivity
 import tornaco.apps.shortx.ui.util.toComposeColor
@@ -57,15 +64,25 @@ import tornaco.apps.shortx.core.proto.common.Rect as ProtoRect
 
 @AndroidEntryPoint
 class FindColorSelectorActivity : BaseSelectorActivity<FindPointsByColorConfig>() {
+    companion object {
+        const val EXTRA_SHOW_OUTPUT_TYPE = "find_color.show_output_type"
+    }
+
     @Composable
     override fun BaseSelectorActivity<FindPointsByColorConfig>.SelectorContent(currentData: FindPointsByColorConfig?) {
-        Selector(currentAction = currentData)
+        Selector(
+            currentAction = currentData,
+            showOutputTypeSelector = intent.getBooleanExtra(EXTRA_SHOW_OUTPUT_TYPE, false),
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun BaseSelectorActivity<FindPointsByColorConfig>.Selector(currentAction: FindPointsByColorConfig?) {
+private fun BaseSelectorActivity<FindPointsByColorConfig>.Selector(
+    currentAction: FindPointsByColorConfig?,
+    showOutputTypeSelector: Boolean,
+) {
     val vm = hiltViewModel<FindColorSelectorViewModel>()
     LaunchedEffect(vm) {
         vm.initFrom(currentAction)
@@ -107,6 +124,64 @@ private fun BaseSelectorActivity<FindPointsByColorConfig>.Selector(currentAction
             }
 
             SectionSpacer()
+
+            if (showOutputTypeSelector) {
+                FieldTitle(text = i18N["ui.action.find.color.output.type"])
+                SmallSpacer()
+                val outputTypeMenuState = rememberMenuDialogState<String>(
+                    title = i18N["ui.action.find.color.output.type"],
+                    menuItems = listOf(
+                        MenuDialogItem(
+                            id = FindPointsByColorOutputType.FindPointsByColorOutputType_Text.name,
+                            title = i18N["ui.action.find.color.output.text"],
+                            summary = i18N["ui.action.find.color.output.text.summary"],
+                        ),
+                        MenuDialogItem(
+                            id = FindPointsByColorOutputType.FindPointsByColorOutputType_Json.name,
+                            title = i18N["ui.action.find.color.output.json"],
+                            summary = i18N["ui.action.find.color.output.json.summary"],
+                        ),
+                    ),
+                    onItemSelected = { _, id ->
+                        when (id) {
+                            FindPointsByColorOutputType.FindPointsByColorOutputType_Text.name -> {
+                                vm.setOutputType(FindPointsByColorOutputType.FindPointsByColorOutputType_Text)
+                            }
+
+                            FindPointsByColorOutputType.FindPointsByColorOutputType_Json.name -> {
+                                vm.setOutputType(FindPointsByColorOutputType.FindPointsByColorOutputType_Json)
+                            }
+                        }
+                    }
+                )
+                MenuDialog(state = outputTypeMenuState)
+
+                ListItem(
+                    icon = {
+                        ColoredIcon {
+                            RemixIcon(remixName = Remix.Document.file_text_line)
+                        }
+                    },
+                    titleLines = listOf(
+                        i18N["ui.action.find.color.output.type"],
+                        when (state.outputType) {
+                            FindPointsByColorOutputType.FindPointsByColorOutputType_Text ->
+                                i18N["ui.action.find.color.output.text"]
+
+                            else -> i18N["ui.action.find.color.output.json"]
+                        },
+                        when (state.outputType) {
+                            FindPointsByColorOutputType.FindPointsByColorOutputType_Text ->
+                                i18N["ui.action.find.color.output.text.summary"]
+
+                            else -> i18N["ui.action.find.color.output.json.summary"]
+                        },
+                    ),
+                    onClick = { outputTypeMenuState.show() }
+                )
+
+                StandardSpacer()
+            }
 
             FieldTitle(text = LocalI18N.current["ui.action.find.color.color"])
             SmallSpacer()

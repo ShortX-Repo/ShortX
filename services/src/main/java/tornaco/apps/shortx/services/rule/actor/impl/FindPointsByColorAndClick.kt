@@ -21,7 +21,7 @@ object FindPointsByColorAndClick : Actor {
             d.config,
             androidContext,
             evaluateContext,
-            shortXContext
+            shortXContext,
         )
 
         val firstPoint = points.firstOrNull()

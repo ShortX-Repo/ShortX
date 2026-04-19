@@ -530,11 +530,17 @@ message ImageSourceBase64 {
   string base64 = 1;
 }
 
+enum FindPointsByColorOutputType {
+  FindPointsByColorOutputType_Text = 0;
+  FindPointsByColorOutputType_Json = 1;
+}
+
 message FindPointsByColorConfig {
   google.protobuf.Any image = 1;
   int32 color = 2;
   int32 threshold = 3;
   Rect rect = 4;
+  FindPointsByColorOutputType output_type = 5;
 }
 
 enum ImageScaleType {

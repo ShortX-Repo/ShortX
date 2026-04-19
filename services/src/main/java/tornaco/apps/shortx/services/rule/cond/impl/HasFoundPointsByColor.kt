@@ -20,7 +20,7 @@ object HasFoundPointsByColor : Cond {
                 data.config,
                 context,
                 evaluateContext,
-                shortXContext
+                shortXContext,
             )
         }
         logger.d("evaluate complete: ${points.size}")

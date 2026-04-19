@@ -3,7 +3,6 @@ package tornaco.apps.shortx.services.rule.actor.impl
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Point
-import android.os.ParcelFileDescriptor
 import com.google.protobuf.Message
 import com.google.protobuf.StringValue
 import tornaco.apps.shortx.core.context.ContextDataMapping
@@ -16,11 +15,11 @@ import tornaco.apps.shortx.core.proto.common.ImageSourcePath
 import tornaco.apps.shortx.core.proto.common.ImageSourceScreenshot
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.ProtoAny
+import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
-import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.util.powerManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.data.Dirs
@@ -64,33 +63,21 @@ object FindImagePosition : Actor {
         when (d.outputType) {
             FindImagePositionOutputType.FindImagePositionOutputType_Json -> {
                 val receiver = SynchronousResultReceiver.get()
-                val imageFile =
-                    saveScreenBitmapToFile(image, Dirs.baseServerCacheDir(), "find-image-json-i")
-                val templateFile =
-                    saveScreenBitmapToFile(template, Dirs.baseServerCacheDir(), "find-image-json-t")
-                val json: String = try {
-                    ParcelFileDescriptor.open(
-                        imageFile,
-                        ParcelFileDescriptor.MODE_READ_ONLY
-                    ).use { imagePFD ->
-                        ParcelFileDescriptor.open(
-                            templateFile,
-                            ParcelFileDescriptor.MODE_READ_ONLY
-                        ).use { templatePFD ->
-                            cv.findImageJsonPFD(imagePFD, templatePFD, receiver)
-                            val receiverRes =
-                                receiver.awaitResultNoInterrupt(
-                                    Duration.ofSeconds(FIND_IMAGE_TIMEOUT_S)
-                                )
-                            val byteRes: ByteArrayWrapper? = receiverRes.getValue(null)
-                            requireNotNull(byteRes) { "findImageJsonPFD empty response." }
-                            StringValue.parseFrom(byteRes.byteData).value
+                val json: String =
+                    with(OcrDetect) {
+                        image.useSharedPFD { imagePFD ->
+                            template.useSharedPFD { templatePFD ->
+                                cv.findImageJsonPFD(imagePFD, templatePFD, receiver)
+                                val receiverRes =
+                                    receiver.awaitResultNoInterrupt(
+                                        Duration.ofSeconds(FIND_IMAGE_TIMEOUT_S)
+                                    )
+                                val byteRes: ByteArrayWrapper? = receiverRes.getValue(null)
+                                requireNotNull(byteRes) { "findImageJsonPFD empty response." }
+                                StringValue.parseFrom(byteRes.byteData).value
+                            }
                         }
                     }
-                } finally {
-                    runCatching { imageFile.delete() }
-                    runCatching { templateFile.delete() }
-                }
                 logger.d("findImageJson: $json")
                 params.contextData.add(
                     d.customContextDataKey.forKey(ContextDataMapping.FindImagePosition.isImageFound.name)

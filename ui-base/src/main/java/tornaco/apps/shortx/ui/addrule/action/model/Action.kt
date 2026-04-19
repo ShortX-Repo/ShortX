@@ -30,6 +30,7 @@ import tornaco.apps.shortx.core.proto.common.CoroutineContext
 import tornaco.apps.shortx.core.proto.common.CustomContextDataKey
 import tornaco.apps.shortx.core.proto.common.DialogUiStyleSettings
 import tornaco.apps.shortx.core.proto.common.DownloadSubject
+import tornaco.apps.shortx.core.proto.common.FindPointsByColorOutputType
 import tornaco.apps.shortx.core.proto.common.FindTextMethod
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.HttpRequestHeader
@@ -5386,7 +5387,9 @@ data class FindPointsByColorConfig(
     val image: ImageSource,
     val color: Int,
     val threshold: Int,
-    val rect: Rect
+    val rect: Rect,
+    val outputType: FindPointsByColorOutputType =
+        FindPointsByColorOutputType.FindPointsByColorOutputType_Text,
 ) : Parcelable
 
 fun FindPointsByColorConfig.toProto(): tornaco.apps.shortx.core.proto.common.FindPointsByColorConfig {
@@ -5395,6 +5398,7 @@ fun FindPointsByColorConfig.toProto(): tornaco.apps.shortx.core.proto.common.Fin
         .setColor(color)
         .setThreshold(threshold)
         .setRect(rect)
+        .setOutputType(outputType)
         .build()
 }
 
@@ -5403,7 +5407,8 @@ fun tornaco.apps.shortx.core.proto.common.FindPointsByColorConfig.toFindPointsBy
         image = this.image.toImageSource(),
         color = this.color,
         threshold = this.threshold,
-        rect = this.rect
+        rect = this.rect,
+        outputType = this.outputType,
     )
 }
 

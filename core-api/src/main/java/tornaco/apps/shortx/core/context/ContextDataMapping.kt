@@ -472,6 +472,7 @@ object ContextDataMapping {
         pointX("X offset of the color from screen, or 0 is not found"),
         pointY("Y offset of the color from screen, or 0 is not found"),
         isColorFound("If the color has been found"),
+        findPointsByColorJson("JSON string with detailed color-match result when output type is JSON (fields depend on the CV engine)"),
     }
 
     @DoNotStrip

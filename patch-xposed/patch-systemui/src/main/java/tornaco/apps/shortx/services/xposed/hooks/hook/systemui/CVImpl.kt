@@ -130,4 +130,51 @@ class CVImpl(private val context: Context) : ICV.Stub() {
         runCatching { bitmap.recycle() }
         return res
     }
+
+    override fun findPointsByColorJson(
+        image: Bitmap,
+        color: Int,
+        threshold: Int,
+        rect: Rect?
+    ): String {
+        return runCatching {
+            logger.d("findPointsByColorJson cvApiIns: $cvApiIns")
+            (Reflections.callMethod(
+                cvApiIns,
+                "findPointsByColorJson",
+                image,
+                color,
+                threshold,
+                rect
+            ) as String?)
+                .orEmpty()
+        }.getOrElse {
+            logger.e(it, "findPointsByColorJson error")
+            ""
+        }
+    }
+
+    override fun findPointsByColorJsonPFD(
+        pfd: ParcelFileDescriptor,
+        color: Int,
+        threshold: Int,
+        rect: Rect?,
+        receiver: SynchronousResultReceiver
+    ) {
+        var bitmap: Bitmap? = null
+        val json: String = kotlin.runCatching {
+            bitmap = BitmapFactory.decodeFileDescriptor(pfd.fileDescriptor)
+            logger.d("findPointsByColorJsonPFD, bitmap: $bitmap")
+            findPointsByColorJson(requireNotNull(bitmap), color, threshold, rect)
+        }.getOrElse {
+            logger.e(it, "findPointsByColorJsonPFD")
+            ""
+        }
+        runCatching { bitmap?.recycle() }
+        receiver.send(
+            ByteArrayWrapper(
+                StringValue.newBuilder().setValue(json).build().toByteArray()
+            )
+        )
+    }
 }

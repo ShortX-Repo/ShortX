@@ -507,7 +507,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                         context,
                         source.getActionAs<Action.FindPointsByColor>()?.config,
                         FindColorSelectorActivity::class.java
-                    )
+                    ).putExtra(FindColorSelectorActivity.EXTRA_SHOW_OUTPUT_TYPE, true)
                 )
                 true
             }

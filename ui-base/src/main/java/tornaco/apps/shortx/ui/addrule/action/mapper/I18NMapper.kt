@@ -18,6 +18,7 @@ import tornaco.apps.shortx.core.proto.common.AndroidIntentComponentType
 import tornaco.apps.shortx.core.proto.common.AudioSource
 import tornaco.apps.shortx.core.proto.common.CoroutineContext
 import tornaco.apps.shortx.core.proto.common.FindTextMethod
+import tornaco.apps.shortx.core.proto.common.FindPointsByColorOutputType
 import tornaco.apps.shortx.core.proto.common.OCREngine
 import tornaco.apps.shortx.core.proto.common.OnOffToggle
 import tornaco.apps.shortx.core.proto.common.RingerMode
@@ -1266,7 +1267,13 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
 
         is Action.FindPointsByColor -> listOf(
             i18N["ui.action.find.color"],
-            action.config.color.toHexString()
+            action.config.color.toHexString(),
+            when (action.config.outputType) {
+                FindPointsByColorOutputType.FindPointsByColorOutputType_Json ->
+                    i18N["ui.action.find.color.output.json"]
+
+                else -> i18N["ui.action.find.color.output.text"]
+            },
         )
 
         is Action.FindPointsByColorAndClick -> listOf(
