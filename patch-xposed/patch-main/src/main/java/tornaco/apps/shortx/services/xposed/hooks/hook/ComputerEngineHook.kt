@@ -28,11 +28,11 @@ object ComputerEngineHook {
     }
 
     fun hook(lpparam: ISystemServerLoaded.Param) {
-        // Replaced by TileHook.
-        // hookGetServiceInfo(lpparam)
+        hookGetServiceInfo(lpparam)
         hookQueryIntentActivities(lpparam)
     }
 
+    // Hook for some ROM r.g. coloros16, the TileHook can not change the tilelabel when device reboot.
     private fun hookGetServiceInfo(lpparam: ISystemServerLoaded.Param) = kotlin.runCatching {
         afterMethod(
             lpparam.classLoader.pmComputerEngineClass(),
@@ -46,19 +46,18 @@ object ComputerEngineHook {
             if (name != null && name.packageName == BuildPropInternal.APP_PACKAGE_NAME) {
                 val tileName = name.className.substringAfterLast(".")
                 val tileOrNull = StatusBarTile.entries.firstOrNull { it.name == tileName }
-                logger.d("getServiceInfo: $name, tileOrNull?: $tileOrNull")
+                // logger.d("getServiceInfo: $name, tileOrNull?: $tileOrNull")
                 if (tileOrNull != null) {
-                    val iconName =
-                        shortXManager.getStatusBarTileSettingsByNumber(tileOrNull.number)?.iconName
-                    logger.d("getServiceInfo: $name, iconName?: $iconName")
-                    if (iconName != null) {
-                        val remixResId =
-                            ShortXService.shortXContext.statusbar.appContext.remixResId(iconName)
-                        logger.d("getServiceInfo: $name, remixResId?: $remixResId")
+                    val label =
+                        runCatching { shortXManager.getStatusBarTileSettingsByNumber(tileOrNull.number).label }.getOrNull()
+                    logger.d("getServiceInfo: $name, label?: $label")
+                    if (label != null) {
                         val resultServiceInfo = param.result as ServiceInfo
                         logger.d("getServiceInfo: $name, resultServiceInfo?: $resultServiceInfo")
-                        resultServiceInfo.icon = remixResId
+                        resultServiceInfo.nonLocalizedLabel = label
+                        resultServiceInfo.labelRes = -1
                         param.result = resultServiceInfo
+                        logger.d("getServiceInfo: $name, override.")
                     }
                 }
             }
