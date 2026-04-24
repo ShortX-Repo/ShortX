@@ -3,15 +3,6 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="29" />
@@ -38,12 +29,6 @@
     <application
         android:requestLegacyExternalStorage="true"
         android:theme="@style/UiTheme.ShortX">
-
-        <meta-data
-            android:name="com.amap.api.v2.apikey"
-            android:value="${AMAP_API_KEY}" />
-
-        <service android:name="com.amap.api.location.APSService" />
 
         <activity
             android:name=".main.MainActivity"
@@ -608,10 +593,6 @@
             android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
         <service
             android:name="tornaco.apps.shortx.ui.service.AppHttpRequestService"
-            android:exported="true"
-            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
-        <service
-            android:name="tornaco.apps.shortx.ui.service.AppLocationService"
             android:exported="true"
             android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
 

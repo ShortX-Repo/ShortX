@@ -33,11 +33,9 @@ android {
     productFlavors {
         create("row") {
             dimension = "market"
-            manifestPlaceholders["AMAP_API_KEY"] = Configs.flavorValue("amap.api.key", tornaco.project.android.shortx.Flavor.ROW) ?: ""
         }
         create("prc") {
             dimension = "market"
-            manifestPlaceholders["AMAP_API_KEY"] = Configs.flavorValue("amap.api.key", tornaco.project.android.shortx.Flavor.PRC) ?: ""
         }
     }
 
@@ -145,8 +143,6 @@ dependencies {
     implementation(libs.touchimageview)
     implementation(libs.androidx.paging.runtime.ktx)
     implementation(libs.androidx.paging.compose)
-
-    implementation("com.amap.api:location:6.5.1")
 
     compileOnly(files("${project.rootDir.path}/patch-xposed/patch-main/libs/libxposed-api.jar"))
     implementation(files("${project.rootDir.path}/patch-xposed/patch-main/libs/libxposed-service.jar"))
