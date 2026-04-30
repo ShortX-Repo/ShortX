@@ -27,7 +27,6 @@ import tornaco.apps.shortx.services.xposed.hooks.hook.CustomHookApp
 import tornaco.apps.shortx.services.xposed.hooks.hook.afterMethod
 import tornaco.apps.shortx.services.xposed.hooks.hook.api.IPackageLoaded
 import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.data.GlobalSettings
-import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.input.opls.installInputMonitor
 import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.ocr.OCRImpl
 import util.Reflections
 
