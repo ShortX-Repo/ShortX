@@ -72,6 +72,10 @@ class EdgeGestureEngine(
     fun isTracking(): Boolean = gestureCaptured
 
     private fun handleEdgeDownStart(event: MotionEvent): Boolean {
+        if (firstTapUpEvent != null) {
+            return handleDoubleTapDown(event)
+        }
+
         resetState()
 
         downX = event.rawX
@@ -87,7 +91,6 @@ class EdgeGestureEngine(
         gestureCaptured = true
         cachedDownEvent = MotionEvent.obtain(event)
 
-        val longPressTimeout = (service.getSwipeDistanceThresholdDp() * 10L).coerceIn(300, 800)
         timerController.startLongPressTimer(LONG_PRESS_TIMEOUT_MS) {
             onLongPressTimeout()
         }
@@ -95,6 +98,21 @@ class EdgeGestureEngine(
         listener?.onEdgeTouchDown(region, downX, downY)
 
         if (LOGV) logger.d("handleEdgeDownStart: region=$region, pos=($downX,$downY)")
+        return true
+    }
+
+    private fun handleDoubleTapDown(event: MotionEvent): Boolean {
+        val region = regionResolver.resolve(event.rawX, event.rawY)
+        if (region == Edge.UNRECOGNIZED || region != hitRegion) {
+            resetState()
+            return handleEdgeDownStart(event)
+        }
+
+        downX = event.rawX
+        downY = event.rawY
+        lockedDeviceId = event.deviceId
+        cachedDownEvent?.recycle()
+        cachedDownEvent = MotionEvent.obtain(event)
         return true
     }
 
@@ -245,8 +263,8 @@ class EdgeGestureEngine(
         val firstUp = firstTapUpEvent ?: return false
         val interval = event.eventTime - firstUp.eventTime
         if (interval < 40) {
-            resetState()
-            return handleEdgeDownStart(event)
+            cancelAndReplay()
+            return false
         }
         if (interval <= DOUBLE_TAP_TIMEOUT_MS) {
             val resolvedAction = actionResolver.resolve(hitRegion, Gesture.DoubleTap)
@@ -321,7 +339,8 @@ class EdgeGestureEngine(
     private fun replayCachedEvent() {
         cachedDownEvent?.let { event ->
             try {
-                injectionBridge.injectEvent(event)
+                val copy = MotionEvent.obtain(event)
+                injectionBridge.injectEvent(copy)
             } catch (e: Exception) {
                 logger.e(e, "Failed to replay cached event")
             }
@@ -337,6 +356,8 @@ class EdgeGestureEngine(
         timerController.cancelAll()
         firstTapUpEvent?.recycle()
         firstTapUpEvent = null
+        cachedDownEvent?.recycle()
+        cachedDownEvent = null
         continuousHandler = null
         downX = 0f
         downY = 0f
