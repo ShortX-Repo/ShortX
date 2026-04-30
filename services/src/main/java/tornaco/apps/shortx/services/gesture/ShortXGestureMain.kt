@@ -5,16 +5,20 @@ import android.view.MotionEvent
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.core.util.newHandlerOfNewThread
 import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.services.gesture.bpok.gesture.DetectorServiceImpl
 import tornaco.apps.shortx.services.gesture.bpok.gesture.EdgeGestureEngine
+import tornaco.apps.shortx.services.gesture.bpok.gesture.EdgeGestureSequenceDetector
+import tornaco.apps.shortx.services.gesture.bpok.gesture.EdgeGestureSequenceHintReporter
 import tornaco.apps.shortx.services.gesture.bpok.gesture.EdgeGestureHintDetector
 import tornaco.apps.shortx.services.gesture.bpok.gesture.EdgeRegionResolver
 import tornaco.apps.shortx.services.gesture.bpok.gesture.GestureActionResolver
 import tornaco.apps.shortx.services.gesture.bpok.gesture.GestureDirectionResolver
 import tornaco.apps.shortx.services.gesture.bpok.gesture.GestureHapticController
 import tornaco.apps.shortx.services.gesture.bpok.gesture.GestureHintController
+import tornaco.apps.shortx.services.gesture.bpok.gesture.GestureSequenceScheduler
 import tornaco.apps.shortx.services.gesture.bpok.gesture.GestureTimerController
 import tornaco.apps.shortx.services.gesture.bpok.gesture.InputInjectionBridgeImpl
 
@@ -40,6 +44,25 @@ class ShortXGestureMain(
     private val gestureHintController = GestureHintController(context)
     private val gestureHapticController = GestureHapticController(context)
 
+    private val sequenceHintReporter = EdgeGestureSequenceHintReporter(
+        gestureHintController, gestureHapticController
+    )
+
+    private val sequenceDetector = EdgeGestureSequenceDetector(
+        scheduler = object : GestureSequenceScheduler {
+            override fun removeCallbacks(runnable: Runnable) {
+                detectorHandler.removeCallbacks(runnable)
+            }
+            override fun postDelayed(runnable: Runnable, delayMillis: Long): Boolean {
+                return detectorHandler.postDelayed(runnable, delayMillis)
+            }
+        },
+        service = service,
+        elapsedRealtime = android.os.SystemClock::elapsedRealtime,
+        dpToPx = { it._dp },
+        hintSink = sequenceHintReporter,
+    )
+
     val engine = EdgeGestureEngine(
         service = service,
         handler = detectorHandler,
@@ -47,7 +70,8 @@ class ShortXGestureMain(
         directionResolver = directionResolver,
         timerController = timerController,
         actionResolver = actionResolver,
-        injectionBridge = injectionBridge
+        injectionBridge = injectionBridge,
+        sequenceDetector = sequenceDetector,
     )
 
     fun filterMotionEvent(event: MotionEvent): Boolean? {

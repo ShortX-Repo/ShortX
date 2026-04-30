@@ -17,6 +17,7 @@ class EdgeGestureEngine(
     private val timerController: GestureTimerController,
     private val actionResolver: GestureActionResolver,
     private val injectionBridge: InputInjectionBridge,
+    private val sequenceDetector: EdgeGestureSequenceDetector,
 ) {
     companion object {
         const val LOGV = BuildPropInternal.APP_IS_DEBUG
@@ -62,6 +63,7 @@ class EdgeGestureEngine(
     }
 
     fun cancelAndReplay() {
+        sequenceDetector.cancelTracking()
         if (executionStarted) {
             continuousHandler?.onCancel()
         }
@@ -76,6 +78,7 @@ class EdgeGestureEngine(
             return handleDoubleTapDown(event)
         }
 
+        sequenceDetector.cancelTracking()
         resetState()
 
         downX = event.rawX
@@ -120,6 +123,10 @@ class EdgeGestureEngine(
         if (!gestureCaptured) return false
         if (event.deviceId != lockedDeviceId) return false
 
+        if (sequenceDetector.isTracking()) {
+            return sequenceDetector.onTouchEvent(event)
+        }
+
         if (executionStarted) {
             continuousHandler?.onMove(event.rawX, event.rawY, event.eventTime)
             return true
@@ -136,18 +143,13 @@ class EdgeGestureEngine(
 
                 val gesture = directionToGesture(dir)
                 val resolvedAction = actionResolver.resolve(hitRegion, gesture)
-                if (resolvedAction == null) {
-                    logger.logOnDebug("No action for $dir in $hitRegion, replaying")
-                    cancelAndReplay()
-                    return false
-                }
 
                 listener?.onDirectionResolved(dir, gestureToGestureType(dir))
 
                 val travelSq = travelDistanceSq(event.rawX, event.rawY)
                 val thresholdPx = service.getSwipeDistanceThresholdDp()._dp.toFloat()
                 if (travelSq >= thresholdPx * thresholdPx) {
-                    startExecution(resolvedAction, dir, event.eventTime)
+                    startExecution(resolvedAction, dir, event.eventTime, event.rawX, event.rawY)
                 }
             }
         } else {
@@ -170,9 +172,7 @@ class EdgeGestureEngine(
             if (travelSq >= thresholdPx * thresholdPx && !executionStarted) {
                 val gesture = directionToGesture(recognizedDirection)
                 val resolvedAction = actionResolver.resolve(hitRegion, gesture)
-                if (resolvedAction != null) {
-                    startExecution(resolvedAction, recognizedDirection, event.eventTime)
-                }
+                startExecution(resolvedAction, recognizedDirection, event.eventTime, event.rawX, event.rawY)
             }
 
             if (executionStarted) {
@@ -187,6 +187,10 @@ class EdgeGestureEngine(
     private fun handleUp(event: MotionEvent): Boolean {
         if (!gestureCaptured) return false
         if (event.deviceId != lockedDeviceId) return false
+
+        if (sequenceDetector.isTracking()) {
+            return sequenceDetector.onTouchEvent(event)
+        }
 
         if (executionStarted) {
             continuousHandler?.onFinish(event.rawX, event.rawY, event.eventTime)
@@ -227,6 +231,7 @@ class EdgeGestureEngine(
 
     private fun handleCancel(event: MotionEvent): Boolean {
         if (!gestureCaptured) return false
+        sequenceDetector.cancelTracking()
         cancelAndReplay()
         return true
     }
@@ -324,16 +329,36 @@ class EdgeGestureEngine(
         resetState()
     }
 
-    private fun startExecution(action: Any, direction: Direction, eventTime: Long) {
+    private fun startExecution(action: Any?, direction: Direction, eventTime: Long, currentX: Float, currentY: Float) {
+        val gesture = directionToGesture(direction)
+        val areas = listOf(DetectedArea.PredefinedEdge(hitRegion))
+
+        val sequenceCandidates = service.findMatchingEdgeGestureSequences(areas, gesture)
+        if (action == null && sequenceCandidates.isEmpty()) {
+            logger.logOnDebug("No action and no sequence candidates for $direction in $hitRegion, replaying")
+            cancelAndReplay()
+            return
+        }
+
         executionStarted = true
         consumeCachedEvent()
-        listener?.onGestureTriggered(hitRegion, gestureToGestureType(direction) ?: GestureType.SwipeLeft)
-        service.handleEdgeGestureEvent(
-            listOf(DetectedArea.PredefinedEdge(hitRegion)),
-            directionToGesture(direction),
-            downX,
-            downY
-        )
+
+        if (action != null) {
+            listener?.onGestureTriggered(hitRegion, gestureToGestureType(direction) ?: GestureType.SwipeLeft)
+            service.handleEdgeGestureEvent(areas, gesture, downX, downY)
+        }
+
+        if (sequenceCandidates.isNotEmpty()) {
+            sequenceDetector.startTracking(
+                pointerId = 0,
+                primaryGesture = gesture,
+                downX = downX,
+                downY = downY,
+                anchorX = currentX,
+                anchorY = currentY,
+                candidates = sequenceCandidates,
+            )
+        }
     }
 
     private fun replayCachedEvent() {
