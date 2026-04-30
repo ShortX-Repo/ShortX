@@ -32,6 +32,7 @@ interface EdgeGestureSequenceHintSink {
         step: EdgeGestureStep,
         progress: Float,
         isReady: Boolean,
+        hintEnabled: Boolean,
         hapticEnabled: Boolean,
     )
 
@@ -46,6 +47,7 @@ private object NoOpEdgeGestureSequenceHintSink : EdgeGestureSequenceHintSink {
         step: EdgeGestureStep,
         progress: Float,
         isReady: Boolean,
+        hintEnabled: Boolean,
         hapticEnabled: Boolean,
     ) = Unit
 
@@ -455,6 +457,7 @@ class EdgeGestureSequenceDetector(
             step = step,
             progress = if (step.type == EdgeGestureStepType.Hover) 0.28f else 0.12f,
             isReady = false,
+            hintEnabled = currentStepHintEnabled(),
             hapticEnabled = currentStepHapticEnabled(),
         )
     }
@@ -471,6 +474,7 @@ class EdgeGestureSequenceDetector(
                     step = step,
                     progress = progress.coerceIn(0.12f, 1f),
                     isReady = progress >= 1f,
+                    hintEnabled = currentStepHintEnabled(),
                     hapticEnabled = currentStepHapticEnabled(),
                 )
             }
@@ -491,6 +495,7 @@ class EdgeGestureSequenceDetector(
                     step = step,
                     progress = (distance / readyDistance).coerceIn(0.12f, 1f),
                     isReady = distance >= readyDistance && dot >= minDirectionDot(),
+                    hintEnabled = currentStepHintEnabled(),
                     hapticEnabled = currentStepHapticEnabled(),
                 )
             }
@@ -500,6 +505,12 @@ class EdgeGestureSequenceDetector(
     private fun currentStepHapticEnabled(): Boolean {
         return candidates.any {
             it.rule.hasEnableGestureHaptic() && it.rule.enableGestureHaptic
+        }
+    }
+
+    private fun currentStepHintEnabled(): Boolean {
+        return candidates.any {
+            it.rule.hasEnableGestureHint() && it.rule.enableGestureHint
         }
     }
 

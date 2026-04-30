@@ -9,6 +9,7 @@ class EdgeGestureSequenceHintReporter(
 ) : EdgeGestureSequenceHintSink {
     private var nextToken = 10_000L
     private var activeToken: Long? = null
+    private var activeHintEnabled: Boolean = false
     private var activeHapticEnabled: Boolean = false
 
     override fun onStepHint(
@@ -17,9 +18,11 @@ class EdgeGestureSequenceHintReporter(
         step: EdgeGestureStep,
         progress: Float,
         isReady: Boolean,
+        hintEnabled: Boolean,
         hapticEnabled: Boolean,
     ) {
         val token = activeToken ?: nextToken++.also { activeToken = it }
+        activeHintEnabled = activeHintEnabled || hintEnabled
         activeHapticEnabled = activeHapticEnabled || hapticEnabled
         if (hapticEnabled) {
             gestureHapticController.onGestureCandidate(token)
@@ -27,19 +30,21 @@ class EdgeGestureSequenceHintReporter(
                 gestureHapticController.onGestureReady(token)
             }
         }
-        val (directionX, directionY) = directionFor(step.type)
-        gestureHintController.onGestureProgress(
-            GestureHintModel(
-                token = token,
-                anchorX = anchorX,
-                anchorY = anchorY,
-                directionX = directionX,
-                directionY = directionY,
-                progress = progress.coerceIn(0f, 1f),
-                state = if (isReady) GestureHintState.Ready else GestureHintState.Showing,
-                showArrow = step.type != EdgeGestureStepType.Hover,
+        if (hintEnabled) {
+            val (directionX, directionY) = directionFor(step.type)
+            gestureHintController.onGestureProgress(
+                GestureHintModel(
+                    token = token,
+                    anchorX = anchorX,
+                    anchorY = anchorY,
+                    directionX = directionX,
+                    directionY = directionY,
+                    progress = progress.coerceIn(0f, 1f),
+                    state = if (isReady) GestureHintState.Ready else GestureHintState.Showing,
+                    showArrow = step.type != EdgeGestureStepType.Hover,
+                )
             )
-        )
+        }
     }
 
     override fun onSequenceSuccess() {
@@ -48,6 +53,7 @@ class EdgeGestureSequenceHintReporter(
             activeToken?.let(gestureHapticController::onGestureSuccess)
         }
         activeToken = null
+        activeHintEnabled = false
         activeHapticEnabled = false
     }
 
@@ -55,6 +61,7 @@ class EdgeGestureSequenceHintReporter(
         gestureHintController.onGestureCancel(activeToken)
         gestureHapticController.onGestureCancel(activeToken)
         activeToken = null
+        activeHintEnabled = false
         activeHapticEnabled = false
     }
 

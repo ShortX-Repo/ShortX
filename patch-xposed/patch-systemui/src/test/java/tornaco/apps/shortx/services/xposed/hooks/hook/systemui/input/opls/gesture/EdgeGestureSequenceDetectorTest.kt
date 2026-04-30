@@ -372,6 +372,7 @@ class EdgeGestureSequenceDetectorTest {
             step: EdgeGestureStep,
             progress: Float,
             isReady: Boolean,
+            hintEnabled: Boolean,
             hapticEnabled: Boolean,
         ) {
             stepHints += step

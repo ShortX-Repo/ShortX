@@ -18,6 +18,7 @@ class EdgeGestureEngine(
     private val actionResolver: GestureActionResolver,
     private val injectionBridge: InputInjectionBridge,
     private val sequenceDetector: EdgeGestureSequenceDetector,
+    private val hintDetector: EdgeGestureHintDetector,
 ) {
     companion object {
         const val LOGV = BuildPropInternal.APP_IS_DEBUG
@@ -74,6 +75,8 @@ class EdgeGestureEngine(
     fun isTracking(): Boolean = gestureCaptured
 
     private fun handleEdgeDownStart(event: MotionEvent): Boolean {
+        hintDetector.onTouchEvent(event)
+
         if (firstTapUpEvent != null) {
             return handleDoubleTapDown(event)
         }
@@ -120,6 +123,8 @@ class EdgeGestureEngine(
     }
 
     private fun handleMove(event: MotionEvent): Boolean {
+        hintDetector.onTouchEvent(event)
+
         if (!gestureCaptured) return false
         if (event.deviceId != lockedDeviceId) return false
 
@@ -185,6 +190,8 @@ class EdgeGestureEngine(
     }
 
     private fun handleUp(event: MotionEvent): Boolean {
+        hintDetector.onTouchEvent(event)
+
         if (!gestureCaptured) return false
         if (event.deviceId != lockedDeviceId) return false
 
@@ -230,6 +237,8 @@ class EdgeGestureEngine(
     }
 
     private fun handleCancel(event: MotionEvent): Boolean {
+        hintDetector.onTouchEvent(event)
+
         if (!gestureCaptured) return false
         sequenceDetector.cancelTracking()
         cancelAndReplay()
@@ -346,9 +355,11 @@ class EdgeGestureEngine(
         if (action != null) {
             listener?.onGestureTriggered(hitRegion, gestureToGestureType(direction) ?: GestureType.SwipeLeft)
             service.handleEdgeGestureEvent(areas, gesture, downX, downY)
+            hintDetector.onEdgeGestureTriggered(areas, gesture, true)
         }
 
         if (sequenceCandidates.isNotEmpty()) {
+            hintDetector.onEdgeGestureSequenceStarted(areas, gesture)
             sequenceDetector.startTracking(
                 pointerId = 0,
                 primaryGesture = gesture,

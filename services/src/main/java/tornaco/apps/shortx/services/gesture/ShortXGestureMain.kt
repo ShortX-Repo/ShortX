@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.core.util.newHandlerOfNewThread
 import tornaco.apps.shortx.core.util.screenSize
+import tornaco.apps.shortx.services.gesture.bpok.gesture.DetectedArea
 import tornaco.apps.shortx.services.gesture.bpok.gesture.DetectorServiceImpl
 import tornaco.apps.shortx.services.gesture.bpok.gesture.EdgeGestureEngine
 import tornaco.apps.shortx.services.gesture.bpok.gesture.EdgeGestureSequenceDetector
@@ -63,6 +64,20 @@ class ShortXGestureMain(
         hintSink = sequenceHintReporter,
     )
 
+    private val hintDetector = EdgeGestureHintDetector(
+        service = service,
+        gestureHintController = gestureHintController,
+        gestureHapticController = gestureHapticController,
+        detectAreas = { x, y ->
+            val edge = regionResolver.resolve(x, y)
+            if (edge != tornaco.apps.shortx.core.proto.fact.Edge.UNRECOGNIZED) {
+                listOf(DetectedArea.PredefinedEdge(edge))
+            } else {
+                emptyList()
+            }
+        },
+    )
+
     val engine = EdgeGestureEngine(
         service = service,
         handler = detectorHandler,
@@ -72,6 +87,7 @@ class ShortXGestureMain(
         actionResolver = actionResolver,
         injectionBridge = injectionBridge,
         sequenceDetector = sequenceDetector,
+        hintDetector = hintDetector,
     )
 
     fun filterMotionEvent(event: MotionEvent): Boolean? {
