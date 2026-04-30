@@ -6,8 +6,17 @@ import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.newHandlerOfNewThread
-import tornaco.apps.shortx.services.gesture.bpok.gesture.Detector
+import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.services.gesture.bpok.gesture.DetectorServiceImpl
+import tornaco.apps.shortx.services.gesture.bpok.gesture.EdgeGestureEngine
+import tornaco.apps.shortx.services.gesture.bpok.gesture.EdgeGestureHintDetector
+import tornaco.apps.shortx.services.gesture.bpok.gesture.EdgeRegionResolver
+import tornaco.apps.shortx.services.gesture.bpok.gesture.GestureActionResolver
+import tornaco.apps.shortx.services.gesture.bpok.gesture.GestureDirectionResolver
+import tornaco.apps.shortx.services.gesture.bpok.gesture.GestureHapticController
+import tornaco.apps.shortx.services.gesture.bpok.gesture.GestureHintController
+import tornaco.apps.shortx.services.gesture.bpok.gesture.GestureTimerController
+import tornaco.apps.shortx.services.gesture.bpok.gesture.InputInjectionBridgeImpl
 
 class ShortXGestureMain(
     private val context: Context,
@@ -20,10 +29,25 @@ class ShortXGestureMain(
 
     val service = DetectorServiceImpl(context)
 
-    val detector = Detector(
-        context = context,
-        handler = newHandlerOfNewThread("shortx-detector"),
-        service = service
+    private val detectorHandler = newHandlerOfNewThread("shortx-detector")
+
+    private val regionResolver = EdgeRegionResolver(service) { context.screenSize() }
+    private val directionResolver = GestureDirectionResolver()
+    private val timerController = GestureTimerController(detectorHandler)
+    private val actionResolver = GestureActionResolver(service, regionResolver)
+    private val injectionBridge = InputInjectionBridgeImpl()
+
+    private val gestureHintController = GestureHintController(context)
+    private val gestureHapticController = GestureHapticController(context)
+
+    val engine = EdgeGestureEngine(
+        service = service,
+        handler = detectorHandler,
+        regionResolver = regionResolver,
+        directionResolver = directionResolver,
+        timerController = timerController,
+        actionResolver = actionResolver,
+        injectionBridge = injectionBridge
     )
 
     fun filterMotionEvent(event: MotionEvent): Boolean? {
@@ -31,9 +55,8 @@ class ShortXGestureMain(
             logger.logOnDebug("shouldDetectMotion is false.")
             return null
         }
-        val consumed = detector.consumeEvent(event)
-        // logger.logOnDebug { "InputMonitor consumed: $consumed $it" }
-        if (consumed == true) {
+        val consumed = engine.handleTouchSequence(event)
+        if (consumed) {
             logger.logOnDebug("pilferPointers. consumed")
             return false
         }

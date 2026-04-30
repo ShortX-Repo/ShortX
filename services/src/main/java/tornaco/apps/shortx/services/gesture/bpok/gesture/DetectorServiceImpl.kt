@@ -31,6 +31,8 @@ import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util._dp
+import tornaco.apps.shortx.services.gesture.bpok.gesture.handlers.BrightnessContinuousHandler
+import tornaco.apps.shortx.services.gesture.bpok.gesture.handlers.VolumeContinuousHandler
 import kotlin.math.roundToInt
 
 class DetectorServiceImpl(private val context: Context) : DetectorService {
@@ -490,6 +492,14 @@ class DetectorServiceImpl(private val context: Context) : DetectorService {
     fun reportEvent(event: InputEvent) {
         if (isGestureRecording && event is MotionEvent) {
             shortx.onMotionEvent(event)
+        }
+    }
+
+    fun createContinuousActionHandler(actionType: String): ContinuousActionHandler? {
+        return when (actionType) {
+            "brightness" -> BrightnessContinuousHandler()
+            "volume" -> VolumeContinuousHandler()
+            else -> null
         }
     }
 }
