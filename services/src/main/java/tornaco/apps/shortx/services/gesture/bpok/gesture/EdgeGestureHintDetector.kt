@@ -8,7 +8,7 @@ import kotlin.math.cos
 import kotlin.math.hypot
 
 class EdgeGestureHintDetector(
-    private val service: DetectorService,
+    private val bridge: GestureBridge,
     private val gestureHintController: GestureHintController,
     private val gestureHapticController: GestureHapticController,
     private val detectAreas: (Float, Float) -> List<DetectedArea>,
@@ -138,12 +138,12 @@ class EdgeGestureHintDetector(
         }
 
         val readyDistancePx = maxOf(
-            service.getSwipeDistanceThresholdDp()._dp.toFloat(),
+            bridge.getSwipeDistanceThresholdDp()._dp.toFloat(),
             GESTURE_HINT_MAX_VISUAL_DISTANCE_DP._dp.toFloat()
         )
         val progress = ((distance - showThresholdPx) /
                 (readyDistancePx - showThresholdPx)).coerceIn(0f, 1f)
-        val state = if (distance >= service.getSwipeDistanceThresholdDp()._dp.toFloat() &&
+        val state = if (distance >= bridge.getSwipeDistanceThresholdDp()._dp.toFloat() &&
             candidate.dot >= MIN_TRIGGER_DIRECTION_DOT
         ) {
             GestureHintState.Ready
@@ -196,7 +196,7 @@ class EdgeGestureHintDetector(
         return trackedAreas
             .asSequence()
             .flatMap { area ->
-                service.enabledEdgeGestures
+                bridge.enabledEdgeGestures
                     .asSequence()
                     .filter { rule ->
                         !rule.isDisabled &&
@@ -232,7 +232,7 @@ class EdgeGestureHintDetector(
     }
 
     private fun hasFeedbackEnabledSwipeRule(area: DetectedArea): Boolean {
-        return service.enabledEdgeGestures.any { rule ->
+        return bridge.enabledEdgeGestures.any { rule ->
             !rule.isDisabled &&
                     rule.isGestureFeedbackEnabled() &&
                     rule.gesture.supportsGestureIndicator() &&
@@ -241,7 +241,7 @@ class EdgeGestureHintDetector(
     }
 
     private fun hasFeedbackEnabledSwipeRule(area: DetectedArea, gesture: Gesture): Boolean {
-        return service.enabledEdgeGestures.any { rule ->
+        return bridge.enabledEdgeGestures.any { rule ->
             !rule.isDisabled &&
                     rule.isGestureFeedbackEnabled() &&
                     rule.gesture == gesture &&
@@ -251,7 +251,7 @@ class EdgeGestureHintDetector(
     }
 
     private fun hasHintEnabledSwipeRule(area: DetectedArea): Boolean {
-        return service.enabledEdgeGestures.any { rule ->
+        return bridge.enabledEdgeGestures.any { rule ->
             !rule.isDisabled &&
                     rule.isGestureHintEnabled() &&
                     rule.gesture.supportsGestureIndicator() &&
@@ -260,7 +260,7 @@ class EdgeGestureHintDetector(
     }
 
     private fun hasHapticEnabledSwipeRule(area: DetectedArea): Boolean {
-        return service.enabledEdgeGestures.any { rule ->
+        return bridge.enabledEdgeGestures.any { rule ->
             !rule.isDisabled &&
                     rule.isGestureHapticEnabled() &&
                     rule.gesture.supportsGestureIndicator() &&
@@ -269,7 +269,7 @@ class EdgeGestureHintDetector(
     }
 
     private fun hasHapticEnabledSwipeRule(area: DetectedArea, gesture: Gesture): Boolean {
-        return service.enabledEdgeGestures.any { rule ->
+        return bridge.enabledEdgeGestures.any { rule ->
             !rule.isDisabled &&
                     rule.isGestureHapticEnabled() &&
                     rule.gesture == gesture &&

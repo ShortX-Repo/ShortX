@@ -1,21 +1,20 @@
 package tornaco.apps.shortx.services.gesture.bpok.gesture
 
 import android.graphics.Point
-import android.graphics.RectF
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util._dp
 
 class EdgeRegionResolver(
-    private val service: DetectorService,
+    private val bridge: GestureBridge,
     private val getScreenSize: () -> Point,
 ) {
     private val logger = Logger("EdgeRegionResolver")
 
     fun resolve(rawX: Float, rawY: Float): Edge {
         val screenSize = getScreenSize()
-        val areaSize = service.getGestureAreaWidthDp()._dp.toFloat()
-        val areaLengthScale = service.getGestureLengthScale()
+        val areaSize = bridge.getGestureAreaWidthDp()._dp.toFloat()
+        val areaLengthScale = bridge.getGestureLengthScale()
         val sw = screenSize.x.toFloat()
         val sh = screenSize.y.toFloat()
 

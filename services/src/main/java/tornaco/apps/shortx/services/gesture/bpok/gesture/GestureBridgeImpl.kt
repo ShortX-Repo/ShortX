@@ -35,9 +35,9 @@ import tornaco.apps.shortx.services.gesture.bpok.gesture.handlers.BrightnessCont
 import tornaco.apps.shortx.services.gesture.bpok.gesture.handlers.VolumeContinuousHandler
 import kotlin.math.roundToInt
 
-class DetectorServiceImpl(private val context: Context) : DetectorService {
+class GestureBridgeImpl(private val context: Context) : GestureBridge {
     private val shortx by lazy { shortXManager }
-    private val logger = Logger("DetectorService")
+    private val logger = Logger("GestureBridge")
 
     companion object {
         private const val DIAG_PREFIX = "[SX_EDGE_DIAG]"

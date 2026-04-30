@@ -84,13 +84,13 @@ private class AndroidGestureSequencePointerEvent(
 
 class EdgeGestureSequenceDetector(
     private val scheduler: GestureSequenceScheduler,
-    private val service: DetectorService,
+    private val service: GestureBridge,
     private val elapsedRealtime: () -> Long,
     private val dpToPx: (Int) -> Int,
     private val hintSink: EdgeGestureSequenceHintSink,
     private val debugLog: (String) -> Unit,
 ) {
-    constructor(handler: Handler, service: DetectorService) : this(
+    constructor(handler: Handler, service: GestureBridge) : this(
         scheduler = AndroidGestureSequenceScheduler(handler),
         service = service,
         elapsedRealtime = SystemClock::elapsedRealtime,
@@ -101,7 +101,7 @@ class EdgeGestureSequenceDetector(
 
     constructor(
         scheduler: GestureSequenceScheduler,
-        service: DetectorService,
+        service: GestureBridge,
     ) : this(
         scheduler = scheduler,
         service = service,
@@ -113,7 +113,7 @@ class EdgeGestureSequenceDetector(
 
     constructor(
         scheduler: GestureSequenceScheduler,
-        service: DetectorService,
+        service: GestureBridge,
         elapsedRealtime: () -> Long,
     ) : this(
         scheduler = scheduler,
@@ -126,7 +126,7 @@ class EdgeGestureSequenceDetector(
 
     constructor(
         scheduler: GestureSequenceScheduler,
-        service: DetectorService,
+        service: GestureBridge,
         elapsedRealtime: () -> Long,
         dpToPx: (Int) -> Int,
     ) : this(
@@ -140,7 +140,7 @@ class EdgeGestureSequenceDetector(
 
     constructor(
         scheduler: GestureSequenceScheduler,
-        service: DetectorService,
+        service: GestureBridge,
         elapsedRealtime: () -> Long,
         dpToPx: (Int) -> Int,
         hintSink: EdgeGestureSequenceHintSink,

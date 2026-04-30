@@ -10,7 +10,7 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util._dp
 
 class EdgeGestureEngine(
-    private val service: DetectorService,
+    private val bridge: GestureBridge,
     private val handler: Handler,
     private val regionResolver: EdgeRegionResolver,
     private val directionResolver: GestureDirectionResolver,
@@ -152,7 +152,7 @@ class EdgeGestureEngine(
                 listener?.onDirectionResolved(dir, gestureToGestureType(dir))
 
                 val travelSq = travelDistanceSq(event.rawX, event.rawY)
-                val thresholdPx = service.getSwipeDistanceThresholdDp()._dp.toFloat()
+                val thresholdPx = bridge.getSwipeDistanceThresholdDp()._dp.toFloat()
                 if (travelSq >= thresholdPx * thresholdPx) {
                     startExecution(resolvedAction, dir, event.eventTime, event.rawX, event.rawY)
                 }
@@ -173,7 +173,7 @@ class EdgeGestureEngine(
                 maxTravelDistanceSq = travelSq
             }
 
-            val thresholdPx = service.getSwipeDistanceThresholdDp()._dp.toFloat()
+            val thresholdPx = bridge.getSwipeDistanceThresholdDp()._dp.toFloat()
             if (travelSq >= thresholdPx * thresholdPx && !executionStarted) {
                 val gesture = directionToGesture(recognizedDirection)
                 val resolvedAction = actionResolver.resolve(hitRegion, gesture)
@@ -208,13 +208,13 @@ class EdgeGestureEngine(
 
         if (recognizedDirection != Direction.UNKNOWN) {
             val travelSq = travelDistanceSq(event.rawX, event.rawY)
-            val thresholdPx = service.getSwipeDistanceThresholdDp()._dp.toFloat()
+            val thresholdPx = bridge.getSwipeDistanceThresholdDp()._dp.toFloat()
             if (travelSq >= thresholdPx * thresholdPx) {
                 val gesture = directionToGesture(recognizedDirection)
                 val resolvedAction = actionResolver.resolve(hitRegion, gesture)
                 if (resolvedAction != null) {
                     listener?.onGestureTriggered(hitRegion, gestureToGestureType(recognizedDirection)!!)
-                    service.handleEdgeGestureEvent(
+                    bridge.handleEdgeGestureEvent(
                         listOf(DetectedArea.PredefinedEdge(hitRegion)),
                         gesture,
                         downX,
@@ -258,7 +258,7 @@ class EdgeGestureEngine(
         val resolvedAction = actionResolver.resolve(hitRegion, Gesture.SingleTap)
         if (resolvedAction != null) {
             listener?.onGestureTriggered(hitRegion, GestureType.Tap)
-            service.handleEdgeGestureEvent(
+            bridge.handleEdgeGestureEvent(
                 listOf(DetectedArea.PredefinedEdge(hitRegion)),
                 Gesture.SingleTap,
                 downX,
@@ -284,7 +284,7 @@ class EdgeGestureEngine(
             val resolvedAction = actionResolver.resolve(hitRegion, Gesture.DoubleTap)
             if (resolvedAction != null) {
                 listener?.onGestureTriggered(hitRegion, GestureType.DoubleTap)
-                service.handleEdgeGestureEvent(
+                bridge.handleEdgeGestureEvent(
                     listOf(DetectedArea.PredefinedEdge(hitRegion)),
                     Gesture.DoubleTap,
                     downX,
@@ -295,7 +295,7 @@ class EdgeGestureEngine(
                 return true
             }
         }
-        service.handleEdgeGestureEvent(
+        bridge.handleEdgeGestureEvent(
             listOf(DetectedArea.PredefinedEdge(hitRegion)),
             Gesture.SingleTap,
             downX,
@@ -313,7 +313,7 @@ class EdgeGestureEngine(
         val resolvedAction = actionResolver.resolve(hitRegion, Gesture.LongTap)
         if (resolvedAction != null) {
             listener?.onGestureTriggered(hitRegion, GestureType.LongPress)
-            service.handleEdgeGestureEvent(
+            bridge.handleEdgeGestureEvent(
                 listOf(DetectedArea.PredefinedEdge(hitRegion)),
                 Gesture.LongTap,
                 downX,
@@ -328,7 +328,7 @@ class EdgeGestureEngine(
 
     private fun onDoubleTapTimeout() {
         if (!gestureCaptured) return
-        service.handleEdgeGestureEvent(
+        bridge.handleEdgeGestureEvent(
             listOf(DetectedArea.PredefinedEdge(hitRegion)),
             Gesture.SingleTap,
             downX,
@@ -342,7 +342,7 @@ class EdgeGestureEngine(
         val gesture = directionToGesture(direction)
         val areas = listOf(DetectedArea.PredefinedEdge(hitRegion))
 
-        val sequenceCandidates = service.findMatchingEdgeGestureSequences(areas, gesture)
+        val sequenceCandidates = bridge.findMatchingEdgeGestureSequences(areas, gesture)
         if (action == null && sequenceCandidates.isEmpty()) {
             logger.logOnDebug("No action and no sequence candidates for $direction in $hitRegion, replaying")
             cancelAndReplay()
@@ -354,7 +354,7 @@ class EdgeGestureEngine(
 
         if (action != null) {
             listener?.onGestureTriggered(hitRegion, gestureToGestureType(direction) ?: GestureType.SwipeLeft)
-            service.handleEdgeGestureEvent(areas, gesture, downX, downY)
+            bridge.handleEdgeGestureEvent(areas, gesture, downX, downY)
             hintDetector.onEdgeGestureTriggered(areas, gesture, true)
         }
 

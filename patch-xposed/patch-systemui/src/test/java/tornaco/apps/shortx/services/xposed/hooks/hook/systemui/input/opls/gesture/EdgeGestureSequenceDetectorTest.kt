@@ -23,7 +23,7 @@ class EdgeGestureSequenceDetectorTest {
     @Test
     fun should_fire_after_all_child_steps_matched() {
         val scheduler = FakeScheduler()
-        val service = FakeDetectorService()
+        val service = FakeGestureBridge()
         val clock = FakeClock()
         val detector = EdgeGestureSequenceDetector(scheduler, service, clock::now, ::identityDpToPx)
         val area = DetectedArea.PredefinedEdge(Edge.BottomCenter)
@@ -64,7 +64,7 @@ class EdgeGestureSequenceDetectorTest {
     @Test
     fun should_not_fire_hover_step_before_pointer_release_even_after_delay() {
         val scheduler = FakeScheduler()
-        val service = FakeDetectorService()
+        val service = FakeGestureBridge()
         val clock = FakeClock()
         val detector = EdgeGestureSequenceDetector(scheduler, service, clock::now, ::identityDpToPx)
         val area = DetectedArea.PredefinedEdge(Edge.RightCenter)
@@ -99,7 +99,7 @@ class EdgeGestureSequenceDetectorTest {
     @Test
     fun should_fire_hover_step_on_pointer_release_after_duration_when_pointer_stays_in_radius() {
         val scheduler = FakeScheduler()
-        val service = FakeDetectorService()
+        val service = FakeGestureBridge()
         val clock = FakeClock()
         val detector = EdgeGestureSequenceDetector(scheduler, service, clock::now, ::identityDpToPx)
         val area = DetectedArea.PredefinedEdge(Edge.RightCenter)
@@ -135,7 +135,7 @@ class EdgeGestureSequenceDetectorTest {
     @Test
     fun should_cancel_hover_when_pointer_moves_out_of_radius() {
         val scheduler = FakeScheduler()
-        val service = FakeDetectorService()
+        val service = FakeGestureBridge()
         val clock = FakeClock()
         val detector = EdgeGestureSequenceDetector(scheduler, service, clock::now, ::identityDpToPx)
         val area = DetectedArea.CustomRect(
@@ -172,7 +172,7 @@ class EdgeGestureSequenceDetectorTest {
     @Test
     fun should_keep_waiting_for_directional_child_step_without_timeout() {
         val scheduler = FakeScheduler()
-        val service = FakeDetectorService()
+        val service = FakeGestureBridge()
         val clock = FakeClock()
         val detector = EdgeGestureSequenceDetector(scheduler, service, clock::now, ::identityDpToPx)
         val area = DetectedArea.PredefinedEdge(Edge.LeftCenter)
@@ -209,7 +209,7 @@ class EdgeGestureSequenceDetectorTest {
     @Test
     fun should_keep_hint_visible_for_best_direction_when_child_steps_diverge() {
         val scheduler = FakeScheduler()
-        val service = FakeDetectorService()
+        val service = FakeGestureBridge()
         val clock = FakeClock()
         val hintSink = FakeHintSink()
         val detector = EdgeGestureSequenceDetector(
@@ -259,7 +259,7 @@ class EdgeGestureSequenceDetectorTest {
     @Test
     fun should_choose_best_matching_direction_when_multiple_candidates_pass_threshold() {
         val scheduler = FakeScheduler()
-        val service = FakeDetectorService(childSwipeMaxAngleDeviationDeg = 60)
+        val service = FakeGestureBridge(childSwipeMaxAngleDeviationDeg = 60)
         val clock = FakeClock()
         val detector = EdgeGestureSequenceDetector(scheduler, service, clock::now, ::identityDpToPx)
         val candidates = listOf(
@@ -383,9 +383,9 @@ class EdgeGestureSequenceDetectorTest {
         override fun onSequenceCancelled() = Unit
     }
 
-    private class FakeDetectorService(
+    private class FakeGestureBridge(
         private val childSwipeMaxAngleDeviationDeg: Int = 35,
-    ) : DetectorService {
+    ) : GestureBridge {
         data class FiredEvent(
             val area: DetectedArea,
             val gesture: Gesture,

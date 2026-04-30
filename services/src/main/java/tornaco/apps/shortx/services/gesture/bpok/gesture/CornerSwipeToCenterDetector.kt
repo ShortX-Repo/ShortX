@@ -10,7 +10,7 @@ import kotlin.math.hypot
 
 class CornerSwipeToCenterDetector(
     private val context: Context,
-    private val service: DetectorService,
+    private val bridge: GestureBridge,
     private val gestureHintController: GestureHintController,
     private val gestureHapticController: GestureHapticController,
 ) {
@@ -73,14 +73,14 @@ class CornerSwipeToCenterDetector(
 
                 handleGestureHint(corner, distance, dot)
 
-                if (distance < service.getCornerSwipeMinDistanceDp()._dp) {
+                if (distance < bridge.getCornerSwipeMinDistanceDp()._dp) {
                     return false
                 }
                 if (dot < MIN_DIRECTION_DOT) {
                     return false
                 }
 
-                val handled = service.handleCornerSwipeToCenterEvent(corner, downX, downY)
+                val handled = bridge.handleCornerSwipeToCenterEvent(corner, downX, downY)
                 if (handled) {
                     if (hasHapticEnabled(corner)) {
                         gestureHapticController.onGestureSuccess(trackedToken)
@@ -114,7 +114,7 @@ class CornerSwipeToCenterDetector(
 
     private fun handleGestureHint(corner: ScreenCorner, distance: Float, dot: Float) {
         if (trackedToken == 0L) return
-        val shouldShowHint = service.enabledCornerSwipeToCenterFacts.any {
+        val shouldShowHint = bridge.enabledCornerSwipeToCenterFacts.any {
             !it.isDisabled && it.corner == corner && it.enableGestureHint
         }
         if (!shouldShowHint) {
@@ -162,7 +162,7 @@ class CornerSwipeToCenterDetector(
     }
 
     private fun detectCorner(x: Float, y: Float): ScreenCorner? {
-        val enabledCorners = service.enabledCornerSwipeToCenterFacts
+        val enabledCorners = bridge.enabledCornerSwipeToCenterFacts
             .asSequence()
             .filter { !it.isDisabled }
             .map { it.corner }
@@ -172,7 +172,7 @@ class CornerSwipeToCenterDetector(
         val screenSize = context.screenSize()
         val width = screenSize.x.toFloat()
         val height = screenSize.y.toFloat()
-        val radiusRatio = service.getCornerGestureRegionRadiusRatio()
+        val radiusRatio = bridge.getCornerGestureRegionRadiusRatio()
 
         return enabledCorners.firstOrNull { corner ->
             CornerSwipeToCenterGeometry.contains(corner, x, y, width, height, radiusRatio)
@@ -206,13 +206,13 @@ class CornerSwipeToCenterDetector(
     }
 
     private fun hasHapticEnabled(corner: ScreenCorner): Boolean {
-        return service.enabledCornerSwipeToCenterFacts.any {
+        return bridge.enabledCornerSwipeToCenterFacts.any {
             !it.isDisabled && it.corner == corner && it.enableGestureHaptic
         }
     }
 
     private fun hasFeedbackEnabled(corner: ScreenCorner): Boolean {
-        return service.enabledCornerSwipeToCenterFacts.any {
+        return bridge.enabledCornerSwipeToCenterFacts.any {
             !it.isDisabled && it.corner == corner && (it.enableGestureHint || it.enableGestureHaptic)
         }
     }

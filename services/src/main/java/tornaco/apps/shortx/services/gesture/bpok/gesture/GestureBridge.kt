@@ -11,7 +11,7 @@ data class EdgeGestureSequenceCandidate(
     val rule: EdgeGesture,
 )
 
-interface DetectorService {
+interface GestureBridge {
     fun handleEdgeGestureEvent(
         areas: List<DetectedArea>,
         gestureEvent: Gesture,
