@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.core.util.newHandlerOfNewThread
 import tornaco.apps.shortx.core.util.screenSize
+import tornaco.apps.shortx.services.gesture.bpok.gesture.CornerSwipeToCenterDetector
 import tornaco.apps.shortx.services.gesture.bpok.gesture.DetectedArea
 import tornaco.apps.shortx.services.gesture.bpok.gesture.GestureBridgeImpl
 import tornaco.apps.shortx.services.gesture.bpok.gesture.EdgeGestureEngine
@@ -90,11 +91,26 @@ class ShortXGestureMain(
         hintDetector = hintDetector,
     )
 
+    private val cornerSwipeDetector = CornerSwipeToCenterDetector(
+        context = context,
+        bridge = service,
+        gestureHintController = gestureHintController,
+        gestureHapticController = gestureHapticController,
+        injectionBridge = injectionBridge,
+    )
+
     fun filterMotionEvent(event: MotionEvent): Boolean? {
         if (!service.shouldDetectMotion) {
             logger.logOnDebug("shouldDetectMotion is false.")
             return null
         }
+
+        val cornerConsumed = cornerSwipeDetector.onTouchEvent(event)
+        if (cornerConsumed) {
+            logger.logOnDebug("cornerSwipe consumed")
+            return false
+        }
+
         val consumed = engine.handleTouchSequence(event)
         if (consumed) {
             logger.logOnDebug("pilferPointers. consumed")

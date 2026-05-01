@@ -13,6 +13,7 @@ class CornerSwipeToCenterDetector(
     private val bridge: GestureBridge,
     private val gestureHintController: GestureHintController,
     private val gestureHapticController: GestureHapticController,
+    private val injectionBridge: InputInjectionBridge,
 ) {
     companion object {
         private const val CORNER_SWIPE_MAX_ANGLE_DEVIATION_DEG = 30f
@@ -34,6 +35,7 @@ class CornerSwipeToCenterDetector(
     private var downY = 0f
     private var hasTriggered = false
     private var hasHintShown = false
+    private var cachedDownEvent: MotionEvent? = null
 
     fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.actionMasked) {
@@ -46,6 +48,10 @@ class CornerSwipeToCenterDetector(
                 trackedToken = if (trackedCorner != null && hasFeedbackEnabled(trackedCorner!!)) nextToken++ else 0L
                 if (trackedToken != 0L && trackedCorner != null && hasHapticEnabled(trackedCorner!!)) {
                     gestureHapticController.onGestureCandidate(trackedToken)
+                }
+                if (trackedCorner != null) {
+                    cachedDownEvent = MotionEvent.obtain(event)
+                    return true
                 }
             }
 
@@ -86,6 +92,8 @@ class CornerSwipeToCenterDetector(
                         gestureHapticController.onGestureSuccess(trackedToken)
                     }
                     gestureHintController.onGestureSuccess(trackedToken)
+                    cachedDownEvent?.recycle()
+                    cachedDownEvent = null
                 }
                 hasTriggered = handled
                 return handled
@@ -196,6 +204,15 @@ class CornerSwipeToCenterDetector(
 
     private fun reset() {
         gestureHapticController.onGestureCancel(trackedToken)
+        if (!hasTriggered && cachedDownEvent != null) {
+            try {
+                val copy = MotionEvent.obtain(cachedDownEvent!!)
+                injectionBridge.injectEvent(copy)
+            } catch (_: Exception) {
+            }
+        }
+        cachedDownEvent?.recycle()
+        cachedDownEvent = null
         trackedToken = 0L
         trackedPointerId = MotionEvent.INVALID_POINTER_ID
         trackedCorner = null

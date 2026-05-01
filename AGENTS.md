@@ -1,10 +1,10 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
-- Plan: specs/004-integrate-gesture-indicator/plan.md
-- Spec: specs/004-integrate-gesture-indicator/spec.md
-- Research: specs/004-integrate-gesture-indicator/research.md
-- Data Model: specs/004-integrate-gesture-indicator/data-model.md
-- Contracts: specs/004-integrate-gesture-indicator/contracts/interfaces.md
-- Quickstart: specs/004-integrate-gesture-indicator/quickstart.md
+- Plan: specs/006-corner-swipe-event-replay/plan.md
+- Spec: specs/006-corner-swipe-event-replay/spec.md
+- Research: specs/006-corner-swipe-event-replay/research.md
+- Data Model: specs/006-corner-swipe-event-replay/data-model.md
+- Contracts: specs/006-corner-swipe-event-replay/contracts/interfaces.md
+- Quickstart: specs/006-corner-swipe-event-replay/quickstart.md
 <!-- SPECKIT END -->
