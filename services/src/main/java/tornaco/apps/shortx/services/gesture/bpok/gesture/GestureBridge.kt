@@ -1,6 +1,5 @@
 package tornaco.apps.shortx.services.gesture.bpok.gesture
 
-import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.CornerSwipeToCenter
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.EdgeGestureStep
@@ -74,7 +73,7 @@ interface GestureBridge {
     fun obsUserDataChanged(obs: () -> Unit)
 
     fun findContinuousGestureBinding(
-        edge: Edge,
+        areas: List<DetectedArea>,
         gestureEvent: Gesture,
     ): ContinuousGestureBinding?
 

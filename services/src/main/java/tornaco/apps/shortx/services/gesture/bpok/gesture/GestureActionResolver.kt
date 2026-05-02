@@ -11,29 +11,47 @@ class GestureActionResolver(
 ) {
     private val logger = Logger("GestureActionResolver")
 
-    fun resolve(edge: Edge, gesture: Gesture): EdgeGesture? {
-        val direct = findAction(edge, gesture)
-        if (direct != null) return direct
+    fun resolve(areas: List<DetectedArea>, gesture: Gesture): EdgeGesture? {
+        areas.forEach { area ->
+            val direct = findAction(area, gesture)
+            if (direct != null) return direct
 
-        val parent = regionResolver.getParentEdgeRegion(edge)
-        if (parent != edge) {
-            val fallback = findAction(parent, gesture)
-            if (fallback != null) return fallback
+            if (area is DetectedArea.PredefinedEdge) {
+                val parent = regionResolver.getParentEdgeRegion(area.edge)
+                if (parent != area.edge) {
+                    val fallback = findAction(DetectedArea.PredefinedEdge(parent), gesture)
+                    if (fallback != null) return fallback
+                }
+            }
         }
         return null
     }
 
-    fun hasAction(edge: Edge, gesture: Gesture): Boolean {
-        return resolve(edge, gesture) != null
+    fun hasAction(areas: List<DetectedArea>, gesture: Gesture): Boolean {
+        return resolve(areas, gesture) != null
     }
 
-    private fun findAction(edge: Edge, gesture: Gesture): EdgeGesture? {
+    private fun findAction(area: DetectedArea, gesture: Gesture): EdgeGesture? {
         return bridge.enabledEdgeGestures.firstOrNull { rule ->
             !rule.isDisabled &&
                     rule.gesture == gesture &&
                     rule.childStepsCount == 0 &&
-                    rule.edge == edge &&
-                    (!rule.hasCustomRect() || rule.customRect == tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance())
+                    areaMatchesRule(area, rule)
+        }
+    }
+
+    private fun areaMatchesRule(area: DetectedArea, rule: EdgeGesture): Boolean {
+        return when (area) {
+            is DetectedArea.PredefinedEdge -> {
+                rule.edge == area.edge &&
+                        (!rule.hasCustomRect() || rule.customRect == tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance())
+            }
+
+            is DetectedArea.CustomRect -> {
+                rule.hasCustomRect() &&
+                        rule.customRect != tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance() &&
+                        rule.customRect == area.rect
+            }
         }
     }
 }

@@ -279,15 +279,14 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
     }
 
     override fun findContinuousGestureBinding(
-        edge: Edge,
+        areas: List<DetectedArea>,
         gestureEvent: Gesture,
     ): ContinuousGestureBinding? {
         return continuousGestureBindings.firstOrNull { binding ->
             !binding.rule.isDisabled &&
                     binding.rule.childStepsCount == 0 &&
-                    binding.rule.edge == edge &&
                     binding.rule.gesture == gestureEvent &&
-                    (!binding.rule.hasCustomRect() || binding.rule.customRect == tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance())
+                    areas.any { area -> areaMatchesRule(area, binding.rule) }
         }
     }
 

@@ -70,12 +70,7 @@ class ShortXGestureMain(
         gestureHintController = gestureHintController,
         gestureHapticController = gestureHapticController,
         detectAreas = { x, y ->
-            val edge = regionResolver.resolve(x, y)
-            if (edge != tornaco.apps.shortx.core.proto.fact.Edge.UNRECOGNIZED) {
-                listOf(DetectedArea.PredefinedEdge(edge))
-            } else {
-                emptyList()
-            }
+            regionResolver.detectAreas(x, y)
         },
     )
 

@@ -33,6 +33,7 @@ class EdgeGestureEngine(
 
     private var downX = 0f
     private var downY = 0f
+    private var hitAreas: List<DetectedArea> = emptyList()
     private var hitRegion: Edge = Edge.UNRECOGNIZED
     private var recognizedDirection: Direction = Direction.UNKNOWN
     private var gestureCaptured = false
@@ -89,12 +90,13 @@ class EdgeGestureEngine(
         downY = event.rawY
         lockedDeviceId = event.deviceId
 
-        val region = regionResolver.resolve(downX, downY)
-        if (region == Edge.UNRECOGNIZED) {
+        val detectedAreas = regionResolver.detectAreas(downX, downY)
+        if (detectedAreas.isEmpty()) {
             return false
         }
 
-        hitRegion = region
+        hitAreas = detectedAreas
+        hitRegion = detectedAreas.filterIsInstance<DetectedArea.PredefinedEdge>().firstOrNull()?.edge ?: Edge.UNRECOGNIZED
         gestureCaptured = true
         cachedDownEvent = MotionEvent.obtain(event)
 
@@ -102,15 +104,15 @@ class EdgeGestureEngine(
             onLongPressTimeout()
         }
 
-        listener?.onEdgeTouchDown(region, downX, downY)
+        listener?.onEdgeTouchDown(hitRegion, downX, downY)
 
-        if (LOGV) logger.d("handleEdgeDownStart: region=$region, pos=($downX,$downY)")
+        if (LOGV) logger.d("handleEdgeDownStart: areas=$detectedAreas, pos=($downX,$downY)")
         return true
     }
 
     private fun handleDoubleTapDown(event: MotionEvent): Boolean {
-        val region = regionResolver.resolve(event.rawX, event.rawY)
-        if (region == Edge.UNRECOGNIZED || region != hitRegion) {
+        val detectedAreas = regionResolver.detectAreas(event.rawX, event.rawY)
+        if (detectedAreas.isEmpty() || detectedAreas != hitAreas) {
             resetState()
             return handleEdgeDownStart(event)
         }
@@ -148,7 +150,7 @@ class EdgeGestureEngine(
                 timerController.cancelLongPressTimer()
 
                 val gesture = directionToGesture(dir)
-                val resolvedAction = actionResolver.resolve(hitRegion, gesture)
+                val resolvedAction = actionResolver.resolve(hitAreas, gesture)
 
                 listener?.onDirectionResolved(dir, gestureToGestureType(dir))
 
@@ -177,7 +179,7 @@ class EdgeGestureEngine(
             val thresholdPx = bridge.getSwipeDistanceThresholdDp()._dp.toFloat()
             if (travelSq >= thresholdPx * thresholdPx && !executionStarted) {
                 val gesture = directionToGesture(recognizedDirection)
-                val resolvedAction = actionResolver.resolve(hitRegion, gesture)
+                val resolvedAction = actionResolver.resolve(hitAreas, gesture)
                 startExecution(resolvedAction, recognizedDirection, event.eventTime, event.rawX, event.rawY)
             }
 
@@ -212,11 +214,11 @@ class EdgeGestureEngine(
             val thresholdPx = bridge.getSwipeDistanceThresholdDp()._dp.toFloat()
             if (travelSq >= thresholdPx * thresholdPx) {
                 val gesture = directionToGesture(recognizedDirection)
-                val resolvedAction = actionResolver.resolve(hitRegion, gesture)
+                val resolvedAction = actionResolver.resolve(hitAreas, gesture)
                 if (resolvedAction != null) {
                     listener?.onGestureTriggered(hitRegion, gestureToGestureType(recognizedDirection)!!)
                     bridge.handleEdgeGestureEvent(
-                        listOf(DetectedArea.PredefinedEdge(hitRegion)),
+                        hitAreas,
                         gesture,
                         downX,
                         downY
@@ -247,7 +249,7 @@ class EdgeGestureEngine(
     }
 
     private fun handleTapRelease(event: MotionEvent): Boolean {
-        val hasDoubleTap = actionResolver.hasAction(hitRegion, Gesture.DoubleTap)
+        val hasDoubleTap = actionResolver.hasAction(hitAreas, Gesture.DoubleTap)
         if (hasDoubleTap) {
             firstTapUpEvent = MotionEvent.obtain(event)
             timerController.startDoubleTapTimer(DOUBLE_TAP_TIMEOUT_MS) {
@@ -256,11 +258,11 @@ class EdgeGestureEngine(
             return true
         }
 
-        val resolvedAction = actionResolver.resolve(hitRegion, Gesture.SingleTap)
+        val resolvedAction = actionResolver.resolve(hitAreas, Gesture.SingleTap)
         if (resolvedAction != null) {
             listener?.onGestureTriggered(hitRegion, GestureType.Tap)
             bridge.handleEdgeGestureEvent(
-                listOf(DetectedArea.PredefinedEdge(hitRegion)),
+                hitAreas,
                 Gesture.SingleTap,
                 downX,
                 downY
@@ -282,11 +284,11 @@ class EdgeGestureEngine(
             return false
         }
         if (interval <= DOUBLE_TAP_TIMEOUT_MS) {
-            val resolvedAction = actionResolver.resolve(hitRegion, Gesture.DoubleTap)
+            val resolvedAction = actionResolver.resolve(hitAreas, Gesture.DoubleTap)
             if (resolvedAction != null) {
                 listener?.onGestureTriggered(hitRegion, GestureType.DoubleTap)
                 bridge.handleEdgeGestureEvent(
-                    listOf(DetectedArea.PredefinedEdge(hitRegion)),
+                    hitAreas,
                     Gesture.DoubleTap,
                     downX,
                     downY
@@ -297,7 +299,7 @@ class EdgeGestureEngine(
             }
         }
         bridge.handleEdgeGestureEvent(
-            listOf(DetectedArea.PredefinedEdge(hitRegion)),
+            hitAreas,
             Gesture.SingleTap,
             downX,
             downY
@@ -311,11 +313,11 @@ class EdgeGestureEngine(
         if (!gestureCaptured || executionStarted) return
         if (recognizedDirection != Direction.UNKNOWN) return
 
-        val resolvedAction = actionResolver.resolve(hitRegion, Gesture.LongTap)
+        val resolvedAction = actionResolver.resolve(hitAreas, Gesture.LongTap)
         if (resolvedAction != null) {
             listener?.onGestureTriggered(hitRegion, GestureType.LongPress)
             bridge.handleEdgeGestureEvent(
-                listOf(DetectedArea.PredefinedEdge(hitRegion)),
+            hitAreas,
                 Gesture.LongTap,
                 downX,
                 downY
@@ -330,7 +332,7 @@ class EdgeGestureEngine(
     private fun onDoubleTapTimeout() {
         if (!gestureCaptured) return
         bridge.handleEdgeGestureEvent(
-            listOf(DetectedArea.PredefinedEdge(hitRegion)),
+            hitAreas,
             Gesture.SingleTap,
             downX,
             downY
@@ -341,8 +343,8 @@ class EdgeGestureEngine(
 
     private fun startExecution(action: EdgeGesture?, direction: Direction, eventTime: Long, currentX: Float, currentY: Float) {
         val gesture = directionToGesture(direction)
-        val areas = listOf(DetectedArea.PredefinedEdge(hitRegion))
-        val continuousBinding = bridge.findContinuousGestureBinding(hitRegion, gesture)
+        val areas = hitAreas
+        val continuousBinding = bridge.findContinuousGestureBinding(areas, gesture)
 
         val sequenceCandidates = bridge.findMatchingEdgeGestureSequences(areas, gesture)
         if (action == null && continuousBinding == null && sequenceCandidates.isEmpty()) {
@@ -415,6 +417,7 @@ class EdgeGestureEngine(
         continuousHandler = null
         downX = 0f
         downY = 0f
+        hitAreas = emptyList()
         hitRegion = Edge.UNRECOGNIZED
         recognizedDirection = Direction.UNKNOWN
         gestureCaptured = false
