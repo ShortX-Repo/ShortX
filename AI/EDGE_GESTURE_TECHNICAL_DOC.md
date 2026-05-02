@@ -745,6 +745,317 @@ Android 13 及以上使用：
 
 这些类本质都是“把手势位移离散成档位，然后不断更新目标值”的连续调节器。
 
+### 11.2.1 手势指针动作（原动作 id `106`）
+
+动作类：动作定义中心中的 `a.b.q0`
+
+这个动作不是普通一次性动作，也不是上面那种“纯数值连续调节器”。它更接近一个“手势驱动的虚拟指针模式”：
+
+- 用户先通过边缘手势进入该模式
+- 系统拉起一个悬浮可视层显示当前指针位置和模式
+- 手指继续移动时，不是直接把原始 move 透传给前台应用，而是先在本模块内部更新“指针位置”
+- 手指抬起时，再按照当前指针模式决定要注入单击、长按、双击，或进入 transform 分支
+
+#### 11.2.1.1 动作定义
+
+动作定义中心中的 `a.b.q0` 很短，核心只有一个模式字段 `I`：
+
+```java
+public static final class q0 extends b implements u0 {
+    public final int I;
+
+    private q0(int i) {
+        super(106, R.string.action_gesture_pointer, R.drawable.ic_gesture_pointer);
+        this.I = i;
+    }
+}
+```
+
+这里的 `I` 不是方向，而是“手势指针模式”。
+
+模式名来自手势配置中心里的 `p.f.i`：
+
+```java
+public static final int[] i = {
+    R.string.mode_default,
+    R.string.mode_tap,
+    R.string.mode_long_press,
+    R.string.mode_double_tap,
+    R.string.mode_transform
+};
+```
+
+因此手势指针至少有 5 种运行模式：
+
+| 模式值 | 含义 |
+|---|---|
+| 0 | default，使用默认轮转逻辑 |
+| 1 | tap，抬手后注入单击 |
+| 2 | long press，抬手后注入长按 |
+| 3 | double tap，抬手后注入双击 |
+| 4 | transform，不直接点击，而是进入后续变换/二段手势分支 |
+
+#### 11.2.1.2 为什么它和普通动作不同
+
+边缘手势状态机在提交方向动作时，明确把 `106` 和 `68`、`107` 放进了“不要走普通一次性派发”的特判组：
+
+```java
+int i = bVarW.z;
+if (i != 1 && i != 51 && i != 68 && i != 106) {
+    if (i == 107) {
+        bVarW = ((b.h3) bVarW).I[v(this.Z)];
+    }
+    N(bVarW, u(this.Z));
+}
+```
+
+这说明动作 id `106` 不会像返回、主页、打开通知栏那样直接丢给“普通动作派发器”，而是会进入专门的运行时流程。
+
+#### 11.2.1.3 手势指针的可视层就是 `d3`
+
+`d3` 虽然在其它章节被叫作“轨迹反馈层”，但从配置项和行为看，它实际就是手势指针的核心运行时视图：
+
+- 它读取 `gesture_pointer_color` 对应的配置键 `16`
+- 它读取 `gesture_pointer_scale` 对应的配置键 `15`
+- 它保存当前指针点、起始点、已移动距离、当前模式索引
+- move 时只更新内部指针坐标，不直接把 move 注入前台应用
+- up 时按模式决定调用哪一种注入逻辑
+
+最关键的构造片段如下：
+
+```java
+this.D.setColor(this.z.v(16, -14509620));
+Point pointI = this.C.g2().I(new Point());
+int i2 = this.J;
+this.I = new b(
+    i2 == 0 ? this.z.z() : new int[]{i2},
+    pointI.x,
+    pointI.y,
+    f2,
+    f3,
+    this.z.v(15, 250),
+    i == 1
+);
+t3.n().j(this.I, 7);
+```
+
+这段代码能说明 4 个实现事实：
+
+1. 手势指针视图是系统覆盖层 View，而不是应用内 View。
+2. 它有颜色和缩放两个独立配置。
+3. 模式值为 0 时，不是固定一个动作，而是使用 `this.z.z()` 返回的一组模式数组轮转。
+4. 视图真正挂载在系统覆盖层管理器上。
+
+#### 11.2.1.4 move 阶段只更新“虚拟指针位置”
+
+`d3.b.j(...)` 的职责可以还原成下面的语义：
+
+```java
+void updatePointer(float rawX, float rawY) {
+    float deltaX = (rawX - gestureStartX) * pointerScale;
+    float deltaY = (rawY - gestureStartY) * pointerScale;
+
+    travelDistance = sqrt(deltaX * deltaX + deltaY * deltaY);
+    pointerX = clamp(gestureStartX + deltaX, 0, displayWidth);
+    pointerY = clamp(gestureStartY + deltaY, 0, displayHeight);
+
+    if (travelDistance crosses activationRadius) {
+        advanceOrArmPointerMode();
+    }
+
+    invalidate();
+}
+```
+
+也就是说，手势指针不是“把手指轨迹原样透传到应用”，而是把边缘手势的位移映射成一个新的屏幕内虚拟坐标，再在这个虚拟坐标上做点击或其它后续动作。
+
+#### 11.2.1.5 抬手时如何决定注入什么
+
+`d3.b.i()` 是最值得参考的方法。它把当前模式映射到底层控制器 `y0` 的 4 类入口：
+
+```java
+public void i() {
+    int mode = this.N[this.O];
+    if (mode == 1) {
+        d3.this.C.W1().h0(this.K, this.L);
+    } else if (mode == 2) {
+        d3.this.C.W1().d0(this.K, this.L);
+    } else if (mode == 3) {
+        d3.this.C.W1().X(this.K, this.L);
+    } else if (mode == 4) {
+        d3.this.C.W1().V().P(this.K, this.L, this);
+    } else {
+        return;
+    }
+}
+```
+
+可以直接把它翻译成这张表：
+
+| 模式值 | `d3` 结束时调用 | 实际效果 |
+|---|---|---|
+| 1 | `y0.h0(x, y)` | 注入单击 |
+| 2 | `y0.d0(x, y)` | 注入长按 |
+| 3 | `y0.X(x, y)` | 注入双击 |
+| 4 | `y0.V().P(x, y, callback)` | 进入 transform / 二段手势分支 |
+
+模式 `0` 则不是一个固定动作，而是由 `d3` 内部根据移动距离阈值在模式数组中轮转或选中当前项。
+
+#### 11.2.1.6 底层触摸注入是如何做的
+
+真正注入到系统里的不是应用层点击，而是由输入网关控制器 `y0` 直接构造 `MotionEvent` 再走输入注入桥。
+
+基础事件构造函数：
+
+```java
+private MotionEvent t0(long downTime, long eventTime, int action, float x, float y) {
+    pointerProperties[0].id = 0;
+    pointerProperties[0].toolType = 1;
+    pointerCoords[0].x = x;
+    pointerCoords[0].y = y;
+    return MotionEvent.obtain(
+        downTime,
+        eventTime,
+        action,
+        1,
+        pointerProperties,
+        pointerCoords,
+        0,
+        0,
+        1.0f,
+        1.0f,
+        0,
+        0,
+        4098,
+        0
+    );
+}
+```
+
+这里的 source 是 `4098`，也就是触摸屏来源。说明手势指针最终不是模拟鼠标光标 API，而是在系统输入层直接注入触摸事件。
+
+单击：
+
+```java
+private void r0(float x, float y) {
+    long t = SystemClock.uptimeMillis();
+    f0(t0(t, t, 0, x, y));
+    f0(t0(t, t + 5, 1, x, y));
+}
+```
+
+长按：
+
+```java
+private void q0(float x, float y) {
+    long t = SystemClock.uptimeMillis();
+    f0(t0(t, t, 0, x, y));
+    long hold = ViewConfiguration.getLongPressTimeout() + 300;
+    for (long dt = 100; dt < hold; dt += 100) {
+        f0(t0(t, t + dt, 2, x, y));
+    }
+    f0(t0(t, t + hold, 1, x, y));
+}
+```
+
+双击：
+
+```java
+private void l0(float x, float y) {
+    long t1 = SystemClock.uptimeMillis();
+    f0(t0(t1, t1, 0, x, y));
+    f0(t0(t1, t1 + 5, 1, x, y));
+
+    f.d.f(60L);
+
+    long t2 = SystemClock.uptimeMillis();
+    f0(t0(t2, t2, 0, x, y));
+    f0(t0(t2, t2 + 5, 1, x, y));
+}
+```
+
+包装层方法名映射如下：
+
+| 外部调用 | 内部实现 | 语义 |
+|---|---|---|
+| `y0.h0(x, y)` | `r0(x, y)` | 单击 |
+| `y0.d0(x, y)` | `q0(x, y)` | 长按 |
+| `y0.X(x, y)` | `l0(x, y)` | 双击 |
+
+#### 11.2.1.7 transform 模式到底做了什么
+
+模式 4 并不直接注入标准点击，而是调用：
+
+```java
+void P(float x, float y, b callback) {
+    this.g0 = (((int) x) << 16) | ((int) y);
+    this.k0 = false;
+    this.l0 = callback;
+}
+```
+
+这说明 transform 模式做的是“把当前指针落点回送给边缘手势状态机，作为下一段内部状态转换的起点”。
+
+高置信解释：
+
+- `g0` 保存了一个待处理的目标坐标
+- `l0` 保存了一个回调对象，用于后续把变换结果回推给当前手势指针视图
+- 后续输入流再经过 `b0.d(...)` 时，会检查这组内部状态并进入另一段特殊流程
+
+这里还不能逐条还原成完整控制流，但已经足以说明：`transform` 模式不是普通点击，而是“把手势指针模式切换成下一阶段交互”。
+
+#### 11.2.1.8 可直接参考的最小等价实现
+
+如果要重写一个行为接近的手势指针，核心代码可以先按下面这个骨架搭：
+
+```java
+final class GesturePointerRuntime {
+    private final InputInjectionBridge inputBridge;
+    private final OverlayManager overlayManager;
+    private final int pointerScalePercent;
+    private final int pointerColor;
+    private final int[] pointerModes;
+
+    private float anchorX;
+    private float anchorY;
+    private float pointerX;
+    private float pointerY;
+    private int modeIndex;
+
+    void onStart(float startX, float startY, boolean fromRightEdge) {
+        anchorX = startX;
+        anchorY = startY;
+        pointerX = startX;
+        pointerY = startY;
+        modeIndex = 0;
+        overlayManager.showGesturePointer(pointerColor, pointerScalePercent, pointerModes, fromRightEdge);
+    }
+
+    void onMove(float rawX, float rawY, int screenWidth, int screenHeight) {
+        float scale = pointerScalePercent / 100f;
+        pointerX = clamp(anchorX + (rawX - anchorX) * scale, 0f, screenWidth);
+        pointerY = clamp(anchorY + (rawY - anchorY) * scale, 0f, screenHeight);
+        overlayManager.updateGesturePointer(pointerX, pointerY);
+    }
+
+    void onFinish() {
+        int mode = pointerModes[modeIndex];
+        if (mode == 1) {
+            inputBridge.injectTap(pointerX, pointerY);
+        } else if (mode == 2) {
+            inputBridge.injectLongPress(pointerX, pointerY);
+        } else if (mode == 3) {
+            inputBridge.injectDoubleTap(pointerX, pointerY);
+        } else if (mode == 4) {
+            handOffToTransformState(pointerX, pointerY);
+        }
+        overlayManager.hideGesturePointer();
+    }
+}
+```
+
+这个骨架缺少原项目中的模式轮转、小动画和 transform 的完整第二阶段，但已经保留了“边缘进入 -> 内部虚拟指针移动 -> 抬手再注入触摸”的核心设计。
+
 ### 11.3 特殊内部动作
 
 #### 11.3.1 子手势容器动作（原动作 id `107`）
@@ -786,6 +1097,10 @@ Android 13 及以上使用：
 - 带轨迹或指示动画
 - move 时跟随手指更新
 - up 时播放动画或触发后续动作
+
+补充：
+
+对“手势指针”这个功能来说，`d3` 不只是普通轨迹反馈层，而是核心运行时视图。它既负责显示指针当前位置，也负责在抬手时把当前模式转换成单击、长按、双击或 transform 分支。
 
 ### 12.2 扇形反馈层（原 `y2`）
 
