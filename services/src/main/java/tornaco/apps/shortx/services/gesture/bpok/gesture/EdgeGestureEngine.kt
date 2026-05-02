@@ -4,8 +4,9 @@ import android.os.Handler
 import android.view.MotionEvent
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.logOnDebug
-import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
+import tornaco.apps.shortx.core.proto.fact.EdgeGesture
+import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util._dp
 
@@ -338,12 +339,13 @@ class EdgeGestureEngine(
         resetState()
     }
 
-    private fun startExecution(action: Any?, direction: Direction, eventTime: Long, currentX: Float, currentY: Float) {
+    private fun startExecution(action: EdgeGesture?, direction: Direction, eventTime: Long, currentX: Float, currentY: Float) {
         val gesture = directionToGesture(direction)
         val areas = listOf(DetectedArea.PredefinedEdge(hitRegion))
+        val continuousBinding = bridge.findContinuousGestureBinding(hitRegion, gesture)
 
         val sequenceCandidates = bridge.findMatchingEdgeGestureSequences(areas, gesture)
-        if (action == null && sequenceCandidates.isEmpty()) {
+        if (action == null && continuousBinding == null && sequenceCandidates.isEmpty()) {
             logger.logOnDebug("No action and no sequence candidates for $direction in $hitRegion, replaying")
             cancelAndReplay()
             return
@@ -351,6 +353,12 @@ class EdgeGestureEngine(
 
         executionStarted = true
         consumeCachedEvent()
+
+        if (continuousBinding != null) {
+            continuousHandler = bridge.createContinuousActionHandler(continuousBinding.payload)
+            continuousHandler?.onStart(edgeGroup(hitRegion), downX, downY, eventTime)
+            return
+        }
 
         if (action != null) {
             listener?.onGestureTriggered(hitRegion, gestureToGestureType(direction) ?: GestureType.SwipeLeft)
@@ -369,6 +377,16 @@ class EdgeGestureEngine(
                 anchorY = currentY,
                 candidates = sequenceCandidates,
             )
+        }
+    }
+
+    private fun edgeGroup(region: Edge): Int {
+        return when (region) {
+            Edge.LeftAll, Edge.LeftTop, Edge.LeftCenter, Edge.LeftBottom -> 0
+            Edge.RightAll, Edge.RightTop, Edge.RightCenter, Edge.RightBottom -> 1
+            Edge.TopAll, Edge.TopLeft, Edge.TopCenter, Edge.TopRight -> 2
+            Edge.BottomAll, Edge.BottomLeft, Edge.BottomCenter, Edge.BottomRight -> 3
+            else -> -1
         }
     }
 

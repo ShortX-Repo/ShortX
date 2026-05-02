@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.gesture.bpok.gesture
 
+import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.CornerSwipeToCenter
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.EdgeGestureStep
@@ -9,6 +10,24 @@ import tornaco.apps.shortx.core.proto.fact.ScreenCorner
 data class EdgeGestureSequenceCandidate(
     val area: DetectedArea,
     val rule: EdgeGesture,
+)
+
+sealed interface ContinuousGestureActionPayload {
+    data class Brightness(
+        val sensitivityScale: Float,
+        val minValue: Int,
+        val maxValue: Int,
+    ) : ContinuousGestureActionPayload
+
+    data class Volume(
+        val streamType: Int,
+        val sensitivityScale: Float,
+    ) : ContinuousGestureActionPayload
+}
+
+data class ContinuousGestureBinding(
+    val rule: EdgeGesture,
+    val payload: ContinuousGestureActionPayload,
 )
 
 interface GestureBridge {
@@ -53,6 +72,13 @@ interface GestureBridge {
 
     // Rule/DA/PkgSet...
     fun obsUserDataChanged(obs: () -> Unit)
+
+    fun findContinuousGestureBinding(
+        edge: Edge,
+        gestureEvent: Gesture,
+    ): ContinuousGestureBinding?
+
+    fun createContinuousActionHandler(payload: ContinuousGestureActionPayload): ContinuousActionHandler?
 
     val enabledEdgeGestures: Set<EdgeGesture>
     val enabledCornerSwipeToCenterFacts: Set<CornerSwipeToCenter>

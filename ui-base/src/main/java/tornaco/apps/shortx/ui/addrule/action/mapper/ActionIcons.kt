@@ -393,6 +393,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.System.brightness_5_fill
         }
 
+        Action.ContinuousAdjustBrightness::class -> {
+            Remix.System.brightness_auto_fill
+        }
+
         Action.EnableAutoBrightness::class -> {
             Remix.System.brightness_auto_fill
         }
@@ -506,6 +510,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
 
         Action.SetVolume::class -> {
             Remix.Media.volume_up_fill
+        }
+
+        Action.ContinuousAdjustVolume::class -> {
+            Remix.Media.volume_up_line
         }
 
         Action.BiometricVerify::class -> {

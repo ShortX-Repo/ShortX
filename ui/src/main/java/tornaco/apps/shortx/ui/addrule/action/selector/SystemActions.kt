@@ -99,6 +99,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     }
     BrightnessValueSelector(state = setBrightnessState)
 
+    val continuousBrightnessDialogState = rememberContinuousBrightnessDialogState {
+        addAction(it)
+    }
+    ContinuousBrightnessDialog(state = continuousBrightnessDialogState)
+
     val writeClipboardSelectorDialogState = rememberTextInputState(
         title = LocalI18N.current["ui.action.write.clipboard"],
         message = null,
@@ -345,6 +350,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     })
     SetVolumeDialog(state = setVolumeDialogState)
 
+    val continuousVolumeDialogState = rememberContinuousVolumeDialogState(onSelected = {
+        addAction(it)
+    })
+    ContinuousVolumeDialog(state = continuousVolumeDialogState)
+
     val biometricVerifyLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
@@ -519,6 +529,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.ContinuousAdjustBrightness::class -> {
+                continuousBrightnessDialogState.show(source.getActionAs())
+                true
+            }
+
             Action.InjectKeyCode::class -> {
                 injectKeyCodeSelectorState.show()
                 true
@@ -542,6 +557,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
 
             Action.SetVolume::class -> {
                 setVolumeDialogState.show(source.getActionAs())
+                true
+            }
+
+            Action.ContinuousAdjustVolume::class -> {
+                continuousVolumeDialogState.show(source.getActionAs())
                 true
             }
 
@@ -726,6 +746,7 @@ fun SystemActions(
         Action.SetRingerMode::class,
         Action.AdjustVolume::class,
         Action.SetVolume::class,
+        Action.ContinuousAdjustVolume::class,
         Action.ReadClipboard::class,
         Action.WriteClipboard::class,
         Action.EnableWifi::class,
@@ -753,6 +774,7 @@ fun SystemActions(
         Action.EnableAutoBrightness::class,
         Action.DisableAutoBrightness::class,
         Action.SetBrightness::class,
+        Action.ContinuousAdjustBrightness::class,
         Action.EnableSensorsOff::class,
         Action.DisableSensorsOff::class,
         Action.Vibrate::class,

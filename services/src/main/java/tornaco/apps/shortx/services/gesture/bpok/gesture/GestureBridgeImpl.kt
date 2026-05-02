@@ -13,6 +13,8 @@ import tornaco.apps.shortx.core.IForceDisableListener
 import tornaco.apps.shortx.core.IRuleFeatureStateListener
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.logOnDebug
+import tornaco.apps.shortx.core.proto.action.ContinuousAdjustBrightness
+import tornaco.apps.shortx.core.proto.action.ContinuousAdjustVolume
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AppPkgList
 import tornaco.apps.shortx.core.proto.fact.CornerSwipeToCenter
@@ -65,6 +67,7 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
 
     override val enabledEdgeGestures = mutableSetOf<EdgeGesture>()
     override val enabledCornerSwipeToCenterFacts = mutableSetOf<CornerSwipeToCenter>()
+    private val continuousGestureBindings = mutableListOf<ContinuousGestureBinding>()
 
     private val requiredFrontApps = mutableSetOf<AppPkg>()
     private val currentFrontApps = mutableSetOf<AppPkg>()
@@ -275,6 +278,19 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
         afterUserDataChangedObs = obs
     }
 
+    override fun findContinuousGestureBinding(
+        edge: Edge,
+        gestureEvent: Gesture,
+    ): ContinuousGestureBinding? {
+        return continuousGestureBindings.firstOrNull { binding ->
+            !binding.rule.isDisabled &&
+                    binding.rule.childStepsCount == 0 &&
+                    binding.rule.edge == edge &&
+                    binding.rule.gesture == gestureEvent &&
+                    (!binding.rule.hasCustomRect() || binding.rule.customRect == tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance())
+        }
+    }
+
     override fun handleEdgeGestureEvent(
         areas: List<DetectedArea>,
         gestureEvent: Gesture,
@@ -422,10 +438,12 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
 
         enabledEdgeGestures.clear()
         enabledCornerSwipeToCenterFacts.clear()
+        continuousGestureBindings.clear()
         requiredFrontApps.clear()
 
         val tempEnabledFacts = mutableSetOf<EdgeGesture>()
         val tempEnabledCornerFacts = mutableSetOf<CornerSwipeToCenter>()
+        val tempContinuousGestureBindings = mutableListOf<ContinuousGestureBinding>()
         val tempRequiredApps = mutableSetOf<AppPkg>()
 
         // Reset.
@@ -438,6 +456,36 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
                     val eg = protoFact unpack_ EdgeGesture::class.java
                     if (!eg.isDisabled) {
                         tempEnabledFacts.add(eg)
+                        val continuousPayload = rule.actionsList.firstNotNullOfOrNull { actionProto ->
+                            when {
+                                actionProto is_ ContinuousAdjustBrightness::class.java -> {
+                                    val action = actionProto unpack_ ContinuousAdjustBrightness::class.java
+                                    ContinuousGestureActionPayload.Brightness(
+                                        sensitivityScale = action.sensitivityScale.takeIf { it > 0f } ?: 1f,
+                                        minValue = action.minValue.coerceAtLeast(0),
+                                        maxValue = action.maxValue.takeIf { it > action.minValue } ?: 255,
+                                    )
+                                }
+
+                                actionProto is_ ContinuousAdjustVolume::class.java -> {
+                                    val action = actionProto unpack_ ContinuousAdjustVolume::class.java
+                                    ContinuousGestureActionPayload.Volume(
+                                        streamType = action.streamType,
+                                        sensitivityScale = action.sensitivityScale.takeIf { it > 0f } ?: 1f,
+                                    )
+                                }
+
+                                else -> null
+                            }
+                        }
+                        if (continuousPayload != null) {
+                            tempContinuousGestureBindings.add(
+                                ContinuousGestureBinding(
+                                    rule = eg,
+                                    payload = continuousPayload,
+                                )
+                            )
+                        }
 
                         // For all.
                         if (eg.appsList.isEmpty() && eg.pkgSetsList.isEmpty()) {
@@ -469,12 +517,14 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
         // 一次性更新所有集合
         enabledEdgeGestures.addAll(tempEnabledFacts)
         enabledCornerSwipeToCenterFacts.addAll(tempEnabledCornerFacts)
+        continuousGestureBindings.addAll(tempContinuousGestureBindings)
         requiredFrontApps.addAll(tempRequiredApps)
 
         checkFrontAppPkg("updateQuickCheckDataOnRuleChange")
 
         logger.d("updateQuickCheckDataOnRuleChange, enabledEdgeGestures: $enabledEdgeGestures")
         logger.d("updateQuickCheckDataOnRuleChange, enabledCornerSwipeToCenterFacts: $enabledCornerSwipeToCenterFacts")
+        logger.d("updateQuickCheckDataOnRuleChange, continuousGestureBindings: $continuousGestureBindings")
         logger.d("updateQuickCheckDataOnRuleChange, requiredFrontApps: $requiredFrontApps")
         logger.d("updateQuickCheckDataOnRuleChange, requiredFrontAppMatchQuick: $requiredFrontAppMatchQuick")
         logger.d("updateQuickCheckDataOnRuleChange, requiredFrontAppAny: $requiredFrontAppAny")
@@ -495,11 +545,20 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
         }
     }
 
-    fun createContinuousActionHandler(actionType: String): ContinuousActionHandler? {
-        return when (actionType) {
-            "brightness" -> BrightnessContinuousHandler()
-            "volume" -> VolumeContinuousHandler()
-            else -> null
+    override fun createContinuousActionHandler(payload: ContinuousGestureActionPayload): ContinuousActionHandler? {
+        return when (payload) {
+            is ContinuousGestureActionPayload.Brightness -> BrightnessContinuousHandler(
+                context = context,
+                sensitivityScale = payload.sensitivityScale,
+                minValue = payload.minValue,
+                maxValue = payload.maxValue,
+            )
+
+            is ContinuousGestureActionPayload.Volume -> VolumeContinuousHandler(
+                context = context,
+                streamType = payload.streamType,
+                sensitivityScale = payload.sensitivityScale,
+            )
         }
     }
 }

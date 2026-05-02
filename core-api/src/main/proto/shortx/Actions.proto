@@ -2057,3 +2057,26 @@ message RequestAudioFocus {
   string note = 99;
   string id = 100;
 }
+
+message ContinuousAdjustBrightness {
+  float sensitivityScale = 1;
+  int32 minValue = 2;
+  int32 maxValue = 3;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message ContinuousAdjustVolume {
+  int32 streamType = 1;
+  float sensitivityScale = 2;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}

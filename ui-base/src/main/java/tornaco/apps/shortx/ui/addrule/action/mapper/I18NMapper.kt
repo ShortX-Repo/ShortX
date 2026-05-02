@@ -270,6 +270,10 @@ fun labelAndDescriptionForActionSelector(
         Action.CreatePkgSet::class -> i18N["ui.pkg.set.add.title"] to null
         Action.SetRingerMode::class -> i18N["ui.action.set.ringer.mode"] to null
         Action.SetBrightness::class -> i18N["ui.action.set.brightness"] to null
+        Action.ContinuousAdjustBrightness::class -> i18N.get(
+            key = "ui.action.continuous.adjust.brightness",
+            fallback = "Continuous brightness"
+        ) to null
         Action.StopService::class -> i18N["ui.action.stop.service"] to null
         Action.StartService::class -> i18N["ui.action.start.service"] to null
         Action.RemoveTasks::class -> i18N["ui.action.remove.tasks"] to null
@@ -281,6 +285,10 @@ fun labelAndDescriptionForActionSelector(
         Action.StopCurrentApp::class -> i18N["ui.action.stop.current.foreground.app"] to null
         Action.AdjustVolume::class -> i18N["ui.action.adjust.volume"] to null
         Action.SetVolume::class -> i18N["ui.action.set.volume"] to null
+        Action.ContinuousAdjustVolume::class -> i18N.get(
+            key = "ui.action.continuous.adjust.volume",
+            fallback = "Continuous volume"
+        ) to null
         Action.Vibrate::class -> i18N["ui.action.vibrate"] to null
         Action.AudioRecording::class -> i18N["ui.action.audio.recording"] to null
         Action.StopAudioRecording::class -> i18N["ui.action.audio.recording.stop"] to null
@@ -899,6 +907,16 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             listOf(i18N["ui.action.set.brightness"], action.value.toString())
         }
 
+        is Action.ContinuousAdjustBrightness -> {
+            listOf(
+                i18N.get(
+                    key = "ui.action.continuous.adjust.brightness",
+                    fallback = "Continuous brightness"
+                ),
+                "${action.minValue}-${action.maxValue} @ ${"%.2f".format(action.sensitivityScale)}x"
+            )
+        }
+
         is Action.StopService -> {
             listOf(
                 i18N["ui.action.stop.service"],
@@ -984,6 +1002,16 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             listOf(
                 i18N["ui.action.set.volume"],
                 i18N[action.type.streamTypeLabelKey()] + " " + action.index
+            )
+        }
+
+        is Action.ContinuousAdjustVolume -> {
+            listOf(
+                i18N.get(
+                    key = "ui.action.continuous.adjust.volume",
+                    fallback = "Continuous volume"
+                ),
+                i18N[action.type.streamTypeLabelKey()] + " @ ${"%.2f".format(action.sensitivityScale)}x"
             )
         }
 

@@ -12,6 +12,8 @@ import tornaco.apps.shortx.core.proto.action.ClickNotification
 import tornaco.apps.shortx.core.proto.action.ClickNotificationActionButton
 import tornaco.apps.shortx.core.proto.action.ClickTile
 import tornaco.apps.shortx.core.proto.action.ConnectWifi
+import tornaco.apps.shortx.core.proto.action.ContinuousAdjustBrightness
+import tornaco.apps.shortx.core.proto.action.ContinuousAdjustVolume
 import tornaco.apps.shortx.core.proto.action.CreateGlobalVar
 import tornaco.apps.shortx.core.proto.action.CreateLocalVar
 import tornaco.apps.shortx.core.proto.action.CreatePkgSet
@@ -1324,6 +1326,19 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .build()
         }
 
+            is Action.ContinuousAdjustBrightness -> {
+                ContinuousAdjustBrightness.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setSensitivityScale(sensitivityScale)
+                .setMinValue(minValue)
+                .setMaxValue(maxValue)
+                .build()
+            }
+
         is Action.StopService -> {
             StopService.newBuilder()
                 .setId(overrideId ?: id)
@@ -1568,6 +1583,18 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setIndex(index)
                 .build()
         }
+
+            is Action.ContinuousAdjustVolume -> {
+                ContinuousAdjustVolume.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setStreamType(type)
+                .setSensitivityScale(sensitivityScale)
+                .build()
+            }
 
         is Action.Vibrate -> {
             Vibrate.newBuilder()
