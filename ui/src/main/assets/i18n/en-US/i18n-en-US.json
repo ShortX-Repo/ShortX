@@ -1211,6 +1211,8 @@
   "ui.settings.edge.gesture.sub.child.swipe.distance.description": "After the primary gesture, the follow-up swipe must travel at least this far before it counts as the next step",
   "ui.settings.edge.gesture.sub.child.swipe.angle": "Direction tolerance angle",
   "ui.settings.edge.gesture.sub.child.swipe.angle.description": "The maximum angle the follow-up swipe may deviate from the target direction; larger values are easier to trigger",
+  "ui.settings.edge.gesture.sub.child.swipe.release.trigger": "Allow release to match child swipe",
+  "ui.settings.edge.gesture.sub.child.swipe.release.trigger.description": "When enabled, lifting the finger can still complete the current child swipe step if distance and direction already meet the threshold",
   "ui.settings.corner.gesture.group.title": "Corner gesture settings",
   "ui.settings.corner.gesture.group.summary": "Affects swipes that start from the screen corners and move toward the center, including hot area size and minimum trigger distance",
   "ui.settings.corner.gesture.size": "Corner gesture hot area size",

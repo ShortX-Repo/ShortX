@@ -1206,6 +1206,8 @@
   "ui.settings.edge.gesture.sub.child.swipe.distance.description": "進入子手勢後，後續滑動至少需要移動這麼長才會被視為下一步",
   "ui.settings.edge.gesture.sub.child.swipe.angle": "方向容差角度",
   "ui.settings.edge.gesture.sub.child.swipe.angle.description": "後續滑動允許偏離目標方向的最大角度，越大越容易觸發",
+  "ui.settings.edge.gesture.sub.child.swipe.release.trigger": "允許抬手完成子滑動",
+  "ui.settings.edge.gesture.sub.child.swipe.release.trigger.description": "開啟後，只要目前子滑動在抬手時已滿足距離與方向閾值，也會判定為命中",
   "ui.settings.corner.gesture.size": "角落熱區大小",
   "ui.settings.corner.gesture.size.description": "影響四角滑向中心手勢的起始熱區，也會同步影響其攔截區域與預覽範圍",
   "ui.settings.corner.gesture.swipe.distance": "角落手勢最短觸發距離",

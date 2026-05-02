@@ -57,6 +57,7 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
     private var edgeGestureSequenceHoverRadiusDp: Int = 24
     private var edgeGestureSequenceChildSwipeMinDistanceDp: Int = 72
     private var edgeGestureSequenceChildSwipeMaxAngleDeviationDeg: Int = 35
+    private var edgeGestureSequenceChildSwipeTriggerOnRelease: Boolean = false
 
     var isGestureRecording: Boolean = false
         private set
@@ -206,6 +207,8 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
             shortx.getEdgeGestureSequenceChildSwipeMinDistanceDp()
         edgeGestureSequenceChildSwipeMaxAngleDeviationDeg =
             shortx.getEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg()
+        edgeGestureSequenceChildSwipeTriggerOnRelease =
+            shortx.isEdgeGestureSequenceChildSwipeTriggerOnRelease()
         isGestureRecording = shortx.isGestureRecording()
         GlobalSettings.isEdgeGestureEnabled =
             shortx.isAppFeatureEnabled(AppFeature.AppFeature_EdgeGesture.number)
@@ -223,6 +226,7 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
         logger.w("edgeGestureSequenceHoverRadiusDp: $edgeGestureSequenceHoverRadiusDp")
         logger.w("edgeGestureSequenceChildSwipeMinDistanceDp: $edgeGestureSequenceChildSwipeMinDistanceDp")
         logger.w("edgeGestureSequenceChildSwipeMaxAngleDeviationDeg: $edgeGestureSequenceChildSwipeMaxAngleDeviationDeg")
+        logger.w("edgeGestureSequenceChildSwipeTriggerOnRelease: $edgeGestureSequenceChildSwipeTriggerOnRelease")
         logger.w("isGestureRecording: $isGestureRecording")
         logger.logOnDebug("isGestureEnabledQuick: $isGestureEnabledQuick")
         logger.logOnDebug("isEdgeGestureEnabled: ${GlobalSettings.isEdgeGestureEnabled}")
@@ -264,6 +268,10 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
 
     override fun getEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(): Int {
         return edgeGestureSequenceChildSwipeMaxAngleDeviationDeg
+    }
+
+    override fun isEdgeGestureSequenceChildSwipeTriggerOnRelease(): Boolean {
+        return edgeGestureSequenceChildSwipeTriggerOnRelease
     }
 
     override fun obsGestureSettingsChanged(obs: () -> Unit) {

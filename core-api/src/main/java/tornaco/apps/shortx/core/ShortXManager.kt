@@ -1231,6 +1231,18 @@ class ShortXManager(val service: IShortX) {
         }
     }
 
+    fun isEdgeGestureSequenceChildSwipeTriggerOnRelease(): Boolean {
+        return invokeService(false) {
+            isEdgeGestureSequenceChildSwipeTriggerOnRelease()
+        }
+    }
+
+    fun setEdgeGestureSequenceChildSwipeTriggerOnRelease(enabled: Boolean) {
+        invokeService(Unit) {
+            setEdgeGestureSequenceChildSwipeTriggerOnRelease(enabled)
+        }
+    }
+
     fun hasHookFlags(flag: String): Boolean {
         return invokeService(false) { hasHookFlags(flag) }
     }

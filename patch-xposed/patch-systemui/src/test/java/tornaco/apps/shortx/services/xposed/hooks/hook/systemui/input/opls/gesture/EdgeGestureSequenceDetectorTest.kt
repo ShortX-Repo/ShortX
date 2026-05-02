@@ -207,6 +207,40 @@ class EdgeGestureSequenceDetectorTest {
     }
 
     @Test
+    fun should_fire_directional_child_step_on_pointer_release_when_setting_enabled() {
+        val scheduler = FakeScheduler()
+        val service = FakeGestureBridge(childSwipeTriggerOnRelease = true)
+        val clock = FakeClock()
+        val detector = EdgeGestureSequenceDetector(scheduler, service, clock::now, ::identityDpToPx)
+        val area = DetectedArea.PredefinedEdge(Edge.LeftCenter)
+        val candidates = listOf(
+            EdgeGestureSequenceCandidate(
+                area = area,
+                rule = EdgeGesture.newBuilder()
+                    .setEdge(Edge.LeftCenter)
+                    .setGesture(Gesture.SwipeFromLeft)
+                    .addChildSteps(step(EdgeGestureStepType.SwipeUp))
+                    .build()
+            )
+        )
+
+        detector.startTracking(
+            pointerId = 1,
+            primaryGesture = Gesture.SwipeFromLeft,
+            downX = 20f,
+            downY = 400f,
+            anchorX = 80f,
+            anchorY = 400f,
+            candidates = candidates,
+        ) shouldBe true
+
+        detector.onTouchEvent(upEvent(pointerId = 1, x = 80f, y = 280f)) shouldBe true
+
+        service.firedEvents shouldHaveSize 1
+        service.firedEvents.single().childSteps.map { it.type } shouldBe listOf(EdgeGestureStepType.SwipeUp)
+    }
+
+    @Test
     fun should_keep_hint_visible_for_best_direction_when_child_steps_diverge() {
         val scheduler = FakeScheduler()
         val service = FakeGestureBridge()
@@ -385,6 +419,7 @@ class EdgeGestureSequenceDetectorTest {
 
     private class FakeGestureBridge(
         private val childSwipeMaxAngleDeviationDeg: Int = 35,
+        private val childSwipeTriggerOnRelease: Boolean = false,
     ) : GestureBridge {
         data class FiredEvent(
             val area: DetectedArea,
@@ -434,9 +469,15 @@ class EdgeGestureSequenceDetectorTest {
         override fun getEdgeGestureSequenceHoverRadiusDp(): Int = 24
         override fun getEdgeGestureSequenceChildSwipeMinDistanceDp(): Int = 72
         override fun getEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(): Int = childSwipeMaxAngleDeviationDeg
+        override fun isEdgeGestureSequenceChildSwipeTriggerOnRelease(): Boolean = childSwipeTriggerOnRelease
         override fun obsGestureSettingsChanged(obs: () -> Unit) = Unit
         override fun obsConfigChanged(obs: () -> Unit) = Unit
         override fun obsUserDataChanged(obs: () -> Unit) = Unit
+        override fun findContinuousGestureBinding(
+            areas: List<DetectedArea>,
+            gestureEvent: Gesture,
+        ): ContinuousGestureBinding? = null
+        override fun createContinuousActionHandler(payload: ContinuousGestureActionPayload): ContinuousActionHandler? = null
         override val enabledEdgeGestures: Set<EdgeGesture> = emptySet()
         override val enabledCornerSwipeToCenterFacts: Set<CornerSwipeToCenter> = emptySet()
     }

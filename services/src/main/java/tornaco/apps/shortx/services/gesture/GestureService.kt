@@ -175,6 +175,14 @@ class GestureService(shortXContext: ShortXContext) :
         notifyGestureSettingsChanged()
     }
 
+    fun isEdgeGestureSequenceChildSwipeTriggerOnRelease(): Boolean =
+        store.read(Settings.BoolSettings.EdgeGestureSequenceChildSwipeTriggerOnRelease)
+
+    fun setEdgeGestureSequenceChildSwipeTriggerOnRelease(enabled: Boolean) {
+        store.write(Settings.BoolSettings.EdgeGestureSequenceChildSwipeTriggerOnRelease, enabled)
+        notifyGestureSettingsChanged()
+    }
+
     fun onRuleChanged() {
         logger.logOnDebug { "onRuleChanged" }
     }

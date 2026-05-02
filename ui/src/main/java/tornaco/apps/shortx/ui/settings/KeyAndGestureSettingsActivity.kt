@@ -108,6 +108,7 @@ class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@Application
                     edgeGestureSequenceHoverRadiusDp = shortXManager.getEdgeGestureSequenceHoverRadiusDp(),
                     edgeGestureSequenceChildSwipeMinDistanceDp = shortXManager.getEdgeGestureSequenceChildSwipeMinDistanceDp(),
                     edgeGestureSequenceChildSwipeMaxAngleDeviationDeg = shortXManager.getEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(),
+                    edgeGestureSequenceChildSwipeTriggerOnRelease = shortXManager.isEdgeGestureSequenceChildSwipeTriggerOnRelease(),
                     isEdgeGestureEnabled = shortXManager.isAppFeatureEnabled(AppFeature.AppFeature_EdgeGesture.number),
                     isKeyEventEnabled = shortXManager.isAppFeatureEnabled(AppFeature.AppFeature_KeyEvent.number),
                     keyDetectorLongPressTimeoutMS = shortXManager.getKeyDetectorLongPressTimeoutMS()
@@ -192,6 +193,13 @@ class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@Application
         }
     }
 
+    fun setEdgeGestureSequenceChildSwipeTriggerOnRelease(enabled: Boolean) {
+        viewModelScope.launch {
+            shortXManager.setEdgeGestureSequenceChildSwipeTriggerOnRelease(enabled)
+            loadState()
+        }
+    }
+
     fun setGestureFeatureEnabled(enabled: Boolean) {
         viewModelScope.launch {
             shortXManager.setAppFeatureEnabled(AppFeature.AppFeature_EdgeGesture.number, enabled)
@@ -224,6 +232,7 @@ data class KeyAndGestureSettings(
     val edgeGestureSequenceHoverRadiusDp: Int = 24,
     val edgeGestureSequenceChildSwipeMinDistanceDp: Int = 72,
     val edgeGestureSequenceChildSwipeMaxAngleDeviationDeg: Int = 35,
+    val edgeGestureSequenceChildSwipeTriggerOnRelease: Boolean = false,
     val isEdgeGestureEnabled: Boolean = false,
     val isKeyEventEnabled: Boolean = false,
     // Key
@@ -391,6 +400,16 @@ fun KeyAndGestureSettingsActivity.EdgeGestureSettingsSelector() {
                             onValueChange = {
                                 vm.setEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(it.roundToInt())
                             })
+                        LargeSpacer()
+
+                        SwitchBar(
+                            isChecked = state.edgeGestureSequenceChildSwipeTriggerOnRelease,
+                            text = LocalI18N.current["ui.settings.edge.gesture.sub.child.swipe.release.trigger"],
+                            onCheckChange = {
+                                vm.setEdgeGestureSequenceChildSwipeTriggerOnRelease(it)
+                            }
+                        )
+                        TipRow(LocalI18N.current["ui.settings.edge.gesture.sub.child.swipe.release.trigger.description"])
                     }
 
                     LargeSpacer()

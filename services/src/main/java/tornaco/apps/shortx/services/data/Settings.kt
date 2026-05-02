@@ -56,6 +56,9 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
 
         data object ClipboardEnableDeDup :
             BoolSettings(key = "ClipboardEnableDeDup", defaultValue = { false })
+
+        data object EdgeGestureSequenceChildSwipeTriggerOnRelease :
+            BoolSettings(key = "EdgeGestureSequenceChildSwipeTriggerOnRelease", defaultValue = { false })
     }
 
     sealed class StringSettings(key: String, defaultValue: (Context) -> String?) :

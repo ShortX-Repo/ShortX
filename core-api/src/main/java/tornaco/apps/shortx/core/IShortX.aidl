@@ -475,6 +475,8 @@ interface IShortX {
     void setEdgeGestureSequenceChildSwipeMinDistanceDp(int distanceDp);
     int getEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg();
     void setEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(int angleDeg);
+    boolean isEdgeGestureSequenceChildSwipeTriggerOnRelease();
+    void setEdgeGestureSequenceChildSwipeTriggerOnRelease(boolean enabled);
 
     String updateWorkdayCalendarCache(String payload);
 }

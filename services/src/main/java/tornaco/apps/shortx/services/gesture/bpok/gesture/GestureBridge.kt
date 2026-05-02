@@ -65,6 +65,7 @@ interface GestureBridge {
     fun getEdgeGestureSequenceHoverRadiusDp(): Int
     fun getEdgeGestureSequenceChildSwipeMinDistanceDp(): Int
     fun getEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(): Int
+    fun isEdgeGestureSequenceChildSwipeTriggerOnRelease(): Boolean
 
     fun obsGestureSettingsChanged(obs: () -> Unit)
     fun obsConfigChanged(obs: () -> Unit)

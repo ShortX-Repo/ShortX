@@ -268,6 +268,9 @@ class EdgeGestureSequenceDetector(
                 if (tryCompleteHoverOnPointerRelease()) {
                     return true
                 }
+                if (tryCompleteDirectionalStepOnPointerRelease()) {
+                    return true
+                }
                 cancelTracking("pointer up")
                 return true
             }
@@ -283,6 +286,9 @@ class EdgeGestureSequenceDetector(
                     latestX = event.getX(event.actionIndex)
                     latestY = event.getY(event.actionIndex)
                     if (tryCompleteHoverOnPointerRelease()) {
+                        return true
+                    }
+                    if (tryCompleteDirectionalStepOnPointerRelease()) {
                         return true
                     }
                     cancelTracking("tracked pointer pointer-up")
@@ -446,6 +452,27 @@ class EdgeGestureSequenceDetector(
             "$DIAG_PREFIX hover release matched: stepIndex=$currentStepIndex, elapsed=$elapsed/${hoverDurationMs()}, distance=$distance, radiusPx=${hoverRadiusPx()}"
         )
         advanceCandidates(hoverCandidates, hoverCandidates.first().rule.getChildSteps(currentStepIndex))
+        return true
+    }
+
+    private fun tryCompleteDirectionalStepOnPointerRelease(): Boolean {
+        if (!service.isEdgeGestureSequenceChildSwipeTriggerOnRelease()) return false
+
+        val matchedStep = findBestDirectionalCandidate(
+            x = latestX,
+            y = latestY,
+            requireThreshold = true,
+        )?.step ?: return false
+
+        val matchedCandidates = candidates.filter {
+            it.rule.getChildStepsOrNull(currentStepIndex)?.type == matchedStep.type
+        }
+        if (matchedCandidates.isEmpty()) return false
+
+        debugLog(
+            "$DIAG_PREFIX directional release matched: stepIndex=$currentStepIndex, matched=${matchedStep.type}, anchor=($anchorX,$anchorY), latest=($latestX,$latestY)"
+        )
+        advanceCandidates(matchedCandidates, matchedStep)
         return true
     }
 
