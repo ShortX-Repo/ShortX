@@ -248,14 +248,11 @@ class EdgeGestureSequenceDetector(
                 updateCurrentStepHint()
                 val matchedStep = findMatchedDirectionalStep(latestX, latestY) ?: run {
                     val hoverOnly = hasOnlyHoverCandidates()
-                    if (!service.isEdgeGestureSequenceChildSwipeTriggerOnRelease() && tryCompleteHoverOnMove()) {
+                    if (hoverOnly && distanceFromAnchor(latestX, latestY) > hoverRadiusPx()) {
+                        resetHoverAnchor(latestX, latestY)
                         return true
                     }
-                    if (hoverOnly && distanceFromAnchor(latestX, latestY) > hoverRadiusPx()) {
-                        debugLog(
-                            "$DIAG_PREFIX hover-only cancel: stepIndex=$currentStepIndex, distance=${distanceFromAnchor(latestX, latestY)}, radiusPx=${hoverRadiusPx()}"
-                        )
-                        cancelTracking("hover-only moved out of radius")
+                    if (!service.isEdgeGestureSequenceChildSwipeTriggerOnRelease() && tryCompleteHoverOnMove()) {
                         return true
                     }
                     logDirectionalMiss()
@@ -500,6 +497,17 @@ class EdgeGestureSequenceDetector(
         debugLog(
             "$DIAG_PREFIX hover auto-complete skipped: stepIndex=$currentStepIndex, elapsed=${elapsedRealtime() - startedAtElapsed}/${hoverDurationMs()}, distance=$distance, radiusPx=${hoverRadiusPx()}"
         )
+    }
+
+    private fun resetHoverAnchor(x: Float, y: Float) {
+        debugLog(
+            "$DIAG_PREFIX hover anchor reset: stepIndex=$currentStepIndex, from=($anchorX,$anchorY), to=($x,$y), radiusPx=${hoverRadiusPx()}"
+        )
+        anchorX = x
+        anchorY = y
+        startedAtElapsed = elapsedRealtime()
+        emitCurrentStepHint()
+        scheduleHoverAutoCompletionIfNeeded()
     }
 
     private fun scheduleHoverAutoCompletionIfNeeded() {

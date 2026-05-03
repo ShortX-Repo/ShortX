@@ -180,7 +180,7 @@ class EdgeGestureSequenceDetectorTest {
     }
 
     @Test
-    fun should_cancel_hover_when_pointer_moves_out_of_radius() {
+    fun should_reset_hover_anchor_when_pointer_moves_out_of_radius_and_fire_after_stabilizing() {
         val scheduler = FakeScheduler()
         val service = FakeGestureBridge()
         val clock = FakeClock()
@@ -210,9 +210,14 @@ class EdgeGestureSequenceDetectorTest {
         ) shouldBe true
 
         detector.onTouchEvent(moveEvent(pointerId = 1, x = 120f, y = 20f)) shouldBe true
-
+        detector.isTracking() shouldBe true
         service.firedEvents shouldHaveSize 0
-        scheduler.hasPendingDelayed() shouldBe false
+
+        clock.advanceBy(350)
+        scheduler.runPending()
+
+        service.firedEvents shouldHaveSize 1
+        service.firedEvents.single().childSteps.map { it.type } shouldBe listOf(EdgeGestureStepType.Hover)
         detector.isTracking() shouldBe false
     }
 

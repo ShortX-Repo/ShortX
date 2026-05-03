@@ -43,6 +43,7 @@ class EdgeGestureEngine(
     private var continuousHandler: ContinuousActionHandler? = null
     private var maxTravelDistanceSq = 0f
     private var lockedDeviceId = MotionEvent.INVALID_POINTER_ID
+    private var lockedPointerId = MotionEvent.INVALID_POINTER_ID
 
     var listener: GestureEngineListener? = null
 
@@ -89,6 +90,7 @@ class EdgeGestureEngine(
         downX = event.rawX
         downY = event.rawY
         lockedDeviceId = event.deviceId
+        lockedPointerId = event.getPointerId(event.actionIndex)
 
         val detectedAreas = regionResolver.detectAreas(downX, downY)
         if (detectedAreas.isEmpty()) {
@@ -120,6 +122,7 @@ class EdgeGestureEngine(
         downX = event.rawX
         downY = event.rawY
         lockedDeviceId = event.deviceId
+        lockedPointerId = event.getPointerId(event.actionIndex)
         cachedDownEvent?.recycle()
         cachedDownEvent = MotionEvent.obtain(event)
         return true
@@ -371,7 +374,7 @@ class EdgeGestureEngine(
         if (sequenceCandidates.isNotEmpty()) {
             hintDetector.onEdgeGestureSequenceStarted(areas, gesture)
             sequenceDetector.startTracking(
-                pointerId = 0,
+                pointerId = lockedPointerId,
                 primaryGesture = gesture,
                 downX = downX,
                 downY = downY,
@@ -424,6 +427,7 @@ class EdgeGestureEngine(
         executionStarted = false
         maxTravelDistanceSq = 0f
         lockedDeviceId = MotionEvent.INVALID_POINTER_ID
+        lockedPointerId = MotionEvent.INVALID_POINTER_ID
     }
 
     private fun travelDistanceSq(currentX: Float, currentY: Float): Float {
