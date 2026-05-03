@@ -222,6 +222,99 @@ class EdgeGestureSequenceDetectorTest {
     }
 
     @Test
+    fun should_fire_hover_when_hover_and_directional_candidates_exist_together() {
+        val scheduler = FakeScheduler()
+        val service = FakeGestureBridge()
+        val clock = FakeClock()
+        val detector = EdgeGestureSequenceDetector(scheduler, service, clock::now, ::identityDpToPx)
+        val area = DetectedArea.PredefinedEdge(Edge.RightCenter)
+        val candidates = listOf(
+            EdgeGestureSequenceCandidate(
+                area = area,
+                rule = EdgeGesture.newBuilder()
+                    .setEdge(Edge.RightCenter)
+                    .setGesture(Gesture.SwipeFromBottom)
+                    .addChildSteps(step(EdgeGestureStepType.Hover))
+                    .build()
+            ),
+            EdgeGestureSequenceCandidate(
+                area = area,
+                rule = EdgeGesture.newBuilder()
+                    .setEdge(Edge.RightCenter)
+                    .setGesture(Gesture.SwipeFromBottom)
+                    .addChildSteps(step(EdgeGestureStepType.SwipeLeft))
+                    .build()
+            )
+        )
+
+        detector.startTracking(
+            pointerId = 1,
+            primaryGesture = Gesture.SwipeFromBottom,
+            downX = 500f,
+            downY = 1000f,
+            anchorX = 500f,
+            anchorY = 1000f,
+            candidates = candidates,
+        ) shouldBe true
+
+        detector.onTouchEvent(moveEvent(pointerId = 1, x = 506f, y = 1004f)) shouldBe true
+        clock.advanceBy(350)
+        scheduler.runPending()
+
+        service.firedEvents shouldHaveSize 1
+        service.firedEvents.single().childSteps.map { it.type } shouldBe listOf(EdgeGestureStepType.Hover)
+        detector.isTracking() shouldBe false
+    }
+
+    @Test
+    fun should_fire_hover_after_swipe_up_from_first_settled_point() {
+        val scheduler = FakeScheduler()
+        val service = FakeGestureBridge()
+        val clock = FakeClock()
+        val detector = EdgeGestureSequenceDetector(scheduler, service, clock::now, ::identityDpToPx)
+        val area = DetectedArea.PredefinedEdge(Edge.BottomCenter)
+        val candidates = listOf(
+            EdgeGestureSequenceCandidate(
+                area = area,
+                rule = EdgeGesture.newBuilder()
+                    .setEdge(Edge.BottomCenter)
+                    .setGesture(Gesture.SwipeFromBottom)
+                    .addChildSteps(step(EdgeGestureStepType.SwipeUp))
+                    .addChildSteps(step(EdgeGestureStepType.Hover))
+                    .build()
+            )
+        )
+
+        detector.startTracking(
+            pointerId = 1,
+            primaryGesture = Gesture.SwipeFromBottom,
+            downX = 300f,
+            downY = 900f,
+            anchorX = 300f,
+            anchorY = 900f,
+            candidates = candidates,
+        ) shouldBe true
+
+        detector.onTouchEvent(moveEvent(pointerId = 1, x = 300f, y = 780f)) shouldBe true
+        service.firedEvents shouldHaveSize 0
+        detector.isTracking() shouldBe true
+
+        detector.onTouchEvent(moveEvent(pointerId = 1, x = 304f, y = 748f)) shouldBe true
+        service.firedEvents shouldHaveSize 0
+        detector.isTracking() shouldBe true
+
+        clock.advanceBy(350)
+        scheduler.runPending()
+
+        service.firedEvents shouldHaveSize 1
+        service.firedEvents.single().childSteps.map { it.type } shouldBe listOf(
+            EdgeGestureStepType.SwipeUp,
+            EdgeGestureStepType.Hover,
+        )
+        detector.isTracking() shouldBe false
+    }
+
+    @Test
     fun should_keep_waiting_for_directional_child_step_without_timeout() {
         val scheduler = FakeScheduler()
         val service = FakeGestureBridge()
