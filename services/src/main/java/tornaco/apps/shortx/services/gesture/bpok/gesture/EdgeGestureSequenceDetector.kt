@@ -181,6 +181,9 @@ class EdgeGestureSequenceDetector(
     // 仅用于 Hover 这类需要持续时长的步骤，不用于等待下一步时的自动超时取消。
     private var startedAtElapsed = 0L
     private var currentStepIndex = 0
+    private val hoverAutoCompleteRunnable = Runnable {
+        handleHoverAutoCompletion()
+    }
 
     // candidates 表示“到当前步骤为止仍然可能匹配成功”的规则集合。
     // 每命中一步都会收缩一次，直到只剩下完成项或全部淘汰。
@@ -217,6 +220,7 @@ class EdgeGestureSequenceDetector(
         this.matchedSteps.clear()
         // 一进入二段识别，就先把当前目标步骤的提示显示出来。
         emitCurrentStepHint()
+        scheduleHoverAutoCompletionIfNeeded()
         debugLog(
             "$DIAG_PREFIX startTracking: primary=$primaryGesture, candidates=${candidates.size}, anchor=($anchorX,$anchorY), down=($downX,$downY), rules=${formatCandidates(candidates)}"
         )
@@ -243,8 +247,9 @@ class EdgeGestureSequenceDetector(
                 // hint 是连续更新的，用户在做当前步骤时可以实时看到进度和 ready 状态。
                 updateCurrentStepHint()
                 val matchedStep = findMatchedDirectionalStep(latestX, latestY) ?: run {
-                    val hoverOnly = candidates.all {
-                        it.rule.getChildStepsOrNull(currentStepIndex)?.type == EdgeGestureStepType.Hover
+                    val hoverOnly = hasOnlyHoverCandidates()
+                    if (!service.isEdgeGestureSequenceChildSwipeTriggerOnRelease() && tryCompleteHoverOnMove()) {
+                        return true
                     }
                     if (hoverOnly && distanceFromAnchor(latestX, latestY) > hoverRadiusPx()) {
                         debugLog(
@@ -258,6 +263,12 @@ class EdgeGestureSequenceDetector(
                 }
                 val matchedCandidates = candidates.filter {
                     it.rule.getChildStepsOrNull(currentStepIndex)?.type == matchedStep.type
+                }
+                if (service.isEdgeGestureSequenceChildSwipeTriggerOnRelease()) {
+                    debugLog(
+                        "$DIAG_PREFIX directional move ready: stepIndex=$currentStepIndex, matched=${matchedStep.type}, waiting for release"
+                    )
+                    return true
                 }
                 advanceCandidates(matchedCandidates, matchedStep)
                 return true
@@ -309,6 +320,7 @@ class EdgeGestureSequenceDetector(
 
     private fun cancelTracking(reason: String) {
         val wasTracking = isTracking()
+        clearHoverAutoCompletion()
         trackedPointerId = INVALID_POINTER_ID
         primaryGesture = null
         downX = 0f
@@ -360,6 +372,7 @@ class EdgeGestureSequenceDetector(
         matchedCandidates: List<EdgeGestureSequenceCandidate>,
         matchedStep: EdgeGestureStep,
     ) {
+        clearHoverAutoCompletion()
         matchedSteps.add(matchedStep)
         debugLog(
             "$DIAG_PREFIX advanceCandidates: matched=${matchedStep.type}, stepIndex=$currentStepIndex, matchedSteps=${matchedSteps.map { it.type }}, matchedCandidates=${matchedCandidates.size}"
@@ -380,6 +393,7 @@ class EdgeGestureSequenceDetector(
             anchorY = latestY
             startedAtElapsed = elapsedRealtime()
             emitCurrentStepHint()
+            scheduleHoverAutoCompletionIfNeeded()
             debugLog(
                 "$DIAG_PREFIX advanceCandidates: continue stepIndex=$currentStepIndex, nextStep=${currentHintStep()?.type}, pending=${formatCandidates(pendingCandidates)}"
             )
@@ -405,6 +419,7 @@ class EdgeGestureSequenceDetector(
     }
 
     private fun clearTrackingState() {
+        clearHoverAutoCompletion()
         trackedPointerId = INVALID_POINTER_ID
         primaryGesture = null
         downX = 0f
@@ -428,10 +443,12 @@ class EdgeGestureSequenceDetector(
     }
 
     private fun tryCompleteHoverOnPointerRelease(): Boolean {
+        if (!service.isEdgeGestureSequenceChildSwipeTriggerOnRelease()) return false
+
         val hoverCandidates = candidates.filter {
             it.rule.getChildStepsOrNull(currentStepIndex)?.type == EdgeGestureStepType.Hover
         }
-        if (hoverCandidates.isEmpty()) return false
+        if (hoverCandidates.isEmpty() || !hasOnlyHoverCandidates()) return false
 
         val elapsed = elapsedRealtime() - startedAtElapsed
         val distance = distanceFromAnchor(latestX, latestY)
@@ -453,6 +470,47 @@ class EdgeGestureSequenceDetector(
         )
         advanceCandidates(hoverCandidates, hoverCandidates.first().rule.getChildSteps(currentStepIndex))
         return true
+    }
+
+    private fun tryCompleteHoverOnMove(): Boolean {
+        val hoverCandidates = candidates.filter {
+            it.rule.getChildStepsOrNull(currentStepIndex)?.type == EdgeGestureStepType.Hover
+        }
+        if (hoverCandidates.isEmpty() || !hasOnlyHoverCandidates()) return false
+
+        val elapsed = elapsedRealtime() - startedAtElapsed
+        val distance = distanceFromAnchor(latestX, latestY)
+        if (elapsed < hoverDurationMs()) return false
+        if (distance > hoverRadiusPx()) return false
+
+        debugLog(
+            "$DIAG_PREFIX hover move matched: stepIndex=$currentStepIndex, elapsed=$elapsed/${hoverDurationMs()}, distance=$distance, radiusPx=${hoverRadiusPx()}"
+        )
+        advanceCandidates(hoverCandidates, hoverCandidates.first().rule.getChildSteps(currentStepIndex))
+        return true
+    }
+
+    private fun handleHoverAutoCompletion() {
+        if (!isTracking()) return
+        if (service.isEdgeGestureSequenceChildSwipeTriggerOnRelease()) return
+        if (!hasOnlyHoverCandidates()) return
+        if (tryCompleteHoverOnMove()) return
+
+        val distance = distanceFromAnchor(latestX, latestY)
+        debugLog(
+            "$DIAG_PREFIX hover auto-complete skipped: stepIndex=$currentStepIndex, elapsed=${elapsedRealtime() - startedAtElapsed}/${hoverDurationMs()}, distance=$distance, radiusPx=${hoverRadiusPx()}"
+        )
+    }
+
+    private fun scheduleHoverAutoCompletionIfNeeded() {
+        clearHoverAutoCompletion()
+        if (service.isEdgeGestureSequenceChildSwipeTriggerOnRelease()) return
+        if (!hasOnlyHoverCandidates()) return
+        scheduler.postDelayed(hoverAutoCompleteRunnable, hoverDurationMs())
+    }
+
+    private fun clearHoverAutoCompletion() {
+        scheduler.removeCallbacks(hoverAutoCompleteRunnable)
     }
 
     private fun tryCompleteDirectionalStepOnPointerRelease(): Boolean {
@@ -598,6 +656,12 @@ class EdgeGestureSequenceDetector(
 
     private fun distanceFromAnchor(x: Float, y: Float): Float {
         return hypot((x - anchorX).toDouble(), (y - anchorY).toDouble()).toFloat()
+    }
+
+    private fun hasOnlyHoverCandidates(): Boolean {
+        return candidates.isNotEmpty() && candidates.all {
+            it.rule.getChildStepsOrNull(currentStepIndex)?.type == EdgeGestureStepType.Hover
+        }
     }
 
     private fun directionFor(type: EdgeGestureStepType): Pair<Float, Float>? {

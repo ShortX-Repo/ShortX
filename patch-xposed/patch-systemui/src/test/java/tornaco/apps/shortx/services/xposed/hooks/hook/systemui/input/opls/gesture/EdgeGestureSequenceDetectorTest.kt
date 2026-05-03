@@ -11,6 +11,16 @@ import tornaco.apps.shortx.core.proto.fact.EdgeGestureStep
 import tornaco.apps.shortx.core.proto.fact.EdgeGestureStepType
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.proto.fact.ScreenCorner
+import tornaco.apps.shortx.services.gesture.bpok.gesture.ContinuousActionHandler
+import tornaco.apps.shortx.services.gesture.bpok.gesture.ContinuousGestureActionPayload
+import tornaco.apps.shortx.services.gesture.bpok.gesture.ContinuousGestureBinding
+import tornaco.apps.shortx.services.gesture.bpok.gesture.DetectedArea
+import tornaco.apps.shortx.services.gesture.bpok.gesture.EdgeGestureSequenceCandidate
+import tornaco.apps.shortx.services.gesture.bpok.gesture.EdgeGestureSequenceDetector
+import tornaco.apps.shortx.services.gesture.bpok.gesture.EdgeGestureSequenceHintSink
+import tornaco.apps.shortx.services.gesture.bpok.gesture.GestureBridge
+import tornaco.apps.shortx.services.gesture.bpok.gesture.GestureSequencePointerEvent
+import tornaco.apps.shortx.services.gesture.bpok.gesture.GestureSequenceScheduler
 
 class EdgeGestureSequenceDetectorTest {
     companion object {
@@ -62,9 +72,46 @@ class EdgeGestureSequenceDetectorTest {
     }
 
     @Test
-    fun should_not_fire_hover_step_before_pointer_release_even_after_delay() {
+    fun should_fire_hover_step_immediately_after_duration_when_release_trigger_disabled() {
         val scheduler = FakeScheduler()
         val service = FakeGestureBridge()
+        val clock = FakeClock()
+        val detector = EdgeGestureSequenceDetector(scheduler, service, clock::now, ::identityDpToPx)
+        val area = DetectedArea.PredefinedEdge(Edge.RightCenter)
+        val candidates = listOf(
+            EdgeGestureSequenceCandidate(
+                area = area,
+                rule = EdgeGesture.newBuilder()
+                    .setEdge(Edge.RightCenter)
+                    .setGesture(Gesture.SwipeFromRight)
+                    .addChildSteps(step(EdgeGestureStepType.Hover))
+                    .build()
+            )
+        )
+
+        detector.startTracking(
+            pointerId = 1,
+            primaryGesture = Gesture.SwipeFromRight,
+            downX = 500f,
+            downY = 300f,
+            anchorX = 460f,
+            anchorY = 300f,
+            candidates = candidates,
+        ) shouldBe true
+
+        detector.onTouchEvent(moveEvent(pointerId = 1, x = 466f, y = 306f)) shouldBe true
+        clock.advanceBy(350)
+        scheduler.runPending()
+
+        service.firedEvents shouldHaveSize 1
+        service.firedEvents.single().childSteps.map { it.type } shouldBe listOf(EdgeGestureStepType.Hover)
+        detector.isTracking() shouldBe false
+    }
+
+    @Test
+    fun should_not_fire_hover_step_before_pointer_release_when_release_trigger_enabled_even_after_delay() {
+        val scheduler = FakeScheduler()
+        val service = FakeGestureBridge(childSwipeTriggerOnRelease = true)
         val clock = FakeClock()
         val detector = EdgeGestureSequenceDetector(scheduler, service, clock::now, ::identityDpToPx)
         val area = DetectedArea.PredefinedEdge(Edge.RightCenter)
@@ -97,9 +144,9 @@ class EdgeGestureSequenceDetectorTest {
     }
 
     @Test
-    fun should_fire_hover_step_on_pointer_release_after_duration_when_pointer_stays_in_radius() {
+    fun should_fire_hover_step_on_pointer_release_after_duration_when_release_trigger_enabled() {
         val scheduler = FakeScheduler()
-        val service = FakeGestureBridge()
+        val service = FakeGestureBridge(childSwipeTriggerOnRelease = true)
         val clock = FakeClock()
         val detector = EdgeGestureSequenceDetector(scheduler, service, clock::now, ::identityDpToPx)
         val area = DetectedArea.PredefinedEdge(Edge.RightCenter)
@@ -233,6 +280,10 @@ class EdgeGestureSequenceDetectorTest {
             anchorY = 400f,
             candidates = candidates,
         ) shouldBe true
+
+        detector.onTouchEvent(moveEvent(pointerId = 1, x = 80f, y = 280f)) shouldBe true
+        service.firedEvents shouldHaveSize 0
+        detector.isTracking() shouldBe true
 
         detector.onTouchEvent(upEvent(pointerId = 1, x = 80f, y = 280f)) shouldBe true
 
@@ -369,6 +420,12 @@ class EdgeGestureSequenceDetectorTest {
 
         fun hasPendingDelayed(): Boolean {
             return lastRunnable != null
+        }
+
+        fun runPending() {
+            val runnable = lastRunnable ?: return
+            lastRunnable = null
+            runnable.run()
         }
     }
 

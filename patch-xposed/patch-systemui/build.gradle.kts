@@ -15,6 +15,8 @@ dependencies {
     implementation(project(":external:dex-maker"))
     implementation(project(":external:utils"))
 
+    testImplementation(project(":services"))
+
     implementation(libs.mvel2)
     implementation(libs.kotlinx.coroutines.core)
 
