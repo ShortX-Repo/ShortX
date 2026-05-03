@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ActionBarStyle" parent="@android:style/Widget.DeviceDefault.ActionBar">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@color/colorPrimary</item>
+    </style>
+    <style name="AppTheme" parent="@android:style/Theme.DeviceDefault.Light.DarkActionBar">
+        <item name="android:listViewStyle">@style/ListViewStyleLight</item>
+        <item name="android:actionBarStyle">@style/ActionBarStyle</item>
+    </style>
+    <style name="AppThemeAuto" parent="@style/AppTheme">
+    </style>
+    <style name="AppThemeBlack" parent="@style/AppThemeDark">
+        <item name="android:windowBackground">@android:color/black</item>
+    </style>
+    <style name="AppThemeDark" parent="@android:style/Theme.DeviceDefault">
+        <item name="android:windowBackground">@color/colorBackgroundDark</item>
+        <item name="android:listViewStyle">@style/ListViewStyleDark</item>
+        <item name="android:actionBarStyle">@style/ActionBarStyle</item>
+    </style>
+    <style name="AppThemeLightGray" parent="@style/AppTheme">
+        <item name="android:windowBackground">@color/colorBackgroundLightGray</item>
+    </style>
+    <style name="ListViewStyleAuto" parent="@android:style/Widget.DeviceDefault.ListView">
+        <item name="android:scrollbarSize">6dp</item>
+        <item name="android:scrollbarThumbVertical">@color/colorPrimary</item>
+    </style>
+    <style name="ListViewStyleDark" parent="@android:style/Widget.DeviceDefault.ListView">
+        <item name="android:scrollbarSize">6dp</item>
+        <item name="android:scrollbarThumbVertical">@color/colorPrimary</item>
+    </style>
+    <style name="ListViewStyleLight" parent="@android:style/Widget.DeviceDefault.Light.ListView">
+        <item name="android:scrollbarSize">6dp</item>
+        <item name="android:scrollbarThumbVertical">@color/colorPrimary</item>
+    </style>
+</resources>

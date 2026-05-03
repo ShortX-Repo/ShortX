@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="@android:style/Theme.DeviceDefault.Light.DarkActionBar">
+        <item name="android:listViewStyle">@style/ListViewStyleLight</item>
+        <item name="android:actionBarStyle">@style/ActionBarStyle</item>
+        <item name="android:colorPrimary">@color/colorPrimary</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+        <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
+        <item name="android:forceDarkAllowed">false</item>
+    </style>
+    <style name="AppThemeAuto" parent="@android:style/Theme.DeviceDefault.DayNight">
+        <item name="android:listViewStyle">@style/ListViewStyleAuto</item>
+        <item name="android:actionBarStyle">@style/ActionBarStyle</item>
+        <item name="android:colorPrimary">@color/colorPrimary</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+        <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
+        <item name="android:forceDarkAllowed">false</item>
+    </style>
+    <style name="AppThemeDark" parent="@android:style/Theme.DeviceDefault">
+        <item name="android:windowBackground">@color/colorBackgroundDark</item>
+        <item name="android:listViewStyle">@style/ListViewStyleDark</item>
+        <item name="android:actionBarStyle">@style/ActionBarStyle</item>
+        <item name="android:colorPrimary">@color/colorPrimary</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+        <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
+        <item name="android:forceDarkAllowed">false</item>
+    </style>
+</resources>
