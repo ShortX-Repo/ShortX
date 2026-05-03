@@ -115,7 +115,7 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
             IntSettings(key = "EdgeGestureSequenceHoverDurationMs", defaultValue = { 300 })
 
         data object EdgeGestureSequenceHoverRadiusDp :
-            IntSettings(key = "EdgeGestureSequenceHoverRadiusDp", defaultValue = { 24 })
+            IntSettings(key = "EdgeGestureSequenceHoverRadiusDp", defaultValue = { 80 })
 
         data object EdgeGestureSequenceChildSwipeMinDistanceDp :
             IntSettings(key = "EdgeGestureSequenceChildSwipeMinDistanceDp", defaultValue = { 72 })

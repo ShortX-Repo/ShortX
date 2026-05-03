@@ -229,7 +229,7 @@ data class KeyAndGestureSettings(
     val cornerGestureAreaRatioPercent: Int = 18,
     val cornerGestureMinSwipeDistanceDp: Int = 72,
     val edgeGestureSequenceHoverDurationMs: Int = 300,
-    val edgeGestureSequenceHoverRadiusDp: Int = 24,
+    val edgeGestureSequenceHoverRadiusDp: Int = 80,
     val edgeGestureSequenceChildSwipeMinDistanceDp: Int = 72,
     val edgeGestureSequenceChildSwipeMaxAngleDeviationDeg: Int = 35,
     val edgeGestureSequenceChildSwipeTriggerOnRelease: Boolean = false,

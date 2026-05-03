@@ -54,7 +54,7 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
         CornerSwipeToCenterGeometry.DEFAULT_CORNER_REGION_RADIUS_RATIO
     private var cornerSwipeMinDistanceDp: Int = 72
     private var edgeGestureSequenceHoverDurationMs: Int = 300
-    private var edgeGestureSequenceHoverRadiusDp: Int = 24
+    private var edgeGestureSequenceHoverRadiusDp: Int = 80
     private var edgeGestureSequenceChildSwipeMinDistanceDp: Int = 72
     private var edgeGestureSequenceChildSwipeMaxAngleDeviationDeg: Int = 35
     private var edgeGestureSequenceChildSwipeTriggerOnRelease: Boolean = false
