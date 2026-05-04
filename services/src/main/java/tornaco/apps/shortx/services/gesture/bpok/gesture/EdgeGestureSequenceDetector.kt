@@ -165,6 +165,21 @@ class EdgeGestureSequenceDetector(
         private const val ACTION_POINTER_UP = 6
     }
 
+    private sealed interface StepPhase {
+        object Undecided : StepPhase
+
+        data class HoverTracking(
+            val anchorX: Float,
+            val anchorY: Float,
+            val startedAtElapsed: Long,
+        ) : StepPhase
+
+        data class LockedDirection(
+            val type: EdgeGestureStepType,
+            val peakDistancePx: Float,
+        ) : StepPhase
+    }
+
     // 当前正在跟踪的那根手指。sequence 必须沿用同一触摸流，换指或抬起都直接取消。
     private var trackedPointerId = INVALID_POINTER_ID
     private var primaryGesture: Gesture? = null
@@ -183,10 +198,8 @@ class EdgeGestureSequenceDetector(
     // 当前步骤开始的时间，而不是整个 sequence 的开始时间。
     // 仅用于 Hover 这类需要持续时长的步骤，不用于等待下一步时的自动超时取消。
     private var startedAtElapsed = 0L
-    private var hoverStartedAtElapsed = 0L
     private var currentStepIndex = 0
-    private var lockedDirectionalType: EdgeGestureStepType? = null
-    private var lockedDirectionalPeakDistancePx = 0f
+    private var stepPhase: StepPhase = StepPhase.Undecided
     private val hoverAutoCompleteRunnable = Runnable {
         handleHoverAutoCompletion()
     }
@@ -194,7 +207,24 @@ class EdgeGestureSequenceDetector(
     // candidates 表示“到当前步骤为止仍然可能匹配成功”的规则集合。
     // 每命中一步都会收缩一次，直到只剩下完成项或全部淘汰。
     private var candidates: List<EdgeGestureSequenceCandidate> = emptyList()
+    private var currentStepCandidates: List<CurrentStepCandidate> = emptyList()
+    private var hoverStepCandidates: List<CurrentStepCandidate> = emptyList()
+    private var directionalStepCandidates: List<CurrentStepCandidate> = emptyList()
+    private var currentStepTypes: Set<EdgeGestureStepType> = emptySet()
+    private var cachedCurrentStepHintEnabled = false
+    private var cachedCurrentStepHapticEnabled = false
+    private var cachedHoverDurationMs = 0L
+    private var cachedHoverRadiusPx = 0f
+    private var cachedChildSwipeMinDistancePx = 0f
+    private var cachedMinDirectionDot = 0f
+    private var cachedDirectionalIntentLockDistancePx = 0f
+    private var cachedDirectionalRollbackTolerancePx = 0f
     private val matchedSteps = mutableListOf<EdgeGestureStep>()
+
+    private data class CurrentStepCandidate(
+        val candidate: EdgeGestureSequenceCandidate,
+        val step: EdgeGestureStep,
+    )
 
     private data class DirectionalStepCandidate(
         val step: EdgeGestureStep,
@@ -224,12 +254,12 @@ class EdgeGestureSequenceDetector(
         this.latestX = anchorX
         this.latestY = anchorY
         this.startedAtElapsed = elapsedRealtime()
-        this.hoverStartedAtElapsed = this.startedAtElapsed
-        this.lockedDirectionalType = null
-        this.lockedDirectionalPeakDistancePx = 0f
         this.candidates = candidates
         this.currentStepIndex = 0
         this.matchedSteps.clear()
+        refreshThresholdCache()
+        refreshCurrentStepSnapshot()
+        initializeStepPhase()
         // 一进入二段识别，就先把当前目标步骤的提示显示出来。
         emitCurrentStepHint()
         scheduleHoverAutoCompletionIfNeeded()
@@ -255,31 +285,7 @@ class EdgeGestureSequenceDetector(
                 }
                 latestX = event.getX(pointerIndex)
                 latestY = event.getY(pointerIndex)
-                updateDirectionalIntentTracking()
-
-                // hint 是连续更新的，用户在做当前步骤时可以实时看到进度和 ready 状态。
-                updateCurrentStepHint()
-                val matchedStep = findMatchedDirectionalStep(latestX, latestY) ?: run {
-                    if (resetHoverTrackingWindowIfNeeded()) {
-                        return true
-                    }
-                    if (!service.isEdgeGestureSequenceChildSwipeTriggerOnRelease() && tryCompleteHoverOnMove()) {
-                        return true
-                    }
-                    logDirectionalMiss()
-                    return true
-                }
-                val matchedCandidates = candidates.filter {
-                    it.rule.getChildStepsOrNull(currentStepIndex)?.type == matchedStep.type
-                }
-                if (service.isEdgeGestureSequenceChildSwipeTriggerOnRelease()) {
-                    debugLog(
-                        "$DIAG_PREFIX directional move ready: stepIndex=$currentStepIndex, matched=${matchedStep.type}, waiting for release"
-                    )
-                    return true
-                }
-                advanceCandidates(matchedCandidates, matchedStep)
-                return true
+                return handleMove()
             }
 
             ACTION_UP -> {
@@ -318,6 +324,37 @@ class EdgeGestureSequenceDetector(
         return true
     }
 
+    private fun handleMove(): Boolean {
+        updateDirectionalIntentTracking()
+
+        // hint 是连续更新的，用户在做当前步骤时可以实时看到进度和 ready 状态。
+        updateCurrentStepHint()
+
+        val matchedStep = findMatchedDirectionalStep(latestX, latestY)
+        if (matchedStep != null) {
+            val matchedCandidates = currentStepCandidates.filter {
+                it.step.type == matchedStep.type
+            }.map { it.candidate }
+            if (service.isEdgeGestureSequenceChildSwipeTriggerOnRelease()) {
+                debugLog(
+                    "$DIAG_PREFIX directional move ready: stepIndex=$currentStepIndex, matched=${matchedStep.type}, waiting for release"
+                )
+                return true
+            }
+            advanceCandidates(matchedCandidates, matchedStep)
+            return true
+        }
+
+        if (resetHoverTrackingWindowIfNeeded()) {
+            return true
+        }
+        if (!service.isEdgeGestureSequenceChildSwipeTriggerOnRelease() && tryCompleteHoverOnMove()) {
+            return true
+        }
+        logDirectionalMiss()
+        return true
+    }
+
     fun isTracking(): Boolean {
         return trackedPointerId != INVALID_POINTER_ID && candidates.isNotEmpty() && primaryGesture != null
     }
@@ -328,24 +365,7 @@ class EdgeGestureSequenceDetector(
 
     private fun cancelTracking(reason: String) {
         val wasTracking = isTracking()
-        clearHoverAutoCompletion()
-        trackedPointerId = INVALID_POINTER_ID
-        primaryGesture = null
-        downX = 0f
-        downY = 0f
-        anchorX = 0f
-        anchorY = 0f
-        hoverAnchorX = 0f
-        hoverAnchorY = 0f
-        latestX = 0f
-        latestY = 0f
-        startedAtElapsed = 0L
-        hoverStartedAtElapsed = 0L
-        currentStepIndex = 0
-        lockedDirectionalType = null
-        lockedDirectionalPeakDistancePx = 0f
-        candidates = emptyList()
-        matchedSteps.clear()
+        resetDetectorState()
         if (wasTracking) {
             debugLog("$DIAG_PREFIX cancelTracking: reason=$reason")
             hintSink.onSequenceCancelled()
@@ -369,9 +389,9 @@ class EdgeGestureSequenceDetector(
         if (requireThreshold && distance < childSwipeMinDistancePx()) return null
         val normalizedX = deltaX / distance
         val normalizedY = deltaY / distance
-        return candidates.asSequence()
+        return directionalStepCandidates.asSequence()
             .mapNotNull { candidate ->
-                val step = candidate.rule.getChildStepsOrNull(currentStepIndex) ?: return@mapNotNull null
+            val step = candidate.step
                 val direction = directionFor(step.type) ?: return@mapNotNull null
                 val dot = normalizedX * direction.first + normalizedY * direction.second
                 val projectedDistance = projectedDistanceFor(step.type, x, y)
@@ -409,9 +429,8 @@ class EdgeGestureSequenceDetector(
             hoverAnchorX = latestX
             hoverAnchorY = latestY
             startedAtElapsed = elapsedRealtime()
-            hoverStartedAtElapsed = startedAtElapsed
-            lockedDirectionalType = null
-            lockedDirectionalPeakDistancePx = 0f
+            refreshCurrentStepSnapshot()
+            initializeStepPhase()
             emitCurrentStepHint()
             scheduleHoverAutoCompletionIfNeeded()
             debugLog(
@@ -439,6 +458,10 @@ class EdgeGestureSequenceDetector(
     }
 
     private fun clearTrackingState() {
+        resetDetectorState()
+    }
+
+    private fun resetDetectorState() {
         clearHoverAutoCompletion()
         trackedPointerId = INVALID_POINTER_ID
         primaryGesture = null
@@ -451,11 +474,11 @@ class EdgeGestureSequenceDetector(
         latestX = 0f
         latestY = 0f
         startedAtElapsed = 0L
-        hoverStartedAtElapsed = 0L
         currentStepIndex = 0
-        lockedDirectionalType = null
-        lockedDirectionalPeakDistancePx = 0f
         candidates = emptyList()
+        clearCurrentStepSnapshot()
+        clearThresholdCache()
+        stepPhase = StepPhase.Undecided
         matchedSteps.clear()
     }
 
@@ -474,7 +497,8 @@ class EdgeGestureSequenceDetector(
         if (hoverCandidates.isEmpty()) return false
         if (hasLockedDirectionalIntent()) return false
 
-        val elapsed = elapsedRealtime() - hoverStartedAtElapsed
+        val hoverPhase = stepPhase as? StepPhase.HoverTracking ?: return false
+        val elapsed = elapsedRealtime() - hoverPhase.startedAtElapsed
         val distance = hoverDistanceFromAnchor(latestX, latestY)
         if (elapsed < hoverDurationMs()) {
             debugLog(
@@ -492,7 +516,7 @@ class EdgeGestureSequenceDetector(
         debugLog(
             "$DIAG_PREFIX hover release matched: stepIndex=$currentStepIndex, elapsed=$elapsed/${hoverDurationMs()}, distance=$distance, radiusPx=${hoverRadiusPx()}"
         )
-        advanceCandidates(hoverCandidates, hoverCandidates.first().rule.getChildSteps(currentStepIndex))
+        advanceCandidates(hoverCandidates.map { it.candidate }, hoverCandidates.first().step)
         return true
     }
 
@@ -501,7 +525,8 @@ class EdgeGestureSequenceDetector(
         if (hoverCandidates.isEmpty()) return false
         if (hasLockedDirectionalIntent()) return false
 
-        val elapsed = elapsedRealtime() - hoverStartedAtElapsed
+        val hoverPhase = stepPhase as? StepPhase.HoverTracking ?: return false
+        val elapsed = elapsedRealtime() - hoverPhase.startedAtElapsed
         val distance = hoverDistanceFromAnchor(latestX, latestY)
         if (elapsed < hoverDurationMs()) return false
         if (distance > hoverRadiusPx()) return false
@@ -509,7 +534,7 @@ class EdgeGestureSequenceDetector(
         debugLog(
             "$DIAG_PREFIX hover move matched: stepIndex=$currentStepIndex, elapsed=$elapsed/${hoverDurationMs()}, distance=$distance, radiusPx=${hoverRadiusPx()}"
         )
-        advanceCandidates(hoverCandidates, hoverCandidates.first().rule.getChildSteps(currentStepIndex))
+        advanceCandidates(hoverCandidates.map { it.candidate }, hoverCandidates.first().step)
         return true
     }
 
@@ -522,7 +547,7 @@ class EdgeGestureSequenceDetector(
 
         val distance = hoverDistanceFromAnchor(latestX, latestY)
         debugLog(
-            "$DIAG_PREFIX hover auto-complete skipped: stepIndex=$currentStepIndex, elapsed=${elapsedRealtime() - hoverStartedAtElapsed}/${hoverDurationMs()}, distance=$distance, radiusPx=${hoverRadiusPx()}"
+            "$DIAG_PREFIX hover auto-complete skipped: stepIndex=$currentStepIndex, elapsed=${elapsedRealtime() - hoverTrackingStartedAtElapsed()}/${hoverDurationMs()}, distance=$distance, radiusPx=${hoverRadiusPx()}"
         )
     }
 
@@ -549,9 +574,9 @@ class EdgeGestureSequenceDetector(
             requireThreshold = true,
         )?.step ?: return false
 
-        val matchedCandidates = candidates.filter {
-            it.rule.getChildStepsOrNull(currentStepIndex)?.type == matchedStep.type
-        }
+        val matchedCandidates = currentStepCandidates.filter {
+            it.step.type == matchedStep.type
+        }.map { it.candidate }
         if (matchedCandidates.isEmpty()) return false
 
         debugLog(
@@ -563,8 +588,8 @@ class EdgeGestureSequenceDetector(
 
     private fun emitCurrentStepHint() {
         val step = resolveHintStep(anchorX, anchorY) ?: return
-        val hintAnchorX = if (step.type == EdgeGestureStepType.Hover) hoverAnchorX else anchorX
-        val hintAnchorY = if (step.type == EdgeGestureStepType.Hover) hoverAnchorY else anchorY
+        val hintAnchorX = if (step.type == EdgeGestureStepType.Hover) hoverTrackingAnchorX() else anchorX
+        val hintAnchorY = if (step.type == EdgeGestureStepType.Hover) hoverTrackingAnchorY() else anchorY
         hintSink.onStepHint(
             anchorX = hintAnchorX,
             anchorY = hintAnchorY,
@@ -581,10 +606,10 @@ class EdgeGestureSequenceDetector(
         when (step.type) {
             EdgeGestureStepType.Hover -> {
                 // Hover 用时间推进 progress，而不是位移。
-                val progress = (elapsedRealtime() - hoverStartedAtElapsed).toFloat() / hoverDurationMs()
+                val progress = (elapsedRealtime() - hoverTrackingStartedAtElapsed()).toFloat() / hoverDurationMs()
                 hintSink.onStepHint(
-                    anchorX = hoverAnchorX,
-                    anchorY = hoverAnchorY,
+                    anchorX = hoverTrackingAnchorX(),
+                    anchorY = hoverTrackingAnchorY(),
                     step = step,
                     progress = progress.coerceIn(0.12f, 1f),
                     isReady = progress >= 1f,
@@ -617,29 +642,21 @@ class EdgeGestureSequenceDetector(
     }
 
     private fun currentStepHapticEnabled(): Boolean {
-        return candidates.any {
-            it.rule.hasEnableGestureHaptic() && it.rule.enableGestureHaptic
-        }
+        return cachedCurrentStepHapticEnabled
     }
 
     private fun currentStepHintEnabled(): Boolean {
-        return candidates.any {
-            it.rule.hasEnableGestureHint() && it.rule.enableGestureHint
-        }
+        return cachedCurrentStepHintEnabled
     }
 
     private fun currentHintStep(): EdgeGestureStep? {
-        lockedDirectionalType?.let { lockedType ->
-            val lockedStep = candidates.firstNotNullOfOrNull {
-                val step = it.rule.getChildStepsOrNull(currentStepIndex) ?: return@firstNotNullOfOrNull null
-                step.takeIf { it.type == lockedType }
+        val phase = stepPhase
+        if (phase is StepPhase.LockedDirection) {
+            val lockedStep = currentStepCandidates.firstNotNullOfOrNull {
+                it.step.takeIf { step -> step.type == phase.type }
             }
             if (lockedStep != null) return lockedStep
         }
-
-        val currentStepTypes = candidates.mapNotNull {
-            it.rule.getChildStepsOrNull(currentStepIndex)?.type
-        }.distinct()
 
         // 只有当前剩余候选在“下一步类型”上一致时，hint 才有明确方向。
         // 如果规则分叉到了不同的下一步，这里宁可不画，也不误导用户。
@@ -672,18 +689,16 @@ class EdgeGestureSequenceDetector(
         )
     }
 
-    private fun hoverDurationMs(): Long = service.getEdgeGestureSequenceHoverDurationMs().toLong()
+    private fun hoverDurationMs(): Long = cachedHoverDurationMs
 
-    private fun hoverRadiusPx(): Float = dpToPx(service.getEdgeGestureSequenceHoverRadiusDp()).toFloat()
+    private fun hoverRadiusPx(): Float = cachedHoverRadiusPx
 
-    private fun childSwipeMinDistancePx(): Float =
-        dpToPx(service.getEdgeGestureSequenceChildSwipeMinDistanceDp()).toFloat()
+    private fun childSwipeMinDistancePx(): Float = cachedChildSwipeMinDistancePx
 
     private fun childSwipeMaxAngleDeviationDeg(): Float =
         service.getEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg().toFloat()
 
-    private fun minDirectionDot(): Float =
-        cos(Math.toRadians(childSwipeMaxAngleDeviationDeg().toDouble())).toFloat()
+    private fun minDirectionDot(): Float = cachedMinDirectionDot
 
     private fun formatCandidates(candidates: List<EdgeGestureSequenceCandidate>): String {
         return candidates.joinToString(prefix = "[", postfix = "]") {
@@ -696,7 +711,7 @@ class EdgeGestureSequenceDetector(
     }
 
     private fun hoverDistanceFromAnchor(x: Float, y: Float): Float {
-        return hypot((x - hoverAnchorX).toDouble(), (y - hoverAnchorY).toDouble()).toFloat()
+        return hypot((x - hoverTrackingAnchorX()).toDouble(), (y - hoverTrackingAnchorY()).toDouble()).toFloat()
     }
 
     private fun projectedDistanceFor(type: EdgeGestureStepType, x: Float, y: Float): Float {
@@ -715,18 +730,23 @@ class EdgeGestureSequenceDetector(
         val dominantCandidate = findDominantDirectionalCandidate(latestX, latestY) ?: return
         val lockDistancePx = directionalIntentLockDistancePx()
 
-        if (lockedDirectionalType == null) {
+        val phase = stepPhase
+        if (phase !is StepPhase.LockedDirection) {
             if (dominantCandidate.projectedDistance < lockDistancePx) return
-            lockedDirectionalType = dominantCandidate.step.type
-            lockedDirectionalPeakDistancePx = dominantCandidate.projectedDistance
+            stepPhase = StepPhase.LockedDirection(
+                type = dominantCandidate.step.type,
+                peakDistancePx = dominantCandidate.projectedDistance,
+            )
             debugLog(
-                "$DIAG_PREFIX directional intent locked: stepIndex=$currentStepIndex, type=$lockedDirectionalType, distance=${dominantCandidate.projectedDistance}, lockDistance=$lockDistancePx"
+                "$DIAG_PREFIX directional intent locked: stepIndex=$currentStepIndex, type=${dominantCandidate.step.type}, distance=${dominantCandidate.projectedDistance}, lockDistance=$lockDistancePx"
             )
             return
         }
 
-        if (lockedDirectionalType == dominantCandidate.step.type) {
-            lockedDirectionalPeakDistancePx = max(lockedDirectionalPeakDistancePx, dominantCandidate.projectedDistance)
+        if (phase.type == dominantCandidate.step.type) {
+            stepPhase = phase.copy(
+                peakDistancePx = max(phase.peakDistancePx, dominantCandidate.projectedDistance)
+            )
         }
     }
 
@@ -743,9 +763,8 @@ class EdgeGestureSequenceDetector(
             if (deltaY < 0f) EdgeGestureStepType.SwipeUp else EdgeGestureStepType.SwipeDown
         }
 
-        val step = candidates.firstNotNullOfOrNull {
-            val currentStep = it.rule.getChildStepsOrNull(currentStepIndex) ?: return@firstNotNullOfOrNull null
-            currentStep.takeIf { it.type == dominantType }
+        val step = directionalStepCandidates.firstNotNullOfOrNull {
+            it.step.takeIf { step -> step.type == dominantType }
         } ?: return null
 
         return DirectionalStepCandidate(
@@ -756,50 +775,50 @@ class EdgeGestureSequenceDetector(
     }
 
     private fun findLockedDirectionalMatch(x: Float, y: Float): DirectionalStepCandidate? {
-        val lockedType = lockedDirectionalType ?: return null
-        if (lockedDirectionalPeakDistancePx < childSwipeMinDistancePx()) return null
+        val phase = stepPhase as? StepPhase.LockedDirection ?: return null
+        if (phase.peakDistancePx < childSwipeMinDistancePx()) return null
 
-        val step = candidates.firstNotNullOfOrNull {
-            val currentStep = it.rule.getChildStepsOrNull(currentStepIndex) ?: return@firstNotNullOfOrNull null
-            currentStep.takeIf { it.type == lockedType }
+        val step = directionalStepCandidates.firstNotNullOfOrNull {
+            it.step.takeIf { step -> step.type == phase.type }
         } ?: return null
 
-        val currentProjectedDistance = projectedDistanceFor(lockedType, x, y)
-        if (lockedDirectionalPeakDistancePx - currentProjectedDistance > directionalRollbackTolerancePx()) return null
+        val currentProjectedDistance = projectedDistanceFor(phase.type, x, y)
+        if (phase.peakDistancePx - currentProjectedDistance > directionalRollbackTolerancePx()) return null
 
         return DirectionalStepCandidate(
             step = step,
             dot = 1f,
-            projectedDistance = lockedDirectionalPeakDistancePx,
+            projectedDistance = phase.peakDistancePx,
         )
     }
 
     private fun hasLockedDirectionalIntent(): Boolean {
-        return lockedDirectionalType != null && lockedDirectionalPeakDistancePx >= directionalIntentLockDistancePx()
+        return stepPhase is StepPhase.LockedDirection
     }
 
     private fun directionalIntentLockDistancePx(): Float {
-        return (childSwipeMinDistancePx() * 0.4f)
-            .coerceAtLeast(dpToPx(12).toFloat())
-            .coerceAtMost(hoverRadiusPx() * 0.5f)
+        return cachedDirectionalIntentLockDistancePx
     }
 
     private fun directionalRollbackTolerancePx(): Float {
-        return hoverRadiusPx().coerceAtLeast(dpToPx(16).toFloat())
+        return cachedDirectionalRollbackTolerancePx
     }
 
     private fun resetHoverTrackingWindowIfNeeded(): Boolean {
         if (!hasHoverCandidates()) return false
+        val phase = stepPhase as? StepPhase.HoverTracking ?: return false
 
         val distance = hoverDistanceFromAnchor(latestX, latestY)
         if (distance <= hoverRadiusPx()) return false
 
         clearHoverAutoCompletion()
-        hoverAnchorX = latestX
-        hoverAnchorY = latestY
-        hoverStartedAtElapsed = elapsedRealtime()
+        stepPhase = phase.copy(
+            anchorX = latestX,
+            anchorY = latestY,
+            startedAtElapsed = elapsedRealtime(),
+        )
         debugLog(
-            "$DIAG_PREFIX hover tracking reset: stepIndex=$currentStepIndex, hoverAnchor=($hoverAnchorX,$hoverAnchorY), radiusPx=${hoverRadiusPx()}"
+            "$DIAG_PREFIX hover tracking reset: stepIndex=$currentStepIndex, hoverAnchor=(${hoverTrackingAnchorX()},${hoverTrackingAnchorY()}), radiusPx=${hoverRadiusPx()}"
         )
         emitCurrentStepHint()
         scheduleHoverAutoCompletionIfNeeded()
@@ -808,10 +827,77 @@ class EdgeGestureSequenceDetector(
 
     private fun hasHoverCandidates(): Boolean = hoverCandidates().isNotEmpty()
 
-    private fun hoverCandidates(): List<EdgeGestureSequenceCandidate> {
-        return candidates.filter {
-            it.rule.getChildStepsOrNull(currentStepIndex)?.type == EdgeGestureStepType.Hover
+    private fun hoverCandidates(): List<CurrentStepCandidate> {
+        return hoverStepCandidates
+    }
+
+    private fun refreshCurrentStepSnapshot() {
+        currentStepCandidates = candidates.mapNotNull { candidate ->
+            val step = candidate.rule.getChildStepsOrNull(currentStepIndex) ?: return@mapNotNull null
+            CurrentStepCandidate(candidate = candidate, step = step)
         }
+        hoverStepCandidates = currentStepCandidates.filter { it.step.type == EdgeGestureStepType.Hover }
+        directionalStepCandidates = currentStepCandidates.filter { directionFor(it.step.type) != null }
+        currentStepTypes = currentStepCandidates.map { it.step.type }.toSet()
+        cachedCurrentStepHintEnabled = currentStepCandidates.any {
+            it.candidate.rule.hasEnableGestureHint() && it.candidate.rule.enableGestureHint
+        }
+        cachedCurrentStepHapticEnabled = currentStepCandidates.any {
+            it.candidate.rule.hasEnableGestureHaptic() && it.candidate.rule.enableGestureHaptic
+        }
+    }
+
+    private fun clearCurrentStepSnapshot() {
+        currentStepCandidates = emptyList()
+        hoverStepCandidates = emptyList()
+        directionalStepCandidates = emptyList()
+        currentStepTypes = emptySet()
+        cachedCurrentStepHintEnabled = false
+        cachedCurrentStepHapticEnabled = false
+    }
+
+    private fun refreshThresholdCache() {
+        cachedHoverDurationMs = service.getEdgeGestureSequenceHoverDurationMs().toLong()
+        cachedHoverRadiusPx = dpToPx(service.getEdgeGestureSequenceHoverRadiusDp()).toFloat()
+        cachedChildSwipeMinDistancePx = dpToPx(service.getEdgeGestureSequenceChildSwipeMinDistanceDp()).toFloat()
+        cachedMinDirectionDot = cos(Math.toRadians(childSwipeMaxAngleDeviationDeg().toDouble())).toFloat()
+        cachedDirectionalIntentLockDistancePx = (cachedChildSwipeMinDistancePx * 0.4f)
+            .coerceAtLeast(dpToPx(12).toFloat())
+            .coerceAtMost(cachedHoverRadiusPx * 0.5f)
+        cachedDirectionalRollbackTolerancePx = cachedHoverRadiusPx.coerceAtLeast(dpToPx(16).toFloat())
+    }
+
+    private fun clearThresholdCache() {
+        cachedHoverDurationMs = 0L
+        cachedHoverRadiusPx = 0f
+        cachedChildSwipeMinDistancePx = 0f
+        cachedMinDirectionDot = 0f
+        cachedDirectionalIntentLockDistancePx = 0f
+        cachedDirectionalRollbackTolerancePx = 0f
+    }
+
+    private fun initializeStepPhase() {
+        stepPhase = if (hoverStepCandidates.isNotEmpty()) {
+            StepPhase.HoverTracking(
+                anchorX = hoverAnchorX,
+                anchorY = hoverAnchorY,
+                startedAtElapsed = startedAtElapsed,
+            )
+        } else {
+            StepPhase.Undecided
+        }
+    }
+
+    private fun hoverTrackingAnchorX(): Float {
+        return (stepPhase as? StepPhase.HoverTracking)?.anchorX ?: hoverAnchorX
+    }
+
+    private fun hoverTrackingAnchorY(): Float {
+        return (stepPhase as? StepPhase.HoverTracking)?.anchorY ?: hoverAnchorY
+    }
+
+    private fun hoverTrackingStartedAtElapsed(): Long {
+        return (stepPhase as? StepPhase.HoverTracking)?.startedAtElapsed ?: startedAtElapsed
     }
 
     private fun directionFor(type: EdgeGestureStepType): Pair<Float, Float>? {
