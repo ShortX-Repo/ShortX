@@ -216,7 +216,9 @@ class EdgeGestureSequenceDetector(
     private var cachedHoverDurationMs = 0L
     private var cachedHoverRadiusPx = 0f
     private var cachedChildSwipeMinDistancePx = 0f
+    private var cachedChildSwipeMaxAngleDeviationDeg = 0f
     private var cachedMinDirectionDot = 0f
+    private var cachedChildSwipeTriggerOnRelease = false
     private var cachedDirectionalIntentLockDistancePx = 0f
     private var cachedDirectionalRollbackTolerancePx = 0f
     private val matchedSteps = mutableListOf<EdgeGestureStep>()
@@ -231,6 +233,38 @@ class EdgeGestureSequenceDetector(
         val dot: Float,
         val projectedDistance: Float,
     )
+
+    private data class DirectionalMotionMetrics(
+        val deltaX: Float,
+        val deltaY: Float,
+        val distance: Float,
+        val normalizedX: Float,
+        val normalizedY: Float,
+    ) {
+        fun dotFor(direction: Pair<Float, Float>): Float {
+            return normalizedX * direction.first + normalizedY * direction.second
+        }
+
+        fun projectedDistanceFor(type: EdgeGestureStepType): Float {
+            return when (type) {
+                EdgeGestureStepType.SwipeLeft -> max(0f, -deltaX)
+                EdgeGestureStepType.SwipeRight -> max(0f, deltaX)
+                EdgeGestureStepType.SwipeUp -> max(0f, -deltaY)
+                EdgeGestureStepType.SwipeDown -> max(0f, deltaY)
+                else -> 0f
+            }
+        }
+
+        fun dominantType(): EdgeGestureStepType {
+            val absX = kotlin.math.abs(deltaX)
+            val absY = kotlin.math.abs(deltaY)
+            return if (absX >= absY) {
+                if (deltaX < 0f) EdgeGestureStepType.SwipeLeft else EdgeGestureStepType.SwipeRight
+            } else {
+                if (deltaY < 0f) EdgeGestureStepType.SwipeUp else EdgeGestureStepType.SwipeDown
+            }
+        }
+    }
 
     fun startTracking(
         pointerId: Int,
@@ -332,10 +366,8 @@ class EdgeGestureSequenceDetector(
 
         val matchedStep = findMatchedDirectionalStep(latestX, latestY)
         if (matchedStep != null) {
-            val matchedCandidates = currentStepCandidates.filter {
-                it.step.type == matchedStep.type
-            }.map { it.candidate }
-            if (service.isEdgeGestureSequenceChildSwipeTriggerOnRelease()) {
+            val matchedCandidates = matchedCandidatesFor(matchedStep.type)
+            if (isChildSwipeTriggerOnRelease()) {
                 debugLog(
                     "$DIAG_PREFIX directional move ready: stepIndex=$currentStepIndex, matched=${matchedStep.type}, waiting for release"
                 )
@@ -348,7 +380,7 @@ class EdgeGestureSequenceDetector(
         if (resetHoverTrackingWindowIfNeeded()) {
             return true
         }
-        if (!service.isEdgeGestureSequenceChildSwipeTriggerOnRelease() && tryCompleteHoverOnMove()) {
+        if (!isChildSwipeTriggerOnRelease() && tryCompleteHoverOnMove()) {
             return true
         }
         logDirectionalMiss()
@@ -382,19 +414,14 @@ class EdgeGestureSequenceDetector(
         y: Float,
         requireThreshold: Boolean,
     ): DirectionalStepCandidate? {
-        val deltaX = x - anchorX
-        val deltaY = y - anchorY
-        val distance = hypot(deltaX.toDouble(), deltaY.toDouble()).toFloat()
-        if (distance <= 0f) return null
-        if (requireThreshold && distance < childSwipeMinDistancePx()) return null
-        val normalizedX = deltaX / distance
-        val normalizedY = deltaY / distance
+        val metrics = directionalMotionMetrics(x, y) ?: return null
+        if (requireThreshold && metrics.distance < childSwipeMinDistancePx()) return null
         return directionalStepCandidates.asSequence()
             .mapNotNull { candidate ->
-            val step = candidate.step
+                val step = candidate.step
                 val direction = directionFor(step.type) ?: return@mapNotNull null
-                val dot = normalizedX * direction.first + normalizedY * direction.second
-                val projectedDistance = projectedDistanceFor(step.type, x, y)
+                val dot = metrics.dotFor(direction)
+                val projectedDistance = metrics.projectedDistanceFor(step.type)
 
                 // 用点积做方向判断：越接近 1 越同向，低于阈值就认为偏得太多。
                 if (requireThreshold && dot < minDirectionDot()) return@mapNotNull null
@@ -491,7 +518,7 @@ class EdgeGestureSequenceDetector(
     }
 
     private fun tryCompleteHoverOnPointerRelease(): Boolean {
-        if (!service.isEdgeGestureSequenceChildSwipeTriggerOnRelease()) return false
+        if (!isChildSwipeTriggerOnRelease()) return false
 
         val hoverCandidates = hoverCandidates()
         if (hoverCandidates.isEmpty()) return false
@@ -540,7 +567,7 @@ class EdgeGestureSequenceDetector(
 
     private fun handleHoverAutoCompletion() {
         if (!isTracking()) return
-        if (service.isEdgeGestureSequenceChildSwipeTriggerOnRelease()) return
+        if (isChildSwipeTriggerOnRelease()) return
         if (!hasHoverCandidates()) return
         if (hasLockedDirectionalIntent()) return
         if (tryCompleteHoverOnMove()) return
@@ -553,7 +580,7 @@ class EdgeGestureSequenceDetector(
 
     private fun scheduleHoverAutoCompletionIfNeeded() {
         clearHoverAutoCompletion()
-        if (service.isEdgeGestureSequenceChildSwipeTriggerOnRelease()) return
+        if (isChildSwipeTriggerOnRelease()) return
         if (!hasHoverCandidates()) return
         scheduler.postDelayed(hoverAutoCompleteRunnable, hoverDurationMs())
     }
@@ -563,20 +590,14 @@ class EdgeGestureSequenceDetector(
     }
 
     private fun tryCompleteDirectionalStepOnPointerRelease(): Boolean {
-        if (!service.isEdgeGestureSequenceChildSwipeTriggerOnRelease()) return false
+        if (!isChildSwipeTriggerOnRelease()) return false
 
-        val matchedStep = findLockedDirectionalMatch(
+        val matchedStep = findMatchedDirectionalStep(
             x = latestX,
             y = latestY,
-        )?.step ?: findBestDirectionalCandidate(
-            x = latestX,
-            y = latestY,
-            requireThreshold = true,
-        )?.step ?: return false
+        ) ?: return false
 
-        val matchedCandidates = currentStepCandidates.filter {
-            it.step.type == matchedStep.type
-        }.map { it.candidate }
+        val matchedCandidates = matchedCandidatesFor(matchedStep.type)
         if (matchedCandidates.isEmpty()) return false
 
         debugLog(
@@ -621,19 +642,15 @@ class EdgeGestureSequenceDetector(
             else -> {
                 // 方向步骤用“朝目标方向移动了多远”来表达当前进度。
                 val direction = directionFor(step.type) ?: return
-                val deltaX = latestX - anchorX
-                val deltaY = latestY - anchorY
-                val distance = hypot(deltaX.toDouble(), deltaY.toDouble()).toFloat()
+                val metrics = directionalMotionMetrics(latestX, latestY) ?: return
                 val readyDistance = childSwipeMinDistancePx()
-                val normalizedX = if (distance > 0f) deltaX / distance else 0f
-                val normalizedY = if (distance > 0f) deltaY / distance else 0f
-                val dot = normalizedX * direction.first + normalizedY * direction.second
+                val dot = metrics.dotFor(direction)
                 hintSink.onStepHint(
                     anchorX = anchorX,
                     anchorY = anchorY,
                     step = step,
-                    progress = (distance / readyDistance).coerceIn(0.12f, 1f),
-                    isReady = distance >= readyDistance && dot >= minDirectionDot(),
+                    progress = (metrics.distance / readyDistance).coerceIn(0.12f, 1f),
+                    isReady = metrics.distance >= readyDistance && dot >= minDirectionDot(),
                     hintEnabled = currentStepHintEnabled(),
                     hapticEnabled = currentStepHapticEnabled(),
                 )
@@ -676,17 +693,19 @@ class EdgeGestureSequenceDetector(
         val step = resolveHintStep(latestX, latestY) ?: return
         if (step.type == EdgeGestureStepType.Hover) return
         val direction = directionFor(step.type) ?: return
-        val deltaX = latestX - anchorX
-        val deltaY = latestY - anchorY
-        val distance = hypot(deltaX.toDouble(), deltaY.toDouble()).toFloat()
+        val metrics = directionalMotionMetrics(latestX, latestY) ?: return
         val minDistancePx = childSwipeMinDistancePx()
-        val normalizedX = if (distance > 0f) deltaX / distance else 0f
-        val normalizedY = if (distance > 0f) deltaY / distance else 0f
-        val dot = normalizedX * direction.first + normalizedY * direction.second
+        val dot = metrics.dotFor(direction)
         val angleDeg = Math.toDegrees(acos(dot.coerceIn(-1f, 1f).toDouble()))
         debugLog(
-            "$DIAG_PREFIX directional miss: stepIndex=$currentStepIndex, expected=${step.type}, distance=$distance/$minDistancePx, dot=$dot/${minDirectionDot()}, angleDeg=$angleDeg/${childSwipeMaxAngleDeviationDeg()}, anchor=($anchorX,$anchorY), latest=($latestX,$latestY)"
+            "$DIAG_PREFIX directional miss: stepIndex=$currentStepIndex, expected=${step.type}, distance=${metrics.distance}/$minDistancePx, dot=$dot/${minDirectionDot()}, angleDeg=$angleDeg/${childSwipeMaxAngleDeviationDeg()}, anchor=($anchorX,$anchorY), latest=($latestX,$latestY)"
         )
+    }
+
+    private fun matchedCandidatesFor(type: EdgeGestureStepType): List<EdgeGestureSequenceCandidate> {
+        return currentStepCandidates.filter {
+            it.step.type == type
+        }.map { it.candidate }
     }
 
     private fun hoverDurationMs(): Long = cachedHoverDurationMs
@@ -696,14 +715,30 @@ class EdgeGestureSequenceDetector(
     private fun childSwipeMinDistancePx(): Float = cachedChildSwipeMinDistancePx
 
     private fun childSwipeMaxAngleDeviationDeg(): Float =
-        service.getEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg().toFloat()
+        cachedChildSwipeMaxAngleDeviationDeg
 
     private fun minDirectionDot(): Float = cachedMinDirectionDot
+
+    private fun isChildSwipeTriggerOnRelease(): Boolean = cachedChildSwipeTriggerOnRelease
 
     private fun formatCandidates(candidates: List<EdgeGestureSequenceCandidate>): String {
         return candidates.joinToString(prefix = "[", postfix = "]") {
             "{area=${it.area}, childSteps=${it.rule.childStepsList.map { step -> step.type }}}"
         }
+    }
+
+    private fun directionalMotionMetrics(x: Float, y: Float): DirectionalMotionMetrics? {
+        val deltaX = x - anchorX
+        val deltaY = y - anchorY
+        val distance = hypot(deltaX.toDouble(), deltaY.toDouble()).toFloat()
+        if (distance <= 0f) return null
+        return DirectionalMotionMetrics(
+            deltaX = deltaX,
+            deltaY = deltaY,
+            distance = distance,
+            normalizedX = deltaX / distance,
+            normalizedY = deltaY / distance,
+        )
     }
 
     private fun distanceFromAnchor(x: Float, y: Float): Float {
@@ -715,15 +750,7 @@ class EdgeGestureSequenceDetector(
     }
 
     private fun projectedDistanceFor(type: EdgeGestureStepType, x: Float, y: Float): Float {
-        val deltaX = x - anchorX
-        val deltaY = y - anchorY
-        return when (type) {
-            EdgeGestureStepType.SwipeLeft -> max(0f, -deltaX)
-            EdgeGestureStepType.SwipeRight -> max(0f, deltaX)
-            EdgeGestureStepType.SwipeUp -> max(0f, -deltaY)
-            EdgeGestureStepType.SwipeDown -> max(0f, deltaY)
-            else -> 0f
-        }
+        return directionalMotionMetrics(x, y)?.projectedDistanceFor(type) ?: 0f
     }
 
     private fun updateDirectionalIntentTracking() {
@@ -751,17 +778,8 @@ class EdgeGestureSequenceDetector(
     }
 
     private fun findDominantDirectionalCandidate(x: Float, y: Float): DirectionalStepCandidate? {
-        val deltaX = x - anchorX
-        val deltaY = y - anchorY
-        val absX = kotlin.math.abs(deltaX)
-        val absY = kotlin.math.abs(deltaY)
-        if (absX <= 0f && absY <= 0f) return null
-
-        val dominantType = if (absX >= absY) {
-            if (deltaX < 0f) EdgeGestureStepType.SwipeLeft else EdgeGestureStepType.SwipeRight
-        } else {
-            if (deltaY < 0f) EdgeGestureStepType.SwipeUp else EdgeGestureStepType.SwipeDown
-        }
+        val metrics = directionalMotionMetrics(x, y) ?: return null
+        val dominantType = metrics.dominantType()
 
         val step = directionalStepCandidates.firstNotNullOfOrNull {
             it.step.takeIf { step -> step.type == dominantType }
@@ -770,7 +788,7 @@ class EdgeGestureSequenceDetector(
         return DirectionalStepCandidate(
             step = step,
             dot = 1f,
-            projectedDistance = projectedDistanceFor(dominantType, x, y),
+            projectedDistance = metrics.projectedDistanceFor(dominantType),
         )
     }
 
@@ -860,6 +878,8 @@ class EdgeGestureSequenceDetector(
         cachedHoverDurationMs = service.getEdgeGestureSequenceHoverDurationMs().toLong()
         cachedHoverRadiusPx = dpToPx(service.getEdgeGestureSequenceHoverRadiusDp()).toFloat()
         cachedChildSwipeMinDistancePx = dpToPx(service.getEdgeGestureSequenceChildSwipeMinDistanceDp()).toFloat()
+        cachedChildSwipeMaxAngleDeviationDeg = service.getEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg().toFloat()
+        cachedChildSwipeTriggerOnRelease = service.isEdgeGestureSequenceChildSwipeTriggerOnRelease()
         cachedMinDirectionDot = cos(Math.toRadians(childSwipeMaxAngleDeviationDeg().toDouble())).toFloat()
         cachedDirectionalIntentLockDistancePx = (cachedChildSwipeMinDistancePx * 0.4f)
             .coerceAtLeast(dpToPx(12).toFloat())
@@ -871,7 +891,9 @@ class EdgeGestureSequenceDetector(
         cachedHoverDurationMs = 0L
         cachedHoverRadiusPx = 0f
         cachedChildSwipeMinDistancePx = 0f
+        cachedChildSwipeMaxAngleDeviationDeg = 0f
         cachedMinDirectionDot = 0f
+        cachedChildSwipeTriggerOnRelease = false
         cachedDirectionalIntentLockDistancePx = 0f
         cachedDirectionalRollbackTolerancePx = 0f
     }

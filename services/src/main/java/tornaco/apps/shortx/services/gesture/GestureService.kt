@@ -259,11 +259,9 @@ class GestureService(shortXContext: ShortXContext) :
     }
 
     fun reportMotionEvent(event: MotionEvent) {
-        logger.logOnDebug { "reportMotionEvent. $event" }
-        if (!isSystemReady) return
-        if (gestureRecorder.isRecording) {
-            runBlocking { gestureRecorder.onMotionEvent(event) }
-        }
+        logger.e(
+            "reportMotionEvent, should never be called, system-ui gesture solution is deprecated. $event"
+        )
     }
 
     fun getGestureLengthScale(): Float =
