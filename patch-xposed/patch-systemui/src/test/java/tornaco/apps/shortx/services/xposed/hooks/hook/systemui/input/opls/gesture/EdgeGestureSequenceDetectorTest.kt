@@ -180,7 +180,7 @@ class EdgeGestureSequenceDetectorTest {
     }
 
     @Test
-    fun should_reset_hover_anchor_when_pointer_moves_out_of_radius_and_fire_after_stabilizing() {
+    fun should_reset_hover_tracking_when_pointer_moves_out_of_radius_and_fire_after_stabilizing() {
         val scheduler = FakeScheduler()
         val service = FakeGestureBridge()
         val clock = FakeClock()
@@ -210,15 +210,15 @@ class EdgeGestureSequenceDetectorTest {
         ) shouldBe true
 
         detector.onTouchEvent(moveEvent(pointerId = 1, x = 120f, y = 20f)) shouldBe true
-        detector.isTracking() shouldBe true
+    detector.isTracking() shouldBe true
         service.firedEvents shouldHaveSize 0
 
         clock.advanceBy(350)
         scheduler.runPending()
 
-        service.firedEvents shouldHaveSize 1
-        service.firedEvents.single().childSteps.map { it.type } shouldBe listOf(EdgeGestureStepType.Hover)
-        detector.isTracking() shouldBe false
+    service.firedEvents shouldHaveSize 1
+    service.firedEvents.single().childSteps.map { it.type } shouldBe listOf(EdgeGestureStepType.Hover)
+    detector.isTracking() shouldBe false
     }
 
     @Test
@@ -267,7 +267,146 @@ class EdgeGestureSequenceDetectorTest {
     }
 
     @Test
-    fun should_fire_hover_after_swipe_up_from_first_settled_point() {
+    fun should_prefer_swipe_down_when_directional_intent_appears_before_hover_timeout() {
+        val scheduler = FakeScheduler()
+        val service = FakeGestureBridge(hoverRadiusDp = 80)
+        val clock = FakeClock()
+        val detector = EdgeGestureSequenceDetector(scheduler, service, clock::now, ::identityDpToPx)
+        val area = DetectedArea.PredefinedEdge(Edge.RightCenter)
+        val candidates = listOf(
+            EdgeGestureSequenceCandidate(
+                area = area,
+                rule = EdgeGesture.newBuilder()
+                    .setEdge(Edge.RightCenter)
+                    .setGesture(Gesture.SwipeFromBottom)
+                    .addChildSteps(step(EdgeGestureStepType.Hover))
+                    .build()
+            ),
+            EdgeGestureSequenceCandidate(
+                area = area,
+                rule = EdgeGesture.newBuilder()
+                    .setEdge(Edge.RightCenter)
+                    .setGesture(Gesture.SwipeFromBottom)
+                    .addChildSteps(step(EdgeGestureStepType.SwipeDown))
+                    .build()
+            )
+        )
+
+        detector.startTracking(
+            pointerId = 1,
+            primaryGesture = Gesture.SwipeFromBottom,
+            downX = 500f,
+            downY = 1000f,
+            anchorX = 500f,
+            anchorY = 1000f,
+            candidates = candidates,
+        ) shouldBe true
+
+        detector.onTouchEvent(moveEvent(pointerId = 1, x = 502f, y = 1032f)) shouldBe true
+        service.firedEvents shouldHaveSize 0
+        detector.isTracking() shouldBe true
+
+    clock.advanceBy(120)
+        detector.onTouchEvent(moveEvent(pointerId = 1, x = 502f, y = 1080f)) shouldBe true
+
+        service.firedEvents shouldHaveSize 1
+        service.firedEvents.single().childSteps.map { it.type } shouldBe listOf(EdgeGestureStepType.SwipeDown)
+        detector.isTracking() shouldBe false
+    }
+
+    @Test
+    fun should_keep_directional_distance_accumulating_when_hover_window_resets() {
+        val scheduler = FakeScheduler()
+        val service = FakeGestureBridge(hoverRadiusDp = 40, childSwipeMinDistanceDp = 120)
+        val clock = FakeClock()
+        val detector = EdgeGestureSequenceDetector(scheduler, service, clock::now, ::identityDpToPx)
+        val area = DetectedArea.PredefinedEdge(Edge.RightCenter)
+        val candidates = listOf(
+            EdgeGestureSequenceCandidate(
+                area = area,
+                rule = EdgeGesture.newBuilder()
+                    .setEdge(Edge.RightCenter)
+                    .setGesture(Gesture.SwipeFromBottom)
+                    .addChildSteps(step(EdgeGestureStepType.Hover))
+                    .build()
+            ),
+            EdgeGestureSequenceCandidate(
+                area = area,
+                rule = EdgeGesture.newBuilder()
+                    .setEdge(Edge.RightCenter)
+                    .setGesture(Gesture.SwipeFromBottom)
+                    .addChildSteps(step(EdgeGestureStepType.SwipeLeft))
+                    .build()
+            )
+        )
+
+        detector.startTracking(
+            pointerId = 1,
+            primaryGesture = Gesture.SwipeFromBottom,
+            downX = 500f,
+            downY = 1000f,
+            anchorX = 500f,
+            anchorY = 1000f,
+            candidates = candidates,
+        ) shouldBe true
+
+        detector.onTouchEvent(moveEvent(pointerId = 1, x = 455f, y = 1008f)) shouldBe true
+        service.firedEvents shouldHaveSize 0
+        detector.isTracking() shouldBe true
+
+        detector.onTouchEvent(moveEvent(pointerId = 1, x = 378f, y = 1014f)) shouldBe true
+
+        service.firedEvents shouldHaveSize 1
+        service.firedEvents.single().childSteps.map { it.type } shouldBe listOf(EdgeGestureStepType.SwipeLeft)
+        detector.isTracking() shouldBe false
+    }
+
+    @Test
+    fun should_fire_swipe_down_with_hover_candidate_after_minor_jitter() {
+        val scheduler = FakeScheduler()
+        val service = FakeGestureBridge(hoverRadiusDp = 80)
+        val clock = FakeClock()
+        val detector = EdgeGestureSequenceDetector(scheduler, service, clock::now, ::identityDpToPx)
+        val area = DetectedArea.PredefinedEdge(Edge.RightCenter)
+        val candidates = listOf(
+            EdgeGestureSequenceCandidate(
+                area = area,
+                rule = EdgeGesture.newBuilder()
+                    .setEdge(Edge.RightCenter)
+                    .setGesture(Gesture.SwipeFromBottom)
+                    .addChildSteps(step(EdgeGestureStepType.Hover))
+                    .build()
+            ),
+            EdgeGestureSequenceCandidate(
+                area = area,
+                rule = EdgeGesture.newBuilder()
+                    .setEdge(Edge.RightCenter)
+                    .setGesture(Gesture.SwipeFromBottom)
+                    .addChildSteps(step(EdgeGestureStepType.SwipeDown))
+                    .build()
+            )
+        )
+
+        detector.startTracking(
+            pointerId = 1,
+            primaryGesture = Gesture.SwipeFromBottom,
+            downX = 500f,
+            downY = 1000f,
+            anchorX = 500f,
+            anchorY = 1000f,
+            candidates = candidates,
+        ) shouldBe true
+
+        detector.onTouchEvent(moveEvent(pointerId = 1, x = 506f, y = 1028f)) shouldBe true
+        detector.onTouchEvent(moveEvent(pointerId = 1, x = 510f, y = 1078f)) shouldBe true
+
+        service.firedEvents shouldHaveSize 1
+        service.firedEvents.single().childSteps.map { it.type } shouldBe listOf(EdgeGestureStepType.SwipeDown)
+        detector.isTracking() shouldBe false
+    }
+
+    @Test
+    fun should_fire_hover_after_swipe_up_when_jitter_stays_within_hover_radius() {
         val scheduler = FakeScheduler()
         val service = FakeGestureBridge()
         val clock = FakeClock()
@@ -299,7 +438,51 @@ class EdgeGestureSequenceDetectorTest {
         service.firedEvents shouldHaveSize 0
         detector.isTracking() shouldBe true
 
-        detector.onTouchEvent(moveEvent(pointerId = 1, x = 304f, y = 748f)) shouldBe true
+        detector.onTouchEvent(moveEvent(pointerId = 1, x = 304f, y = 764f)) shouldBe true
+        service.firedEvents shouldHaveSize 0
+        detector.isTracking() shouldBe true
+
+        clock.advanceBy(350)
+        scheduler.runPending()
+
+        service.firedEvents shouldHaveSize 1
+        service.firedEvents.single().childSteps.map { it.type } shouldBe listOf(
+            EdgeGestureStepType.SwipeUp,
+            EdgeGestureStepType.Hover,
+        )
+        detector.isTracking() shouldBe false
+    }
+
+    @Test
+    fun should_fire_hover_after_fast_swipe_up_without_extra_move() {
+        val scheduler = FakeScheduler()
+        val service = FakeGestureBridge()
+        val clock = FakeClock()
+        val detector = EdgeGestureSequenceDetector(scheduler, service, clock::now, ::identityDpToPx)
+        val area = DetectedArea.PredefinedEdge(Edge.BottomCenter)
+        val candidates = listOf(
+            EdgeGestureSequenceCandidate(
+                area = area,
+                rule = EdgeGesture.newBuilder()
+                    .setEdge(Edge.BottomCenter)
+                    .setGesture(Gesture.SwipeFromBottom)
+                    .addChildSteps(step(EdgeGestureStepType.SwipeUp))
+                    .addChildSteps(step(EdgeGestureStepType.Hover))
+                    .build()
+            )
+        )
+
+        detector.startTracking(
+            pointerId = 1,
+            primaryGesture = Gesture.SwipeFromBottom,
+            downX = 300f,
+            downY = 900f,
+            anchorX = 300f,
+            anchorY = 900f,
+            candidates = candidates,
+        ) shouldBe true
+
+        detector.onTouchEvent(moveEvent(pointerId = 1, x = 300f, y = 780f)) shouldBe true
         service.firedEvents shouldHaveSize 0
         detector.isTracking() shouldBe true
 
@@ -575,6 +758,8 @@ class EdgeGestureSequenceDetectorTest {
     private class FakeGestureBridge(
         private val childSwipeMaxAngleDeviationDeg: Int = 35,
         private val childSwipeTriggerOnRelease: Boolean = false,
+        private val hoverRadiusDp: Int = 24,
+        private val childSwipeMinDistanceDp: Int = 72,
     ) : GestureBridge {
         data class FiredEvent(
             val area: DetectedArea,
@@ -621,8 +806,8 @@ class EdgeGestureSequenceDetectorTest {
         override fun getCornerGestureRegionRadiusRatio(): Float = 0.18f
         override fun getCornerSwipeMinDistanceDp(): Int = 72
         override fun getEdgeGestureSequenceHoverDurationMs(): Int = 300
-        override fun getEdgeGestureSequenceHoverRadiusDp(): Int = 24
-        override fun getEdgeGestureSequenceChildSwipeMinDistanceDp(): Int = 72
+        override fun getEdgeGestureSequenceHoverRadiusDp(): Int = hoverRadiusDp
+        override fun getEdgeGestureSequenceChildSwipeMinDistanceDp(): Int = childSwipeMinDistanceDp
         override fun getEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(): Int = childSwipeMaxAngleDeviationDeg
         override fun isEdgeGestureSequenceChildSwipeTriggerOnRelease(): Boolean = childSwipeTriggerOnRelease
         override fun obsGestureSettingsChanged(obs: () -> Unit) = Unit
