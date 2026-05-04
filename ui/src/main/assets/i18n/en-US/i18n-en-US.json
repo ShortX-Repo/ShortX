@@ -726,6 +726,8 @@
   "ui.action.adjust.volume.unmute": "Unmute",
   "ui.action.adjust.volume.toggle.mute": "Toggle mute",
   "ui.action.adjust.volume.show.ui": "Show UI",
+  "ui.action.continuous.adjust.volume": "Continuous adjust volume",
+  "ui.action.continuous.adjust.brightness": "Continuous adjust brightness",
   "ui.action.media.play.back": "Media play back",
   "ui.action.media.play.back.play": "Play",
   "ui.action.media.play.back.pause": "Pause",

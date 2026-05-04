@@ -32,5 +32,7 @@
   "ui.fact.edge.gesture.child.hover": "懸停",
   "ui.fact.edge.gesture.child.singletap": "單按",
   "ui.fact.edge.gesture.child.doubletap": "雙按",
-  "ui.fact.edge.gesture.child.longtap": "長按"
+  "ui.fact.edge.gesture.child.longtap": "長按",
+  "ui.action.continuous.adjust.volume": "連續調節音量"
+  ,"ui.action.continuous.adjust.brightness": "連續調節亮度"
 }

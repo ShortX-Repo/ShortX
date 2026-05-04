@@ -746,6 +746,8 @@
   "ui.action.adjust.volume.unmute": "取消靜音",
   "ui.action.adjust.volume.toggle.mute": "切換 靜音/取消靜音",
   "ui.action.adjust.volume.show.ui": "顯示音量調節UI",
+  "ui.action.continuous.adjust.volume": "連續調節音量",
+  "ui.action.continuous.adjust.brightness": "連續調節亮度",
   "ui.action.click.tile": "輕觸磁貼",
   "ui.action.click.tile.is.long.click": "長按",
   "ui.action.inject.keycode": "模擬按鍵",
