@@ -274,6 +274,10 @@ fun labelAndDescriptionForActionSelector(
             key = "ui.action.continuous.adjust.brightness",
             fallback = "Continuous brightness"
         ) to null
+        Action.ContinuousGesturePointer::class -> i18N.get(
+            key = "ui.action.continuous.gesture.pointer",
+            fallback = "Gesture pointer"
+        ) to null
         Action.StopService::class -> i18N["ui.action.stop.service"] to null
         Action.StartService::class -> i18N["ui.action.start.service"] to null
         Action.RemoveTasks::class -> i18N["ui.action.remove.tasks"] to null
@@ -914,6 +918,19 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                     fallback = "Continuous brightness"
                 ),
                 "${action.minValue}-${action.maxValue} @ ${"%.2f".format(action.sensitivityScale)}x"
+            )
+        }
+
+        is Action.ContinuousGesturePointer -> {
+            listOf(
+                i18N.get(
+                    key = "ui.action.continuous.gesture.pointer",
+                    fallback = "Gesture pointer"
+                ),
+                buildString {
+                    append("@ ${"%.2f".format(action.sensitivityScale)}x")
+                    if (action.clickOnRelease) append(" · tap on release")
+                }
             )
         }
 

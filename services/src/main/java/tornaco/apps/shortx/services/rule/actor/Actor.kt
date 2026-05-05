@@ -429,6 +429,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.ContinuousAdjustBrightness
     },
+    ContinuousGesturePointer {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ContinuousGesturePointer
+    },
     SetAutoBrightness {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetAutoBrightness

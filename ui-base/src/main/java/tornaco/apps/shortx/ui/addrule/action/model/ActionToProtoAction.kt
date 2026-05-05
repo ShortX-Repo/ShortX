@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.proto.action.ClickNotificationActionButton
 import tornaco.apps.shortx.core.proto.action.ClickTile
 import tornaco.apps.shortx.core.proto.action.ConnectWifi
 import tornaco.apps.shortx.core.proto.action.ContinuousAdjustBrightness
+import tornaco.apps.shortx.core.proto.action.ContinuousGesturePointer
 import tornaco.apps.shortx.core.proto.action.ContinuousAdjustVolume
 import tornaco.apps.shortx.core.proto.action.CreateGlobalVar
 import tornaco.apps.shortx.core.proto.action.CreateLocalVar
@@ -1336,6 +1337,18 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setSensitivityScale(sensitivityScale)
                 .setMinValue(minValue)
                 .setMaxValue(maxValue)
+                .build()
+            }
+
+            is Action.ContinuousGesturePointer -> {
+                ContinuousGesturePointer.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setSensitivityScale(sensitivityScale)
+                .setClickOnRelease(clickOnRelease)
                 .build()
             }
 

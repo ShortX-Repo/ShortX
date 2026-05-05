@@ -355,6 +355,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     })
     ContinuousVolumeDialog(state = continuousVolumeDialogState)
 
+    val continuousGesturePointerDialogState = rememberContinuousGesturePointerDialogState(onSelected = {
+        addAction(it)
+    })
+    ContinuousGesturePointerDialog(state = continuousGesturePointerDialogState)
+
     val biometricVerifyLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
@@ -565,6 +570,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.ContinuousGesturePointer::class -> {
+                continuousGesturePointerDialogState.show(source.getActionAs())
+                true
+            }
+
             Action.Vibrate::class -> {
                 vibratePatternDialogState.show(source.getActionAs())
                 true
@@ -747,6 +757,7 @@ fun SystemActions(
         Action.AdjustVolume::class,
         Action.SetVolume::class,
         Action.ContinuousAdjustVolume::class,
+        Action.ContinuousGesturePointer::class,
         Action.ReadClipboard::class,
         Action.WriteClipboard::class,
         Action.EnableWifi::class,

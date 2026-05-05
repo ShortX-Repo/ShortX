@@ -18,6 +18,11 @@ sealed interface ContinuousGestureActionPayload {
         val maxValue: Int,
     ) : ContinuousGestureActionPayload
 
+    data class Pointer(
+        val sensitivityScale: Float,
+        val clickOnRelease: Boolean,
+    ) : ContinuousGestureActionPayload
+
     data class Volume(
         val streamType: Int,
         val sensitivityScale: Float,

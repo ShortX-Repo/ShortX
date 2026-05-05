@@ -14,6 +14,7 @@ import tornaco.apps.shortx.core.IRuleFeatureStateListener
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.action.ContinuousAdjustBrightness
+import tornaco.apps.shortx.core.proto.action.ContinuousGesturePointer
 import tornaco.apps.shortx.core.proto.action.ContinuousAdjustVolume
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AppPkgList
@@ -34,6 +35,7 @@ import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.services.gesture.bpok.gesture.handlers.BrightnessContinuousHandler
+import tornaco.apps.shortx.services.gesture.bpok.gesture.handlers.GesturePointerContinuousHandler
 import tornaco.apps.shortx.services.gesture.bpok.gesture.handlers.VolumeContinuousHandler
 import kotlin.math.roundToInt
 
@@ -474,6 +476,14 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
                                     )
                                 }
 
+                                actionProto is_ ContinuousGesturePointer::class.java -> {
+                                    val action = actionProto unpack_ ContinuousGesturePointer::class.java
+                                    ContinuousGestureActionPayload.Pointer(
+                                        sensitivityScale = action.sensitivityScale.takeIf { it > 0f } ?: 1f,
+                                        clickOnRelease = action.clickOnRelease,
+                                    )
+                                }
+
                                 actionProto is_ ContinuousAdjustVolume::class.java -> {
                                     val action = actionProto unpack_ ContinuousAdjustVolume::class.java
                                     ContinuousGestureActionPayload.Volume(
@@ -559,6 +569,11 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
                 sensitivityScale = payload.sensitivityScale,
                 minValue = payload.minValue,
                 maxValue = payload.maxValue,
+            )
+
+            is ContinuousGestureActionPayload.Pointer -> GesturePointerContinuousHandler(
+                sensitivityScale = payload.sensitivityScale,
+                clickOnRelease = payload.clickOnRelease,
             )
 
             is ContinuousGestureActionPayload.Volume -> VolumeContinuousHandler(

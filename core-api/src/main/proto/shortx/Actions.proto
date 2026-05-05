@@ -2080,3 +2080,14 @@ message ContinuousAdjustVolume {
   string note = 99;
   string id = 100;
 }
+
+message ContinuousGesturePointer {
+  float sensitivityScale = 1;
+  bool clickOnRelease = 2;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}

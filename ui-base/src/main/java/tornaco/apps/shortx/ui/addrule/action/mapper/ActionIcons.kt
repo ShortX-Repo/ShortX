@@ -397,6 +397,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.System.brightness_auto_fill
         }
 
+        Action.ContinuousGesturePointer::class -> {
+            Remix.Editor.input_cursor_move
+        }
+
         Action.EnableAutoBrightness::class -> {
             Remix.System.brightness_auto_fill
         }
