@@ -28,6 +28,16 @@ fun ShortXNavigationBar(
     windowInsets: WindowInsets = NavigationBarDefaults.windowInsets,
     content: @Composable RowScope.() -> Unit
 ) {
+    if (isLiquidGlassEnabled()) {
+        ShortXLiquidGlassNavigationBar(
+            modifier = modifier
+                .windowInsetsPadding(windowInsets)
+                .defaultMinSize(minHeight = 80.dp),
+            content = content,
+        )
+        return
+    }
+
     Surface(
         color = containerColor,
         contentColor = contentColor,

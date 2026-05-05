@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.compose.material3)
     implementation(libs.compose.material)
     implementation(libs.compose.material.icons)
+    implementation(libs.backdrop)
 
     implementation(libs.navigation.compose)
     implementation(libs.accompanist.placeholder.material)

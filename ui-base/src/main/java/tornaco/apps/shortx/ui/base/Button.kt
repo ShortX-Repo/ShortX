@@ -3,6 +3,8 @@
 package tornaco.apps.shortx.ui.base
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -15,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun DropdownButtonLayout(
@@ -22,6 +25,39 @@ fun DropdownButtonLayout(
     dropState: DropdownSelectorState,
     modifier: Modifier = Modifier
 ) {
+    if (isLiquidGlassEnabled()) {
+        Row(
+            modifier = modifier,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            ShortXLiquidGlassButton(
+                onClick = {},
+                modifier = Modifier.weight(1f),
+            ) {
+                Text(text)
+            }
+            ShortXLiquidGlassButton(
+                onClick = { dropState.open() },
+                contentPadding = androidx.compose.foundation.layout.PaddingValues(12.dp),
+            ) {
+                val rotation: Float by animateFloatAsState(
+                    targetValue = if (dropState.isMenuOpen) 180f else 0f,
+                    label = "Trailing Icon Rotation"
+                )
+                androidx.compose.material3.Icon(
+                    Icons.Filled.KeyboardArrowDown,
+                    modifier = Modifier
+                        .size(SplitButtonDefaults.TrailingIconSize)
+                        .graphicsLayer {
+                            this.rotationZ = rotation
+                        },
+                    contentDescription = ""
+                )
+            }
+        }
+        return
+    }
+
     SplitButtonLayout(
         modifier = modifier,
         leadingButton = {
@@ -65,6 +101,39 @@ fun <T> MenuButtonLayout(
     menuDialogState: MenuDialogState<T>,
     modifier: Modifier = Modifier
 ) {
+    if (isLiquidGlassEnabled()) {
+        Row(
+            modifier = modifier,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            ShortXLiquidGlassButton(
+                onClick = {},
+                modifier = Modifier.weight(1f),
+            ) {
+                Text(text)
+            }
+            ShortXLiquidGlassButton(
+                onClick = { menuDialogState.show() },
+                contentPadding = androidx.compose.foundation.layout.PaddingValues(12.dp),
+            ) {
+                val rotation: Float by animateFloatAsState(
+                    targetValue = if (menuDialogState.isShowing) 180f else 0f,
+                    label = "Trailing Icon Rotation"
+                )
+                androidx.compose.material3.Icon(
+                    Icons.Filled.KeyboardArrowDown,
+                    modifier = Modifier
+                        .size(SplitButtonDefaults.TrailingIconSize)
+                        .graphicsLayer {
+                            this.rotationZ = rotation
+                        },
+                    contentDescription = ""
+                )
+            }
+        }
+        return
+    }
+
     SplitButtonLayout(
         modifier = modifier,
         leadingButton = {
