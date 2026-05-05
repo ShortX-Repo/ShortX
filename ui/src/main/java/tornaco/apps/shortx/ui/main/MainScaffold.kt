@@ -93,6 +93,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
 import tornaco.apps.shortx.ui.base.SearchBarState
 import tornaco.apps.shortx.ui.base.ShortXAlertDialog
+import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShapeXL
 import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
@@ -325,7 +326,8 @@ fun MainScaffold(
                 Card(
                     modifier = Modifier
                         .padding(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+                    shape = ShortXCardRoundedCornerShapeXL
                 ) {
                     Column(
                         modifier = Modifier
@@ -370,7 +372,8 @@ fun MainScaffold(
                 Card(
                     modifier = Modifier
                         .padding(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                    shape = ShortXCardRoundedCornerShapeXL
                 ) {
                     Row(
                         modifier = Modifier
@@ -404,7 +407,8 @@ fun MainScaffold(
                 Card(
                     modifier = Modifier
                         .padding(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
+                    shape = ShortXCardRoundedCornerShapeXL
                 ) {
                     Column(
                         modifier = Modifier
@@ -584,6 +588,7 @@ private fun AddOptionsFab(
     val fabMenuExpanded = fabState.currentState.value == MultiFabState.Expanded
     BackHandler(fabMenuExpanded) { fabState.collapse() }
     FloatingActionButtonMenu(
+        modifier = Modifier.padding(bottom = 120.dp),
         expanded = fabMenuExpanded,
         button = {
             ToggleFloatingActionButton(

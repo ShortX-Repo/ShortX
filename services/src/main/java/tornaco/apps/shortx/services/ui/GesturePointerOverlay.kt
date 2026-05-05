@@ -84,20 +84,20 @@ class GesturePointerOverlay(private val context: Context) {
 private class GesturePointerOverlayView(context: Context) : View(context) {
     private val density = resources.displayMetrics.density
     private val trailPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#66009D9D")
+        color = Color.parseColor("#66FF3B30")
         style = Paint.Style.STROKE
         strokeWidth = 2f * density
         strokeCap = Paint.Cap.ROUND
     }
     private val arrowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#FF009D9D")
+        color = Color.parseColor("#FFFF3B30")
         style = Paint.Style.FILL_AND_STROKE
         strokeWidth = 3f * density
         strokeJoin = Paint.Join.ROUND
         strokeCap = Paint.Cap.ROUND
     }
     private val haloPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#26009D9D")
+        color = Color.parseColor("#26FF3B30")
         style = Paint.Style.FILL
     }
     private val arrowPath = Path()
@@ -123,10 +123,12 @@ private class GesturePointerOverlayView(context: Context) : View(context) {
         val dx = currentX - anchorX
         val dy = currentY - anchorY
         val movement = hypot(dx.toDouble(), dy.toDouble()).toFloat()
-        val minArrowLength = 28f * density
-        val shaftLength = 20f * density + movement.coerceAtMost(28f * density)
-        val arrowLength = 14f * density
-        val arrowWidth = 9f * density
+        val tipLength = 15f * density
+        val tipWidth = 10f * density
+        val shaftWidth = 5.5f * density
+        val minArrowLength = tipLength + 10f * density
+        val shaftExtension = movement.coerceAtMost(30f * density)
+        val totalLength = minArrowLength + shaftExtension
         val angle = if (movement >= 4f * density) {
             atan2(dy, dx)
         } else {
@@ -134,34 +136,37 @@ private class GesturePointerOverlayView(context: Context) : View(context) {
         }
         val unitX = cos(angle)
         val unitY = sin(angle)
+        val perpX = sin(angle)
+        val perpY = -cos(angle)
 
-        val trailEndX = if (movement >= minArrowLength) currentX - unitX * arrowLength else anchorX
-        val trailEndY = if (movement >= minArrowLength) currentY - unitY * arrowLength else anchorY
+        val trailEndX = if (movement >= minArrowLength) currentX - unitX * totalLength else anchorX
+        val trailEndY = if (movement >= minArrowLength) currentY - unitY * totalLength else anchorY
         if (movement >= 2f * density) {
             canvas.drawLine(anchorX, anchorY, trailEndX, trailEndY, trailPaint)
         }
 
         canvas.drawCircle(currentX, currentY, 12f * density, haloPaint)
 
-        val tailX = currentX - unitX * shaftLength
-        val tailY = currentY - unitY * shaftLength
-        val leftX = tailX + sin(angle) * arrowWidth
-        val leftY = tailY - cos(angle) * arrowWidth
-        val rightX = tailX - sin(angle) * arrowWidth
-        val rightY = tailY + cos(angle) * arrowWidth
+        val neckX = currentX - unitX * tipLength
+        val neckY = currentY - unitY * tipLength
+        val tailX = currentX - unitX * totalLength
+        val tailY = currentY - unitY * totalLength
+
+        val leftTipX = neckX + perpX * tipWidth
+        val leftTipY = neckY + perpY * tipWidth
+        val rightTipX = neckX - perpX * tipWidth
+        val rightTipY = neckY - perpY * tipWidth
+        val leftTailX = tailX + perpX * shaftWidth
+        val leftTailY = tailY + perpY * shaftWidth
+        val rightTailX = tailX - perpX * shaftWidth
+        val rightTailY = tailY - perpY * shaftWidth
 
         arrowPath.reset()
         arrowPath.moveTo(currentX, currentY)
-        arrowPath.lineTo(leftX, leftY)
-        arrowPath.lineTo(
-            tailX + unitX * (shaftLength - arrowLength),
-            tailY + unitY * (shaftLength - arrowLength),
-        )
-        arrowPath.lineTo(
-            tailX - unitX * (arrowLength * 0.45f),
-            tailY - unitY * (arrowLength * 0.45f),
-        )
-        arrowPath.lineTo(rightX, rightY)
+        arrowPath.lineTo(leftTipX, leftTipY)
+        arrowPath.lineTo(leftTailX, leftTailY)
+        arrowPath.lineTo(rightTailX, rightTailY)
+        arrowPath.lineTo(rightTipX, rightTipY)
         arrowPath.close()
         canvas.drawPath(arrowPath, arrowPaint)
     }

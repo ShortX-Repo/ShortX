@@ -372,7 +372,7 @@ private fun DAListContent(
         state = lazyStaggeredGridState,
         modifier = Modifier.fillMaxSize(),
         columns = dynamicStaggeredGridCells(),
-        contentPadding = PaddingValues(top = 8.dp, bottom = 72.dp)
+        contentPadding = PaddingValues(top = 8.dp, bottom = 160.dp)
     ) {
         items(items = das, key = { it.uniqueUIKey }) { da ->
             val colorfulCard = LocalUiSettings.current.uiColorfulCard

@@ -1,11 +1,14 @@
 package tornaco.apps.shortx.ui.base
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.MaterialTheme
@@ -32,29 +35,33 @@ fun ShortXNavigationBar(
         ShortXLiquidGlassNavigationBar(
             modifier = modifier
                 .windowInsetsPadding(windowInsets)
-                .defaultMinSize(minHeight = 80.dp),
+                .defaultMinSize(minHeight = 60.dp),
             content = content,
         )
         return
     }
 
-    Surface(
-        color = containerColor,
-        contentColor = contentColor,
-        tonalElevation = tonalElevation,
-        shadowElevation = 4.dp,
-        modifier = modifier,
-        shape = ShortXCardRoundedCornerShapeXXL
+    Box(
+        modifier = modifier.padding(horizontal = 16.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .windowInsetsPadding(windowInsets)
-                .defaultMinSize(minHeight = 80.dp)
-                .selectableGroup(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            content = content
-        )
+        Surface(
+            color = containerColor,
+            contentColor = contentColor,
+            tonalElevation = tonalElevation,
+            shadowElevation = 2.dp,
+            modifier = Modifier,
+            shape = ShortXCardRoundedCornerShapeXXL
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .windowInsetsPadding(windowInsets)
+                    .defaultMinSize(minHeight = 60.dp)
+                    .selectableGroup(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                content = content
+            )
+        }
     }
 }
