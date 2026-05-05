@@ -79,6 +79,7 @@ import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
+import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
@@ -528,10 +529,10 @@ fun SettingsScreen(
                                 horizontalArrangement = Arrangement.End,
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                TextButton(onClick = { vm.expandAllSettingsCategories() }) {
+                                ShortXTextButton(onClick = { vm.expandAllSettingsCategories() }) {
                                     Text(text = i18N["ui.common.expand.all"])
                                 }
-                                TextButton(onClick = { vm.collapseAllSettingsCategories(categoryTitles) }) {
+                                ShortXTextButton(onClick = { vm.collapseAllSettingsCategories(categoryTitles) }) {
                                     Text(text = i18N["ui.common.collapse.all"])
                                 }
                             }
@@ -581,8 +582,9 @@ private fun SubscriptionStatus(mainState: LVLStateHolder.State) {
     Box(modifier = Modifier) {
         val context = LocalContext.current
         if (mainState.isSubscribed) {
-            TextButton(
+            ShortXTextButton(
                 colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
+                liquidGlassContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 onClick = {
                     SubscribeActivity.start(context)
                 }) {

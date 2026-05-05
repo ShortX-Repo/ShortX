@@ -30,6 +30,7 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
+import tornaco.apps.shortx.ui.base.ShortXTextButton
 import java.time.LocalTime
 
 class TimePickerDialogState(
@@ -112,10 +113,10 @@ private fun DialogContainer(
                         .fillMaxWidth()
                 ) {
                     Spacer(modifier = Modifier.weight(1f))
-                    TextButton(
+                    ShortXTextButton(
                         onClick = onCancel
                     ) { Text(stringResource(id = android.R.string.cancel)) }
-                    TextButton(
+                    ShortXTextButton(
                         onClick = onConfirm
                     ) { Text(stringResource(id = android.R.string.ok)) }
                 }

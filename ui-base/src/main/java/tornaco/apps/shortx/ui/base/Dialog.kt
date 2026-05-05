@@ -197,7 +197,7 @@ fun <T> ConfirmDialog(
                 state.dismiss()
             },
             confirmButton = {
-                TextButton(onClick = {
+                ShortXTextButton(onClick = {
                     onConfirm(data)
                     state.dismiss()
                 }) {
@@ -205,7 +205,7 @@ fun <T> ConfirmDialog(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { state.dismiss() }) {
+                ShortXTextButton(onClick = { state.dismiss() }) {
                     Text(text = dismissButton)
                 }
             },
@@ -250,7 +250,7 @@ fun RebootConfirmDialog(
                 state.dismiss()
             },
             confirmButton = {
-                TextButton(onClick = {
+                ShortXTextButton(onClick = {
                     shortXManager.reboot("RebootConfirmDialog")
                     state.dismiss()
                 }) {
@@ -258,7 +258,7 @@ fun RebootConfirmDialog(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { state.dismiss() }) {
+                ShortXTextButton(onClick = { state.dismiss() }) {
                     Text(text = stringResource(id = android.R.string.cancel))
                 }
             },
@@ -298,7 +298,7 @@ fun TipDialog(state: TipDialogState) {
                 state.dismiss()
             },
             confirmButton = {
-                TextButton(onClick = {
+                ShortXTextButton(onClick = {
                     state.dismiss()
                     state.textToCopy?.let {
                         ClipboardUtils.copyToClipboard(context, "key", it)

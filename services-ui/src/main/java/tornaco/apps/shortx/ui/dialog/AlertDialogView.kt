@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.proto.common.DialogUiStyleSettings
+import tornaco.apps.shortx.ui.base.ShortXTextButton
 
 @SuppressLint("ViewConstructor")
 class AlertDialogView(
@@ -81,7 +82,7 @@ class AlertDialogView(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 if (neutralText != null) {
-                    TextButton(onClick = {
+                    ShortXTextButton(onClick = {
                         onDismissRequest(DialogButton.Neutral)
                     }) {
                         Text(
@@ -99,7 +100,7 @@ class AlertDialogView(
                     horizontalArrangement = Arrangement.End
                 ) {
                     negativeText?.let {
-                        TextButton(onClick = {
+                        ShortXTextButton(onClick = {
                             onDismissRequest(DialogButton.Negative)
                         }) {
                             Text(
@@ -109,7 +110,7 @@ class AlertDialogView(
                         }
                     }
                     positiveText?.let {
-                        TextButton(onClick = {
+                        ShortXTextButton(onClick = {
                             onDismissRequest(DialogButton.Positive)
                         }) {
                             Text(

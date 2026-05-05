@@ -56,7 +56,7 @@ fun ShortXLiquidGlassButton(
 ) {
     val backdrop = rememberShortXGlassBackdrop(MaterialTheme.colorScheme.surface)
     val resolvedSurfaceColor =
-        if (surfaceColor.isSpecified) surfaceColor else defaultGlassSurfaceColor()
+        if (surfaceColor.isSpecified) surfaceColor else shortXGlassSurfaceColor()
     Row(
         modifier = modifier
             .drawBackdrop(
@@ -112,7 +112,7 @@ fun RowScope.ShortXNavigationBarItem(
             .weight(1f)
             .padding(horizontal = 4.dp, vertical = 6.dp),
         tint = itemTint,
-        surfaceColor = defaultGlassSurfaceColor(alpha = if (selected) 0.28f else 0.16f),
+        surfaceColor = shortXGlassSurfaceColor(alpha = if (selected) 0.28f else 0.16f),
         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
     ) {
         CompositionLocalProvider(LocalContentColor provides contentColor) {
@@ -135,7 +135,7 @@ fun ShortXLiquidGlassNavigationBar(
     content: @Composable RowScope.() -> Unit,
 ) {
     val backdrop = rememberShortXGlassBackdrop(MaterialTheme.colorScheme.surface)
-    val surfaceColor = defaultGlassSurfaceColor(alpha = 0.24f)
+    val surfaceColor = shortXGlassSurfaceColor(alpha = 0.24f)
     Row(
         modifier = modifier
             .drawBackdrop(
@@ -159,7 +159,7 @@ fun ShortXLiquidGlassNavigationBar(
 }
 
 @Composable
-private fun defaultGlassSurfaceColor(alpha: Float = 0.22f): Color {
+fun shortXGlassSurfaceColor(alpha: Float = 0.22f): Color {
     val isDarkTheme = isSystemInDarkTheme()
     return remember(alpha, isDarkTheme) {
         if (isDarkTheme) {

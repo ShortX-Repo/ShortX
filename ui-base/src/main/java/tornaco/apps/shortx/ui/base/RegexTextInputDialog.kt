@@ -9,7 +9,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -81,7 +80,7 @@ fun RegexTextInputDialog(state: RegexTextInputState) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
             DialogTitle(text = state.title)
         }, buttons = {
-            TextButton(
+            ShortXTextButton(
                 enabled = state.validateRes !is InputValidateResult.Error,
                 onClick = {
                     state.onSelected(state.currentValue, state.matchOptions)

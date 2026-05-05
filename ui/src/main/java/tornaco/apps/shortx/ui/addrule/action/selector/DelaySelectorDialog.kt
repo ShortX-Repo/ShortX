@@ -29,6 +29,7 @@ import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.ShortXDialog
+import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.StandardSpacer
@@ -86,7 +87,7 @@ fun DelaySelectorDialog(state: DelayState) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
             DialogTitle(text = LocalI18N.current["ui.action.delay"])
         }, buttons = {
-            TextButton(
+            ShortXTextButton(
                 enabled = state.currentValue.isNotEmpty(),
                 onClick = {
                     state.onSelected(
