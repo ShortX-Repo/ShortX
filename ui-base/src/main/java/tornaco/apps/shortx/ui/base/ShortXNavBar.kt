@@ -43,7 +43,8 @@ fun ShortXNavigationBar(
         contentColor = contentColor,
         tonalElevation = tonalElevation,
         shadowElevation = 4.dp,
-        modifier = modifier
+        modifier = modifier,
+        shape = ShortXCardRoundedCornerShapeXXL
     ) {
         Row(
             modifier = Modifier

@@ -572,6 +572,7 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
             )
 
             is ContinuousGestureActionPayload.Pointer -> GesturePointerContinuousHandler(
+                context = context,
                 sensitivityScale = payload.sensitivityScale,
                 clickOnRelease = payload.clickOnRelease,
             )

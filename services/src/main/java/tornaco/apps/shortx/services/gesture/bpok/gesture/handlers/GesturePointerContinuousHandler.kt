@@ -1,32 +1,43 @@
 package tornaco.apps.shortx.services.gesture.bpok.gesture.handlers
 
-import android.os.SystemClock
+import android.content.Context
 import android.view.InputDevice
 import android.view.MotionEvent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ctrl.Controller
 import tornaco.apps.shortx.services.ctrl.Device
 import tornaco.apps.shortx.services.ctrl.Options
 import tornaco.apps.shortx.services.ctrl.Position
 import tornaco.apps.shortx.services.gesture.bpok.gesture.ContinuousActionHandler
+import tornaco.apps.shortx.services.ui.GesturePointerOverlay
 import kotlin.math.roundToInt
 
 class GesturePointerContinuousHandler(
+    context: Context,
     private val sensitivityScale: Float = 1f,
     private val clickOnRelease: Boolean = true,
 ) : ContinuousActionHandler {
     private val logger = Logger("GesturePointerHandler")
     private val device by lazy { Device(Options()) }
     private val controller by lazy { Controller(device) }
+    private val pointerOverlay = GesturePointerOverlay(context)
+    private val overlayScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
+    private var edgeGroup = -1
     private var screenWidth = 0
     private var screenHeight = 0
     private var currentX = 0f
     private var currentY = 0f
     private var startX = 0f
     private var startY = 0f
+    private var overlayShown = false
 
     override fun onStart(edgeGroup: Int, x: Float, y: Float, time: Long) {
+        this.edgeGroup = edgeGroup
         val contentRect = device.screenInfo.contentRect
         screenWidth = contentRect.width()
         screenHeight = contentRect.height()
@@ -34,6 +45,8 @@ class GesturePointerContinuousHandler(
         startY = y
         currentX = x.coerceIn(0f, screenWidth.toFloat())
         currentY = y.coerceIn(0f, screenHeight.toFloat())
+        showPointerOverlay()
+        updatePointerOverlay()
         injectHoverMove(currentX, currentY, time)
         logger.d("onStart: x=$x, y=$y, screen=$screenWidth x $screenHeight, clickOnRelease=$clickOnRelease")
     }
@@ -43,6 +56,7 @@ class GesturePointerContinuousHandler(
         val dy = (y - startY) * sensitivityScale
         currentX = (startX + dx).coerceIn(0f, screenWidth.toFloat())
         currentY = (startY + dy).coerceIn(0f, screenHeight.toFloat())
+        updatePointerOverlay()
         injectHoverMove(currentX, currentY, time)
     }
 
@@ -50,11 +64,48 @@ class GesturePointerContinuousHandler(
         if (clickOnRelease) {
             injectMouseClick(currentX, currentY)
         }
+        hidePointerOverlay()
         logger.d("onFinish: x=$currentX, y=$currentY")
     }
 
     override fun onCancel() {
+        hidePointerOverlay()
         logger.d("onCancel")
+    }
+
+    private fun showPointerOverlay() {
+        if (overlayShown) {
+            return
+        }
+        overlayShown = true
+        overlayScope.launch {
+            pointerOverlay.show(edgeGroup = edgeGroup, x = currentX, y = currentY)
+        }
+    }
+
+    private fun hidePointerOverlay() {
+        if (!overlayShown) {
+            return
+        }
+        overlayShown = false
+        overlayScope.launch {
+            pointerOverlay.hide()
+        }
+    }
+
+    private fun updatePointerOverlay() {
+        if (!overlayShown) {
+            return
+        }
+        overlayScope.launch {
+            pointerOverlay.update(
+                edgeGroup = edgeGroup,
+                anchorX = startX,
+                anchorY = startY,
+                currentX = currentX,
+                currentY = currentY,
+            )
+        }
     }
 
     private fun injectHoverMove(x: Float, y: Float, eventTime: Long) {

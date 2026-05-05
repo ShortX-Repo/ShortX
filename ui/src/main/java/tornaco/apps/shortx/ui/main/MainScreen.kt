@@ -31,14 +31,11 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.LocalDrawerState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalNavHostController
-import tornaco.apps.shortx.ui.base.LiquidBottomTabItem
-import tornaco.apps.shortx.ui.base.LiquidBottomTabs
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXNavigationBar
 import tornaco.apps.shortx.ui.base.ShortXNavigationBarItem
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextDisplayActivity
-import tornaco.apps.shortx.ui.base.isLiquidGlassEnabled
 import tornaco.apps.shortx.ui.discover.DiscoverScreen
 import tornaco.apps.shortx.ui.featoggle.FeatureToggleActivity
 import tornaco.apps.shortx.ui.function.FunctionListActivity
@@ -228,62 +225,43 @@ private fun BottomNavigationContent(
     navController: NavHostController,
     items: List<BottomNavItem>,
 ) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
-    val itemContent: @Composable androidx.compose.foundation.layout.RowScope.() -> Unit = {
+    ShortXNavigationBar(
+        modifier = modifier
+    ) {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
         items.forEach { item ->
-            val iconContent: @Composable () -> Unit = {
-                if (item.isExperimental) {
-                    BadgedBox(badge = {
-                        Badge(containerColor = ExperimentalYellow) {
-                            Text(text = LocalI18N.current["ui.common.experimental"])
+            ShortXNavigationBarItem(
+                icon = {
+                    if (item.isExperimental) {
+                        BadgedBox(badge = {
+                            Badge(containerColor = ExperimentalYellow) {
+                                Text(text = LocalI18N.current["ui.common.experimental"])
+                            }
+                        }) {
+                            RemixIcon(remixName = item.icon)
                         }
-                    }) {
+                    } else {
                         RemixIcon(remixName = item.icon)
                     }
-                } else {
-                    RemixIcon(remixName = item.icon)
-                }
-            }
-            val labelContent: @Composable () -> Unit = {
-                Text(text = LocalI18N.current[item.title], fontSize = 9.sp)
-            }
-            val onNavigate = {
-                navController.navigate(item.screenRoute.name) {
-                    navController.graph.startDestinationRoute?.let { screenRoute ->
-                        popUpTo(screenRoute) {
-                            saveState = true
+                },
+                label = {
+                    Text(text = LocalI18N.current[item.title], fontSize = 9.sp)
+                },
+                alwaysShowLabel = true,
+                selected = currentRoute == item.screenRoute.name,
+                onClick = {
+                    navController.navigate(item.screenRoute.name) {
+                        navController.graph.startDestinationRoute?.let { screen_route ->
+                            popUpTo(screen_route) {
+                                saveState = true
+                            }
                         }
+                        launchSingleTop = true
+                        restoreState = true
                     }
-                    launchSingleTop = true
-                    restoreState = true
-                }
-            }
-
-            if (isLiquidGlassEnabled()) {
-                LiquidBottomTabItem(
-                    icon = iconContent,
-                    label = labelContent,
-                    alwaysShowLabel = false,
-                    selected = currentRoute == item.screenRoute.name,
-                    onClick = onNavigate,
-                )
-            } else {
-                ShortXNavigationBarItem(
-                    icon = iconContent,
-                    label = labelContent,
-                    alwaysShowLabel = true,
-                    selected = currentRoute == item.screenRoute.name,
-                    onClick = onNavigate,
-                )
-            }
+                })
         }
-    }
-
-    if (isLiquidGlassEnabled()) {
-        LiquidBottomTabs(modifier = modifier, content = itemContent)
-    } else {
-        ShortXNavigationBar(modifier = modifier, content = itemContent)
     }
 }
 
