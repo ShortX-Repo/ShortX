@@ -1,5 +1,8 @@
 package tornaco.apps.shortx.services.gesture.bpok.gesture
 
+import tornaco.apps.shortx.core.proto.action.GesturePointerDragButton
+import tornaco.apps.shortx.core.proto.action.GesturePointerReleaseButton
+import tornaco.apps.shortx.core.proto.action.GesturePointerScrollMode
 import tornaco.apps.shortx.core.proto.fact.CornerSwipeToCenter
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.EdgeGestureStep
@@ -20,7 +23,11 @@ sealed interface ContinuousGestureActionPayload {
 
     data class Pointer(
         val sensitivityScale: Float,
-        val clickOnRelease: Boolean,
+        val releaseButton: GesturePointerReleaseButton,
+        val dragButton: GesturePointerDragButton,
+        val dragHoldDurationMs: Int,
+        val scrollMode: GesturePointerScrollMode,
+        val scrollScale: Float,
     ) : ContinuousGestureActionPayload
 
     data class Volume(

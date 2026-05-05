@@ -929,7 +929,65 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                 ),
                 buildString {
                     append("@ ${"%.2f".format(action.sensitivityScale)}x")
-                    if (action.clickOnRelease) append(" · tap on release")
+                    if (action.releaseButton != tornaco.apps.shortx.ui.addrule.action.model.GesturePointerReleaseButton.None) {
+                        append(" · ")
+                        append(
+                            when (action.releaseButton) {
+                                tornaco.apps.shortx.ui.addrule.action.model.GesturePointerReleaseButton.Primary -> i18N.get(
+                                    key = "ui.action.continuous.gesture.pointer.release.button.primary",
+                                    fallback = "primary click"
+                                )
+
+                                tornaco.apps.shortx.ui.addrule.action.model.GesturePointerReleaseButton.Secondary -> i18N.get(
+                                    key = "ui.action.continuous.gesture.pointer.release.button.secondary",
+                                    fallback = "secondary click"
+                                )
+
+                                else -> ""
+                            }
+                        )
+                    }
+                    if (action.dragButton != tornaco.apps.shortx.ui.addrule.action.model.GesturePointerDragButton.None) {
+                        append(" · ")
+                        append(
+                            when (action.dragButton) {
+                                tornaco.apps.shortx.ui.addrule.action.model.GesturePointerDragButton.Primary -> i18N.get(
+                                    key = "ui.action.continuous.gesture.pointer.drag.button.primary",
+                                    fallback = "primary drag"
+                                )
+
+                                tornaco.apps.shortx.ui.addrule.action.model.GesturePointerDragButton.Secondary -> i18N.get(
+                                    key = "ui.action.continuous.gesture.pointer.drag.button.secondary",
+                                    fallback = "secondary drag"
+                                )
+
+                                else -> ""
+                            }
+                        )
+                    }
+                    if (action.scrollMode != tornaco.apps.shortx.ui.addrule.action.model.GesturePointerScrollMode.None) {
+                        append(" · ")
+                        append(
+                            when (action.scrollMode) {
+                                tornaco.apps.shortx.ui.addrule.action.model.GesturePointerScrollMode.Vertical -> i18N.get(
+                                    key = "ui.action.continuous.gesture.pointer.scroll.mode.vertical",
+                                    fallback = "vertical wheel"
+                                )
+
+                                tornaco.apps.shortx.ui.addrule.action.model.GesturePointerScrollMode.Horizontal -> i18N.get(
+                                    key = "ui.action.continuous.gesture.pointer.scroll.mode.horizontal",
+                                    fallback = "horizontal wheel"
+                                )
+
+                                tornaco.apps.shortx.ui.addrule.action.model.GesturePointerScrollMode.Both -> i18N.get(
+                                    key = "ui.action.continuous.gesture.pointer.scroll.mode.both",
+                                    fallback = "two-axis wheel"
+                                )
+
+                                else -> ""
+                            }
+                        )
+                    }
                 }
             )
         }

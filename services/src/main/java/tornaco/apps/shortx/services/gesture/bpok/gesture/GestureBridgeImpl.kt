@@ -480,7 +480,15 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
                                     val action = actionProto unpack_ ContinuousGesturePointer::class.java
                                     ContinuousGestureActionPayload.Pointer(
                                         sensitivityScale = action.sensitivityScale.takeIf { it > 0f } ?: 1f,
-                                        clickOnRelease = action.clickOnRelease,
+                                        releaseButton = when {
+                                            action.releaseButton != tornaco.apps.shortx.core.proto.action.GesturePointerReleaseButton.GesturePointerReleaseButtonNone -> action.releaseButton
+                                            action.clickOnRelease -> tornaco.apps.shortx.core.proto.action.GesturePointerReleaseButton.GesturePointerReleaseButtonPrimary
+                                            else -> tornaco.apps.shortx.core.proto.action.GesturePointerReleaseButton.GesturePointerReleaseButtonNone
+                                        },
+                                        dragButton = action.dragButton,
+                                        dragHoldDurationMs = action.dragHoldDurationMs.takeIf { it > 0 } ?: 350,
+                                        scrollMode = action.scrollMode,
+                                        scrollScale = action.scrollScale.takeIf { it > 0f } ?: 1f,
                                     )
                                 }
 
@@ -574,7 +582,11 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
             is ContinuousGestureActionPayload.Pointer -> GesturePointerContinuousHandler(
                 context = context,
                 sensitivityScale = payload.sensitivityScale,
-                clickOnRelease = payload.clickOnRelease,
+                releaseButton = payload.releaseButton,
+                dragButton = payload.dragButton,
+                dragHoldDurationMs = payload.dragHoldDurationMs,
+                scrollMode = payload.scrollMode,
+                scrollScale = payload.scrollScale,
             )
 
             is ContinuousGestureActionPayload.Volume -> VolumeContinuousHandler(

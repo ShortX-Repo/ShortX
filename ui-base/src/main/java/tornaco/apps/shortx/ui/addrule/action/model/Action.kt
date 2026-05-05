@@ -77,6 +77,25 @@ import java.util.UUID
 
 fun defaultNewActionId() = "A-" + UUID.randomUUID().toString()
 
+enum class GesturePointerReleaseButton {
+    None,
+    Primary,
+    Secondary,
+}
+
+enum class GesturePointerDragButton {
+    None,
+    Primary,
+    Secondary,
+}
+
+enum class GesturePointerScrollMode {
+    None,
+    Vertical,
+    Horizontal,
+    Both,
+}
+
 sealed interface Action : Parcelable {
     val id: String
     val isEnabled: Boolean
@@ -3265,7 +3284,12 @@ sealed interface Action : Parcelable {
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val sensitivityScale: Float = 1f,
-        val clickOnRelease: Boolean = true,
+        val releaseButton: GesturePointerReleaseButton = GesturePointerReleaseButton.Primary,
+        val dragButton: GesturePointerDragButton = GesturePointerDragButton.None,
+        @IntRange(from = 120, to = 1200)
+        val dragHoldDurationMs: Int = 350,
+        val scrollMode: GesturePointerScrollMode = GesturePointerScrollMode.None,
+        val scrollScale: Float = 1f,
     ) : Action {
         override fun clone(
             id: String,

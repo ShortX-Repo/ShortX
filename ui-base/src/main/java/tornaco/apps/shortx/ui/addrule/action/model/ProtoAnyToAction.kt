@@ -1502,7 +1502,31 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 id = data.id,
                 note = data.note,
                 sensitivityScale = data.sensitivityScale,
-                clickOnRelease = data.clickOnRelease
+                releaseButton = when {
+                    data.releaseButton != tornaco.apps.shortx.core.proto.action.GesturePointerReleaseButton.GesturePointerReleaseButtonNone -> {
+                        when (data.releaseButton) {
+                            tornaco.apps.shortx.core.proto.action.GesturePointerReleaseButton.GesturePointerReleaseButtonPrimary -> GesturePointerReleaseButton.Primary
+                            tornaco.apps.shortx.core.proto.action.GesturePointerReleaseButton.GesturePointerReleaseButtonSecondary -> GesturePointerReleaseButton.Secondary
+                            else -> GesturePointerReleaseButton.None
+                        }
+                    }
+
+                    data.clickOnRelease -> GesturePointerReleaseButton.Primary
+                    else -> GesturePointerReleaseButton.None
+                },
+                dragButton = when (data.dragButton) {
+                    tornaco.apps.shortx.core.proto.action.GesturePointerDragButton.GesturePointerDragButtonPrimary -> GesturePointerDragButton.Primary
+                    tornaco.apps.shortx.core.proto.action.GesturePointerDragButton.GesturePointerDragButtonSecondary -> GesturePointerDragButton.Secondary
+                    else -> GesturePointerDragButton.None
+                },
+                dragHoldDurationMs = data.dragHoldDurationMs.takeIf { it > 0 } ?: 350,
+                scrollMode = when (data.scrollMode) {
+                    tornaco.apps.shortx.core.proto.action.GesturePointerScrollMode.GesturePointerScrollModeVertical -> GesturePointerScrollMode.Vertical
+                    tornaco.apps.shortx.core.proto.action.GesturePointerScrollMode.GesturePointerScrollModeHorizontal -> GesturePointerScrollMode.Horizontal
+                    tornaco.apps.shortx.core.proto.action.GesturePointerScrollMode.GesturePointerScrollModeBoth -> GesturePointerScrollMode.Both
+                    else -> GesturePointerScrollMode.None
+                },
+                scrollScale = data.scrollScale.takeIf { it > 0f } ?: 1f,
             )
         }
 
