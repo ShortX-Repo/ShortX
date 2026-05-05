@@ -2,7 +2,6 @@ package tornaco.apps.shortx.ui.gvar
 
 import android.widget.Toast
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
@@ -12,6 +11,7 @@ import tornaco.apps.shortx.core.rule.GLOBAL_VAR_REF_PREFIX
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.ShortXAlertDialog
+import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 class GlobalVarAccessHelpDialogState(val globalVar: GlobalVar) : CommonDialogState()
@@ -36,7 +36,7 @@ fun GlobalVarAccessHelpDialog(state: GlobalVarAccessHelpDialogState) {
                 state.dismiss()
             },
             confirmButton = {
-                TextButton(onClick = {
+                ShortXTextButton(onClick = {
                     state.dismiss()
 
                     ClipboardUtils.copyToClipboard(

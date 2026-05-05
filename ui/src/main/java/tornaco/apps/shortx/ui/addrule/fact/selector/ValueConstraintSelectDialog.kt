@@ -5,9 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +25,8 @@ import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.ShortXDialog
+import tornaco.apps.shortx.ui.base.ShortXFilledTonalButton
+import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
@@ -80,7 +80,7 @@ fun ValueConstraintSelector(state: ValueConstraintSelectorState) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
             DialogTitle(text = LocalI18N.current["ui.fact.sensor.constraint"])
         }, buttons = {
-            TextButton(onClick = {
+            ShortXTextButton(onClick = {
                 state.selected(
                     state.before,
                     ValueConstraints.newBuilder()
@@ -96,7 +96,7 @@ fun ValueConstraintSelector(state: ValueConstraintSelectorState) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 val opSelectorState = rememberDropdownSelectorState()
                 Box {
-                    FilledTonalButton(
+                    ShortXFilledTonalButton(
                         onClick = {
                             opSelectorState.open()
                         }) {

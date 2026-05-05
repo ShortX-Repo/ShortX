@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,6 +17,7 @@ import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXAlertDialog
+import tornaco.apps.shortx.ui.base.ShortXTextButton
 
 
 class DeleteSetConfirmDialogState(val setTitle: String, val itemsCount: Int) : CommonDialogState() {
@@ -51,7 +51,7 @@ fun DeleteSetConfirmDialog(
                 state.dismiss()
             },
             confirmButton = {
-                TextButton(onClick = {
+                ShortXTextButton(onClick = {
                     onConfirm(state.alsoDeleteItems)
                     state.dismiss()
                 }) {
@@ -59,7 +59,7 @@ fun DeleteSetConfirmDialog(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { state.dismiss() }) {
+                ShortXTextButton(onClick = { state.dismiss() }) {
                     Text(text = stringResource(id = android.R.string.cancel))
                 }
             },

@@ -93,6 +93,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
 import tornaco.apps.shortx.ui.base.SearchBarState
 import tornaco.apps.shortx.ui.base.ShortXAlertDialog
+import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.TextFieldStyle
@@ -349,7 +350,7 @@ fun MainScaffold(
                             contentAlignment = Alignment.CenterEnd
                         ) {
                             val scope = rememberCoroutineScope()
-                            TextButton(onClick = {
+                            ShortXTextButton(onClick = {
                                 scope.launch {
                                     Pref(context).hideSubscribeInfo()
                                 }
@@ -499,7 +500,7 @@ private fun ActiveDialog(
     }, text = {
         Text(text = LocalI18N.current["ui.active.dialog.message", mapOf("app_name" to LocalAppName.current)])
     }, onDismissRequest = onDismissRequest, confirmButton = {
-        TextButton(onClick = {
+        ShortXTextButton(onClick = {
             onDismissRequest()
         }) {
             Text(text = stringResource(android.R.string.ok))
@@ -532,14 +533,14 @@ private fun PrivacyStatementDialog(
         },
         onDismissRequest = onDismissRequest,
         dismissButton = {
-            TextButton(onClick = {
+            ShortXTextButton(onClick = {
                 onDismissRequest()
             }) {
                 Text(text = stringResource(android.R.string.cancel))
             }
         },
         confirmButton = {
-            TextButton(onClick = {
+            ShortXTextButton(onClick = {
                 onAccept()
             }) {
                 Text(text = stringResource(android.R.string.ok))

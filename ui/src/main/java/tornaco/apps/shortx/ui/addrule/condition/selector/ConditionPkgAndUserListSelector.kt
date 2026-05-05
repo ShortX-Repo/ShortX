@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -41,6 +40,7 @@ import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogState
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXFilledTonalButton
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -168,7 +168,7 @@ private fun DialogContent(dialogState: ConditionPkgAndUserListSelectorDialogStat
                                         dialogState.selectOp(op)
                                     })
                             MenuDialog(state = opSelectorDialogState)
-                            FilledTonalButton(onClick = {
+                            ShortXFilledTonalButton(onClick = {
                                 opSelectorDialogState.show()
                             }) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {

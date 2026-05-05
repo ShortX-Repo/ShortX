@@ -3,7 +3,6 @@ package tornaco.apps.shortx.ui.addrule.fact.selector
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -15,6 +14,7 @@ import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.ShortXDialog
+import tornaco.apps.shortx.ui.base.ShortXTextButton
 
 class OnOffAnyStateSelectorState(
     val title: String,
@@ -39,7 +39,7 @@ fun OnOffAnyStateSelectorDialog(state: OnOffAnyStateSelectorState) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
             DialogTitle(text = state.title)
         }, buttons = {
-            TextButton(onClick = {
+            ShortXTextButton(onClick = {
                 state.dismiss()
             }) {
                 Text(text = stringResource(id = android.R.string.cancel))

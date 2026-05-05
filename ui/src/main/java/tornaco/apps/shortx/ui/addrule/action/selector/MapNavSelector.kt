@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -39,6 +38,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXFilledTonalButton
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
@@ -159,7 +159,7 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                         }
                     }, action1 = {
                         val context = LocalContext.current
-                        FilledTonalButton(onClick = {
+                        ShortXFilledTonalButton(onClick = {
                             if (dialogState.mapApp == MapApp.Gaode) {
                                 BrowserUtils.launch(context, GAODE_LOC_PICK_URL)
                             } else {
@@ -199,7 +199,7 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                     FieldTitle(text = "Nav")
                     val navTypeDropState = rememberDropdownSelectorState()
                     Box {
-                        FilledTonalButton(onClick = {
+                        ShortXFilledTonalButton(onClick = {
                             navTypeDropState.open()
                         }) {
                             Text(text = i18n[dialogState.navType.labelKey()])

@@ -9,9 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,8 +36,10 @@ import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortXFilledTonalButton
 import tornaco.apps.shortx.ui.base.ShortXDialog
 import tornaco.apps.shortx.ui.base.ShortXSwitch
+import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.TipBody
@@ -102,7 +102,7 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
             DialogTitle(text = LocalI18N.current["ui.global.var.title"])
         }, buttons = {
-            TextButton(onClick = {
+            ShortXTextButton(onClick = {
                 if (state.name.isNotBlank()) {
                     state.onSelected(
                         NewGlobalVar(
@@ -138,7 +138,7 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
                         state.name = it
                     })
                 SmallSpacer()
-                TextButton(onClick = {
+                ShortXTextButton(onClick = {
                     ClipboardUtils.copyToClipboard(
                         context,
                         "var",
@@ -192,7 +192,7 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
                         state.type = it.data
                     }
 
-                    FilledTonalButton(onClick = {
+                    ShortXFilledTonalButton(onClick = {
                         typeDropdownState.open()
                     }) {
                         Row(verticalAlignment = Alignment.CenterVertically) {

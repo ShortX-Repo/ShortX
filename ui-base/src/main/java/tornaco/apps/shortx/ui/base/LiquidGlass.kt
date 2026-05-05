@@ -12,10 +12,13 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
@@ -156,6 +159,73 @@ fun ShortXLiquidGlassNavigationBar(
         verticalAlignment = Alignment.CenterVertically,
         content = content,
     )
+}
+
+@Composable
+fun LiquidBottomTabs(
+    modifier: Modifier = Modifier,
+    windowInsets: WindowInsets = NavigationBarDefaults.windowInsets,
+    content: @Composable RowScope.() -> Unit,
+) {
+    val backdrop = rememberShortXGlassBackdrop(MaterialTheme.colorScheme.surface)
+    val surfaceColor = shortXGlassSurfaceColor(alpha = 0.26f)
+    Row(
+        modifier = modifier
+            .windowInsetsPadding(windowInsets)
+            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .drawBackdrop(
+                backdrop = backdrop,
+                shape = { RoundedCornerShape(32.dp) },
+                effects = {
+                    vibrancy()
+                    blur(16.dp.toPx())
+                    lens(18.dp.toPx(), 24.dp.toPx())
+                },
+                onDrawSurface = {
+                    drawRect(surfaceColor)
+                }
+            )
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        content = content,
+    )
+}
+
+@Composable
+fun RowScope.LiquidBottomTabItem(
+    selected: Boolean,
+    onClick: () -> Unit,
+    icon: @Composable () -> Unit,
+    label: @Composable () -> Unit,
+    alwaysShowLabel: Boolean = true,
+) {
+    val selectedContentColor = MaterialTheme.colorScheme.primary
+    val unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val contentColor = if (selected) selectedContentColor else unselectedContentColor
+
+    ShortXLiquidGlassButton(
+        onClick = onClick,
+        modifier = Modifier
+            .weight(1f)
+            .padding(vertical = 2.dp),
+        tint = if (selected) selectedContentColor else Color.Unspecified,
+        surfaceColor = shortXGlassSurfaceColor(alpha = if (selected) 0.30f else 0.14f),
+        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
+    ) {
+        CompositionLocalProvider(LocalContentColor provides contentColor) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(0.dp),
+            ) {
+                icon()
+                if (alwaysShowLabel || selected) {
+                    label()
+                }
+            }
+        }
+    }
 }
 
 @Composable

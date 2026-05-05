@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -32,6 +31,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.base.BaseActivity
+import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
@@ -213,7 +213,7 @@ private fun HeadlineText(textRes: Int) {
 
 @Composable
 private fun HighLightText(modifier: Modifier, textRes: Int, onClick: () -> Unit) {
-    TextButton(modifier = modifier, onClick = onClick) {
+    ShortXTextButton(modifier = modifier, onClick = onClick) {
         Text(
             modifier = Modifier.padding(16.dp),
             text = stringResource(textRes),

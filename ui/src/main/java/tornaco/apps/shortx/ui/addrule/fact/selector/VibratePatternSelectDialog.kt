@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,6 +21,7 @@ import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.ShortXDialog
+import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import java.util.UUID
 import kotlin.math.roundToInt
@@ -75,7 +75,7 @@ fun VibratePatternSelector(state: VibratePatternSelectorState) {
                 DialogTitle(text = LocalI18N.current["ui.action.vibrate"])
             },
             buttons = {
-                TextButton(onClick = {
+                ShortXTextButton(onClick = {
                     state.selected(
                         Action.Vibrate(
                             vib1 = state.vib1,

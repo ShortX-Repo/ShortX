@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +31,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXDialog
 import tornaco.apps.shortx.ui.base.ShortXSwitch
+import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 
@@ -99,7 +99,7 @@ fun CornerSwipeToCenterSelector(state: CornerSwipeToCenterSelectorState) {
         onDismissRequest = { state.dismiss() },
         title = { DialogTitle(text = LocalI18N.current["ui.fact.corner.swipe.to.center"]) },
         buttons = {
-            TextButton(onClick = { state.confirm() }) {
+            ShortXTextButton(onClick = { state.confirm() }) {
                 Text(text = stringResource(id = android.R.string.ok))
             }
         },

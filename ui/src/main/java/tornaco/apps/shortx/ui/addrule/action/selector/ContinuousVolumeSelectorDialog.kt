@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -40,6 +39,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXFilledTonalButton
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipBody
@@ -129,7 +129,7 @@ private fun ContinuousVolumeSelector(dialogState: ContinuousVolumeDialogState) {
                     FieldTitle(text = LocalI18N.current["ui.action.audio.stream.type"])
                     MediumSpacer()
                     Box(modifier = Modifier.fillMaxWidth()) {
-                        FilledTonalButton(onClick = { typeDropdownState.open() }) {
+                        ShortXFilledTonalButton(onClick = { typeDropdownState.open() }) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(text = LocalI18N.current[dialogState.type.streamTypeLabelKey()])
                                 StandardSpacer()
