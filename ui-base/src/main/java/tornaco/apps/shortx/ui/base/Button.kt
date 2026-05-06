@@ -3,8 +3,8 @@
 package tornaco.apps.shortx.ui.base
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.size
@@ -15,18 +15,14 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SplitButtonDefaults
 import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 
@@ -36,39 +32,6 @@ fun DropdownButtonLayout(
     dropState: DropdownSelectorState,
     modifier: Modifier = Modifier
 ) {
-    if (isLiquidGlassEnabled()) {
-        Row(
-            modifier = modifier,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            ShortXLiquidGlassButton(
-                onClick = {},
-                modifier = Modifier.weight(1f),
-            ) {
-                Text(text)
-            }
-            ShortXLiquidGlassButton(
-                onClick = { dropState.open() },
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(12.dp),
-            ) {
-                val rotation: Float by animateFloatAsState(
-                    targetValue = if (dropState.isMenuOpen) 180f else 0f,
-                    label = "Trailing Icon Rotation"
-                )
-                androidx.compose.material3.Icon(
-                    Icons.Filled.KeyboardArrowDown,
-                    modifier = Modifier
-                        .size(SplitButtonDefaults.TrailingIconSize)
-                        .graphicsLayer {
-                            this.rotationZ = rotation
-                        },
-                    contentDescription = ""
-                )
-            }
-        }
-        return
-    }
-
     SplitButtonLayout(
         modifier = modifier,
         leadingButton = {
@@ -112,39 +75,6 @@ fun <T> MenuButtonLayout(
     menuDialogState: MenuDialogState<T>,
     modifier: Modifier = Modifier
 ) {
-    if (isLiquidGlassEnabled()) {
-        Row(
-            modifier = modifier,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            ShortXLiquidGlassButton(
-                onClick = {},
-                modifier = Modifier.weight(1f),
-            ) {
-                Text(text)
-            }
-            ShortXLiquidGlassButton(
-                onClick = { menuDialogState.show() },
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(12.dp),
-            ) {
-                val rotation: Float by animateFloatAsState(
-                    targetValue = if (menuDialogState.isShowing) 180f else 0f,
-                    label = "Trailing Icon Rotation"
-                )
-                androidx.compose.material3.Icon(
-                    Icons.Filled.KeyboardArrowDown,
-                    modifier = Modifier
-                        .size(SplitButtonDefaults.TrailingIconSize)
-                        .graphicsLayer {
-                            this.rotationZ = rotation
-                        },
-                    contentDescription = ""
-                )
-            }
-        }
-        return
-    }
-
     SplitButtonLayout(
         modifier = modifier,
         leadingButton = {
@@ -217,33 +147,14 @@ fun ShortXFilledTonalButton(
     contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 10.dp),
     content: @Composable RowScope.() -> Unit,
 ) {
-    if (!isLiquidGlassEnabled()) {
-        FilledTonalButton(
-            onClick = onClick,
-            modifier = modifier,
-            enabled = enabled,
-            colors = colors,
-            contentPadding = contentPadding,
-            content = content,
-        )
-        return
-    }
-
-    val tint = if (liquidGlassTint.isSpecified) liquidGlassTint else MaterialTheme.colorScheme.secondaryContainer
-    val contentColor = if (liquidGlassContentColor.isSpecified) liquidGlassContentColor else MaterialTheme.colorScheme.onSecondaryContainer
-    val surfaceColor = if (liquidGlassTint.isSpecified) liquidGlassTint.copy(alpha = 0.24f) else shortXGlassSurfaceColor(alpha = 0.18f)
-    ShortXLiquidGlassButton(
+    FilledTonalButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
-        tint = tint,
-        surfaceColor = surfaceColor,
+        colors = colors,
         contentPadding = contentPadding,
-    ) {
-        CompositionLocalProvider(LocalContentColor provides contentColor) {
-            content()
-        }
-    }
+        content = content,
+    )
 }
 
 @Composable
@@ -257,30 +168,12 @@ fun ShortXTextButton(
     contentPadding: PaddingValues = PaddingValues(horizontal = 12.dp, vertical = 10.dp),
     content: @Composable RowScope.() -> Unit,
 ) {
-    if (!isLiquidGlassEnabled()) {
-        TextButton(
-            onClick = onClick,
-            modifier = modifier,
-            enabled = enabled,
-            colors = colors,
-            contentPadding = contentPadding,
-            content = content,
-        )
-        return
-    }
-
-    val contentColor = if (liquidGlassContentColor.isSpecified) liquidGlassContentColor else LocalContentColor.current
-    val surfaceColor = if (liquidGlassSurfaceColor.isSpecified) liquidGlassSurfaceColor else shortXGlassSurfaceColor(alpha = 0.12f)
-    ShortXLiquidGlassButton(
+    TextButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
-        tint = Color.Unspecified,
-        surfaceColor = surfaceColor,
+        colors = colors,
         contentPadding = contentPadding,
-    ) {
-        CompositionLocalProvider(LocalContentColor provides contentColor) {
-            content()
-        }
-    }
+        content = content,
+    )
 }

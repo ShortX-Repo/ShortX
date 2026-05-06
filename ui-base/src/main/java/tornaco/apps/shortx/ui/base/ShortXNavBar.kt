@@ -1,6 +1,5 @@
 package tornaco.apps.shortx.ui.base
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -31,16 +30,6 @@ fun ShortXNavigationBar(
     windowInsets: WindowInsets = NavigationBarDefaults.windowInsets,
     content: @Composable RowScope.() -> Unit
 ) {
-    if (isLiquidGlassEnabled()) {
-        ShortXLiquidGlassNavigationBar(
-            modifier = modifier
-                .windowInsetsPadding(windowInsets)
-                .defaultMinSize(minHeight = 60.dp),
-            content = content,
-        )
-        return
-    }
-
     Box(
         modifier = modifier.padding(horizontal = 16.dp)
     ) {

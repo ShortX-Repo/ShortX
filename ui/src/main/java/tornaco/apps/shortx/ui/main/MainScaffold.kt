@@ -588,7 +588,7 @@ private fun AddOptionsFab(
     val fabMenuExpanded = fabState.currentState.value == MultiFabState.Expanded
     BackHandler(fabMenuExpanded) { fabState.collapse() }
     FloatingActionButtonMenu(
-        modifier = Modifier.padding(bottom = 120.dp),
+        modifier = Modifier.padding(bottom = 90.dp),
         expanded = fabMenuExpanded,
         button = {
             ToggleFloatingActionButton(

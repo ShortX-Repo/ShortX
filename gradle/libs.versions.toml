@@ -69,7 +69,6 @@ okhttp3-integration = "4.16.0"
 rxjava = "2.2.21"
 compose-markdown = "0.5.4"
 desugar-jdk-libs = "2.1.5"
-backdrop = "1.0.0"
 
 [plugins]
 agp-lib = { id = "com.android.library", version.ref = "agp" }
@@ -110,7 +109,6 @@ firebase-config = { module = "com.google.firebase:firebase-config" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 luckycatlabs-sunrisesunsetcalculator = { module = "com.luckycatlabs:SunriseSunsetCalculator", version.ref = "sunrisesunsetcalculator-version" }
 compose-markdown = { module = "com.github.jeziellago:compose-markdown", version.ref = "compose-markdown" }
-backdrop = { module = "io.github.kyant0:backdrop", version.ref = "backdrop" }
 rxjava = { module = "io.reactivex.rxjava2:rxjava", version.ref = "rxjava" }
 desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar-jdk-libs" }
 
