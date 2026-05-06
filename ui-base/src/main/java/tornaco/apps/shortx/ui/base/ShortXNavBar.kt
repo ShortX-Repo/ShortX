@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ShortXNavigationBar(
     modifier: Modifier = Modifier,
-    containerColor: Color = NavigationBarDefaults.containerColor,
+    containerColor: Color = ColorDefaults.backgroundSurfaceColor(),
     contentColor: Color = MaterialTheme.colorScheme.contentColorFor(containerColor),
     tonalElevation: Dp = NavigationBarDefaults.Elevation,
     windowInsets: WindowInsets = NavigationBarDefaults.windowInsets,
@@ -37,17 +37,18 @@ fun ShortXNavigationBar(
             color = containerColor,
             contentColor = contentColor,
             tonalElevation = tonalElevation,
-            shadowElevation = 2.dp,
+            shadowElevation = 1.dp,
             modifier = Modifier,
-            shape = ShortXCardRoundedCornerShapeXXL
+            shape = ShortXCardRoundedCornerShapeXXXL
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .windowInsetsPadding(windowInsets)
-                    .defaultMinSize(minHeight = 60.dp)
-                    .selectableGroup(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    .defaultMinSize(minHeight = 48.dp)
+                    .selectableGroup()
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 content = content
             )
