@@ -1,16 +1,14 @@
 package tornaco.apps.shortx.ui.main
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -19,8 +17,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -34,6 +34,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXNavigationBar
+import tornaco.apps.shortx.ui.base.ShortXNavigationBarItem
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextDisplayActivity
 import tornaco.apps.shortx.ui.discover.DiscoverScreen
@@ -188,26 +189,23 @@ fun HomeScreen() {
                     } ?: emptyList()
 
                     if (items.isNotEmpty()) {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.SpaceBetween
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
                         ) {
-                            Box(
+                            BottomNavigationGraph(
                                 modifier = Modifier
-                                    .fillMaxSize()
-                                    .weight(1f, fill = false)
-                            ) {
-                                BottomNavigationGraph(
-                                    modifier = Modifier
-                                        .fillMaxSize(),
-                                    navController = navController,
-                                    startDestination = items.first()
-                                )
-                            }
+                                    .fillMaxSize(),
+                                navController = navController,
+                                startDestination = items.first()
+                            )
 
                             BottomNavigationContent(
                                 modifier = Modifier
-                                    .fillMaxWidth(),
+                                    .align(Alignment.BottomCenter)
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 12.dp)
+                                    .padding(bottom = 12.dp),
                                 navController = navController,
                                 items = items,
                             )
@@ -231,7 +229,7 @@ private fun BottomNavigationContent(
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
         items.forEach { item ->
-            NavigationBarItem(
+            ShortXNavigationBarItem(
                 icon = {
                     if (item.isExperimental) {
                         BadgedBox(badge = {

@@ -66,7 +66,7 @@ fun TipCard(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Card(
         modifier = modifier,
         backgroundColor = SuccessGreen.copy(alpha = 0.16f),
-        shape = ShortXCardRoundedCornerShape,
+        shape = ShortXCardRoundedCornerShapeXL,
         elevation = 0.dp,
         content = content
     )
@@ -87,7 +87,7 @@ fun TipCard(modifier: Modifier = Modifier, tip: String) {
 @Composable
 fun WarningCard(
     modifier: Modifier = Modifier,
-    shape: Shape = ShortXCardRoundedCornerShape,
+    shape: Shape = ShortXCardRoundedCornerShapeXL,
     onClick: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
@@ -111,7 +111,7 @@ fun ErrorCard(
     androidx.compose.material3.Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
-        shape = ShortXCardRoundedCornerShape,
+        shape = ShortXCardRoundedCornerShapeXL,
         onClick = onClick
     ) {
         Column(

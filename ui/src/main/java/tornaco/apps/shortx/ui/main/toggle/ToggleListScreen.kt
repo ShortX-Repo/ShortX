@@ -97,7 +97,7 @@ fun ToggleListScreen() {
                 LazyVerticalStaggeredGrid(
                     modifier = Modifier.fillMaxSize(),
                     columns = dynamicStaggeredGridCells(),
-                    contentPadding = PaddingValues(top = 8.dp, bottom = 72.dp)
+                    contentPadding = PaddingValues(top = 8.dp, bottom = 160.dp)
                 ) {
                     items(
                         items = toggleListState.toggles,

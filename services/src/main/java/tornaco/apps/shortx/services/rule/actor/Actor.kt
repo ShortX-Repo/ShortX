@@ -425,6 +425,14 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetBrightness
     },
+    ContinuousAdjustBrightness {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ContinuousAdjustBrightness
+    },
+    ContinuousGesturePointer {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ContinuousGesturePointer
+    },
     SetAutoBrightness {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetAutoBrightness
@@ -497,6 +505,10 @@ enum class PrebuiltActor : ActorProvider {
     SetVolume {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetVolume
+    },
+    ContinuousAdjustVolume {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ContinuousAdjustVolume
     },
     RequestAudioFocus {
         override val actor: Actor

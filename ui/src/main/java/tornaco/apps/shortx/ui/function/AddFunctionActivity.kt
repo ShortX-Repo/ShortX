@@ -41,6 +41,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
+import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.UnderlineSmallText
 import tornaco.apps.shortx.ui.base.handleSideEffect
@@ -233,7 +234,7 @@ fun AddFunctionScreen(
                 state.resultContextDataKey.takeIf { it.isNotBlank() }?.let { resultContextDataKey ->
                     val accessExample = resultContextDataKey.asAccessExample()
                     Spacer(modifier = Modifier.size(8.dp))
-                    androidx.compose.material3.TextButton(onClick = {
+                    ShortXTextButton(onClick = {
                         ClipboardUtils.copyToClipboard(
                             context,
                             "functionResultContextKey",

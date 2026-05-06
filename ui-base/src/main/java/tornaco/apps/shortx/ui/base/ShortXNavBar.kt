@@ -1,11 +1,13 @@
 package tornaco.apps.shortx.ui.base
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.MaterialTheme
@@ -22,28 +24,34 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ShortXNavigationBar(
     modifier: Modifier = Modifier,
-    containerColor: Color = NavigationBarDefaults.containerColor,
+    containerColor: Color = ColorDefaults.backgroundSurfaceColor(),
     contentColor: Color = MaterialTheme.colorScheme.contentColorFor(containerColor),
     tonalElevation: Dp = NavigationBarDefaults.Elevation,
     windowInsets: WindowInsets = NavigationBarDefaults.windowInsets,
     content: @Composable RowScope.() -> Unit
 ) {
-    Surface(
-        color = containerColor,
-        contentColor = contentColor,
-        tonalElevation = tonalElevation,
-        shadowElevation = 4.dp,
-        modifier = modifier
+    Box(
+        modifier = modifier.padding(horizontal = 16.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .windowInsetsPadding(windowInsets)
-                .defaultMinSize(minHeight = 80.dp)
-                .selectableGroup(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            content = content
-        )
+        Surface(
+            color = containerColor,
+            contentColor = contentColor,
+            tonalElevation = tonalElevation,
+            shadowElevation = 1.dp,
+            modifier = Modifier,
+            shape = ShortXCardRoundedCornerShapeXXXL
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .windowInsetsPadding(windowInsets)
+                    .defaultMinSize(minHeight = 48.dp)
+                    .selectableGroup()
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                content = content
+            )
+        }
     }
 }

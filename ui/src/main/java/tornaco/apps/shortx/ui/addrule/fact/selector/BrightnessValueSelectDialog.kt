@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.ShortXDialog
+import tornaco.apps.shortx.ui.base.ShortXTextButton
 import kotlin.math.roundToInt
 
 class BrightnessValueSelectorState(
@@ -52,7 +52,7 @@ fun BrightnessValueSelector(state: BrightnessValueSelectorState) {
                 DialogTitle(text = LocalI18N.current["ui.action.set.brightness"])
             },
             buttons = {
-                TextButton(onClick = {
+                ShortXTextButton(onClick = {
                     state.selected(state.brightnessValue)
                     state.dismiss()
                 }) {

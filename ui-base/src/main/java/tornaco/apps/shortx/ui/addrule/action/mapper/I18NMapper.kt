@@ -270,6 +270,14 @@ fun labelAndDescriptionForActionSelector(
         Action.CreatePkgSet::class -> i18N["ui.pkg.set.add.title"] to null
         Action.SetRingerMode::class -> i18N["ui.action.set.ringer.mode"] to null
         Action.SetBrightness::class -> i18N["ui.action.set.brightness"] to null
+        Action.ContinuousAdjustBrightness::class -> i18N.get(
+            key = "ui.action.continuous.adjust.brightness",
+            fallback = "Continuous brightness"
+        ) to null
+        Action.ContinuousGesturePointer::class -> i18N.get(
+            key = "ui.action.continuous.gesture.pointer",
+            fallback = "Gesture pointer"
+        ) to null
         Action.StopService::class -> i18N["ui.action.stop.service"] to null
         Action.StartService::class -> i18N["ui.action.start.service"] to null
         Action.RemoveTasks::class -> i18N["ui.action.remove.tasks"] to null
@@ -281,6 +289,10 @@ fun labelAndDescriptionForActionSelector(
         Action.StopCurrentApp::class -> i18N["ui.action.stop.current.foreground.app"] to null
         Action.AdjustVolume::class -> i18N["ui.action.adjust.volume"] to null
         Action.SetVolume::class -> i18N["ui.action.set.volume"] to null
+        Action.ContinuousAdjustVolume::class -> i18N.get(
+            key = "ui.action.continuous.adjust.volume",
+            fallback = "Continuous volume"
+        ) to null
         Action.Vibrate::class -> i18N["ui.action.vibrate"] to null
         Action.AudioRecording::class -> i18N["ui.action.audio.recording"] to null
         Action.StopAudioRecording::class -> i18N["ui.action.audio.recording.stop"] to null
@@ -899,6 +911,87 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             listOf(i18N["ui.action.set.brightness"], action.value.toString())
         }
 
+        is Action.ContinuousAdjustBrightness -> {
+            listOf(
+                i18N.get(
+                    key = "ui.action.continuous.adjust.brightness",
+                    fallback = "Continuous brightness"
+                ),
+                "${action.minValue}-${action.maxValue} @ ${"%.2f".format(action.sensitivityScale)}x"
+            )
+        }
+
+        is Action.ContinuousGesturePointer -> {
+            listOf(
+                i18N.get(
+                    key = "ui.action.continuous.gesture.pointer",
+                    fallback = "Gesture pointer"
+                ),
+                buildString {
+                    append("@ ${"%.2f".format(action.sensitivityScale)}x")
+                    if (action.releaseButton != tornaco.apps.shortx.ui.addrule.action.model.GesturePointerReleaseButton.None) {
+                        append(" · ")
+                        append(
+                            when (action.releaseButton) {
+                                tornaco.apps.shortx.ui.addrule.action.model.GesturePointerReleaseButton.Primary -> i18N.get(
+                                    key = "ui.action.continuous.gesture.pointer.release.button.primary",
+                                    fallback = "primary click"
+                                )
+
+                                tornaco.apps.shortx.ui.addrule.action.model.GesturePointerReleaseButton.Secondary -> i18N.get(
+                                    key = "ui.action.continuous.gesture.pointer.release.button.secondary",
+                                    fallback = "secondary click"
+                                )
+
+                                else -> ""
+                            }
+                        )
+                    }
+                    if (action.dragButton != tornaco.apps.shortx.ui.addrule.action.model.GesturePointerDragButton.None) {
+                        append(" · ")
+                        append(
+                            when (action.dragButton) {
+                                tornaco.apps.shortx.ui.addrule.action.model.GesturePointerDragButton.Primary -> i18N.get(
+                                    key = "ui.action.continuous.gesture.pointer.drag.button.primary",
+                                    fallback = "primary drag"
+                                )
+
+                                tornaco.apps.shortx.ui.addrule.action.model.GesturePointerDragButton.Secondary -> i18N.get(
+                                    key = "ui.action.continuous.gesture.pointer.drag.button.secondary",
+                                    fallback = "secondary drag"
+                                )
+
+                                else -> ""
+                            }
+                        )
+                    }
+                    if (action.scrollMode != tornaco.apps.shortx.ui.addrule.action.model.GesturePointerScrollMode.None) {
+                        append(" · ")
+                        append(
+                            when (action.scrollMode) {
+                                tornaco.apps.shortx.ui.addrule.action.model.GesturePointerScrollMode.Vertical -> i18N.get(
+                                    key = "ui.action.continuous.gesture.pointer.scroll.mode.vertical",
+                                    fallback = "vertical wheel"
+                                )
+
+                                tornaco.apps.shortx.ui.addrule.action.model.GesturePointerScrollMode.Horizontal -> i18N.get(
+                                    key = "ui.action.continuous.gesture.pointer.scroll.mode.horizontal",
+                                    fallback = "horizontal wheel"
+                                )
+
+                                tornaco.apps.shortx.ui.addrule.action.model.GesturePointerScrollMode.Both -> i18N.get(
+                                    key = "ui.action.continuous.gesture.pointer.scroll.mode.both",
+                                    fallback = "two-axis wheel"
+                                )
+
+                                else -> ""
+                            }
+                        )
+                    }
+                }
+            )
+        }
+
         is Action.StopService -> {
             listOf(
                 i18N["ui.action.stop.service"],
@@ -984,6 +1077,16 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             listOf(
                 i18N["ui.action.set.volume"],
                 i18N[action.type.streamTypeLabelKey()] + " " + action.index
+            )
+        }
+
+        is Action.ContinuousAdjustVolume -> {
+            listOf(
+                i18N.get(
+                    key = "ui.action.continuous.adjust.volume",
+                    fallback = "Continuous volume"
+                ),
+                i18N[action.type.streamTypeLabelKey()] + " @ ${"%.2f".format(action.sensitivityScale)}x"
             )
         }
 

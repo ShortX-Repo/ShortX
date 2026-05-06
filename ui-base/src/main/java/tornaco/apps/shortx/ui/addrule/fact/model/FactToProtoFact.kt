@@ -191,7 +191,6 @@ fun Fact.toProtoFact(
             val builder = EdgeGesture.newBuilder()
                 .setEdge(edge)
                 .setGesture(gesture)
-                .setIsIntercept(isIntercept)
                 .setEnableGestureHint(enableGestureHint)
                 .setEnableGestureHaptic(enableGestureHaptic)
                 .addAllChildSteps(childSteps.map {
@@ -217,7 +216,6 @@ fun Fact.toProtoFact(
                 .setCorner(corner)
                 .setEnableGestureHint(enableGestureHint)
                 .setEnableGestureHaptic(enableGestureHaptic)
-                .setIsIntercept(isIntercept)
                 .setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
                 .setIsDisabled(isDisabled)

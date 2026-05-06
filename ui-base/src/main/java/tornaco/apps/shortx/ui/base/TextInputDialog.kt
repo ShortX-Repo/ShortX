@@ -9,7 +9,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -127,7 +126,7 @@ fun TextInputDialog(state: TextInputState) {
             DialogTitle(text = state.title)
         }, buttons = {
             textToCopy?.let {
-                TextButton(
+                ShortXTextButton(
                     onClick = {
                         ClipboardUtils.copyToClipboard(context, "text", textToCopy)
                         Toast.makeText(
@@ -142,7 +141,7 @@ fun TextInputDialog(state: TextInputState) {
                 }
             }
 
-            TextButton(
+            ShortXTextButton(
                 enabled = state.validateRes !is InputValidateResult.Error,
                 onClick = {
                     state.onSelected(state.currentValue)

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +31,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXDialog
 import tornaco.apps.shortx.ui.base.ShortXSwitch
+import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 
@@ -48,9 +48,6 @@ class CornerSwipeToCenterSelectorState(
     private var _enableGestureHaptic by mutableStateOf(false)
     val enableGestureHaptic get() = _enableGestureHaptic
 
-    private var _isIntercept by mutableStateOf(false)
-    val isIntercept get() = _isIntercept
-
     fun setCorner(corner: ScreenCorner) {
         _corner = corner
     }
@@ -63,10 +60,6 @@ class CornerSwipeToCenterSelectorState(
         _enableGestureHaptic = enable
     }
 
-    fun setIsIntercept(isIntercept: Boolean) {
-        _isIntercept = isIntercept
-    }
-
     fun previewCorner(corner: ScreenCorner) {
         showCornerHint(corner)
     }
@@ -77,7 +70,6 @@ class CornerSwipeToCenterSelectorState(
                 corner = corner,
                 enableGestureHint = enableGestureHint,
                 enableGestureHaptic = enableGestureHaptic,
-                isIntercept = isIntercept,
             )
         )
         dismiss()
@@ -87,7 +79,6 @@ class CornerSwipeToCenterSelectorState(
         _corner = fact?.corner ?: ScreenCorner.CornerTopLeft
         _enableGestureHint = fact?.enableGestureHint ?: true
         _enableGestureHaptic = fact?.enableGestureHaptic ?: false
-        _isIntercept = fact?.isIntercept ?: false
         show()
     }
 }
@@ -108,7 +99,7 @@ fun CornerSwipeToCenterSelector(state: CornerSwipeToCenterSelectorState) {
         onDismissRequest = { state.dismiss() },
         title = { DialogTitle(text = LocalI18N.current["ui.fact.corner.swipe.to.center"]) },
         buttons = {
-            TextButton(onClick = { state.confirm() }) {
+            ShortXTextButton(onClick = { state.confirm() }) {
                 Text(text = stringResource(id = android.R.string.ok))
             }
         },
@@ -156,17 +147,6 @@ fun CornerSwipeToCenterSelector(state: CornerSwipeToCenterSelectorState) {
                         )
                     }
                     StandardSpacer()
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        FieldTitle(text = i18n["ui.fact.key.event.adv.is.intercept.mode"])
-                        ShortXSwitch(
-                            checked = state.isIntercept,
-                            onCheckedChange = { state.setIsIntercept(it) }
-                        )
-                    }
                 }
                 DropdownSelector(
                     state = dropdownState,

@@ -26,7 +26,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -54,6 +53,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXCard
+import tornaco.apps.shortx.ui.base.ShortXFilledTonalButton
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
@@ -144,11 +144,11 @@ fun DanmuUISettingsScreen(back: () -> Unit) {
                     }
                     ColorPickerDialog(state = bgColorPickerState)
                     ItemCard(itemLabel = "Background color") {
-                        FilledTonalButton(colors = ButtonDefaults.filledTonalButtonColors(
+                        ShortXFilledTonalButton(colors = ButtonDefaults.filledTonalButtonColors(
                             containerColor = Color(
                                 state.settings.backgroundColor
                             )
-                        ), onClick = { bgColorPickerState.show() }) {}
+                        ), liquidGlassTint = Color(state.settings.backgroundColor), onClick = { bgColorPickerState.show() }) {}
                     }
                     StandardSpacer()
 
@@ -185,11 +185,11 @@ fun DanmuUISettingsScreen(back: () -> Unit) {
                     }
                     ColorPickerDialog(state = textColorPickerState)
                     ItemCard(itemLabel = "Text color") {
-                        FilledTonalButton(colors = ButtonDefaults.filledTonalButtonColors(
+                        ShortXFilledTonalButton(colors = ButtonDefaults.filledTonalButtonColors(
                             containerColor = Color(
                                 state.settings.textColor
                             )
-                        ), onClick = { textColorPickerState.show() }) {}
+                        ), liquidGlassTint = Color(state.settings.textColor), onClick = { textColorPickerState.show() }) {}
                     }
                     StandardSpacer()
                 }

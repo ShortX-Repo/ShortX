@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -25,6 +24,7 @@ import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.ShortXDialog
+import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.StandardSpacer
 
 class ComponentRuleInfoDialogState(
@@ -48,7 +48,7 @@ fun ComponentRuleInfoDialog(state: ComponentRuleInfoDialogState) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
             DialogTitle(text = state.ruleLabel)
         }, buttons = {
-            TextButton(onClick = {
+            ShortXTextButton(onClick = {
                 state.dismiss()
             }) {
                 Text(text = stringResource(id = android.R.string.ok))

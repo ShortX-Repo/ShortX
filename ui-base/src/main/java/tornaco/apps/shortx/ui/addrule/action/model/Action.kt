@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.action.model
 
 import android.content.Intent
+import android.media.AudioManager
 import android.os.Parcelable
 import androidx.annotation.IntRange
 import kotlinx.parcelize.Parcelize
@@ -75,6 +76,25 @@ import tornaco.apps.shortx.ui.remote.RemoteExecuteMVELAction
 import java.util.UUID
 
 fun defaultNewActionId() = "A-" + UUID.randomUUID().toString()
+
+enum class GesturePointerReleaseButton {
+    None,
+    Primary,
+    Secondary,
+}
+
+enum class GesturePointerDragButton {
+    None,
+    Primary,
+    Secondary,
+}
+
+enum class GesturePointerScrollMode {
+    None,
+    Vertical,
+    Horizontal,
+    Both,
+}
 
 sealed interface Action : Parcelable {
     val id: String
@@ -3225,6 +3245,70 @@ sealed interface Action : Parcelable {
     }
 
     @Parcelize
+    data class ContinuousAdjustBrightness(
+        override val id: String = defaultNewActionId(),
+        override val isEnabled: Boolean = true,
+        override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val contextData: List<ContextData> = emptyList(),
+        override val note: String = "",
+        val sensitivityScale: Float = 1f,
+        @IntRange(from = 0, to = 255)
+        val minValue: Int = 0,
+        @IntRange(from = 0, to = 255)
+        val maxValue: Int = 255,
+    ) : Action {
+        override fun clone(
+            id: String,
+            note: String,
+            isEnabled: Boolean,
+            actionOnError: ActionOnError,
+            contextData: List<ContextData>
+        ): Action {
+            return this.copy(
+                id = id,
+                note = note,
+                isEnabled = isEnabled,
+                actionOnError = actionOnError,
+                contextData = contextData
+            )
+        }
+    }
+
+    @Parcelize
+    data class ContinuousGesturePointer(
+        override val id: String = defaultNewActionId(),
+        override val isEnabled: Boolean = true,
+        override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val contextData: List<ContextData> = emptyList(),
+        override val note: String = "",
+        val sensitivityScale: Float = 1f,
+        val releaseButton: GesturePointerReleaseButton = GesturePointerReleaseButton.Primary,
+        val dragButton: GesturePointerDragButton = GesturePointerDragButton.None,
+        @IntRange(from = 120, to = 1200)
+        val dragHoldDurationMs: Int = 350,
+        val scrollMode: GesturePointerScrollMode = GesturePointerScrollMode.None,
+        val scrollScale: Float = 1f,
+    ) : Action {
+        override fun clone(
+            id: String,
+            note: String,
+            isEnabled: Boolean,
+            actionOnError: ActionOnError,
+            contextData: List<ContextData>
+        ): Action {
+            return this.copy(
+                id = id,
+                note = note,
+                isEnabled = isEnabled,
+                actionOnError = actionOnError,
+                contextData = contextData
+            )
+        }
+    }
+
+    @Parcelize
     data class StopService(
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
@@ -3667,6 +3751,34 @@ sealed interface Action : Parcelable {
 
         val type: Int,
         val index: Int
+    ) : Action {
+        override fun clone(
+            id: String,
+            note: String,
+            isEnabled: Boolean,
+            actionOnError: ActionOnError,
+            contextData: List<ContextData>
+        ): Action {
+            return this.copy(
+                id = id,
+                note = note,
+                isEnabled = isEnabled,
+                actionOnError = actionOnError,
+                contextData = contextData
+            )
+        }
+    }
+
+    @Parcelize
+    data class ContinuousAdjustVolume(
+        override val id: String = defaultNewActionId(),
+        override val isEnabled: Boolean = true,
+        override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val contextData: List<ContextData> = emptyList(),
+        override val note: String = "",
+        val type: Int = AudioManager.STREAM_MUSIC,
+        val sensitivityScale: Float = 1f,
     ) : Action {
         override fun clone(
             id: String,

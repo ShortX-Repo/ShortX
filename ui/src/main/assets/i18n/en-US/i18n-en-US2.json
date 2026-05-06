@@ -32,5 +32,7 @@
   "ui.fact.edge.gesture.child.hover": "Hover",
   "ui.fact.edge.gesture.child.singletap": "Single tap",
   "ui.fact.edge.gesture.child.doubletap": "Double tap",
-  "ui.fact.edge.gesture.child.longtap": "Long tap"
+  "ui.fact.edge.gesture.child.longtap": "Long tap",
+  "ui.action.continuous.adjust.volume": "Continuous adjust volume"
+  ,"ui.action.continuous.adjust.brightness": "Continuous adjust brightness"
 }

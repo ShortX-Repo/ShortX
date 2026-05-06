@@ -2057,3 +2057,61 @@ message RequestAudioFocus {
   string note = 99;
   string id = 100;
 }
+
+message ContinuousAdjustBrightness {
+  float sensitivityScale = 1;
+  int32 minValue = 2;
+  int32 maxValue = 3;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message ContinuousAdjustVolume {
+  int32 streamType = 1;
+  float sensitivityScale = 2;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
+enum GesturePointerReleaseButton {
+  GesturePointerReleaseButtonNone = 0;
+  GesturePointerReleaseButtonPrimary = 1;
+  GesturePointerReleaseButtonSecondary = 2;
+}
+
+enum GesturePointerDragButton {
+  GesturePointerDragButtonNone = 0;
+  GesturePointerDragButtonPrimary = 1;
+  GesturePointerDragButtonSecondary = 2;
+}
+
+enum GesturePointerScrollMode {
+  GesturePointerScrollModeNone = 0;
+  GesturePointerScrollModeVertical = 1;
+  GesturePointerScrollModeHorizontal = 2;
+  GesturePointerScrollModeBoth = 3;
+}
+
+message ContinuousGesturePointer {
+  float sensitivityScale = 1;
+  bool clickOnRelease = 2 [deprecated = true];
+  GesturePointerReleaseButton releaseButton = 3;
+  GesturePointerDragButton dragButton = 4;
+  int32 dragHoldDurationMs = 5;
+  GesturePointerScrollMode scrollMode = 6;
+  float scrollScale = 7;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}

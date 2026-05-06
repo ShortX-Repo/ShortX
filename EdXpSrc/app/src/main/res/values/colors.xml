@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorAccent">#208982</color>
+    <color name="colorBackgroundDark">#212121</color>
+    <color name="colorBackgroundLightGray">#cccccc</color>
+    <color name="colorPrimary">#208982</color>
+    <color name="colorPrimaryDark">#208982</color>
+    <color name="colorPrimaryLight">#30a9a2</color>
+    <color name="ic_launcher_background">#3ddc84</color>
+</resources>

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
@@ -66,7 +65,7 @@ fun UserTip(modifier: Modifier = Modifier, tipId: String, message: String) {
                     style = MaterialTheme.typography.bodyMedium
                 )
 
-                TextButton(onClick = {
+                ShortXTextButton(onClick = {
                     scope.launch { pref.userReadTip(tipId) }
                 }) {
                     Text(text = LocalI18N.current["ui.common.got.it"])

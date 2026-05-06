@@ -18,7 +18,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Tab
@@ -57,6 +56,7 @@ import tornaco.apps.shortx.ui.base.SearchBar
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
+import tornaco.apps.shortx.ui.base.ShortXFilledTonalButton
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
@@ -285,7 +285,7 @@ fun AppListContent(dialogState: BaseAppPkgSelectorDialogState) {
                 Box(modifier = Modifier.padding(horizontal = 12.dp)) {
                     val allPkgSets = shortXManager.getAllPkgSets(false)
                     val dropdownState = rememberDropdownSelectorState()
-                    FilledTonalButton(onClick = {
+                    ShortXFilledTonalButton(onClick = {
                         dropdownState.open()
                     }) {
                         Row(verticalAlignment = Alignment.CenterVertically) {

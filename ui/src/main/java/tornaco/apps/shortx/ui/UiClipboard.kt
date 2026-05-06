@@ -15,7 +15,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +41,7 @@ import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.thenIf
 import tornaco.apps.shortx.ui.theme.ErrorRed
@@ -171,7 +171,7 @@ fun ClipboardDialog(
                                 },
                                 actions = {
                                     AnimatedVisibility(visible = state.selections.isNotEmpty()) {
-                                        TextButton(onClick = {
+                                        ShortXTextButton(onClick = {
                                             state.onSelected(state.selections)
                                             state.dismiss()
                                         }) {

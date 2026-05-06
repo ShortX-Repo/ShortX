@@ -1,0 +1,3 @@
+rootProject.name = 'Xposed Edge Pro'
+
+include 'app'

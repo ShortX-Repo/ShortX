@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="colors">
+        <item>#368bcf</item>
+        <item>#ca3668</item>
+        <item>#678b3b</item>
+        <item>#d57726</item>
+        <item>#5b6adc</item>
+        <item>#b15ccc</item>
+        <item>#367f7a</item>
+        <item>#d9a426</item>
+        <item>#d26589</item>
+        <item>#1e9998</item>
+        <item>#c14138</item>
+        <item>#1a814f</item>
+        <item>#6a49a4</item>
+    </array>
+    <array name="xposed_scope">
+        <item>android</item>
+    </array>
+</resources>

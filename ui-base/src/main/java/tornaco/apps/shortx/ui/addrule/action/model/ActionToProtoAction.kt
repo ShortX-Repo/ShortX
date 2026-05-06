@@ -12,6 +12,12 @@ import tornaco.apps.shortx.core.proto.action.ClickNotification
 import tornaco.apps.shortx.core.proto.action.ClickNotificationActionButton
 import tornaco.apps.shortx.core.proto.action.ClickTile
 import tornaco.apps.shortx.core.proto.action.ConnectWifi
+import tornaco.apps.shortx.core.proto.action.ContinuousAdjustBrightness
+import tornaco.apps.shortx.core.proto.action.ContinuousGesturePointer
+import tornaco.apps.shortx.core.proto.action.ContinuousAdjustVolume
+import tornaco.apps.shortx.core.proto.action.GesturePointerDragButton
+import tornaco.apps.shortx.core.proto.action.GesturePointerReleaseButton
+import tornaco.apps.shortx.core.proto.action.GesturePointerScrollMode
 import tornaco.apps.shortx.core.proto.action.CreateGlobalVar
 import tornaco.apps.shortx.core.proto.action.CreateLocalVar
 import tornaco.apps.shortx.core.proto.action.CreatePkgSet
@@ -1324,6 +1330,55 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .build()
         }
 
+            is Action.ContinuousAdjustBrightness -> {
+                ContinuousAdjustBrightness.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setSensitivityScale(sensitivityScale)
+                .setMinValue(minValue)
+                .setMaxValue(maxValue)
+                .build()
+            }
+
+            is Action.ContinuousGesturePointer -> {
+                ContinuousGesturePointer.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setSensitivityScale(sensitivityScale)
+                .setClickOnRelease(releaseButton == tornaco.apps.shortx.ui.addrule.action.model.GesturePointerReleaseButton.Primary)
+                .setReleaseButton(
+                    when (releaseButton) {
+                        tornaco.apps.shortx.ui.addrule.action.model.GesturePointerReleaseButton.None -> GesturePointerReleaseButton.GesturePointerReleaseButtonNone
+                        tornaco.apps.shortx.ui.addrule.action.model.GesturePointerReleaseButton.Primary -> GesturePointerReleaseButton.GesturePointerReleaseButtonPrimary
+                        tornaco.apps.shortx.ui.addrule.action.model.GesturePointerReleaseButton.Secondary -> GesturePointerReleaseButton.GesturePointerReleaseButtonSecondary
+                    }
+                )
+                .setDragButton(
+                    when (dragButton) {
+                        tornaco.apps.shortx.ui.addrule.action.model.GesturePointerDragButton.None -> GesturePointerDragButton.GesturePointerDragButtonNone
+                        tornaco.apps.shortx.ui.addrule.action.model.GesturePointerDragButton.Primary -> GesturePointerDragButton.GesturePointerDragButtonPrimary
+                        tornaco.apps.shortx.ui.addrule.action.model.GesturePointerDragButton.Secondary -> GesturePointerDragButton.GesturePointerDragButtonSecondary
+                    }
+                )
+                .setDragHoldDurationMs(dragHoldDurationMs)
+                .setScrollMode(
+                    when (scrollMode) {
+                        tornaco.apps.shortx.ui.addrule.action.model.GesturePointerScrollMode.None -> GesturePointerScrollMode.GesturePointerScrollModeNone
+                        tornaco.apps.shortx.ui.addrule.action.model.GesturePointerScrollMode.Vertical -> GesturePointerScrollMode.GesturePointerScrollModeVertical
+                        tornaco.apps.shortx.ui.addrule.action.model.GesturePointerScrollMode.Horizontal -> GesturePointerScrollMode.GesturePointerScrollModeHorizontal
+                        tornaco.apps.shortx.ui.addrule.action.model.GesturePointerScrollMode.Both -> GesturePointerScrollMode.GesturePointerScrollModeBoth
+                    }
+                )
+                .setScrollScale(scrollScale)
+                .build()
+            }
+
         is Action.StopService -> {
             StopService.newBuilder()
                 .setId(overrideId ?: id)
@@ -1568,6 +1623,18 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setIndex(index)
                 .build()
         }
+
+            is Action.ContinuousAdjustVolume -> {
+                ContinuousAdjustVolume.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setStreamType(type)
+                .setSensitivityScale(sensitivityScale)
+                .build()
+            }
 
         is Action.Vibrate -> {
             Vibrate.newBuilder()

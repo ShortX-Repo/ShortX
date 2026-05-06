@@ -19,8 +19,8 @@ import tornaco.apps.shortx.core.proto.toAndroidRect
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.screenSize
-import tornaco.apps.shortx.services.gesture.HotSeat
-import tornaco.apps.shortx.services.gesture.getRect
+import tornaco.apps.shortx.services.gesture.bpok.gesture.HotSeat
+import tornaco.apps.shortx.services.gesture.bpok.gesture.getRect
 import util.Reflections
 
 @SuppressLint("ViewConstructor")

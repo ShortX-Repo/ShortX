@@ -60,6 +60,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.TextDisplayActivity
 import tornaco.apps.shortx.ui.base.code.ParcelableCode
@@ -143,7 +144,7 @@ fun MVELEditorActivity.MVELEditor(
                 ShortXTopAppBar(
                     modifier = Modifier,
                     title = {
-                        TextButton(onClick = {
+                        ShortXTextButton(onClick = {
                             contextMenuState.show()
                         }) {
                             Text(

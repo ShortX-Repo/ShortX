@@ -79,7 +79,6 @@ data class EdgeGestureSelectDialogResult(
     val edge: Edge,
     val gesture: Gesture,
     val childSteps: List<EdgeGestureStepModel>,
-    val isIntercept: Boolean,
     val apps: List<App>,
     val pkgSet: List<PkgSet>,
     val customRect: Rect? = null,
@@ -103,7 +102,6 @@ class EdgeGestureSelectorState(
 ) : CommonDialogState() {
     var edge by mutableStateOf(Edge.BottomRight)
     var gesture by mutableStateOf(Gesture.DoubleTap)
-    var isIntercept by mutableStateOf(false)
     var enableGestureHint by mutableStateOf(true)
     var enableGestureHaptic by mutableStateOf(false)
     var customRect by mutableStateOf<Rect?>(null)
@@ -118,7 +116,6 @@ class EdgeGestureSelectorState(
         composeLogger.d("EdgeGestureSelectorState show: $data")
         this.edge = data?.edge ?: Edge.BottomRight
         this.gesture = data?.gesture ?: Gesture.SingleTap
-        this.isIntercept = data?.isIntercept ?: false
         this.enableGestureHint = data?.enableGestureHint ?: true
         this.enableGestureHaptic = data?.enableGestureHaptic ?: false
         this.customRect = data?.customRect
@@ -169,7 +166,6 @@ class EdgeGestureSelectorState(
             edge = edge,
             gesture = gesture,
             childSteps = childSteps.toList().take(MAX_CHILD_STEP_COUNT),
-            isIntercept = isIntercept,
             apps = apps,
             pkgSet = pkgSets,
             customRect = if (useCustomRect) customRect else null,
@@ -542,18 +538,6 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                 StandardSpacer()
                             }
 
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                FieldTitle(text = LocalI18N.current["ui.fact.key.event.adv.is.intercept.mode"])
-                                ShortXSwitch(checked = state.isIntercept, onCheckedChange = {
-                                    state.isIntercept = it
-                                })
-                            }
-                            StandardSpacer()
-
                             val appFgPkgSelectorState =
                                 rememberAppPkgSelectorState(
                                     onAppListSelected = { pkg ->
@@ -588,12 +572,6 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                 )
                             })
                             LargeSpacer()
-
-                            AnimatedVisibility(visible = state.isIntercept) {
-                                TipRow(text = LocalI18N.current["ui.fact.motion.event.adv.summary"])
-                                StandardSpacer()
-                                StandardSpacer()
-                            }
                         }
                     }
                 }

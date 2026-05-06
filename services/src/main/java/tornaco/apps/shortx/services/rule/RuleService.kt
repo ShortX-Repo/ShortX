@@ -69,6 +69,7 @@ import tornaco.apps.shortx.core.rule.IDAObserver
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.rule.IRuleObserver
 import tornaco.apps.shortx.core.rule.IToggleObserver
+import tornaco.apps.shortx.core.rule.RuleObserver
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
@@ -175,6 +176,16 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     val keyGestureController by lazy {
         KeyGestureController(context, shortXContext, handler)
+    }
+
+    private val legacyGestureRuleObserver = object : RuleObserver() {
+        override fun onRuleChanged(id: String) {
+            shortXContext.gesture.onRuleChanged()
+        }
+
+        override fun onRuleSetChanged(id: String) {
+            shortXContext.gesture.onRuleChanged()
+        }
     }
 
     private val allTriggers by lazy {
@@ -307,6 +318,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         webDavProfileStore.readBlocking()
 
         installListeners()
+        registerRuleObs(legacyGestureRuleObserver)
+        shortXContext.gesture.onRuleChanged()
 
         SystemEnvInit.install(context, shortXContext)
 
@@ -347,6 +360,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     override fun shutdown() {
         super.shutdown()
+        unregisterRuleObs(legacyGestureRuleObserver)
         allTriggers.forEach {
             kotlin.runCatching {
                 logger.d("Un-Register trigger: $it")

@@ -2,9 +2,7 @@ package tornaco.apps.shortx.ui.addrule.condition.selector
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,6 +20,8 @@ import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.ShortXDialog
+import tornaco.apps.shortx.ui.base.ShortXFilledTonalButton
+import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
@@ -59,7 +59,7 @@ fun TimeOfADayRangeSelector(state: TimeOfADayRangeSelectorState) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
             DialogTitle(text = LocalI18N.current["ui.common.time.of.day.selector.title"])
         }, buttons = {
-            TextButton(onClick = {
+            ShortXTextButton(onClick = {
                 if (state.isValid) {
                     state.selected(
                         TimeOfADayRange.newBuilder()
@@ -114,7 +114,7 @@ private fun TimeContent(state: TimeOfADayRangeSelectorState) {
 
     SmallTitle(text = LocalI18N.current["ui.common.time.of.day.range.start"])
     SmallSpacer()
-    FilledTonalButton(onClick = { startSelectState.show() }) {
+    ShortXFilledTonalButton(onClick = { startSelectState.show() }) {
         Text(
             text = state.start?.let { DateUtils.formatLocalTime(it) }
                 ?: LocalI18N.current["ui.common.unselected"]
@@ -125,7 +125,7 @@ private fun TimeContent(state: TimeOfADayRangeSelectorState) {
 
     SmallTitle(text = LocalI18N.current["ui.common.time.of.day.range.end"])
     SmallSpacer()
-    FilledTonalButton(onClick = { endSelectState.show() }) {
+    ShortXFilledTonalButton(onClick = { endSelectState.show() }) {
         Text(
             text = state.end?.let { DateUtils.formatLocalTime(it) }
                 ?: LocalI18N.current["ui.common.unselected"]

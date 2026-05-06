@@ -956,6 +956,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.gesture.setEdgeGestureSequenceChildSwipeMaxAngleDeviationDeg(angleDeg)
         }
 
+        override fun isEdgeGestureSequenceChildSwipeTriggerOnRelease(): Boolean {
+            return shortXContext.gesture.isEdgeGestureSequenceChildSwipeTriggerOnRelease()
+        }
+
+        override fun setEdgeGestureSequenceChildSwipeTriggerOnRelease(enabled: Boolean) {
+            shortXContext.gesture.setEdgeGestureSequenceChildSwipeTriggerOnRelease(enabled)
+        }
+
         override fun log(message: String?, redirectTo: String?) {
             if (redirectTo.isNullOrBlank()) {
                 logger.i("EXTERNAL: $message")

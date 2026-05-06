@@ -16,6 +16,11 @@
 out/
 /github.properties
 /patch-magisk/bridge/bin/
+*.log
+.env*
+*.tmp
+*.swp
+Thumbs.db
 # Common build directories
 **/build/
 **/bin/

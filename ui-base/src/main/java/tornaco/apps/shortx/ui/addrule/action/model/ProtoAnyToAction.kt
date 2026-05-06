@@ -1477,6 +1477,59 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.ContinuousAdjustBrightness::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.ContinuousAdjustBrightness::class.java
+            Action.ContinuousAdjustBrightness(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                sensitivityScale = data.sensitivityScale,
+                minValue = data.minValue,
+                maxValue = data.maxValue
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.ContinuousGesturePointer::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.ContinuousGesturePointer::class.java
+            Action.ContinuousGesturePointer(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                sensitivityScale = data.sensitivityScale,
+                releaseButton = when {
+                    data.releaseButton != tornaco.apps.shortx.core.proto.action.GesturePointerReleaseButton.GesturePointerReleaseButtonNone -> {
+                        when (data.releaseButton) {
+                            tornaco.apps.shortx.core.proto.action.GesturePointerReleaseButton.GesturePointerReleaseButtonPrimary -> GesturePointerReleaseButton.Primary
+                            tornaco.apps.shortx.core.proto.action.GesturePointerReleaseButton.GesturePointerReleaseButtonSecondary -> GesturePointerReleaseButton.Secondary
+                            else -> GesturePointerReleaseButton.None
+                        }
+                    }
+
+                    data.clickOnRelease -> GesturePointerReleaseButton.Primary
+                    else -> GesturePointerReleaseButton.None
+                },
+                dragButton = when (data.dragButton) {
+                    tornaco.apps.shortx.core.proto.action.GesturePointerDragButton.GesturePointerDragButtonPrimary -> GesturePointerDragButton.Primary
+                    tornaco.apps.shortx.core.proto.action.GesturePointerDragButton.GesturePointerDragButtonSecondary -> GesturePointerDragButton.Secondary
+                    else -> GesturePointerDragButton.None
+                },
+                dragHoldDurationMs = data.dragHoldDurationMs.takeIf { it > 0 } ?: 350,
+                scrollMode = when (data.scrollMode) {
+                    tornaco.apps.shortx.core.proto.action.GesturePointerScrollMode.GesturePointerScrollModeVertical -> GesturePointerScrollMode.Vertical
+                    tornaco.apps.shortx.core.proto.action.GesturePointerScrollMode.GesturePointerScrollModeHorizontal -> GesturePointerScrollMode.Horizontal
+                    tornaco.apps.shortx.core.proto.action.GesturePointerScrollMode.GesturePointerScrollModeBoth -> GesturePointerScrollMode.Both
+                    else -> GesturePointerScrollMode.None
+                },
+                scrollScale = data.scrollScale.takeIf { it > 0f } ?: 1f,
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.SetAutoBrightness::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.action.SetAutoBrightness::class.java
@@ -1756,6 +1809,20 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 note = data.note,
                 type = data.type,
                 index = data.index
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.ContinuousAdjustVolume::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.ContinuousAdjustVolume::class.java
+            Action.ContinuousAdjustVolume(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                type = data.streamType,
+                sensitivityScale = data.sensitivityScale
             )
         }
 

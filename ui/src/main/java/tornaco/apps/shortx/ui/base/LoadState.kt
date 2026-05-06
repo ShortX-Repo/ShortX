@@ -13,7 +13,6 @@ import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -73,7 +72,7 @@ fun LoadError(
         )
 
         message?.let {
-            TextButton(onClick = {
+            ShortXTextButton(onClick = {
                 TextDisplayActivity.start(context, "ERROR", it)
             }) {
                 Text(
@@ -86,7 +85,7 @@ fun LoadError(
         }
 
         refresh?.let {
-            TextButton(onClick = { refresh() }) {
+            ShortXTextButton(onClick = { refresh() }) {
                 Text(
                     text = LocalI18N.current["ui.common.error.click.retry"],
                     style = MaterialTheme.typography.bodySmall.copy(
@@ -118,7 +117,7 @@ fun EmptyList(modifier: Modifier = Modifier, refresh: (() -> Unit)? = null) {
         )
 
         refresh?.let {
-            TextButton(onClick = { refresh() }) {
+            ShortXTextButton(onClick = { refresh() }) {
                 Text(
                     text = LocalI18N.current["ui.common.empty.click.retry"],
                     style = MaterialTheme.typography.bodySmall.copy(

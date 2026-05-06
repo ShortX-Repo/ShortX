@@ -3,7 +3,6 @@ package tornaco.apps.shortx.ui.addrule.fact.selector
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -17,6 +16,7 @@ import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.ShortXDialog
+import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.composeLogger
@@ -39,7 +39,7 @@ fun NFCTagSelectorDialog(state: NFCTagSelectorState) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
             DialogTitle(text = LocalI18N.current["ui.fact.nfc.tag"])
         }, buttons = {
-            TextButton(onClick = {
+            ShortXTextButton(onClick = {
                 state.dismiss()
             }) {
                 Text(text = stringResource(id = android.R.string.cancel))

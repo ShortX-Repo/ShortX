@@ -12,7 +12,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -52,6 +51,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXFilledTonalButton
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
@@ -278,7 +278,7 @@ private fun FixedBySelector(fixedBy: FixedSetting?, setFixedBy: (FixedSetting) -
     FieldTitle(text = LocalI18N.current["ui.fact.time.of.a.day.fixed.by.select"])
 
     Box {
-        FilledTonalButton(onClick = {
+        ShortXFilledTonalButton(onClick = {
             fixedByDropdownState.open()
         }) {
             Text(text = fixedBy?.label(i18N) ?: i18N["ui.common.unselected"])
