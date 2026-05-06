@@ -26,7 +26,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.proto.common.DialogUiStyleSettings
-import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.ShortXTextField
 
 @SuppressLint("ViewConstructor")
@@ -86,7 +85,7 @@ class EditTextDialogView(
                     .padding(top = 16.dp),
                 horizontalArrangement = Arrangement.End
             ) {
-                ShortXTextButton(onClick = {
+                TextButton(onClick = {
                     onDismissRequest(DialogButton.Negative)
                 }) {
                     Text(
@@ -94,7 +93,7 @@ class EditTextDialogView(
                         style = MaterialTheme.typography.labelLarge.applyStyle(style)
                     )
                 }
-                ShortXTextButton(onClick = {
+                TextButton(onClick = {
                     onDismissRequest(DialogButton.Positive)
                 }) {
                     Text(

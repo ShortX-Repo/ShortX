@@ -33,7 +33,6 @@ import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.DialogUiStyleSettings
-import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
@@ -76,7 +75,7 @@ class ListDialogView(
                     .fillMaxWidth()
             ) {
                 Column {
-                    ShortXTextButton(onClick = {
+                    TextButton(onClick = {
                         scope.launch { listState.scrollToItem(0) }
                     }) {
                         Text(
@@ -171,7 +170,7 @@ class ListDialogView(
                         .padding(top = 16.dp),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    ShortXTextButton(onClick = {
+                    TextButton(onClick = {
                         onDismissRequest()
                     }) {
                         Text(
