@@ -1,10 +1,14 @@
 package tornaco.apps.shortx.services.gesture
 
 import android.view.InputEvent
+import android.view.KeyEvent
 import android.view.MotionEvent
+import android.widget.Toast
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
@@ -262,6 +266,30 @@ class GestureService(shortXContext: ShortXContext) :
         logger.e(
             "reportMotionEvent, should never be called, system-ui gesture solution is deprecated. $event"
         )
+    }
+
+    // Return true, means consumed, should intercept this event.
+    fun interceptKeyBeforeQueueing(event: KeyEvent, interactive: Boolean): Boolean? {
+        // update last key.
+        shortXContext.input.updateLastInputKey(event.keyCode, "handleKeyEvent")
+
+        // Stop play gesture if necessary
+        if (event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || event.keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+            if (gesturePlayer.isInjecting) {
+                logger.w("Stop inject gesture since VOL key event.")
+                systemServiceScope.launchSafety("handleKeyEvent") {
+                    gesturePlayer.stopInject()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            i18NIns["ui.action.gesture.record.inject.stopped"],
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+        }
+        return shortXContext.rule.interceptKeyBeforeQueueing(event, interactive)
     }
 
     fun getGestureLengthScale(): Float =
