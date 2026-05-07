@@ -23,23 +23,18 @@ class InputFilterInstaller(private val root: ShortXService) {
             if (ims == null) {
                 return
             }
-            val inputFilter = Reflections.getObjectField(ims, "mInputFilter")
-            logger.w("installInputFilter, inputFilter: $inputFilter")
+            // Android low: nativeSetInputFilterEnabled(mPtr, filter != null);
+            // Android high: mNative.setInputFilterEnabled(filter != null);
 
-            // Not null means input filter is enabled.
-            if (inputFilter == null) {
-                Reflections.callMethod(
-                    ServiceHolder.inputManagerService,
-                    "setInputFilter",
-                    InputFilterImpl
-                )
-                logger.w("installInputFilter, InputFilter installed.")
-                Reflections.setObjectField(
-                    ServiceHolder.inputManagerService,
-                    "mInputFilter",
-                    null
-                )
-                logger.w("installInputFilter, InputFilter removed.")
+            val mNative = runCatching { Reflections.getObjectField(ims, "mNative") }.getOrNull()
+            logger.w("installInputFilter, mNative: $mNative")
+            if (mNative != null) {
+                Reflections.callMethod(mNative, "setInputFilterEnabled", true)
+            } else {
+                logger.w("installInputFilter mNative == null, try call nativeSetInputFilterEnabled")
+                val mPtr = Reflections.getObjectField(ims, "mPtr")
+                Reflections.callMethod(ims, "nativeSetInputFilterEnabled", mPtr, true)
+                logger.w("installInputFilter, nativeSetInputFilterEnabled called.")
             }
         } else {
             logger.w("Drop inputFilter set up since hasDisableGestureFlag is true")
