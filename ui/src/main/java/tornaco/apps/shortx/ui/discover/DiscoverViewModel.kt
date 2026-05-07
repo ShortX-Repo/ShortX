@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
 import tornaco.apps.shortx.core.BuildProp.SHORTX_DISCOVERY_DEFAULT_ONLINE_REPO_URL
+import tornaco.apps.shortx.core.BuildProp.SHORTX_DISCOVERY_GITHUB_TELEGRAM_ONLINE_REPO_URL
 import tornaco.apps.shortx.core.proto.common.CodeLibraryItem
 import tornaco.apps.shortx.core.proto.common.CodeType
 import tornaco.apps.shortx.core.proto.da.DirectAction
@@ -48,6 +49,11 @@ sealed interface DiscoverRepo {
     data object OfficialOnline : DiscoverRepo {
         override val repoIndexUrl: String
             get() = SHORTX_DISCOVERY_DEFAULT_ONLINE_REPO_URL
+    }
+
+    data object TelegramOnline : DiscoverRepo {
+        override val repoIndexUrl: String
+            get() = SHORTX_DISCOVERY_GITHUB_TELEGRAM_ONLINE_REPO_URL
     }
 
     data class CustomOnline(val indexUrl: String) : DiscoverRepo {
@@ -123,6 +129,10 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                         DiscoverRepo.OfficialOnline
                     }
 
+                    SHORTX_DISCOVERY_GITHUB_TELEGRAM_ONLINE_REPO_URL -> {
+                        DiscoverRepo.TelegramOnline
+                    }
+
                     else -> {
                         DiscoverRepo.CustomOnline(it)
                     }
@@ -173,6 +183,10 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                     SHORTX_DISCOVERY_DEFAULT_ONLINE_REPO_URL
                 }
 
+                DiscoverRepo.TelegramOnline -> {
+                    SHORTX_DISCOVERY_GITHUB_TELEGRAM_ONLINE_REPO_URL
+                }
+
                 else -> ""
             }
 
@@ -192,6 +206,10 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
 
                 DiscoverRepo.OfficialOnline -> {
                     loadOnlineData(SHORTX_DISCOVERY_DEFAULT_ONLINE_REPO_URL)
+                }
+
+                DiscoverRepo.TelegramOnline -> {
+                    loadOnlineData(SHORTX_DISCOVERY_GITHUB_TELEGRAM_ONLINE_REPO_URL)
                 }
 
                 DiscoverRepo.PrebuiltLocal -> {

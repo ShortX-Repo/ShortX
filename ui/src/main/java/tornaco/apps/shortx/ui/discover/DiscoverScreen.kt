@@ -39,6 +39,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.core.BuildProp.SHORTX_GITHIB_REPO_URL
+import tornaco.apps.shortx.core.BuildProp.SHORTX_DISCOVERY_GITHUB_TELEGRAM_ONLINE_REPO_URL
 import tornaco.apps.shortx.core.proto.common.CodeType
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.select
@@ -134,6 +135,10 @@ fun DiscoverScreen() {
                 "ShortX-Repo"
             }
 
+            DiscoverRepo.TelegramOnline -> {
+                "Telegram群文件"
+            }
+
             DiscoverRepo.PrebuiltLocal -> {
                 LocalI18N.current["ui.discover.source.prebuilt"]
             }
@@ -153,6 +158,12 @@ fun DiscoverScreen() {
                 id = "officialOnline",
                 title = "ShortX-Repo",
                 summary = SHORTX_GITHIB_REPO_URL,
+                iconName = Remix.Business.global_line
+            ),
+            MenuDialogItem(
+                id = "telegramOnline",
+                title = "Telegram群文件",
+                summary = SHORTX_DISCOVERY_GITHUB_TELEGRAM_ONLINE_REPO_URL,
                 iconName = Remix.Business.global_line
             ),
         ).apply {
@@ -189,6 +200,12 @@ fun DiscoverScreen() {
                 "local" -> discoverModel.switchRepo(DiscoverRepo.PrebuiltLocal)
                 "officialOnline" -> globalSubscribeState.isSubscribed.select({
                     discoverModel.switchRepo(DiscoverRepo.OfficialOnline)
+                }, {
+                    subscribeDialogState.show()
+                })
+
+                "telegramOnline" -> globalSubscribeState.isSubscribed.select({
+                    discoverModel.switchRepo(DiscoverRepo.TelegramOnline)
                 }, {
                     subscribeDialogState.show()
                 })
@@ -235,6 +252,10 @@ fun DiscoverScreen() {
 
                     DiscoverRepo.OfficialOnline -> {
                         listOf("officialOnline")
+                    }
+
+                    DiscoverRepo.TelegramOnline -> {
+                        listOf("telegramOnline")
                     }
 
                     is DiscoverRepo.CustomOnline -> {
