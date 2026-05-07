@@ -78,6 +78,12 @@ buildConfig {
         "SHORTX_DISCOVERY_DEFAULT_ONLINE_REPO_URL",
         "\"https://raw.githubusercontent.com/ShortX-Repo/Files/main/index.json\""
     )
+
+    buildConfigField(
+        "String",
+        "SHORTX_DISCOVERY_GITHUB_TELEGRAM_ONLINE_REPO_URL",
+        "\"https://raw.githubusercontent.com/ShortX-Repo/ShortX-Files/refs/heads/telegram/index.json\""
+    )
 }
 
 dependencies {
