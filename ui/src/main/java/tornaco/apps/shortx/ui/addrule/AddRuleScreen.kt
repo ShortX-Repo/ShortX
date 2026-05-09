@@ -88,6 +88,8 @@ import tornaco.apps.shortx.ui.base.handleSideEffect
 import tornaco.apps.shortx.ui.base.itemWithPadding
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.ui.flow.InstructionFlowDialog
+import tornaco.apps.shortx.ui.flow.RuleFlowSpec
 import tornaco.apps.shortx.ui.record.EvaRecordSetting
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 
@@ -189,6 +191,7 @@ fun AddRuleScreen(
     val quitActionState by quitActionHandler.state.collectAsState()
 
     val shortXProps = LocalShortXProps.current
+    var flowSpec by remember { mutableStateOf<RuleFlowSpec?>(null) }
 
     LaunchedEffect(vm) {
         vm.initRuleSetIdIfNonNull(ruleSetId)
@@ -270,6 +273,28 @@ fun AddRuleScreen(
         },
         actions = {
             IconButton(
+                onClick = {
+                    flowSpec = RuleFlowSpec(
+                        title = addRuleState.title.ifBlank { screenTitle },
+                        parameters = addRuleState.parameters,
+                        facts = factHandler.facts,
+                        conditions = conditionHandler.conditions,
+                        actions = actionHandler.actions,
+                        actionsOnEnabled = actionOnEnabledHandler.actions,
+                        actionsOnDisabled = actionOnDisabledHandler.actions,
+                        actionsOnDeleted = actionOnDeletedHandler.actions,
+                        actionsOnUpdated = actionOnUpdatedHandler.actions,
+                        actionsOnStopped = actionOnStoppedHandler.actions,
+                        quitEnabled = addRuleState.isQuitEnabled,
+                        quitFacts = quitFactHandler.facts,
+                        quitConditions = quitConditionHandler.conditions,
+                        quitActions = quitActionHandler.actions,
+                    )
+                }
+            ) {
+                RemixIcon(remixName = Remix.Editor.flow_chart)
+            }
+            IconButton(
                 enabled = canSaveWithoutChanges || hasAnyChanges,
                 onClick = {
                     vm.save(shortXProps.firstOrNull())
@@ -332,6 +357,15 @@ fun AddRuleScreen(
                     )
                 }
             }
+        }
+
+        flowSpec?.let { spec ->
+            InstructionFlowDialog(
+                title = i18n["ui.flow.view"],
+                root = spec,
+                shortXManager = vm.shortXManager,
+                onDismissRequest = { flowSpec = null }
+            )
         }
     }
 }

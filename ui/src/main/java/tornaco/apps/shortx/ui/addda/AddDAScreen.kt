@@ -30,7 +30,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
@@ -79,6 +81,8 @@ import tornaco.apps.shortx.ui.base.WarningCard
 import tornaco.apps.shortx.ui.base.handleSideEffect
 import tornaco.apps.shortx.ui.base.itemWithPadding
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
+import tornaco.apps.shortx.ui.flow.DirectActionFlowSpec
+import tornaco.apps.shortx.ui.flow.InstructionFlowDialog
 import tornaco.apps.shortx.ui.record.EvaRecordSetting
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 
@@ -181,6 +185,7 @@ fun AddDirectActionScreen(
     val actionOnStoppedState by actionOnStoppedHandler.state.collectAsState()
 
     val shortXProps = LocalShortXProps.current
+    var flowSpec by remember { mutableStateOf<DirectActionFlowSpec?>(null) }
 
     val backConfirmDialogState = rememberConfirmDialogState()
     ConfirmDialog(
@@ -230,6 +235,22 @@ fun AddDirectActionScreen(
             }
         },
         actions = {
+            IconButton(
+                onClick = {
+                    flowSpec = DirectActionFlowSpec(
+                        title = addDirectActionState.title.ifBlank { screenTitle },
+                        parameters = addDirectActionState.parameters,
+                        actions = actionContentStateHandler.actions,
+                        actionsOnStop = actionOnStoppedHandler.actions,
+                        quitEnabled = addDirectActionState.isQuitEnabled,
+                        quitFacts = quitFactHandler.facts,
+                        quitConditions = quitConditionHandler.conditions,
+                        quitActions = quitActionHandler.actions,
+                    )
+                }
+            ) {
+                RemixIcon(remixName = Remix.Editor.flow_chart)
+            }
             IconButton(
                 enabled = canSaveWithoutChanges || hasAnyChanges,
                 onClick = {
@@ -285,6 +306,15 @@ fun AddDirectActionScreen(
                     }
                 }
             }
+        }
+
+        flowSpec?.let { spec ->
+            InstructionFlowDialog(
+                title = i18n["ui.flow.view"],
+                root = spec,
+                shortXManager = vm.shortXManager,
+                onDismissRequest = { flowSpec = null }
+            )
         }
     }
 }
