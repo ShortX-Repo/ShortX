@@ -111,6 +111,7 @@ class AppStateService(shortXContext: ShortXContext) :
     private val homePkgs = mutableListOf<String>()
 
     private val pkgStopRunningEvents = mutableMapOf<AppPkg, Long>()
+    private val processRemovedEvents = mutableMapOf<String, Long>()
 
     private val dynamicShortcutSettingsStore by lazy {
         DynamicShortcutSettingsStore(systemServiceScope)
@@ -658,6 +659,16 @@ class AppStateService(shortXContext: ShortXContext) :
 
     @Synchronized
     fun onProcessRemoved(process: ProcessRecord) {
+        val now = System.currentTimeMillis()
+        val processKey = buildProcessRemovedEventKey(process)
+        val lastEventTime = processRemovedEvents[processKey] ?: 0L
+        if (now - lastEventTime <= PROCESS_REMOVED_DEBOUNCE_WINDOW_MS) {
+            logger.i("onProcessRemoved duplicate ignored: $processKey")
+            return
+        }
+        processRemovedEvents[processKey] = now
+        trimExpiredProcessRemovedEvents(now)
+
         systemServiceScope.launch {
             logger.d("onProcessRemoved: ${process.owner.pkgName} - ${process.owner.userId} - ${process.processName}")
 
@@ -703,6 +714,22 @@ class AppStateService(shortXContext: ShortXContext) :
                     logger.i("alreadyBroadcastStopEvent skip.")
                 }
             }
+        }
+    }
+
+    private fun buildProcessRemovedEventKey(process: ProcessRecord): String {
+        return "${process.owner.userId}:${process.owner.pkgName}:${process.processName}:${process.pid}"
+    }
+
+    private fun trimExpiredProcessRemovedEvents(now: Long) {
+        if (processRemovedEvents.size < PROCESS_REMOVED_EVENTS_CACHE_LIMIT) return
+
+        processRemovedEvents.entries.removeAll { (_, timestamp) ->
+            now - timestamp > PROCESS_REMOVED_DEBOUNCE_WINDOW_MS * 4
+        }
+
+        if (processRemovedEvents.size >= PROCESS_REMOVED_EVENTS_CACHE_LIMIT) {
+            processRemovedEvents.clear()
         }
     }
 
@@ -1035,5 +1062,10 @@ class AppStateService(shortXContext: ShortXContext) :
                 }
             }
         }
+    }
+
+    companion object {
+        private const val PROCESS_REMOVED_DEBOUNCE_WINDOW_MS = 1200L
+        private const val PROCESS_REMOVED_EVENTS_CACHE_LIMIT = 128
     }
 }
