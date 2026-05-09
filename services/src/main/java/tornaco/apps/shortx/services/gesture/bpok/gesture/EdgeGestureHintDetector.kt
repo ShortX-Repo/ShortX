@@ -281,9 +281,15 @@ class EdgeGestureHintDetector(
     private fun areaMatchesRule(area: DetectedArea, rule: EdgeGesture): Boolean {
         return when (area) {
             is DetectedArea.PredefinedEdge -> {
-                rule.edge == area.edge &&
-                        (rule.customRect == null ||
-                                rule.customRect == tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance())
+                val hasCustomRect = rule.customRect != null &&
+                        rule.customRect != tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance()
+                if (hasCustomRect) {
+                    false
+                } else {
+                    rule.edge == area.edge ||
+                            (getParentEdgeRegion(area.edge) != area.edge &&
+                                    rule.edge == getParentEdgeRegion(area.edge))
+                }
             }
 
             is DetectedArea.CustomRect -> {
@@ -291,6 +297,32 @@ class EdgeGestureHintDetector(
                         rule.customRect != tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance() &&
                         rule.customRect == area.rect
             }
+        }
+    }
+
+    private fun getParentEdgeRegion(edge: tornaco.apps.shortx.core.proto.fact.Edge): tornaco.apps.shortx.core.proto.fact.Edge {
+        return when (edge) {
+            tornaco.apps.shortx.core.proto.fact.Edge.LeftTop,
+            tornaco.apps.shortx.core.proto.fact.Edge.LeftCenter,
+            tornaco.apps.shortx.core.proto.fact.Edge.LeftBottom -> tornaco.apps.shortx.core.proto.fact.Edge.LeftAll
+
+            tornaco.apps.shortx.core.proto.fact.Edge.RightTop,
+            tornaco.apps.shortx.core.proto.fact.Edge.RightCenter,
+            tornaco.apps.shortx.core.proto.fact.Edge.RightBottom -> tornaco.apps.shortx.core.proto.fact.Edge.RightAll
+
+            tornaco.apps.shortx.core.proto.fact.Edge.TopLeft,
+            tornaco.apps.shortx.core.proto.fact.Edge.TopCenter,
+            tornaco.apps.shortx.core.proto.fact.Edge.TopRight -> tornaco.apps.shortx.core.proto.fact.Edge.TopAll
+
+            tornaco.apps.shortx.core.proto.fact.Edge.BottomLeft,
+            tornaco.apps.shortx.core.proto.fact.Edge.BottomCenter,
+            tornaco.apps.shortx.core.proto.fact.Edge.BottomRight -> tornaco.apps.shortx.core.proto.fact.Edge.BottomAll
+
+            tornaco.apps.shortx.core.proto.fact.Edge.LeftAll,
+            tornaco.apps.shortx.core.proto.fact.Edge.RightAll,
+            tornaco.apps.shortx.core.proto.fact.Edge.TopAll,
+            tornaco.apps.shortx.core.proto.fact.Edge.BottomAll,
+            tornaco.apps.shortx.core.proto.fact.Edge.UNRECOGNIZED -> edge
         }
     }
 
