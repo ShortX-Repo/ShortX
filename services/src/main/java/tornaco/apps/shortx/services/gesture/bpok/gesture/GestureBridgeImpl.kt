@@ -296,7 +296,7 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
             !binding.rule.isDisabled &&
                     binding.rule.childStepsCount == 0 &&
                     binding.rule.gesture == gestureEvent &&
-                    areas.any { area -> areaMatchesRule(area, binding.rule) }
+                    areas.any { area -> matchedTriggerArea(area, binding.rule) != null }
         }
     }
 
@@ -306,12 +306,22 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
         downX: Float,
         downY: Float,
     ): Boolean {
-        var res = false
-        areas.forEach {
-            val handled = onEdgeGestureEvent(it, gestureEvent, downX, downY)
-            if (handled) res = true
+        val matches = enabledEdgeGestures.mapNotNull { enabledGesture ->
+            if (enabledGesture.isDisabled || enabledGesture.childStepsCount > 0 || enabledGesture.gesture != gestureEvent) {
+                return@mapNotNull null
+            }
+
+            val matchedArea = areas.firstNotNullOfOrNull { area ->
+                matchedTriggerArea(area, enabledGesture)
+            } ?: return@mapNotNull null
+
+            enabledGesture to matchedArea
         }
-        return res
+
+        matches.forEach { (_, matchedArea) ->
+            fireEdgeGestureEvent(matchedArea, gestureEvent, downX, downY)
+        }
+        return matches.isNotEmpty()
     }
 
     override fun findMatchingEdgeGestureSequences(
@@ -321,15 +331,12 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
         val allSequenceRules = enabledEdgeGestures.filter {
             !it.isDisabled && it.gesture == gestureEvent && it.childStepsCount > 0
         }
-        val matched = areas.flatMap { area ->
-            enabledEdgeGestures.filter { enabledGesture ->
-                !enabledGesture.isDisabled &&
-                        enabledGesture.gesture == gestureEvent &&
-                        enabledGesture.childStepsCount > 0 &&
-                        areaMatchesRule(area, enabledGesture)
-            }.map {
-                EdgeGestureSequenceCandidate(area = area, rule = it)
-            }
+        val matched = allSequenceRules.mapNotNull { enabledGesture ->
+            val matchedArea = areas.firstNotNullOfOrNull { area ->
+                matchedTriggerArea(area, enabledGesture)
+            } ?: return@mapNotNull null
+
+            EdgeGestureSequenceCandidate(area = matchedArea, rule = enabledGesture)
         }
         logger.logOnDebug(
             "$DIAG_PREFIX findMatchingEdgeGestureSequences: gesture=$gestureEvent, areas=$areas, totalSequenceRules=${allSequenceRules.size}, matched=${matched.map { candidate -> "${candidate.area}:${candidate.rule.childStepsList.map { it.type }}" }}"
@@ -383,61 +390,69 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
         return true
     }
 
-    private fun onEdgeGestureEvent(
+    private fun fireEdgeGestureEvent(
         area: DetectedArea,
         gesture: Gesture,
         downX: Float,
         downY: Float,
-    ): Boolean {
-        if (shouldFireEdgeGesture(area, gesture)) {
-            logger.d("Let's fire: $area $gesture")
-            val data = EdgeGesture.newBuilder()
-                .setGesture(gesture)
-                .apply {
-                    if (area is DetectedArea.PredefinedEdge) {
-                        setEdge(area.edge)
-                        setIsTriggerCustom(false)
-                    } else if (area is DetectedArea.CustomRect) {
-                        setCustomRect(area.rect)
-                        setIsTriggerCustom(true)
-                    }
+    ) {
+        logger.d("Let's fire: $area $gesture")
+        val data = EdgeGesture.newBuilder()
+            .setGesture(gesture)
+            .apply {
+                if (area is DetectedArea.PredefinedEdge) {
+                    setEdge(area.edge)
+                    setIsTriggerCustom(false)
+                } else if (area is DetectedArea.CustomRect) {
+                    setCustomRect(area.rect)
+                    setIsTriggerCustom(true)
                 }
-                .setDownX(downX.roundToInt())
-                .setDownY(downY.roundToInt())
-                .build()
-            shortx.fireEdgeGesture(data)
-            return true
-        } else return false
+            }
+            .setDownX(downX.roundToInt())
+            .setDownY(downY.roundToInt())
+            .build()
+        shortx.fireEdgeGesture(data)
     }
 
-    private fun shouldFireEdgeGesture(area: DetectedArea, gesture: Gesture): Boolean {
-        // 检查enabledEdgeGestures中是否包含匹配的EdgeGesture
-        return enabledEdgeGestures.any { enabledGesture ->
-            if (enabledGesture.childStepsCount > 0) {
-                return@any false
-            }
-            // 首先检查gesture是否匹配，不匹配则提前返回false
-            if (enabledGesture.gesture != gesture) {
-                return@any false
-            }
-
-            // gesture匹配后再检查区域是否匹配
-            areaMatchesRule(area, enabledGesture)
-        }
-    }
-
-    private fun areaMatchesRule(area: DetectedArea, rule: EdgeGesture): Boolean {
+    private fun matchedTriggerArea(area: DetectedArea, rule: EdgeGesture): DetectedArea? {
         return when (area) {
             is DetectedArea.PredefinedEdge -> {
-                rule.edge == area.edge &&
-                        (!rule.hasCustomRect() || rule.customRect == tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance())
+                val hasCustomRect = rule.hasCustomRect() &&
+                        rule.customRect != tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance()
+                if (hasCustomRect) {
+                    null
+                } else if (rule.edge == area.edge) {
+                    area
+                } else {
+                    val parentEdge = getParentEdgeRegion(area.edge)
+                    if (parentEdge != area.edge && rule.edge == parentEdge) {
+                        DetectedArea.PredefinedEdge(parentEdge)
+                    } else {
+                        null
+                    }
+                }
             }
 
             is DetectedArea.CustomRect -> {
-                rule.hasCustomRect() &&
-                        rule.customRect != tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance() &&
-                        rule.customRect == area.rect
+                if (rule.hasCustomRect() &&
+                    rule.customRect != tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance() &&
+                    rule.customRect == area.rect
+                ) {
+                    area
+                } else {
+                    null
+                }
             }
+        }
+    }
+
+    private fun getParentEdgeRegion(edge: Edge): Edge {
+        return when (edge) {
+            Edge.LeftTop, Edge.LeftCenter, Edge.LeftBottom -> Edge.LeftAll
+            Edge.RightTop, Edge.RightCenter, Edge.RightBottom -> Edge.RightAll
+            Edge.TopLeft, Edge.TopCenter, Edge.TopRight -> Edge.TopAll
+            Edge.BottomLeft, Edge.BottomCenter, Edge.BottomRight -> Edge.BottomAll
+            Edge.LeftAll, Edge.RightAll, Edge.TopAll, Edge.BottomAll, Edge.UNRECOGNIZED -> edge
         }
     }
 

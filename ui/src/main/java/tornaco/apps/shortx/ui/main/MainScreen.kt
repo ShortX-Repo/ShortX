@@ -204,8 +204,8 @@ fun HomeScreen() {
                                 modifier = Modifier
                                     .align(Alignment.BottomCenter)
                                     .fillMaxWidth()
-                                    .padding(horizontal = 12.dp)
-                                    .padding(bottom = 12.dp),
+                                    .padding(horizontal = 0.dp)
+                                    .padding(bottom = 0.dp),
                                 navController = navController,
                                 items = items,
                             )

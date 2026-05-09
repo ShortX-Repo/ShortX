@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -10,6 +11,7 @@ import telegram_group_download_curated as curated
 
 
 DEFAULT_OUTPUT_SUFFIX = "-curated"
+CONTENT_SEPARATOR = "###------###"
 
 
 @dataclass
@@ -29,6 +31,8 @@ class FileCandidate:
     canonical_title: str
     version: int
     modified_time: float
+    command_id: str | None
+    last_update_time: int | None
 
 
 def parse_args() -> argparse.Namespace:
@@ -36,6 +40,7 @@ def parse_args() -> argparse.Namespace:
         description=(
             "Curate downloaded ShortX files in a local folder. "
             "Numeric-only titles are removed, duplicate titles keep the highest numbered version, "
+            "files with the same payload id keep the largest lastUpdateTime, "
             "and selected files can be renamed in place to canonical names."
         )
     )
@@ -92,6 +97,7 @@ def build_candidate(path: Path, source_dir: Path) -> FileCandidate | None:
         return None
 
     _, canonical_title, version = parsed
+    command_id, last_update_time = parse_command_metadata(path)
     return FileCandidate(
         source_path=path,
         relative_path=path.relative_to(source_dir),
@@ -99,7 +105,41 @@ def build_candidate(path: Path, source_dir: Path) -> FileCandidate | None:
         canonical_title=canonical_title,
         version=version,
         modified_time=path.stat().st_mtime,
+        command_id=command_id,
+        last_update_time=last_update_time,
     )
+
+
+def parse_command_metadata(path: Path) -> tuple[str | None, int | None]:
+    try:
+        content = path.read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return None, None
+
+    json_part, _, _ = content.rpartition(CONTENT_SEPARATOR)
+    if not json_part:
+        return None, None
+
+    try:
+        payload = json.loads(json_part.strip())
+    except json.JSONDecodeError:
+        return None, None
+
+    if not isinstance(payload, dict):
+        return None, None
+
+    command_id = payload.get("id")
+    last_update_time = payload.get("lastUpdateTime")
+    normalized_id = str(command_id).strip() if command_id is not None else None
+    if not normalized_id:
+        normalized_id = None
+
+    try:
+        normalized_last_update = int(str(last_update_time).strip())
+    except (TypeError, ValueError, AttributeError):
+        normalized_last_update = None
+
+    return normalized_id, normalized_last_update
 
 
 def prefer_candidate(current: FileCandidate | None, incoming: FileCandidate) -> FileCandidate:
@@ -112,10 +152,23 @@ def prefer_candidate(current: FileCandidate | None, incoming: FileCandidate) -> 
     return incoming if str(incoming.source_path) > str(current.source_path) else current
 
 
+def prefer_candidate_by_id(current: FileCandidate | None, incoming: FileCandidate) -> FileCandidate:
+    if current is None:
+        return incoming
+    current_last_update = current.last_update_time if current.last_update_time is not None else -1
+    incoming_last_update = incoming.last_update_time if incoming.last_update_time is not None else -1
+    if incoming_last_update != current_last_update:
+        return incoming if incoming_last_update > current_last_update else current
+    return prefer_candidate(current, incoming)
+
+
 def curate_candidates(paths: list[Path], source_dir: Path) -> tuple[list[FileCandidate], dict[str, int]]:
-    selected: dict[str, FileCandidate] = {}
+    selected_by_title: dict[str, FileCandidate] = {}
+    selected_by_id: dict[str, FileCandidate] = {}
+    retained_without_id: list[FileCandidate] = []
     skipped_non_matching = 0
-    replaced_duplicates = 0
+    replaced_title_duplicates = 0
+    replaced_id_duplicates = 0
 
     for path in paths:
         candidate = build_candidate(path, source_dir)
@@ -123,17 +176,32 @@ def curate_candidates(paths: list[Path], source_dir: Path) -> tuple[list[FileCan
             skipped_non_matching += 1
             continue
 
-        existing = selected.get(candidate.canonical_title)
+        existing = selected_by_title.get(candidate.canonical_title)
         preferred = prefer_candidate(existing, candidate)
         if preferred is candidate and existing is not None:
-            replaced_duplicates += 1
-        selected[candidate.canonical_title] = preferred
+            replaced_title_duplicates += 1
+        selected_by_title[candidate.canonical_title] = preferred
 
-    ordered = sorted(selected.values(), key=lambda item: item.relative_path.as_posix())
+    for candidate in selected_by_title.values():
+        if not candidate.command_id:
+            retained_without_id.append(candidate)
+            continue
+
+        existing = selected_by_id.get(candidate.command_id)
+        preferred = prefer_candidate_by_id(existing, candidate)
+        if preferred is candidate and existing is not None:
+            replaced_id_duplicates += 1
+        selected_by_id[candidate.command_id] = preferred
+
+    ordered = sorted(
+        [*retained_without_id, *selected_by_id.values()],
+        key=lambda item: item.relative_path.as_posix(),
+    )
     return ordered, {
         "selected": len(ordered),
         "skipped_non_matching": skipped_non_matching,
-        "replaced_duplicates": replaced_duplicates,
+        "replaced_title_duplicates": replaced_title_duplicates,
+        "replaced_id_duplicates": replaced_id_duplicates,
     }
 
 
@@ -200,13 +268,14 @@ def main() -> None:
     print(f"Source directory: {config.source_dir}")
     print(
         "Selection rules: prefix=ShortX extension=.txt exclude_numeric_titles=true keep_highest_version=true "
-        f"rename_standardized={not config.keep_original_name} in_place_cleanup=true"
+        f"rename_standardized={not config.keep_original_name} in_place_cleanup=true dedupe_by_id=true"
     )
 
     for candidate in candidates:
         print(
             "[select] "
-            f"{candidate.source_path} canonical={candidate.canonical_title} version={candidate.version}"
+            f"{candidate.source_path} canonical={candidate.canonical_title} version={candidate.version} "
+            f"command_id={candidate.command_id} lastUpdateTime={candidate.last_update_time}"
         )
 
     deleted, renamed = apply_actions(delete_paths, rename_actions, config)
@@ -216,7 +285,9 @@ def main() -> None:
         "Finished. "
         f"selected={stats['selected']} deleted={deleted} renamed={renamed} planned_deletes={planned_deletes} "
         f"planned_renames={planned_renames} blocked_renames={blocked_renames} "
-        f"skipped_non_matching={stats['skipped_non_matching']} replaced_duplicates={stats['replaced_duplicates']} "
+        f"skipped_non_matching={stats['skipped_non_matching']} "
+        f"replaced_title_duplicates={stats['replaced_title_duplicates']} "
+        f"replaced_id_duplicates={stats['replaced_id_duplicates']} "
         f"dry_run={config.dry_run}"
     )
 
