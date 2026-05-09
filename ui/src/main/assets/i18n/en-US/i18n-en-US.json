@@ -1573,6 +1573,8 @@
   "ui.flow.on.delete": "On delete",
   "ui.flow.on.update": "On update",
   "ui.flow.on.stop": "On stop",
+  "ui.flow.focus.mode.enabled": "Path focus mode",
+  "ui.flow.focus.mode.tip": "Tap any node to focus its branch. Only the current path stays highlighted and expanded.",
   "ui.function.title": "Function",
   "ui.system.env.battery.level": "Battery level",
   "ui.system.env.current.time.millis": "Current time in ms",

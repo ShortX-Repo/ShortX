@@ -1571,6 +1571,8 @@
   "ui.flow.on.delete": "刪除時",
   "ui.flow.on.update": "更新時",
   "ui.flow.on.stop": "停止時",
+  "ui.flow.focus.mode.enabled": "路徑聚焦模式",
+  "ui.flow.focus.mode.tip": "點擊任意節點即可聚焦該分支。當前路徑會保持高亮並展開，其他分支會收起。",
   "ui.function.title": "函數",
   "ui.system.env.battery.level": "电量",
   "ui.system.env.current.time.millis": "当前时间 ms",

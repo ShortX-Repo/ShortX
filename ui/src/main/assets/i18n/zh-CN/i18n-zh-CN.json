@@ -1572,6 +1572,8 @@
   "ui.flow.on.delete": "删除时",
   "ui.flow.on.update": "更新时",
   "ui.flow.on.stop": "停止时",
+  "ui.flow.focus.mode.enabled": "路径聚焦模式",
+  "ui.flow.focus.mode.tip": "点击任意节点即可聚焦该分支。当前路径会保持高亮并展开，其它分支会收起。",
   "ui.function.title": "函数",
   "ui.system.env.battery.level": "电量",
   "ui.system.env.current.time.millis": "当前时间 ms",
