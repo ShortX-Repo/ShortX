@@ -943,6 +943,11 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                                     fallback = "secondary click"
                                 )
 
+                                tornaco.apps.shortx.ui.addrule.action.model.GesturePointerReleaseButton.Touch -> i18N.get(
+                                    key = "ui.action.continuous.gesture.pointer.release.button.touch",
+                                    fallback = "touch tap"
+                                )
+
                                 else -> ""
                             }
                         )

@@ -311,6 +311,11 @@ private fun tornaco.apps.shortx.core.I18N.labelFor(button: GesturePointerRelease
             key = "ui.action.continuous.gesture.pointer.release.button.secondary",
             fallback = "Secondary click"
         )
+
+        GesturePointerReleaseButton.Touch -> get(
+            key = "ui.action.continuous.gesture.pointer.release.button.touch",
+            fallback = "Touch tap"
+        )
     }
 }
 

@@ -754,6 +754,7 @@
   "ui.action.continuous.gesture.pointer.release.button.none": "無",
   "ui.action.continuous.gesture.pointer.release.button.primary": "左鍵點擊",
   "ui.action.continuous.gesture.pointer.release.button.secondary": "右鍵點擊",
+  "ui.action.continuous.gesture.pointer.release.button.touch": "觸控點擊",
   "ui.action.continuous.gesture.pointer.drag.button": "長按拖拽",
   "ui.action.continuous.gesture.pointer.drag.button.none": "停用",
   "ui.action.continuous.gesture.pointer.drag.button.primary": "左鍵拖拽",

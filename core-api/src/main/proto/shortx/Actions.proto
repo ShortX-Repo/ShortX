@@ -2085,6 +2085,7 @@ enum GesturePointerReleaseButton {
   GesturePointerReleaseButtonNone = 0;
   GesturePointerReleaseButtonPrimary = 1;
   GesturePointerReleaseButtonSecondary = 2;
+  GesturePointerReleaseButtonTouch = 3;
 }
 
 enum GesturePointerDragButton {

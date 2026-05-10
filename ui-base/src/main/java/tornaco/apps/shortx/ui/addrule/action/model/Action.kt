@@ -81,6 +81,7 @@ enum class GesturePointerReleaseButton {
     None,
     Primary,
     Secondary,
+    Touch,
 }
 
 enum class GesturePointerDragButton {

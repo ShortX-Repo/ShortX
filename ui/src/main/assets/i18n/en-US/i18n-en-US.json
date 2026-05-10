@@ -734,6 +734,7 @@
   "ui.action.continuous.gesture.pointer.release.button.none": "None",
   "ui.action.continuous.gesture.pointer.release.button.primary": "Primary click",
   "ui.action.continuous.gesture.pointer.release.button.secondary": "Secondary click",
+  "ui.action.continuous.gesture.pointer.release.button.touch": "Touch tap",
   "ui.action.continuous.gesture.pointer.drag.button": "Long-press drag",
   "ui.action.continuous.gesture.pointer.drag.button.none": "Disabled",
   "ui.action.continuous.gesture.pointer.drag.button.primary": "Primary drag",

@@ -30,6 +30,7 @@ class GesturePointerContinuousHandler(
 ) : ContinuousActionHandler {
     companion object {
         private const val POINTER_ID = -3L
+        private const val TOUCH_POINTER_ID = -4L
         private const val DEFAULT_DRAG_HOLD_MS = 350
         private const val SCROLL_STEP_PX = 48f
     }
@@ -131,7 +132,10 @@ class GesturePointerContinuousHandler(
             )
             dragActive = false
         } else if (releaseButton != GesturePointerReleaseButton.GesturePointerReleaseButtonNone) {
-            injectMouseClick(pointerX, pointerY, releaseButton.toMotionButton())
+            when (releaseButton) {
+                GesturePointerReleaseButton.GesturePointerReleaseButtonTouch -> injectTouchTap(pointerX, pointerY)
+                else -> injectMouseClick(pointerX, pointerY, releaseButton.toMotionButton())
+            }
         }
         hidePointerOverlay()
         logger.d("onFinish: pointer=($pointerX,$pointerY)")
@@ -239,6 +243,30 @@ class GesturePointerContinuousHandler(
             button,
         )
         logger.d("injectMouseClick: downOk=$downOk, upOk=$upOk")
+    }
+
+    private fun injectTouchTap(x: Float, y: Float) {
+        val position = Position(
+            x.roundToInt(),
+            y.roundToInt(),
+            screenWidth,
+            screenHeight,
+        )
+        val downOk = controller.injectTouch(
+            MotionEvent.ACTION_DOWN,
+            TOUCH_POINTER_ID,
+            position,
+            1f,
+            0,
+        )
+        val upOk = controller.injectTouch(
+            MotionEvent.ACTION_UP,
+            TOUCH_POINTER_ID,
+            position,
+            0f,
+            0,
+        )
+        logger.d("injectTouchTap: downOk=$downOk, upOk=$upOk")
     }
 
     private fun injectPointerAction(action: Int, x: Float, y: Float, pressure: Float, button: Int): Boolean {

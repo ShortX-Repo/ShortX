@@ -752,6 +752,7 @@
   "ui.action.continuous.gesture.pointer.release.button.none": "无",
   "ui.action.continuous.gesture.pointer.release.button.primary": "左键点击",
   "ui.action.continuous.gesture.pointer.release.button.secondary": "右键点击",
+  "ui.action.continuous.gesture.pointer.release.button.touch": "触屏点击",
   "ui.action.continuous.gesture.pointer.drag.button": "长按拖拽",
   "ui.action.continuous.gesture.pointer.drag.button.none": "禁用",
   "ui.action.continuous.gesture.pointer.drag.button.primary": "左键拖拽",

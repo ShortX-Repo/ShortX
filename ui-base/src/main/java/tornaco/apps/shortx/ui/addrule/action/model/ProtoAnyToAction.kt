@@ -1507,6 +1507,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                         when (data.releaseButton) {
                             tornaco.apps.shortx.core.proto.action.GesturePointerReleaseButton.GesturePointerReleaseButtonPrimary -> GesturePointerReleaseButton.Primary
                             tornaco.apps.shortx.core.proto.action.GesturePointerReleaseButton.GesturePointerReleaseButtonSecondary -> GesturePointerReleaseButton.Secondary
+                            tornaco.apps.shortx.core.proto.action.GesturePointerReleaseButton.GesturePointerReleaseButtonTouch -> GesturePointerReleaseButton.Touch
                             else -> GesturePointerReleaseButton.None
                         }
                     }

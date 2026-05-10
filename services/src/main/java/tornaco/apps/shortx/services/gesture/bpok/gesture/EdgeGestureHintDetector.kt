@@ -122,6 +122,41 @@ class EdgeGestureHintDetector(
         reset()
     }
 
+    fun onDiscreteGestureTriggered(areas: List<DetectedArea>, gesture: Gesture, anchorX: Float, anchorY: Float) {
+        val matchedRules = bridge.enabledEdgeGestures.filter { rule ->
+            !rule.isDisabled &&
+                    rule.gesture == gesture &&
+                    rule.isGestureFeedbackEnabled() &&
+                    areas.any { area -> areaMatchesRule(area, rule) }
+        }
+        if (matchedRules.isEmpty()) return
+
+        val token = nextToken++
+        val hintEnabled = matchedRules.any { it.isGestureHintEnabled() }
+        val hapticEnabled = matchedRules.any { it.isGestureHapticEnabled() }
+
+        if (hintEnabled) {
+            gestureHintController.onGestureProgress(
+                GestureHintModel(
+                    token = token,
+                    anchorX = anchorX,
+                    anchorY = anchorY,
+                    directionX = 0f,
+                    directionY = 0f,
+                    progress = 0.36f,
+                    state = GestureHintState.Ready,
+                    showArrow = false,
+                )
+            )
+        }
+        if (hapticEnabled) {
+            gestureHapticController.onGestureSuccess(token)
+        }
+        if (hintEnabled) {
+            gestureHintController.onGestureSuccess(token)
+        }
+    }
+
     private fun handleGestureHint(distance: Float, candidate: HintCandidate?) {
         if (trackedToken == 0L) return
         val showThresholdPx = GESTURE_HINT_SHOW_DISTANCE_DP._dp.toFloat()

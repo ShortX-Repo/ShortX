@@ -1357,6 +1357,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                         tornaco.apps.shortx.ui.addrule.action.model.GesturePointerReleaseButton.None -> GesturePointerReleaseButton.GesturePointerReleaseButtonNone
                         tornaco.apps.shortx.ui.addrule.action.model.GesturePointerReleaseButton.Primary -> GesturePointerReleaseButton.GesturePointerReleaseButtonPrimary
                         tornaco.apps.shortx.ui.addrule.action.model.GesturePointerReleaseButton.Secondary -> GesturePointerReleaseButton.GesturePointerReleaseButtonSecondary
+                        tornaco.apps.shortx.ui.addrule.action.model.GesturePointerReleaseButton.Touch -> GesturePointerReleaseButton.GesturePointerReleaseButtonTouch
                     }
                 )
                 .setDragButton(

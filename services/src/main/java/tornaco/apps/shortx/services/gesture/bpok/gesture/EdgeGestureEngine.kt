@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.gesture.bpok.gesture
 
 import android.os.Handler
+import android.os.SystemClock
 import android.view.MotionEvent
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.logOnDebug
@@ -125,6 +126,11 @@ class EdgeGestureEngine(
         lockedPointerId = event.getPointerId(event.actionIndex)
         cachedDownEvent?.recycle()
         cachedDownEvent = MotionEvent.obtain(event)
+
+        if (startContinuousExecution(Gesture.DoubleTap, event.eventTime)) {
+            listener?.onGestureTriggered(hitRegion, GestureType.DoubleTap)
+            hintDetector.onDiscreteGestureTriggered(hitAreas, Gesture.DoubleTap, downX, downY)
+        }
         return true
     }
 
@@ -316,12 +322,19 @@ class EdgeGestureEngine(
         if (!gestureCaptured || executionStarted) return
         if (recognizedDirection != Direction.UNKNOWN) return
 
-        val resolvedAction = actionResolver.resolve(hitAreas, Gesture.LongTap)
+        val gesture = Gesture.LongTap
+        val resolvedAction = actionResolver.resolve(hitAreas, gesture)
+
+        if (startContinuousExecution(gesture, SystemClock.uptimeMillis())) {
+            hintDetector.onDiscreteGestureTriggered(hitAreas, gesture, downX, downY)
+            return
+        }
+
         if (resolvedAction != null) {
             listener?.onGestureTriggered(hitRegion, GestureType.LongPress)
             bridge.handleEdgeGestureEvent(
-            hitAreas,
-                Gesture.LongTap,
+                hitAreas,
+                gesture,
                 downX,
                 downY
             )
@@ -383,6 +396,20 @@ class EdgeGestureEngine(
                 candidates = sequenceCandidates,
             )
         }
+    }
+
+    private fun startContinuousExecution(gesture: Gesture, eventTime: Long): Boolean {
+        val continuousBinding = bridge.findContinuousGestureBinding(hitAreas, gesture) ?: return false
+        val handler = bridge.createContinuousActionHandler(continuousBinding.payload) ?: return false
+
+        timerController.cancelAll()
+        firstTapUpEvent?.recycle()
+        firstTapUpEvent = null
+        executionStarted = true
+        consumeCachedEvent()
+        continuousHandler = handler
+        handler.onStart(edgeGroup(hitRegion), downX, downY, eventTime)
+        return true
     }
 
     private fun edgeGroup(region: Edge): Int {
