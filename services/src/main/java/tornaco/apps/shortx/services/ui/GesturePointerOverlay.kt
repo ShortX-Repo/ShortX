@@ -12,10 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import tornaco.apps.shortx.core.util.OsUtils
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.hypot
-import kotlin.math.sin
 
 class GesturePointerOverlay(private val context: Context) {
     private val windowManager by lazy {
@@ -30,7 +26,7 @@ class GesturePointerOverlay(private val context: Context) {
             return
         }
         val view = GesturePointerOverlayView(context).also {
-            it.updatePointer(edgeGroup = edgeGroup, anchorX = x, anchorY = y, currentX = x, currentY = y)
+            it.updatePointer(anchorX = x, anchorY = y, currentX = x, currentY = y)
         }
         windowManager.addView(view, createLayoutParams())
         overlayView = view
@@ -38,7 +34,6 @@ class GesturePointerOverlay(private val context: Context) {
 
     fun update(edgeGroup: Int, anchorX: Float, anchorY: Float, currentX: Float, currentY: Float) {
         overlayView?.updatePointer(
-            edgeGroup = edgeGroup,
             anchorX = anchorX,
             anchorY = anchorY,
             currentX = currentX,
@@ -83,33 +78,49 @@ class GesturePointerOverlay(private val context: Context) {
 
 private class GesturePointerOverlayView(context: Context) : View(context) {
     private val density = resources.displayMetrics.density
-    private val trailPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#66FF3B30")
-        style = Paint.Style.STROKE
-        strokeWidth = 2f * density
-        strokeCap = Paint.Cap.ROUND
-    }
-    private val arrowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#FFFF3B30")
-        style = Paint.Style.FILL_AND_STROKE
-        strokeWidth = 3f * density
-        strokeJoin = Paint.Join.ROUND
-        strokeCap = Paint.Cap.ROUND
-    }
-    private val haloPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#26FF3B30")
+
+    private val arrowFillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.WHITE
         style = Paint.Style.FILL
     }
-    private val arrowPath = Path()
 
-    private var edgeGroup: Int = -1
+    private val arrowStrokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.BLACK
+        style = Paint.Style.STROKE
+        strokeWidth = 1.2f * density
+        strokeJoin = Paint.Join.MITER
+    }
+
+    private val shadowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#40000000")
+        style = Paint.Style.FILL
+    }
+
+    private val arrowPath = Path().apply {
+        moveTo(0f, 0f)
+        lineTo(0f, 18f * density)
+        lineTo(4.5f * density, 14.5f * density)
+        lineTo(7.5f * density, 21.5f * density)
+        lineTo(10f * density, 20.5f * density)
+        lineTo(7f * density, 13.5f * density)
+        lineTo(12.5f * density, 13.5f * density)
+        close()
+    }
+
+    private val trailPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.BLACK
+        style = Paint.Style.STROKE
+        strokeWidth = 3f * density
+        strokeCap = Paint.Cap.ROUND
+        alpha = 160 // Semi-transparent black
+    }
+
     private var anchorX = 0f
     private var anchorY = 0f
     private var currentX = 0f
     private var currentY = 0f
 
-    fun updatePointer(edgeGroup: Int, anchorX: Float, anchorY: Float, currentX: Float, currentY: Float) {
-        this.edgeGroup = edgeGroup
+    fun updatePointer(anchorX: Float, anchorY: Float, currentX: Float, currentY: Float) {
         this.anchorX = anchorX
         this.anchorY = anchorY
         this.currentX = currentX
@@ -120,64 +131,35 @@ private class GesturePointerOverlayView(context: Context) : View(context) {
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        val dx = currentX - anchorX
-        val dy = currentY - anchorY
-        val movement = hypot(dx.toDouble(), dy.toDouble()).toFloat()
-        val tipLength = 15f * density
-        val tipWidth = 10f * density
-        val shaftWidth = 5.5f * density
-        val minArrowLength = tipLength + 10f * density
-        val shaftExtension = movement.coerceAtMost(30f * density)
-        val totalLength = minArrowLength + shaftExtension
-        val angle = if (movement >= 4f * density) {
-            atan2(dy, dx)
-        } else {
-            defaultAngleForEdge(edgeGroup)
-        }
-        val unitX = cos(angle)
-        val unitY = sin(angle)
-        val perpX = sin(angle)
-        val perpY = -cos(angle)
+        // Calculate tail position of the rotated cursor
+        // Local tail center is approx (8.75, 21) * density
+        // Rotation is -15 degrees
+        val rad = Math.toRadians(-15.0)
+        val cos = Math.cos(rad)
+        val sin = Math.sin(rad)
+        val localTailX = 8.75f * density
+        val localTailY = 21f * density
+        val tailX = currentX + (localTailX * cos - localTailY * sin).toFloat()
+        val tailY = currentY + (localTailX * sin + localTailY * cos).toFloat()
 
-        val trailEndX = if (movement >= minArrowLength) currentX - unitX * totalLength else anchorX
-        val trailEndY = if (movement >= minArrowLength) currentY - unitY * totalLength else anchorY
-        if (movement >= 2f * density) {
-            canvas.drawLine(anchorX, anchorY, trailEndX, trailEndY, trailPaint)
-        }
+        // Draw connecting line to tail
+        canvas.drawLine(anchorX, anchorY, tailX, tailY, trailPaint)
 
-        canvas.drawCircle(currentX, currentY, 12f * density, haloPaint)
+        canvas.save()
+        canvas.translate(currentX, currentY)
+        // Standard mouse cursor is usually tilted.
+        canvas.rotate(-15f)
 
-        val neckX = currentX - unitX * tipLength
-        val neckY = currentY - unitY * tipLength
-        val tailX = currentX - unitX * totalLength
-        val tailY = currentY - unitY * totalLength
+        // Draw shadow
+        canvas.save()
+        canvas.translate(1f * density, 1f * density)
+        canvas.drawPath(arrowPath, shadowPaint)
+        canvas.restore()
 
-        val leftTipX = neckX + perpX * tipWidth
-        val leftTipY = neckY + perpY * tipWidth
-        val rightTipX = neckX - perpX * tipWidth
-        val rightTipY = neckY - perpY * tipWidth
-        val leftTailX = tailX + perpX * shaftWidth
-        val leftTailY = tailY + perpY * shaftWidth
-        val rightTailX = tailX - perpX * shaftWidth
-        val rightTailY = tailY - perpY * shaftWidth
+        // Draw cursor
+        canvas.drawPath(arrowPath, arrowFillPaint)
+        canvas.drawPath(arrowPath, arrowStrokePaint)
 
-        arrowPath.reset()
-        arrowPath.moveTo(currentX, currentY)
-        arrowPath.lineTo(leftTipX, leftTipY)
-        arrowPath.lineTo(leftTailX, leftTailY)
-        arrowPath.lineTo(rightTailX, rightTailY)
-        arrowPath.lineTo(rightTipX, rightTipY)
-        arrowPath.close()
-        canvas.drawPath(arrowPath, arrowPaint)
-    }
-
-    private fun defaultAngleForEdge(edgeGroup: Int): Float {
-        return when (edgeGroup) {
-            0 -> 0f
-            1 -> Math.PI.toFloat()
-            2 -> (Math.PI / 2f).toFloat()
-            3 -> (-Math.PI / 2f).toFloat()
-            else -> (-Math.PI / 4f).toFloat()
-        }
+        canvas.restore()
     }
 }
