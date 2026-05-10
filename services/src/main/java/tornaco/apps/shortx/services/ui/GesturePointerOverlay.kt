@@ -5,13 +5,13 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.Path
 import android.graphics.PixelFormat
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import tornaco.apps.shortx.core.util.OsUtils
+import kotlin.math.hypot
 
 class GesturePointerOverlay(private val context: Context) {
     private val windowManager by lazy {
@@ -79,40 +79,32 @@ class GesturePointerOverlay(private val context: Context) {
 private class GesturePointerOverlayView(context: Context) : View(context) {
     private val density = resources.displayMetrics.density
 
-    private val arrowFillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.WHITE
-        style = Paint.Style.FILL
+    private val accentColor = Color.parseColor("#D40000")
+
+    private val connectorPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = accentColor
+        style = Paint.Style.STROKE
+        strokeWidth = 1.6f * density
+        strokeCap = Paint.Cap.ROUND
     }
 
-    private val arrowStrokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.BLACK
+    private val anchorRingPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = accentColor
+        style = Paint.Style.STROKE
+        strokeWidth = 1.5f * density
+    }
+
+    private val anchorCrossPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = accentColor
         style = Paint.Style.STROKE
         strokeWidth = 1.2f * density
-        strokeJoin = Paint.Join.MITER
-    }
-
-    private val shadowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#40000000")
-        style = Paint.Style.FILL
-    }
-
-    private val arrowPath = Path().apply {
-        moveTo(0f, 0f)
-        lineTo(0f, 18f * density)
-        lineTo(4.5f * density, 14.5f * density)
-        lineTo(7.5f * density, 21.5f * density)
-        lineTo(10f * density, 20.5f * density)
-        lineTo(7f * density, 13.5f * density)
-        lineTo(12.5f * density, 13.5f * density)
-        close()
-    }
-
-    private val trailPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.BLACK
-        style = Paint.Style.STROKE
-        strokeWidth = 3f * density
         strokeCap = Paint.Cap.ROUND
-        alpha = 160 // Semi-transparent black
+    }
+
+    private val targetRingPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = accentColor
+        style = Paint.Style.STROKE
+        strokeWidth = 1.9f * density
     }
 
     private var anchorX = 0f
@@ -131,35 +123,36 @@ private class GesturePointerOverlayView(context: Context) : View(context) {
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        // Calculate tail position of the rotated cursor
-        // Local tail center is approx (8.75, 21) * density
-        // Rotation is -15 degrees
-        val rad = Math.toRadians(-15.0)
-        val cos = Math.cos(rad)
-        val sin = Math.sin(rad)
-        val localTailX = 8.75f * density
-        val localTailY = 21f * density
-        val tailX = currentX + (localTailX * cos - localTailY * sin).toFloat()
-        val tailY = currentY + (localTailX * sin + localTailY * cos).toFloat()
-
-        // Draw connecting line to tail
-        canvas.drawLine(anchorX, anchorY, tailX, tailY, trailPaint)
-
-        canvas.save()
-        canvas.translate(currentX, currentY)
-        // Standard mouse cursor is usually tilted.
-        canvas.rotate(-15f)
-
-        // Draw shadow
-        canvas.save()
-        canvas.translate(1f * density, 1f * density)
-        canvas.drawPath(arrowPath, shadowPaint)
-        canvas.restore()
-
-        // Draw cursor
-        canvas.drawPath(arrowPath, arrowFillPaint)
-        canvas.drawPath(arrowPath, arrowStrokePaint)
-
-        canvas.restore()
+        val distance = hypot((currentX - anchorX).toDouble(), (currentY - anchorY).toDouble()).toFloat()
+        if (distance > 1f) {
+            canvas.drawLine(
+                currentX,
+                currentY,
+                anchorX,
+                anchorY,
+                connectorPaint,
+            )
+        }
+        drawStartAnchor(canvas, distance)
+        drawCurrentPointer(canvas)
     }
+
+    private fun drawCurrentPointer(canvas: Canvas) {
+        val ringRadius = 9f * density
+        val crossHalf = 13f * density
+        val gap = 4f * density
+
+        canvas.drawCircle(currentX, currentY, ringRadius, anchorRingPaint)
+        canvas.drawLine(currentX - crossHalf, currentY, currentX - gap, currentY, anchorCrossPaint)
+        canvas.drawLine(currentX + gap, currentY, currentX + crossHalf, currentY, anchorCrossPaint)
+        canvas.drawLine(currentX, currentY - crossHalf, currentX, currentY - gap, anchorCrossPaint)
+        canvas.drawLine(currentX, currentY + gap, currentX, currentY + crossHalf, anchorCrossPaint)
+    }
+
+    private fun drawStartAnchor(canvas: Canvas, distance: Float) {
+        if (distance > 1f) {
+            canvas.drawCircle(anchorX, anchorY, distance, targetRingPaint)
+        }
+    }
+
 }
