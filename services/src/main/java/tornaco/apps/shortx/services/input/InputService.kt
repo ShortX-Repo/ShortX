@@ -85,6 +85,11 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
                 onClipboardChange(text)
             }
         }
+
+        systemServiceScope.launchSafety("InputService.systemReady") {
+            delay(5000)
+            checkInstallInputFilter()
+        }
     }
 
     override fun userPresent(isFirstTime: Boolean) {
