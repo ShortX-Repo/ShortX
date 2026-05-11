@@ -1372,6 +1372,8 @@
   "ui.pkg.set.add.input.label.exists": "同名程式集已存在",
   "ui.pkg.set.items.count": "{count}個程式",
   "ui.pkg.set.prebuilt": "內建",
+  "ui.pkg.set.auto.add.newly.installed.apps.label": "自动添加新安装的应用",
+  "ui.pkg.set.auto.add.newly.installed.apps.desc": "当系统中有新应用安装时，自动将其添加到此应用集中。",
   "ui.active.dialog.message": "請在Xposed管理器中啓用{app_name}",
   "ui.delete.dialog.confirm": "你確定要刪除{wht}嗎？",
   "ui.dismiss.dialog.confirm": "你確定要解散{wht}嗎？",

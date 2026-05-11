@@ -45,6 +45,17 @@ class PkgSetService(shortXContext: ShortXContext) : SystemService(shortXContext,
             // Prebuilt.
             broadcastPkgSetChanged(PrebuiltStablePkgSet.User.label.name)
             broadcastPkgSetChanged(PrebuiltStablePkgSet.All.label.name)
+
+            // Auto add logic
+            getAllPkgSets(false).filter { it.autoAddNewlyInstalledApps }.forEach { pkgSet ->
+                if (!pkgSet.appPkgsList.contains(added.pkg)) {
+                    val newPkgSet = PkgSet.newBuilder(pkgSet)
+                        .addAppPkgs(added.pkg)
+                        .build()
+                    updatePkgSet(newPkgSet)
+                }
+            }
+
             // User set.
             shortXContext.pkgSet.getAllPkgSets(false).filter {
                 it.appPkgsList.contains(added.pkg)
@@ -75,6 +86,11 @@ class PkgSetService(shortXContext: ShortXContext) : SystemService(shortXContext,
         broadcastPkgSetChanged(set.label)
 
         return true
+    }
+
+    fun updatePkgSet(set: PkgSet) {
+        pkgSetsStore.addPkgSet(set)
+        broadcastPkgSetChanged(set.label)
     }
 
     private fun broadcastPkgSetChanged(label: String) {

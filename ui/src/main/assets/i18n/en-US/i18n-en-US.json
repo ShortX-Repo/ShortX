@@ -1373,6 +1373,8 @@
   "ui.pkg.set.add.input.label.exists": "Label exists",
   "ui.pkg.set.items.count": "{count} items",
   "ui.pkg.set.prebuilt": "Prebuilt",
+  "ui.pkg.set.auto.add.newly.installed.apps.label": "Auto add newly installed apps",
+  "ui.pkg.set.auto.add.newly.installed.apps.desc": "Automatically add newly installed apps to this set.",
   "ui.active.dialog.message": "Please enable {app_name} in Xposed Manager",
   "ui.delete.dialog.confirm": "Do you really want to delete {wht}?",
   "ui.dismiss.dialog.confirm": "Do you really want to dismiss {wht}?",

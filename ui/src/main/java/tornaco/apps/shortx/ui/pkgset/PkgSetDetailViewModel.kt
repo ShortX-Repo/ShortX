@@ -20,6 +20,7 @@ data class PkgSetDetailState(
     val apps: List<App> = emptyList(),
     val installedApps: List<App> = emptyList(),
     val isPrebuilt: Boolean = false,
+    val autoAddNewlyInstalledApps: Boolean = false,
     val isChanged: Boolean = false,
     val isLoading: Boolean = true
 )
@@ -51,6 +52,7 @@ class PkgSetDetailViewModel : StateViewModel<PkgSetDetailState, Unit>({ PkgSetDe
                             apps = apps,
                             installedApps = installedApps,
                             isPrebuilt = pkgSet.isPrebuilt,
+                            autoAddNewlyInstalledApps = pkgSet.autoAddNewlyInstalledApps,
                             isLoading = false
                         )
                     }
@@ -62,6 +64,12 @@ class PkgSetDetailViewModel : StateViewModel<PkgSetDetailState, Unit>({ PkgSetDe
     fun updateLabel(label: String) {
         updateState {
             copy(label = label, isChanged = true)
+        }
+    }
+
+    fun updateAutoAddNewlyInstalledApps(autoAdd: Boolean) {
+        updateState {
+            copy(autoAddNewlyInstalledApps = autoAdd, isChanged = true)
         }
     }
 
@@ -104,6 +112,7 @@ class PkgSetDetailViewModel : StateViewModel<PkgSetDetailState, Unit>({ PkgSetDe
                             .setDescription(description)
                             .setLabel(label)
                             .addAllAppPkgs(pkgs)
+                            .setAutoAddNewlyInstalledApps(autoAddNewlyInstalledApps)
                             .build()
                     )
                 }

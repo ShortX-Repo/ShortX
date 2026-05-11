@@ -29,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -194,6 +195,31 @@ private fun PkgSetContent(
                         onValueChange = { value ->
                             vm.updateLabel(value)
                         })
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            SmallTitle(
+                                text = LocalI18N.current["ui.pkg.set.auto.add.newly.installed.apps.label"]
+                                    ?: "Auto add newly installed apps"
+                            )
+                            Spacer(modifier = Modifier.size(4.dp))
+                            Text(
+                                text = LocalI18N.current["ui.pkg.set.auto.add.newly.installed.apps.desc"]
+                                    ?: "Automatically add newly installed apps to this set.",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                        Switch(
+                            checked = state.autoAddNewlyInstalledApps,
+                            onCheckedChange = { vm.updateAutoAddNewlyInstalledApps(it) }
+                        )
+                    }
                 }
             }
         }
