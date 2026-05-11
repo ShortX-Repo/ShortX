@@ -4,6 +4,7 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -21,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
@@ -29,6 +31,7 @@ import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
+import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
@@ -43,12 +46,14 @@ class WriteLocalVarDialogState(
 ) : CommonDialogState() {
     var name by mutableStateOf("")
     var valueString by mutableStateOf("")
+    var autoCreateIfMissing by mutableStateOf(false)
 
     val isValid get() = name.isNotBlank()
 
     fun show(current: Action.WriteLocalVar? = null) {
         this.name = current?.varName ?: ""
         this.valueString = current?.valueAsString ?: ""
+        this.autoCreateIfMissing = current?.autoCreateIfMissing ?: false
         show()
     }
 }
@@ -96,7 +101,8 @@ private fun WriteLocalVarSelector(dialogState: WriteLocalVarDialogState) {
                                     dialogState.onSelected(
                                         Action.WriteLocalVar(
                                             varName = dialogState.name,
-                                            valueAsString = dialogState.valueString
+                                            valueAsString = dialogState.valueString,
+                                            autoCreateIfMissing = dialogState.autoCreateIfMissing,
                                         )
                                     )
                                     dialogState.dismiss()
@@ -128,6 +134,21 @@ private fun WriteLocalVarSelector(dialogState: WriteLocalVarDialogState) {
                         onValueChange = {
                             dialogState.name = it
                         })
+
+                    StandardSpacer()
+
+                    SmallTitle(
+                        modifier = Modifier.padding(vertical = 12.dp),
+                        text = LocalI18N.current["ui.action.var.auto.create.title"]
+                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        ShortXSwitch(
+                            checked = dialogState.autoCreateIfMissing,
+                            onCheckedChange = { dialogState.autoCreateIfMissing = it }
+                        )
+                        StandardSpacer()
+                        Text(text = LocalI18N.current["ui.action.var.auto.create.summary"])
+                    }
 
                     StandardSpacer()
 

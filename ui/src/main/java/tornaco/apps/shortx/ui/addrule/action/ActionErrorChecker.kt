@@ -33,7 +33,10 @@ class ActionErrorChecker {
 
 
     private fun getWillBeCreatedGlobalVars(actions: List<Action>): List<String> {
-        return actions.filterIsInstance(Action.CreateGV::class.java).map { it.globalVar.name }
+        return actions.filterIsInstance(Action.CreateGV::class.java).map { it.globalVar.name } +
+            actions.filterIsInstance(Action.WriteGV::class.java)
+                .filter { it.autoCreateIfMissing }
+                .map { it.varName }
     }
 
     private fun getGlobalVarRefs(

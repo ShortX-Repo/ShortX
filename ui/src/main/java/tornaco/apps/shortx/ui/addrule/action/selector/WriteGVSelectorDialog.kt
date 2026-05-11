@@ -42,6 +42,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
+import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
@@ -60,6 +61,7 @@ class WriteGVDialogState(
     var valueString by mutableStateOf("")
 
     var op by mutableStateOf(WriteGlobalVarOp.WriteGlobalVarOp_Auto)
+    var autoCreateIfMissing by mutableStateOf(false)
 
     val isValid get() = name.isNotBlank()
 
@@ -68,6 +70,7 @@ class WriteGVDialogState(
         this.valueString = current?.valueAsString ?: ""
 
         this.op = current?.op ?: WriteGlobalVarOp.WriteGlobalVarOp_Auto
+        this.autoCreateIfMissing = current?.autoCreateIfMissing ?: false
 
         show()
     }
@@ -116,7 +119,8 @@ private fun WriteGVSelector(dialogState: WriteGVDialogState) {
                                         Action.WriteGV(
                                             varName = dialogState.name,
                                             valueAsString = dialogState.valueString,
-                                            op = dialogState.op
+                                            op = dialogState.op,
+                                            autoCreateIfMissing = dialogState.autoCreateIfMissing,
                                         )
                                     )
                                     dialogState.dismiss()
@@ -202,6 +206,18 @@ private fun Content(paddingValues: PaddingValues, dialogState: WriteGVDialogStat
                 onSelect = {
                     dialogState.op = it.data
                 })
+        }
+        StandardSpacer()
+
+        FieldTitle(text = LocalI18N.current["ui.action.var.auto.create.title"])
+        MediumSpacer()
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            ShortXSwitch(
+                checked = dialogState.autoCreateIfMissing,
+                onCheckedChange = { dialogState.autoCreateIfMissing = it }
+            )
+            StandardSpacer()
+            Text(text = LocalI18N.current["ui.action.var.auto.create.summary"])
         }
         StandardSpacer()
 

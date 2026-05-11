@@ -691,6 +691,7 @@ message WriteGlobalVar {
   string varName = 1;
   string valueAsString = 2;
   WriteGlobalVarOp op = 3;
+  bool autoCreateIfMissing = 4;
 
 
   CustomContextDataKey customContextDataKey = 96;
@@ -1295,6 +1296,7 @@ message CreateLocalVar {
 message WriteLocalVar {
   string varName = 1;
   string valueAsString = 2;
+  bool autoCreateIfMissing = 3;
 
 
   CustomContextDataKey customContextDataKey = 96;

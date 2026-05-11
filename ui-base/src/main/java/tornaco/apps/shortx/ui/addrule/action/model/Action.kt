@@ -2386,7 +2386,8 @@ sealed interface Action : Parcelable {
         override val note: String = "",
         val valueAsString: String,
         val varName: String,
-        val op: WriteGlobalVarOp
+        val op: WriteGlobalVarOp,
+        val autoCreateIfMissing: Boolean = false,
     ) : Action {
         override fun clone(
             id: String,
@@ -4032,7 +4033,8 @@ sealed interface Action : Parcelable {
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val valueAsString: String,
-        val varName: String
+        val varName: String,
+        val autoCreateIfMissing: Boolean = false,
     ) : Action {
         override fun clone(
             id: String,

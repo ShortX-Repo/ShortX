@@ -886,6 +886,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setVarName(varName)
                 .setValueAsString(valueAsString)
                 .setOp(op)
+                .setAutoCreateIfMissing(autoCreateIfMissing)
                 .setNote(overrideNote ?: note).build()
         }
 
@@ -1741,6 +1742,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setNote(overrideNote ?: note)
                 .setVarName(varName)
                 .setValueAsString(valueAsString)
+                .setAutoCreateIfMissing(autoCreateIfMissing)
                 .build()
         }
 

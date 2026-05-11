@@ -1039,6 +1039,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 varName = data.varName,
                 valueAsString = data.valueAsString,
                 op = data.op,
+                autoCreateIfMissing = data.autoCreateIfMissing,
             )
         }
 
@@ -1944,7 +1945,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 id = data.id,
                 note = data.note,
                 varName = data.varName,
-                valueAsString = data.valueAsString
+                valueAsString = data.valueAsString,
+                autoCreateIfMissing = data.autoCreateIfMissing,
             )
         }
 

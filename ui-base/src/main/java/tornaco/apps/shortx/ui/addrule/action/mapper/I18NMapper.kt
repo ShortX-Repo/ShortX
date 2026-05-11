@@ -694,10 +694,11 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         }
 
         is Action.WriteGV -> {
-            listOf(
+            listOfNotNull(
                 i18N["ui.action.write.global.var"],
                 action.varName,
-                action.valueAsString
+                action.valueAsString,
+                i18N[if (action.autoCreateIfMissing) "ui.action.var.auto.create.enabled" else "ui.action.var.auto.create.disabled"]
             )
         }
 
@@ -728,7 +729,8 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             listOfNotNull(
                 i18N["ui.action.write.local.var"],
                 action.varName,
-                action.valueAsString
+                action.valueAsString,
+                i18N[if (action.autoCreateIfMissing) "ui.action.var.auto.create.enabled" else "ui.action.var.auto.create.disabled"]
             )
         }
 

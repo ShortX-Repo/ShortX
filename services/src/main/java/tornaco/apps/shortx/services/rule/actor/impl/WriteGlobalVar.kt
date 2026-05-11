@@ -5,12 +5,18 @@ import com.google.protobuf.Message
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.action.WriteGlobalVar
 import tornaco.apps.shortx.core.proto.action.WriteGlobalVarOp
+import tornaco.apps.shortx.core.proto.gv.BoolVar
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
+import tornaco.apps.shortx.core.proto.gv.GlobalVarCreatedBy_Rule
+import tornaco.apps.shortx.core.proto.gv.Int64Var
+import tornaco.apps.shortx.core.proto.gv.StringListVar
+import tornaco.apps.shortx.core.proto.gv.StringVar
 import tornaco.apps.shortx.core.rule.addOrUpdateValue
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.isBool
 import tornaco.apps.shortx.core.rule.isInt
 import tornaco.apps.shortx.core.rule.isList
+import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.setValue
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.rule.valueList
@@ -28,9 +34,16 @@ object WriteGlobalVar : Actor {
         params: HandleParams
     ) = with(params) {
         val d = action unpack_ WriteGlobalVar::class.java
-        val globalVar = requireNotNull(shortXContext.rule.getGlobalVarByName(d.varName)) {
-            "Global var: ${d.varName} not exists. pls create first."
-        }
+        val globalVar = shortXContext.rule.getGlobalVarByName(d.varName)
+            ?: require(d.autoCreateIfMissing) {
+                "Global var: ${d.varName} not exists. pls create first."
+            }.let {
+                createDefaultGlobalVar(
+                    name = d.varName,
+                    op = d.op,
+                    srcId = params.evaluateContext.srcId
+                )
+            }
         val op: WriteGlobalVarOp = d.op
         logger.d("$op -> ${globalVar.name}")
 
@@ -43,6 +56,40 @@ object WriteGlobalVar : Actor {
 
         shortXContext.rule.addGlobalVar(newGlobalVar)
         Actor.Res.EMPTY
+    }
+
+    private fun createDefaultGlobalVar(
+        name: String,
+        op: WriteGlobalVarOp,
+        srcId: String
+    ): GlobalVar {
+        val type = when (op) {
+            WriteGlobalVarOp.WriteGlobalVarOp_Plus1,
+            WriteGlobalVarOp.WriteGlobalVarOp_Minus1,
+            WriteGlobalVarOp.WriteGlobalVarOp_PlusDelta,
+            WriteGlobalVarOp.WriteGlobalVarOp_MinusDelta -> Int64Var.getDefaultInstance().pack_()
+
+            WriteGlobalVarOp.WriteGlobalVarOp_DeleteFirst,
+            WriteGlobalVarOp.WriteGlobalVarOp_DeleteLast,
+            WriteGlobalVarOp.WriteGlobalVarOp_RemoveAtIndex,
+            WriteGlobalVarOp.WriteGlobalVarOp_Reverse,
+            WriteGlobalVarOp.WriteGlobalVarOp_Shuffle -> StringListVar.getDefaultInstance().pack_()
+
+            WriteGlobalVarOp.WriteGlobalVarOp_Invert -> BoolVar.getDefaultInstance().pack_()
+
+            else -> StringVar.getDefaultInstance().pack_()
+        }
+
+        return GlobalVar.newBuilder()
+            .setName(name)
+            .setType(type)
+            .setCreatedBy(
+                GlobalVarCreatedBy_Rule.newBuilder()
+                    .setSrcId(srcId)
+                    .build()
+                    .pack_()
+            )
+            .build()
     }
 
     @VisibleForTesting
