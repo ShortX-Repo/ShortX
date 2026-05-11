@@ -1036,6 +1036,8 @@
   "ui.action.map.nav.bus.query.bus": "公交",
   "ui.action.stop.app": "强行停止应用",
   "ui.action.stop.app.by.pkg": "強行停止应用（动态）",
+  "ui.action.add.apps.to.pkg.set.by.pkg": "向应用集添加应用（动态）",
+  "ui.action.remove.apps.from.pkg.set.by.pkg": "从应用集移除应用（动态）",
   "ui.action.select.pkg.and.user.package": "输入应用包名",
   "ui.action.select.pkg.and.user.user": "输入用户Id（可选）",
   "ui.action.select.pkg.and.user.user.summary": "用户id是系统给每个用户分配的一个数字，留空代表主用户",

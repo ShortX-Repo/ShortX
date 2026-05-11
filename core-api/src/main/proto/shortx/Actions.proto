@@ -665,6 +665,28 @@ message CreatePkgSet {
   string id = 100;
 }
 
+message AddAppsToPkgSetByPkg {
+  string pkgSetLabel = 1;
+  repeated StringPair pkgAndUsers = 2;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message RemoveAppsFromPkgSetByPkg {
+  string pkgSetLabel = 1;
+  repeated StringPair pkgAndUsers = 2;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message WriteGlobalVar {
   string varName = 1;
   string valueAsString = 2;

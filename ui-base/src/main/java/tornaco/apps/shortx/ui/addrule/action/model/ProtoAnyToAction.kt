@@ -1453,6 +1453,32 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.AddAppsToPkgSetByPkg::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.action.AddAppsToPkgSetByPkg::class.java
+            Action.AddAppsToPkgSetByPkg(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                pkgSetLabel = data.pkgSetLabel,
+                stringPairs = data.pkgAndUsersList,
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.RemoveAppsFromPkgSetByPkg::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.action.RemoveAppsFromPkgSetByPkg::class.java
+            Action.RemoveAppsFromPkgSetByPkg(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                pkgSetLabel = data.pkgSetLabel,
+                stringPairs = data.pkgAndUsersList,
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.SetRingerMode::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.SetRingerMode::class.java
             Action.SetRingerMode(

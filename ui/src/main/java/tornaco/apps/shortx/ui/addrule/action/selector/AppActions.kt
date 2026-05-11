@@ -70,6 +70,22 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         })
     PackageNameAndUserSelectorDialog(state = stopAppByPackageSelectorState)
 
+    val addAppsToPkgSetByPkgSelectorState = rememberPkgSetAppMutationSelectorDialogState(
+        title = LocalI18N.current["ui.action.add.apps.to.pkg.set.by.pkg"],
+        onSelected = { label, pairs ->
+            addAction(Action.AddAppsToPkgSetByPkg(pkgSetLabel = label, stringPairs = pairs))
+        }
+    )
+    PkgSetAppMutationSelectorDialog(state = addAppsToPkgSetByPkgSelectorState)
+
+    val removeAppsFromPkgSetByPkgSelectorState = rememberPkgSetAppMutationSelectorDialogState(
+        title = LocalI18N.current["ui.action.remove.apps.from.pkg.set.by.pkg"],
+        onSelected = { label, pairs ->
+            addAction(Action.RemoveAppsFromPkgSetByPkg(pkgSetLabel = label, stringPairs = pairs))
+        }
+    )
+    PkgSetAppMutationSelectorDialog(state = removeAppsFromPkgSetByPkgSelectorState)
+
     val enableAppByPkgSelectorState = rememberPkgAndUserListSelectorDialogState(
         title = LocalI18N.current["ui.action.enable.app.by.pkg"],
         onSelected = {
@@ -354,6 +370,22 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.AddAppsToPkgSetByPkg::class -> {
+                addAppsToPkgSetByPkgSelectorState.show(
+                    source.getActionAs<Action.AddAppsToPkgSetByPkg>()?.pkgSetLabel,
+                    source.getActionAs<Action.AddAppsToPkgSetByPkg>()?.stringPairs
+                )
+                true
+            }
+
+            Action.RemoveAppsFromPkgSetByPkg::class -> {
+                removeAppsFromPkgSetByPkgSelectorState.show(
+                    source.getActionAs<Action.RemoveAppsFromPkgSetByPkg>()?.pkgSetLabel,
+                    source.getActionAs<Action.RemoveAppsFromPkgSetByPkg>()?.stringPairs
+                )
+                true
+            }
+
             Action.RemoveTasks::class -> {
                 removeTasksSelectorState.show(
                     source.getActionAs<Action.RemoveTasks>()?.apps,
@@ -540,6 +572,8 @@ fun AppActions(
         Action.StartLastApp::class,
         Action.StopApp::class,
         Action.StopAppByPkg::class,
+        Action.AddAppsToPkgSetByPkg::class,
+        Action.RemoveAppsFromPkgSetByPkg::class,
         Action.StopCurrentApp::class,
         Action.StartAppProcess::class,
         Action.StartAppProcessByPkg::class,

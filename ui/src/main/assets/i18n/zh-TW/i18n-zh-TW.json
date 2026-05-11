@@ -1038,6 +1038,8 @@
   "ui.action.map.nav.bus.query.bus": "公交",
   "ui.action.stop.app": "強行停止程式",
   "ui.action.stop.app.by.pkg": "強行停止程式（動態）",
+  "ui.action.add.apps.to.pkg.set.by.pkg": "向程式集加入程式（動態）",
+  "ui.action.remove.apps.from.pkg.set.by.pkg": "從程式集移除程式（動態）",
   "ui.action.select.pkg.and.user.package": "輸入程式包名",
   "ui.action.select.pkg.and.user.user": "輸入用戶Id（可選）",
   "ui.action.select.pkg.and.user.user.summary": "用戶id是系統給每個用戶分配的一個數字，留空代表主用戶",

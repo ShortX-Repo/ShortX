@@ -575,6 +575,8 @@ private class InstructionFlowBuilder(
             is Action.FromDA -> action.title ?: action.daId
             is Action.ExecuteFunction -> action.name ?: action.functionId
             is Action.ShowAlertDialog -> action.title.takeIf { it.isNotBlank() }
+            is Action.AddAppsToPkgSetByPkg -> summarizePkgSetMutation(action.pkgSetLabel, action.stringPairs)
+            is Action.RemoveAppsFromPkgSetByPkg -> summarizePkgSetMutation(action.pkgSetLabel, action.stringPairs)
             is Action.ShowFloatWindow -> summarizeFloatingUi(action.tag, action.settings.size, "radius=${action.panelRadiusScale}")
             is Action.ShowSideBar -> summarizeFloatingUi(action.tag, action.settings.size)
             is Action.HideFloatWindow -> summarizeTags(action.tags)
@@ -737,6 +739,16 @@ private class InstructionFlowBuilder(
         val labels = mutableListOf<String>()
         summarizeText(expression)?.let { labels += it }
         context.takeIf { it.isNotBlank() }?.let { labels += "ctx=$it" }
+        return summarizeLabels(labels)
+    }
+
+    private fun summarizePkgSetMutation(
+        pkgSetLabel: String,
+        pairs: List<tornaco.apps.shortx.core.proto.common.StringPair>
+    ): String? {
+        val labels = mutableListOf<String>()
+        pkgSetLabel.takeIf { it.isNotBlank() }?.let { labels += "set=$it" }
+        if (pairs.isNotEmpty()) labels += "items=${pairs.size}"
         return summarizeLabels(labels)
     }
 

@@ -385,6 +385,14 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Document.folder_4_line
         }
 
+        Action.AddAppsToPkgSetByPkg::class -> {
+            Remix.Document.folder_add_line
+        }
+
+        Action.RemoveAppsFromPkgSetByPkg::class -> {
+            Remix.Document.folder_reduce_line
+        }
+
         Action.SetRingerMode::class -> {
             Remix.Media.volume_vibrate_fill
         }

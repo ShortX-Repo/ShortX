@@ -268,6 +268,8 @@ fun labelAndDescriptionForActionSelector(
         Action.WaitForIdle::class -> i18N["ui.action.wait.for.idle"] to i18N["ui.action.wait.for.idle.description"]
         Action.IfThenElse::class -> i18N["ui.action.if.then.else"] to null
         Action.CreatePkgSet::class -> i18N["ui.pkg.set.add.title"] to null
+        Action.AddAppsToPkgSetByPkg::class -> i18N["ui.action.add.apps.to.pkg.set.by.pkg"] to null
+        Action.RemoveAppsFromPkgSetByPkg::class -> i18N["ui.action.remove.apps.from.pkg.set.by.pkg"] to null
         Action.SetRingerMode::class -> i18N["ui.action.set.ringer.mode"] to null
         Action.SetBrightness::class -> i18N["ui.action.set.brightness"] to null
         Action.ContinuousAdjustBrightness::class -> i18N.get(
@@ -901,6 +903,22 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
 
         is Action.CreatePkgSet -> {
             listOfNotNull(i18N["ui.pkg.set.add.title"], action.label, action.description)
+        }
+
+        is Action.AddAppsToPkgSetByPkg -> {
+            listOf(
+                i18N["ui.action.add.apps.to.pkg.set.by.pkg"],
+                action.pkgSetLabel,
+                "${action.stringPairs.size} items"
+            )
+        }
+
+        is Action.RemoveAppsFromPkgSetByPkg -> {
+            listOf(
+                i18N["ui.action.remove.apps.from.pkg.set.by.pkg"],
+                action.pkgSetLabel,
+                "${action.stringPairs.size} items"
+            )
         }
 
         is Action.SetRingerMode -> {

@@ -1047,6 +1047,8 @@
   "ui.action.map.nav.bus.query.bus": "Bus",
   "ui.action.stop.app": "Force stop app",
   "ui.action.stop.app.by.pkg": "Force stop app (Input)",
+  "ui.action.add.apps.to.pkg.set.by.pkg": "Add apps to application set (Input)",
+  "ui.action.remove.apps.from.pkg.set.by.pkg": "Remove apps from application set (Input)",
   "ui.action.select.pkg.and.user.package": "Package name",
   "ui.action.select.pkg.and.user.user": "User Id (optional)",
   "ui.action.select.pkg.and.user.user.summary": "User id is a digital allocated by System for each user, you can also leave it blank if the app is from Main user",

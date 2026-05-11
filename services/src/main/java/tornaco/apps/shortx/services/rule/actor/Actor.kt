@@ -293,6 +293,14 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.CreatePkgSet
     },
+    AddAppsToPkgSetByPkg {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.AddAppsToPkgSetByPkg
+    },
+    RemoveAppsFromPkgSetByPkg {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.RemoveAppsFromPkgSetByPkg
+    },
     WriteGlobalVar {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.WriteGlobalVar

@@ -93,6 +93,8 @@ val allActionClasses = listOf(
     Action.WriteClipboard::class,
     Action.GetTextFromScreenNode::class,
     Action.CreatePkgSet::class,
+    Action.AddAppsToPkgSetByPkg::class,
+    Action.RemoveAppsFromPkgSetByPkg::class,
     Action.SetRingerMode::class,
     Action.EnableAutoBrightness::class,
     Action.DisableAutoBrightness::class,

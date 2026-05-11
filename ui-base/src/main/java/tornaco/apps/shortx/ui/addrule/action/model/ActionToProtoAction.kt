@@ -15,6 +15,7 @@ import tornaco.apps.shortx.core.proto.action.ConnectWifi
 import tornaco.apps.shortx.core.proto.action.ContinuousAdjustBrightness
 import tornaco.apps.shortx.core.proto.action.ContinuousGesturePointer
 import tornaco.apps.shortx.core.proto.action.ContinuousAdjustVolume
+import tornaco.apps.shortx.core.proto.action.AddAppsToPkgSetByPkg
 import tornaco.apps.shortx.core.proto.action.GesturePointerDragButton
 import tornaco.apps.shortx.core.proto.action.GesturePointerReleaseButton
 import tornaco.apps.shortx.core.proto.action.GesturePointerScrollMode
@@ -79,6 +80,7 @@ import tornaco.apps.shortx.core.proto.action.ReadClipboard
 import tornaco.apps.shortx.core.proto.action.RemoveNotification
 import tornaco.apps.shortx.core.proto.action.RemoveNotificationForPackage
 import tornaco.apps.shortx.core.proto.action.RemoveNotificationForPackageByPkg
+import tornaco.apps.shortx.core.proto.action.RemoveAppsFromPkgSetByPkg
 import tornaco.apps.shortx.core.proto.action.RemovePPN
 import tornaco.apps.shortx.core.proto.action.RemoveStatusBarIcon
 import tornaco.apps.shortx.core.proto.action.RemoveTasks
@@ -1283,6 +1285,30 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setNote(overrideNote ?: note)
                 .setLabel(label)
                 .apply { description?.let { description = it } }
+                .build()
+        }
+
+        is Action.AddAppsToPkgSetByPkg -> {
+            AddAppsToPkgSetByPkg.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setPkgSetLabel(pkgSetLabel)
+                .addAllPkgAndUsers(stringPairs)
+                .build()
+        }
+
+        is Action.RemoveAppsFromPkgSetByPkg -> {
+            RemoveAppsFromPkgSetByPkg.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setPkgSetLabel(pkgSetLabel)
+                .addAllPkgAndUsers(stringPairs)
                 .build()
         }
 
