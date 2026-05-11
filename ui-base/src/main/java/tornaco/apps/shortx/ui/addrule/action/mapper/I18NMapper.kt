@@ -356,6 +356,7 @@ fun labelAndDescriptionForActionSelector(
         Action.AreaScreenshot::class -> i18N["ui.action.area.screen.shot"] to i18N["ui.action.select.screen.area.tip"]
         Action.OcrDetect::class -> i18N["ui.action.ocr.detect"] to null
         Action.ScreenFlash::class -> i18N["ui.action.screen.flash"] to null
+        Action.PanoramicLightEffect::class -> i18N["ui.action.panoramic.light.effect"] to null
         Action.DisplayImage::class -> i18N["ui.action.display.image"] to null
         Action.WebDavList::class -> i18N["ui.action.web.dav.list"] to null
         Action.WebDavGet::class -> i18N["ui.action.web.dav.get"] to null
@@ -1439,6 +1440,11 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
 
         is Action.ScreenFlash -> listOfNotNull(
             i18N["ui.action.screen.flash"],
+        )
+
+        is Action.PanoramicLightEffect -> listOfNotNull(
+            i18N["ui.action.panoramic.light.effect"],
+            action.times.takeIf { it.isNotBlank() }
         )
 
         is Action.DisplayImage -> listOfNotNull(

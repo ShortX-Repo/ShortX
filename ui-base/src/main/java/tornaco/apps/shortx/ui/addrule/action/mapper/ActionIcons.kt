@@ -668,6 +668,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Edit.flashlamp
         }
 
+        Action.PanoramicLightEffect::class -> {
+            Remix.Edit.flashlamp
+        }
+
         Action.DisplayImage::class -> {
             Remix.Office.image_files
         }

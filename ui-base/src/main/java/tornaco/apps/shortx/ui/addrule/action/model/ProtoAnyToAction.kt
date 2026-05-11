@@ -2601,6 +2601,20 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.PanoramicLightEffect::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.PanoramicLightEffect::class.java
+            Action.PanoramicLightEffect(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                colorInt = data.colorInt,
+                times = data.times
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.DisplayImage::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.action.DisplayImage::class.java

@@ -87,6 +87,7 @@ import tornaco.apps.shortx.core.proto.action.RemoveTasks
 import tornaco.apps.shortx.core.proto.action.RemoveTasksByPkg
 import tornaco.apps.shortx.core.proto.action.ReplaceRegex
 import tornaco.apps.shortx.core.proto.action.RequestAudioFocus
+import tornaco.apps.shortx.core.proto.action.PanoramicLightEffect
 import tornaco.apps.shortx.core.proto.action.ScreenFlash
 import tornaco.apps.shortx.core.proto.action.ScrollViewTo
 import tornaco.apps.shortx.core.proto.action.SelectScreenArea
@@ -2359,6 +2360,18 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
 
         is Action.ScreenFlash -> {
             ScreenFlash.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setColorInt(colorInt)
+                .setTimes(times)
+                .build()
+        }
+
+        is Action.PanoramicLightEffect -> {
+            PanoramicLightEffect.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
                 .setActionOnError(actionOnError)

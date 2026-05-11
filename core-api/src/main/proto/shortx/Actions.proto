@@ -1934,6 +1934,17 @@ message ScreenFlash {
   string id = 100;
 }
 
+message PanoramicLightEffect {
+  string colorInt = 1;
+  string times = 2;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message DisplayImage {
   string imageUrl = 1;
   ImageScaleType scaleType = 2;

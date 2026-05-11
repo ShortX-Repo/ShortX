@@ -281,6 +281,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.ScreenFlash
     },
+    PanoramicLightEffect {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.PanoramicLightEffect
+    },
     WhileLoop {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.WhileLoop

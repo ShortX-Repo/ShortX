@@ -257,6 +257,16 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
         }
     )
 
+    val panoramicLightEffectLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action.PanoramicLightEffect>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
     val displayImageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
@@ -435,6 +445,17 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                 true
             }
 
+            Action.PanoramicLightEffect::class -> {
+                panoramicLightEffectLauncher.launch(
+                    newIntent(
+                        context = context,
+                        currentData = source.getActionAs<Action.PanoramicLightEffect>(),
+                        clazz = PanoramicLightEffectSelectorActivity::class.java
+                    )
+                )
+                true
+            }
+
             Action.FindAndClickViewByText::class -> {
                 findTextAndClickState.launch(
                     newIntent(
@@ -600,6 +621,7 @@ fun UiActions(
         Action.ShowDrawBoard::class,
         Action.ShowClipboardView::class,
         Action.ScreenFlash::class,
+        Action.PanoramicLightEffect::class,
         Action.DisplayImage::class,
     ).map {
         SelectorItem(

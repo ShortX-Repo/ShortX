@@ -176,6 +176,7 @@ val allActionClasses = listOf(
     Action.SelectScreenArea::class,
     Action.OcrDetect::class,
     Action.ScreenFlash::class,
+    Action.PanoramicLightEffect::class,
     Action.DisplayImage::class,
     Action.ToggleSlot::class,
     Action.ShowRecentApps::class,
