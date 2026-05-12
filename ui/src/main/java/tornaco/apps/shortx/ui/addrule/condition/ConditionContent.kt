@@ -60,14 +60,17 @@ import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.ErrorCard
+import tornaco.apps.shortx.ui.base.InputValidateResult
 import tornaco.apps.shortx.ui.base.LargeTitle
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumTitle
+import tornaco.apps.shortx.ui.base.NoteRow
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShapeXL
+import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TinySpacer
@@ -76,6 +79,7 @@ import tornaco.apps.shortx.ui.base.VerticalDivider
 import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
 import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.base.rememberTipDialogState
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.rememberClipboardDialogState
@@ -89,6 +93,7 @@ class ConditionHandler(
     val insertBelow: (condition: Condition, anchorId: String) -> Unit = { _, _ -> run {} },
     val insertLast: (condition: Condition) -> Unit = {},
     val copy: (conditionId: String) -> Unit = {},
+    val setNote: (conditionId: String, note: String) -> Unit = { _, _ -> run {} },
     val enableDisable: (conditionId: String) -> Unit = {},
     val invert: (conditionId: String) -> Unit = {},
 )
@@ -207,6 +212,17 @@ fun ConditionList(
                             ContextDataInfoDialog(state = contextDataInfoDialogState)
                             val i18N = LocalI18N.current
                             val context = LocalContext.current
+                            val noteDialogState =
+                                rememberTextInputState(
+                                    title = LocalI18N.current["ui.common.note"],
+                                    message = null,
+                                    inputValidator = {
+                                        InputValidateResult.OK
+                                    }
+                                ) {
+                                    handler.setNote(currentCondition.id, it)
+                                }
+                            TextInputDialog(state = noteDialogState)
 
                             Column(
                                 modifier = Modifier
@@ -278,6 +294,16 @@ fun ConditionList(
                                             }
                                         }
                                     })
+
+                                if (conditionItem.note.isNotBlank()) {
+                                    NoteRow(
+                                        modifier = Modifier
+                                            .padding(start = 68.dp, end = 16.dp)
+                                            .padding(bottom = 16.dp),
+                                        text = conditionItem.note
+                                    )
+                                }
+
                                 // Warning.
                                 val conditionWarning: List<String>? = warnings[conditionItem.id]
                                 AnimatedVisibility(visible = !conditionWarning.isNullOrEmpty()) {
@@ -325,6 +351,16 @@ fun ConditionList(
                                         icon = {
                                             RemixIcon(
                                                 remixName = Remix.Document.file_copy_fill,
+                                                tint = colorForCondition(conditionItem::class)
+                                            )
+                                        }
+                                    ),
+                                    DropdownItem(
+                                        labelLines = listOf(LocalI18N.current["ui.common.note"]),
+                                        data = currentCondition.id to "note",
+                                        icon = {
+                                            RemixIcon(
+                                                remixName = Remix.Document.sticky_note_line,
                                                 tint = colorForCondition(conditionItem::class)
                                             )
                                         }
@@ -397,6 +433,10 @@ fun ConditionList(
 
                                         "cp" -> {
                                             handler.copy(dropdownItem.data.first)
+                                        }
+
+                                        "note" -> {
+                                            noteDialogState.show(conditionItem.note)
                                         }
 
                                         "invert" -> {

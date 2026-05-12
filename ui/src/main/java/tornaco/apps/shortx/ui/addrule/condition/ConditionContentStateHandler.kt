@@ -40,6 +40,11 @@ fun ConditionContentStateHandler.asConditionHandler(): ConditionHandler {
         insertLast = { condition ->
             insertConditionLast(condition)
         },
+        setNote = { id, note ->
+            conditions.firstOrNull { it.id == id }?.let {
+                setNote(it, note)
+            }
+        },
         enableDisable = { conditionId ->
             val currentCondition = conditions.first { it.id == conditionId }
             addCondition(
@@ -166,6 +171,16 @@ class ConditionContentStateHandler(
             copy(conditions = conditions + refinedCondition, isChanged = true)
         }
         checkUpdateWarnings()
+    }
+
+    fun setNote(condition: Condition, note: String) {
+        condition.clone(
+            id = condition.id,
+            note = note,
+            isInvert = condition.isInvert,
+            isDisabled = condition.isDisabled,
+            customContextDataKey = condition.customContextDataKey
+        ).let { addCondition(it) }
     }
 
     fun init(
