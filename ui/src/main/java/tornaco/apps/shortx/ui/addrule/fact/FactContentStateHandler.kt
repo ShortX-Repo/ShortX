@@ -31,6 +31,9 @@ fun FactContentStateHandler.asFactHandler(): FactHandler {
         insertBelow = { fact, anchorId ->
             insertFactBelow(fact, anchorId)
         },
+        insertLast = { fact ->
+            insertFactLast(fact)
+        },
         setNote = { id, note ->
             facts.firstOrNull { it.id == id }?.let {
                 setNote(it, note)
@@ -133,6 +136,18 @@ class FactContentStateHandler(
                     add(refinedFact)
                 }
             }, isChanged = true)
+        }
+    }
+
+    fun insertFactLast(fact: Fact) {
+        val refinedFact = requireNotNull(
+            fact.toProtoFact(overrideId = defaultNewFactId()).pack_()
+                .toFact(shortXManager)
+        ) {
+            "refinedFact is null"
+        }
+        updateState {
+            copy(facts = facts + refinedFact, isChanged = true)
         }
     }
 

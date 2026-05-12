@@ -87,6 +87,7 @@ class ConditionHandler(
     val setConditionOp: (Op) -> Unit,
     val insertAbove: (condition: Condition, anchorId: String) -> Unit = { _, _ -> run {} },
     val insertBelow: (condition: Condition, anchorId: String) -> Unit = { _, _ -> run {} },
+    val insertLast: (condition: Condition) -> Unit = {},
     val copy: (conditionId: String) -> Unit = {},
     val enableDisable: (conditionId: String) -> Unit = {},
     val invert: (conditionId: String) -> Unit = {},
@@ -133,9 +134,16 @@ fun ConditionList(
     Column(modifier = Modifier.fillMaxWidth()) {
         header()
 
+        val conditionCardDropdownState = rememberDropdownSelectorState()
+
         ShortXCard(
             modifier = Modifier,
             shape = ShortXCardRoundedCornerShapeXL,
+            onClick = {
+                if (!readOnly) {
+                    conditionCardDropdownState.open()
+                }
+            }
         ) {
             Box {
                 Column(
@@ -428,6 +436,29 @@ fun ConditionList(
             }
 
         }
+
+        val clipboardDialogState = rememberClipboardDialogState()
+        ClipboardDialog(state = clipboardDialogState)
+        DropdownSelector(
+            state = conditionCardDropdownState,
+            items = listOf(
+                DropdownItem(
+                    labelLines = listOf(LocalI18N.current["ui.common.paste"]),
+                    data = "paste",
+                )
+            ),
+            onSelect = {
+                val conditionContents = UiClipboard.getConditions()
+                if (conditionContents.size == 1) {
+                    handler.insertLast(conditionContents[0].condition)
+                } else {
+                    clipboardDialogState.show { contentList ->
+                        contentList.filterIsInstance<UiClipboard.ClipboardContent.ConditionContent>()
+                            .forEach { handler.insertLast(it.condition) }
+                    }
+                }
+            }
+        )
     }
 }
 

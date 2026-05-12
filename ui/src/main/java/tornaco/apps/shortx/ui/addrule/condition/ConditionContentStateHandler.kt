@@ -37,6 +37,9 @@ fun ConditionContentStateHandler.asConditionHandler(): ConditionHandler {
         insertBelow = { condition, anchorId ->
             insertConditionBelow(condition, anchorId)
         },
+        insertLast = { condition ->
+            insertConditionLast(condition)
+        },
         enableDisable = { conditionId ->
             val currentCondition = conditions.first { it.id == conditionId }
             addCondition(
@@ -148,6 +151,19 @@ class ConditionContentStateHandler(
                     add(refinedCondition)
                 }
             }, isChanged = true)
+        }
+        checkUpdateWarnings()
+    }
+
+    fun insertConditionLast(condition: Condition) {
+        val refinedCondition = requireNotNull(
+            condition.toProtoCondition(overrideId = defaultNewConditionId()).pack_()
+                .toCondition(shortXManager)
+        ) {
+            "refinedCondition is null"
+        }
+        updateState {
+            copy(conditions = conditions + refinedCondition, isChanged = true)
         }
         checkUpdateWarnings()
     }

@@ -79,6 +79,7 @@ class FactHandler(
     val removeFact: (Fact) -> Unit,
     val insertAbove: (fact: Fact, anchorId: String) -> Unit = { _, _ -> run {} },
     val insertBelow: (fact: Fact, anchorId: String) -> Unit = { _, _ -> run {} },
+    val insertLast: (fact: Fact) -> Unit = {},
     val copy: (factId: String) -> Unit = {},
     val enableDisable: (factId: String) -> Unit = {},
     val setNote: (factId: String, note: String) -> Unit = { _, _ -> run {} },
@@ -107,9 +108,18 @@ fun FactSelectors(
     Column(modifier = Modifier.fillMaxWidth()) {
         header()
 
+        val cardDropdownState = rememberDropdownSelectorState()
+        val clipboardDialogState = rememberClipboardDialogState()
+        ClipboardDialog(state = clipboardDialogState)
+
         ShortXCard(
             modifier = Modifier,
             shape = ShortXCardRoundedCornerShapeXL,
+            onClick = {
+                if (!readOnly) {
+                    cardDropdownState.open()
+                }
+            }
         ) {
             Column(
                 modifier = Modifier
@@ -142,6 +152,27 @@ fun FactSelectors(
                 }
             }
         }
+
+        DropdownSelector(
+            state = cardDropdownState,
+            items = listOf(
+                DropdownItem(
+                    labelLines = listOf(LocalI18N.current["ui.common.paste"]),
+                    data = "paste",
+                )
+            ),
+            onSelect = {
+                val clipboardFacts = UiClipboard.getFacts()
+                if (clipboardFacts.size == 1) {
+                    handler.insertLast(clipboardFacts[0].fact)
+                } else {
+                    clipboardDialogState.show { contentList ->
+                        contentList.filterIsInstance<UiClipboard.ClipboardContent.FactContent>()
+                            .forEach { handler.insertLast(it.fact) }
+                    }
+                }
+            }
+        )
     }
 }
 
