@@ -2379,6 +2379,10 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setNote(overrideNote ?: note)
                 .setColorInt(colorInt)
                 .setTimes(times)
+                .setSpeedScale(speedScale)
+                .setGlowWidthScale(glowWidthScale)
+                .setIntensityScale(intensityScale)
+                .setFlameJitterScale(flameJitterScale)
                 .build()
         }
 

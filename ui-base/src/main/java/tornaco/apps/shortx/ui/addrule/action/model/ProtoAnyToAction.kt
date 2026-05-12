@@ -2611,7 +2611,11 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 id = data.id,
                 note = data.note,
                 colorInt = data.colorInt,
-                times = data.times
+                times = data.times,
+                speedScale = data.speedScale.ifBlank { "1.0" },
+                glowWidthScale = data.glowWidthScale.ifBlank { "1.0" },
+                intensityScale = data.intensityScale.ifBlank { "1.0" },
+                flameJitterScale = data.flameJitterScale.ifBlank { "1.0" },
             )
         }
 

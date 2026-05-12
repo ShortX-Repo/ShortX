@@ -1444,7 +1444,8 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
 
         is Action.PanoramicLightEffect -> listOfNotNull(
             i18N["ui.action.panoramic.light.effect"],
-            action.times.takeIf { it.isNotBlank() }
+            action.times.takeIf { it.isNotBlank() },
+            "${action.speedScale}x"
         )
 
         is Action.DisplayImage -> listOfNotNull(

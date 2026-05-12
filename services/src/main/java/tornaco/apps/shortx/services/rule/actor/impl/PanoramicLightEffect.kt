@@ -26,8 +26,19 @@ object PanoramicLightEffect : Actor {
 
             val color = d.colorInt.toIntOrNull() ?: d.colorInt.compileContextAndVars(cv).trim()
                 .toIntOrNull() ?: FALLBACK_COLOR
-            shortXContext.overlay.showPanoramicLightEffect(color, max(d.times.toIntOrNull() ?: 2, 1))
+            shortXContext.overlay.showPanoramicLightEffect(
+                color = color,
+                times = max(d.times.toIntOrNull() ?: 2, 1),
+                speedScale = d.speedScale.toScale(1f, 0.2f, 4f),
+                glowWidthScale = d.glowWidthScale.toScale(1f, 0.35f, 3f),
+                intensityScale = d.intensityScale.toScale(1f, 0.2f, 2.5f),
+                flameJitterScale = d.flameJitterScale.toScale(1f, 0f, 3f),
+            )
             Actor.Res.EMPTY
         }
+    }
+
+    private fun String.toScale(defaultValue: Float, min: Float, max: Float): Float {
+        return toFloatOrNull()?.coerceIn(min, max) ?: defaultValue
     }
 }

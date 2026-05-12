@@ -41,6 +41,7 @@ import tornaco.apps.shortx.ui.util.toComposeColor
 import javax.inject.Inject
 
 private const val FALLBACK_COLOR = 0x55FF4018
+private const val DEFAULT_SCALE = "1.0"
 
 @AndroidEntryPoint
 class PanoramicLightEffectSelectorActivity : BaseSelectorActivity<Action.PanoramicLightEffect>() {
@@ -107,6 +108,50 @@ private fun BaseSelectorActivity<Action.PanoramicLightEffect>.Selector(currentAc
                     vm.setTimes(it)
                 }
             )
+
+            SectionSpacer()
+
+            FieldTitle(text = "Speed scale")
+            SmallSpacer()
+            ShortXTextField(
+                value = state.speedScale,
+                onValueChange = {
+                    vm.setSpeedScale(it)
+                }
+            )
+
+            SectionSpacer()
+
+            FieldTitle(text = "Glow width scale")
+            SmallSpacer()
+            ShortXTextField(
+                value = state.glowWidthScale,
+                onValueChange = {
+                    vm.setGlowWidthScale(it)
+                }
+            )
+
+            SectionSpacer()
+
+            FieldTitle(text = "Intensity scale")
+            SmallSpacer()
+            ShortXTextField(
+                value = state.intensityScale,
+                onValueChange = {
+                    vm.setIntensityScale(it)
+                }
+            )
+
+            SectionSpacer()
+
+            FieldTitle(text = "Flame jitter scale")
+            SmallSpacer()
+            ShortXTextField(
+                value = state.flameJitterScale,
+                onValueChange = {
+                    vm.setFlameJitterScale(it)
+                }
+            )
         }
     }
 }
@@ -114,7 +159,11 @@ private fun BaseSelectorActivity<Action.PanoramicLightEffect>.Selector(currentAc
 data class PanoramicLightEffectSelectorState(
     val id: String = defaultNewActionId(),
     val color: String = "$FALLBACK_COLOR",
-    val times: String = "2"
+    val times: String = "2",
+    val speedScale: String = DEFAULT_SCALE,
+    val glowWidthScale: String = DEFAULT_SCALE,
+    val intensityScale: String = DEFAULT_SCALE,
+    val flameJitterScale: String = DEFAULT_SCALE,
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -132,7 +181,11 @@ class PanoramicLightEffectSelectorViewModel @Inject constructor(@ApplicationCont
                 copy(
                     id = it.id,
                     color = it.colorInt,
-                    times = it.times
+                    times = it.times,
+                    speedScale = it.speedScale,
+                    glowWidthScale = it.glowWidthScale,
+                    intensityScale = it.intensityScale,
+                    flameJitterScale = it.flameJitterScale,
                 )
             }
         }
@@ -150,11 +203,39 @@ class PanoramicLightEffectSelectorViewModel @Inject constructor(@ApplicationCont
         }
     }
 
+    fun setSpeedScale(speedScale: String) {
+        updateState {
+            copy(speedScale = speedScale)
+        }
+    }
+
+    fun setGlowWidthScale(glowWidthScale: String) {
+        updateState {
+            copy(glowWidthScale = glowWidthScale)
+        }
+    }
+
+    fun setIntensityScale(intensityScale: String) {
+        updateState {
+            copy(intensityScale = intensityScale)
+        }
+    }
+
+    fun setFlameJitterScale(flameJitterScale: String) {
+        updateState {
+            copy(flameJitterScale = flameJitterScale)
+        }
+    }
+
     fun toActionOrNull(): Action.PanoramicLightEffect {
         return Action.PanoramicLightEffect(
             id = state.value.id,
             colorInt = state.value.color,
-            times = state.value.times
+            times = state.value.times,
+            speedScale = state.value.speedScale,
+            glowWidthScale = state.value.glowWidthScale,
+            intensityScale = state.value.intensityScale,
+            flameJitterScale = state.value.flameJitterScale,
         )
     }
 }

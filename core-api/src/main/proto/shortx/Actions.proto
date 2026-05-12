@@ -1937,6 +1937,10 @@ message ScreenFlash {
 message PanoramicLightEffect {
   string colorInt = 1;
   string times = 2;
+  string speedScale = 3;
+  string glowWidthScale = 4;
+  string intensityScale = 5;
+  string flameJitterScale = 6;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;

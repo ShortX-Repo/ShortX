@@ -80,11 +80,24 @@ class OverlayService(shortXContext: ShortXContext) :
         }
     }
 
-    fun showPanoramicLightEffect(@ColorInt color: Int, times: Int) {
+    fun showPanoramicLightEffect(
+        @ColorInt color: Int,
+        times: Int,
+        speedScale: Float = 1f,
+        glowWidthScale: Float = 1f,
+        intensityScale: Float = 1f,
+        flameJitterScale: Float = 1f,
+    ) {
         systemServiceScope.launchSafety("showPanoramicLightEffect") {
             repeat(times) {
                 delay(120)
-                panoramicLightEffect.flash(color)
+                panoramicLightEffect.flash(
+                    color = color,
+                    speedScale = speedScale,
+                    glowWidthScale = glowWidthScale,
+                    intensityScale = intensityScale,
+                    flameJitterScale = flameJitterScale,
+                )
             }
         }
     }

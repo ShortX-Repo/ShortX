@@ -457,6 +457,10 @@ sealed interface Action : Parcelable {
         override val note: String = "",
         val colorInt: String,
         val times: String,
+        val speedScale: String = "1.0",
+        val glowWidthScale: String = "1.0",
+        val intensityScale: String = "1.0",
+        val flameJitterScale: String = "1.0",
     ) : Action {
         override fun clone(
             id: String,
