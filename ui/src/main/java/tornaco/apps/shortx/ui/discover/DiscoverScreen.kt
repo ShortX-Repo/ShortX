@@ -35,6 +35,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -474,14 +478,14 @@ private fun DiscoverRule(
                                             .padding(top = 6.dp, bottom = 12.dp)
                                     ) {
                                         Text(
-                                            text = rule.title,
+                                            text = highlightQuery(rule.title, discoverState.searchQuery),
                                             style = MaterialTheme.typography.titleMedium.copy(
                                                 fontSize = 16.sp
                                             )
                                         )
                                         TinySpacer()
                                         Text(
-                                            text = rule.description,
+                                            text = highlightQuery(rule.description, discoverState.searchQuery),
                                             style = MaterialTheme.typography.bodyMedium.copy(
                                                 fontSize = 12.sp
                                             ),
@@ -489,14 +493,9 @@ private fun DiscoverRule(
                                         )
 
                                         StandardSpacer()
-                                        TipRow(
-                                            text = rule.author,
-                                            icon = {
-                                                RemixIcon(
-                                                    modifier = Modifier.size(12.dp),
-                                                    remixName = Remix.UserAndFaces.user_line
-                                                )
-                                            }
+                                        DiscoverAuthorRow(
+                                            author = rule.author,
+                                            query = discoverState.searchQuery
                                         )
                                         MediumSpacer()
                                         TipBody(text = rule.updateTime)
@@ -630,14 +629,14 @@ private fun DiscoverDA(
 
                                     Column(modifier = Modifier.padding(bottom = 12.dp)) {
                                         Text(
-                                            text = it.title,
+                                            text = highlightQuery(it.title, discoverState.searchQuery),
                                             style = MaterialTheme.typography.titleMedium.copy(
                                                 fontSize = 16.sp
                                             )
                                         )
                                         SmallSpacer()
                                         Text(
-                                            text = it.description,
+                                            text = highlightQuery(it.description, discoverState.searchQuery),
                                             style = MaterialTheme.typography.bodyMedium.copy(
                                                 fontSize = 12.sp
                                             ),
@@ -645,14 +644,10 @@ private fun DiscoverDA(
                                         )
 
                                         StandardSpacer()
-                                        TipRow(
-                                            text = it.author,
-                                            icon = {
-                                                RemixIcon(
-                                                    modifier = Modifier.size(12.dp),
-                                                    remixName = Remix.UserAndFaces.user_line
-                                                )
-                                            })
+                                        DiscoverAuthorRow(
+                                            author = it.author,
+                                            query = discoverState.searchQuery
+                                        )
                                         MediumSpacer()
                                         TipBody(text = it.updateTime)
                                     }
@@ -784,14 +779,14 @@ private fun DiscoverCodeLibrary(
 
                                     Column(modifier = Modifier.padding(bottom = 12.dp)) {
                                         Text(
-                                            text = it.title,
+                                            text = highlightQuery(it.title, discoverState.searchQuery),
                                             style = MaterialTheme.typography.titleMedium.copy(
                                                 fontSize = 16.sp
                                             )
                                         )
                                         SmallSpacer()
                                         Text(
-                                            text = it.description,
+                                            text = highlightQuery(it.description, discoverState.searchQuery),
                                             style = MaterialTheme.typography.bodyMedium.copy(
                                                 fontSize = 12.sp
                                             ),
@@ -804,14 +799,9 @@ private fun DiscoverCodeLibrary(
                                         }
 
                                         StandardSpacer()
-                                        TipRow(
-                                            text = it.author,
-                                            icon = {
-                                                RemixIcon(
-                                                    modifier = Modifier.size(12.dp),
-                                                    remixName = Remix.UserAndFaces.user_line
-                                                )
-                                            }
+                                        DiscoverAuthorRow(
+                                            author = it.author,
+                                            query = discoverState.searchQuery
                                         )
                                         MediumSpacer()
                                         TipBody(text = it.updateTime)
@@ -868,10 +858,58 @@ private fun <T> List<T>.filterByQuery(
     val normalizedQuery = query.trim()
     if (normalizedQuery.isBlank()) return this
 
+    val pinyinQuery = normalizedQuery.lowercase()
+
     return filter {
         title(it).contains(normalizedQuery, ignoreCase = true) ||
-            titlePinyin(it).contains(normalizedQuery.lowercase(), ignoreCase = true) ||
+            titlePinyin(it).contains(pinyinQuery, ignoreCase = true) ||
             description(it).contains(normalizedQuery, ignoreCase = true) ||
-            author(it).contains(normalizedQuery, ignoreCase = true)
+            author(it).contains(normalizedQuery, ignoreCase = true) ||
+            com.github.promeg.pinyinhelper.Pinyin.toPinyin(author(it), "")
+                .lowercase()
+                .contains(pinyinQuery, ignoreCase = true)
+    }
+}
+
+@Composable
+private fun highlightQuery(text: String, query: String) = buildAnnotatedString {
+    val highlightColor = MaterialTheme.colorScheme.primary
+    val normalizedQuery = query.trim()
+    if (normalizedQuery.isEmpty()) {
+        append(text)
+        return@buildAnnotatedString
+    }
+
+    val matchStart = text.indexOf(normalizedQuery, ignoreCase = true)
+    if (matchStart < 0) {
+        append(text)
+        return@buildAnnotatedString
+    }
+
+    val matchEnd = matchStart + normalizedQuery.length
+    append(text.substring(0, matchStart))
+    withStyle(
+        SpanStyle(
+            color = highlightColor,
+            fontWeight = FontWeight.SemiBold
+        )
+    ) {
+        append(text.substring(matchStart, matchEnd))
+    }
+    append(text.substring(matchEnd))
+}
+
+@Composable
+private fun DiscoverAuthorRow(author: String, query: String) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        RemixIcon(
+            modifier = Modifier.size(12.dp),
+            remixName = Remix.UserAndFaces.user_line
+        )
+        SmallSpacer()
+        Text(
+            text = highlightQuery(author, query),
+            style = MaterialTheme.typography.bodySmall
+        )
     }
 }
