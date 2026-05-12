@@ -66,6 +66,7 @@ data class AddRuleState(
     val showAdvancedOptions: Boolean = false,
     val expandHooks: Boolean = false,
     val showGeeksOptions: Boolean = false,
+    val showOtherOptions: Boolean = false,
     val isQuitEnabled: Boolean = false,
     val quitEvaluatePolicy: Quit_EvaluatePolicy = Quit_EvaluatePolicy.Quit_EvaluatePolicy_Always,
     val asyncMode: AsyncMode = AsyncMode.AsyncMode_Async,
@@ -183,11 +184,11 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
     }
 
     fun setIcon(icon: String) {
-        updateState { copy(icon = icon, ruleChanged = true) }
+        updateState { copy(icon = icon, ruleChanged = true, showOtherOptions = true) }
     }
 
     fun setIconColor(iconColor: ULong) {
-        updateState { copy(iconColor = iconColor, ruleChanged = true) }
+        updateState { copy(iconColor = iconColor, ruleChanged = true, showOtherOptions = true) }
     }
 
     fun setShowAdvancedOptions(show: Boolean) {
@@ -200,6 +201,10 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
 
     fun setShowGeeksOptions(show: Boolean) {
         updateState { copy(showGeeksOptions = show) }
+    }
+
+    fun setShowOtherOptions(show: Boolean) {
+        updateState { copy(showOtherOptions = show) }
     }
 
     fun setInsGen(gen: RuleInstanceIdGen) {
@@ -491,6 +496,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
 
                 val hasAnyGeeksOptions: Boolean = r.hasRuleInstanceIdGenerator()
                 logger.d("hasAnyGeeksOptions: $hasAnyGeeksOptions")
+                val hasOtherOptions = r.icon.isNotEmpty() || r.iconColor.instructionIconColorOrNull() != null
 
                 val evaluatingActions = shortx.getEvaluatingActions()
 
@@ -506,6 +512,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         showAdvancedOptions = hasAnyHookActions,
                         expandHooks = hasAnyHookActions,
                         showGeeksOptions = hasAnyGeeksOptions,
+                        showOtherOptions = hasOtherOptions,
                         instanceIdGen = r.ruleInstanceIdGenerator.toRuleInstanceIdGen(),
                         isQuitEnabled = r.quit.isEnabled,
                         quitEvaluatePolicy = r.quit.evaluatePolicy.takeIf { it != Quit_EvaluatePolicy.UNRECOGNIZED }

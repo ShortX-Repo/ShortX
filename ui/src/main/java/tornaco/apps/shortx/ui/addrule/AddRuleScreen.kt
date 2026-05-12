@@ -441,14 +441,6 @@ private fun LazyListScope.ruleContent(
     // 2
     itemWithPadding {
         TitleAndDescription(state = addRuleState, vm = vm, readOnly = readOnly)
-        StandardSpacer()
-        InstructionAppearanceEditor(
-            icon = addRuleState.icon,
-            iconColor = addRuleState.iconColor,
-            readOnly = readOnly,
-            setIcon = vm::setIcon,
-            setIconColor = vm::setIconColor,
-        )
         SectionSpacer()
     }
 
@@ -489,12 +481,6 @@ private fun LazyListScope.ruleContent(
 
     // 6
     itemWithPadding {
-        EvaRecordSetting(id = addRuleState.id)
-        SectionSpacer()
-    }
-
-    // 7
-    itemWithPadding {
         AnimatedVisibility(
             addRuleState.parameters.isNotEmpty()
                     && !addRuleState.showAdvancedOptions
@@ -516,14 +502,14 @@ private fun LazyListScope.ruleContent(
 
 
     // Adv
-    // 8
+    // 7
     stickyHeader {
         val cornerDp by animateDpAsState(
-            if (currentStickyHeaderIndex >= 8) 0.dp else SECTION_BAR_CORNER_SIZE.dp,
+            if (currentStickyHeaderIndex >= 7) 0.dp else SECTION_BAR_CORNER_SIZE.dp,
             label = "Dp"
         )
         val paddingDp by animateDpAsState(
-            if (currentStickyHeaderIndex >= 8) 0.dp else SECTION_BAR_H_PADDING.dp,
+            if (currentStickyHeaderIndex >= 7) 0.dp else SECTION_BAR_H_PADDING.dp,
             label = "Dp"
         )
         ExpandableSectionBar(
@@ -537,7 +523,7 @@ private fun LazyListScope.ruleContent(
         }
         StandardSpacer()
     }
-    // 9
+    // 8
     itemWithPadding {
         AnimatedVisibility(visible = addRuleState.showAdvancedOptions) {
             Column {
@@ -592,14 +578,14 @@ private fun LazyListScope.ruleContent(
     }
 
     // Quit START
-    // 10
+    // 9
     stickyHeader {
         val cornerDp by animateDpAsState(
-            if (currentStickyHeaderIndex >= 10) 0.dp else SECTION_BAR_CORNER_SIZE.dp,
+            if (currentStickyHeaderIndex >= 9) 0.dp else SECTION_BAR_CORNER_SIZE.dp,
             label = "Dp"
         )
         val paddingDp by animateDpAsState(
-            if (currentStickyHeaderIndex >= 10) 0.dp else SECTION_BAR_H_PADDING.dp,
+            if (currentStickyHeaderIndex >= 9) 0.dp else SECTION_BAR_H_PADDING.dp,
             label = "Dp"
         )
         SwitchBar(
@@ -680,14 +666,14 @@ private fun LazyListScope.ruleContent(
     // Quit END
 
     // Hooks START
-    // 12
+    // 11
     stickyHeader {
         val cornerDp by animateDpAsState(
-            if (currentStickyHeaderIndex >= 12) 0.dp else SECTION_BAR_CORNER_SIZE.dp,
+            if (currentStickyHeaderIndex >= 11) 0.dp else SECTION_BAR_CORNER_SIZE.dp,
             label = "Dp"
         )
         val paddingDp by animateDpAsState(
-            if (currentStickyHeaderIndex >= 12) 0.dp else SECTION_BAR_H_PADDING.dp,
+            if (currentStickyHeaderIndex >= 11) 0.dp else SECTION_BAR_H_PADDING.dp,
             label = "Dp"
         )
         // Hooks
@@ -801,7 +787,7 @@ private fun LazyListScope.ruleContent(
     // Hooks END
 
     // GEEKS START
-    // 14
+    // 13
     stickyHeader {
         ExpandableSectionBar(
             isExpand = addRuleState.showGeeksOptions,
@@ -823,6 +809,37 @@ private fun LazyListScope.ruleContent(
         }
     }
     // GEEKS END
+
+    // Other START
+    // 15
+    stickyHeader {
+        ExpandableSectionBar(
+            isExpand = addRuleState.showOtherOptions,
+            text = LocalI18N.current["ui.other.options"],
+            iconName = Remix.System.more_2_fill,
+            modifier = Modifier.padding(horizontal = SECTION_BAR_H_PADDING.dp)
+        ) {
+            vm.setShowOtherOptions(!addRuleState.showOtherOptions)
+        }
+        StandardSpacer()
+    }
+    itemWithPadding {
+        AnimatedVisibility(visible = addRuleState.showOtherOptions) {
+            Column {
+                InstructionAppearanceEditor(
+                    icon = addRuleState.icon,
+                    iconColor = addRuleState.iconColor,
+                    readOnly = readOnly,
+                    setIcon = vm::setIcon,
+                    setIconColor = vm::setIconColor,
+                )
+                StandardSpacer()
+                EvaRecordSetting(id = addRuleState.id)
+                SectionSpacer()
+            }
+        }
+    }
+    // Other END
 
     itemWithPadding {
         SectionSpacer()

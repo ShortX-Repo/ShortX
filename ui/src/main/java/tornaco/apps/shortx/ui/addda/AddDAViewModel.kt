@@ -67,6 +67,7 @@ data class AddDirectActionState(
     val copiedAction: Action? = null,
     val showAdvancedOptions: Boolean = false,
     val expandHooks: Boolean = false,
+    val showOtherOptions: Boolean = false,
     val conflictStrategy: ConflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
     val evaluatingActions: List<String> = emptyList(),
     val daSetId: String = "",
@@ -166,11 +167,11 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
     }
 
     fun setIcon(icon: String) {
-        updateState { copy(icon = icon, daChanged = true) }
+        updateState { copy(icon = icon, daChanged = true, showOtherOptions = true) }
     }
 
     fun setIconColor(iconColor: ULong) {
-        updateState { copy(iconColor = iconColor, daChanged = true) }
+        updateState { copy(iconColor = iconColor, daChanged = true, showOtherOptions = true) }
     }
 
     fun setShowAdvancedOptions(show: Boolean) {
@@ -179,6 +180,10 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
 
     fun setConflictStrategy(conflictStrategy: ConflictStrategy) {
         updateState { copy(conflictStrategy = conflictStrategy, daChanged = true) }
+    }
+
+    fun setShowOtherOptions(show: Boolean) {
+        updateState { copy(showOtherOptions = show) }
     }
 
     fun addParameter(parameter: FuncParameter, override: Boolean) {
@@ -362,6 +367,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
 
                 val hasAnyHookActions: Boolean = actionOnStoppedStateHandler.actions.isNotEmpty()
                 logger.d("hasAnyHookActions: $hasAnyHookActions")
+                val hasOtherOptions = da.icon.isNotEmpty() || da.iconColor.instructionIconColorOrNull() != null
 
                 updateState {
                     copy(
@@ -383,7 +389,8 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                         hasSMSAction = hasAnySMSAction,
                         parameters = da.parametersList,
                         showAdvancedOptions = hasAnyParam || hasAnyQuitActions || hasAnyHookActions,
-                        expandHooks = hasAnyHookActions
+                        expandHooks = hasAnyHookActions,
+                        showOtherOptions = hasOtherOptions,
                     )
                 }
             }

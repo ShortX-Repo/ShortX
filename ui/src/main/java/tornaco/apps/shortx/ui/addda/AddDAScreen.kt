@@ -379,14 +379,6 @@ private fun LazyListScope.daContent(
     // 2
     itemWithPadding {
         TitleAndDescription(state = addDirectActionState, vm = vm, readOnly = readOnly)
-        StandardSpacer()
-        InstructionAppearanceEditor(
-            icon = addDirectActionState.icon,
-            iconColor = addDirectActionState.iconColor,
-            readOnly = readOnly,
-            setIcon = vm::setIcon,
-            setIconColor = vm::setIconColor,
-        )
         Spacer(modifier = Modifier.size(24.dp))
     }
 
@@ -405,21 +397,15 @@ private fun LazyListScope.daContent(
         SectionSpacer()
     }
 
-    // 4
-    itemWithPadding {
-        EvaRecordSetting(id = addDirectActionState.id)
-        SectionSpacer()
-    }
-
     // Adv START
-    // 5
+    // 4
     stickyHeader {
         val cornerDp by animateDpAsState(
-            if (currentStickyHeaderIndex >= 5) 0.dp else SECTION_BAR_CORNER_SIZE.dp,
+            if (currentStickyHeaderIndex >= 4) 0.dp else SECTION_BAR_CORNER_SIZE.dp,
             label = "Dp"
         )
         val paddingDp by animateDpAsState(
-            if (currentStickyHeaderIndex >= 5) 0.dp else SECTION_BAR_H_PADDING.dp,
+            if (currentStickyHeaderIndex >= 4) 0.dp else SECTION_BAR_H_PADDING.dp,
             label = "Dp"
         )
         ExpandableSectionBar(
@@ -433,7 +419,7 @@ private fun LazyListScope.daContent(
         }
         StandardSpacer()
     }
-    // 6
+    // 5
     itemWithPadding {
         AnimatedVisibility(visible = addDirectActionState.showAdvancedOptions) {
             Column {
@@ -459,14 +445,14 @@ private fun LazyListScope.daContent(
     }
 
     // Quit START
-    // 7
+    // 6
     stickyHeader {
         val cornerDp by animateDpAsState(
-            if (currentStickyHeaderIndex >= 7) 0.dp else SECTION_BAR_CORNER_SIZE.dp,
+            if (currentStickyHeaderIndex >= 6) 0.dp else SECTION_BAR_CORNER_SIZE.dp,
             label = "Dp"
         )
         val paddingDp by animateDpAsState(
-            if (currentStickyHeaderIndex >= 7) 0.dp else SECTION_BAR_H_PADDING.dp,
+            if (currentStickyHeaderIndex >= 6) 0.dp else SECTION_BAR_H_PADDING.dp,
             label = "Dp"
         )
         ExpandableSectionBar(
@@ -592,6 +578,47 @@ private fun LazyListScope.daContent(
         }
     }
     // Quit END
+
+    // Other START
+    // 10
+    stickyHeader {
+        val cornerDp by animateDpAsState(
+            if (currentStickyHeaderIndex >= 10) 0.dp else SECTION_BAR_CORNER_SIZE.dp,
+            label = "Dp"
+        )
+        val paddingDp by animateDpAsState(
+            if (currentStickyHeaderIndex >= 10) 0.dp else SECTION_BAR_H_PADDING.dp,
+            label = "Dp"
+        )
+        ExpandableSectionBar(
+            isExpand = addDirectActionState.showOtherOptions,
+            text = LocalI18N.current["ui.other.options"],
+            iconName = Remix.System.more_2_fill,
+            shape = RoundedCornerShape(cornerDp),
+            modifier = Modifier.padding(horizontal = paddingDp)
+        ) {
+            vm.setShowOtherOptions(!addDirectActionState.showOtherOptions)
+        }
+        StandardSpacer()
+    }
+    // 11
+    itemWithPadding {
+        AnimatedVisibility(addDirectActionState.showOtherOptions) {
+            Column {
+                InstructionAppearanceEditor(
+                    icon = addDirectActionState.icon,
+                    iconColor = addDirectActionState.iconColor,
+                    readOnly = readOnly,
+                    setIcon = vm::setIcon,
+                    setIconColor = vm::setIconColor,
+                )
+                StandardSpacer()
+                EvaRecordSetting(id = addDirectActionState.id)
+                SectionSpacer()
+            }
+        }
+    }
+    // Other END
 
     itemWithPadding {
         SectionSpacer()
