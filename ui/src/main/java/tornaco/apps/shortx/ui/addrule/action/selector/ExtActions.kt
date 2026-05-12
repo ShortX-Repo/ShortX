@@ -43,7 +43,10 @@ import tornaco.apps.shortx.ui.base.code.toParcelableCodeOrNull
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.config.config
+import tornaco.apps.shortx.ui.pkgset.NewPkgSet
+import tornaco.apps.shortx.ui.pkgset.NewPkgSetDialog
 import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
+import tornaco.apps.shortx.ui.pkgset.rememberNewPkgSetState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 
@@ -172,17 +175,19 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
 
     val vm = hiltViewModel<PkgSetListViewModel>()
     val addPkgSetDialogState =
-        rememberTextInputState(
-            title = i18N["ui.pkg.set.add.title"],
-            message = i18N["ui.pkg.set.add.input.label"],
-            showSymbolButton = false,
+        rememberNewPkgSetState(
             inputValidator = {
                 vm.validateLabel(label = it, i18N = i18N, errorIfExists = false)
             },
             onSelected = {
-                addAction(Action.CreatePkgSet(label = it))
+                addAction(
+                    Action.CreatePkgSet(
+                        label = it.label,
+                        description = it.description.takeIf { desc -> desc.isNotBlank() }
+                    )
+                )
             })
-    TextInputDialog(addPkgSetDialogState)
+    NewPkgSetDialog(addPkgSetDialogState)
 
     val httpLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
@@ -420,7 +425,9 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             }
 
             Action.CreatePkgSet::class -> {
-                addPkgSetDialogState.show(source.getActionAs<Action.CreatePkgSet>()?.label)
+                addPkgSetDialogState.show(source.getActionAs<Action.CreatePkgSet>()?.let {
+                    NewPkgSet(label = it.label, description = it.description.orEmpty())
+                })
                 true
             }
 

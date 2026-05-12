@@ -53,15 +53,14 @@ import tornaco.apps.shortx.ui.base.DropdownSelectorState
 import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumSpacer
+import tornaco.apps.shortx.ui.base.NoteRow
 import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
-import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
-import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
@@ -107,17 +106,14 @@ fun PkgSetListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
         ) {
             val i18N = LocalI18N.current
             val addPkgSetDialogState =
-                rememberTextInputState(
-                    title = i18N["ui.pkg.set.add.title"],
-                    message = i18N["ui.pkg.set.add.input.label"],
-                    showSymbolButton = false,
+                rememberNewPkgSetState(
                     inputValidator = {
                         vm.validateLabel(it, i18N)
                     },
                     onSelected = {
-                        vm.createPkgSet(it)
+                        vm.createPkgSet(it.label, it.description)
                     })
-            TextInputDialog(addPkgSetDialogState)
+            NewPkgSetDialog(addPkgSetDialogState)
 
             val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
             Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -173,6 +169,7 @@ fun PkgSetListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                                         PkgSetListItem(modifier = Modifier,
                                             title = LocalI18N.current["ui.common.app.${it.label.lowercase()}", emptyMap(), it.label],
                                             text1 = i18N["ui.pkg.set.items.count", mapOf("count" to "${it.appPkgsCount}")],
+                                            note = it.description.takeIf { desc -> desc.isNotBlank() },
                                             badge = if (it.isPrebuilt) {
                                                 i18N["ui.pkg.set.prebuilt"]
                                             } else null,
@@ -203,6 +200,7 @@ private fun PkgSetListItem(
     modifier: Modifier,
     title: String,
     text1: String,
+    note: String?,
     badge: String?,
     onLongClick: () -> Unit,
     onClick: () -> Unit,
@@ -240,6 +238,11 @@ private fun PkgSetListItem(
             style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
             maxLines = 3
         )
+
+        note?.let {
+            MediumSpacer()
+            NoteRow(text = it)
+        }
 
         if (badge != null) {
             MediumSpacer()

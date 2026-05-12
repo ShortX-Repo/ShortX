@@ -51,6 +51,9 @@ import tornaco.apps.shortx.ui.addrule.base.AppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.base.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.base.AppIcon
 import tornaco.apps.shortx.ui.base.BaseActivity
+import tornaco.apps.shortx.ui.base.CategoryTitle
+import tornaco.apps.shortx.ui.base.InputValidateResult
+import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -59,7 +62,10 @@ import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.SmallTitle
+import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.copy
+import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
@@ -100,6 +106,17 @@ fun PkgSetDetailScreen(id: String, back: () -> Unit) {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
+            val noteInputState = rememberTextInputState(
+                title = LocalI18N.current["ui.common.note"],
+                message = null,
+                showSymbolButton = false,
+                inputValidator = { InputValidateResult.OK },
+                onSelected = {
+                    vm.updateDescription(it)
+                }
+            )
+            TextInputDialog(state = noteInputState)
+
             val appSelectorDialogState = rememberAppPkgSelectorState(
                 onAppListSelected = {
                     vm.setApps(it)
@@ -155,7 +172,8 @@ fun PkgSetDetailScreen(id: String, back: () -> Unit) {
                                 bottom = { it + 120.dp }
                             ),
                             state = state,
-                            vm = vm)
+                            vm = vm,
+                            noteInputState = noteInputState)
                     }
                 }
 
@@ -169,7 +187,8 @@ fun PkgSetDetailScreen(id: String, back: () -> Unit) {
 private fun PkgSetContent(
     paddingValues: PaddingValues,
     state: PkgSetDetailState,
-    vm: PkgSetDetailViewModel
+    vm: PkgSetDetailViewModel,
+    noteInputState: tornaco.apps.shortx.ui.base.TextInputState
 ) {
     LazyColumn(
         modifier = Modifier
@@ -222,6 +241,22 @@ private fun PkgSetContent(
                     }
                 }
             }
+        }
+
+        item {
+            StandardSpacer()
+            CategoryTitle(title = LocalI18N.current["ui.common.note"])
+        }
+
+        item {
+            ListItem(
+                title = state.description.ifEmpty { "-" },
+                onClick = {
+                    if (!state.isPrebuilt) {
+                        noteInputState.show(state.description)
+                    }
+                }
+            )
         }
 
         items(state.apps) {

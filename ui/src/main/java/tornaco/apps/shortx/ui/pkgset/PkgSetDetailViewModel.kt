@@ -67,6 +67,12 @@ class PkgSetDetailViewModel : StateViewModel<PkgSetDetailState, Unit>({ PkgSetDe
         }
     }
 
+    fun updateDescription(description: String) {
+        updateState {
+            copy(description = description, isChanged = true)
+        }
+    }
+
     fun updateAutoAddNewlyInstalledApps(autoAdd: Boolean) {
         updateState {
             copy(autoAddNewlyInstalledApps = autoAdd, isChanged = true)

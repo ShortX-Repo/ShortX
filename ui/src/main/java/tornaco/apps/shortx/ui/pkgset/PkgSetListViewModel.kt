@@ -63,9 +63,12 @@ class PkgSetListViewModel : StateViewModel<PkgSetListState, Unit>({ PkgSetListSt
         }
     }
 
-    fun createPkgSet(label: String) {
+    fun createPkgSet(label: String, description: String) {
         shortXManager.addPkgSet(
-            PkgSet.newBuilder().setLabel(label).build()
+            PkgSet.newBuilder()
+                .setLabel(label.trim())
+                .setDescription(description.trim())
+                .build()
         )
         loadState()
     }

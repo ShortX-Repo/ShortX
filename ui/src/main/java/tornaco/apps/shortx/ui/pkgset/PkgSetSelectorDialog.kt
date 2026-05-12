@@ -28,6 +28,8 @@ import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MediumSpacer
+import tornaco.apps.shortx.ui.base.NoteRow
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXCard
@@ -92,6 +94,7 @@ private fun PkgSetSelector(selectorState: PkgSetSelectorState) {
                     items(state.pkgSets) {
                         PkgSetListItem(modifier = Modifier,
                             name = it.label,
+                            note = it.description.takeIf { desc -> desc.isNotBlank() },
                             onClick = {
                                 selectorState.onPkgSetSelected(it)
                                 selectorState.dismiss()
@@ -109,6 +112,7 @@ private fun PkgSetSelector(selectorState: PkgSetSelectorState) {
 private fun PkgSetListItem(
     modifier: Modifier,
     name: String,
+    note: String?,
     onClick: () -> Unit,
 ) {
     ShortXCard(
@@ -121,6 +125,10 @@ private fun PkgSetListItem(
             Text(
                 text = name, style = MaterialTheme.typography.titleMedium.copy(fontSize = 14.sp)
             )
+            note?.let {
+                MediumSpacer()
+                NoteRow(text = it)
+            }
         }
     }
 }
