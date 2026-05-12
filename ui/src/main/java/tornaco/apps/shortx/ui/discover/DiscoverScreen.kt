@@ -70,14 +70,11 @@ import tornaco.apps.shortx.ui.base.ShortXTabRow
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
-import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.TipBody
-import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
-import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.code.CodeLibraryViewerDialog
 import tornaco.apps.shortx.ui.code.rememberCodeLibraryViewerState
 import tornaco.apps.shortx.ui.discover.contribute.ContributorActivity
@@ -88,7 +85,6 @@ import tornaco.apps.shortx.ui.main.da.rememberDAViewerState
 import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.main.rule.RuleViewerDialog
 import tornaco.apps.shortx.ui.main.rule.rememberRuleViewerState
-import tornaco.apps.shortx.ui.settings.pref.DiscoveryRepoSetting
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.util.BrowserUtils
@@ -111,21 +107,12 @@ fun DiscoverScreen() {
         discoverModel.loadDiscoverData()
     }
 
-    val newRepoDialogState =
-        rememberTextInputState(
-            title = LocalI18N.current["ui.discover.source.add.custom"],
-            message = LocalI18N.current["ui.discover.source.add.custom.description"],
-            showSymbolButton = true,
-            onSelected = {
-                discoverModel.addCustomRepo(
-                    DiscoveryRepoSetting(
-                        // "https://raw.githubusercontent.com/ShortX-Repo/Files/main/index.json"
-                        alias = it.substringAfter("//").substringBefore("/"),
-                        url = it
-                    )
-                )
-            })
-    TextInputDialog(state = newRepoDialogState)
+    val newRepoDialogState = rememberNewDiscoveryRepoState(
+        onSelected = {
+            discoverModel.addCustomRepo(it)
+        }
+    )
+    NewDiscoveryRepoDialog(state = newRepoDialogState)
 
     val subscribeDialogState = rememberShortXBottomSheetState()
     FeatureAccessDialog(subscribeDialogState)
