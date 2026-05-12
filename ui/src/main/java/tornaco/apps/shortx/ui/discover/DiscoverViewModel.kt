@@ -92,6 +92,7 @@ data class DiscoverState(
     val discoverRepo: DiscoverRepo = DiscoverRepo.PrebuiltLocal,
     val customRepos: Set<DiscoveryRepoSetting> = emptySet(),
     val enableChucker: Boolean = false,
+    val searchQuery: String = "",
 )
 
 const val assetName = "prebuilt/prebuilt-all.zip"
@@ -218,6 +219,12 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
             }
         }
         currentJob = job
+    }
+
+    fun updateSearchQuery(query: String) {
+        updateState {
+            copy(searchQuery = query)
+        }
     }
 
     private suspend fun loadPrebuiltData() {

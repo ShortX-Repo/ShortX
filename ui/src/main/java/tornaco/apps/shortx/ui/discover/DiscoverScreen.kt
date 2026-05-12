@@ -20,6 +20,9 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -60,6 +63,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXTabRow
+import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextInputDialog
@@ -290,6 +294,34 @@ fun DiscoverScreen() {
                 }
             )
 
+            ShortXTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                value = discoverState.searchQuery,
+                onValueChange = discoverModel::updateSearchQuery,
+                singleLine = true,
+                showSymbolButton = false,
+                placeholder = {
+                    Text(LocalI18N.current["ui.discover.search.placeholder"])
+                },
+                leadingIcon = {
+                    RemixIcon(remixName = Remix.System.search_line)
+                },
+                trailingIcon = {
+                    if (discoverState.searchQuery.isNotEmpty()) {
+                        IconButton(onClick = {
+                            discoverModel.updateSearchQuery("")
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = LocalI18N.current["ui.common.delete"]
+                            )
+                        }
+                    }
+                }
+            )
+
             HorizontalPager(
                 state = pagerState
             ) { index ->
@@ -360,7 +392,14 @@ private fun DiscoverRule(
     ) {
         when (val discoverData = discoverState.data) {
             is LoadState.Success -> {
-                if (discoverData.data.rules.isEmpty()) {
+                val filteredRules = discoverData.data.rules.filterByQuery(
+                    query = discoverState.searchQuery,
+                    title = { it.title },
+                    titlePinyin = { it.titlePinyin },
+                    description = { it.description },
+                    author = { it.author }
+                )
+                if (filteredRules.isEmpty()) {
                     EmptyList(modifier = Modifier.fillMaxSize()) {
                         refresh()
                     }
@@ -371,7 +410,7 @@ private fun DiscoverRule(
                         contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
                     ) {
                         items(
-                            items = discoverData.data.rules,
+                            items = filteredRules,
                             key = { listItem: RuleUM -> listItem.id + listItem.updateTime }) { rule ->
 
                             val ruleViewerState = rememberRuleViewerState(
@@ -515,7 +554,14 @@ private fun DiscoverDA(
     ) {
         when (val discoverData = discoverState.data) {
             is LoadState.Success -> {
-                if (discoverData.data.das.isEmpty()) {
+                val filteredDAs = discoverData.data.das.filterByQuery(
+                    query = discoverState.searchQuery,
+                    title = { it.title },
+                    titlePinyin = { it.titlePinyin },
+                    description = { it.description },
+                    author = { it.author }
+                )
+                if (filteredDAs.isEmpty()) {
                     EmptyList(modifier = Modifier.fillMaxSize()) {
                         refresh()
                     }
@@ -525,7 +571,7 @@ private fun DiscoverDA(
                         columns = dynamicStaggeredGridCells(),
                         contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
                     ) {
-                        items(items = discoverData.data.das, key = { it.id }) {
+                        items(items = filteredDAs, key = { it.id }) {
                             val daViewerState = rememberDAViewerState(
                                 title = it.title,
                                 url = it.url,
@@ -663,7 +709,14 @@ private fun DiscoverCodeLibrary(
     ) {
         when (val discoverData = discoverState.data) {
             is LoadState.Success -> {
-                if (discoverData.data.codeLibraries.isEmpty()) {
+                val filteredCodeLibraries = discoverData.data.codeLibraries.filterByQuery(
+                    query = discoverState.searchQuery,
+                    title = { it.title },
+                    titlePinyin = { it.titlePinyin },
+                    description = { it.description },
+                    author = { it.author }
+                )
+                if (filteredCodeLibraries.isEmpty()) {
                     EmptyList(modifier = Modifier.fillMaxSize()) {
                         refresh()
                     }
@@ -673,7 +726,7 @@ private fun DiscoverCodeLibrary(
                         columns = dynamicStaggeredGridCells(),
                         contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
                     ) {
-                        items(items = discoverData.data.codeLibraries, key = { it.id + it.updateTime }) {
+                        items(items = filteredCodeLibraries, key = { it.id + it.updateTime }) {
                             val codeViewerState = rememberCodeLibraryViewerState(
                                 title = it.title,
                                 item = it.item,
@@ -802,5 +855,23 @@ private fun discoverCodeTypeLabel(type: CodeType): String? {
         CodeType.CodeType_MVEL -> "MVEL"
         CodeType.CodeType_JAVASCRIPT -> "JavaScript"
         else -> null
+    }
+}
+
+private fun <T> List<T>.filterByQuery(
+    query: String,
+    title: (T) -> String,
+    titlePinyin: (T) -> String,
+    description: (T) -> String,
+    author: (T) -> String,
+): List<T> {
+    val normalizedQuery = query.trim()
+    if (normalizedQuery.isBlank()) return this
+
+    return filter {
+        title(it).contains(normalizedQuery, ignoreCase = true) ||
+            titlePinyin(it).contains(normalizedQuery.lowercase(), ignoreCase = true) ||
+            description(it).contains(normalizedQuery, ignoreCase = true) ||
+            author(it).contains(normalizedQuery, ignoreCase = true)
     }
 }

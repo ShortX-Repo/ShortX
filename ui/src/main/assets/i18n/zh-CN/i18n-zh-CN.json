@@ -627,6 +627,7 @@
   "ui.feat.label.toggles": "开关",
   "ui.feat.label.discover": "发现",
   "ui.discover.select.source": "选择源",
+  "ui.discover.search.placeholder": "搜索仓库指令、描述或作者...",
   "ui.discover.source.prebuilt": "预置",
   "ui.discover.source.add.custom": "添加自定义仓库",
   "ui.discover.source.add.custom.description": "输入index.json的url",

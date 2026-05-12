@@ -629,6 +629,7 @@
   "ui.feat.label.toggles": "Toggle",
   "ui.feat.label.discover": "Discover",
   "ui.discover.select.source": "Select source",
+  "ui.discover.search.placeholder": "Search repository items, descriptions, or authors...",
   "ui.discover.source.prebuilt": "Prebuilt",
   "ui.discover.source.add.custom": "Add custom repo",
   "ui.discover.source.add.custom.description": "Input the url of the index.json",
