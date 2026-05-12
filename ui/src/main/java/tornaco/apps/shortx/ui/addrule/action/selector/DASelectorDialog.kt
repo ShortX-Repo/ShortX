@@ -19,6 +19,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.CommonDialogState
@@ -28,8 +29,10 @@ import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalSnackbarHostState
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.SearchBar
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.main.CommonSetFilter
 import tornaco.apps.shortx.ui.main.da.ActiveJobIds
 import tornaco.apps.shortx.ui.main.da.DAItemHandler
@@ -73,6 +76,11 @@ private fun DASelector(dialogState: DADialogState) {
     LaunchedEffect(daListViewModel) {
         daListViewModel.selectDASetFilter(CommonSetFilter.PinnedAllFlat)
     }
+    val searchBarState = rememberSearchBarState(
+        keywordChanged = {
+            daListViewModel.updateSearchQuery(it)
+        }
+    )
 
     ShortXTheme {
         Surface(
@@ -127,6 +135,11 @@ private fun DASelector(dialogState: DADialogState) {
                                     daSetFilters = (daList as LoadState.Success<DAList>).data.daSetFilters,
                                     selectedDASetFilter = (daList as LoadState.Success<DAList>).data.selectedDASetFilter,
                                     selectDASetFilter = { daListViewModel.selectDASetFilter(it) },
+                                )
+                                SearchBar(
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                    searchBarState = searchBarState,
+                                    autoFocus = true,
                                 )
                                 DirectActionListContent(
                                     isShowDetailedDAItem = true,
