@@ -87,6 +87,12 @@ fun BatchOpToolbar(state: BatchOpState) {
                     RemixIcon(remixName = Remix.System.toggle_line, tint = PrefIcon)
                 }
 
+                state.onExecuteSelected?.let { executeSelected ->
+                    IconButton(onClick = { executeSelected(state.batchSelectedItems) }) {
+                        RemixIcon(remixName = Remix.Media.play_line, tint = PrefIcon)
+                    }
+                }
+
                 IconButton(onClick = { state.selectAll(state, state.batchSelectedItems) }) {
                     RemixIcon(remixName = Remix.System.checkbox_multiple_line, tint = PrefIcon)
                 }
@@ -104,6 +110,7 @@ class BatchOpState(
     val onToggleItems: (List<String>) -> Unit,
     val selectAll: BatchOpState.(currentSelections: List<String>) -> Unit,
     val onDeleteConfirmed: (List<String>) -> Unit,
+    val onExecuteSelected: ((List<String>) -> Unit)? = null,
 ) {
     private var _isEnable by mutableStateOf(false)
     val isEnable get() = _isEnable
@@ -147,13 +154,15 @@ fun rememberBatchOpState(
     onToggleItems: (List<String>) -> Unit,
     selectAll: BatchOpState.(currentSelections: List<String>) -> Unit,
     onDeleteConfirmed: (List<String>) -> Unit,
+    onExecuteSelected: ((List<String>) -> Unit)? = null,
 ): BatchOpState {
     return remember {
         BatchOpState(
             onCopy = onCopy,
             onToggleItems = onToggleItems,
             selectAll = selectAll,
-            onDeleteConfirmed = onDeleteConfirmed
+            onDeleteConfirmed = onDeleteConfirmed,
+            onExecuteSelected = onExecuteSelected,
         )
     }
 }

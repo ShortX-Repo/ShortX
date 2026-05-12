@@ -311,6 +311,7 @@ private fun Actions(
                 }
             ) {
                 val updatedActions by rememberUpdatedState(newValue = actions)
+                val scope = rememberCoroutineScope()
                 val batchOpState = rememberBatchOpState(
                     onCopy = { idList ->
                         idList.forEach { handler.copy(it) }
@@ -320,6 +321,9 @@ private fun Actions(
                     },
                     onDeleteConfirmed = { idList ->
                         idList.forEach { handler.removeAction(it) }
+                    },
+                    onExecuteSelected = { idList ->
+                        scope.launch { handler.executeSelected(idList) }
                     },
                     selectAll = { currentSelections ->
                         val isAllSelected =
@@ -517,8 +521,6 @@ private fun Actions(
                                         }
                                     }
                                 }
-
-                                val scope = rememberCoroutineScope()
                                 DropdownSelector(
                                     state = clickDropdownState,
                                     items = listOf(
@@ -841,6 +843,7 @@ class ActionHandler(
     val setNote: (actionId: String, note: String) -> Unit = { _, _ -> run {} },
     val setAsyncMode: (mode: ActionAsyncMode) -> Unit = { },
     val execute: suspend (actionId: String) -> Unit = { },
+    val executeSelected: suspend (actionIds: List<String>) -> Unit = { },
     val executeAll: suspend () -> Unit = { },
     val setCustomContextDataKey: (actionId: String, StringPair) -> Unit = { _, _ -> run {} },
 )

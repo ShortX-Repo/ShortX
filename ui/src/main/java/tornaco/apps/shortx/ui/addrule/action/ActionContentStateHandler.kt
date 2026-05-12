@@ -110,6 +110,9 @@ fun ActionContentStateHandler.asActionHandler(name: String = "unnamed"): ActionH
         execute = { actionId ->
             actions.first { it.id == actionId }.let { this.executeAction(it) }
         },
+        executeSelected = { actionIdList ->
+            this.executeActions(actions.filter { actionIdList.contains(it.id) })
+        },
         executeAll = {
             this.executeAllAction()
         },
@@ -274,6 +277,32 @@ class ActionContentStateHandler(
                 .setTitle("Testing")
                 .addAllActions(listOf(action.toProtoAction().pack_()))
                 .addAllParameters(parameterInputsProvider.invoke())
+                .build()
+
+            shortXManager.executeDirectionAction(context = evaluateContext, da = da)
+        }
+    }
+
+    suspend fun executeActions(actions: List<Action>) {
+        withContext(Dispatchers.IO) {
+            logger.d("executeActions: ${actions.map { it.id }}")
+            if (actions.isEmpty()) return@withContext
+            val protoActions = actions.map {
+                it.toProtoAction().pack_()
+            }
+            val da = DirectAction.newBuilder()
+                .setId("Tmp-${Date()}")
+                .setLastUpdateTime(System.currentTimeMillis())
+                .setTitle("Testing selected actions")
+                .addAllActions(protoActions)
+                .addAllParameters(parameterInputsProvider.invoke())
+                .setActionAsyncMode(state.value.asyncMode)
+                .build()
+
+            val evaluateContext = EvaluateContext.newBuilder()
+                .setSrcId(da.id)
+                .setSrcEvent(ContextSrcEvent.ContextSrc_ExecuteOnDAEditor)
+                .setSrcTitle(da.title)
                 .build()
 
             shortXManager.executeDirectionAction(context = evaluateContext, da = da)
