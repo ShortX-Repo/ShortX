@@ -17,6 +17,7 @@ import tornaco.apps.shortx.services.ctrl.Options
 import tornaco.apps.shortx.services.ctrl.Position
 import tornaco.apps.shortx.services.gesture.bpok.gesture.ContinuousActionHandler
 import tornaco.apps.shortx.services.ui.GesturePointerOverlay
+import kotlin.math.hypot
 import kotlin.math.roundToInt
 
 class GesturePointerContinuousHandler(
@@ -33,6 +34,7 @@ class GesturePointerContinuousHandler(
         private const val TOUCH_POINTER_ID = -4L
         private const val DEFAULT_DRAG_HOLD_MS = 350
         private const val SCROLL_STEP_PX = 48f
+        private const val CANCEL_REGION_RADIUS_DP = 48f
     }
 
     private val logger = Logger("GesturePointerHandler")
@@ -40,6 +42,7 @@ class GesturePointerContinuousHandler(
     private val controller by lazy { Controller(device) }
     private val pointerOverlay = GesturePointerOverlay(context)
     private val overlayScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private val cancelRegionRadiusPx = CANCEL_REGION_RADIUS_DP * context.resources.displayMetrics.density
 
     private var edgeGroup = -1
     private var screenWidth = 0
@@ -122,6 +125,7 @@ class GesturePointerContinuousHandler(
     }
 
     override fun onFinish(x: Float, y: Float, time: Long) {
+        val shouldCancel = isInCancelRegion(currentX, currentY)
         if (dragActive) {
             injectPointerAction(
                 action = MotionEvent.ACTION_UP,
@@ -131,14 +135,14 @@ class GesturePointerContinuousHandler(
                 button = dragButton.toMotionButton(),
             )
             dragActive = false
-        } else if (releaseButton != GesturePointerReleaseButton.GesturePointerReleaseButtonNone) {
+        } else if (!shouldCancel && releaseButton != GesturePointerReleaseButton.GesturePointerReleaseButtonNone) {
             when (releaseButton) {
                 GesturePointerReleaseButton.GesturePointerReleaseButtonTouch -> injectTouchTap(pointerX, pointerY)
                 else -> injectMouseClick(pointerX, pointerY, releaseButton.toMotionButton())
             }
         }
         hidePointerOverlay()
-        logger.d("onFinish: pointer=($pointerX,$pointerY)")
+        logger.d("onFinish: pointer=($pointerX,$pointerY), shouldCancel=$shouldCancel")
     }
 
     override fun onCancel() {
@@ -187,8 +191,14 @@ class GesturePointerContinuousHandler(
                 anchorY = startY,
                 currentX = currentX,
                 currentY = currentY,
+                cancelRegionRadius = cancelRegionRadiusPx,
+                isInCancelRegion = isInCancelRegion(currentX, currentY),
             )
         }
+    }
+
+    private fun isInCancelRegion(x: Float, y: Float): Boolean {
+        return hypot(x - startX, y - startY) <= cancelRegionRadiusPx
     }
 
     private fun injectHoverMove(x: Float, y: Float, eventTime: Long) {

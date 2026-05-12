@@ -32,12 +32,22 @@ class GesturePointerOverlay(private val context: Context) {
         overlayView = view
     }
 
-    fun update(edgeGroup: Int, anchorX: Float, anchorY: Float, currentX: Float, currentY: Float) {
+    fun update(
+        edgeGroup: Int,
+        anchorX: Float,
+        anchorY: Float,
+        currentX: Float,
+        currentY: Float,
+        cancelRegionRadius: Float = 0f,
+        isInCancelRegion: Boolean = false,
+    ) {
         overlayView?.updatePointer(
             anchorX = anchorX,
             anchorY = anchorY,
             currentX = currentX,
             currentY = currentY,
+            cancelRegionRadius = cancelRegionRadius,
+            isInCancelRegion = isInCancelRegion,
         )
     }
 
@@ -107,16 +117,39 @@ private class GesturePointerOverlayView(context: Context) : View(context) {
         strokeWidth = 1.9f * density
     }
 
+    private val cancelRegionPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = accentColor
+        style = Paint.Style.STROKE
+        strokeWidth = 2.4f * density
+    }
+
+    private val cancelRegionActivePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#F44336")
+        style = Paint.Style.STROKE
+        strokeWidth = 3.2f * density
+    }
+
     private var anchorX = 0f
     private var anchorY = 0f
     private var currentX = 0f
     private var currentY = 0f
+    private var cancelRegionRadius = 0f
+    private var isInCancelRegion = false
 
-    fun updatePointer(anchorX: Float, anchorY: Float, currentX: Float, currentY: Float) {
+    fun updatePointer(
+        anchorX: Float,
+        anchorY: Float,
+        currentX: Float,
+        currentY: Float,
+        cancelRegionRadius: Float = 0f,
+        isInCancelRegion: Boolean = false,
+    ) {
         this.anchorX = anchorX
         this.anchorY = anchorY
         this.currentX = currentX
         this.currentY = currentY
+        this.cancelRegionRadius = cancelRegionRadius
+        this.isInCancelRegion = isInCancelRegion
         invalidate()
     }
 
@@ -133,8 +166,21 @@ private class GesturePointerOverlayView(context: Context) : View(context) {
                 connectorPaint,
             )
         }
+        drawCancelRegion(canvas)
         drawStartAnchor(canvas, distance)
         drawCurrentPointer(canvas)
+    }
+
+    private fun drawCancelRegion(canvas: Canvas) {
+        if (cancelRegionRadius <= 0f) {
+            return
+        }
+        canvas.drawCircle(
+            anchorX,
+            anchorY,
+            cancelRegionRadius,
+            if (isInCancelRegion) cancelRegionActivePaint else cancelRegionPaint,
+        )
     }
 
     private fun drawCurrentPointer(canvas: Canvas) {
