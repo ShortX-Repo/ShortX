@@ -441,6 +441,14 @@ private fun LazyListScope.ruleContent(
     // 2
     itemWithPadding {
         TitleAndDescription(state = addRuleState, vm = vm, readOnly = readOnly)
+        StandardSpacer()
+        InstructionAppearanceEditor(
+            icon = addRuleState.icon,
+            iconColor = addRuleState.iconColor,
+            readOnly = readOnly,
+            setIcon = vm::setIcon,
+            setIconColor = vm::setIconColor,
+        )
         SectionSpacer()
     }
 

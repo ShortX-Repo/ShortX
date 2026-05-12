@@ -43,6 +43,7 @@ import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.ConflictStrategy
+import tornaco.apps.shortx.ui.addrule.InstructionAppearanceEditor
 import tornaco.apps.shortx.ui.addrule.QuitEvaluatePolicy
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.ActionContentState
@@ -378,6 +379,14 @@ private fun LazyListScope.daContent(
     // 2
     itemWithPadding {
         TitleAndDescription(state = addDirectActionState, vm = vm, readOnly = readOnly)
+        StandardSpacer()
+        InstructionAppearanceEditor(
+            icon = addDirectActionState.icon,
+            iconColor = addDirectActionState.iconColor,
+            readOnly = readOnly,
+            setIcon = vm::setIcon,
+            setIconColor = vm::setIconColor,
+        )
         Spacer(modifier = Modifier.size(24.dp))
     }
 

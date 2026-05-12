@@ -53,6 +53,7 @@ message DirectAction {
   AsyncMode asyncMode = 17;
   ActionAsyncMode actionAsyncMode = 18;
   int32 requireMinShortXProtoVersion = 19;
+  string iconColor = 20;
 }
 
 message DirectActionHook {

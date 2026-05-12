@@ -46,6 +46,8 @@ import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.addrule.fact.model.toProtoFact
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.ShortXContextViewModelWithEffect
+import tornaco.apps.shortx.ui.main.model.instructionIconColorOrNull
+import tornaco.apps.shortx.ui.main.model.toInstructionIconColorProto
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import java.net.URL
 import java.util.Date
@@ -68,6 +70,8 @@ data class AddDirectActionState(
     val conflictStrategy: ConflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
     val evaluatingActions: List<String> = emptyList(),
     val daSetId: String = "",
+    val icon: String = "",
+    val iconColor: ULong? = null,
     val isQuitEnabled: Boolean = false,
     val quitEvaluatePolicy: Quit_EvaluatePolicy = Quit_EvaluatePolicy.Quit_EvaluatePolicy_Always,
     // For online.
@@ -161,6 +165,14 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
         }
     }
 
+    fun setIcon(icon: String) {
+        updateState { copy(icon = icon, daChanged = true) }
+    }
+
+    fun setIconColor(iconColor: ULong) {
+        updateState { copy(iconColor = iconColor, daChanged = true) }
+    }
+
     fun setShowAdvancedOptions(show: Boolean) {
         updateState { copy(showAdvancedOptions = show) }
     }
@@ -230,6 +242,8 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                 .setVersionCode(state.value.versionCode)
                 .setConflictPolicy(state.value.conflictStrategy)
                 .setDirectActionSetId(state.value.daSetId)
+                .setIcon(state.value.icon)
+                .setIconColor(state.value.iconColor?.toInstructionIconColorProto().orEmpty())
                 .setHook(
                     DirectActionHook.newBuilder()
                         .addAllActionsOnStop(actionsOnStopped.map {
@@ -360,6 +374,8 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                         conflictStrategy = da.conflictPolicy,
                         evaluatingActions = shortx.getEvaluatingActions(),
                         daSetId = da.directActionSetId,
+                        icon = da.icon,
+                        iconColor = da.iconColor.instructionIconColorOrNull(),
                         isQuitEnabled = da.quit.isEnabled,
                         quitEvaluatePolicy = da.quit.evaluatePolicy.takeIf { it != Quit_EvaluatePolicy.UNRECOGNIZED }
                             ?: Quit_EvaluatePolicy.Quit_EvaluatePolicy_Only_When_Is_Running,

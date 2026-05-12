@@ -45,6 +45,8 @@ import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.addrule.fact.model.toProtoFact
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.ShortXContextViewModelWithEffect
+import tornaco.apps.shortx.ui.main.model.instructionIconColorOrNull
+import tornaco.apps.shortx.ui.main.model.toInstructionIconColorProto
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import java.net.URL
 import java.util.UUID
@@ -69,6 +71,8 @@ data class AddRuleState(
     val asyncMode: AsyncMode = AsyncMode.AsyncMode_Async,
     val conflictStrategy: ConflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
     val ruleSetId: String = "",
+    val icon: String = "",
+    val iconColor: ULong? = null,
     val evaluatingActions: List<String> = emptyList(),
     // Geeks options
     val instanceIdGen: RuleInstanceIdGen = RuleInstanceIdGen.RuleInstanceIdGenDefault,
@@ -176,6 +180,14 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                 copy(description = description, ruleChanged = true)
             }
         }
+    }
+
+    fun setIcon(icon: String) {
+        updateState { copy(icon = icon, ruleChanged = true) }
+    }
+
+    fun setIconColor(iconColor: ULong) {
+        updateState { copy(iconColor = iconColor, ruleChanged = true) }
     }
 
     fun setShowAdvancedOptions(show: Boolean) {
@@ -319,6 +331,8 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                 .setConflictPolicy(state.value.conflictStrategy)
                 .setAuthor(authorPref)
                 .setVersionCode(state.value.versionCode)
+                .setIcon(state.value.icon)
+                .setIconColor(state.value.iconColor?.toInstructionIconColorProto().orEmpty())
                 .addAllExtras(mutableListOf<StringPair>().apply {
                     if (!token.isNullOrEmpty()) {
                         add((BuildPropInternal.APP_PACKAGE_NAME to token).toStringPair())
@@ -498,6 +512,8 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                             ?: Quit_EvaluatePolicy.Quit_EvaluatePolicy_Always,
                         asyncMode = r.asyncMode,
                         conflictStrategy = r.conflictPolicy,
+                        icon = r.icon,
+                        iconColor = r.iconColor.instructionIconColorOrNull(),
                         evaluatingActions = evaluatingActions,
                         ruleSetId = r.ruleSetId,
                         securityCheckRes = Security.checkSecurity(r),

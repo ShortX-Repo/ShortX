@@ -24,7 +24,6 @@ import tornaco.apps.shortx.ui.addrule.fact.mapper.labelAndDescriptionForFactSele
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.base.ContextViewModel
-import tornaco.apps.shortx.ui.theme.ShortXRed
 import java.util.Date
 
 
@@ -62,9 +61,9 @@ fun ContextViewModel<*, *>.daToDirectActionUM(
         icon = directAction.icon.takeIf { it.isNotBlank() } ?: firstAction?.let {
             imageVectorForAction(it)
         } ?: Remix.Animals.dog,
-        iconColor = firstAction?.let {
+        iconColor = directAction.iconColor.instructionIconColorOrNull() ?: firstAction?.let {
             colorForAction(it::class).value
-        } ?: ShortXRed.value,
+        } ?: DefaultInstructionIconColor,
         directAction = directAction,
         versionCode = directAction.versionCode,
         hasAnyParameter = directAction.parametersList.isNotEmpty(),
@@ -124,9 +123,9 @@ fun ContextViewModel<*, *>.ruleToRuleUM(
                 it::class
             )
         } ?: Remix.Animals.dog,
-        iconColor = firstFact?.let {
+        iconColor = rule.iconColor.instructionIconColorOrNull() ?: firstFact?.let {
             colorForFact(it::class).value
-        } ?: ShortXRed.value,
+        } ?: DefaultInstructionIconColor,
         rule = rule,
         versionCode = rule.versionCode,
         hasAnyParameter = rule.parametersList.isNotEmpty(),
