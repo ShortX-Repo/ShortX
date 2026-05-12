@@ -50,12 +50,6 @@ class EdgeGestureHintDetector(
                 downY = event.y
                 trackedAreas = detectAreas(downX, downY).filter(::hasFeedbackEnabledSwipeRule)
                 trackedToken = if (trackedAreas.isNotEmpty()) nextToken++ else 0L
-                if (trackedToken != 0L && trackedAreas.any(::hasHapticEnabledSwipeRule)) {
-                    gestureHapticController.onGestureCandidate(trackedToken)
-                }
-                if (trackedToken != 0L) {
-                    showStartIndicator()
-                }
             }
 
             MotionEvent.ACTION_MOVE -> {
@@ -208,22 +202,6 @@ class EdgeGestureHintDetector(
         }
     }
 
-    private fun showStartIndicator() {
-        if (!trackedAreas.any(::hasHintEnabledSwipeRule)) return
-        gestureHintController.onGestureProgress(
-            GestureHintModel(
-                token = trackedToken,
-                anchorX = downX,
-                anchorY = downY,
-                directionX = 0f,
-                directionY = 0f,
-                progress = 0.18f,
-                state = GestureHintState.Candidate,
-                showArrow = false,
-            )
-        )
-    }
-
     private fun findBestCandidate(deltaX: Float, deltaY: Float, distance: Float): HintCandidate? {
         if (trackedAreas.isEmpty()) return null
         val normalizedX = deltaX / distance
@@ -280,15 +258,6 @@ class EdgeGestureHintDetector(
             !rule.isDisabled &&
                     rule.isGestureFeedbackEnabled() &&
                     rule.gesture == gesture &&
-                    rule.gesture.supportsGestureIndicator() &&
-                    areaMatchesRule(area, rule)
-        }
-    }
-
-    private fun hasHintEnabledSwipeRule(area: DetectedArea): Boolean {
-        return bridge.enabledEdgeGestures.any { rule ->
-            !rule.isDisabled &&
-                    rule.isGestureHintEnabled() &&
                     rule.gesture.supportsGestureIndicator() &&
                     areaMatchesRule(area, rule)
         }
