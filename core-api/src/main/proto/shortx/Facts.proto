@@ -153,6 +153,7 @@ message EdgeGesture {
   optional bool enableGestureHint = 10;
   repeated EdgeGestureStep childSteps = 11;
   optional bool enableGestureHaptic = 12;
+  optional bool useAbsoluteArea = 13;
 
   string tag = 97;
   CustomContextDataKey customContextDataKey = 98;

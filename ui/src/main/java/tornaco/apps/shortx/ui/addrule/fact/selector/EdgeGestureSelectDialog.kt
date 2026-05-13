@@ -82,6 +82,7 @@ data class EdgeGestureSelectDialogResult(
     val apps: List<App>,
     val pkgSet: List<PkgSet>,
     val customRect: Rect? = null,
+    val useAbsoluteArea: Boolean = false,
     val enableGestureHint: Boolean = true,
     val enableGestureHaptic: Boolean = false,
 )
@@ -106,6 +107,7 @@ class EdgeGestureSelectorState(
     var enableGestureHaptic by mutableStateOf(false)
     var customRect by mutableStateOf<Rect?>(null)
     var useCustomRect by mutableStateOf(false)
+    var useAbsoluteArea by mutableStateOf(false)
     var rectInputText by mutableStateOf("")
 
     val childSteps = mutableStateListOf<EdgeGestureStepModel>()
@@ -120,6 +122,7 @@ class EdgeGestureSelectorState(
         this.enableGestureHaptic = data?.enableGestureHaptic ?: false
         this.customRect = data?.customRect
         this.useCustomRect = data?.customRect != null
+        this.useAbsoluteArea = data?.useAbsoluteArea ?: false
         this.childSteps.clear()
         this.childSteps.addAll((data?.childSteps ?: emptyList()).take(MAX_CHILD_STEP_COUNT))
 
@@ -169,6 +172,7 @@ class EdgeGestureSelectorState(
             apps = apps,
             pkgSet = pkgSets,
             customRect = if (useCustomRect) customRect else null,
+            useAbsoluteArea = useAbsoluteArea,
             enableGestureHint = enableGestureHint,
             enableGestureHaptic = enableGestureHaptic,
         )
@@ -386,6 +390,26 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                             }
 
                             StandardSpacer()
+
+                            AnimatedVisibility(visible = !state.useCustomRect) {
+                                Column {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        SmallTitle(text = i18N["ui.fact.edge.gesture.use.absolute.area"])
+                                        ShortXSwitch(
+                                            checked = state.useAbsoluteArea,
+                                            onCheckedChange = {
+                                                state.useAbsoluteArea = it
+                                            }
+                                        )
+                                    }
+                                    TipRow(text = i18N["ui.fact.edge.gesture.use.absolute.area.description"])
+                                    StandardSpacer()
+                                }
+                            }
 
                             Box {
                                 val dropdownState = rememberDropdownSelectorState()

@@ -1,6 +1,8 @@
 package tornaco.apps.shortx.services.gesture.bpok.gesture
 
 import android.graphics.Point
+import android.graphics.PointF
+import android.view.Surface
 import tornaco.apps.shortx.core.proto.common.Rect
 import tornaco.apps.shortx.core.proto.toAndroidRect
 import tornaco.apps.shortx.core.proto.fact.Edge
@@ -10,6 +12,7 @@ import tornaco.apps.shortx.core.util._dp
 class EdgeRegionResolver(
     private val bridge: GestureBridge,
     private val getScreenSize: () -> Point,
+    private val getDisplayRotation: () -> Int,
 ) {
     private val logger = Logger("EdgeRegionResolver")
 
@@ -29,40 +32,132 @@ class EdgeRegionResolver(
                 }
             }
 
-        val edge = resolvePredefinedEdge(rawX, rawY)
-        if (edge != Edge.UNRECOGNIZED) {
-            detectedAreas.add(DetectedArea.PredefinedEdge(edge))
+        // 预置区域要同时产出两套命中结果：
+        // 1. 跟随当前屏幕方向的相对区域。
+        // 2. 固定竖屏语义的绝对区域。
+        // 这样每条规则都可以按自己的开关选择匹配哪一套区域。
+        val relativeEdge = resolveRelativePredefinedEdge(rawX, rawY)
+        if (relativeEdge != Edge.UNRECOGNIZED) {
+            detectedAreas.add(
+                DetectedArea.PredefinedEdge(
+                    edge = relativeEdge,
+                    coordinateMode = PredefinedEdgeCoordinateMode.RelativeToDisplay,
+                )
+            )
+        }
+
+        val absoluteEdge = resolveAbsolutePredefinedEdge(rawX, rawY)
+        if (absoluteEdge != Edge.UNRECOGNIZED) {
+            detectedAreas.add(
+                DetectedArea.PredefinedEdge(
+                    edge = absoluteEdge,
+                    coordinateMode = PredefinedEdgeCoordinateMode.AbsolutePortrait,
+                )
+            )
         }
 
         return detectedAreas
     }
 
     fun resolve(rawX: Float, rawY: Float): Edge {
-        return resolvePredefinedEdge(rawX, rawY)
+        return resolveRelativePredefinedEdge(rawX, rawY)
     }
 
-    private fun resolvePredefinedEdge(rawX: Float, rawY: Float): Edge {
+    fun toAbsolutePortraitPoint(rawX: Float, rawY: Float): PointF {
+        val portraitMetrics = getPortraitMetrics()
+        val mapped = when (portraitMetrics.rotation) {
+            // 这里要按当前 rotation 做“逆变换”，把横屏坐标还原回竖屏坐标。
+            // 之前 90/270 的公式写反了，会导致“竖屏右边”在某个横屏方向下错误映射到上边。
+            Surface.ROTATION_90 -> PointF(portraitMetrics.width - rawY, rawX)
+            Surface.ROTATION_180 -> PointF(
+                portraitMetrics.width - rawX,
+                portraitMetrics.height - rawY
+            )
+
+            Surface.ROTATION_270 -> PointF(rawY, portraitMetrics.height - rawX)
+            else -> PointF(rawX, rawY)
+        }
+        return PointF(
+            mapped.x.coerceIn(0f, maxCoordinate(portraitMetrics.width)),
+            mapped.y.coerceIn(0f, maxCoordinate(portraitMetrics.height)),
+        )
+    }
+
+    private fun resolveRelativePredefinedEdge(rawX: Float, rawY: Float): Edge {
         val screenSize = getScreenSize()
+        return resolvePredefinedEdge(
+            point = PointF(rawX, rawY),
+            screenWidth = screenSize.x.toFloat(),
+            screenHeight = screenSize.y.toFloat(),
+            isPortrait = isCurrentDisplayPortrait(),
+        )
+    }
+
+    private fun resolveAbsolutePredefinedEdge(rawX: Float, rawY: Float): Edge {
+        val portraitPoint = toAbsolutePortraitPoint(rawX, rawY)
+        val portraitMetrics = getPortraitMetrics()
+        return resolvePredefinedEdge(
+            point = portraitPoint,
+            screenWidth = portraitMetrics.width,
+            screenHeight = portraitMetrics.height,
+            isPortrait = true,
+        )
+    }
+
+    private fun resolvePredefinedEdge(
+        point: PointF,
+        screenWidth: Float,
+        screenHeight: Float,
+        isPortrait: Boolean,
+    ): Edge {
         val areaSize = bridge.getGestureAreaWidthDp()._dp.toFloat()
         val areaLengthScale = bridge.getGestureLengthScale()
-        val sw = screenSize.x.toFloat()
-        val sh = screenSize.y.toFloat()
 
         val edges = Edge.entries.filter { it != Edge.UNRECOGNIZED }
         for (edge in edges) {
             val rect = edge.getRect(
-                isPortrait = true,
-                screenWidth = sw,
-                screenHeight = sh,
+                isPortrait = isPortrait,
+                screenWidth = screenWidth,
+                screenHeight = screenHeight,
                 areaSize = areaSize,
                 areaLengthScale = areaLengthScale
             )
-            if (rect.contains(rawX, rawY)) {
+            if (rect.contains(point.x, point.y)) {
                 return edge
             }
         }
         return Edge.UNRECOGNIZED
     }
+
+    private fun getPortraitMetrics(): PortraitMetrics {
+        val screenSize = getScreenSize()
+        val screenWidth = screenSize.x.toFloat()
+        val screenHeight = screenSize.y.toFloat()
+        return PortraitMetrics(
+            width = minOf(screenWidth, screenHeight),
+            height = maxOf(screenWidth, screenHeight),
+            rotation = getDisplayRotation(),
+        )
+    }
+
+    private fun isCurrentDisplayPortrait(): Boolean {
+        // 相对区域模式要跟随当前屏幕方向变化，
+        // 这里显式区分横竖屏，避免横屏时仍然套用竖屏矩形。
+        return when (getDisplayRotation()) {
+            Surface.ROTATION_90, Surface.ROTATION_270 -> false
+            else -> true
+        }
+    }
+
+    private fun maxCoordinate(size: Float): Float {
+        return if (size <= 1f) 0f else size - 0.001f
+    }
+
+    private data class PortraitMetrics(
+        val width: Float,
+        val height: Float,
+        val rotation: Int,
+    )
 
     fun getParentEdgeRegion(edge: Edge): Edge {
         return when (edge) {

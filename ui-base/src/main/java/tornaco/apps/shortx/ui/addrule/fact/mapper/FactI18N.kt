@@ -434,6 +434,10 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
                 i18N["ui.fact.edge.gesture.haptic.disabled"],
                 null
             ),
+            ((fact.customRect == null) && fact.useAbsoluteArea).select(
+                i18N["ui.fact.edge.gesture.absolute.area.enabled"],
+                null
+            ),
             i18N.gestureDisabledMessageOrNull()
         )
 

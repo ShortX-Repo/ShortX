@@ -93,6 +93,7 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
                     apps = eg.apps,
                     pkgSets = eg.pkgSet,
                     customRect = eg.customRect,
+                    useAbsoluteArea = eg.useAbsoluteArea,
                     enableGestureHint = eg.enableGestureHint,
                     enableGestureHaptic = eg.enableGestureHaptic,
                 )

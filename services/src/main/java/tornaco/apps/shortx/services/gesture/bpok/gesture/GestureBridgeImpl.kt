@@ -419,14 +419,21 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
             is DetectedArea.PredefinedEdge -> {
                 val hasCustomRect = rule.hasCustomRect() &&
                         rule.customRect != tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance()
+                val expectedMode = if (rule.usesAbsolutePredefinedArea()) {
+                    PredefinedEdgeCoordinateMode.AbsolutePortrait
+                } else {
+                    PredefinedEdgeCoordinateMode.RelativeToDisplay
+                }
                 if (hasCustomRect) {
+                    null
+                } else if (area.coordinateMode != expectedMode) {
                     null
                 } else if (rule.edge == area.edge) {
                     area
                 } else {
                     val parentEdge = getParentEdgeRegion(area.edge)
                     if (parentEdge != area.edge && rule.edge == parentEdge) {
-                        DetectedArea.PredefinedEdge(parentEdge)
+                        DetectedArea.PredefinedEdge(parentEdge, area.coordinateMode)
                     } else {
                         null
                     }

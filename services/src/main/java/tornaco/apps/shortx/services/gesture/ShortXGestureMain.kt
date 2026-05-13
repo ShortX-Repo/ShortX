@@ -2,12 +2,14 @@ package tornaco.apps.shortx.services.gesture
 
 import android.content.Context
 import android.view.MotionEvent
+import android.view.Surface
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.core.util.newHandlerOfNewThread
 import tornaco.apps.shortx.core.util.screenSize
+import tornaco.apps.shortx.core.util.windowManager
 import tornaco.apps.shortx.services.gesture.bpok.gesture.CornerSwipeToCenterDetector
 import tornaco.apps.shortx.services.gesture.bpok.gesture.DetectedArea
 import tornaco.apps.shortx.services.gesture.bpok.gesture.GestureBridgeImpl
@@ -37,7 +39,11 @@ class ShortXGestureMain(
 
     private val detectorHandler = newHandlerOfNewThread("shortx-detector")
 
-    private val regionResolver = EdgeRegionResolver(service) { context.screenSize() }
+    private val regionResolver = EdgeRegionResolver(
+        bridge = service,
+        getScreenSize = { context.screenSize() },
+        getDisplayRotation = { context.windowManager.defaultDisplay?.rotation ?: Surface.ROTATION_0 },
+    )
     private val directionResolver = GestureDirectionResolver()
     private val timerController = GestureTimerController(detectorHandler)
     private val actionResolver = GestureActionResolver(service, regionResolver)
@@ -72,6 +78,7 @@ class ShortXGestureMain(
         detectAreas = { x, y ->
             regionResolver.detectAreas(x, y)
         },
+        toAbsolutePortraitPoint = regionResolver::toAbsolutePortraitPoint,
     )
 
     val engine = EdgeGestureEngine(

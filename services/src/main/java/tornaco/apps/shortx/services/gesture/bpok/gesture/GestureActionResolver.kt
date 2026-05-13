@@ -19,7 +19,10 @@ class GestureActionResolver(
             if (area is DetectedArea.PredefinedEdge) {
                 val parent = regionResolver.getParentEdgeRegion(area.edge)
                 if (parent != area.edge) {
-                    val fallback = findAction(DetectedArea.PredefinedEdge(parent), gesture)
+                    val fallback = findAction(
+                        DetectedArea.PredefinedEdge(parent, area.coordinateMode),
+                        gesture
+                    )
                     if (fallback != null) return fallback
                 }
             }
@@ -43,7 +46,13 @@ class GestureActionResolver(
     private fun areaMatchesRule(area: DetectedArea, rule: EdgeGesture): Boolean {
         return when (area) {
             is DetectedArea.PredefinedEdge -> {
+                val expectedMode = if (rule.usesAbsolutePredefinedArea()) {
+                    PredefinedEdgeCoordinateMode.AbsolutePortrait
+                } else {
+                    PredefinedEdgeCoordinateMode.RelativeToDisplay
+                }
                 rule.edge == area.edge &&
+                        area.coordinateMode == expectedMode &&
                         (!rule.hasCustomRect() || rule.customRect == tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance())
             }
 

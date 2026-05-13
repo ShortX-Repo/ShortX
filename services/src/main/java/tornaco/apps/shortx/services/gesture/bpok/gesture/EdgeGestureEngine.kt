@@ -34,9 +34,12 @@ class EdgeGestureEngine(
 
     private var downX = 0f
     private var downY = 0f
+    private var downAbsoluteX = 0f
+    private var downAbsoluteY = 0f
     private var hitAreas: List<DetectedArea> = emptyList()
     private var hitRegion: Edge = Edge.UNRECOGNIZED
     private var recognizedDirection: Direction = Direction.UNKNOWN
+    private var recognizedSwipeGestures: Set<Gesture> = emptySet()
     private var gestureCaptured = false
     private var executionStarted = false
     private var cachedDownEvent: MotionEvent? = null
@@ -90,6 +93,10 @@ class EdgeGestureEngine(
 
         downX = event.rawX
         downY = event.rawY
+        regionResolver.toAbsolutePortraitPoint(downX, downY).also {
+            downAbsoluteX = it.x
+            downAbsoluteY = it.y
+        }
         lockedDeviceId = event.deviceId
         lockedPointerId = event.getPointerId(event.actionIndex)
 
@@ -122,6 +129,10 @@ class EdgeGestureEngine(
 
         downX = event.rawX
         downY = event.rawY
+        regionResolver.toAbsolutePortraitPoint(downX, downY).also {
+            downAbsoluteX = it.x
+            downAbsoluteY = it.y
+        }
         lockedDeviceId = event.deviceId
         lockedPointerId = event.getPointerId(event.actionIndex)
         cachedDownEvent?.recycle()
@@ -149,33 +160,31 @@ class EdgeGestureEngine(
             return true
         }
 
-        if (recognizedDirection == Direction.UNKNOWN) {
-            val dir = directionResolver.resolve(
-                downX, downY, event.rawX, event.rawY,
-                DIRECTION_MIN_THRESHOLD_DP._dp.toFloat()
-            )
-            if (dir != Direction.UNKNOWN) {
-                recognizedDirection = dir
+        if (recognizedSwipeGestures.isEmpty()) {
+            val snapshot = resolveSwipeGestureSnapshot(event.rawX, event.rawY)
+            if (snapshot.gestures.isNotEmpty()) {
+                recognizedSwipeGestures = snapshot.gestures.toSet()
+                recognizedDirection = snapshot.preferredDirection
                 timerController.cancelLongPressTimer()
 
-                val gesture = directionToGesture(dir)
-                val resolvedAction = actionResolver.resolve(hitAreas, gesture)
-
-                listener?.onDirectionResolved(dir, gestureToGestureType(dir))
+                listener?.onDirectionResolved(
+                    snapshot.preferredDirection,
+                    gestureToGestureType(snapshot.preferredDirection)
+                )
 
                 val travelSq = travelDistanceSq(event.rawX, event.rawY)
                 val thresholdPx = bridge.getSwipeDistanceThresholdDp()._dp.toFloat()
                 if (travelSq >= thresholdPx * thresholdPx) {
-                    startExecution(resolvedAction, dir, event.eventTime, event.rawX, event.rawY)
+                    startExecution(snapshot.gestures, event.eventTime, event.rawX, event.rawY)
                 }
             }
         } else {
-            val currentDir = directionResolver.resolve(
-                downX, downY, event.rawX, event.rawY,
-                DIRECTION_MIN_THRESHOLD_DP._dp.toFloat()
-            )
-            if (currentDir != Direction.UNKNOWN && currentDir != recognizedDirection) {
-                logger.logOnDebug("Direction changed: $recognizedDirection -> $currentDir, cancelling")
+            val snapshot = resolveSwipeGestureSnapshot(event.rawX, event.rawY)
+            val currentGestures = snapshot.gestures.toSet()
+            if (currentGestures.isNotEmpty() && currentGestures.intersect(recognizedSwipeGestures).isEmpty()) {
+                logger.logOnDebug(
+                    "Direction changed: $recognizedSwipeGestures -> $currentGestures, cancelling"
+                )
                 cancelAndReplay()
                 return false
             }
@@ -187,9 +196,14 @@ class EdgeGestureEngine(
 
             val thresholdPx = bridge.getSwipeDistanceThresholdDp()._dp.toFloat()
             if (travelSq >= thresholdPx * thresholdPx && !executionStarted) {
-                val gesture = directionToGesture(recognizedDirection)
-                val resolvedAction = actionResolver.resolve(hitAreas, gesture)
-                startExecution(resolvedAction, recognizedDirection, event.eventTime, event.rawX, event.rawY)
+                val gesturesForExecution = if (snapshot.gestures.isEmpty()) {
+                    recognizedSwipeGestures.toList()
+                } else {
+                    recognizedSwipeGestures.intersect(snapshot.gestures.toSet()).ifEmpty {
+                        recognizedSwipeGestures
+                    }.toList()
+                }
+                startExecution(gesturesForExecution, event.eventTime, event.rawX, event.rawY)
             }
 
             if (executionStarted) {
@@ -218,20 +232,23 @@ class EdgeGestureEngine(
             return true
         }
 
-        if (recognizedDirection != Direction.UNKNOWN) {
+        if (recognizedSwipeGestures.isNotEmpty()) {
             val travelSq = travelDistanceSq(event.rawX, event.rawY)
             val thresholdPx = bridge.getSwipeDistanceThresholdDp()._dp.toFloat()
             if (travelSq >= thresholdPx * thresholdPx) {
-                val gesture = directionToGesture(recognizedDirection)
-                val resolvedAction = actionResolver.resolve(hitAreas, gesture)
-                if (resolvedAction != null) {
-                    listener?.onGestureTriggered(hitRegion, gestureToGestureType(recognizedDirection)!!)
-                    bridge.handleEdgeGestureEvent(
-                        hitAreas,
-                        gesture,
-                        downX,
-                        downY
-                    )
+                val matchedGestures = recognizedSwipeGestures.filter { gesture ->
+                    actionResolver.resolve(hitAreas, gesture) != null
+                }
+                if (matchedGestures.isNotEmpty()) {
+                    matchedGestures.forEach { gesture ->
+                        listener?.onGestureTriggered(hitRegion, gestureToGestureType(gesture)!!)
+                        bridge.handleEdgeGestureEvent(
+                            hitAreas,
+                            gesture,
+                            downX,
+                            downY
+                        )
+                    }
                     consumeCachedEvent()
                     resetState()
                     return true
@@ -357,14 +374,27 @@ class EdgeGestureEngine(
         resetState()
     }
 
-    private fun startExecution(action: EdgeGesture?, direction: Direction, eventTime: Long, currentX: Float, currentY: Float) {
-        val gesture = directionToGesture(direction)
+    private fun startExecution(
+        gestures: Collection<Gesture>,
+        eventTime: Long,
+        currentX: Float,
+        currentY: Float,
+    ) {
         val areas = hitAreas
-        val continuousBinding = bridge.findContinuousGestureBinding(areas, gesture)
-
-        val sequenceCandidates = bridge.findMatchingEdgeGestureSequences(areas, gesture)
-        if (action == null && continuousBinding == null && sequenceCandidates.isEmpty()) {
-            logger.logOnDebug("No action and no sequence candidates for $direction in $hitRegion, replaying")
+        val executionCandidates = gestures.distinct().mapNotNull { gesture ->
+            val action = actionResolver.resolve(areas, gesture)
+            val continuousBinding = bridge.findContinuousGestureBinding(areas, gesture)
+            val sequenceCandidates = bridge.findMatchingEdgeGestureSequences(areas, gesture)
+            if (action == null && continuousBinding == null && sequenceCandidates.isEmpty()) {
+                null
+            } else {
+                SwipeExecutionCandidate(gesture, action, continuousBinding, sequenceCandidates)
+            }
+        }
+        if (executionCandidates.isEmpty()) {
+            // 这里不能只看单一方向，因为同一次物理滑动可能同时对应
+            // “相对屏幕方向”和“绝对竖屏方向”两套语义。
+            logger.logOnDebug("No action and no sequence candidates for $gestures in $hitRegion, replaying")
             cancelAndReplay()
             return
         }
@@ -372,28 +402,32 @@ class EdgeGestureEngine(
         executionStarted = true
         consumeCachedEvent()
 
+        val continuousBinding = executionCandidates.firstNotNullOfOrNull { it.continuousBinding }
         if (continuousBinding != null) {
             continuousHandler = bridge.createContinuousActionHandler(continuousBinding.payload)
             continuousHandler?.onStart(edgeGroup(hitRegion), downX, downY, eventTime)
             return
         }
 
-        if (action != null) {
-            listener?.onGestureTriggered(hitRegion, gestureToGestureType(direction) ?: GestureType.SwipeLeft)
-            bridge.handleEdgeGestureEvent(areas, gesture, downX, downY)
-            hintDetector.onEdgeGestureTriggered(areas, gesture, true)
-        }
+        executionCandidates
+            .filter { it.action != null }
+            .forEach { candidate ->
+                listener?.onGestureTriggered(hitRegion, gestureToGestureType(candidate.gesture) ?: GestureType.SwipeLeft)
+                bridge.handleEdgeGestureEvent(areas, candidate.gesture, downX, downY)
+                hintDetector.onEdgeGestureTriggered(areas, candidate.gesture, true)
+            }
 
-        if (sequenceCandidates.isNotEmpty()) {
-            hintDetector.onEdgeGestureSequenceStarted(areas, gesture)
+        val sequenceCandidate = executionCandidates.firstOrNull { it.sequenceCandidates.isNotEmpty() }
+        if (sequenceCandidate != null) {
+            hintDetector.onEdgeGestureSequenceStarted(areas, sequenceCandidate.gesture)
             sequenceDetector.startTracking(
                 pointerId = lockedPointerId,
-                primaryGesture = gesture,
+                primaryGesture = sequenceCandidate.gesture,
                 downX = downX,
                 downY = downY,
                 anchorX = currentX,
                 anchorY = currentY,
-                candidates = sequenceCandidates,
+                candidates = sequenceCandidate.sequenceCandidates,
             )
         }
     }
@@ -447,9 +481,12 @@ class EdgeGestureEngine(
         continuousHandler = null
         downX = 0f
         downY = 0f
+        downAbsoluteX = 0f
+        downAbsoluteY = 0f
         hitAreas = emptyList()
         hitRegion = Edge.UNRECOGNIZED
         recognizedDirection = Direction.UNKNOWN
+        recognizedSwipeGestures = emptySet()
         gestureCaptured = false
         executionStarted = false
         maxTravelDistanceSq = 0f
@@ -462,6 +499,55 @@ class EdgeGestureEngine(
         val dy = currentY - downY
         return dx * dx + dy * dy
     }
+
+    private fun resolveSwipeGestureSnapshot(currentX: Float, currentY: Float): SwipeGestureSnapshot {
+        val gestures = linkedSetOf<Gesture>()
+        val relativeDirection = directionResolver.resolve(
+            downX,
+            downY,
+            currentX,
+            currentY,
+            DIRECTION_MIN_THRESHOLD_DP._dp.toFloat()
+        )
+        if (relativeDirection != Direction.UNKNOWN) {
+            gestures.add(directionToGesture(relativeDirection))
+        }
+
+        // 绝对区域模式需要先把当前触点映射回“竖屏坐标系”，再判断滑动方向。
+        // 这样横屏下用户的实际手势，会被还原成竖屏时配置的方向语义。
+        val currentAbsolutePoint = regionResolver.toAbsolutePortraitPoint(currentX, currentY)
+        val absoluteDirection = directionResolver.resolve(
+            downAbsoluteX,
+            downAbsoluteY,
+            currentAbsolutePoint.x,
+            currentAbsolutePoint.y,
+            DIRECTION_MIN_THRESHOLD_DP._dp.toFloat()
+        )
+        if (absoluteDirection != Direction.UNKNOWN) {
+            gestures.add(directionToGesture(absoluteDirection))
+        }
+
+        return SwipeGestureSnapshot(
+            gestures = gestures.toList(),
+            preferredDirection = when {
+                relativeDirection != Direction.UNKNOWN -> relativeDirection
+                absoluteDirection != Direction.UNKNOWN -> absoluteDirection
+                else -> Direction.UNKNOWN
+            }
+        )
+    }
+
+    private data class SwipeGestureSnapshot(
+        val gestures: List<Gesture>,
+        val preferredDirection: Direction,
+    )
+
+    private data class SwipeExecutionCandidate(
+        val gesture: Gesture,
+        val action: EdgeGesture?,
+        val continuousBinding: ContinuousGestureBinding?,
+        val sequenceCandidates: List<EdgeGestureSequenceCandidate>,
+    )
 
     private fun directionToGesture(dir: Direction): Gesture {
         return when (dir) {
@@ -480,6 +566,16 @@ class EdgeGestureEngine(
             Direction.UP -> GestureType.SwipeUp
             Direction.DOWN -> GestureType.SwipeDown
             Direction.UNKNOWN -> null
+        }
+    }
+
+    private fun gestureToGestureType(gesture: Gesture): GestureType? {
+        return when (gesture) {
+            Gesture.SwipeFromLeft -> GestureType.SwipeRight
+            Gesture.SwipeFromRight -> GestureType.SwipeLeft
+            Gesture.SwipeFromTop -> GestureType.SwipeDown
+            Gesture.SwipeFromBottom -> GestureType.SwipeUp
+            else -> null
         }
     }
 }

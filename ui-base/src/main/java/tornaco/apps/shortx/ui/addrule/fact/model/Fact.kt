@@ -367,6 +367,7 @@ sealed interface Fact : Parcelable {
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList(),
         val customRect: tornaco.apps.shortx.core.proto.common.Rect? = null,
+        val useAbsoluteArea: Boolean = false,
         val enableGestureHint: Boolean = true,
         val enableGestureHaptic: Boolean = false,
         override val note: String = "",

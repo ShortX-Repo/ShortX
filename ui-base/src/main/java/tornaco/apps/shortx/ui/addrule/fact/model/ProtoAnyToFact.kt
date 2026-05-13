@@ -76,6 +76,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 apps = models.first,
                 pkgSets = models.second,
                 customRect = if (data.hasCustomRect()) data.customRect else null,
+                useAbsoluteArea = data.hasUseAbsoluteArea() && data.useAbsoluteArea,
                 enableGestureHint = data.hasEnableGestureHint() && data.enableGestureHint,
                 enableGestureHaptic = data.hasEnableGestureHaptic() && data.enableGestureHaptic,
                 id = data.id, customContextDataKey = data.customContextDataKey,

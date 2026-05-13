@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.gesture.bpok.gesture
 
+import android.graphics.PointF
 import android.view.MotionEvent
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.Gesture
@@ -12,6 +13,7 @@ class EdgeGestureHintDetector(
     private val gestureHintController: GestureHintController,
     private val gestureHapticController: GestureHapticController,
     private val detectAreas: (Float, Float) -> List<DetectedArea>,
+    private val toAbsolutePortraitPoint: (Float, Float) -> PointF,
 ) {
     companion object {
         private const val EDGE_HINT_MAX_ANGLE_DEVIATION_DEG = 50f
@@ -38,6 +40,8 @@ class EdgeGestureHintDetector(
     private var trackedAreas: List<DetectedArea> = emptyList()
     private var downX = 0f
     private var downY = 0f
+    private var downAbsoluteX = 0f
+    private var downAbsoluteY = 0f
     private var hasHintShown = false
     private var hasTriggered = false
 
@@ -46,10 +50,20 @@ class EdgeGestureHintDetector(
             MotionEvent.ACTION_DOWN -> {
                 reset()
                 trackedPointerId = event.getPointerId(event.actionIndex)
-                downX = event.x
-                downY = event.y
+                downX = event.rawX
+                downY = event.rawY
+                toAbsolutePortraitPoint(downX, downY).also {
+                    downAbsoluteX = it.x
+                    downAbsoluteY = it.y
+                }
                 trackedAreas = detectAreas(downX, downY).filter(::hasFeedbackEnabledSwipeRule)
                 trackedToken = if (trackedAreas.isNotEmpty()) nextToken++ else 0L
+                if (trackedToken != 0L && trackedAreas.any(::hasHapticEnabledSwipeRule)) {
+                    gestureHapticController.onGestureCandidate(trackedToken)
+                }
+                if (trackedToken != 0L) {
+                    showStartIndicator()
+                }
             }
 
             MotionEvent.ACTION_MOVE -> {
@@ -60,14 +74,20 @@ class EdgeGestureHintDetector(
                     return false
                 }
 
-                val moveX = event.getX(pointerIndex)
-                val moveY = event.getY(pointerIndex)
+                val moveX = event.rawX
+                val moveY = event.rawY
                 val deltaX = moveX - downX
                 val deltaY = moveY - downY
+                val absolutePoint = toAbsolutePortraitPoint(moveX, moveY)
+                val absoluteDeltaX = absolutePoint.x - downAbsoluteX
+                val absoluteDeltaY = absolutePoint.y - downAbsoluteY
                 val distance = hypot(deltaX.toDouble(), deltaY.toDouble()).toFloat()
                 if (distance <= 0f) return false
 
-                handleGestureHint(distance, findBestCandidate(deltaX, deltaY, distance))
+                handleGestureHint(
+                    distance,
+                    findBestCandidate(deltaX, deltaY, absoluteDeltaX, absoluteDeltaY, distance)
+                )
             }
 
             MotionEvent.ACTION_UP,
@@ -202,10 +222,34 @@ class EdgeGestureHintDetector(
         }
     }
 
-    private fun findBestCandidate(deltaX: Float, deltaY: Float, distance: Float): HintCandidate? {
+    private fun showStartIndicator() {
+        if (!trackedAreas.any(::hasHintEnabledSwipeRule)) return
+        gestureHintController.onGestureProgress(
+            GestureHintModel(
+                token = trackedToken,
+                anchorX = downX,
+                anchorY = downY,
+                directionX = 0f,
+                directionY = 0f,
+                progress = 0.18f,
+                state = GestureHintState.Candidate,
+                showArrow = false,
+            )
+        )
+    }
+
+    private fun findBestCandidate(
+        deltaX: Float,
+        deltaY: Float,
+        absoluteDeltaX: Float,
+        absoluteDeltaY: Float,
+        distance: Float,
+    ): HintCandidate? {
         if (trackedAreas.isEmpty()) return null
         val normalizedX = deltaX / distance
         val normalizedY = deltaY / distance
+        val normalizedAbsoluteX = absoluteDeltaX / distance
+        val normalizedAbsoluteY = absoluteDeltaY / distance
         return trackedAreas
             .asSequence()
             .flatMap { area ->
@@ -219,10 +263,15 @@ class EdgeGestureHintDetector(
                     }
                     .mapNotNull { rule ->
                         gestureDirection(rule.gesture)?.let { (directionX, directionY) ->
+                            val (resolvedX, resolvedY) = if (rule.usesAbsolutePredefinedArea()) {
+                                normalizedAbsoluteX to normalizedAbsoluteY
+                            } else {
+                                normalizedX to normalizedY
+                            }
                             HintCandidate(
                                 directionX = directionX,
                                 directionY = directionY,
-                                dot = normalizedX * directionX + normalizedY * directionY,
+                                dot = resolvedX * directionX + resolvedY * directionY,
                                 hintEnabled = rule.isGestureHintEnabled(),
                                 hapticEnabled = rule.isGestureHapticEnabled(),
                             )
@@ -263,6 +312,15 @@ class EdgeGestureHintDetector(
         }
     }
 
+    private fun hasHintEnabledSwipeRule(area: DetectedArea): Boolean {
+        return bridge.enabledEdgeGestures.any { rule ->
+            !rule.isDisabled &&
+                    rule.isGestureHintEnabled() &&
+                    rule.gesture.supportsGestureIndicator() &&
+                    areaMatchesRule(area, rule)
+        }
+    }
+
     private fun hasHapticEnabledSwipeRule(area: DetectedArea): Boolean {
         return bridge.enabledEdgeGestures.any { rule ->
             !rule.isDisabled &&
@@ -287,12 +345,18 @@ class EdgeGestureHintDetector(
             is DetectedArea.PredefinedEdge -> {
                 val hasCustomRect = rule.customRect != null &&
                         rule.customRect != tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance()
+                val expectedMode = if (rule.usesAbsolutePredefinedArea()) {
+                    PredefinedEdgeCoordinateMode.AbsolutePortrait
+                } else {
+                    PredefinedEdgeCoordinateMode.RelativeToDisplay
+                }
                 if (hasCustomRect) {
                     false
                 } else {
-                    rule.edge == area.edge ||
+                    (rule.edge == area.edge ||
                             (getParentEdgeRegion(area.edge) != area.edge &&
-                                    rule.edge == getParentEdgeRegion(area.edge))
+                                    rule.edge == getParentEdgeRegion(area.edge))) &&
+                            area.coordinateMode == expectedMode
                 }
             }
 
@@ -370,6 +434,8 @@ class EdgeGestureHintDetector(
         trackedAreas = emptyList()
         downX = 0f
         downY = 0f
+        downAbsoluteX = 0f
+        downAbsoluteY = 0f
         hasHintShown = false
         hasTriggered = false
     }

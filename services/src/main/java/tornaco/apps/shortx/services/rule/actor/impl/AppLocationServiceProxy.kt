@@ -97,9 +97,9 @@ internal class AppLocationServiceProxy(context: Context, intent: Intent, scope: 
             timeoutMillis: Long,
         ): CurrentLocationInfoData? {
             val intent = Intent().apply {
-                setPackage(BuildPropInternal.APP_PACKAGE_NAME)
+                setPackage(BuildPropInternal.SHORTX_EXT_APP_PKG_NAME)
                 component = ComponentName.unflattenFromString(
-                    "${BuildPropInternal.APP_PACKAGE_NAME}/${BuildProp.APP_LOCATION_SERVICE_NAME}"
+                    "${BuildPropInternal.SHORTX_EXT_APP_PKG_NAME}/${BuildProp.APP_LOCATION_SERVICE_NAME}"
                 )
             }
             return AppLocationServiceProxy(context, intent, scope).getCurrentLocationInfo(
@@ -115,9 +115,9 @@ internal class AppLocationServiceProxy(context: Context, intent: Intent, scope: 
             timeoutMillis: Long,
         ): CurrentLocationAddressData? {
             val intent = Intent().apply {
-                setPackage(BuildPropInternal.APP_PACKAGE_NAME)
+                setPackage(BuildPropInternal.SHORTX_EXT_APP_PKG_NAME)
                 component = ComponentName.unflattenFromString(
-                    "${BuildPropInternal.APP_PACKAGE_NAME}/${BuildProp.APP_LOCATION_SERVICE_NAME}"
+                    "${BuildPropInternal.SHORTX_EXT_APP_PKG_NAME}/${BuildProp.APP_LOCATION_SERVICE_NAME}"
                 )
             }
             return AppLocationServiceProxy(context, intent, scope).getCurrentLocationAddress(

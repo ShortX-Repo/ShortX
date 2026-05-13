@@ -191,6 +191,7 @@ fun Fact.toProtoFact(
             val builder = EdgeGesture.newBuilder()
                 .setEdge(edge)
                 .setGesture(gesture)
+                .setUseAbsoluteArea(useAbsoluteArea)
                 .setEnableGestureHint(enableGestureHint)
                 .setEnableGestureHaptic(enableGestureHaptic)
                 .addAllChildSteps(childSteps.map {
