@@ -24,6 +24,7 @@ class EdgeRegionResolver(
     fun detectAreas(rawX: Float, rawY: Float): List<DetectedArea> {
         val detectedAreas = mutableListOf<DetectedArea>()
         val seenCustomRects = linkedSetOf<Rect>()
+        val absolutePoint = toAbsolutePortraitPoint(rawX, rawY)
 
         bridge.enabledEdgeGestures
             .asSequence()
@@ -33,7 +34,7 @@ class EdgeRegionResolver(
             .sortedWith(compareBy({ it.left }, { it.top }, { it.right }, { it.bottom }))
             .forEach { rect ->
                 if (rect.toAndroidRect()
-                        .contains(rawX.toInt(), rawY.toInt()) && seenCustomRects.add(rect)
+                        .contains(absolutePoint.x.toInt(), absolutePoint.y.toInt()) && seenCustomRects.add(rect)
                 ) {
                     detectedAreas.add(DetectedArea.CustomRect(rect))
                 }

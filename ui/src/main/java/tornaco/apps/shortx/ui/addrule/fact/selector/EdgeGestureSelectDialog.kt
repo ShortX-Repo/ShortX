@@ -2,6 +2,8 @@
 
 package tornaco.apps.shortx.ui.addrule.fact.selector
 
+import android.content.Context
+import android.view.Surface
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -74,6 +76,8 @@ import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.gesture.ScreenRectPickerActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import kotlin.math.ceil
+import kotlin.math.floor
 
 data class EdgeGestureSelectDialogResult(
     val edge: Edge,
@@ -202,7 +206,9 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
             if (result.resultCode == android.app.Activity.RESULT_OK) {
                 val rect = result.data?.getSerializableExtra("rect") as Rect?
                 if (rect != null) {
-                    state.customRect = rect
+                    val portraitRect = normalizeRectToPortrait(context, rect)
+                    state.customRect = portraitRect
+                    state.rectInputText = "${portraitRect.left} ${portraitRect.top} ${portraitRect.right} ${portraitRect.bottom}"
                 }
             }
         }
@@ -302,7 +308,9 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                         Spacer(modifier = Modifier.height(8.dp))
                                         OutlinedButton(
                                             onClick = {
-                                                shortXManager.showScreenRectHint(rect)
+                                                shortXManager.showScreenRectHint(
+                                                    projectPortraitRectToDisplay(context, rect)
+                                                )
                                             },
                                             modifier = Modifier.fillMaxWidth()
                                         ) {
@@ -371,6 +379,30 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                             state.showEdgeHint(it.data)
                                         }
                                     )
+
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    OutlinedButton(
+                                        onClick = {
+                                            val previewEdge = if (state.useAbsoluteArea) {
+                                                mapPortraitEdgeToDisplayEdge(
+                                                    state.edge,
+                                                    currentDisplayRotation(context)
+                                                )
+                                            } else {
+                                                state.edge
+                                            }
+                                            state.showEdgeHint(previewEdge)
+                                        },
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Visibility,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(i18N["ui.fact.edge.gesture.show.selected.area"])
+                                    }
                                 }
                             }
 
@@ -601,6 +633,155 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                 }
             }
         })
+    }
+}
+
+private data class PreviewScreenMetrics(
+    val currentWidth: Int,
+    val currentHeight: Int,
+    val portraitWidth: Int,
+    val portraitHeight: Int,
+    val rotation: Int,
+)
+
+private fun currentDisplayRotation(context: Context): Int {
+    return context.display?.rotation ?: Surface.ROTATION_0
+}
+
+private fun previewScreenMetrics(context: Context): PreviewScreenMetrics {
+    val displayMetrics = context.resources.displayMetrics
+    val currentWidth = displayMetrics.widthPixels
+    val currentHeight = displayMetrics.heightPixels
+    return PreviewScreenMetrics(
+        currentWidth = currentWidth,
+        currentHeight = currentHeight,
+        portraitWidth = minOf(currentWidth, currentHeight),
+        portraitHeight = maxOf(currentWidth, currentHeight),
+        rotation = currentDisplayRotation(context),
+    )
+}
+
+private fun normalizeRectToPortrait(context: Context, rect: Rect): Rect {
+    val metrics = previewScreenMetrics(context)
+    return transformRect(rect) { x, y ->
+        when (metrics.rotation) {
+            Surface.ROTATION_90 ->
+                (metrics.portraitWidth - y) to x
+
+            Surface.ROTATION_180 ->
+                (metrics.portraitWidth - x) to (metrics.portraitHeight - y)
+
+            Surface.ROTATION_270 ->
+                y to (metrics.portraitHeight - x)
+
+            else -> x to y
+        }
+    }
+}
+
+private fun projectPortraitRectToDisplay(context: Context, rect: Rect): Rect {
+    val metrics = previewScreenMetrics(context)
+    return transformRect(rect) { x, y ->
+        when (metrics.rotation) {
+            Surface.ROTATION_90 ->
+                y to (metrics.portraitWidth - x)
+
+            Surface.ROTATION_180 ->
+                (metrics.portraitWidth - x) to (metrics.portraitHeight - y)
+
+            Surface.ROTATION_270 ->
+                (metrics.portraitHeight - y) to x
+
+            else -> x to y
+        }
+    }
+}
+
+private fun transformRect(
+    rect: Rect,
+    transform: (Float, Float) -> Pair<Float, Float>,
+): Rect {
+    val points = listOf(
+        transform(rect.left.toFloat(), rect.top.toFloat()),
+        transform(rect.right.toFloat(), rect.top.toFloat()),
+        transform(rect.left.toFloat(), rect.bottom.toFloat()),
+        transform(rect.right.toFloat(), rect.bottom.toFloat()),
+    )
+    val left = floor(points.minOf { it.first }.toDouble()).toInt()
+    val top = floor(points.minOf { it.second }.toDouble()).toInt()
+    val right = ceil(points.maxOf { it.first }.toDouble()).toInt()
+    val bottom = ceil(points.maxOf { it.second }.toDouble()).toInt()
+    return Rect.newBuilder()
+        .setLeft(left)
+        .setTop(top)
+        .setRight(right)
+        .setBottom(bottom)
+        .build()
+}
+
+private fun mapPortraitEdgeToDisplayEdge(edge: Edge, rotation: Int): Edge {
+    return when (rotation) {
+        Surface.ROTATION_90 -> when (edge) {
+            Edge.TopAll -> Edge.LeftAll
+            Edge.TopLeft -> Edge.LeftBottom
+            Edge.TopCenter -> Edge.LeftCenter
+            Edge.TopRight -> Edge.LeftTop
+            Edge.RightAll -> Edge.TopAll
+            Edge.RightTop -> Edge.TopLeft
+            Edge.RightCenter -> Edge.TopCenter
+            Edge.RightBottom -> Edge.TopRight
+            Edge.BottomAll -> Edge.RightAll
+            Edge.BottomLeft -> Edge.RightBottom
+            Edge.BottomCenter -> Edge.RightCenter
+            Edge.BottomRight -> Edge.RightTop
+            Edge.LeftAll -> Edge.BottomAll
+            Edge.LeftTop -> Edge.BottomLeft
+            Edge.LeftCenter -> Edge.BottomCenter
+            Edge.LeftBottom -> Edge.BottomRight
+            else -> edge
+        }
+
+        Surface.ROTATION_180 -> when (edge) {
+            Edge.TopAll -> Edge.BottomAll
+            Edge.TopLeft -> Edge.BottomRight
+            Edge.TopCenter -> Edge.BottomCenter
+            Edge.TopRight -> Edge.BottomLeft
+            Edge.RightAll -> Edge.LeftAll
+            Edge.RightTop -> Edge.LeftBottom
+            Edge.RightCenter -> Edge.LeftCenter
+            Edge.RightBottom -> Edge.LeftTop
+            Edge.BottomAll -> Edge.TopAll
+            Edge.BottomLeft -> Edge.TopRight
+            Edge.BottomCenter -> Edge.TopCenter
+            Edge.BottomRight -> Edge.TopLeft
+            Edge.LeftAll -> Edge.RightAll
+            Edge.LeftTop -> Edge.RightBottom
+            Edge.LeftCenter -> Edge.RightCenter
+            Edge.LeftBottom -> Edge.RightTop
+            else -> edge
+        }
+
+        Surface.ROTATION_270 -> when (edge) {
+            Edge.TopAll -> Edge.RightAll
+            Edge.TopLeft -> Edge.RightTop
+            Edge.TopCenter -> Edge.RightCenter
+            Edge.TopRight -> Edge.RightBottom
+            Edge.RightAll -> Edge.BottomAll
+            Edge.RightTop -> Edge.BottomRight
+            Edge.RightCenter -> Edge.BottomCenter
+            Edge.RightBottom -> Edge.BottomLeft
+            Edge.BottomAll -> Edge.LeftAll
+            Edge.BottomLeft -> Edge.LeftTop
+            Edge.BottomCenter -> Edge.LeftCenter
+            Edge.BottomRight -> Edge.LeftBottom
+            Edge.LeftAll -> Edge.TopAll
+            Edge.LeftTop -> Edge.TopRight
+            Edge.LeftCenter -> Edge.TopCenter
+            Edge.LeftBottom -> Edge.TopLeft
+            else -> edge
+        }
+
+        else -> edge
     }
 }
 

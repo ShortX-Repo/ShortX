@@ -11,9 +11,13 @@ class GestureActionResolver(
 ) {
     private val logger = Logger("GestureActionResolver")
 
-    fun resolve(areas: List<DetectedArea>, gesture: Gesture): EdgeGesture? {
+    fun resolve(
+        areas: List<DetectedArea>,
+        gesture: Gesture,
+        coordinateMode: PredefinedEdgeCoordinateMode? = null,
+    ): EdgeGesture? {
         areas.forEach { area ->
-            val direct = findAction(area, gesture)
+            val direct = findAction(area, gesture, coordinateMode)
             if (direct != null) return direct
 
             if (area is DetectedArea.PredefinedEdge) {
@@ -21,7 +25,8 @@ class GestureActionResolver(
                 if (parent != area.edge) {
                     val fallback = findAction(
                         DetectedArea.PredefinedEdge(parent, area.coordinateMode),
-                        gesture
+                        gesture,
+                        coordinateMode,
                     )
                     if (fallback != null) return fallback
                 }
@@ -30,15 +35,25 @@ class GestureActionResolver(
         return null
     }
 
-    fun hasAction(areas: List<DetectedArea>, gesture: Gesture): Boolean {
-        return resolve(areas, gesture) != null
+    fun hasAction(
+        areas: List<DetectedArea>,
+        gesture: Gesture,
+        coordinateMode: PredefinedEdgeCoordinateMode? = null,
+    ): Boolean {
+        return resolve(areas, gesture, coordinateMode) != null
     }
 
-    private fun findAction(area: DetectedArea, gesture: Gesture): EdgeGesture? {
+    private fun findAction(
+        area: DetectedArea,
+        gesture: Gesture,
+        coordinateMode: PredefinedEdgeCoordinateMode?,
+    ): EdgeGesture? {
         return bridge.enabledEdgeGestures.firstOrNull { rule ->
             !rule.isDisabled &&
                     rule.gesture == gesture &&
                     rule.childStepsCount == 0 &&
+                    (!gesture.requiresDirectionalCoordinateMode() ||
+                            (coordinateMode != null && rule.expectedDirectionCoordinateMode() == coordinateMode)) &&
                     areaMatchesRule(area, rule)
         }
     }

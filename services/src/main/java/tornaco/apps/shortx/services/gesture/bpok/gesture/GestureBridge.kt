@@ -47,11 +47,13 @@ interface GestureBridge {
         gestureEvent: Gesture,
         downX: Float,
         downY: Float,
+        coordinateMode: PredefinedEdgeCoordinateMode? = null,
     ): Boolean
 
     fun findMatchingEdgeGestureSequences(
         areas: List<DetectedArea>,
         gestureEvent: Gesture,
+        coordinateMode: PredefinedEdgeCoordinateMode? = null,
     ): List<EdgeGestureSequenceCandidate>
 
     fun fireEdgeGestureSequence(
@@ -88,6 +90,7 @@ interface GestureBridge {
     fun findContinuousGestureBinding(
         areas: List<DetectedArea>,
         gestureEvent: Gesture,
+        coordinateMode: PredefinedEdgeCoordinateMode? = null,
     ): ContinuousGestureBinding?
 
     fun createContinuousActionHandler(payload: ContinuousGestureActionPayload): ContinuousActionHandler?

@@ -291,11 +291,14 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
     override fun findContinuousGestureBinding(
         areas: List<DetectedArea>,
         gestureEvent: Gesture,
+        coordinateMode: PredefinedEdgeCoordinateMode?,
     ): ContinuousGestureBinding? {
         return continuousGestureBindings.firstOrNull { binding ->
             !binding.rule.isDisabled &&
                     binding.rule.childStepsCount == 0 &&
                     binding.rule.gesture == gestureEvent &&
+                    (!gestureEvent.requiresDirectionalCoordinateMode() ||
+                            (coordinateMode != null && binding.rule.expectedDirectionCoordinateMode() == coordinateMode)) &&
                     areas.any { area -> matchedTriggerArea(area, binding.rule) != null }
         }
     }
@@ -305,9 +308,15 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
         gestureEvent: Gesture,
         downX: Float,
         downY: Float,
+        coordinateMode: PredefinedEdgeCoordinateMode?,
     ): Boolean {
         val matches = enabledEdgeGestures.mapNotNull { enabledGesture ->
             if (enabledGesture.isDisabled || enabledGesture.childStepsCount > 0 || enabledGesture.gesture != gestureEvent) {
+                return@mapNotNull null
+            }
+            if (gestureEvent.requiresDirectionalCoordinateMode() &&
+                (coordinateMode == null || enabledGesture.expectedDirectionCoordinateMode() != coordinateMode)
+            ) {
                 return@mapNotNull null
             }
 
@@ -327,9 +336,14 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
     override fun findMatchingEdgeGestureSequences(
         areas: List<DetectedArea>,
         gestureEvent: Gesture,
+        coordinateMode: PredefinedEdgeCoordinateMode?,
     ): List<EdgeGestureSequenceCandidate> {
         val allSequenceRules = enabledEdgeGestures.filter {
-            !it.isDisabled && it.gesture == gestureEvent && it.childStepsCount > 0
+            !it.isDisabled &&
+                    it.gesture == gestureEvent &&
+                    it.childStepsCount > 0 &&
+                    (!gestureEvent.requiresDirectionalCoordinateMode() ||
+                            (coordinateMode != null && it.expectedDirectionCoordinateMode() == coordinateMode))
         }
         val matched = allSequenceRules.mapNotNull { enabledGesture ->
             val matchedArea = areas.firstNotNullOfOrNull { area ->

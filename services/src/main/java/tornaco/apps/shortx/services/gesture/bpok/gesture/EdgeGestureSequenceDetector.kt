@@ -783,7 +783,7 @@ class EdgeGestureSequenceDetector(
     private fun directionalMotionMetrics(candidate: CurrentStepCandidate, x: Float, y: Float): DirectionalMotionMetrics? {
         // 子手势候选可能同时存在“跟随当前屏幕方向”和“保持竖屏绝对语义”两类规则，
         // 所以这里按候选规则逐个选择位移坐标系，避免横屏时把两类规则混到同一套 delta 上。
-        return if (candidate.candidate.rule.usesAbsolutePredefinedArea()) {
+        return if (candidate.candidate.rule.usesAbsoluteDirection()) {
             directionalMotionMetricsAbsolute(x, y)
         } else {
             directionalMotionMetricsRelative(x, y)

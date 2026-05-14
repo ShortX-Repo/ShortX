@@ -263,7 +263,7 @@ class EdgeGestureHintDetector(
                     }
                     .mapNotNull { rule ->
                         gestureDirection(rule.gesture)?.let { (directionX, directionY) ->
-                            val (resolvedX, resolvedY) = if (rule.usesAbsolutePredefinedArea()) {
+                            val (resolvedX, resolvedY) = if (rule.usesAbsoluteDirection()) {
                                 normalizedAbsoluteX to normalizedAbsoluteY
                             } else {
                                 normalizedX to normalizedY

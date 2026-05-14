@@ -22,3 +22,27 @@ fun EdgeGesture.usesAbsolutePredefinedArea(): Boolean {
     val hasCustomRect = hasCustomRect() && customRect != Rect.getDefaultInstance()
     return !hasCustomRect && hasUseAbsoluteArea() && useAbsoluteArea
 }
+
+fun EdgeGesture.usesAbsoluteDirection(): Boolean {
+    val hasCustomRect = hasCustomRect() && customRect != Rect.getDefaultInstance()
+    return hasCustomRect || (hasUseAbsoluteArea() && useAbsoluteArea)
+}
+
+fun EdgeGesture.expectedDirectionCoordinateMode(): PredefinedEdgeCoordinateMode {
+    return if (usesAbsoluteDirection()) {
+        PredefinedEdgeCoordinateMode.AbsolutePortrait
+    } else {
+        PredefinedEdgeCoordinateMode.RelativeToDisplay
+    }
+}
+
+fun tornaco.apps.shortx.core.proto.fact.Gesture.requiresDirectionalCoordinateMode(): Boolean {
+    return when (this) {
+        tornaco.apps.shortx.core.proto.fact.Gesture.SwipeFromLeft,
+        tornaco.apps.shortx.core.proto.fact.Gesture.SwipeFromRight,
+        tornaco.apps.shortx.core.proto.fact.Gesture.SwipeFromTop,
+        tornaco.apps.shortx.core.proto.fact.Gesture.SwipeFromBottom -> true
+
+        else -> false
+    }
+}
