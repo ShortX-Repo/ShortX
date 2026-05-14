@@ -16,6 +16,10 @@ class EdgeRegionResolver(
 ) {
     private val logger = Logger("EdgeRegionResolver")
 
+    companion object {
+        private const val DIAG_PREFIX = "[SX_EDGE_DIAG]"
+    }
+
     fun detectAreas(rawX: Float, rawY: Float): List<DetectedArea> {
         val detectedAreas = mutableListOf<DetectedArea>()
         val seenCustomRects = linkedSetOf<Rect>()
@@ -56,6 +60,13 @@ class EdgeRegionResolver(
             )
         }
 
+        if (relativeEdge != Edge.UNRECOGNIZED || absoluteEdge != Edge.UNRECOGNIZED) {
+            val screenSize = getScreenSize()
+            logger.d(
+                "$DIAG_PREFIX detectAreas: raw=($rawX,$rawY), rotation=${rotationName(getDisplayRotation())}, screen=${screenSize.x}x${screenSize.y}, relative=$relativeEdge, absolute=$absoluteEdge"
+            )
+        }
+
         return detectedAreas
     }
 
@@ -67,7 +78,9 @@ class EdgeRegionResolver(
         val portraitMetrics = getPortraitMetrics()
         val mapped = when (portraitMetrics.rotation) {
             // 这里要按当前 rotation 做“逆变换”，把横屏坐标还原回竖屏坐标。
-            // 之前 90/270 的公式写反了，会导致“竖屏右边”在某个横屏方向下错误映射到上边。
+            // 从日志可见，ROTATION_270 下横屏底边中部被错误映射到了竖屏左边，
+            // 说明 90/270 两个逆变换分支仍然写反了。这里按真实旋转方向恢复：
+            // ROTATION_90: 竖屏右边 -> 横屏上边；ROTATION_270: 竖屏右边 -> 横屏下边。
             Surface.ROTATION_90 -> PointF(portraitMetrics.width - rawY, rawX)
             Surface.ROTATION_180 -> PointF(
                 portraitMetrics.width - rawX,
@@ -77,10 +90,14 @@ class EdgeRegionResolver(
             Surface.ROTATION_270 -> PointF(rawY, portraitMetrics.height - rawX)
             else -> PointF(rawX, rawY)
         }
-        return PointF(
+        val clamped = PointF(
             mapped.x.coerceIn(0f, maxCoordinate(portraitMetrics.width)),
             mapped.y.coerceIn(0f, maxCoordinate(portraitMetrics.height)),
         )
+        logger.d(
+            "$DIAG_PREFIX toAbsolutePortraitPoint: raw=($rawX,$rawY), rotation=${rotationName(portraitMetrics.rotation)}, portrait=${portraitMetrics.width}x${portraitMetrics.height}, mapped=(${clamped.x},${clamped.y})"
+        )
+        return clamped
     }
 
     private fun resolveRelativePredefinedEdge(rawX: Float, rawY: Float): Edge {
@@ -151,6 +168,16 @@ class EdgeRegionResolver(
 
     private fun maxCoordinate(size: Float): Float {
         return if (size <= 1f) 0f else size - 0.001f
+    }
+
+    private fun rotationName(rotation: Int): String {
+        return when (rotation) {
+            Surface.ROTATION_0 -> "ROTATION_0"
+            Surface.ROTATION_90 -> "ROTATION_90"
+            Surface.ROTATION_180 -> "ROTATION_180"
+            Surface.ROTATION_270 -> "ROTATION_270"
+            else -> "ROTATION_UNKNOWN($rotation)"
+        }
     }
 
     private data class PortraitMetrics(

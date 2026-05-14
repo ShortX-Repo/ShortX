@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.gesture.bpok.gesture
 
+import android.graphics.PointF
 import android.os.Handler
 import android.os.SystemClock
 import android.view.MotionEvent
@@ -89,6 +90,7 @@ class EdgeGestureSequenceDetector(
     private val elapsedRealtime: () -> Long,
     private val dpToPx: (Int) -> Int,
     private val hintSink: EdgeGestureSequenceHintSink,
+    private val toAbsolutePortraitPoint: (Float, Float) -> PointF,
     private val debugLog: (String) -> Unit,
 ) {
     constructor(handler: Handler, service: GestureBridge) : this(
@@ -97,6 +99,7 @@ class EdgeGestureSequenceDetector(
         elapsedRealtime = SystemClock::elapsedRealtime,
         dpToPx = { it._dp },
         hintSink = NoOpEdgeGestureSequenceHintSink,
+        toAbsolutePortraitPoint = { x, y -> PointF(x, y) },
         debugLog = tornaco.apps.shortx.core.util.Logger("EdgeGestureSequence")::d,
     )
 
@@ -109,6 +112,7 @@ class EdgeGestureSequenceDetector(
         elapsedRealtime = SystemClock::elapsedRealtime,
         dpToPx = { it._dp },
         hintSink = NoOpEdgeGestureSequenceHintSink,
+        toAbsolutePortraitPoint = { x, y -> PointF(x, y) },
         debugLog = {},
     )
 
@@ -122,6 +126,7 @@ class EdgeGestureSequenceDetector(
         elapsedRealtime = elapsedRealtime,
         dpToPx = { it._dp },
         hintSink = NoOpEdgeGestureSequenceHintSink,
+        toAbsolutePortraitPoint = { x, y -> PointF(x, y) },
         debugLog = {},
     )
 
@@ -136,6 +141,7 @@ class EdgeGestureSequenceDetector(
         elapsedRealtime = elapsedRealtime,
         dpToPx = dpToPx,
         hintSink = NoOpEdgeGestureSequenceHintSink,
+        toAbsolutePortraitPoint = { x, y -> PointF(x, y) },
         debugLog = {},
     )
 
@@ -151,6 +157,24 @@ class EdgeGestureSequenceDetector(
         elapsedRealtime = elapsedRealtime,
         dpToPx = dpToPx,
         hintSink = hintSink,
+        toAbsolutePortraitPoint = { x, y -> PointF(x, y) },
+        debugLog = tornaco.apps.shortx.core.util.Logger("EdgeGestureSequence")::d,
+    )
+
+    constructor(
+        scheduler: GestureSequenceScheduler,
+        service: GestureBridge,
+        elapsedRealtime: () -> Long,
+        dpToPx: (Int) -> Int,
+        hintSink: EdgeGestureSequenceHintSink,
+        toAbsolutePortraitPoint: (Float, Float) -> PointF,
+    ) : this(
+        scheduler = scheduler,
+        service = service,
+        elapsedRealtime = elapsedRealtime,
+        dpToPx = dpToPx,
+        hintSink = hintSink,
+        toAbsolutePortraitPoint = toAbsolutePortraitPoint,
         debugLog = tornaco.apps.shortx.core.util.Logger("EdgeGestureSequence")::d,
     )
 
@@ -185,15 +209,21 @@ class EdgeGestureSequenceDetector(
     private var primaryGesture: Gesture? = null
     private var downX = 0f
     private var downY = 0f
+    private var downAbsoluteX = 0f
+    private var downAbsoluteY = 0f
 
     // anchor 表示“当前这一步”开始计算位移的起点。
     // 每匹配完一步，anchor 会推进到最新位置，下一步从这里继续判断。
     private var anchorX = 0f
     private var anchorY = 0f
+    private var anchorAbsoluteX = 0f
+    private var anchorAbsoluteY = 0f
     private var hoverAnchorX = 0f
     private var hoverAnchorY = 0f
     private var latestX = 0f
     private var latestY = 0f
+    private var latestAbsoluteX = 0f
+    private var latestAbsoluteY = 0f
 
     // 当前步骤开始的时间，而不是整个 sequence 的开始时间。
     // 仅用于 Hover 这类需要持续时长的步骤，不用于等待下一步时的自动超时取消。
@@ -281,8 +311,18 @@ class EdgeGestureSequenceDetector(
         this.primaryGesture = primaryGesture
         this.downX = downX
         this.downY = downY
+        toAbsolutePortraitPoint(downX, downY).also {
+            this.downAbsoluteX = it.x
+            this.downAbsoluteY = it.y
+        }
         this.anchorX = anchorX
         this.anchorY = anchorY
+        toAbsolutePortraitPoint(anchorX, anchorY).also {
+            this.anchorAbsoluteX = it.x
+            this.anchorAbsoluteY = it.y
+            this.latestAbsoluteX = it.x
+            this.latestAbsoluteY = it.y
+        }
         this.hoverAnchorX = anchorX
         this.hoverAnchorY = anchorY
         this.latestX = anchorX
@@ -319,6 +359,7 @@ class EdgeGestureSequenceDetector(
                 }
                 latestX = event.getX(pointerIndex)
                 latestY = event.getY(pointerIndex)
+                updateLatestAbsoluteCoordinates(latestX, latestY)
                 return handleMove()
             }
 
@@ -344,6 +385,7 @@ class EdgeGestureSequenceDetector(
                 if (pointerId == trackedPointerId) {
                     latestX = event.getX(event.actionIndex)
                     latestY = event.getY(event.actionIndex)
+                    updateLatestAbsoluteCoordinates(latestX, latestY)
                     if (tryCompleteHoverOnPointerRelease()) {
                         return true
                     }
@@ -414,12 +456,12 @@ class EdgeGestureSequenceDetector(
         y: Float,
         requireThreshold: Boolean,
     ): DirectionalStepCandidate? {
-        val metrics = directionalMotionMetrics(x, y) ?: return null
-        if (requireThreshold && metrics.distance < childSwipeMinDistancePx()) return null
         return directionalStepCandidates.asSequence()
             .mapNotNull { candidate ->
                 val step = candidate.step
                 val direction = directionFor(step.type) ?: return@mapNotNull null
+                val metrics = directionalMotionMetrics(candidate, x, y) ?: return@mapNotNull null
+                if (requireThreshold && metrics.distance < childSwipeMinDistancePx()) return@mapNotNull null
                 val dot = metrics.dotFor(direction)
                 val projectedDistance = metrics.projectedDistanceFor(step.type)
 
@@ -453,6 +495,8 @@ class EdgeGestureSequenceDetector(
             currentStepIndex += 1
             anchorX = latestX
             anchorY = latestY
+            anchorAbsoluteX = latestAbsoluteX
+            anchorAbsoluteY = latestAbsoluteY
             hoverAnchorX = latestX
             hoverAnchorY = latestY
             startedAtElapsed = elapsedRealtime()
@@ -494,12 +538,18 @@ class EdgeGestureSequenceDetector(
         primaryGesture = null
         downX = 0f
         downY = 0f
+        downAbsoluteX = 0f
+        downAbsoluteY = 0f
         anchorX = 0f
         anchorY = 0f
+        anchorAbsoluteX = 0f
+        anchorAbsoluteY = 0f
         hoverAnchorX = 0f
         hoverAnchorY = 0f
         latestX = 0f
         latestY = 0f
+        latestAbsoluteX = 0f
+        latestAbsoluteY = 0f
         startedAtElapsed = 0L
         currentStepIndex = 0
         candidates = emptyList()
@@ -514,6 +564,7 @@ class EdgeGestureSequenceDetector(
         if (pointerIndex >= 0) {
             latestX = event.getX(pointerIndex)
             latestY = event.getY(pointerIndex)
+            updateLatestAbsoluteCoordinates(latestX, latestY)
         }
     }
 
@@ -642,7 +693,8 @@ class EdgeGestureSequenceDetector(
             else -> {
                 // 方向步骤用“朝目标方向移动了多远”来表达当前进度。
                 val direction = directionFor(step.type) ?: return
-                val metrics = directionalMotionMetrics(latestX, latestY) ?: return
+                val hintCandidate = directionalStepCandidates.firstOrNull { it.step.type == step.type } ?: return
+                val metrics = directionalMotionMetrics(hintCandidate, latestX, latestY) ?: return
                 val readyDistance = childSwipeMinDistancePx()
                 val dot = metrics.dotFor(direction)
                 hintSink.onStepHint(
@@ -693,7 +745,8 @@ class EdgeGestureSequenceDetector(
         val step = resolveHintStep(latestX, latestY) ?: return
         if (step.type == EdgeGestureStepType.Hover) return
         val direction = directionFor(step.type) ?: return
-        val metrics = directionalMotionMetrics(latestX, latestY) ?: return
+        val missCandidate = directionalStepCandidates.firstOrNull { it.step.type == step.type } ?: return
+        val metrics = directionalMotionMetrics(missCandidate, latestX, latestY) ?: return
         val minDistancePx = childSwipeMinDistancePx()
         val dot = metrics.dotFor(direction)
         val angleDeg = Math.toDegrees(acos(dot.coerceIn(-1f, 1f).toDouble()))
@@ -727,9 +780,34 @@ class EdgeGestureSequenceDetector(
         }
     }
 
-    private fun directionalMotionMetrics(x: Float, y: Float): DirectionalMotionMetrics? {
+    private fun directionalMotionMetrics(candidate: CurrentStepCandidate, x: Float, y: Float): DirectionalMotionMetrics? {
+        // 子手势候选可能同时存在“跟随当前屏幕方向”和“保持竖屏绝对语义”两类规则，
+        // 所以这里按候选规则逐个选择位移坐标系，避免横屏时把两类规则混到同一套 delta 上。
+        return if (candidate.candidate.rule.usesAbsolutePredefinedArea()) {
+            directionalMotionMetricsAbsolute(x, y)
+        } else {
+            directionalMotionMetricsRelative(x, y)
+        }
+    }
+
+    private fun directionalMotionMetricsRelative(x: Float, y: Float): DirectionalMotionMetrics? {
         val deltaX = x - anchorX
         val deltaY = y - anchorY
+        val distance = hypot(deltaX.toDouble(), deltaY.toDouble()).toFloat()
+        if (distance <= 0f) return null
+        return DirectionalMotionMetrics(
+            deltaX = deltaX,
+            deltaY = deltaY,
+            distance = distance,
+            normalizedX = deltaX / distance,
+            normalizedY = deltaY / distance,
+        )
+    }
+
+    private fun directionalMotionMetricsAbsolute(x: Float, y: Float): DirectionalMotionMetrics? {
+        val absolutePoint = toAbsolutePortraitPoint(x, y)
+        val deltaX = absolutePoint.x - anchorAbsoluteX
+        val deltaY = absolutePoint.y - anchorAbsoluteY
         val distance = hypot(deltaX.toDouble(), deltaY.toDouble()).toFloat()
         if (distance <= 0f) return null
         return DirectionalMotionMetrics(
@@ -750,7 +828,8 @@ class EdgeGestureSequenceDetector(
     }
 
     private fun projectedDistanceFor(type: EdgeGestureStepType, x: Float, y: Float): Float {
-        return directionalMotionMetrics(x, y)?.projectedDistanceFor(type) ?: 0f
+        val candidate = directionalStepCandidates.firstOrNull { it.step.type == type } ?: return 0f
+        return directionalMotionMetrics(candidate, x, y)?.projectedDistanceFor(type) ?: 0f
     }
 
     private fun updateDirectionalIntentTracking() {
@@ -778,18 +857,14 @@ class EdgeGestureSequenceDetector(
     }
 
     private fun findDominantDirectionalCandidate(x: Float, y: Float): DirectionalStepCandidate? {
-        val metrics = directionalMotionMetrics(x, y) ?: return null
-        val dominantType = metrics.dominantType()
-
-        val step = directionalStepCandidates.firstNotNullOfOrNull {
-            it.step.takeIf { step -> step.type == dominantType }
-        } ?: return null
-
-        return DirectionalStepCandidate(
-            step = step,
-            dot = 1f,
-            projectedDistance = metrics.projectedDistanceFor(dominantType),
-        )
+        return directionalStepCandidates.mapNotNull { candidate ->
+            val metrics = directionalMotionMetrics(candidate, x, y) ?: return@mapNotNull null
+            DirectionalStepCandidate(
+                step = candidate.step,
+                dot = 1f,
+                projectedDistance = metrics.projectedDistanceFor(candidate.step.type),
+            )
+        }.maxByOrNull { it.projectedDistance }
     }
 
     private fun findLockedDirectionalMatch(x: Float, y: Float): DirectionalStepCandidate? {
@@ -920,6 +995,13 @@ class EdgeGestureSequenceDetector(
 
     private fun hoverTrackingStartedAtElapsed(): Long {
         return (stepPhase as? StepPhase.HoverTracking)?.startedAtElapsed ?: startedAtElapsed
+    }
+
+    private fun updateLatestAbsoluteCoordinates(x: Float, y: Float) {
+        toAbsolutePortraitPoint(x, y).also {
+            latestAbsoluteX = it.x
+            latestAbsoluteY = it.y
+        }
     }
 
     private fun directionFor(type: EdgeGestureStepType): Pair<Float, Float>? {

@@ -69,6 +69,7 @@ class ShortXGestureMain(
         elapsedRealtime = android.os.SystemClock::elapsedRealtime,
         dpToPx = { it._dp },
         hintSink = sequenceHintReporter,
+        toAbsolutePortraitPoint = regionResolver::toAbsolutePortraitPoint,
     )
 
     private val hintDetector = EdgeGestureHintDetector(
