@@ -72,10 +72,13 @@ When adding or changing product translations, update the checked-in JSON assets 
 
 - [traces/notification-rule-flow.md](traces/notification-rule-flow.md)
 - [traces/method-hook-flow.md](traces/method-hook-flow.md)
-- [traces/edge-gesture-ui-service-patch-flow.md](traces/edge-gesture-ui-service-patch-flow.md)
 - [traces/corner-swipe-intercept-mode-design.md](traces/corner-swipe-intercept-mode-design.md)
 - [traces/workday-calendar-design.md](traces/workday-calendar-design.md)
 - [traces/workday-calendar-tasking.md](traces/workday-calendar-tasking.md)
+
+## Gesture
+
+- [EDGE_GESTURE_OVERVIEW.html](EDGE_GESTURE_OVERVIEW.html)
 
 ## Support
 
