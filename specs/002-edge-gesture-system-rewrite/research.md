@@ -7,7 +7,7 @@
 
 **Decision**: Replace `Detector.kt` + `SystemGesturesPointerEventListener.java` + Android `GestureDetector` with a single `EdgeGestureEngine` state machine.
 
-**Rationale**: The technical doc (`AI/EDGE_GESTURE_TECHNICAL_DOC.md`) describes a unified state machine (`b0`) that handles all gesture types (tap, double-tap, long-press, swipe) in a single flow with shared state (cached down event, recognized direction, execution phase). The current architecture splits detection across 4 independent detectors, making it impossible to implement event caching/replay (a cancelled gesture in one detector can't replay the cached down event that another detector consumed).
+**Rationale**: The consolidated overview (`AI/EDGE_GESTURE_OVERVIEW.html`) describes the current unified state machine (`EdgeGestureEngine`) that handles all gesture types (tap, double-tap, long-press, swipe) in a single flow with shared state (cached down event, recognized direction, execution phase). The current architecture splits detection across 4 independent detectors, making it impossible to implement event caching/replay (a cancelled gesture in one detector can't replay the cached down event that another detector consumed).
 
 **Alternatives considered**:
 - Keep separate detectors + add a shared state layer: Rejected because it adds coupling without simplifying the logic. The state machine is inherently sequential (DOWN → MOVE → UP with branching).

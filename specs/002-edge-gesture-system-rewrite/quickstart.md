@@ -8,11 +8,11 @@
 - Android Studio with Kotlin support
 - Gradle build system configured for the ShortX project
 - Access to `core-api` module (protobuf definitions)
-- Understanding of `AI/EDGE_GESTURE_TECHNICAL_DOC.md`
+- Understanding of `AI/EDGE_GESTURE_OVERVIEW.html`
 
 ## Key Files to Understand First
 
-1. **`AI/EDGE_GESTURE_TECHNICAL_DOC.md`** — The design reference. Sections 5-9 are most critical for implementation.
+1. **`AI/EDGE_GESTURE_OVERVIEW.html`** — The current runtime overview. Start from the end-to-end flow, then read the sections for regions, primary gestures, sub-gestures, and bridge dispatch.
 2. **`core-api/src/main/proto/shortx/Facts.proto`** — Protobuf definitions for `Edge`, `Gesture`, `EdgeGesture`, `ScreenCorner` enums/messages.
 3. **`services/src/main/java/tornaco/apps/shortx/services/gesture/bpok/gesture/DetectorService.kt`** — The interface contract between detection and rule engine.
 4. **`services/src/main/java/tornaco/apps/shortx/services/gesture/bpok/gesture/Detector.kt`** — Current orchestrator to understand the event flow.

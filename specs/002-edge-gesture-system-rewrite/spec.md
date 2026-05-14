@@ -3,7 +3,7 @@
 **Feature Branch**: `feature/002-edge-gesture-system-rewrite`  
 **Created**: 2026-04-30  
 **Status**: Draft  
-**Input**: User description: "基于AI/EDGE_GESTURE_TECHNICAL_DOC.md的设计文档，重新实现项目里的手势功能。当前实现在services/src/main/java/tornaco/apps/shortx/services/gesture下。"
+**Input**: User description: "基于AI/EDGE_GESTURE_OVERVIEW.html的说明文档，重新实现项目里的手势功能。当前实现在services/src/main/java/tornaco/apps/shortx/services/gesture下。"
 
 ## User Scenarios & Testing *(mandatory)*
 

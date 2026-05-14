@@ -2,7 +2,7 @@
 
 说明
 
-1. 本清单基于 AI/traces/edge-gesture-sub-gesture-design.md 拆分。
+1. 本清单基于 AI/EDGE_GESTURE_OVERVIEW.html 中的子手势章节与当前实现链路拆分。
 2. 默认以“先兼容旧一段式规则，再增量扩展子手势序列”的顺序实施。
 3. 第一阶段 UI 只要求支持一个子手势，但内部模型按可扩展序列设计。
 4. 最新需求调整为：主手势成功后等待子手势不设置自动超时，但需要在等待阶段展示提示器。
@@ -98,6 +98,6 @@
 
 十一、收尾与文档回写
 
-- [ ] 61. 根据最终实现回写 AI/traces/edge-gesture-sub-gesture-design.md 中的差异。
+- [ ] 61. 根据最终实现回写 AI/EDGE_GESTURE_OVERVIEW.html 中的子手势章节差异。
 - [ ] 62. 如协议字段落地时有调整，回写 requirements/EdgeGestureSubGesture.md。
 - [ ] 63. 补充最终运行链路说明，说明 legacy one-step 与 sequence rule 的分流关系。

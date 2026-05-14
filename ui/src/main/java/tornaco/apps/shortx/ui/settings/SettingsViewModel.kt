@@ -33,6 +33,7 @@ import tornaco.apps.shortx.ui.backup.BackupAgent
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.theme.ThemePref
+import tornaco.apps.shortx.ui.theme.UiThemeMode
 import java.io.File
 import java.time.Instant
 import java.time.Year
@@ -66,6 +67,7 @@ data class SettingsState(
     val isPostNByApp: Boolean = false,
     val isForceDisableShortXByKeyPress: Boolean = false,
     val dynamicColor: Boolean = true,
+    val themeMode: UiThemeMode = UiThemeMode.System,
     val customSUPath: String? = null,
     val sensorUsages: List<SensorUsage> = emptyList(),
     val ocrEngine: OCREngine = OCREngine.OCREngine_Paddle,
@@ -222,6 +224,12 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
             }
         }
         viewModelScope.launch {
+            themePref.themeMode.collectLatest {
+                logger.d("themeMode changed: $it")
+                updateState { copy(themeMode = it) }
+            }
+        }
+        viewModelScope.launch {
             pref.collapsedSettingsCategories.collectLatest {
                 logger.d("collapsedSettingsCategories changed: $it")
                 updateState { copy(collapsedCategories = it) }
@@ -303,6 +311,12 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
     fun setDynamicColor(dynamic: Boolean) {
         viewModelScope.launch {
             themePref.setThemeDynamicColor(dynamic)
+        }
+    }
+
+    fun setThemeMode(mode: UiThemeMode) {
+        viewModelScope.launch {
+            themePref.setThemeMode(mode)
         }
     }
 

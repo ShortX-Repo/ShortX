@@ -98,6 +98,7 @@ import tornaco.apps.shortx.ui.subscribe.LottieLoadingView
 import tornaco.apps.shortx.ui.subscribe.SubscribeActivity
 import tornaco.apps.shortx.ui.theme.ShortXRed
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.ui.theme.UiThemeMode
 import tornaco.apps.shortx.ui.util.BrowserUtils
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
@@ -160,6 +161,30 @@ fun SettingsScreen(
                 }
             }
             MenuDialog(state = guideSelectorDialogState)
+
+            val themeModeDialogState = rememberMenuDialogState<String>(
+                title = LocalI18N.current["ui.settings.theme.mode"],
+                menuItems = listOf(
+                    MenuDialogItem(
+                        id = UiThemeMode.System.name,
+                        title = LocalI18N.current["ui.settings.theme.mode.system"],
+                        iconName = Remix.Design.contrast_2_fill
+                    ),
+                    MenuDialogItem(
+                        id = UiThemeMode.Light.name,
+                        title = LocalI18N.current["ui.settings.theme.mode.light"],
+                        iconName = Remix.Weather.sun_fill
+                    ),
+                    MenuDialogItem(
+                        id = UiThemeMode.Dark.name,
+                        title = LocalI18N.current["ui.settings.theme.mode.dark"],
+                        iconName = Remix.Weather.moon_fill
+                    ),
+                )
+            ) { _, mode ->
+                runCatching { UiThemeMode.valueOf(mode) }.getOrNull()?.let(vm::setThemeMode)
+            }
+            MenuDialog(state = themeModeDialogState)
 
             val props = LocalShortXProps.current
             val pickFileLauncher = rememberLauncherForActivityResult(
@@ -229,7 +254,12 @@ fun SettingsScreen(
                         state = state,
                         mainState = subscribeState,
                         vm = vm,
-                        goToFeatToggle = goToFeatToggle
+                        goToFeatToggle = goToFeatToggle,
+                        showThemeModeSelector = {
+                            themeModeDialogState.show(
+                                currentSelection = listOf(state.themeMode.name)
+                            )
+                        }
                     )
                 )
                 addAll(
@@ -773,6 +803,7 @@ private fun miscSettings(
     mainState: LVLStateHolder.State,
     vm: SettingsViewModel,
     goToFeatToggle: () -> Unit,
+    showThemeModeSelector: () -> Unit,
 ): List<Preference> {
     val badge = if (mainState.isSubscribed) {
         null
@@ -790,6 +821,12 @@ private fun miscSettings(
             onClick = {
                 goToFeatToggle()
             }
+        ),
+        Preference.TextPreference(
+            icon = Remix.Design.contrast_2_fill,
+            title = LocalI18N.current["ui.settings.theme.mode"],
+            summary = LocalI18N.current[themeModeLabelKey(state.themeMode)],
+            onClick = showThemeModeSelector
         ),
         Preference.SwitchPreference(
             icon = Remix.Design.palette_fill,
@@ -824,6 +861,14 @@ private fun miscSettings(
             }
         ),
     )
+}
+
+private fun themeModeLabelKey(mode: UiThemeMode): String {
+    return when (mode) {
+        UiThemeMode.System -> "ui.settings.theme.mode.system"
+        UiThemeMode.Light -> "ui.settings.theme.mode.light"
+        UiThemeMode.Dark -> "ui.settings.theme.mode.dark"
+    }
 }
 
 

@@ -5,7 +5,7 @@
 
 ## Summary
 
-Rewrite the ShortX edge gesture detection system to match the XEdgePro architecture described in `AI/EDGE_GESTURE_TECHNICAL_DOC.md`. The current system uses a `Detector` orchestrator with multiple sub-detectors (`SystemGesturesPointerEventListener`, `EdgeGestureSequenceDetector`, `CornerSwipeToCenterDetector`, Android `GestureDetector`). The new system will replace this with a unified state machine (`EdgeGestureEngine`) that intercepts MotionEvents at the system input filter level, implements proper event caching/replay, supports a 16×7 action table with parent-edge fallback, and handles continuous adjustment actions and sub-gesture containers.
+Rewrite the ShortX edge gesture detection system to match the consolidated runtime description in `AI/EDGE_GESTURE_OVERVIEW.html`. The current system uses a `Detector` orchestrator with multiple sub-detectors (`SystemGesturesPointerEventListener`, `EdgeGestureSequenceDetector`, `CornerSwipeToCenterDetector`, Android `GestureDetector`). The new system will replace this with a unified state machine (`EdgeGestureEngine`) that intercepts MotionEvents at the system input filter level, implements proper event caching/replay, supports a 16×7 action table with parent-edge fallback, and handles continuous adjustment actions and sub-gesture containers.
 
 Key architectural changes:
 - Replace `SystemGesturesPointerEventListener` + `Detector` with a single `EdgeGestureEngine` state machine

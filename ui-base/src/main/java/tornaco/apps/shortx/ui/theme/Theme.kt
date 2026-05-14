@@ -95,16 +95,24 @@ val DarkColors = darkColorScheme(
 
 @Composable
 fun ShortXTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
+    val systemDarkTheme = isSystemInDarkTheme()
 
     // Dynamic color is available on Android 12+
     val pref = remember { ThemePref(context) }
     val applyDynamicColor: Boolean? by pref.themeDynamicColor.collectAsState(initial = null)
+    val themeMode: UiThemeMode? by pref.themeMode.collectAsState(initial = null)
 
-    applyDynamicColor?.let { dynamicColor ->
+    if (applyDynamicColor != null && themeMode != null) {
+        val dynamicColor = applyDynamicColor == true
+        val darkTheme = when (themeMode) {
+            UiThemeMode.System -> systemDarkTheme
+            UiThemeMode.Light -> false
+            UiThemeMode.Dark -> true
+            null -> systemDarkTheme
+        }
         val colorScheme = when {
             dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
                 if (darkTheme) {
