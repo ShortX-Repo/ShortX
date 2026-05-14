@@ -3,9 +3,10 @@ package tornaco.apps.shortx.services.gesture.bpok.gesture
 import android.graphics.Point
 import android.graphics.PointF
 import android.view.Surface
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.common.Rect
-import tornaco.apps.shortx.core.proto.toAndroidRect
 import tornaco.apps.shortx.core.proto.fact.Edge
+import tornaco.apps.shortx.core.proto.toAndroidRect
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util._dp
 
@@ -31,7 +32,9 @@ class EdgeRegionResolver(
             .distinctBy { listOf(it.left, it.top, it.right, it.bottom) }
             .sortedWith(compareBy({ it.left }, { it.top }, { it.right }, { it.bottom }))
             .forEach { rect ->
-                if (rect.toAndroidRect().contains(rawX.toInt(), rawY.toInt()) && seenCustomRects.add(rect)) {
+                if (rect.toAndroidRect()
+                        .contains(rawX.toInt(), rawY.toInt()) && seenCustomRects.add(rect)
+                ) {
                     detectedAreas.add(DetectedArea.CustomRect(rect))
                 }
             }
@@ -60,11 +63,19 @@ class EdgeRegionResolver(
             )
         }
 
+        // Log.
         if (relativeEdge != Edge.UNRECOGNIZED || absoluteEdge != Edge.UNRECOGNIZED) {
-            val screenSize = getScreenSize()
-            logger.d(
-                "$DIAG_PREFIX detectAreas: raw=($rawX,$rawY), rotation=${rotationName(getDisplayRotation())}, screen=${screenSize.x}x${screenSize.y}, relative=$relativeEdge, absolute=$absoluteEdge"
-            )
+            if (BuildPropInternal.APP_IS_DEBUG) {
+                val screenSize = getScreenSize()
+                logger.d(
+                    "$DIAG_PREFIX detectAreas: raw=($rawX,$rawY), rotation=${
+                        rotationName(
+                            getDisplayRotation()
+                        )
+                    }, " +
+                            "screen=${screenSize.x}x${screenSize.y}, relative=$relativeEdge, absolute=$absoluteEdge"
+                )
+            }
         }
 
         return detectedAreas
@@ -94,9 +105,16 @@ class EdgeRegionResolver(
             mapped.x.coerceIn(0f, maxCoordinate(portraitMetrics.width)),
             mapped.y.coerceIn(0f, maxCoordinate(portraitMetrics.height)),
         )
-        logger.d(
-            "$DIAG_PREFIX toAbsolutePortraitPoint: raw=($rawX,$rawY), rotation=${rotationName(portraitMetrics.rotation)}, portrait=${portraitMetrics.width}x${portraitMetrics.height}, mapped=(${clamped.x},${clamped.y})"
-        )
+        // Log.
+        if (BuildPropInternal.APP_IS_DEBUG) {
+            logger.d(
+                "$DIAG_PREFIX toAbsolutePortraitPoint: raw=($rawX,$rawY), rotation=${
+                    rotationName(
+                        portraitMetrics.rotation
+                    )
+                }, portrait=${portraitMetrics.width}x${portraitMetrics.height}, mapped=(${clamped.x},${clamped.y})"
+            )
+        }
         return clamped
     }
 
