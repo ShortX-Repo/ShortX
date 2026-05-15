@@ -4,6 +4,8 @@ import android.graphics.Point
 import android.graphics.PointF
 import android.view.Surface
 import tornaco.apps.shortx.core.BuildPropInternal
+import tornaco.apps.shortx.core.gesture.buildDisplayPortraitMetrics
+import tornaco.apps.shortx.core.gesture.toAbsolutePortraitPoint
 import tornaco.apps.shortx.core.proto.common.Rect
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.toAndroidRect
@@ -88,23 +90,14 @@ class EdgeRegionResolver(
 
     fun toAbsolutePortraitPoint(rawX: Float, rawY: Float): PointF {
         val portraitMetrics = getPortraitMetrics()
-        val mapped = when (portraitMetrics.rotation) {
-            // 这里要按当前 rotation 做“逆变换”，把横屏坐标还原回竖屏坐标。
-            // 从日志可见，ROTATION_270 下横屏底边中部被错误映射到了竖屏左边，
-            // 说明 90/270 两个逆变换分支仍然写反了。这里按真实旋转方向恢复：
-            // ROTATION_90: 竖屏右边 -> 横屏上边；ROTATION_270: 竖屏右边 -> 横屏下边。
-            Surface.ROTATION_90 -> PointF(portraitMetrics.width - rawY, rawX)
-            Surface.ROTATION_180 -> PointF(
-                portraitMetrics.width - rawX,
-                portraitMetrics.height - rawY
-            )
-
-            Surface.ROTATION_270 -> PointF(rawY, portraitMetrics.height - rawX)
-            else -> PointF(rawX, rawY)
-        }
-        val clamped = PointF(
-            mapped.x.coerceIn(0f, maxCoordinate(portraitMetrics.width)),
-            mapped.y.coerceIn(0f, maxCoordinate(portraitMetrics.height)),
+        val clamped = toAbsolutePortraitPoint(
+            rawX = rawX,
+            rawY = rawY,
+            metrics = buildDisplayPortraitMetrics(
+                currentWidth = portraitMetrics.currentWidth,
+                currentHeight = portraitMetrics.currentHeight,
+                rotation = portraitMetrics.rotation,
+            ),
         )
         // Log.
         if (BuildPropInternal.APP_IS_DEBUG) {
@@ -170,6 +163,8 @@ class EdgeRegionResolver(
         val screenWidth = screenSize.x.toFloat()
         val screenHeight = screenSize.y.toFloat()
         return PortraitMetrics(
+            currentWidth = screenSize.x,
+            currentHeight = screenSize.y,
             width = minOf(screenWidth, screenHeight),
             height = maxOf(screenWidth, screenHeight),
             rotation = getDisplayRotation(),
@@ -185,10 +180,6 @@ class EdgeRegionResolver(
         }
     }
 
-    private fun maxCoordinate(size: Float): Float {
-        return if (size <= 1f) 0f else size - 0.001f
-    }
-
     private fun rotationName(rotation: Int): String {
         return when (rotation) {
             Surface.ROTATION_0 -> "ROTATION_0"
@@ -200,6 +191,8 @@ class EdgeRegionResolver(
     }
 
     private data class PortraitMetrics(
+        val currentWidth: Int,
+        val currentHeight: Int,
         val width: Float,
         val height: Float,
         val rotation: Int,
