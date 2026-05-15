@@ -124,6 +124,7 @@ interface IShortX {
     void reboot(String reason);
 
     String executeMVEL(String expression, int context);
+    String executeMVELWithArgs(String expression, int context, in List<ByteArrayWrapper> parameterInputs);
 
     // Condition start
     boolean evaluateCondition(in ByteArrayWrapper evaluateContext, in ByteArrayWrapper condition);
@@ -228,6 +229,7 @@ interface IShortX {
     boolean isRuleEngineEnabled(String engine);
 
     String executeJS(String expression, int context);
+    String executeJSWithArgs(String expression, int context, in List<ByteArrayWrapper> parameterInputs);
 
     // Rule Set
     void addOrUpdateRuleSet(in ByteArrayWrapper rs);

@@ -182,7 +182,8 @@ fun JSEditorActivity.ExecuteJSEditor(
                             setResultAndFinish(
                                 ParcelableCode(
                                     expression = state.expression,
-                                    coroutineContext = state.coroutineContext
+                                    coroutineContext = state.coroutineContext,
+                                    parameterInputs = state.parameterInputs
                                 )
                             )
                         }) {

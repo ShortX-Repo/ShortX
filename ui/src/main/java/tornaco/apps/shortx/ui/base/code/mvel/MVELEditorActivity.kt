@@ -165,7 +165,8 @@ fun MVELEditorActivity.MVELEditor(
                             setResultAndFinish(
                                 ParcelableCode(
                                     expression = state.expression,
-                                    coroutineContext = state.coroutineContext
+                                    coroutineContext = state.coroutineContext,
+                                    parameterInputs = state.parameterInputs
                                 )
                             )
                         }) {

@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
 import tornaco.apps.shortx.core.proto.common.CoroutineContext
+import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
@@ -51,7 +52,10 @@ import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 
 @Composable
-fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
+fun extActionSelectHandler(
+    addAction: (Action) -> Unit,
+    parameterInputs: List<FuncParameterInput> = emptyList(),
+): (ActionSelectSource) -> Boolean {
     val i18N = LocalI18N.current
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -326,7 +330,8 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                         context,
                         source.getActionAs<Action.MVEL>()?.expression?.toParcelableCodeOrNull(
                             coroutineContext = source.getActionAs<Action.MVEL>()?.context
-                                ?: CoroutineContext.CoroutineContext_Default
+                                ?: CoroutineContext.CoroutineContext_Default,
+                            parameterInputs = parameterInputs
                         ),
                         MVELEditorActivity::class.java
                     )
@@ -340,7 +345,8 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                         context,
                         source.getActionAs<Action.ExecuteJS>()?.expression.toParcelableCodeOrNull(
                             coroutineContext = source.getActionAs<Action.ExecuteJS>()?.context
-                                ?: CoroutineContext.CoroutineContext_Default
+                                ?: CoroutineContext.CoroutineContext_Default,
+                            parameterInputs = parameterInputs
                         ),
                         JSEditorActivity::class.java
                     )

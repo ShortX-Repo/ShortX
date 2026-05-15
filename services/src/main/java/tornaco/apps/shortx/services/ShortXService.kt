@@ -1560,9 +1560,35 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             return shortXContext.rule.executeMVEL(expression, CoroutineContext.forNumber(context))
         }
 
+        override fun executeMVELWithArgs(
+            expression: String,
+            context: Int,
+            parameterInputs: MutableList<ByteArrayWrapper>
+        ): String {
+            enforceCallingPermissions()
+            return shortXContext.rule.executeMVEL(
+                expression = expression,
+                coroutineContext = CoroutineContext.forNumber(context),
+                parameterInputs = parameterInputs.map { FuncParameterInput.parseFrom(it.byteData) }
+            )
+        }
+
         override fun executeJS(expression: String, context: Int): String {
             enforceCallingPermissions()
             return shortXContext.rule.executeJS(expression, CoroutineContext.forNumber(context))
+        }
+
+        override fun executeJSWithArgs(
+            expression: String,
+            context: Int,
+            parameterInputs: MutableList<ByteArrayWrapper>
+        ): String {
+            enforceCallingPermissions()
+            return shortXContext.rule.executeJS(
+                expression = expression,
+                coroutineContext = CoroutineContext.forNumber(context),
+                parameterInputs = parameterInputs.map { FuncParameterInput.parseFrom(it.byteData) }
+            )
         }
 
         override fun addOrUpdateRuleSet(rs: ByteArrayWrapper) {

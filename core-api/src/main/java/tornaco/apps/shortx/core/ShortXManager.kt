@@ -56,6 +56,7 @@ import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.CornerSwipeToCenter
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.MethodHook
+import tornaco.apps.shortx.core.proto.func.FuncParameterInput
 import tornaco.apps.shortx.core.proto.func.`Function` as ShortXFunction
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
@@ -789,9 +790,37 @@ class ShortXManager(val service: IShortX) {
         }
     }
 
+    fun executeMVEL(
+        expression: String,
+        context: CoroutineContext,
+        parameterInputs: List<FuncParameterInput>
+    ): String {
+        return invokeService("") {
+            executeMVELWithArgs(
+                expression,
+                context.number,
+                parameterInputs.map { ByteArrayWrapper(it.toByteArray()) }
+            )
+        }
+    }
+
     fun executeJS(expression: String, context: CoroutineContext): String {
         return invokeService("") {
             executeJS(expression, context.number)
+        }
+    }
+
+    fun executeJS(
+        expression: String,
+        context: CoroutineContext,
+        parameterInputs: List<FuncParameterInput>
+    ): String {
+        return invokeService("") {
+            executeJSWithArgs(
+                expression,
+                context.number,
+                parameterInputs.map { ByteArrayWrapper(it.toByteArray()) }
+            )
         }
     }
 

@@ -474,7 +474,8 @@ private fun LazyListScope.ruleContent(
             evaluatingActions = addRuleState.evaluatingActions,
             handler = actionHandler.asActionHandler(),
             readOnly = readOnly,
-            warnings = actionContentState.actionWarningMessages
+            warnings = actionContentState.actionWarningMessages,
+            parameters = addRuleState.parameters
         )
         SectionSpacer()
     }

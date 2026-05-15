@@ -271,7 +271,8 @@ fun AddFunctionScreen(
                     evaluatingActions = emptyList(),
                     handler = vm.actionContentStateHandler.asActionHandler(),
                     readOnly = readOnly,
-                    warnings = actionContentState.actionWarningMessages
+                    warnings = actionContentState.actionWarningMessages,
+                    parameters = state.parameters
                 )
             }
         }

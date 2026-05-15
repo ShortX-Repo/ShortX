@@ -39,9 +39,11 @@ import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.common.ActionOnError
 import tornaco.apps.shortx.core.proto.common.StringPair
+import tornaco.apps.shortx.core.proto.func.FuncParameter
 import tornaco.apps.shortx.core.proto.rule.ActionAsyncMode
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.res.isBase64Image
+import tornaco.apps.shortx.core.rule.asDefaultInput
 import tornaco.apps.shortx.ui.ClipboardDialog
 import tornaco.apps.shortx.ui.UiClipboard
 import tornaco.apps.shortx.ui.addrule.ContextDataIcon
@@ -119,7 +121,8 @@ fun ActionContent(
     readOnly: Boolean = false,
     handler: ActionHandler,
     actionAsyncMode: ActionAsyncMode = ActionAsyncMode.ActionAsyncMode_Sync,
-    canSelectActionAsyncMode: Boolean = false
+    canSelectActionAsyncMode: Boolean = false,
+    parameters: List<FuncParameter> = emptyList(),
 ) {
     Actions(
         header = header,
@@ -131,6 +134,7 @@ fun ActionContent(
         canSelectActionAsyncMode = canSelectActionAsyncMode,
         evaluatingActions = evaluatingActions,
         readOnly = readOnly,
+        parameters = parameters,
         handler = handler
     )
 }
@@ -146,6 +150,7 @@ private fun Actions(
     evaluatingActions: List<String>,
     warnings: Map<String, List<String>>,
     readOnly: Boolean,
+    parameters: List<FuncParameter>,
     handler: ActionHandler
 ) {
     val clipboardDialogState = rememberClipboardDialogState()
@@ -366,7 +371,10 @@ private fun Actions(
                             appActionSelectHandler(addAction = editAction),
                             notificationActionSelectHandler(addAction = editAction),
                             systemActionSelectHandler(addAction = editAction),
-                            extActionSelectHandler(addAction = editAction),
+                            extActionSelectHandler(
+                                addAction = editAction,
+                                parameterInputs = parameters.map { it.asDefaultInput() }
+                            ),
                             lifeActionSelectHandler(addAction = editAction),
                             funcActionSelectHandler(addAction = editAction),
                             varActionSelectHandler(addAction = editAction),

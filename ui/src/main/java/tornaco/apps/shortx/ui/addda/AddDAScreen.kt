@@ -392,7 +392,8 @@ private fun LazyListScope.daContent(
             evaluatingActions = addDirectActionState.evaluatingActions,
             handler = actionContentStateHandler.asActionHandler(),
             readOnly = readOnly,
-            warnings = actionContentState.actionWarningMessages
+            warnings = actionContentState.actionWarningMessages,
+            parameters = addDirectActionState.parameters
         )
         SectionSpacer()
     }

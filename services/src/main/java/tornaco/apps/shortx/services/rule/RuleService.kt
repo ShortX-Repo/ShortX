@@ -1069,7 +1069,11 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         return signal
     }
 
-    fun executeMVEL(expression: String, coroutineContext: CoroutineContext): String {
+    fun executeMVEL(
+        expression: String,
+        coroutineContext: CoroutineContext,
+        parameterInputs: List<FuncParameterInput> = emptyList()
+    ): String {
         var res = ""
         runBlocking {
             systemServiceScope.launchSafety("executeMVEL.runBlocking") {
@@ -1087,7 +1091,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                         .setExpression(expression)
                         .setContext(coroutineContext)
                         .build().pack_()
-                )
+                ).copy(parameterInputs = parameterInputs)
                 runCatching {
                     ExecuteMVEL.handle(handleParams)
                     res =
@@ -1101,7 +1105,11 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         return res
     }
 
-    fun executeJS(expression: String, coroutineContext: CoroutineContext): String {
+    fun executeJS(
+        expression: String,
+        coroutineContext: CoroutineContext,
+        parameterInputs: List<FuncParameterInput> = emptyList()
+    ): String {
         var res = ""
         runBlocking {
             systemServiceScope.launchSafety("executeJS.runBlocking") {
@@ -1119,7 +1127,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                         .setExpression(expression)
                         .setContext(coroutineContext)
                         .build().pack_()
-                )
+                ).copy(parameterInputs = parameterInputs)
                 runCatching {
                     ExecuteJS.handle(handleParams)
                     res =
