@@ -383,11 +383,11 @@ private fun DAListContent(
                 backgroundColor = if (LocalUiSettings.current.uiExperimental) {
                     Color.Transparent
                 } else {
-                    if (!colorfulCard || da.isDirectActionSet) {
-                        ColorDefaults.backgroundSurfaceColor()
-                    } else {
-                        Color(da.iconColor).copy(alpha = ActionColorBgAlpha)
-                    }
+                        if (!colorfulCard || da.isDirectActionSet) {
+                            ColorDefaults.backgroundSurfaceColor()
+                        } else {
+                            daIconColor(da).copy(alpha = ActionColorBgAlpha)
+                        }
                 },
             ) {
                 val content = movableContentOf {
@@ -418,7 +418,7 @@ private fun DAListContent(
 
                 if (LocalUiSettings.current.uiExperimental) {
                     NiaGradientBackground(
-                        gradientColors = gradientColorsFromThemeColor(Color(da.iconColor))
+                        gradientColors = gradientColorsFromThemeColor(daIconColor(da))
                     ) {
                         content()
                     }

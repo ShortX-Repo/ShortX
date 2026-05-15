@@ -20,9 +20,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -67,13 +64,13 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXTabRow
-import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
+import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.code.CodeLibraryViewerDialog
 import tornaco.apps.shortx.ui.code.rememberCodeLibraryViewerState
@@ -217,6 +214,9 @@ fun DiscoverScreen() {
     MenuDialog(state = repoSelectState)
 
     val context = LocalContext.current
+    val searchBarState = rememberSearchBarState(
+        keywordChanged = discoverModel::updateSearchQuery
+    )
     MainScaffold(
         state = mainState,
         subscribeState = globalSubscribeState,
@@ -238,6 +238,8 @@ fun DiscoverScreen() {
             }
         },
         enableMask = false,
+        enableSearch = true,
+        searchBarState = searchBarState,
         appBarActions = {
             IconButton(onClick = {
                 val selections = when (val currentRepo = discoverState.discoverRepo) {
@@ -282,34 +284,6 @@ fun DiscoverScreen() {
                 selectedTabIndex = pagerState.currentPage,
                 onSelectedTab = {
                     scope.launch { pagerState.animateScrollToPage(it) }
-                }
-            )
-
-            ShortXTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                value = discoverState.searchQuery,
-                onValueChange = discoverModel::updateSearchQuery,
-                singleLine = true,
-                showSymbolButton = false,
-                placeholder = {
-                    Text(LocalI18N.current["ui.discover.search.placeholder"])
-                },
-                leadingIcon = {
-                    RemixIcon(remixName = Remix.System.search_line)
-                },
-                trailingIcon = {
-                    if (discoverState.searchQuery.isNotEmpty()) {
-                        IconButton(onClick = {
-                            discoverModel.updateSearchQuery("")
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.Clear,
-                                contentDescription = LocalI18N.current["ui.common.delete"]
-                            )
-                        }
-                    }
                 }
             )
 

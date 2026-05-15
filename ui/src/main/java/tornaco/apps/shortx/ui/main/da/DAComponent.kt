@@ -89,13 +89,14 @@ fun DirectActionItem(
     colorfulCard: Boolean,
     runningInsCount: Int
 ) {
+    val iconColor = daIconColor(da)
     Box {
         val popMenuState = daListItemOverflowMenu(
             da = da,
             isSubscribed = isSubscribed
         )
 
-        val clickAnimateState = rememberClickAnimateState(animateColor = Color(da.iconColor))
+        val clickAnimateState = rememberClickAnimateState(animateColor = iconColor)
 
         ClickAnimateContainer(clickAnimateState) {
             val handler = LocalDAItemHandler.current
@@ -105,7 +106,7 @@ fun DirectActionItem(
                 description = da.description,
                 updateTime = da.updateTime,
                 icon = da.icon,
-                iconColor = Color(da.iconColor),
+                iconColor = iconColor,
                 runningInsCount = runningInsCount,
                 hasFuncParameter = da.hasAnyParameter,
                 colorfulCard = colorfulCard,
@@ -141,11 +142,18 @@ fun DAListItemCompat(
             modifier = modifier,
             title = da.title,
             icon = da.icon,
-            iconColor = Color(da.iconColor),
+            iconColor = daIconColor(da),
             onClick = { handler.run(da) },
             onLongClick = { if (isLongClickEnabled) popMenuState.open() },
         )
     }
+}
+
+@Composable
+fun daIconColor(da: DirectActionUM): Color = if (da.useDynamicMonetIconColor) {
+    MaterialTheme.colorScheme.primary
+} else {
+    Color(da.iconColor)
 }
 
 @Composable

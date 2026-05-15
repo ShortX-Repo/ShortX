@@ -62,7 +62,6 @@ import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.SmallTitle
-import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.copy
 import tornaco.apps.shortx.ui.base.rememberTextInputState
@@ -215,6 +214,14 @@ private fun PkgSetContent(
                             vm.updateLabel(value)
                         })
 
+                    CategoryTitle(title = LocalI18N.current["ui.common.note"])
+                    ListItem(
+                        title = state.description.ifEmpty { LocalI18N.current["ui.common.note"] },
+                        onClick = {
+                            noteInputState.show(state.description)
+                        }
+                    )
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -241,22 +248,6 @@ private fun PkgSetContent(
                     }
                 }
             }
-        }
-
-        item {
-            StandardSpacer()
-            CategoryTitle(title = LocalI18N.current["ui.common.note"])
-        }
-
-        item {
-            ListItem(
-                title = state.description.ifEmpty { "-" },
-                onClick = {
-                    if (!state.isPrebuilt) {
-                        noteInputState.show(state.description)
-                    }
-                }
-            )
         }
 
         items(state.apps) {

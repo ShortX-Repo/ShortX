@@ -17,6 +17,7 @@ import tornaco.apps.shortx.ui.share.addShareContentHeader
 data class ToggleListState(
     val toggles: List<ToggleUM> = emptyList(),
     val ruleSortBy: ToggleSortBy = ToggleSortBy.CreateTime,
+    val searchQuery: String = "",
     val isLoading: Boolean = true,
 )
 
@@ -55,10 +56,15 @@ abstract class BaseToggleListViewModel(context: Context) :
 
 
     fun postLoadToggleList(delay: Boolean = false) {
-        loadToggleList()
+        loadToggleList(delay)
     }
 
     abstract fun loadToggleList(delay: Boolean = false)
+
+    fun updateSearchQuery(query: String) {
+        updateState { copy(searchQuery = query) }
+        postLoadToggleList()
+    }
 
     fun deleteToggle(id: String) {
         viewModelScope.launch {

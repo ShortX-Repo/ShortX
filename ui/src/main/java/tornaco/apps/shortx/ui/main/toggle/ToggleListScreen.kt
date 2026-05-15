@@ -23,7 +23,9 @@ import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.TipIds
 import tornaco.apps.shortx.ui.base.UserTip
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
+import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
+import tornaco.apps.shortx.ui.main.MainScaffoldFabOptions
 import tornaco.apps.shortx.ui.main.MainScaffold
 import tornaco.apps.shortx.ui.main.MainViewModel
 import tornaco.apps.shortx.ui.main.model.ToggleUM
@@ -44,6 +46,9 @@ fun ToggleListScreen() {
     }
 
     val context = LocalContext.current
+    val searchBarState = rememberSearchBarState(
+        keywordChanged = toggleListViewModel::updateSearchQuery
+    )
 
     MainScaffold(
         state = mainState,
@@ -54,6 +59,8 @@ fun ToggleListScreen() {
         },
         appBarActions = {
         },
+        enableSearch = true,
+        searchBarState = searchBarState,
         onClipboardClick = {
 
         },
@@ -68,7 +75,8 @@ fun ToggleListScreen() {
         },
         acceptPrivacyStatement = {
             mainViewModel.acceptPrivacyStatement()
-        }
+        },
+        fabOptions = listOf(MainScaffoldFabOptions.New)
     ) {
         val bottomSheetState = rememberShortXBottomSheetState()
 

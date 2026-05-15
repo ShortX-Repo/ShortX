@@ -126,6 +126,7 @@ fun MainScaffold(
     onUrlClick: (String) -> Unit,
     onNewSetClick: (String) -> Unit,
     acceptPrivacyStatement: () -> Unit,
+    fabOptions: List<MainScaffoldFabOptions> = MainScaffoldFabOptions.entries,
     appBarContent: @Composable ColumnScope.() -> Unit = {},
     content: @Composable () -> Unit
 ) {
@@ -202,7 +203,7 @@ fun MainScaffold(
         appBarActions = appBarActions,
         acceptPrivacyStatement = acceptPrivacyStatement,
         floatingActionButton = {
-            AddOptionsFab(fabState)
+            AddOptionsFab(fabState, options = fabOptions)
         },
         onMaskClickOutside = { fabState.collapse() },
         appBarContent = appBarContent,
@@ -556,7 +557,8 @@ private fun PrivacyStatementDialog(
 @Composable
 private fun AddOptionsFab(
     fabState: FabState,
-    fabVisible: Boolean = true
+    fabVisible: Boolean = true,
+    options: List<MainScaffoldFabOptions> = MainScaffoldFabOptions.entries
 ) {
     val items: MutableList<MultiFabItem> = mutableListOf(
         MultiFabItem(
@@ -584,7 +586,7 @@ private fun AddOptionsFab(
             icon = Remix.System.add_line,
             label = LocalI18N.current["ui.common.new"]
         ),
-    )
+    ).filter { item -> options.any { it.name == item.id } }.toMutableList()
     val fabMenuExpanded = fabState.currentState.value == MultiFabState.Expanded
     BackHandler(fabMenuExpanded) { fabState.collapse() }
     FloatingActionButtonMenu(

@@ -64,6 +64,7 @@ fun ContextViewModel<*, *>.daToDirectActionUM(
         iconColor = directAction.iconColor.instructionIconColorOrNull() ?: firstAction?.let {
             colorForAction(it::class).value
         } ?: DefaultInstructionIconColor,
+        useDynamicMonetIconColor = directAction.iconColor.isDynamicMonetInstructionIconColor(),
         directAction = directAction,
         versionCode = directAction.versionCode,
         hasAnyParameter = directAction.parametersList.isNotEmpty(),
@@ -126,6 +127,7 @@ fun ContextViewModel<*, *>.ruleToRuleUM(
         iconColor = rule.iconColor.instructionIconColorOrNull() ?: firstFact?.let {
             colorForFact(it::class).value
         } ?: DefaultInstructionIconColor,
+        useDynamicMonetIconColor = rule.iconColor.isDynamicMonetInstructionIconColor(),
         rule = rule,
         versionCode = rule.versionCode,
         hasAnyParameter = rule.parametersList.isNotEmpty(),

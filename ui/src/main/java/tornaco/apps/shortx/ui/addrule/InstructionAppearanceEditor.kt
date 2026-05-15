@@ -36,13 +36,19 @@ import tornaco.apps.shortx.ui.base.TinySpacer
 fun InstructionAppearanceEditor(
     icon: String,
     iconColor: ULong?,
+    useDynamicMonetIconColor: Boolean,
     readOnly: Boolean,
     setIcon: (String) -> Unit,
     setIconColor: (ULong) -> Unit,
+    setDynamicMonetIconColor: () -> Unit,
 ) {
     val context = LocalContext.current
     val displayIcon = icon.ifBlank { Remix.Development.command_line }
-    val displayColor = Color(iconColor ?: MaterialTheme.colorScheme.primary.value)
+    val displayColor = if (useDynamicMonetIconColor) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        Color(iconColor ?: MaterialTheme.colorScheme.primary.value)
+    }
 
     val iconSelector = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
@@ -55,6 +61,7 @@ fun InstructionAppearanceEditor(
     val colorPickerState = remember(iconColor) {
         ColorPickerDialogState(
             colorInt = displayColor.toArgb(),
+            onAutoClicked = setDynamicMonetIconColor,
             onColorChanged = { setIconColor(Color(it).value) }
         )
     }

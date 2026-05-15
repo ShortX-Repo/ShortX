@@ -15,6 +15,7 @@ data class DirectActionUM(
     val createTime: String,
     val icon: String,
     val iconColor: ULong,
+    val useDynamicMonetIconColor: Boolean = false,
 
     // Params
     val hasAnyParameter: Boolean,

@@ -1,7 +1,6 @@
 package tornaco.apps.shortx.ui.main.da
 
 import android.content.Context
-import androidx.compose.ui.graphics.Color
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.lifecycle.viewModelScope
 import com.github.promeg.pinyinhelper.Pinyin
@@ -22,6 +21,7 @@ import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.main.CommonSetFilter
 import tornaco.apps.shortx.ui.main.DASortBy
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
+import tornaco.apps.shortx.ui.main.model.DefaultInstructionIconColor
 import tornaco.apps.shortx.ui.main.model.daToDirectActionUM
 import java.text.Collator
 import java.util.Date
@@ -137,7 +137,7 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                         Date(directActionSet.createTime)
                     ),
                     icon = directActionSet.icon,
-                    iconColor = Color.Red.value,
+                    iconColor = DefaultInstructionIconColor,
                     directAction = DirectAction.getDefaultInstance(),
                     versionCode = 0,
                     isDirectActionSet = true,
@@ -174,7 +174,8 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
         }.filter {
             searchQuery.isBlank() || it.title.contains(
                 searchQuery, true
-            ) || it.titlePinyin.contains(searchQuery.lowercase(), true)
+            ) || it.titlePinyin.contains(searchQuery.lowercase(), true) ||
+                it.description.contains(searchQuery, true)
         }.let { filteredList ->
             // 使用新的排序函数，保持置顶项目在顶部
             val sortFunction = sortDirectActionsWithPinned(daSortBy)

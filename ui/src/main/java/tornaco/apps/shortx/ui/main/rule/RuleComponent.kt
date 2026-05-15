@@ -64,6 +64,7 @@ fun RuleItem(
     runningInsCount: Int
 ) {
     val handler = LocalRuleItemHandler.current
+    val iconColor = ruleIconColor(rule)
     // TODO Animate item
     Box {
         val popMenuState = listItemOverflowMenu(
@@ -71,7 +72,7 @@ fun RuleItem(
             isSubscribed = isSubscribed,
         )
         val clickAnimateState =
-            rememberClickAnimateState(animateColor = Color(rule.iconColor))
+            rememberClickAnimateState(animateColor = iconColor)
         ClickAnimateContainer(clickAnimateState) {
             RuleItem(
                 modifier = modifier.then(it),
@@ -106,6 +107,7 @@ private fun RuleItem(
             .padding(top = 16.dp)
             .padding(bottom = 12.dp)
     ) {
+        val iconColor = ruleIconColor(rule)
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -146,7 +148,7 @@ private fun RuleItem(
                         fontSize = if (showDescription) 14.5.sp else 13.5.sp
                     ),
                     color = colorfulCard.select(
-                        themedTextColor(color = Color(rule.iconColor)),
+                        themedTextColor(color = iconColor),
                         Color.Unspecified
                     )
                 )
@@ -155,7 +157,7 @@ private fun RuleItem(
                         modifier = Modifier.size(16.dp),
                         remixName = Remix.Map.pushpin_fill,
                         tint = colorfulCard.select(
-                            themedTextColor(color = Color(rule.iconColor)),
+                            themedTextColor(color = iconColor),
                             MaterialTheme.colorScheme.primary
                         )
                     )
@@ -169,7 +171,7 @@ private fun RuleItem(
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
                     color = colorfulCard.select(
-                        themedTextColor(color = Color(rule.iconColor)),
+                        themedTextColor(color = iconColor),
                         Color.Unspecified
                     )
                 )
@@ -186,8 +188,9 @@ fun RuleIcon(
     onClick: (() -> Unit)
 ) {
     val isRunning = runningInsCount > 0
+    val iconColor = ruleIconColor(rule)
     if (isRunning) {
-        RunningIndicator(runningInsCount, stopAllJobs, Color(rule.iconColor))
+        RunningIndicator(runningInsCount, stopAllJobs, iconColor)
     } else {
         val colorfulCard = LocalUiSettings.current.uiColorfulCard
         ColoredIcon(
@@ -196,19 +199,26 @@ fun RuleIcon(
             padding = 0.dp,
             color = colorfulCard.select(
                 t = {
-                    Color(rule.iconColor)
+                    iconColor
                 },
                 f = {
-                    Color(rule.iconColor).copy(alpha = if (rule.isEnabled) ActionColorBgAlphaLarge else ActionColorBgAlpha)
+                    iconColor.copy(alpha = if (rule.isEnabled) ActionColorBgAlphaLarge else ActionColorBgAlpha)
                 })
         ) {
             RemixIcon(
                 modifier = Modifier.size(16.dp),
                 remixName = rule.icon,
-                tint = colorfulCard.select(Color.White, Color(rule.iconColor))
+                tint = colorfulCard.select(Color.White, iconColor)
             )
         }
     }
+}
+
+@Composable
+fun ruleIconColor(rule: RuleUM): Color = if (rule.useDynamicMonetIconColor) {
+    MaterialTheme.colorScheme.primary
+} else {
+    Color(rule.iconColor)
 }
 
 @Composable

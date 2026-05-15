@@ -338,7 +338,7 @@ private fun RuleListContent(
                         if (!LocalUiSettings.current.uiColorfulCard || rule.isRuleSet) {
                             ColorDefaults.backgroundSurfaceColor()
                         } else {
-                            Color(rule.iconColor).copy(alpha = ActionColorBgAlpha)
+                            ruleIconColor(rule).copy(alpha = ActionColorBgAlpha)
                         }
                     }
             ) {
@@ -363,7 +363,7 @@ private fun RuleListContent(
 
                 if (LocalUiSettings.current.uiExperimental) {
                     NiaGradientBackground(
-                        gradientColors = gradientColorsFromThemeColor(Color(rule.iconColor))
+                        gradientColors = gradientColorsFromThemeColor(ruleIconColor(rule))
                     ) {
                         content()
                     }

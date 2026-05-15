@@ -95,6 +95,20 @@ fun ColorPickerDialog(state: ColorPickerDialogState) {
                             }
                         }
 
+                        state.onAutoClicked?.let { onAutoClicked ->
+                            ShortXTextButton(
+                                modifier = Modifier,
+                                onClick = {
+                                    state.dismiss()
+                                    onAutoClicked()
+                                }) {
+                                Text(
+                                    text = "Monet",
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                        }
+
                         ShortXTextButton(
                             modifier = Modifier,
                             onClick = {
@@ -130,4 +144,5 @@ class ColorPickerDialogState(
     val colorInt: Int,
     val withAuto: Boolean = false,
     val onColorChanged: (Int) -> Unit,
+    val onAutoClicked: (() -> Unit)? = null,
 ) : CommonDialogState()

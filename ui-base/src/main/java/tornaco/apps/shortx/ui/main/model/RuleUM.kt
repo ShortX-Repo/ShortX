@@ -13,6 +13,7 @@ data class RuleUM(
     val isEnabled: Boolean,
     val icon: String,
     val iconColor: ULong,
+    val useDynamicMonetIconColor: Boolean = false,
     val rule: Rule,
     val versionCode: Long,
 

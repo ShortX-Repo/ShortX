@@ -608,9 +608,11 @@ private fun LazyListScope.daContent(
                 InstructionAppearanceEditor(
                     icon = addDirectActionState.icon,
                     iconColor = addDirectActionState.iconColor,
+                    useDynamicMonetIconColor = addDirectActionState.useDynamicMonetIconColor,
                     readOnly = readOnly,
                     setIcon = vm::setIcon,
                     setIconColor = vm::setIconColor,
+                    setDynamicMonetIconColor = vm::setDynamicMonetIconColor,
                 )
                 StandardSpacer()
                 EvaRecordSetting(id = addDirectActionState.id)

@@ -45,7 +45,9 @@ import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.addrule.fact.model.toProtoFact
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.ShortXContextViewModelWithEffect
+import tornaco.apps.shortx.ui.main.model.DynamicMonetInstructionIconColor
 import tornaco.apps.shortx.ui.main.model.instructionIconColorOrNull
+import tornaco.apps.shortx.ui.main.model.isDynamicMonetInstructionIconColor
 import tornaco.apps.shortx.ui.main.model.toInstructionIconColorProto
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import java.net.URL
@@ -74,6 +76,7 @@ data class AddRuleState(
     val ruleSetId: String = "",
     val icon: String = "",
     val iconColor: ULong? = null,
+    val useDynamicMonetIconColor: Boolean = false,
     val evaluatingActions: List<String> = emptyList(),
     // Geeks options
     val instanceIdGen: RuleInstanceIdGen = RuleInstanceIdGen.RuleInstanceIdGenDefault,
@@ -188,7 +191,18 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
     }
 
     fun setIconColor(iconColor: ULong) {
-        updateState { copy(iconColor = iconColor, ruleChanged = true, showOtherOptions = true) }
+        updateState {
+            copy(
+                iconColor = iconColor,
+                useDynamicMonetIconColor = false,
+                ruleChanged = true,
+                showOtherOptions = true
+            )
+        }
+    }
+
+    fun setDynamicMonetIconColor() {
+        updateState { copy(useDynamicMonetIconColor = true, ruleChanged = true, showOtherOptions = true) }
     }
 
     fun setShowAdvancedOptions(show: Boolean) {
@@ -337,7 +351,13 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                 .setAuthor(authorPref)
                 .setVersionCode(state.value.versionCode)
                 .setIcon(state.value.icon)
-                .setIconColor(state.value.iconColor?.toInstructionIconColorProto().orEmpty())
+                .setIconColor(
+                    if (state.value.useDynamicMonetIconColor) {
+                        DynamicMonetInstructionIconColor
+                    } else {
+                        state.value.iconColor?.toInstructionIconColorProto().orEmpty()
+                    }
+                )
                 .addAllExtras(mutableListOf<StringPair>().apply {
                     if (!token.isNullOrEmpty()) {
                         add((BuildPropInternal.APP_PACKAGE_NAME to token).toStringPair())
@@ -496,7 +516,9 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
 
                 val hasAnyGeeksOptions: Boolean = r.hasRuleInstanceIdGenerator()
                 logger.d("hasAnyGeeksOptions: $hasAnyGeeksOptions")
-                val hasOtherOptions = r.icon.isNotEmpty() || r.iconColor.instructionIconColorOrNull() != null
+                val hasOtherOptions = r.icon.isNotEmpty() ||
+                    r.iconColor.instructionIconColorOrNull() != null ||
+                    r.iconColor.isDynamicMonetInstructionIconColor()
 
                 val evaluatingActions = shortx.getEvaluatingActions()
 
@@ -521,6 +543,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         conflictStrategy = r.conflictPolicy,
                         icon = r.icon,
                         iconColor = r.iconColor.instructionIconColorOrNull(),
+                        useDynamicMonetIconColor = r.iconColor.isDynamicMonetInstructionIconColor(),
                         evaluatingActions = evaluatingActions,
                         ruleSetId = r.ruleSetId,
                         securityCheckRes = Security.checkSecurity(r),

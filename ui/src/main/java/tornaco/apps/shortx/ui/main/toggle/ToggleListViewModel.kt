@@ -37,7 +37,7 @@ class ToggleListViewModel @Inject constructor(@ApplicationContext context: Conte
                 }
             }
             updateState {
-                copy(isLoading = false, toggles = allToggles)
+                copy(isLoading = false, toggles = allToggles.filterBySearchQuery(searchQuery))
             }
 
             // Load toggle state for By cond.
@@ -70,6 +70,16 @@ class ToggleListViewModel @Inject constructor(@ApplicationContext context: Conte
                     }
             }
         }
+    }
+}
+
+private fun List<ToggleUM>.filterBySearchQuery(query: String): List<ToggleUM> {
+    val normalizedQuery = query.trim()
+    if (normalizedQuery.isBlank()) return this
+
+    return filter {
+        it.title.contains(normalizedQuery, ignoreCase = true) ||
+            it.description.contains(normalizedQuery, ignoreCase = true)
     }
 }
 

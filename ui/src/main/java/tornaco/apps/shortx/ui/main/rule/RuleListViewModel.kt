@@ -1,7 +1,6 @@
 package tornaco.apps.shortx.ui.main.rule
 
 import android.content.Context
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewModelScope
 import com.github.promeg.pinyinhelper.Pinyin
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,6 +19,7 @@ import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.main.CommonSetFilter
 import tornaco.apps.shortx.ui.main.RuleSortBy
 import tornaco.apps.shortx.ui.main.model.RuleUM
+import tornaco.apps.shortx.ui.main.model.DefaultInstructionIconColor
 import tornaco.apps.shortx.ui.main.model.ruleToRuleUM
 import java.text.Collator
 import java.util.Locale
@@ -127,7 +127,7 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                     rule = Rule.getDefaultInstance(),
                     versionCode = 0,
                     icon = "",
-                    iconColor = Color.Red.value,
+                    iconColor = DefaultInstructionIconColor,
                     id = ruleSet.id,
                     title = ruleSet.title,
                     titlePinyin = Pinyin.toPinyin(ruleSet.title, "").lowercase(),
@@ -174,7 +174,7 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
             ) || it.titlePinyin.contains(
                 searchQuery.lowercase(),
                 true
-            )
+            ) || it.description.contains(searchQuery, true)
         }
 
         logger.i("final rules: ${finalRules.joinToString { it.title }}")

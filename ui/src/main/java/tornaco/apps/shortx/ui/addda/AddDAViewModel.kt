@@ -46,7 +46,9 @@ import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.addrule.fact.model.toProtoFact
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.ShortXContextViewModelWithEffect
+import tornaco.apps.shortx.ui.main.model.DynamicMonetInstructionIconColor
 import tornaco.apps.shortx.ui.main.model.instructionIconColorOrNull
+import tornaco.apps.shortx.ui.main.model.isDynamicMonetInstructionIconColor
 import tornaco.apps.shortx.ui.main.model.toInstructionIconColorProto
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import java.net.URL
@@ -73,6 +75,7 @@ data class AddDirectActionState(
     val daSetId: String = "",
     val icon: String = "",
     val iconColor: ULong? = null,
+    val useDynamicMonetIconColor: Boolean = false,
     val isQuitEnabled: Boolean = false,
     val quitEvaluatePolicy: Quit_EvaluatePolicy = Quit_EvaluatePolicy.Quit_EvaluatePolicy_Always,
     // For online.
@@ -171,7 +174,18 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
     }
 
     fun setIconColor(iconColor: ULong) {
-        updateState { copy(iconColor = iconColor, daChanged = true, showOtherOptions = true) }
+        updateState {
+            copy(
+                iconColor = iconColor,
+                useDynamicMonetIconColor = false,
+                daChanged = true,
+                showOtherOptions = true
+            )
+        }
+    }
+
+    fun setDynamicMonetIconColor() {
+        updateState { copy(useDynamicMonetIconColor = true, daChanged = true, showOtherOptions = true) }
     }
 
     fun setShowAdvancedOptions(show: Boolean) {
@@ -248,7 +262,13 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                 .setConflictPolicy(state.value.conflictStrategy)
                 .setDirectActionSetId(state.value.daSetId)
                 .setIcon(state.value.icon)
-                .setIconColor(state.value.iconColor?.toInstructionIconColorProto().orEmpty())
+                .setIconColor(
+                    if (state.value.useDynamicMonetIconColor) {
+                        DynamicMonetInstructionIconColor
+                    } else {
+                        state.value.iconColor?.toInstructionIconColorProto().orEmpty()
+                    }
+                )
                 .setHook(
                     DirectActionHook.newBuilder()
                         .addAllActionsOnStop(actionsOnStopped.map {
@@ -367,7 +387,9 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
 
                 val hasAnyHookActions: Boolean = actionOnStoppedStateHandler.actions.isNotEmpty()
                 logger.d("hasAnyHookActions: $hasAnyHookActions")
-                val hasOtherOptions = da.icon.isNotEmpty() || da.iconColor.instructionIconColorOrNull() != null
+                val hasOtherOptions = da.icon.isNotEmpty() ||
+                    da.iconColor.instructionIconColorOrNull() != null ||
+                    da.iconColor.isDynamicMonetInstructionIconColor()
 
                 updateState {
                     copy(
@@ -382,6 +404,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                         daSetId = da.directActionSetId,
                         icon = da.icon,
                         iconColor = da.iconColor.instructionIconColorOrNull(),
+                        useDynamicMonetIconColor = da.iconColor.isDynamicMonetInstructionIconColor(),
                         isQuitEnabled = da.quit.isEnabled,
                         quitEvaluatePolicy = da.quit.evaluatePolicy.takeIf { it != Quit_EvaluatePolicy.UNRECOGNIZED }
                             ?: Quit_EvaluatePolicy.Quit_EvaluatePolicy_Only_When_Is_Running,

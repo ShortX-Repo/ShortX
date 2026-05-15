@@ -829,9 +829,11 @@ private fun LazyListScope.ruleContent(
                 InstructionAppearanceEditor(
                     icon = addRuleState.icon,
                     iconColor = addRuleState.iconColor,
+                    useDynamicMonetIconColor = addRuleState.useDynamicMonetIconColor,
                     readOnly = readOnly,
                     setIcon = vm::setIcon,
                     setIconColor = vm::setIconColor,
+                    setDynamicMonetIconColor = vm::setDynamicMonetIconColor,
                 )
                 StandardSpacer()
                 EvaRecordSetting(id = addRuleState.id)
