@@ -215,12 +215,14 @@ private fun PkgSetContent(
                         })
 
                     CategoryTitle(title = LocalI18N.current["ui.common.note"])
-                    ListItem(
-                        title = state.description.ifEmpty { LocalI18N.current["ui.common.note"] },
-                        onClick = {
-                            noteInputState.show(state.description)
-                        }
-                    )
+                    if (state.description.isNotEmpty()) {
+                        ListItem(
+                            title = state.description,
+                            onClick = {
+                                noteInputState.show(state.description)
+                            }
+                        )
+                    }
 
                     Row(
                         modifier = Modifier
