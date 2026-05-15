@@ -18,6 +18,7 @@ val allConditionClasses = listOf(
     Condition.AppHasWindowFocus::class,
     Condition.ServiceIsRunning::class,
     Condition.ScreenIsOn::class,
+    Condition.ScreenStayAwake::class,
     Condition.VPNIsConnected::class,
     Condition.TimeInRange::class,
     Condition.CalendarDayMatch::class,

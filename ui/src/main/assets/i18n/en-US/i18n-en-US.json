@@ -39,6 +39,7 @@
   "ui.conditions.eva.context.var": "Check context var",
   "ui.conditions.eva.local.var": "Check local var",
   "ui.conditions.screen.on": "Screen is ON",
+  "ui.conditions.screen.stay.awake": "Screen stay awake is on",
   "ui.action.get.current.location.info": "Get current location info",
   "ui.action.get.current.location.info.description": "Get the current location inside the app process and write latitude, longitude, provider and accuracy into context data. Grant Always allow location permission and allow ShortX auto-start first.",
   "ui.action.get.current.location.info.provider": "Location provider preference",

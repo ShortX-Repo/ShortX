@@ -647,6 +647,7 @@ private class InstructionFlowBuilder(
             is Condition.ChargeState -> detailParts += booleanState(condition.requireIsCharge)
             is Condition.PlugState -> detailParts += condition.type.name
             is Condition.ScreenIsOn -> detailParts += booleanState(true)
+            is Condition.ScreenStayAwake -> detailParts += booleanState(true)
             is Condition.VPNIsConnected -> detailParts += booleanState(true)
             is Condition.TimeInRange -> detailParts += condition.range.toString()
             is Condition.CalendarDayMatch -> detailParts += condition.dayType.name

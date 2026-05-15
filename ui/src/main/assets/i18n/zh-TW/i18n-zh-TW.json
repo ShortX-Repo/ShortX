@@ -44,6 +44,7 @@
   "ui.conditions.service.running": "服務正在執行",
   "ui.conditions.has.audio.focus": "程式正在播放音訊",
   "ui.conditions.screen.on": "螢幕亮着",
+  "ui.conditions.screen.stay.awake": "螢幕保持常亮",
   "ui.action.get.current.location.info": "取得目前位置資訊",
   "ui.action.get.current.location.info.description": "在 app 行程內取得目前位置，並把經緯度、定位來源與精度寫入上下文資料；請先授予永遠允許的位置權限，並允許 ShortX 自啟動",
   "ui.action.get.current.location.info.provider": "定位來源偏好",

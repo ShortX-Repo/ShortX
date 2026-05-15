@@ -88,6 +88,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.Device.smartphone_line
         }
 
+        Condition.ScreenStayAwake::class -> {
+            Remix.Weather.sun_fill
+        }
+
         Condition.VPNIsConnected::class -> {
             Remix.Others.key_2_fill
         }

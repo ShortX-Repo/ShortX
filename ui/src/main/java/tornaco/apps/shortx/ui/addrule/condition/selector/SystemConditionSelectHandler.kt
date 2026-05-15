@@ -376,6 +376,11 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
                 true
             }
 
+            Condition.ScreenStayAwake::class -> {
+                addCondition(Condition.ScreenStayAwake())
+                true
+            }
+
             Condition.VPNIsConnected::class -> {
                 addCondition(Condition.VPNIsConnected())
                 true

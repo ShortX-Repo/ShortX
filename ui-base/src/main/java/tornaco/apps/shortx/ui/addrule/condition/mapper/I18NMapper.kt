@@ -122,6 +122,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             )
         }
 
+        Condition.ScreenStayAwake::class -> {
+            listOf(
+                i18N["ui.conditions.screen.stay.awake"]
+            )
+        }
+
         Condition.VPNIsConnected::class -> {
             listOf(
                 i18N["ui.conditions.vpn.is.connected"]
@@ -414,6 +420,12 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
         is Condition.ScreenIsOn -> {
             listOf(
                 i18N["ui.conditions.screen.on"],
+            )
+        }
+
+        is Condition.ScreenStayAwake -> {
+            listOf(
+                i18N["ui.conditions.screen.stay.awake"],
             )
         }
 

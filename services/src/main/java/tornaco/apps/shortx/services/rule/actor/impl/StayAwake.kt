@@ -16,6 +16,8 @@ import tornaco.apps.shortx.services.rule.actor.HandleParams
 object StayAwake : Actor {
     private var wakeLock: WakeLock? = null
 
+    fun isStayAwake(): Boolean = wakeLock?.isHeld ?: false
+
     override fun actionsCanHandle(): Class<out Message> {
         return tornaco.apps.shortx.core.proto.action.StayAwake::class.java
     }
@@ -32,8 +34,7 @@ object StayAwake : Actor {
             OnOffToggle.OnOffToggle_On -> true
             OnOffToggle.OnOffToggle_Off -> false
             OnOffToggle.OnOffToggle_Toggle -> {
-                val currentHold = wakeLock?.isHeld ?: false
-                !currentHold
+                !isStayAwake()
             }
 
             OnOffToggle.UNRECOGNIZED -> false

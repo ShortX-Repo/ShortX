@@ -60,6 +60,7 @@ fun SystemConditions(
         Condition.RequireScreenRotate::class,
         Condition.RequireWindowRotation::class,
         Condition.ScreenIsOn::class,
+        Condition.ScreenStayAwake::class,
         Condition.TimeInRange::class,
         Condition.CalendarDayMatch::class,
         Condition.EvaluateScreenOnTime::class,
