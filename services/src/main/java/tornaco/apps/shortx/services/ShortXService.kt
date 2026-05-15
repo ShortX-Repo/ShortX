@@ -18,6 +18,7 @@ import android.util.Base64
 import android.util.Log
 import android.view.MotionEvent
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.AppGlobals
 import tornaco.apps.shortx.core.BuildPropInternal
@@ -240,7 +241,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             pw.println("      Write text to clipboard.")
             pw.println("am shortx text [TEXT]")
             pw.println("      Input text to the current focused field.")
-            pw.println("am shortx outclip")
+            pw.println("am shortx getclip")
             pw.println("      Print clipboard text to stdout.")
             pw.println("am shortx action-b64 [BASE64_PROTO_ANY]")
             pw.println("      Execute any packed ProtoAny action.")
@@ -336,18 +337,28 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                     .build()
                     .pack_()
             )
-        } else if (nextArgs == "outclip") {
-            val text = kotlin.runCatching {
-                context.clipboardManager.primaryClip?.getItemAt(0)?.text?.toString().orEmpty()
-            }.getOrElse {
-                logger.e(it, "shell outclip")
-                pw.println("Failed to read clipboard: ${it.message}")
-                pw.flush()
-                return 1
+        } else if (nextArgs == "getclip") {
+            var result = 1
+            runBlocking {
+                systemServiceScope.launch {
+                    result = kotlin.runCatching {
+                        val text = context.clipboardManager.primaryClip
+                            ?.getItemAt(0)
+                            ?.text
+                            ?.toString()
+                            .orEmpty()
+                        pw.print(text)
+                        pw.flush()
+                        0
+                    }.getOrElse {
+                        logger.e(it, "shell getclip")
+                        pw.println("Failed to read clipboard: ${it.message}")
+                        pw.flush()
+                        1
+                    }
+                }.join()
             }
-            pw.print(text)
-            pw.flush()
-            return 0
+            return result
         } else if (nextArgs == "action-b64") {
             val base64 = shellCommand.nextArg
             if (base64.isNullOrBlank()) {
@@ -387,27 +398,33 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         action: ProtoAny,
         logSuccess: Boolean = true,
     ): Int {
-        return kotlin.runCatching {
-            shortXContext.rule.executeActionsBlocking(
-                context = EvaluateContext.newBuilder()
-                    .setSrcId("Shell#$actionName#${nextEvaluateContextSerialNumber()}")
-                    .setSrcTitle("Shell command")
-                    .setSrcEvent(ContextSrcEvent.ContextSrc_ExecuteOnDAEditor)
-                    .setSerialNumber(nextEvaluateContextSerialNumber())
-                    .build(),
-                actions = listOf(action)
-            )
-            if (logSuccess) {
-                pw.println("OK")
+        var result = 1
+        runBlocking {
+            systemServiceScope.launch {
+                result = kotlin.runCatching {
+                    shortXContext.rule.executeActionsBlocking(
+                        context = EvaluateContext.newBuilder()
+                            .setSrcId("Shell#$actionName#${nextEvaluateContextSerialNumber()}")
+                            .setSrcTitle("Shell command")
+                            .setSrcEvent(ContextSrcEvent.ContextSrc_ExecuteOnDAEditor)
+                            .setSerialNumber(nextEvaluateContextSerialNumber())
+                            .build(),
+                        actions = listOf(action)
+                    )
+                    if (logSuccess) {
+                        pw.println("OK")
+                    }
+                    pw.flush()
+                    0
+                }.getOrElse {
+                    logger.e(it, "runActionCommand: $actionName")
+                    pw.println("Command failed: ${it.message}")
+                    pw.flush()
+                    1
+                }
             }
-            pw.flush()
-            0
-        }.getOrElse {
-            logger.e(it, "runActionCommand: $actionName")
-            pw.println("Command failed: ${it.message}")
-            pw.flush()
-            1
         }
+        return result
     }
 
     private fun ShellCommand.readRemainingArgsAsText(): String {
