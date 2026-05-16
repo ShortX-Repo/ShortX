@@ -325,12 +325,12 @@ fun extActionSelectHandler(
             }
 
             Action.MVEL::class -> {
-                val current = source.getActionAs<Action.MVEL>()
                 mvelEditorLauncher.launch(
                     newIntent(
                         context,
-                        (current?.expression ?: "").toParcelableCodeOrNull(
-                            coroutineContext = current?.context ?: CoroutineContext.CoroutineContext_Default,
+                        source.getActionAs<Action.MVEL>()?.expression?.toParcelableCodeOrNull(
+                            coroutineContext = source.getActionAs<Action.MVEL>()?.context
+                                ?: CoroutineContext.CoroutineContext_Default,
                             parameterInputs = parameterInputs
                         ),
                         MVELEditorActivity::class.java
@@ -340,12 +340,12 @@ fun extActionSelectHandler(
             }
 
             Action.ExecuteJS::class -> {
-                val current = source.getActionAs<Action.ExecuteJS>()
                 jsEditorLauncher.launch(
                     newIntent(
                         context,
-                        (current?.expression ?: "").toParcelableCodeOrNull(
-                            coroutineContext = current?.context ?: CoroutineContext.CoroutineContext_Default,
+                        source.getActionAs<Action.ExecuteJS>()?.expression.toParcelableCodeOrNull(
+                            coroutineContext = source.getActionAs<Action.ExecuteJS>()?.context
+                                ?: CoroutineContext.CoroutineContext_Default,
                             parameterInputs = parameterInputs
                         ),
                         JSEditorActivity::class.java
