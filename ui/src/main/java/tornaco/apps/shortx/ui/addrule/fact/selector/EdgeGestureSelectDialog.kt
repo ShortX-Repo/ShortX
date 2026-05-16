@@ -307,27 +307,6 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                             modifier = Modifier.padding(vertical = 8.dp)
                                         )
 
-                                        // 添加显示区域位置的按钮
-                                        Spacer(modifier = Modifier.height(8.dp))
-                                        OutlinedButton(
-                                            onClick = {
-                                                shortXManager.showScreenRectHint(
-                                                    projectPortraitRectToDisplay(
-                                                        rect,
-                                                        previewMetrics(context),
-                                                    )
-                                                )
-                                            },
-                                            modifier = Modifier.fillMaxWidth()
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Default.Visibility,
-                                                contentDescription = null,
-                                                modifier = Modifier.size(18.dp)
-                                            )
-                                            Spacer(modifier = Modifier.width(8.dp))
-                                            Text(i18N["ui.fact.edge.gesture.show.selected.area"])
-                                        }
                                     } else {
                                         Text(
                                             text = i18N["ui.fact.edge.gesture.no.area.selected"],
@@ -355,10 +334,10 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
 
                             // Edge position selection (shown when not using custom Rect)
                             AnimatedVisibility(visible = !state.useCustomRect) {
-                                Box {
+                                Column {
                                     val dropdownState = rememberDropdownSelectorState()
 
-                                    Column {
+                                    Box {
                                         ListItem(
                                             title = i18N[state.edge.displayNameKey()],
                                             action1 = {
@@ -369,47 +348,58 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                             onClick = {
                                                 dropdownState.open()
                                             })
-                                    }
 
-                                    DropdownSelector(
-                                        state = dropdownState,
-                                        items = Edge.entries.filterNot { it == Edge.UNRECOGNIZED }
-                                            .map {
-                                                DropdownItem(
-                                                    labelLines = listOf(i18N[it.displayNameKey()]),
-                                                    data = it
-                                                )
-                                            },
-                                        onSelect = {
-                                            state.edge = it.data
-                                            state.showEdgeHint(it.data)
-                                        }
-                                    )
-
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    OutlinedButton(
-                                        onClick = {
-                                            val previewEdge = if (state.useAbsoluteArea) {
-                                                mapPortraitEdgeToDisplayEdge(
-                                                    state.edge,
-                                                    context.display?.rotation ?: 0,
-                                                )
-                                            } else {
-                                                state.edge
+                                        DropdownSelector(
+                                            state = dropdownState,
+                                            items = Edge.entries.filterNot { it == Edge.UNRECOGNIZED }
+                                                .map {
+                                                    DropdownItem(
+                                                        labelLines = listOf(i18N[it.displayNameKey()]),
+                                                        data = it
+                                                    )
+                                                },
+                                            onSelect = {
+                                                state.edge = it.data
+                                                state.showEdgeHint(it.data)
                                             }
-                                            state.showEdgeHint(previewEdge)
-                                        },
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Visibility,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(18.dp)
                                         )
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Text(i18N["ui.fact.edge.gesture.show.selected.area"])
                                     }
                                 }
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+                            OutlinedButton(
+                                onClick = {
+                                    val rect = state.customRect
+                                    if (state.useCustomRect && rect != null) {
+                                        shortXManager.showScreenRectHint(
+                                            projectPortraitRectToDisplay(
+                                                rect,
+                                                previewMetrics(context),
+                                            )
+                                        )
+                                    } else {
+                                        val previewEdge = if (state.useAbsoluteArea) {
+                                            mapPortraitEdgeToDisplayEdge(
+                                                state.edge,
+                                                context.display?.rotation ?: 0,
+                                            )
+                                        } else {
+                                            state.edge
+                                        }
+                                        state.showEdgeHint(previewEdge)
+                                    }
+                                },
+                                enabled = !state.useCustomRect || state.customRect != null,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Visibility,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(i18N["ui.fact.edge.gesture.show.selected.area"])
                             }
 
                             // Custom Rect toggle
@@ -647,4 +637,3 @@ private fun previewMetrics(context: android.content.Context) = buildDisplayPortr
     currentHeight = context.resources.displayMetrics.heightPixels,
     rotation = context.display?.rotation ?: 0,
 )
-
