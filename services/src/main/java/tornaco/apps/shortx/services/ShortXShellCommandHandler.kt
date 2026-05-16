@@ -6,6 +6,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.proto.action.InputText
+import tornaco.apps.shortx.core.proto.action.ShowDanmu
 import tornaco.apps.shortx.core.proto.action.ShowToast
 import tornaco.apps.shortx.core.proto.action.WriteClipboard
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
@@ -48,6 +49,25 @@ internal class ShortXShellCommandHandler(
                 action = ShowToast.newBuilder()
                     .setId("Shell#toast")
                     .setMessage(text)
+                    .build()
+                    .pack_()
+            )
+        } else if (nextArgs == "danmu") {
+            val iconAndText = shellCommand.readOptionalIconAndRemainingText()
+            if (iconAndText.text.isBlank()) {
+                pw.println("Missing danmu text")
+                pw.flush()
+                return 1
+            }
+            return runActionCommand(
+                pw = pw,
+                actionName = "danmu",
+                action = ShowDanmu.newBuilder()
+                    .setId("Shell#danmu")
+                    .setText(iconAndText.text)
+                    .apply {
+                        iconAndText.icon?.let { setIcon(it) }
+                    }
                     .build()
                     .pack_()
             )
@@ -107,6 +127,8 @@ internal class ShortXShellCommandHandler(
         pw.println("      Run a Direct Action.")
         pw.println("am shortx toast [TEXT]")
         pw.println("      Show a toast.")
+        pw.println("am shortx danmu [--icon ICON] [TEXT]")
+        pw.println("      Show a danmu overlay.")
         pw.println("am shortx clip [TEXT]")
         pw.println("      Write text to clipboard.")
         pw.println("am shortx text [TEXT]")
@@ -252,4 +274,24 @@ internal class ShortXShellCommandHandler(
         }
         return parts.joinToString(" ").trim()
     }
+
+    private fun ShellCommand.readOptionalIconAndRemainingText(): IconAndText {
+        var icon: String? = null
+        val parts = mutableListOf<String>()
+        var arg = nextArg
+        while (arg != null) {
+            if (arg == "--icon") {
+                icon = nextArg
+            } else {
+                parts.add(arg)
+            }
+            arg = nextArg
+        }
+        return IconAndText(icon = icon, text = parts.joinToString(" ").trim())
+    }
+
+    private data class IconAndText(
+        val icon: String?,
+        val text: String,
+    )
 }
