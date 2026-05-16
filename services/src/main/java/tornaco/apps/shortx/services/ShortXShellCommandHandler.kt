@@ -106,6 +106,10 @@ internal class ShortXShellCommandHandler(
             )
         } else if (nextArgs == "getclip") {
             return printClipboardText(pw)
+        } else if (nextArgs == "current-app") {
+            return printCurrentApp(pw)
+        } else if (nextArgs == "kill-current-app") {
+            return killCurrentApp(pw)
         } else if (nextArgs == "action-b64") {
             return runBase64Action(shellCommand, pw)
         } else if (nextArgs == "dump") {
@@ -135,6 +139,10 @@ internal class ShortXShellCommandHandler(
         pw.println("      Input text to the current focused field.")
         pw.println("am shortx getclip")
         pw.println("      Print clipboard text to stdout.")
+        pw.println("am shortx current-app")
+        pw.println("      Print current foreground app package and label.")
+        pw.println("am shortx kill-current-app")
+        pw.println("      Kill current foreground app process.")
         pw.println("am shortx action-b64 [BASE64_PROTO_ANY]")
         pw.println("      Execute any packed ProtoAny action.")
         pw.println("am shortx dump")
@@ -205,6 +213,38 @@ internal class ShortXShellCommandHandler(
             }.join()
         }
         return result
+    }
+
+    private fun printCurrentApp(pw: PrintWriter): Int {
+        val currentApps = shortXContext.appState.currentFrontPkgs()
+        if (currentApps.isEmpty()) {
+            pw.println("No current foreground app.")
+            pw.flush()
+            return 1
+        }
+        currentApps.forEach { appPkg ->
+            val label = shortXContext.appState.getAppLabel(appPkg).orEmpty()
+            pw.println("${appPkg.pkgName}\t$label")
+        }
+        pw.flush()
+        return 0
+    }
+
+    private fun killCurrentApp(pw: PrintWriter): Int {
+        val currentApps = shortXContext.appState.currentFrontPkgs()
+        if (currentApps.isEmpty()) {
+            pw.println("No current foreground app.")
+            pw.flush()
+            return 1
+        }
+        pw.println("Killing current foreground app:")
+        currentApps.forEach { appPkg ->
+            val label = shortXContext.appState.getAppLabel(appPkg).orEmpty()
+            pw.println("${appPkg.pkgName}\t$label")
+        }
+        pw.flush()
+        shortXContext.appState.stopForegroundApp()
+        return 0
     }
 
     private fun runBase64Action(shellCommand: ShellCommand, pw: PrintWriter): Int {
