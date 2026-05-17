@@ -32,8 +32,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -64,6 +66,7 @@ import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.main.CommonSetFilter
 import tornaco.apps.shortx.ui.main.MainScaffold
 import tornaco.apps.shortx.ui.main.MainViewModel
+import tornaco.apps.shortx.ui.main.SettingsAppBarActions
 import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.main.uniqueUIKey
 import tornaco.apps.shortx.ui.main.userSetIdOrNull
@@ -101,32 +104,66 @@ fun RuleScreen() {
         }
     )
 
+    var selectedRuleIds by remember { mutableStateOf(emptySet<String>()) }
+    val isSelectionMode = selectedRuleIds.isNotEmpty()
+    val selectedRules = remember(ruleList, selectedRuleIds) {
+        ruleList.data?.rules?.filter { selectedRuleIds.contains(it.id) } ?: emptyList()
+    }
+
+    val ruleHandler = getLocalRuleItemHandler(vm = ruleListViewModel) { rule ->
+        selectedRuleIds = selectedRuleIds + rule.id
+    }
+
     MainScaffold(
         state = mainState,
         appBarTitle = {
             Text(
                 modifier = Modifier.clickable {
-                    ruleListViewModel.toggleShowRuleDescription()
+                    if (!isSelectionMode) {
+                        ruleListViewModel.toggleShowRuleDescription()
+                    }
                 },
-                text = LocalI18N.current["ui.feat.label.rule"]
+                text = if (isSelectionMode) {
+                    LocalI18N.current["ui.common.selected.count", mapOf("selected" to selectedRuleIds.size.toString())]
+                } else {
+                    LocalI18N.current["ui.feat.label.rule"]
+                }
             )
         },
         enableSearch = true,
         searchBarState = searchBarState,
-        appBarActions = {
-            RuleSortSelector(
-                currentSortBy = ruleListState.ruleSortBy,
-                onSortByChanged = { sortBy ->
-                    ruleListViewModel.setRuleSortBy(sortBy)
+        appBarNavigationIcon = {
+            if (isSelectionMode) {
+                IconButton(onClick = { selectedRuleIds = emptySet() }) {
+                    RemixIcon(Remix.System.close_line)
                 }
-            )
-            IconButton(onClick = {
-                ruleListViewModel.toggleOnlyShowEnabled()
-            }) {
-                RemixIcon(
-                    remixName = Remix.Hardware.switch_one,
-                    tint = if (ruleListState.onlyShowEnabled) MaterialTheme.colorScheme.primary else Color.Unspecified
+            } else {
+                SettingsAppBarActions(mainState.hasSensorUsage)
+            }
+        },
+        appBarActions = {
+            if (isSelectionMode) {
+                IconButton(onClick = {
+                    ruleHandler.share(selectedRules)
+                    selectedRuleIds = emptySet()
+                }) {
+                    RemixIcon(Remix.System.share_line)
+                }
+            } else {
+                RuleSortSelector(
+                    currentSortBy = ruleListState.ruleSortBy,
+                    onSortByChanged = { sortBy ->
+                        ruleListViewModel.setRuleSortBy(sortBy)
+                    }
                 )
+                IconButton(onClick = {
+                    ruleListViewModel.toggleOnlyShowEnabled()
+                }) {
+                    RemixIcon(
+                        remixName = Remix.Hardware.switch_one,
+                        tint = if (ruleListState.onlyShowEnabled) MaterialTheme.colorScheme.primary else Color.Unspecified
+                    )
+                }
             }
         },
         onClipboardClick = {
@@ -170,7 +207,6 @@ fun RuleScreen() {
 
         val setHandler =
             getLocalRuleSetItemHandler(bottomSheetState = bottomSheetState, vm = ruleListViewModel)
-        val ruleHandler = getLocalRuleItemHandler(vm = ruleListViewModel)
         CompositionLocalProvider(
             LocalRuleItemHandler provides ruleHandler,
             LocalRuleSetItemHandler provides setHandler,
@@ -190,7 +226,15 @@ fun RuleScreen() {
                     RuleContent(
                         rules = (ruleList as LoadState.Success).data.rules,
                         showDescription = ruleListState.showDescription,
-                        activeJobs = activeJobIds
+                        activeJobs = activeJobIds,
+                        selectedRuleIds = selectedRuleIds,
+                        onRuleSelectionChange = { rule, selected ->
+                            selectedRuleIds = if (selected) {
+                                selectedRuleIds + rule.id
+                            } else {
+                                selectedRuleIds - rule.id
+                            }
+                        }
                     )
                 }
             }
@@ -289,6 +333,8 @@ fun RuleContent(
     showDescription: Boolean,
     rules: List<RuleUM>,
     activeJobs: List<String>,
+    selectedRuleIds: Set<String> = emptySet(),
+    onRuleSelectionChange: (RuleUM, Boolean) -> Unit = { _, _ -> },
 ) {
     Column {
         if (rules.isEmpty()) {
@@ -306,7 +352,9 @@ fun RuleContent(
                 isSubscribed = subscribeState.isSubscribed,
                 rules = rules,
                 showDescription = showDescription,
-                activeJobs = activeJobs
+                activeJobs = activeJobs,
+                selectedRuleIds = selectedRuleIds,
+                onRuleSelectionChange = onRuleSelectionChange
             )
         }
     }
@@ -318,6 +366,8 @@ private fun RuleListContent(
     showDescription: Boolean,
     rules: List<RuleUM>,
     activeJobs: List<String>,
+    selectedRuleIds: Set<String>,
+    onRuleSelectionChange: (RuleUM, Boolean) -> Unit,
 ) {
     LazyVerticalStaggeredGrid(
         modifier = Modifier.fillMaxSize(),
@@ -356,7 +406,10 @@ private fun RuleListContent(
                             rule = rule,
                             isSubscribed = isSubscribed,
                             showDescription = showDescription,
-                            runningInsCount = runningInsCount
+                            runningInsCount = runningInsCount,
+                            isSelectionMode = selectedRuleIds.isNotEmpty(),
+                            selected = selectedRuleIds.contains(rule.id),
+                            onSelectionChange = { onRuleSelectionChange(rule, it) }
                         )
                     }
                 }

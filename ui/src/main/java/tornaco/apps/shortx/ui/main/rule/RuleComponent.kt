@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -61,7 +62,10 @@ fun RuleItem(
     rule: RuleUM,
     isSubscribed: Boolean,
     showDescription: Boolean = true,
-    runningInsCount: Int
+    runningInsCount: Int,
+    isSelectionMode: Boolean = false,
+    selected: Boolean = false,
+    onSelectionChange: (Boolean) -> Unit = {}
 ) {
     val handler = LocalRuleItemHandler.current
     val iconColor = ruleIconColor(rule)
@@ -79,7 +83,10 @@ fun RuleItem(
                 popMenuState = popMenuState,
                 rule = rule,
                 showDescription = showDescription,
-                runningInsCount = runningInsCount
+                runningInsCount = runningInsCount,
+                isSelectionMode = isSelectionMode,
+                selected = selected,
+                onSelectionChange = onSelectionChange
             )
         }
     }
@@ -92,6 +99,9 @@ private fun RuleItem(
     rule: RuleUM,
     showDescription: Boolean,
     runningInsCount: Int,
+    isSelectionMode: Boolean,
+    selected: Boolean,
+    onSelectionChange: (Boolean) -> Unit,
 ) {
     val handler = LocalRuleItemHandler.current
     Column(
@@ -99,9 +109,17 @@ private fun RuleItem(
             .fillMaxWidth()
             .clip(ShortXCardRoundedCornerShape)
             .combinedClickable(onLongClick = {
-                popMenuState.open()
+                if (isSelectionMode) {
+                    onSelectionChange(!selected)
+                } else {
+                    popMenuState.open()
+                }
             }) {
-                handler.click(rule)
+                if (isSelectionMode) {
+                    onSelectionChange(!selected)
+                } else {
+                    handler.click(rule)
+                }
             }
             .padding(horizontal = 16.dp)
             .padding(top = 16.dp)
@@ -118,17 +136,32 @@ private fun RuleItem(
                 runningInsCount = runningInsCount,
                 stopAllJobs = {
                     handler.stopAllJobs(rule)
-                }) {
-                popMenuState.open()
-            }
-            ShortXSwitch(
-                modifier = Modifier,
-                checked = rule.isEnabled,
-                stock = false,
-                onCheckedChange = {
-                    handler.setRuleEnabled(rule, it)
                 },
-            )
+                isSelectionMode = isSelectionMode,
+                selected = selected
+            ) {
+                if (isSelectionMode) {
+                    onSelectionChange(!selected)
+                } else {
+                    popMenuState.open()
+                }
+            }
+            if (isSelectionMode) {
+                RemixIcon(
+                    modifier = Modifier.size(20.dp),
+                    remixName = if (selected) Remix.System.checkbox_circle_fill else Remix.System.checkbox_blank_circle_line,
+                    tint = if (selected) MaterialTheme.colorScheme.primary else Color.Unspecified
+                )
+            } else {
+                ShortXSwitch(
+                    modifier = Modifier,
+                    checked = rule.isEnabled,
+                    stock = false,
+                    onCheckedChange = {
+                        handler.setRuleEnabled(rule, it)
+                    },
+                )
+            }
         }
 
         Column(
@@ -185,31 +218,42 @@ fun RuleIcon(
     rule: RuleUM,
     runningInsCount: Int,
     stopAllJobs: () -> Unit,
+    isSelectionMode: Boolean = false,
+    selected: Boolean = false,
     onClick: (() -> Unit)
 ) {
     val isRunning = runningInsCount > 0
     val iconColor = ruleIconColor(rule)
-    if (isRunning) {
+    if (isRunning && !isSelectionMode) {
         RunningIndicator(runningInsCount, stopAllJobs, iconColor)
     } else {
         val colorfulCard = LocalUiSettings.current.uiColorfulCard
-        ColoredIcon(
-            onClick = onClick,
-            size = Dimens.RuleIconSize,
-            padding = 0.dp,
-            color = colorfulCard.select(
-                t = {
-                    iconColor
-                },
-                f = {
-                    iconColor.copy(alpha = if (rule.isEnabled) ActionColorBgAlphaLarge else ActionColorBgAlpha)
-                })
-        ) {
-            RemixIcon(
-                modifier = Modifier.size(16.dp),
-                remixName = rule.icon,
-                tint = colorfulCard.select(Color.White, iconColor)
-            )
+        Box {
+            ColoredIcon(
+                onClick = onClick,
+                size = Dimens.RuleIconSize,
+                padding = 0.dp,
+                color = colorfulCard.select(
+                    t = {
+                        iconColor
+                    },
+                    f = {
+                        iconColor.copy(alpha = if (rule.isEnabled) ActionColorBgAlphaLarge else ActionColorBgAlpha)
+                    })
+            ) {
+                RemixIcon(
+                    modifier = Modifier.size(16.dp).alpha(if (isSelectionMode && selected) 0.2f else 1f),
+                    remixName = rule.icon,
+                    tint = colorfulCard.select(Color.White, iconColor)
+                )
+            }
+            if (isSelectionMode && selected) {
+                RemixIcon(
+                    modifier = Modifier.align(Alignment.Center).size(18.dp),
+                    remixName = Remix.System.check_line,
+                    tint = colorfulCard.select(Color.White, iconColor)
+                )
+            }
         }
     }
 }
@@ -271,6 +315,12 @@ private fun listItemOverflowMenu(
                 data = RuleItemMenuOptions.TogglePin,
                 icon = {
                     RemixIcon(if (rule.isPinned) Remix.Map.pushpin_line else Remix.Map.pushpin_fill)
+                }),
+            DropdownItem(
+                labelLines = listOf(i18N["ui.common.select"]),
+                data = RuleItemMenuOptions.Select,
+                icon = {
+                    RemixIcon(Remix.System.checkbox_multiple_line)
                 }),
             DropdownItem(
                 labelLines = listOf(i18N["ui.common.execute.actions"]),
@@ -365,6 +415,10 @@ private fun listItemOverflowMenu(
                     handler.run(rule)
                 }
 
+                RuleItemMenuOptions.Select -> {
+                    handler.select(rule)
+                }
+
                 RuleItemMenuOptions.MoveToSet -> {
                     ruleSetSelectDialogState.show()
                 }
@@ -390,5 +444,5 @@ private fun listItemOverflowMenu(
 }
 
 enum class RuleItemMenuOptions {
-    TogglePin, Dup, Delete, Edit, Share, Execute, MoveToSet, MoveOutSet, ViewEvaRecord, ExtractAsDA
+    TogglePin, Select, Dup, Delete, Edit, Share, Execute, MoveToSet, MoveOutSet, ViewEvaRecord, ExtractAsDA
 }

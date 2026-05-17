@@ -29,6 +29,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -87,7 +88,10 @@ fun DirectActionItem(
     isSubscribed: Boolean,
     isLongClickEnabled: Boolean,
     colorfulCard: Boolean,
-    runningInsCount: Int
+    runningInsCount: Int,
+    isSelectionMode: Boolean = false,
+    selected: Boolean = false,
+    onSelectionChange: (Boolean) -> Unit = {}
 ) {
     val iconColor = daIconColor(da)
     Box {
@@ -111,15 +115,33 @@ fun DirectActionItem(
                 hasFuncParameter = da.hasAnyParameter,
                 colorfulCard = colorfulCard,
                 isPinned = da.isPinned,
-                onClick = { handler.click(da) },
-                run = {
-                    clickAnimateState.startAllAnim()
-                    handler.run(da)
+                onClick = {
+                    if (isSelectionMode) {
+                        onSelectionChange(!selected)
+                    } else {
+                        handler.click(da)
+                    }
                 },
-                onLongClick = { if (isLongClickEnabled) popMenuState.open() },
+                run = {
+                    if (isSelectionMode) {
+                        onSelectionChange(!selected)
+                    } else {
+                        clickAnimateState.startAllAnim()
+                        handler.run(da)
+                    }
+                },
+                onLongClick = {
+                    if (isSelectionMode) {
+                        onSelectionChange(!selected)
+                    } else if (isLongClickEnabled) {
+                        popMenuState.open()
+                    }
+                },
                 stopAllJobs = {
                     handler.stopAllJobs(da)
-                }
+                },
+                isSelectionMode = isSelectionMode,
+                selected = selected
             )
         }
     }
@@ -131,6 +153,9 @@ fun DAListItemCompat(
     da: DirectActionUM,
     isSubscribed: Boolean,
     isLongClickEnabled: Boolean,
+    isSelectionMode: Boolean = false,
+    selected: Boolean = false,
+    onSelectionChange: (Boolean) -> Unit = {}
 ) {
     Box {
         val popMenuState = daListItemOverflowMenu(
@@ -143,8 +168,22 @@ fun DAListItemCompat(
             title = da.title,
             icon = da.icon,
             iconColor = daIconColor(da),
-            onClick = { handler.run(da) },
-            onLongClick = { if (isLongClickEnabled) popMenuState.open() },
+            selected = selected,
+            isSelectionMode = isSelectionMode,
+            onClick = {
+                if (isSelectionMode) {
+                    onSelectionChange(!selected)
+                } else {
+                    handler.run(da)
+                }
+            },
+            onLongClick = {
+                if (isSelectionMode) {
+                    onSelectionChange(!selected)
+                } else if (isLongClickEnabled) {
+                    popMenuState.open()
+                }
+            },
         )
     }
 }
@@ -162,6 +201,8 @@ fun DAListItemCompat(
     title: String,
     icon: String,
     iconColor: Color,
+    selected: Boolean = false,
+    isSelectionMode: Boolean = false,
     onClick: () -> Unit,
     onLongClick: () -> Unit
 ) {
@@ -177,16 +218,27 @@ fun DAListItemCompat(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val isImage = icon.isBase64Image()
-        ColoredIcon(
-            size = COMPAT_MODE_ICON_SIZE.dp,
-            padding = 0.dp,
-            color = if (isImage) Color.Transparent else iconColor
-        ) {
-            RemixIcon(
-                modifier = Modifier.size(if (isImage) COMPAT_MODE_ICON_SIZE.dp else 24.dp),
-                remixName = icon,
-                tint = Color.White
-            )
+        Box {
+            ColoredIcon(
+                size = COMPAT_MODE_ICON_SIZE.dp,
+                padding = 0.dp,
+                color = if (isImage) Color.Transparent else iconColor
+            ) {
+                RemixIcon(
+                    modifier = Modifier
+                        .size(if (isImage) COMPAT_MODE_ICON_SIZE.dp else 24.dp)
+                        .alpha(if (isSelectionMode && selected) 0.2f else 1f),
+                    remixName = icon,
+                    tint = Color.White
+                )
+            }
+            if (isSelectionMode) {
+                RemixIcon(
+                    modifier = Modifier.align(Alignment.Center).size(18.dp),
+                    remixName = if (selected) Remix.System.check_line else Remix.System.checkbox_blank_circle_line,
+                    tint = if (selected) Color.White else MaterialTheme.colorScheme.primary
+                )
+            }
         }
 
         TinySpacer()
@@ -218,7 +270,9 @@ private fun DAListItem(
     onClick: () -> Unit,
     run: () -> Unit,
     onLongClick: () -> Unit,
-    stopAllJobs: () -> Unit
+    stopAllJobs: () -> Unit,
+    isSelectionMode: Boolean = false,
+    selected: Boolean = false,
 ) {
     Column(
         modifier = modifier
@@ -236,57 +290,87 @@ private fun DAListItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             val isRunning = runningInsCount > 0
-            if (isRunning) {
+            if (isRunning && !isSelectionMode) {
                 RunningIndicator(runningInsCount, stopAllJobs, iconColor)
             } else {
                 val isImage = icon.isBase64Image()
                 if (colorfulCard) {
-                    ColoredIcon(
-                        modifier = Modifier,
-                        size = Dimens.DAIconSize,
-                        padding = 0.dp,
-                        color = if (isImage) Color.Transparent else iconColor,
-                        shape = if (LocalUiSettings.current.uiExperimental) MaterialShapes.Cookie12Sided.toShape() else CircleShape,
-                        onClick = {
-                            onLongClick()
+                    Box {
+                        ColoredIcon(
+                            modifier = Modifier,
+                            size = Dimens.DAIconSize,
+                            padding = 0.dp,
+                            color = if (isImage) Color.Transparent else iconColor,
+                            shape = if (LocalUiSettings.current.uiExperimental) MaterialShapes.Cookie12Sided.toShape() else CircleShape,
+                            onClick = {
+                                onLongClick()
+                            }
+                        ) {
+                            RemixIcon(
+                                modifier = Modifier
+                                    .size(if (isImage) Dimens.DAIconSize else 16.dp)
+                                    .alpha(if (isSelectionMode && selected) 0.2f else 1f),
+                                remixName = icon,
+                                tint = Color.White
+                            )
                         }
-                    ) {
-                        RemixIcon(
-                            modifier = Modifier.size(if (isImage) Dimens.DAIconSize else 16.dp),
-                            remixName = icon,
-                            tint = Color.White
-                        )
+                        if (isSelectionMode) {
+                            RemixIcon(
+                                modifier = Modifier.align(Alignment.Center).size(18.dp),
+                                remixName = if (selected) Remix.System.check_line else Remix.System.checkbox_blank_circle_line,
+                                tint = Color.White
+                            )
+                        }
                     }
                 } else {
-                    ColoredIcon(
-                        modifier = Modifier,
-                        size = Dimens.DAIconSize,
-                        padding = 0.dp,
-                        color = if (isImage) Color.Transparent else iconColor.copy(alpha = ActionColorBgAlpha),
-                        shape = if (LocalUiSettings.current.uiExperimental) MaterialShapes.Cookie12Sided.toShape() else CircleShape,
-                        onClick = {
-                            onLongClick()
+                    Box {
+                        ColoredIcon(
+                            modifier = Modifier,
+                            size = Dimens.DAIconSize,
+                            padding = 0.dp,
+                            color = if (isImage) Color.Transparent else iconColor.copy(alpha = ActionColorBgAlpha),
+                            shape = if (LocalUiSettings.current.uiExperimental) MaterialShapes.Cookie12Sided.toShape() else CircleShape,
+                            onClick = {
+                                onLongClick()
+                            }
+                        ) {
+                            RemixIcon(
+                                modifier = Modifier
+                                    .size(if (isImage) Dimens.DAIconSize else 16.dp)
+                                    .alpha(if (isSelectionMode && selected) 0.2f else 1f),
+                                remixName = icon,
+                                tint = iconColor
+                            )
                         }
-                    ) {
-                        RemixIcon(
-                            modifier = Modifier.size(if (isImage) Dimens.DAIconSize else 16.dp),
-                            remixName = icon,
-                            tint = iconColor
-                        )
+                        if (isSelectionMode) {
+                            RemixIcon(
+                                modifier = Modifier.align(Alignment.Center).size(18.dp),
+                                remixName = if (selected) Remix.System.check_line else Remix.System.checkbox_blank_circle_line,
+                                tint = iconColor
+                            )
+                        }
                     }
                 }
             }
 
-            IconButton(onClick = {
-                run()
-            }) {
-                if (colorfulCard) {
-                    RemixIcon(
-                        remixName = Remix.Media.play_line,
-                        tint = darkenColor(iconColor, 0.4f)
-                    )
-                } else {
-                    RemixIcon(remixName = Remix.Media.play_circle_line, tint = NoteTextColor)
+            if (isSelectionMode) {
+                RemixIcon(
+                    modifier = Modifier.size(20.dp),
+                    remixName = if (selected) Remix.System.checkbox_circle_fill else Remix.System.checkbox_blank_circle_line,
+                    tint = if (selected) MaterialTheme.colorScheme.primary else Color.Unspecified
+                )
+            } else {
+                IconButton(onClick = {
+                    run()
+                }) {
+                    if (colorfulCard) {
+                        RemixIcon(
+                            remixName = Remix.Media.play_line,
+                            tint = darkenColor(iconColor, 0.4f)
+                        )
+                    } else {
+                        RemixIcon(remixName = Remix.Media.play_circle_line, tint = NoteTextColor)
+                    }
                 }
             }
         }
@@ -451,6 +535,12 @@ private fun daListItemOverflowMenu(
                         RemixIcon(Remix.Map.pushpin_2_line)
                     })
             },
+            DropdownItem(
+                labelLines = listOf(LocalI18N.current["ui.common.select"]),
+                data = DAItemMenuOptions.Select,
+                icon = {
+                    RemixIcon(Remix.System.checkbox_multiple_line)
+                }),
             DropdownItem(
                 labelLines = listOf(LocalI18N.current["ui.common.create.shortcut"]),
                 data = DAItemMenuOptions.Shortcut,
@@ -639,6 +729,10 @@ private fun daListItemOverflowMenu(
                 DAItemMenuOptions.Unpin -> {
                     handler.togglePin(da)
                 }
+
+                DAItemMenuOptions.Select -> {
+                    handler.select(da)
+                }
             }
         })
 
@@ -647,7 +741,7 @@ private fun daListItemOverflowMenu(
 
 
 enum class DAItemMenuOptions {
-    Dup, DeepLink, ShellCommand, Delete, Edit, Share, Shortcut, DynamicShortcut, RemoveDynamicShortcut, CreateApk, MoveToSet, MoveOutSet, ViewEvaRecord, Pin, Unpin
+    Select, Dup, DeepLink, ShellCommand, Delete, Edit, Share, Shortcut, DynamicShortcut, RemoveDynamicShortcut, CreateApk, MoveToSet, MoveOutSet, ViewEvaRecord, Pin, Unpin
 }
 
 @Composable

@@ -442,6 +442,8 @@
   "ui.common.create.dynamic.shortcut": "建立動態快捷",
   "ui.common.remove.dynamic.shortcut": "移除動態快捷",
   "ui.common.dup": "建立副本",
+  "ui.common.cancel": "取消",
+  "ui.common.export": "匯出",
   "ui.common.share": "分享",
   "ui.common.settings": "設定",
   "ui.common.screen.l": "橫向",

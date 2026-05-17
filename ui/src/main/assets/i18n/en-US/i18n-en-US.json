@@ -442,6 +442,8 @@
   "ui.common.create.dynamic.shortcut": "Create dynamic shortcut",
   "ui.common.remove.dynamic.shortcut": "Remove dynamic shortcut",
   "ui.common.dup": "Duplicate",
+  "ui.common.cancel": "Cancel",
+  "ui.common.export": "Export",
   "ui.common.share": "Share",
   "ui.common.settings": "Settings",
   "ui.common.screen.l": "Landscape",

@@ -128,6 +128,7 @@ fun MainScaffold(
     acceptPrivacyStatement: () -> Unit,
     fabOptions: List<MainScaffoldFabOptions> = MainScaffoldFabOptions.entries,
     appBarContent: @Composable ColumnScope.() -> Unit = {},
+    appBarNavigationIcon: @Composable () -> Unit = { SettingsAppBarActions(state.hasSensorUsage) },
     content: @Composable () -> Unit
 ) {
     val subscribeState by LVLStateHolder.collectAsState()
@@ -201,6 +202,7 @@ fun MainScaffold(
         searchBarState = searchBarState,
         enableMask = enableFabMask,
         appBarActions = appBarActions,
+        appBarNavigationIcon = appBarNavigationIcon,
         acceptPrivacyStatement = acceptPrivacyStatement,
         floatingActionButton = {
             AddOptionsFab(fabState, options = fabOptions)
@@ -224,6 +226,7 @@ fun MainScaffold(
     floatingActionButton: @Composable () -> Unit = {},
     onMaskClickOutside: () -> Unit,
     appBarContent: @Composable ColumnScope.() -> Unit,
+    appBarNavigationIcon: @Composable () -> Unit = { SettingsAppBarActions(state.hasSensorUsage) },
     content: @Composable () -> Unit,
 ) {
     var isShowActiveDialog by remember {
@@ -280,7 +283,7 @@ fun MainScaffold(
                                     }
                                 },
                                 navigationIcon = {
-                                    SettingsAppBarActions(state.hasSensorUsage)
+                                    appBarNavigationIcon()
                                 },
                                 actions = {
                                     appBarActions()
@@ -472,7 +475,7 @@ fun MainScaffold(
 }
 
 @Composable
-private fun SettingsAppBarActions(hasSensorUsage: Boolean) {
+fun SettingsAppBarActions(hasSensorUsage: Boolean) {
     val localDrawerState = LocalDrawerState.current
     val scope = rememberCoroutineScope()
     IconButton(onClick = {

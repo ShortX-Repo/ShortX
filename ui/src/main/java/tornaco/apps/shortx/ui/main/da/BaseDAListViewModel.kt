@@ -259,6 +259,20 @@ abstract class BaseDAListViewModel(context: Context) :
         }?.toJson()
             ?.addShareContentHeader(mapOf("type" to SharedData.TYPE_DA_SET))
 
+    fun dasToShareString(title: String, das: List<DirectActionUM>): String? =
+        DirectActionSet.newBuilder()
+            .setId("SHARE-" + defaultNewDASetId())
+            .setTitle(title)
+            .setDescription(title)
+            .setDaList(
+                tornaco.apps.shortx.core.proto.da.DirectActionList.newBuilder()
+                    .addAllDirectActions(das.map { it.directAction })
+                    .build()
+            )
+            .build()
+            .toJson()
+            .addShareContentHeader(mapOf("type" to SharedData.TYPE_DA_SET))
+
     fun importDA(da: DirectAction, shouldChangeId: Boolean, token: String?) {
         val daWithSameNameExists =
             daList.value.data?.das?.firstOrNull { it.title == da.title } != null

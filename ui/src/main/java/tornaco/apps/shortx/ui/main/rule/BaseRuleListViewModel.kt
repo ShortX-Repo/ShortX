@@ -256,6 +256,20 @@ abstract class BaseRuleListViewModel(context: Context) :
         }?.toJson()
             ?.addShareContentHeader(mapOf("type" to SharedData.TYPE_RULE_SET))
 
+    fun rulesToShareString(title: String, rules: List<RuleUM>): String? =
+        RuleSet.newBuilder()
+            .setId("SHARE-" + defaultNewRuleSetId())
+            .setTitle(title)
+            .setDescription(title)
+            .setRuleList(
+                tornaco.apps.shortx.core.proto.rule.RuleList.newBuilder()
+                    .addAllRules(rules.map { it.rule })
+                    .build()
+            )
+            .build()
+            .toJson()
+            .addShareContentHeader(mapOf("type" to SharedData.TYPE_RULE_SET))
+
     fun importRule(rule: Rule, shouldChangeId: Boolean, token: String?) {
         logger.d("importRule: $rule")
         val ruleWithSameNameExists =

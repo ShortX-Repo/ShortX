@@ -28,6 +28,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridS
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,8 +37,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -74,6 +77,7 @@ import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.main.CommonSetFilter
 import tornaco.apps.shortx.ui.main.MainScaffold
 import tornaco.apps.shortx.ui.main.MainViewModel
+import tornaco.apps.shortx.ui.main.SettingsAppBarActions
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.main.uniqueUIKey
 import tornaco.apps.shortx.ui.main.userSetIdOrNull
@@ -142,24 +146,56 @@ fun DirectActionListScreen() {
         }
     )
 
+    var selectedDAIds by remember { mutableStateOf(emptySet<String>()) }
+    val isSelectionMode = selectedDAIds.isNotEmpty()
+    val selectedDAs = remember(daList, selectedDAIds) {
+        daList.data?.das?.filter { selectedDAIds.contains(it.id) } ?: emptyList()
+    }
+
+    val daHandler = getLocalDAItemHandler(vm = daListViewModel) { da ->
+        selectedDAIds = selectedDAIds + da.id
+    }
+
     MainScaffold(
         state = mainState,
         appBarTitle = {
             Text(
-                text = LocalI18N.current["ui.feat.label.da"]
+                text = if (isSelectionMode) {
+                    LocalI18N.current["ui.common.selected.count", mapOf("selected" to selectedDAIds.size.toString())]
+                } else {
+                    LocalI18N.current["ui.feat.label.da"]
+                }
             )
         },
         enableSearch = true,
         searchBarState = searchBarState,
+        appBarNavigationIcon = {
+            if (isSelectionMode) {
+                IconButton(onClick = { selectedDAIds = emptySet() }) {
+                    RemixIcon(Remix.System.close_line)
+                }
+            } else {
+                SettingsAppBarActions(mainState.hasSensorUsage)
+            }
+        },
         appBarActions = {
-            DASortSelector(
-                currentSortBy = daListState.daSortBy,
-                onSortByChanged = { daListViewModel.updateSortBy(it) }
-            )
-            IconButton(onClick = {
-                daListViewModel.toggleShowDetailedDAItem()
-            }) {
-                RemixIcon(remixName = Remix.Design.collage_line)
+            if (isSelectionMode) {
+                IconButton(onClick = {
+                    daHandler.share(selectedDAs)
+                    selectedDAIds = emptySet()
+                }) {
+                    RemixIcon(Remix.System.share_line)
+                }
+            } else {
+                DASortSelector(
+                    currentSortBy = daListState.daSortBy,
+                    onSortByChanged = { daListViewModel.updateSortBy(it) }
+                )
+                IconButton(onClick = {
+                    daListViewModel.toggleShowDetailedDAItem()
+                }) {
+                    RemixIcon(remixName = Remix.Design.collage_line)
+                }
             }
         },
         onClipboardClick = {
@@ -202,7 +238,6 @@ fun DirectActionListScreen() {
         val bottomSheetState = rememberShortXBottomSheetState()
         DADetailsBottomSheet(dialogState = bottomSheetState)
 
-        val daHandler = getLocalDAItemHandler(vm = daListViewModel)
         val setHandler =
             getLocalDASetItemHandler(bottomSheetState = bottomSheetState, vm = daListViewModel)
 
@@ -229,7 +264,15 @@ fun DirectActionListScreen() {
                         isShowDetailedDAItem = daListState.isShowDetailedDAItem,
                         das = (daList as LoadState.Success<DAList>).data.das,
                         activeJobs = activeJobIds,
-                        showOverflowMenu = true
+                        showOverflowMenu = true,
+                        selectedDAIds = selectedDAIds,
+                        onDASelectionChange = { da, selected ->
+                            selectedDAIds = if (selected) {
+                                selectedDAIds + da.id
+                            } else {
+                                selectedDAIds - da.id
+                            }
+                        }
                     )
                 }
             }
@@ -328,6 +371,8 @@ fun DirectActionListContent(
     das: List<DirectActionUM>,
     activeJobs: ActiveJobIds,
     showOverflowMenu: Boolean = false,
+    selectedDAIds: Set<String> = emptySet(),
+    onDASelectionChange: (DirectActionUM, Boolean) -> Unit = { _, _ -> },
 ) {
 
     Column {
@@ -347,12 +392,16 @@ fun DirectActionListContent(
                     activeJobs = activeJobs,
                     isSubscribed = subscribeState.isSubscribed,
                     showOverflowMenu = showOverflowMenu,
+                    selectedDAIds = selectedDAIds,
+                    onDASelectionChange = onDASelectionChange,
                 )
             } else {
                 DAListContentCompat(
                     das = das,
                     isSubscribed = subscribeState.isSubscribed,
                     showOverflowMenu = showOverflowMenu,
+                    selectedDAIds = selectedDAIds,
+                    onDASelectionChange = onDASelectionChange,
                 )
             }
 
@@ -367,6 +416,8 @@ private fun DAListContent(
     activeJobs: ActiveJobIds,
     isSubscribed: Boolean,
     showOverflowMenu: Boolean,
+    selectedDAIds: Set<String>,
+    onDASelectionChange: (DirectActionUM, Boolean) -> Unit,
 ) {
     LazyVerticalStaggeredGrid(
         state = lazyStaggeredGridState,
@@ -410,7 +461,10 @@ private fun DAListContent(
                                 isSubscribed = isSubscribed,
                                 isLongClickEnabled = showOverflowMenu,
                                 colorfulCard = colorfulCard,
-                                runningInsCount = runningInsCount
+                                runningInsCount = runningInsCount,
+                                isSelectionMode = selectedDAIds.isNotEmpty(),
+                                selected = selectedDAIds.contains(da.id),
+                                onSelectionChange = { onDASelectionChange(da, it) }
                             )
                         }
                     }
@@ -435,7 +489,9 @@ private fun DAListContent(
 private fun DAListContentCompat(
     das: List<DirectActionUM>,
     isSubscribed: Boolean,
-    showOverflowMenu: Boolean
+    showOverflowMenu: Boolean,
+    selectedDAIds: Set<String>,
+    onDASelectionChange: (DirectActionUM, Boolean) -> Unit,
 ) {
     LazyVerticalGrid(
         modifier = Modifier.fillMaxSize(),
@@ -455,6 +511,9 @@ private fun DAListContentCompat(
                     da = da,
                     isSubscribed = isSubscribed,
                     isLongClickEnabled = showOverflowMenu,
+                    isSelectionMode = selectedDAIds.isNotEmpty(),
+                    selected = selectedDAIds.contains(da.id),
+                    onSelectionChange = { onDASelectionChange(da, it) },
                 )
             }
         }

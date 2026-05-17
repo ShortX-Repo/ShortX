@@ -13,7 +13,10 @@ import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.util.Permissions.shouldCheckStoragePermissionBeforeWriteDownloads
 
 @Composable
-fun getLocalRuleItemHandler(vm: BaseRuleListViewModel): RuleItemHandler {
+fun getLocalRuleItemHandler(
+    vm: BaseRuleListViewModel,
+    onSelect: (RuleUM) -> Unit = {}
+): RuleItemHandler {
     val context = LocalContext.current
     val shareDialogState = rememberShareDialogState("share.shortx")
     ShareDialog(state = shareDialogState)
@@ -45,6 +48,10 @@ fun getLocalRuleItemHandler(vm: BaseRuleListViewModel): RuleItemHandler {
             edit(rule)
         }
 
+        override fun select(rule: RuleUM) {
+            onSelect(rule)
+        }
+
         override fun share(rule: RuleUM) {
             if (context.shouldCheckStoragePermissionBeforeWriteDownloads()) {
                 permissionRequest.launch(
@@ -56,6 +63,23 @@ fun getLocalRuleItemHandler(vm: BaseRuleListViewModel): RuleItemHandler {
             } else {
                 vm.ruleToShareString(rule)?.let {
                     shareDialogState.show(rule.title, it)
+                }
+            }
+        }
+
+        override fun share(rules: List<RuleUM>) {
+            if (rules.isEmpty()) return
+            if (context.shouldCheckStoragePermissionBeforeWriteDownloads()) {
+                permissionRequest.launch(
+                    arrayOf(
+                        ManifestCompat.permission.READ_EXTERNAL_STORAGE,
+                        ManifestCompat.permission.WRITE_EXTERNAL_STORAGE,
+                    )
+                )
+            } else {
+                val title = rules.joinToString(separator = ", ", limit = 3) { it.title }
+                vm.rulesToShareString(title, rules)?.let {
+                    shareDialogState.show(title, it)
                 }
             }
         }

@@ -16,7 +16,10 @@ import tornaco.apps.shortx.ui.util.ClipboardUtils
 import tornaco.apps.shortx.ui.util.Permissions.shouldCheckStoragePermissionBeforeWriteDownloads
 
 @Composable
-fun getLocalDAItemHandler(vm: BaseDAListViewModel): DAItemHandler {
+fun getLocalDAItemHandler(
+    vm: BaseDAListViewModel,
+    onSelect: (DirectActionUM) -> Unit = {}
+): DAItemHandler {
     val context = LocalContext.current
     val i18N = LocalI18N.current
 
@@ -48,6 +51,10 @@ fun getLocalDAItemHandler(vm: BaseDAListViewModel): DAItemHandler {
 
         override fun click(da: DirectActionUM) {
             edit(da)
+        }
+
+        override fun select(da: DirectActionUM) {
+            onSelect(da)
         }
 
         override fun createApk(da: DirectActionUM) {
@@ -85,6 +92,23 @@ fun getLocalDAItemHandler(vm: BaseDAListViewModel): DAItemHandler {
             } else {
                 vm.daToShareString(da)?.let {
                     shareDialogState.show(da.title, it)
+                }
+            }
+        }
+
+        override fun share(das: List<DirectActionUM>) {
+            if (das.isEmpty()) return
+            if (context.shouldCheckStoragePermissionBeforeWriteDownloads()) {
+                permissionRequest.launch(
+                    arrayOf(
+                        ManifestCompat.permission.READ_EXTERNAL_STORAGE,
+                        ManifestCompat.permission.WRITE_EXTERNAL_STORAGE,
+                    )
+                )
+            } else {
+                val title = das.joinToString(separator = ", ", limit = 3) { it.title }
+                vm.dasToShareString(title, das)?.let {
+                    shareDialogState.show(title, it)
                 }
             }
         }
