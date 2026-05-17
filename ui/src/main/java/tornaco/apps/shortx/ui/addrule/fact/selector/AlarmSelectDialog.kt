@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package tornaco.apps.shortx.ui.addrule.fact.selector
 
 import androidx.compose.foundation.background
@@ -5,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,7 +16,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,7 +30,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight.Companion.W600
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.common.toTimeOfADay
@@ -37,15 +43,15 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.fact.mapper.toDisplayTime
 import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.CommonDialogState
-import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
-import tornaco.apps.shortx.ui.base.ShortXDialog
-import tornaco.apps.shortx.ui.base.ShortXTextButton
+import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.theme.ShortXTheme
 import java.time.LocalTime
 
 class AlarmSelectorState(
@@ -92,39 +98,63 @@ fun rememberAlarmSelectorState(
 @Composable
 fun AlarmSelector(state: AlarmSelectorState) {
     if (state.isShowing) {
-        ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
-            DialogTitle(text = LocalI18N.current["ui.fact.time.of.a.day"])
-        }, buttons = {
-            ShortXTextButton(onClick = {
-                state.selected(
-                    Alarm
-                        .newBuilder()
-                        .setTriggerAt(
-                            TimeOfADay
-                                .newBuilder()
-                                .setHour(state.time.hour)
-                                .setMinutes(state.time.minute)
-                                .setSeconds(state.time.second)
-                                .build()
+        ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
+            ShortXTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+                ) {
+                    Scaffold(topBar = {
+                        ShortXTopAppBar(
+                            title = { Text(text = LocalI18N.current["ui.fact.time.of.a.day"]) },
+                            navigationIcon = {
+                                IconButton(onClick = { state.dismiss() }) {
+                                    RemixIcon(remixName = Remix.System.close_line)
+                                }
+                            },
+                            actions = {
+                                IconButton(onClick = {
+                                    state.selected(
+                                        Alarm
+                                            .newBuilder()
+                                            .setTriggerAt(
+                                                TimeOfADay
+                                                    .newBuilder()
+                                                    .setHour(state.time.hour)
+                                                    .setMinutes(state.time.minute)
+                                                    .setSeconds(state.time.second)
+                                                    .build()
+                                            )
+                                            .setRepeat(
+                                                RepeatDays
+                                                    .newBuilder()
+                                                    .addAllDays(state.repeat)
+                                                    .build()
+                                            )
+                                            .apply {
+                                                state.dayType.toWorkdayFilterOrNull()
+                                                    ?.let { setWorkdayFilter(it) }
+                                            }
+                                            .build()
+                                    )
+                                    state.dismiss()
+                                }) {
+                                    RemixIcon(remixName = Remix.System.check_line)
+                                }
+                            }
                         )
-                        .setRepeat(
-                            RepeatDays
-                                .newBuilder()
-                                .addAllDays(state.repeat)
-                                .build()
-                        )
-                        .apply {
-                            state.dayType.toWorkdayFilterOrNull()?.let { setWorkdayFilter(it) }
+                    }) { paddingValues ->
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp)
+                                .padding(paddingValues)
+                        ) {
+                            AlarmContent(state)
                         }
-                        .build()
-                )
-                state.dismiss()
-            }) {
-                Text(text = stringResource(id = android.R.string.ok))
+                    }
+                }
             }
-        }, content = {
-            AlarmContent(state)
-        })
+        }
     }
 }
 

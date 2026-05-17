@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package tornaco.apps.shortx.ui.addrule.fact.selector
 
 import androidx.compose.animation.AnimatedVisibility
@@ -6,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,7 +16,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,7 +30,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight.Companion.W600
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.alarm.toLocalTime
@@ -33,21 +39,23 @@ import tornaco.apps.shortx.core.proto.condition.CalendarDayType
 import tornaco.apps.shortx.core.proto.fact.RepeatDays
 import tornaco.apps.shortx.core.proto.fact.WeekDay
 import tornaco.apps.shortx.core.proto.fact.WorkdayFilter
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.ui.addrule.condition.mapper.labelKey as calendarDayTypeLabelKey
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.CommonDialogState
-import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.ErrorTipRow
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
-import tornaco.apps.shortx.ui.base.ShortXDialog
+import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXFilledTonalButton
-import tornaco.apps.shortx.ui.base.ShortXTextButton
+import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipRow
+import tornaco.apps.shortx.ui.theme.ShortXTheme
 import java.time.LocalTime
 
 class RandomInPeriodSelectorState(
@@ -119,30 +127,53 @@ fun rememberRandomInPeriodSelectorState(
 @Composable
 fun PeriodSelector(state: RandomInPeriodSelectorState) {
     if (state.isShowing) {
-        ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
-            DialogTitle(text = LocalI18N.current["ui.fact.time.of.a.day.random"])
-        }, buttons = {
-            ShortXTextButton(onClick = {
-                if (state.isValid) {
-                    state.selected(
-                        Fact.RandomInPeriod(
-                            start = state.start!!.toTimeOfADay(),
-                            end = state.end!!.toTimeOfADay(),
-                            repeatDays = RepeatDays
-                                .newBuilder()
-                                .addAllDays(state.repeat)
-                                .build(),
-                            workdayFilter = state.dayType.toWorkdayFilterOrDefault()
+        ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
+            ShortXTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+                ) {
+                    Scaffold(topBar = {
+                        ShortXTopAppBar(
+                            title = { Text(text = LocalI18N.current["ui.fact.time.of.a.day.random"]) },
+                            navigationIcon = {
+                                IconButton(onClick = { state.dismiss() }) {
+                                    RemixIcon(remixName = Remix.System.close_line)
+                                }
+                            },
+                            actions = {
+                                IconButton(onClick = {
+                                    if (state.isValid) {
+                                        state.selected(
+                                            Fact.RandomInPeriod(
+                                                start = state.start!!.toTimeOfADay(),
+                                                end = state.end!!.toTimeOfADay(),
+                                                repeatDays = RepeatDays
+                                                    .newBuilder()
+                                                    .addAllDays(state.repeat)
+                                                    .build(),
+                                                workdayFilter = state.dayType.toWorkdayFilterOrDefault()
+                                            )
+                                        )
+                                        state.dismiss()
+                                    }
+                                }) {
+                                    RemixIcon(remixName = Remix.System.check_line)
+                                }
+                            }
                         )
-                    )
-                    state.dismiss()
+                    }) { paddingValues ->
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp)
+                                .padding(paddingValues)
+                        ) {
+                            PeriodContent(state)
+                        }
+                    }
                 }
-            }) {
-                Text(text = stringResource(id = android.R.string.ok))
             }
-        }, content = {
-            PeriodContent(state)
-        })
+        }
     }
 }
 
