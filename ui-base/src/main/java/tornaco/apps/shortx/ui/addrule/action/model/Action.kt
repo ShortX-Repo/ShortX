@@ -20,6 +20,7 @@ import tornaco.apps.shortx.core.proto.action.OcrDetectOutputType
 import tornaco.apps.shortx.core.proto.action.ScrollViewToLocation
 import tornaco.apps.shortx.core.proto.action.ActionSidebarButton
 import tornaco.apps.shortx.core.proto.action.ActionSidebarDismissBehavior
+import tornaco.apps.shortx.core.proto.action.ActionSidebarStyleSettings
 import tornaco.apps.shortx.core.proto.action.ShowListDialogDataType
 import tornaco.apps.shortx.core.proto.action.WriteGlobalVarOp
 import tornaco.apps.shortx.core.proto.common.ActionOnError
@@ -667,6 +668,7 @@ sealed interface Action : Parcelable {
         val dismissBehavior: ActionSidebarDismissBehavior = ActionSidebarDismissBehavior.ActionSidebarDismissBehavior_OutsideTapOrClose,
         val displayTitle: String = "",
         val position: tornaco.apps.shortx.core.proto.action.ActionSidebarPosition = tornaco.apps.shortx.core.proto.action.ActionSidebarPosition.ActionSidebarPosition_Left,
+        val style: ActionSidebarStyleSettings = ActionSidebarStyleSettings.getDefaultInstance(),
         val tag: String,
     ) : Action {
         override fun clone(

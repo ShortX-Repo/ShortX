@@ -404,6 +404,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 dismissBehavior = data.dismissBehavior,
                 displayTitle = data.displayTitle,
                 position = data.position,
+                style = data.style,
                 tag = data.tag
             )
         }

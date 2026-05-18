@@ -88,6 +88,7 @@ class ActionSidebarManager(
             i18N = i18NIns,
             buttons = buttons,
             position = action.position.normalized(),
+            sidebarStyle = action.style,
             callbacks = ActionSidebarCallbacks(
                 onDismiss = { postHideActionSidebar() },
                 onButtonTap = { button ->

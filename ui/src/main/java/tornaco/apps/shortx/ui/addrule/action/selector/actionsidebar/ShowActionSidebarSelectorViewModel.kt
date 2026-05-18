@@ -9,6 +9,7 @@ import tornaco.apps.shortx.core.IActionEvaluateListener
 import tornaco.apps.shortx.core.proto.action.ActionSidebarButton
 import tornaco.apps.shortx.core.proto.action.ActionSidebarDismissBehavior
 import tornaco.apps.shortx.core.proto.action.ActionSidebarPosition
+import tornaco.apps.shortx.core.proto.action.ActionSidebarStyleSettings
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
@@ -23,12 +24,59 @@ import javax.inject.Inject
 
 private fun newButtonId() = "ASB-${UUID.randomUUID()}"
 
+private const val DEFAULT_PANEL_BG = 0xFF1F1F23.toInt()
+private const val DEFAULT_ICON_BG = 0xFF3A3A40.toInt()
+private const val DEFAULT_ICON_COLOR = 0xFFFFFFFF.toInt()
+private const val DEFAULT_TEXT_COLOR = 0xFFFFFFFF.toInt()
+
+fun defaultActionSidebarStyleSettings(): ActionSidebarStyleSettings {
+    return ActionSidebarStyleSettings.newBuilder()
+        .setBackgroundColor(DEFAULT_PANEL_BG)
+        .setBackgroundAlphaPercent(92)
+        .setPanelCornerRadiusDp(24)
+        .setButtonCornerRadiusDp(18)
+        .setPanelWidthDp(108)
+        .setMaxHeightDp(520)
+        .setIconSizeDp(24)
+        .setIconBackgroundSizeDp(46)
+        .setIconColor(DEFAULT_ICON_COLOR)
+        .setIconBackgroundColor(DEFAULT_ICON_BG)
+        .setTextColor(DEFAULT_TEXT_COLOR)
+        .setTextSizeSp(11)
+        .setContentPaddingHorizontalDp(8)
+        .setContentPaddingVerticalDp(8)
+        .setItemSpacingDp(10)
+        .build()
+}
+
+fun ActionSidebarStyleSettings.withDefaults(): ActionSidebarStyleSettings {
+    val defaults = defaultActionSidebarStyleSettings()
+    return ActionSidebarStyleSettings.newBuilder(this)
+        .setBackgroundColor(if (backgroundColor == 0) defaults.backgroundColor else backgroundColor)
+        .setBackgroundAlphaPercent(if (backgroundAlphaPercent == 0) defaults.backgroundAlphaPercent else backgroundAlphaPercent)
+        .setPanelCornerRadiusDp(if (panelCornerRadiusDp == 0) defaults.panelCornerRadiusDp else panelCornerRadiusDp)
+        .setButtonCornerRadiusDp(if (buttonCornerRadiusDp == 0) defaults.buttonCornerRadiusDp else buttonCornerRadiusDp)
+        .setPanelWidthDp(if (panelWidthDp == 0) defaults.panelWidthDp else panelWidthDp)
+        .setMaxHeightDp(if (maxHeightDp == 0) defaults.maxHeightDp else maxHeightDp)
+        .setIconSizeDp(if (iconSizeDp == 0) defaults.iconSizeDp else iconSizeDp)
+        .setIconBackgroundSizeDp(if (iconBackgroundSizeDp == 0) defaults.iconBackgroundSizeDp else iconBackgroundSizeDp)
+        .setIconColor(if (iconColor == 0) defaults.iconColor else iconColor)
+        .setIconBackgroundColor(if (iconBackgroundColor == 0) defaults.iconBackgroundColor else iconBackgroundColor)
+        .setTextColor(if (textColor == 0) defaults.textColor else textColor)
+        .setTextSizeSp(if (textSizeSp == 0) defaults.textSizeSp else textSizeSp)
+        .setContentPaddingHorizontalDp(if (contentPaddingHorizontalDp == 0) defaults.contentPaddingHorizontalDp else contentPaddingHorizontalDp)
+        .setContentPaddingVerticalDp(if (contentPaddingVerticalDp == 0) defaults.contentPaddingVerticalDp else contentPaddingVerticalDp)
+        .setItemSpacingDp(if (itemSpacingDp == 0) defaults.itemSpacingDp else itemSpacingDp)
+        .build()
+}
+
 data class ShowActionSidebarSelectorState(
     val buttons: List<ActionSidebarButtonEditorState> = emptyList(),
     val tag: String = "",
     val displayTitle: String = "",
     val dismissBehavior: ActionSidebarDismissBehavior = ActionSidebarDismissBehavior.ActionSidebarDismissBehavior_OutsideTapOrClose,
     val position: ActionSidebarPosition = ActionSidebarPosition.ActionSidebarPosition_Left,
+    val style: ActionSidebarStyleSettings = defaultActionSidebarStyleSettings(),
     val id: String = defaultNewActionId(),
     val evaluatingActions: List<String> = emptyList(),
     val validationMessage: String? = null,
@@ -74,6 +122,7 @@ fun ShowActionSidebarSelectorState.toAction(): Action.ShowActionSidebar {
         dismissBehavior = dismissBehavior,
         displayTitle = displayTitle,
         position = position,
+        style = style.withDefaults(),
         tag = tag,
     )
 }
@@ -111,6 +160,7 @@ class ShowActionSidebarSelectorViewModel @Inject constructor(@ApplicationContext
                 displayTitle = action.displayTitle,
                 dismissBehavior = action.dismissBehavior,
                 position = action.position,
+                style = action.style.withDefaults(),
                 evaluatingActions = shortXManager.getEvaluatingActions(),
                 validationMessage = null,
             )
@@ -139,6 +189,10 @@ class ShowActionSidebarSelectorViewModel @Inject constructor(@ApplicationContext
 
     fun updatePosition(position: ActionSidebarPosition) {
         updateState { copy(position = position) }
+    }
+
+    fun updateStyle(style: ActionSidebarStyleSettings) {
+        updateState { copy(style = style.withDefaults()) }
     }
 
     fun validate(): Boolean {

@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.proto.action.ActionSidebarPosition
+import tornaco.apps.shortx.core.proto.action.ActionSidebarStyleSettings
 import tornaco.apps.shortx.core.proto.common.DialogUiStyleSettings
 import tornaco.apps.shortx.ui.dialog.ShadowDialogView
 
@@ -19,10 +20,10 @@ class ActionSidebarDialogView(
     private val buttons: List<ActionSidebarButtonUiModel>,
     private val callbacks: ActionSidebarCallbacks,
     private val position: ActionSidebarPosition,
+    private val sidebarStyle: ActionSidebarStyleSettings,
     context: Context,
     i18N: I18N,
-    style: DialogUiStyleSettings = DialogUiStyleSettings.getDefaultInstance(),
-) : ShadowDialogView(context, i18N, style) {
+) : ShadowDialogView(context, i18N, DialogUiStyleSettings.getDefaultInstance()) {
     private var visible by mutableStateOf(false)
 
     @Composable
@@ -32,6 +33,7 @@ class ActionSidebarDialogView(
             buttons = buttons,
             callbacks = callbacks,
             position = position,
+            style = sidebarStyle.withDefaults(),
             visible = visible,
             onDismissRequest = { dismissWithAnimation(callbacks.onDismiss) },
         )

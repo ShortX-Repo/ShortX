@@ -435,6 +435,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setDismissBehavior(dismissBehavior)
                 .setDisplayTitle(displayTitle)
                 .setPosition(position)
+                .setStyle(style)
                 .setTag(tag.fallbackOnEmpty(DateUtils.formatLongForMessageTime(System.currentTimeMillis())))
                 .setNote(overrideNote ?: note).build()
         }
