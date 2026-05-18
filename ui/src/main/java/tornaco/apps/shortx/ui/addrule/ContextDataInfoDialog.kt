@@ -39,6 +39,8 @@ import tornaco.apps.shortx.core.context.ContextDataMapping.asAccessExample
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.toStringPair
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.UiClipboard
+import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DialogMessage
@@ -101,6 +103,7 @@ fun rememberContextDataInfoDialogState(
 fun ContextDataInfoDialog(state: ContextDataInfoDialogState) {
     if (state.isShowing) {
         val i18N = LocalI18N.current
+        val context = LocalContext.current
 
         ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
             ShortXTheme {
@@ -108,8 +111,30 @@ fun ContextDataInfoDialog(state: ContextDataInfoDialogState) {
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
                     ShortXAppBarScaffold(
-                        title = LocalI18N.current["ui.context.data.title"],
+                        title = i18N["ui.context.data.title"],
                         onBackPressed = { state.dismiss() },
+                        actions = {
+                            IconButton(onClick = {
+                                UiClipboard.copy(
+                                    UiClipboard.ClipboardContent.ActionContent(
+                                        Action.ShowDanmu(
+                                            text = state.contextData.joinToString(separator = "\n") { data ->
+                                                val key = data.selectedKey
+                                                "$key={$key}"
+                                            },
+                                            icon = null,
+                                        )
+                                    )
+                                )
+                                Toast.makeText(
+                                    context,
+                                    i18N["ui.common.copied.to.clipboard"],
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }) {
+                                RemixIcon(remixName = Remix.Document.clipboard_fill)
+                            }
+                        },
                     ) {
                         LazyColumn(
                             contentPadding = PaddingValues(bottom = 120.dp),
