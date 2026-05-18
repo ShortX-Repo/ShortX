@@ -21,6 +21,7 @@ val allActionClasses = listOf(
     Action.ShowFloatWindow::class,
     Action.HideFloatWindow::class,
     Action.ShowSideBar::class,
+    Action.ShowActionSidebar::class,
     Action.HideSideBar::class,
     Action.LaunchApp::class,
     Action.LaunchAppByPkg::class,

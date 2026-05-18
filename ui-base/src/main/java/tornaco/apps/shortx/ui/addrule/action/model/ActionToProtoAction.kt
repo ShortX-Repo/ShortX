@@ -131,6 +131,7 @@ import tornaco.apps.shortx.core.proto.action.ShowGlobalActionsMenu
 import tornaco.apps.shortx.core.proto.action.ShowHideInsets
 import tornaco.apps.shortx.core.proto.action.ShowListDialog
 import tornaco.apps.shortx.core.proto.action.ShowMenuDialog
+import tornaco.apps.shortx.core.proto.action.ShowActionSidebar
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.action.ShowPPN
 import tornaco.apps.shortx.core.proto.action.ShowRecentApps
@@ -421,6 +422,20 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setTag(tag.fallbackOnEmpty(DateUtils.formatLongForMessageTime(System.currentTimeMillis())))
                 .addAllButtonSettings(settings)
+                .setNote(overrideNote ?: note).build()
+        }
+
+        is Action.ShowActionSidebar -> {
+            ShowActionSidebar.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .addAllButtons(buttons)
+                .setDismissBehavior(dismissBehavior)
+                .setDisplayTitle(displayTitle)
+                .setPosition(position)
+                .setTag(tag.fallbackOnEmpty(DateUtils.formatLongForMessageTime(System.currentTimeMillis())))
                 .setNote(overrideNote ?: note).build()
         }
 

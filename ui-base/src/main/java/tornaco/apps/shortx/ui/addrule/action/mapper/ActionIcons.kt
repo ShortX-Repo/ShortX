@@ -85,7 +85,7 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Game.handle_round
         }
 
-        Action.ShowSideBar::class, Action.HideSideBar::class -> {
+        Action.ShowSideBar::class, Action.ShowActionSidebar::class, Action.HideSideBar::class -> {
             Remix.Game.handle_round
         }
 

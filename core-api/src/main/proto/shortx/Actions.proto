@@ -233,6 +233,42 @@ message ShowSideBar {
   string id = 100;
 }
 
+enum ActionSidebarDismissBehavior {
+  ActionSidebarDismissBehavior_OutsideTapOrClose = 0;
+}
+
+enum ActionSidebarPosition {
+  ActionSidebarPosition_Left = 0;
+  ActionSidebarPosition_Right = 1;
+  ActionSidebarPosition_Top = 2;
+  ActionSidebarPosition_Bottom = 3;
+}
+
+message ActionSidebarButton {
+  string icon = 1;
+  string text = 2;
+  int32 order = 3;
+  repeated google.protobuf.Any tapActions = 4;
+  repeated google.protobuf.Any longPressActions = 5;
+
+  string note = 99;
+  string id = 100;
+}
+
+message ShowActionSidebar {
+  repeated ActionSidebarButton buttons = 1;
+  ActionSidebarDismissBehavior dismissBehavior = 2;
+  string displayTitle = 3;
+  string tag = 4;
+  ActionSidebarPosition position = 5;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message HideSideBar {
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;

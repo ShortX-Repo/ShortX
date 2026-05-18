@@ -75,13 +75,21 @@ class ActionErrorChecker {
             }.map { getGlobalVarRefs(it, shortXManager) }.flatten()
         }.flatten()
 
+        val showActionSidebarAction = actions.filterIsInstance<Action.ShowActionSidebar>().map { sidebar ->
+            sidebar.buttons.map { button ->
+                val tapActions = button.tapActionsList.mapNotNull { it.toAction(shortXManager) }
+                val longPressActions = button.longPressActionsList.mapNotNull { it.toAction(shortXManager) }
+                getGlobalVarRefs(tapActions + longPressActions, shortXManager)
+            }.flatten()
+        }.flatten()
+
         val fromDA = actions.filterIsInstance<Action.FromDA>().mapNotNull { fromDA ->
             shortXManager.getDirectActionById(fromDA.daId)?.let { directAction ->
                 directAction.actionsList.mapNotNull { it.toAction(shortXManager) }
             }?.let { getGlobalVarRefs(it, shortXManager) }
         }.flatten()
 
-        return writeGV + ifElseCondition + ifElseAction + showDialogAction + showOverlayAction + fromDA
+        return writeGV + ifElseCondition + ifElseAction + showDialogAction + showOverlayAction + showActionSidebarAction + fromDA
     }
 
     private fun getPkgSetRefs(

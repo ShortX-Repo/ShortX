@@ -17,6 +17,7 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.action.mapper.summaryKey
 import tornaco.apps.shortx.ui.addrule.action.mapper.toAndroidContextMenuActionLabelKey
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.selector.actionsidebar.ShowActionSidebarSelectorActivity
 import tornaco.apps.shortx.ui.addrule.action.selector.dialog.ShowChoiceDialogSelectorActivity
 import tornaco.apps.shortx.ui.addrule.action.selector.dialog.ShowDialogSelectorActivity
 import tornaco.apps.shortx.ui.addrule.action.selector.dialog.ShowListDialogSelectorActivity
@@ -195,6 +196,16 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
         }
     )
 
+    val showActionSidebarLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action.ShowActionSidebar>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
     val getNodeTextSelectorState = rememberTextInputState(
         title = LocalI18N.current["ui.action.get.text.from.node"],
         message = LocalI18N.current["ui.action.get.text.from.node.tip.get.all"],
@@ -347,6 +358,17 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                         context = context,
                         currentData = source.getActionAs<Action.ShowSideBar>(),
                         clazz = ShowSideBarSelectorActivity::class.java
+                    )
+                )
+                true
+            }
+
+            Action.ShowActionSidebar::class -> {
+                showActionSidebarLauncher.launch(
+                    newIntent(
+                        context = context,
+                        currentData = source.getActionAs<Action.ShowActionSidebar>(),
+                        clazz = ShowActionSidebarSelectorActivity::class.java
                     )
                 )
                 true
@@ -597,6 +619,7 @@ fun UiActions(
         Action.HideAllOverlay::class,
         Action.ShowFloatWindow::class,
         Action.HideFloatWindow::class,
+        Action.ShowActionSidebar::class,
         if (BuildPropInternal.APP_IS_DEBUG) Action.ShowSideBar::class else null,
         if (BuildPropInternal.APP_IS_DEBUG) Action.HideSideBar::class else null,
         Action.ShowAlertDialog::class,
@@ -654,4 +677,3 @@ fun UiActions(
             })
     }
 }
-

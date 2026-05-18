@@ -391,6 +391,23 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.ShowActionSidebar::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.ShowActionSidebar::class.java
+            Action.ShowActionSidebar(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                buttons = data.buttonsList,
+                dismissBehavior = data.dismissBehavior,
+                displayTitle = data.displayTitle,
+                position = data.position,
+                tag = data.tag
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.HideSideBar::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.action.HideSideBar::class.java

@@ -53,6 +53,7 @@ import tornaco.apps.shortx.core.proto.action.SetStatusBarIcon
 import tornaco.apps.shortx.core.proto.action.ShowChoiceDialog
 import tornaco.apps.shortx.core.proto.action.ShowClipboardView
 import tornaco.apps.shortx.core.proto.action.ShowDrawBoard
+import tornaco.apps.shortx.core.proto.action.ShowActionSidebar
 import tornaco.apps.shortx.core.proto.action.ShowFloatWindow
 import tornaco.apps.shortx.core.proto.action.ShowGlobalActionsMenu
 import tornaco.apps.shortx.core.proto.action.ShowListDialog
@@ -195,6 +196,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         SetAppEnabledByPkg::class,
         AudioRecording::class,
         ShowOverlayButton::class,
+        ShowActionSidebar::class,
         SwitchMobileDataSlot::class,
         HttpRequest::class,
         InputText::class,
