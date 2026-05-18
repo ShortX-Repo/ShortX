@@ -44,6 +44,7 @@ import tornaco.apps.shortx.core.proto.action.ForEach
 import tornaco.apps.shortx.core.proto.action.ForEachPkgSet
 import tornaco.apps.shortx.core.proto.action.FromDA
 import tornaco.apps.shortx.core.proto.action.GetScreenOnTime
+import tornaco.apps.shortx.core.proto.action.GetAppInfo
 import tornaco.apps.shortx.core.proto.action.GetCurrentLocationAddress
 import tornaco.apps.shortx.core.proto.action.GetTextFromScreenNode
 import tornaco.apps.shortx.core.proto.action.HideFloatWindow
@@ -1268,6 +1269,18 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setNote(overrideNote ?: note)
                 .setProviderPreference(providerPreference)
                 .setTimeoutMillis(timeoutMillis)
+                .build()
+        }
+
+        is Action.GetAppInfo -> {
+            GetAppInfo.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setPkgName(pkgName)
+                .setUserId(userId)
                 .build()
         }
 

@@ -67,6 +67,7 @@ val allKeys: List<String> = listOf(
     enumValues<ContextDataMapping.FindPointsByColor>().map { it.name },
     enumValues<ContextDataMapping.GetScreenOnTime>().map { it.name },
     enumValues<ContextDataMapping.GetCurrentLocationInfo>().map { it.name },
+    enumValues<ContextDataMapping.GetAppInfo>().map { it.name },
     enumValues<ContextDataMapping.GetCurrentLocationAddress>().map { it.name },
     enumValues<ContextDataMapping.AreaScreenshot>().map { it.name },
     enumValues<ContextDataMapping.WebDavList>().map { it.name },

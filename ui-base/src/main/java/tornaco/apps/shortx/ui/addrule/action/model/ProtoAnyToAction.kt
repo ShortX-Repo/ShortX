@@ -85,6 +85,20 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.GetAppInfo::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.GetAppInfo::class.java
+            Action.GetAppInfo(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                pkgName = data.pkgName,
+                userId = data.userId
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.GetCurrentLocationAddress::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.action.GetCurrentLocationAddress::class.java
