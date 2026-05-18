@@ -2,6 +2,7 @@
 
 package tornaco.apps.shortx.ui.contextdata
 
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,8 +16,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import tornaco.apps.shortx.core.context.allKeys
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.UiClipboard
+import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -49,6 +53,8 @@ fun ContextVarSelectorDialog(state: ContextVarSelectorState) {
 
 @Composable
 private fun ContextVarSelector(selectorState: ContextVarSelectorState) {
+    val context = LocalContext.current
+    val i18N = LocalI18N.current
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -57,8 +63,28 @@ private fun ContextVarSelector(selectorState: ContextVarSelectorState) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.context.data.title"]) },
-                        actions = {},
+                        title = { Text(text = i18N["ui.context.data.title"]) },
+                        actions = {
+                            IconButton(onClick = {
+                                UiClipboard.copy(
+                                    UiClipboard.ClipboardContent.ActionContent(
+                                        Action.ShowDanmu(
+                                            text = allKeys.joinToString(separator = "\n") { key ->
+                                                "$key={$key}"
+                                            },
+                                            icon = null,
+                                        )
+                                    )
+                                )
+                                Toast.makeText(
+                                    context,
+                                    i18N["ui.common.copied.to.clipboard"],
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }) {
+                                RemixIcon(remixName = Remix.Document.clipboard_fill)
+                            }
+                        },
                         navigationIcon = {
                             IconButton(onClick = {
                                 selectorState.dismiss()
@@ -83,4 +109,3 @@ private fun ContextVarSelector(selectorState: ContextVarSelectorState) {
         }
     }
 }
-
