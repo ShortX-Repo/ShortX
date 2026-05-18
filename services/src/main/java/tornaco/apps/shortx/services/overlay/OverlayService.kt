@@ -25,6 +25,7 @@ import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.overlay.flash.PanoramicLightEffect
 import tornaco.apps.shortx.services.overlay.flash.ScreenFlash
+import tornaco.apps.shortx.services.overlay.actionsidebar.ActionSidebarManager
 import tornaco.apps.shortx.services.overlay.sidebar.SideBarManager
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.floating.FloatApi
@@ -59,6 +60,7 @@ class OverlayService(shortXContext: ShortXContext) :
     private val panoramicLightEffect: PanoramicLightEffect by lazy { PanoramicLightEffect(context) }
 
     val sideBarManager by lazy { SideBarManager(context, shortXContext, mainHandler) }
+    val actionSidebarManager by lazy { ActionSidebarManager(context, shortXContext, mainHandler) }
 
     override fun systemReady() {
         super.systemReady()

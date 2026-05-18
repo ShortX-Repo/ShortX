@@ -160,6 +160,10 @@ fun labelAndDescriptionForActionSelector(
             i18N["ui.action.show.side.bar"] to null
         }
 
+        Action.ShowActionSidebar::class -> {
+            i18N["ui.action.show.action.sidebar"] to null
+        }
+
         Action.HideSideBar::class -> {
             i18N["ui.action.hide.side.bar"] to null
         }
@@ -488,6 +492,12 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.ShowSideBar -> {
             mutableListOf(i18N["ui.action.show.side.bar"]).apply {
                 add("${action.settings.size} buttons")
+            }
+        }
+
+        is Action.ShowActionSidebar -> {
+            mutableListOf(i18N["ui.action.show.action.sidebar"]).apply {
+                add("${action.buttons.size} buttons")
             }
         }
 

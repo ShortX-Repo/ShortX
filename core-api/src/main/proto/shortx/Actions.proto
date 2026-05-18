@@ -233,6 +233,61 @@ message ShowSideBar {
   string id = 100;
 }
 
+enum ActionSidebarDismissBehavior {
+  ActionSidebarDismissBehavior_OutsideTapOrClose = 0;
+}
+
+enum ActionSidebarPosition {
+  ActionSidebarPosition_Left = 0;
+  ActionSidebarPosition_Right = 1;
+  ActionSidebarPosition_Top = 2;
+  ActionSidebarPosition_Bottom = 3;
+}
+
+message ActionSidebarButton {
+  string icon = 1;
+  string text = 2;
+  int32 order = 3;
+  repeated google.protobuf.Any tapActions = 4;
+  repeated google.protobuf.Any longPressActions = 5;
+
+  string note = 99;
+  string id = 100;
+}
+
+message ActionSidebarStyleSettings {
+  int32 backgroundColor = 1;
+  int32 backgroundAlphaPercent = 2;
+  int32 panelCornerRadiusDp = 3;
+  int32 buttonCornerRadiusDp = 4;
+  int32 panelWidthDp = 5;
+  int32 maxHeightDp = 6;
+  int32 iconSizeDp = 7;
+  int32 iconBackgroundSizeDp = 8;
+  int32 iconColor = 9;
+  int32 iconBackgroundColor = 10;
+  int32 textColor = 11;
+  int32 textSizeSp = 12;
+  int32 contentPaddingHorizontalDp = 13;
+  int32 contentPaddingVerticalDp = 14;
+  int32 itemSpacingDp = 15;
+}
+
+message ShowActionSidebar {
+  repeated ActionSidebarButton buttons = 1;
+  ActionSidebarDismissBehavior dismissBehavior = 2;
+  string displayTitle = 3;
+  string tag = 4;
+  ActionSidebarPosition position = 5;
+  ActionSidebarStyleSettings style = 6;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message HideSideBar {
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
