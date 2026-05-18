@@ -27,8 +27,8 @@ import tornaco.apps.shortx.services.watchdog.postSafety
 import tornaco.apps.shortx.ui.actionsidebar.ActionSidebarButtonUiModel
 import tornaco.apps.shortx.ui.actionsidebar.ActionSidebarCallbacks
 import tornaco.apps.shortx.ui.actionsidebar.ActionSidebarDialogView
+import tornaco.apps.shortx.ui.actionsidebar.withDefaults
 
-private const val ACTION_SIDEBAR_WIDTH_DP = 124
 private const val ACTION_SIDEBAR_X_DP = 8
 private const val ACTION_SIDEBAR_Y_DP = 8
 
@@ -82,6 +82,7 @@ class ActionSidebarManager(
         val buttons = action.buttonsList
             .sortedBy { it.order }
             .map { it.toUiModel() }
+        val resolvedStyle = action.style.withDefaults()
 
         val dialogView = ActionSidebarDialogView(
             context = context,
@@ -120,7 +121,7 @@ class ActionSidebarManager(
                 view = dialogView,
                 cancelable = true,
                 gravity = action.position.normalized().toGravity(),
-                width = { ACTION_SIDEBAR_WIDTH_DP._dp },
+                width = { resolvedStyle.panelWidthDp._dp },
                 onWindow = {
                     val params = attributes
                     clearFlags(

@@ -26,7 +26,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
@@ -62,12 +61,7 @@ fun ActionSidebarPanel(
         Surface(
             modifier = modifier
                 .width(resolvedStyle.panelWidthDp.dp)
-                .heightIn(max = resolvedStyle.maxHeightDp.dp)
-                .shadow(
-                    elevation = 4.dp,
-                    shape = RoundedCornerShape(resolvedStyle.panelCornerRadiusDp.dp),
-                    clip = false,
-                ),
+                .heightIn(max = resolvedStyle.maxHeightDp.dp),
             color = Color(resolvedStyle.backgroundColor).copy(
                 alpha = resolvedStyle.backgroundAlphaPercent.coerceIn(0, 100) / 100f,
             ),
