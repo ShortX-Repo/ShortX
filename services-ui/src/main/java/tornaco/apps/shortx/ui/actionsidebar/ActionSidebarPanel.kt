@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -49,7 +48,6 @@ fun ActionSidebarPanel(
     position: ActionSidebarPosition,
     style: ActionSidebarStyleSettings,
     visible: Boolean,
-    onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     AnimatedVisibility(
@@ -75,13 +73,6 @@ fun ActionSidebarPanel(
                     ),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                IconButton(onClick = onDismissRequest) {
-                    RemixIcon(
-                        remixName = Remix.System.close_line,
-                        modifier = Modifier.size(resolvedStyle.iconSizeDp.dp),
-                    )
-                }
-
                 Column(
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
