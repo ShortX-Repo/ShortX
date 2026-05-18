@@ -198,6 +198,38 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     }
     var currentLocationTimeoutMillis by remember { mutableStateOf(3000L) }
 
+    var getAppInfoPkgName by remember { mutableStateOf("front") }
+    var getAppInfoUserId by remember { mutableStateOf(0) }
+
+    val getAppInfoUserIdDialogState = rememberTextInputState(
+        title = i18N["ui.common.user.id"],
+        message = i18N["ui.action.get.app.info.userid.message"],
+        onSelected = {
+            getAppInfoUserId = it.toIntOrNull() ?: getAppInfoUserId
+            addAction(
+                Action.GetAppInfo(
+                    pkgName = getAppInfoPkgName,
+                    userId = getAppInfoUserId
+                )
+            )
+        }
+    )
+    TextInputDialog(state = getAppInfoUserIdDialogState)
+
+    val getAppInfoPkgNameDialogState = rememberTextInputState(
+        title = i18N["ui.action.get.app.info.pkg.name"],
+        message = i18N["ui.action.get.app.info.pkg.name.message"],
+        inputValidator = {
+            if (it.isBlank()) InputValidateResult.Error("*required")
+            else InputValidateResult.OK
+        },
+        onSelected = {
+            getAppInfoPkgName = it.trim()
+            getAppInfoUserIdDialogState.show(getAppInfoUserId.toString())
+        }
+    )
+    TextInputDialog(state = getAppInfoPkgNameDialogState)
+
     val currentLocationTimeoutDialogState = rememberTextInputState(
         title = i18N["ui.action.get.current.location.info.timeout"],
         message = i18N["ui.action.get.current.location.info.timeout.message"],
@@ -510,6 +542,14 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.GetAppInfo::class -> {
+                val current = source.getActionAs<Action.GetAppInfo>()
+                getAppInfoPkgName = current?.pkgName ?: "front"
+                getAppInfoUserId = current?.userId ?: 0
+                getAppInfoPkgNameDialogState.show(getAppInfoPkgName)
+                true
+            }
+
             Action.GetCurrentLocationAddress::class -> {
                 val current = source.getActionAs<Action.GetCurrentLocationAddress>()
                 currentLocationAddressProviderPreference = current?.providerPreference
@@ -803,6 +843,7 @@ fun SystemActions(
         Action.SetMasterSync::class,
         Action.SendSMS::class,
         Action.GetCurrentLocationInfo::class,
+        Action.GetAppInfo::class,
         Action.GetCurrentLocationAddress::class,
         Action.GetScreenOnTime::class,
     ).map {

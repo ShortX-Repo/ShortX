@@ -194,6 +194,14 @@ object ContextDataMapping {
     }
 
     @DoNotStrip
+    enum class GetAppInfo(val description: String) {
+        appLabel("App label"),
+        versionCode("App version code"),
+        versionName("App version name"),
+        isRunning("True if the app has a running process"),
+    }
+
+    @DoNotStrip
     enum class GetCurrentLocationAddress(val description: String) {
         addressLine("Full address line of the current location"),
         countryName("Country name of the current location"),

@@ -425,6 +425,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.GetCurrentLocationInfo
     },
+    GetAppInfo {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.GetAppInfo
+    },
     GetCurrentLocationAddress {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.GetCurrentLocationAddress

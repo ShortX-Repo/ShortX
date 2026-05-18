@@ -36,7 +36,6 @@ class ActionSidebarDialogView(
                 position = position,
                 style = sidebarStyle.withDefaults(),
                 visible = visible,
-                onDismissRequest = { dismissWithAnimation(callbacks.onDismiss) },
             )
         }
     }
