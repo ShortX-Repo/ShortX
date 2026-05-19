@@ -1,0 +1,1024 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EdXpSrc 关闭 Activity / 结束应用需求与实现分析</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f6f7fb;
+      --panel: #ffffff;
+      --text: #172033;
+      --muted: #5f6b7a;
+      --line: #d9e0ea;
+      --accent: #2563eb;
+      --accent-soft: #e8f0ff;
+      --code-bg: #101827;
+      --code-text: #e5edf8;
+      --ok: #047857;
+      --warn: #b45309;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1117;
+        --panel: #151b23;
+        --text: #e6edf3;
+        --muted: #9aa7b6;
+        --line: #30363d;
+        --accent: #58a6ff;
+        --accent-soft: #10233f;
+        --code-bg: #05080f;
+        --code-text: #dbe7f3;
+        --ok: #34d399;
+        --warn: #f59e0b;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.65;
+    }
+
+    main {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 40px 0 64px;
+    }
+
+    header {
+      padding: 32px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: linear-gradient(135deg, var(--panel), var(--accent-soft));
+      box-shadow: 0 16px 48px rgba(15, 23, 42, 0.08);
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1.15;
+      letter-spacing: -0.04em;
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      font-size: 24px;
+      letter-spacing: -0.02em;
+    }
+
+    h3 {
+      margin: 22px 0 10px;
+      font-size: 18px;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    .subtitle {
+      max-width: 860px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .card,
+    section {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+    }
+
+    .card {
+      padding: 18px;
+    }
+
+    .card strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--accent);
+    }
+
+    section {
+      margin-top: 20px;
+      padding: 26px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--accent-soft);
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    code {
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.92em;
+    }
+
+    pre {
+      overflow-x: auto;
+      padding: 18px;
+      border-radius: 14px;
+      background: var(--code-bg);
+      color: var(--code-text);
+      line-height: 1.55;
+    }
+
+    pre code {
+      padding: 0;
+      background: transparent;
+      color: inherit;
+    }
+
+    .flow {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .step {
+      position: relative;
+      padding: 14px 16px 14px 44px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: color-mix(in srgb, var(--panel), var(--accent-soft) 30%);
+    }
+
+    .step::before {
+      content: attr(data-step);
+      position: absolute;
+      left: 14px;
+      top: 15px;
+      display: grid;
+      place-items: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .tag {
+      display: inline-block;
+      margin-right: 8px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .ok {
+      color: var(--ok);
+      font-weight: 700;
+    }
+
+    .warn {
+      color: var(--warn);
+      font-weight: 700;
+    }
+
+    ul {
+      padding-left: 22px;
+    }
+
+    li {
+      margin: 7px 0;
+    }
+
+    .note {
+      padding: 14px 16px;
+      border-left: 4px solid var(--accent);
+      border-radius: 12px;
+      background: var(--accent-soft);
+    }
+
+    @media (max-width: 820px) {
+      main {
+        width: min(100% - 20px, 1120px);
+        padding-top: 20px;
+      }
+
+      header,
+      section {
+        padding: 20px;
+        border-radius: 16px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>EdXpSrc 关闭 Activity / 结束应用分析</h1>
+      <p class="subtitle">本文整理 <code>EdXpSrc</code> 中与“关闭 Activity”“结束前台应用”“结束应用”“清理后台应用”相关的需求、配置入口、动作分发和 Xposed 系统实现。</p>
+      <div class="grid">
+        <div class="card">
+          <strong>最贴近关闭 Activity</strong>
+          <p><code>l0.e0()</code> -> <code>l0.d0()</code> -> <code>finishActivity(...)</code></p>
+        </div>
+        <div class="card">
+          <strong>结束应用语义</strong>
+          <p><code>forceStopPackage</code> / <code>forceStopPackageAsUser</code>，不是普通 <code>Activity.finish()</code>。</p>
+        </div>
+        <div class="card">
+          <strong>清理后台语义</strong>
+          <p><code>killAllBackgroundProcesses</code> 或逐包 <code>killBackgroundProcesses</code>。</p>
+        </div>
+      </div>
+    </header>
+
+    <section>
+      <h2>需求入口</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>需求/动作</th>
+            <th>资源 Key</th>
+            <th>中文文案</th>
+            <th>资源位置</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>结束应用</td>
+            <td><code>action_kill_app</code></td>
+            <td>结束应用</td>
+            <td><code>app/src/main/res/values-zh/strings.xml:51</code></td>
+          </tr>
+          <tr>
+            <td>结束前台应用</td>
+            <td><code>action_kill_foreground_app</code></td>
+            <td>结束前台应用</td>
+            <td><code>app/src/main/res/values-zh/strings.xml:52</code></td>
+          </tr>
+          <tr>
+            <td>清理后台应用</td>
+            <td><code>action_clear_background_apps</code></td>
+            <td>清理后台应用</td>
+            <td><code>app/src/main/res/values-zh/strings.xml:22</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>动作定义</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>动作类</th>
+            <th>动作 ID</th>
+            <th>文案/图标</th>
+            <th>代码位置</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>a.b.g1</code></td>
+            <td><code>37</code></td>
+            <td><code>action_kill_foreground_app</code> / <code>ic_kill_app</code></td>
+            <td><code>app/src/main/java/a/b.java:1376-1384</code></td>
+          </tr>
+          <tr>
+            <td><code>a.b.f1</code></td>
+            <td><code>77</code></td>
+            <td><code>action_kill_app</code> / <code>ic_kill_custom_app</code></td>
+            <td><code>app/src/main/java/a/b.java:1165-1200</code></td>
+          </tr>
+          <tr>
+            <td><code>a.b.y</code></td>
+            <td><code>38</code></td>
+            <td><code>action_clear_background_apps</code> / <code>ic_clear_background_apps</code></td>
+            <td><code>app/src/main/java/a/b.java:3852-3860</code></td>
+          </tr>
+        </tbody>
+      </table>
+      <p>动作列表中这几个动作被加入到可选动作集合：<code>a/b.java:4477-4480</code>。动作 ID <code>77</code> 反序列化时会读取保存的包名：<code>a/b.java:4695-4696</code>。</p>
+    </section>
+
+    <section>
+      <h2>用户选择指定应用</h2>
+      <p>“结束应用”可以绑定一个具体包名。选择结果由动作选择页面处理：</p>
+      <pre><code>app/src/main/java/d/d.java:43-49
+
+if (i == 77) {
+    String string = bundle.getString("result");
+    if (string == null) {
+        return;
+    } else {
+        f1Var = new b.f1(string);
+    }
+}</code></pre>
+      <ul>
+        <li><code>a.b.f1.I</code> 保存目标包名。</li>
+        <li><code>a.b.f1.n()</code> 显示为“结束应用: 应用名/包名”，位置 <code>a/b.java:1184-1193</code>。</li>
+        <li><code>a.b.f1.m()</code> 叠加目标应用图标和 kill 图标，位置 <code>a/b.java:1173-1182</code>。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>整体调用关系</h2>
+      <div class="flow">
+        <div class="step" data-step="1">
+          用户在 UI 中选择动作：<code>结束前台应用</code>、<code>结束应用</code> 或 <code>清理后台应用</code>。
+        </div>
+        <div class="step" data-step="2">
+          动作对象来自 <code>a.b</code> 的内部类，保存动作 ID 和必要参数，例如目标包名。
+        </div>
+        <div class="step" data-step="3">
+          Xposed 侧动作执行分发进入 <code>w1.y3(a.b, int, Bundle)</code>。该方法反编译不完整，但周边私有方法能确定执行落点。
+        </div>
+        <div class="step" data-step="4">
+          <code>w1</code> 调用 <code>this.P</code>，也就是 <code>l0</code> 实例，进入系统服务层实现。
+        </div>
+        <div class="step" data-step="5">
+          <code>l0</code> 通过 Xposed/反射调用 <code>ActivityManagerService</code>、<code>ActivityTaskManagerService</code> 或 <code>ActivityManager</code> 的隐藏接口。
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>结束前台应用：关闭 Activity 优先</h2>
+      <p><span class="tag">动作 ID 37</span><span class="tag">最贴近关闭 Activity</span></p>
+      <p>执行入口在 <code>w1.M1()</code>：</p>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/w1.java:3264-3270
+
+private void M1() {
+    if (t2()) {
+        return;
+    }
+    y1();
+    this.P.e0();
+}</code></pre>
+      <p>核心实现在 <code>l0.e0()</code>、<code>l0.d0()</code>、<code>l0.f0()</code>：</p>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/l0.java:1485-1492
+
+void e0() {
+    Object objN0 = n0();
+    if (objN0 != null) {
+        d0(objN0);
+    } else {
+        f0(p0());
+    }
+}</code></pre>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/l0.java:1470-1483
+
+void d0(Object obj) {
+    if (obj == null || q2.s(com.jozein.xedgepro.xposed.b.c(obj))) {
+        return;
+    }
+    Object objA = com.jozein.xedgepro.xposed.b.a(obj);
+    int i2 = Build.VERSION.SDK_INT;
+    if (i2 >= 24) {
+        r("finishActivity", objA, 0, new Intent(), 0);
+    } else if (i2 >= 21) {
+        r("finishActivity", objA, 0, new Intent(), Boolean.FALSE);
+    } else {
+        r("finishActivity", objA, 0, new Intent());
+    }
+}</code></pre>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/l0.java:1494-1507
+
+void f0(ActivityManager.RunningTaskInfo runningTaskInfo) throws IllegalAccessException, InvocationTargetException {
+    if (runningTaskInfo.numActivities != 1) {
+        try {
+            Object objV1 = v1(runningTaskInfo.id);
+            if (objV1 != null) {
+                d0(objV1);
+                return;
+            }
+        } catch (Throwable th) {
+            f.v.d(th);
+        }
+    }
+    j1(runningTaskInfo.id);
+}</code></pre>
+      <p class="note"><span class="ok">结论：</span>如果能拿到当前 ActivityRecord，就取 token/appToken 调用系统 <code>finishActivity</code>。如果拿不到，或 task 中只有一个 Activity，则退化为删除整个 task。</p>
+    </section>
+
+    <section>
+      <h2>finishActivity 调用细节</h2>
+      <p><span class="tag">目标类</span><code>com.android.server.am.ActivityManagerService</code></p>
+      <p><span class="tag">目标实例</span><code>IActivityManager</code> / system_server 中的 ActivityManagerService binder/service 实例</p>
+      <p><code>l0</code> 构造时绑定的反射目标类是 <code>ActivityManagerService</code>：</p>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/l0.java:691-693
+
+l0(ClassLoader classLoader, a.p pVar, w1 w1Var, v vVar, boolean z) {
+    super("com.android.server.am.ActivityManagerService", classLoader);
+    ...
+}</code></pre>
+      <p><code>l0</code> 继承 <code>j2</code>，而 <code>j2.r(...)</code> 是真正发起反射调用的位置：</p>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/j2.java:37-39
+
+final Object r(String str, Object... objArr) {
+    return XposedHelpers.findMethodBestMatch(m(), str, objArr).invoke(v(), objArr);
+}</code></pre>
+      <ul>
+        <li><code>m()</code> 来自父类 <code>g</code>，返回构造时绑定的类，也就是 <code>ActivityManagerService</code>。</li>
+        <li><code>findMethodBestMatch(m(), "finishActivity", objArr)</code> 根据参数个数和类型匹配系统里的 <code>finishActivity</code> 重载。</li>
+        <li><code>v()</code> 返回目标实例，也就是实际被调用的系统服务对象。</li>
+      </ul>
+
+      <h3>目标实例如何获得</h3>
+      <p><code>l0.x()</code> 覆盖了 <code>j2.x()</code>，返回 <code>g3.i()</code>：</p>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/l0.java:1776-1779
+
+@Override // com.jozein.xedgepro.xposed.j2
+protected Object x() {
+    return g3.i();
+}</code></pre>
+      <p><code>j2.v()</code> 会懒加载并缓存这个实例：</p>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/j2.java:62-70
+
+final Object v() {
+    if (this.G == null) {
+        Object objX = x();
+        if (s(objX)) {
+            this.G = objX;
+        }
+    }
+    return this.G;
+}</code></pre>
+      <p><code>g3.i()</code> 优先调用 <code>ActivityManager.getService()</code>，失败后从 <code>ServiceManager.getService("activity")</code> 转成 <code>IActivityManager</code>：</p>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/g3.java:19-31
+
+static Object i() {
+    if (Build.VERSION.SDK_INT &gt;= 26) {
+        try {
+            Object objCallStaticMethod = XposedHelpers.callStaticMethod(ActivityManager.class, "getService", new Object[0]);
+            if (objCallStaticMethod != null) {
+                return objCallStaticMethod;
+            }
+        } catch (Throwable th) {
+            f.v.d(th);
+        }
+    }
+    return n("activity");
+}</code></pre>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/g3.java:68-88
+
+private static Object n(String str) {
+    ...
+    if (strArr[i].equals(str)) {
+        return o(strArr[i + 1], str);
+    }
+    ...
+}
+
+static Object o(String str, String str2) {
+    IBinder iBinderR = r(str2);
+    if (XposedHelpers.findClass(str, p2.c()).isInstance(iBinderR)) {
+        return iBinderR;
+    }
+    return XposedHelpers.callStaticMethod(XposedHelpers.findClass(str + ".Stub", p2.c()), "asInterface", new Object[]{iBinderR});
+}</code></pre>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/g3.java:101-106
+
+static IBinder r(String str) {
+    if (F == null) {
+        F = XposedHelpers.findClass("android.os.ServiceManager", p2.c());
+    }
+    return (IBinder) XposedHelpers.callStaticMethod(F, "getService", new Object[]{str});
+}</code></pre>
+      <p class="note"><span class="ok">归纳：</span><code>finishActivity</code> 不是在应用进程中调用，而是 Xposed 代码通过系统服务对象调用 <code>ActivityManagerService.finishActivity(...)</code>。</p>
+
+      <h3>参数来源</h3>
+      <p><code>l0.d0(ActivityRecord)</code> 中每个参数的来源如下：</p>
+      <table>
+        <thead>
+          <tr>
+            <th>参数</th>
+            <th>传入值</th>
+            <th>来源/含义</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>token</code> / <code>appToken</code></td>
+            <td><code>objA</code></td>
+            <td>从当前 <code>ActivityRecord</code> 读取，见 <code>com.jozein.xedgepro.xposed.b.a(obj)</code>。</td>
+          </tr>
+          <tr>
+            <td><code>resultCode</code></td>
+            <td><code>0</code></td>
+            <td>关闭 Activity 时没有返回结果，等价于普通取消/无结果。</td>
+          </tr>
+          <tr>
+            <td><code>resultData</code></td>
+            <td><code>new Intent()</code></td>
+            <td>空 Intent，作为结果数据占位。</td>
+          </tr>
+          <tr>
+            <td>版本相关尾参</td>
+            <td><code>0</code> / <code>Boolean.FALSE</code> / 无</td>
+            <td>适配不同 Android 版本的 <code>finishActivity</code> 方法签名。</td>
+          </tr>
+        </tbody>
+      </table>
+      <p><code>token/appToken</code> 的读取逻辑：</p>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/b.java:30-35
+
+static Object a(Object obj) {
+    if (f92f == null) {
+        f92f = XposedHelpers.findField(obj.getClass(), Build.VERSION.SDK_INT &gt;= 33 ? "token" : "appToken");
+    }
+    return f92f.get(obj);
+}</code></pre>
+
+      <h3>按 Android 版本匹配 finishActivity 签名</h3>
+      <p>项目没有写死具体 <code>Method</code>，而是用 <code>findMethodBestMatch</code> 让 Xposed 根据参数自动匹配。调用分支如下：</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Android 版本</th>
+            <th>实际调用</th>
+            <th>可理解的方法形态</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>&gt;= 24</code></td>
+            <td><code>r("finishActivity", token, 0, new Intent(), 0)</code></td>
+            <td><code>finishActivity(IBinder token, int resultCode, Intent resultData, int finishTask)</code></td>
+          </tr>
+          <tr>
+            <td><code>21..23</code></td>
+            <td><code>r("finishActivity", token, 0, new Intent(), Boolean.FALSE)</code></td>
+            <td><code>finishActivity(IBinder token, int resultCode, Intent resultData, boolean finishTask)</code></td>
+          </tr>
+          <tr>
+            <td><code>&lt; 21</code></td>
+            <td><code>r("finishActivity", token, 0, new Intent())</code></td>
+            <td><code>finishActivity(IBinder token, int resultCode, Intent resultData)</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>完整链路</h3>
+      <div class="flow">
+        <div class="step" data-step="1"><code>w1.M1()</code> 触发结束前台应用动作。</div>
+        <div class="step" data-step="2"><code>l0.e0()</code> 获取当前 <code>ActivityRecord</code>，优先走 <code>n0()</code>。</div>
+        <div class="step" data-step="3"><code>l0.d0(activityRecord)</code> 过滤无效 Activity，并读取 <code>token/appToken</code>。</div>
+        <div class="step" data-step="4"><code>j2.r("finishActivity", ...)</code> 在 <code>ActivityManagerService</code> 类上查找最佳匹配方法。</div>
+        <div class="step" data-step="5"><code>j2.v()</code> 提供系统服务实例，来源是 <code>ActivityManager.getService()</code> 或 <code>ServiceManager.getService("activity")</code>。</div>
+        <div class="step" data-step="6">最终调用 <code>ActivityManagerService.finishActivity(token, resultCode, resultData, finishTask)</code> 关闭目标 Activity。</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>删除 Task 的兜底逻辑</h2>
+      <p>当无法精确关闭 Activity，或者当前 task 只有一个 Activity 时，会调用 <code>removeTask</code>：</p>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/l0.java:1561-1570
+
+void j1(int i2) throws IllegalAccessException, InvocationTargetException {
+    if (this.X == null) {
+        this.X = i("removeTask");
+    }
+    if (Build.VERSION.SDK_INT >= 21) {
+        this.X.invoke(v(), Integer.valueOf(i2));
+    } else {
+        this.X.invoke(v(), Integer.valueOf(i2), 0);
+    }
+}</code></pre>
+      <p><code>w0()</code> 使用 <code>getRunningTasks(100)</code> 获取任务列表，并在部分 Android 版本/模式下过滤显示范围：</p>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/l0.java:1768-1774
+
+List&lt;ActivityManager.RunningTaskInfo&gt; v0() {
+    return j0().getRunningTasks(100);
+}
+
+List&lt;ActivityManager.RunningTaskInfo&gt; w0() {
+    return r0(v0());
+      }</code></pre>
+    </section>
+
+    <section>
+      <h2>如何拿到当前 ActivityRecord</h2>
+      <p><span class="tag">核心方法</span><code>l0.n0()</code> 负责返回当前前台 <code>ActivityRecord</code>，它先走系统焦点/恢复 Activity，再走备用来源。</p>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/l0.java:1022-1028
+
+public Object n0() {
+    Object objB0 = b0();
+    if (objB0 != null && com.jozein.xedgepro.xposed.b.b(objB0) != 0) {
+        objB0 = null;
+    }
+    return objB0 != null ? objB0 : this.I.g2().K();
+}</code></pre>
+      <p>这里有两点判断：</p>
+      <ul>
+        <li><code>b0()</code> 是主路径，直接从系统服务内部字段/方法取当前焦点或最近 resumed 的 ActivityRecord。</li>
+        <li><code>com.jozein.xedgepro.xposed.b.b(objB0) != 0</code> 表示该 ActivityRecord 的 displayId 不是 0，会被丢弃，然后走备用来源 <code>this.I.g2().K()</code>。</li>
+      </ul>
+
+      <h3>主路径：按 Android 版本读取焦点 Activity</h3>
+      <p><code>l0.b0()</code> 根据 Android 版本分成两套取法。</p>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/l0.java:900-940
+
+private Object b0() {
+    int i2 = Build.VERSION.SDK_INT;
+    try {
+        if (i2 &lt; 29) {
+            try {
+                if (this.a0 == null) {
+                    this.a0 = XposedHelpers.findField(m(), i2 &gt;= 26 ? "mLastResumedActivity" : "mFocusedActivity");
+                }
+                Object obj = this.a0.get(v());
+                if (obj != null) {
+                    return obj;
+                }
+            } catch (Throwable unused) {
+            }
+            synchronized (y0()) {
+                Object objR = r("getFocusedStack", new Object[0]);
+                if (objR != null) {
+                    return XposedHelpers.callMethod(objR, Build.VERSION.SDK_INT &gt;= 28 ? "getTopActivity" : "topActivity", new Object[0]);
+                }
+                return null;
+            }
+        }
+        Object objK0 = k0();
+        if (this.a0 == null) {
+            this.a0 = XposedHelpers.findField(objK0.getClass(), "mLastResumedActivity");
+        }
+        Object obj2 = this.a0.get(objK0);
+        if (obj2 != null) {
+            return obj2;
+        }
+        synchronized (y0()) {
+            Object objCallMethod = XposedHelpers.callMethod(objK0, "getTopDisplayFocusedStack", new Object[0]);
+            if (objCallMethod != null) {
+                return XposedHelpers.callMethod(objCallMethod, i2 &gt; 29 ? "topRunningActivity" : "getTopActivity", new Object[0]);
+            }
+            return null;
+        }
+    } catch (Throwable unused2) {
+        return null;
+    }
+    return null;
+}</code></pre>
+      <table>
+        <thead>
+          <tr>
+            <th>Android 版本</th>
+            <th>优先读取</th>
+            <th>失败兜底</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>&lt; 26</code></td>
+            <td><code>ActivityManagerService.mFocusedActivity</code></td>
+            <td><code>getFocusedStack()</code> -> <code>topActivity()</code></td>
+          </tr>
+          <tr>
+            <td><code>26..28</code></td>
+            <td><code>ActivityManagerService.mLastResumedActivity</code></td>
+            <td><code>getFocusedStack()</code> -> <code>getTopActivity()</code></td>
+          </tr>
+          <tr>
+            <td><code>29+</code></td>
+            <td><code>ActivityTaskManagerService.mLastResumedActivity</code></td>
+            <td><code>getTopDisplayFocusedStack()</code> -> <code>getTopActivity()</code> 或 <code>topRunningActivity()</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>ActivityTaskManagerService 的来源</h3>
+      <p>Android 10+ 的主路径会先通过 <code>k0()</code> 拿到 <code>ActivityTaskManagerService</code>：</p>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/l0.java:1002-1012
+
+private Object k0() {
+    if (this.j0 == null) {
+        try {
+            this.j0 = u("mActivityTaskManager");
+        } catch (Throwable th) {
+            f.v.d(th);
+            this.j0 = g3.j();
+        }
+    }
+    return this.j0;
+}</code></pre>
+      <p>也就是说，优先从当前 hook 的系统对象里取 <code>mActivityTaskManager</code>，失败后通过 <code>g3.j()</code> 获取 <code>ActivityManager.getTaskService()</code> 一类的系统 task service。</p>
+
+      <h3>按 taskId 兜底查 ActivityRecord</h3>
+      <p>当 <code>n0()</code> 没拿到当前 ActivityRecord 时，关闭前台 Activity 的流程会进入 <code>f0(p0())</code>，再通过当前 taskId 查询 task，并取 task 顶部 ActivityRecord。</p>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/l0.java:1110-1134
+
+private Object v1(int i2) {
+    Object objV;
+    Object objInvoke;
+    try {
+        objV = V(i2);
+    } catch (Throwable th) {
+        f.v.d(th);
+    }
+    if (objV == null) {
+        return null;
+    }
+    if (this.i0 == null) {
+        Method methodB = p2.b(objV.getClass(), "topRunningActivityLocked", new Class[0]);
+        this.i0 = methodB;
+        if (methodB == null) {
+            this.i0 = Build.VERSION.SDK_INT &gt;= 30 ? p2.b(objV.getClass(), "getTopNonFinishingActivity", new Class[0]) : p2.b(objV.getClass(), "getTopActivity", new Class[0]);
+        }
+    }
+    if (this.i0 != null) {
+        synchronized (y0()) {
+            objInvoke = this.i0.invoke(objV, new Object[0]);
+        }
+        return objInvoke;
+    }
+    return null;
+}</code></pre>
+      <p><code>V(taskId)</code> 负责把 taskId 转成系统内部 TaskRecord：</p>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/l0.java:1307-1342
+
+Object V(int i2) {
+    int i3 = Build.VERSION.SDK_INT;
+    if (i3 &gt;= 29) {
+        Object objT0 = t0();
+        if (this.h0 == null) {
+            Class&lt;?&gt; cls = objT0.getClass();
+            Class cls2 = Integer.TYPE;
+            this.h0 = XposedHelpers.findMethodExact(cls, "anyTaskForId", new Class[]{cls2, cls2});
+        }
+        synchronized (y0()) {
+            return this.h0.invoke(objT0, Integer.valueOf(i2), 0);
+        }
+    }
+    if (i3 &lt; 21) {
+        if (this.e0 == null) {
+            this.e0 = XposedHelpers.findMethodExact(m(), "recentTaskForIdLocked", new Class[]{Integer.TYPE});
+        }
+        synchronized (y0()) {
+            return this.e0.invoke(v(), Integer.valueOf(i2));
+        }
+    }
+    if (this.f0 == null) {
+        this.f0 = XposedHelpers.getObjectField(v(), "mStackSupervisor");
+    }
+    if (this.h0 == null) {
+        this.h0 = p2.b(this.f0.getClass(), "anyTaskForIdLocked", Integer.TYPE);
+    }
+    synchronized (y0()) {
+        return this.h0.invoke(this.f0, Integer.valueOf(i2));
+    }
+}</code></pre>
+      <p>Android 10+ 的 <code>V()</code> 还需要 root container：</p>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/l0.java:1084-1089
+
+private Object t0() {
+    if (this.g0 == null) {
+        this.g0 = XposedHelpers.getObjectField(k0(), Build.VERSION.SDK_INT &gt; 29 ? "mRootWindowContainer" : "mRootActivityContainer");
+    }
+    return this.g0;
+}</code></pre>
+
+      <h3>从窗口对象反查 ActivityRecord</h3>
+      <p>另一个辅助类 <code>u3</code> 可以从窗口对象反查 ActivityRecord。它不是 <code>l0.n0()</code> 的主路径，但说明项目里还有基于窗口 token 的 ActivityRecord 获取方式。</p>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/u3.java:42-63
+
+static Object a(Object obj) {
+    IBinder iBinder;
+    try {
+        if (Build.VERSION.SDK_INT &gt;= 30) {
+            if (f239b == null) {
+                f239b = XposedHelpers.findField(f(obj), "mActivityRecord");
+            }
+            return f239b.get(obj);
+        }
+        WindowManager.LayoutParams layoutParamsC = c(obj);
+        if (layoutParamsC == null || (iBinder = layoutParamsC.token) == null || !iBinder.getClass().getName().endsWith("ActivityRecord$Token")) {
+            return null;
+        }
+        if (f240c == null) {
+            f240c = XposedHelpers.findField(layoutParamsC.token.getClass(), "weakActivity");
+        }
+        return ((WeakReference) f240c.get(layoutParamsC.token)).get();
+    } catch (Throwable th) {
+        f.v.d(th);
+        return null;
+    }
+}</code></pre>
+      <p class="note"><span class="ok">结论：</span>当前 ActivityRecord 的主链路是 <code>n0()</code> -> <code>b0()</code> -> 系统内部焦点/resumed Activity 字段或 focused stack 顶部 Activity。若失败，则使用 <code>RunningTaskInfo.id</code> 找 TaskRecord，再通过 <code>topRunningActivityLocked/getTopNonFinishingActivity/getTopActivity</code> 取顶部 ActivityRecord。</p>
+    </section>
+
+    <section>
+      <h2>结束应用：强停包</h2>
+      <p><span class="tag">动作 ID 77</span><span class="tag">指定包名</span></p>
+      <p>指定包名结束应用的直接入口是 <code>w1.y2(String)</code>：</p>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/w1.java:4990-4992
+
+private void y2(String str) {
+    this.P.i0(str, f.o0.d());
+}</code></pre>
+      <p>如果是结束当前前台包，入口是 <code>w1.z2()</code> -> <code>l0.g0()</code>：</p>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/w1.java:5016-5022
+
+private void z2() {
+    if (t2()) {
+        return;
+    }
+    y1();
+    this.P.g0();
+}</code></pre>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/l0.java:1509-1517
+
+void g0() {
+    Object objN0 = n0();
+    if (objN0 != null) {
+        h0(objN0);
+    } else {
+        ActivityManager.RunningTaskInfo runningTaskInfoP0 = p0();
+        i0(runningTaskInfoP0.topActivity.getPackageName(), A0(runningTaskInfoP0));
+    }
+}</code></pre>
+      <p>最终强停实现在 <code>l0.i0(packageName, userId)</code>：</p>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/l0.java:1533-1543
+
+void i0(String str, int i2) {
+    if (this.K.j(str)) {
+        ActivityManager activityManagerJ0 = j0();
+        if (i2 != 0) {
+            XposedHelpers.callMethod(activityManagerJ0, "forceStopPackageAsUser", new Object[]{str, Integer.valueOf(i2)});
+        } else {
+            XposedHelpers.callMethod(activityManagerJ0, "forceStopPackage", new Object[]{str});
+        }
+        Q0(str, i2);
+        this.N.a(str, i2);
+    }
+}</code></pre>
+      <p class="note"><span class="warn">注意：</span>这里的“结束应用”是强停包级别行为，会影响整个应用进程和后台状态，语义比“关闭当前 Activity”更重。</p>
+    </section>
+
+    <section>
+      <h2>清理后台应用</h2>
+      <p><span class="tag">动作 ID 38</span><span class="tag">后台进程</span></p>
+      <p>入口在 <code>w1.t1()</code>，执行后会 Toast 显示释放内存大小：</p>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/w1.java:4819-4821
+
+private void t1() {
+    J4(this.b0.getString(R.string.memory_released_size_f, Integer.valueOf(this.P.a0())));
+}</code></pre>
+      <p>后台清理核心逻辑：</p>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/l0.java:1441-1468
+
+int a0() {
+    boolean z;
+    ActivityManager activityManagerJ0 = j0();
+    ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+    activityManagerJ0.getMemoryInfo(memoryInfo);
+    try {
+        r("killAllBackgroundProcesses", new Object[0]);
+        z = true;
+    } catch (Throwable th) {
+        f.v.d(th);
+        z = false;
+    }
+    if (!z) {
+        for (ActivityManager.RunningAppProcessInfo runningAppProcessInfo : activityManagerJ0.getRunningAppProcesses()) {
+            int i2 = runningAppProcessInfo.uid;
+            if (i2 >= 10000 && i2 <= 19999
+                    && runningAppProcessInfo.importance > 200
+                    && !runningAppProcessInfo.processName.equals("com.android.systemui")
+                    && !runningAppProcessInfo.processName.equals("android")
+                    && runningAppProcessInfo.pkgList != null) {
+                int iH = f.o0.h(runningAppProcessInfo.uid);
+                for (String str : runningAppProcessInfo.pkgList) {
+                    K0(str, iH);
+                }
+            }
+        }
+    }
+    long j2 = memoryInfo.availMem;
+    activityManagerJ0.getMemoryInfo(memoryInfo);
+    long j3 = memoryInfo.availMem - j2;
+    return (int) (j3 > 0 ? j3 / 1048576 : 0L);
+}</code></pre>
+      <p>逐包清理调用：</p>
+      <pre><code>app/src/main/java/com/jozein/xedgepro/xposed/l0.java:772-786
+
+private void K0(String str, int i2) {
+    Q0(str, i2);
+    if (i2 != 0) {
+        try {
+            if (this.W == null) {
+                this.W = k("killBackgroundProcesses", String.class, Integer.TYPE);
+            }
+            this.W.invoke(v(), str, Integer.valueOf(i2));
+            return;
+        } catch (Throwable th) {
+            f.v.d(th);
+        }
+    }
+    j0().killBackgroundProcesses(str);
+}</code></pre>
+    </section>
+
+    <section>
+      <h2>关键辅助类</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>类/方法</th>
+            <th>作用</th>
+            <th>代码位置</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>com.jozein.xedgepro.xposed.b.a(obj)</code></td>
+            <td>从 ActivityRecord 中读取 <code>token</code> 或 <code>appToken</code>，供 <code>finishActivity</code> 使用。</td>
+            <td><code>xposed/b.java:30-35</code></td>
+          </tr>
+          <tr>
+            <td><code>com.jozein.xedgepro.xposed.b.d(obj)</code></td>
+            <td>读取 ActivityRecord 的 <code>packageName</code>，失败时从 Intent 推断包名。</td>
+            <td><code>xposed/b.java:62-77</code></td>
+          </tr>
+          <tr>
+            <td><code>com.jozein.xedgepro.xposed.b.g(obj)</code></td>
+            <td>读取 ActivityRecord 的 <code>userId</code> 或 <code>mUserId</code>。</td>
+            <td><code>xposed/b.java:95-105</code></td>
+          </tr>
+          <tr>
+            <td><code>com.jozein.xedgepro.xposed.p3.d(obj)</code></td>
+            <td>读取 TaskRecord 的 <code>taskId</code> 或 <code>mTaskId</code>。</td>
+            <td><code>xposed/p3.java:69-82</code></td>
+          </tr>
+          <tr>
+            <td><code>com.jozein.xedgepro.xposed.p3.e(obj)</code></td>
+            <td>读取 TaskRecord 的 <code>userId</code> 或 <code>mUserId</code>。</td>
+            <td><code>xposed/p3.java:84-96</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>总结</h2>
+      <ul>
+        <li><span class="ok">关闭 Activity：</span><code>l0.e0()</code> 优先定位当前 ActivityRecord，再通过 <code>finishActivity</code> 关闭。</li>
+        <li><span class="ok">删除 Task：</span>如果无法精确关闭 Activity，或者 task 只有一个 Activity，则通过 <code>removeTask</code> 兜底。</li>
+        <li><span class="ok">结束应用：</span><code>l0.i0()</code> 调用 <code>forceStopPackage</code> 或 <code>forceStopPackageAsUser</code>，属于强停包。</li>
+        <li><span class="ok">清理后台：</span><code>l0.a0()</code> 优先调用 <code>killAllBackgroundProcesses</code>，失败后遍历后台普通应用并逐包 <code>killBackgroundProcesses</code>。</li>
+        <li><span class="warn">反编译限制：</span><code>w1.y3(...)</code> 是动作分发核心，但该方法未完整反编译；当前结论基于可见动作类、周边私有入口和 <code>l0</code> 系统实现链路。</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
