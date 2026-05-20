@@ -124,13 +124,13 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
 
         Condition.ScreenStayAwake::class -> {
             listOf(
-                i18N["ui.conditions.screen.stay.awake"]
+                i18N["ui.conditions.screen.stay.awake.state"]
             )
         }
 
         Condition.VPNIsConnected::class -> {
             listOf(
-                i18N["ui.conditions.vpn.is.connected"]
+                i18N["ui.conditions.vpn.state"]
             )
         }
 
@@ -208,22 +208,22 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
 
         Condition.KeyguardIsLocked::class -> {
             listOf(
-                i18N["ui.conditions.screen.locked"]
+                i18N["ui.conditions.screen.lock.state"]
             )
         }
 
         Condition.ScreenOrientationIsPort::class -> {
             listOf(
-                i18N["ui.conditions.screen.orientation.p"]
+                i18N["ui.conditions.screen.orientation"]
             )
         }
 
         Condition.IsInCall::class -> {
-            listOf(i18N["ui.condition.is.incall"])
+            listOf(i18N["ui.condition.call.state"])
         }
 
         Condition.IsRinging::class -> {
-            listOf(i18N["ui.condition.is.ringing"])
+            listOf(i18N["ui.condition.ringing.state"])
         }
 
         Condition.HasNodeOnScreen::class -> {
@@ -425,19 +425,31 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
 
         is Condition.ScreenStayAwake -> {
             listOf(
-                i18N["ui.conditions.screen.stay.awake"],
+                i18N["ui.conditions.screen.stay.awake.state"],
+                condition.isInvert.select(
+                    i18N["ui.conditions.screen.stay.awake.off"],
+                    i18N["ui.conditions.screen.stay.awake.on"]
+                )
             )
         }
 
         is Condition.KeyguardIsLocked -> {
             listOf(
-                i18N["ui.conditions.screen.locked"],
+                i18N["ui.conditions.screen.lock.state"],
+                condition.isInvert.select(
+                    i18N["ui.conditions.screen.unlocked"],
+                    i18N["ui.conditions.screen.locked.y"]
+                )
             )
         }
 
         is Condition.VPNIsConnected -> {
             listOf(
-                i18N["ui.conditions.vpn.is.connected"],
+                i18N["ui.conditions.vpn.state"],
+                condition.isInvert.select(
+                    i18N["ui.conditions.vpn.disconnected"],
+                    i18N["ui.conditions.vpn.connected"]
+                )
             )
         }
 
@@ -548,7 +560,11 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
 
         is Condition.ScreenOrientationIsPort -> {
             listOf(
-                i18N["ui.conditions.screen.orientation.p"],
+                i18N["ui.conditions.screen.orientation"],
+                condition.isInvert.select(
+                    i18N["ui.conditions.screen.orientation.landscape"],
+                    i18N["ui.conditions.screen.orientation.portrait"]
+                )
             )
         }
 
@@ -567,13 +583,21 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
 
         is Condition.IsInCall -> {
             listOf(
-                i18N["ui.condition.is.incall"]
+                i18N["ui.condition.call.state"],
+                condition.isInvert.select(
+                    i18N["ui.condition.call.state.not.incall"],
+                    i18N["ui.condition.call.state.incall"]
+                )
             )
         }
 
         is Condition.IsRinging -> {
             listOf(
-                i18N["ui.condition.is.ringing"]
+                i18N["ui.condition.ringing.state"],
+                condition.isInvert.select(
+                    i18N["ui.condition.ringing.state.not.ringing"],
+                    i18N["ui.condition.ringing.state.ringing"]
+                )
             )
         }
 

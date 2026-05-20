@@ -186,7 +186,7 @@ fun ConditionList(
                                     it.clone(
                                         id = currentCondition.id,
                                         note = currentCondition.note,
-                                        isInvert = currentCondition.isInvert,
+                                        isInvert = it.isInvert,
                                         isDisabled = currentCondition.isDisabled,
                                         customContextDataKey = currentCondition.customContextDataKey
                                     )

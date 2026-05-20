@@ -1404,7 +1404,7 @@ private fun engineSettings(
 
         Preference.TextPreference(
             icon = Remix.Office.text_recognition,
-            title = i18N["OCR engine"],
+            title = i18N["OCR Engine"],
             summary = i18N[state.ocrEngine.labelKey()],
             hasLongSummary = false,
             onClick = {

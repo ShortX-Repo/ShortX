@@ -3,8 +3,8 @@ package io.github.rosemoe.sora.app
 import android.graphics.Typeface
 import android.view.MenuItem
 import android.widget.PopupMenu
-import androidx.core.widget.doAfterTextChanged
 import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import io.github.rosemoe.sora.app.R
 import io.github.rosemoe.sora.app.databinding.CodeEditorComposeBinding
 import io.github.rosemoe.sora.event.ContentChangeEvent
@@ -207,9 +207,26 @@ class CEComposeBinding(
         if (currentText == text) {
             return
         }
+        val cursor = binding.editor.cursor
+        val left = cursor.left
+        val right = cursor.right
+        val isSelected = cursor.isSelected
         isApplyingExternalText = true
         try {
             binding.editor.setText(text)
+            if (left <= text.length && right <= text.length) {
+                if (isSelected && left != right) {
+                    val start = binding.editor.text.indexer.getCharPosition(left)
+                    val end = binding.editor.text.indexer.getCharPosition(right)
+                    binding.editor.setSelectionRegion(start.line, start.column, end.line, end.column)
+                } else {
+                    val pos = binding.editor.text.indexer.getCharPosition(left.coerceIn(0, text.length))
+                    binding.editor.setSelection(pos.line, pos.column)
+                }
+            } else {
+                val pos = binding.editor.text.indexer.getCharPosition(text.length)
+                binding.editor.setSelection(pos.line, pos.column)
+            }
         } finally {
             isApplyingExternalText = false
         }

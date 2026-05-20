@@ -17,6 +17,7 @@ import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Stop
+import androidx.compose.material3.Switch
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -110,6 +111,12 @@ fun ShellCommandEditorActivity.ShellCommandEditor(
                         }
                     },
                     actions = {
+                        Switch(
+                            checked = state.isSingleShot,
+                            onCheckedChange = vm::setSingleShot,
+                            modifier = Modifier.padding(horizontal = 8.dp)
+                        )
+
                         IconButton(onClick = {
                             setResultAndFinish(
                                 Action.ShellCommand(
@@ -155,13 +162,6 @@ fun ShellCommandEditorActivity.ShellCommandEditor(
                                 expanded = moreMenuExpanded,
                                 onDismissRequest = { moreMenuExpanded = false }
                             ) {
-                                DropdownMenuItem(
-                                    text = { Text(LocalI18N.current["ui.action.shell.single.shot"]) },
-                                    onClick = {
-                                        moreMenuExpanded = false
-                                        vm.setSingleShot(!state.isSingleShot)
-                                    }
-                                )
                                 DropdownMenuItem(
                                     text = { Text(LocalI18N.current["ui.code.editor.wordwrap"]) },
                                     onClick = {

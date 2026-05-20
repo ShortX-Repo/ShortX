@@ -31,7 +31,6 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -43,7 +42,6 @@ import androidx.compose.material3.FloatingActionButtonMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -75,12 +73,15 @@ import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
 import tornaco.apps.shortx.ui.base.MultiFabItem
 import tornaco.apps.shortx.ui.base.MultiFabState
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.SearchBar
+import tornaco.apps.shortx.ui.base.SearchBarState
 import tornaco.apps.shortx.ui.base.ShareDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.handleSideEffect
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberFabState
+import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.base.rememberShareDialogState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.Permissions.shouldCheckStoragePermissionBeforeWriteDownloads
@@ -123,6 +124,12 @@ fun CodeLibraryListScreen(back: () -> Unit) {
         onResult = {}
     )
     val shareDialogState = rememberShareDialogState("share.shortx.code")
+    val searchBarState = rememberSearchBarState(
+        itemCount = state.allItems.size,
+        keywordChanged = { query ->
+            vm.updateQuery(CodeLibraryQuery.newBuilder(state.query).setKeyword(query).build())
+        }
+    )
 
     ShareDialog(state = shareDialogState)
 
@@ -167,11 +174,6 @@ fun CodeLibraryListScreen(back: () -> Unit) {
                 topBar = {
                     CodeLibraryTopBar(
                         state = state,
-                        onSearchQueryChange = { query ->
-                            vm.updateQuery(
-                                CodeLibraryQuery.newBuilder(state.query).setKeyword(query).build()
-                            )
-                        },
                         onFilterClick = { /* TODO: 实现过滤功能 */ },
                         onDeleteSelected = {
                             vm.deleteSelectedItems()
@@ -181,7 +183,8 @@ fun CodeLibraryListScreen(back: () -> Unit) {
                         },
                         back = {
                             back()
-                        }
+                        },
+                        searchBarState = searchBarState
                     )
                 },
                 floatingActionButton = {
@@ -236,31 +239,22 @@ fun CodeLibraryListScreen(back: () -> Unit) {
 @Composable
 private fun CodeLibraryTopBar(
     state: CodeLibraryListState,
-    onSearchQueryChange: (String) -> Unit,
     onFilterClick: () -> Unit,
     onDeleteSelected: () -> Unit,
     onClearSelection: () -> Unit,
     back: () -> Unit,
+    searchBarState: SearchBarState,
 ) {
     var showSearch by remember { mutableStateOf(false) }
 
     ShortXTopAppBar(
         title = {
             if (showSearch) {
-                OutlinedTextField(
-                    value = state.query.keyword,
-                    onValueChange = onSearchQueryChange,
-                    placeholder = { Text("搜索代码...") },
+                SearchBar(
+                    searchBarState = searchBarState,
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    trailingIcon = {
-                        IconButton(onClick = {
-                            showSearch = false
-                            onSearchQueryChange("")
-                        }) {
-                            Icon(Icons.Default.Clear, contentDescription = "清除搜索")
-                        }
-                    }
+                    autoFocus = true,
+                    onSearchClick = {}
                 )
             } else {
                 Text(
@@ -293,10 +287,17 @@ private fun CodeLibraryTopBar(
             } else {
                 if (!showSearch) {
                     IconButton(onClick = { showSearch = true }) {
-                        Icon(Icons.Default.Search, contentDescription = "搜索")
+                        RemixIcon(remixName = Remix.System.search_2_line)
                     }
                     IconButton(onClick = onFilterClick) {
                         Icon(Icons.Default.FilterList, contentDescription = "过滤")
+                    }
+                } else {
+                    IconButton(onClick = {
+                        showSearch = false
+                        searchBarState.inputKeyword("")
+                    }) {
+                        Icon(Icons.Default.Clear, contentDescription = "清除搜索")
                     }
                 }
             }

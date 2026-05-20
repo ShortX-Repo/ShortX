@@ -24,6 +24,7 @@ import java.nio.charset.Charset
 import javax.inject.Inject
 
 data class CodeLibraryListState(
+    val allItems: List<CodeLibraryItem> = emptyList(),
     val items: List<CodeLibraryItem> = emptyList(),
     val loadState: LoadState<List<CodeLibraryItem>> = LoadState.Loading,
     val query: CodeLibraryQuery = CodeLibraryHelper.createCodeLibraryQuery(),
@@ -56,6 +57,7 @@ class CodeLibraryListViewModel @Inject constructor(@ApplicationContext context: 
                 logger.d("getAllCodeLibraryItems- ${itemWrappers.size}")
                 updateState {
                     copy(
+                        allItems = items,
                         items = items,
                         loadState = LoadState.Success(items)
                     )
@@ -68,7 +70,14 @@ class CodeLibraryListViewModel @Inject constructor(@ApplicationContext context: 
     }
 
     fun updateQuery(query: CodeLibraryQuery) {
-
+        val items = filterItems(state.value.allItems, query)
+        updateState {
+            copy(
+                query = query,
+                items = items,
+                loadState = LoadState.Success(items)
+            )
+        }
     }
 
     fun codeLibraryItemToShareString(item: CodeLibraryItem): String? {
@@ -194,5 +203,18 @@ class CodeLibraryListViewModel @Inject constructor(@ApplicationContext context: 
 
     private fun generateId(): String {
         return "code_${System.currentTimeMillis()}_${(1000..9999).random()}"
+    }
+
+    private fun filterItems(
+        source: List<CodeLibraryItem>,
+        query: CodeLibraryQuery
+    ): List<CodeLibraryItem> {
+        val keyword = query.keyword.trim()
+        if (keyword.isBlank()) return source
+
+        return source.filter { item ->
+            item.name.contains(keyword, ignoreCase = true) ||
+                item.description.contains(keyword, ignoreCase = true)
+        }
     }
 }

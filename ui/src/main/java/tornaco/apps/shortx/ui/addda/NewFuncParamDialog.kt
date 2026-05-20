@@ -60,10 +60,17 @@ class NewFuncParameterState(
     var isRequired by mutableStateOf(false)
 
     fun show(current: FuncParameter? = null) {
-        this.name = current?.name ?: ""
-        this.defaultValue = current?.defaultValue ?: ""
-        this.comments = current?.comments ?: ""
-        this.isRequired = current?.isRequired ?: false
+        if (current == null) {
+            this.name = ""
+            this.defaultValue = ""
+            this.comments = ""
+            this.isRequired = false
+        } else {
+            this.name = current.name
+            this.defaultValue = current.defaultValue
+            this.comments = current.comments
+            this.isRequired = current.isRequired
+        }
 
         show()
     }

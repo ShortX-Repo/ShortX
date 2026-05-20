@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,7 +19,13 @@ fun EditorToolsBar(
     modifier: Modifier = Modifier,
     actions: @Composable RowScope.() -> Unit
 ) {
-    Surface(modifier = modifier.fillMaxWidth(), tonalElevation = 2.dp, shadowElevation = 1.dp) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        contentColor = MaterialTheme.colorScheme.onSurface,
+        tonalElevation = 2.dp,
+        shadowElevation = 1.dp
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
