@@ -1,10 +1,14 @@
 package tornaco.apps.shortx.services
 
+import android.app.ActivityManager
+import android.content.pm.ApplicationInfo
 import android.os.ShellCommand
 import android.util.Base64
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.BuildPropInternal
+import tornaco.apps.shortx.core.proto.common.AppCategory
+import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.action.InputText
 import tornaco.apps.shortx.core.proto.action.ShowDanmu
 import tornaco.apps.shortx.core.proto.action.ShowToast
@@ -15,7 +19,10 @@ import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.toLogString
+import tornaco.apps.shortx.core.util.OsUtils
+import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.clipboardManager
+import tornaco.apps.shortx.core.util.activityManager
 import tornaco.apps.shortx.services.rule.nextEvaluateContextSerialNumber
 import java.io.PrintWriter
 
@@ -107,9 +114,13 @@ internal class ShortXShellCommandHandler(
         } else if (nextArgs == "getclip") {
             return printClipboardText(pw)
         } else if (nextArgs == "current-app") {
-            return printCurrentApp(pw)
-        } else if (nextArgs == "kill-current-app") {
-            return killCurrentApp(pw)
+            return printCurrentApp(shellCommand, pw)
+        } else if (nextArgs == "clear-recents-app") {
+            return clearRecentsApp(shellCommand, pw)
+        } else if (nextArgs == "kill-app") {
+            return killCurrentApp(shellCommand, pw)
+        } else if (nextArgs == "apkpath") {
+            return printApkPath(shellCommand, pw)
         } else if (nextArgs == "action-b64") {
             return runBase64Action(shellCommand, pw)
         } else if (nextArgs == "dump") {
@@ -127,26 +138,52 @@ internal class ShortXShellCommandHandler(
     private fun printHelp(pw: PrintWriter) {
         pw.println("Welcome to ShortX(${BuildPropInternal.APP_VERSION_NAME}). Command usage:")
         pw.println("am shortx run [ID] [arg1]=[value] [arg2]=[value] ...")
-        pw.println("Example: am shortx run 7da392dxfjysl size=24 color=#ffffff")
         pw.println("      Run a Direct Action.")
+        pw.println("      Example: am shortx run 7da392dxfjysl size=24 color=#ffffff")
+        pw.println()
         pw.println("am shortx toast [TEXT]")
         pw.println("      Show a toast.")
+        pw.println("      Example: am shortx toast Hello ShortX")
+        pw.println()
         pw.println("am shortx danmu [--icon ICON] [TEXT]")
         pw.println("      Show a danmu overlay.")
+        pw.println("      Example: am shortx danmu --icon ri:ghost-2-fill Hello")
+        pw.println()
         pw.println("am shortx clip [TEXT]")
         pw.println("      Write text to clipboard.")
+        pw.println("      Example: am shortx clip copied-from-shell")
+        pw.println()
         pw.println("am shortx text [TEXT]")
         pw.println("      Input text to the current focused field.")
+        pw.println("      Example: am shortx text hello")
+        pw.println()
         pw.println("am shortx getclip")
         pw.println("      Print clipboard text to stdout.")
-        pw.println("am shortx current-app")
-        pw.println("      Print current foreground app package and label.")
-        pw.println("am shortx kill-current-app")
-        pw.println("      Kill current foreground app process.")
+        pw.println("      Example: am shortx getclip")
+        pw.println()
+        pw.println("am shortx current-app [-app PKG] [-a|-s|-3]")
+        pw.println("      Print app info as package#label#user#uid.")
+        pw.println("      Example: am shortx current-app -app bin.mt.plus")
+        pw.println()
+        pw.println("am shortx clear-recents-app [PKG USER_ID]")
+        pw.println("      Clear all recents app cards or the specified one.")
+        pw.println("      Example: am shortx clear-recents-app bin.mt.plus 0")
+        pw.println()
+        pw.println("am shortx kill-app [PKG USER_ID]")
+        pw.println("      Kill current foreground app or the specified app.")
+        pw.println("      Example: am shortx kill-app bin.mt.plus 0")
+        pw.println()
+        pw.println("am shortx apkpath [PKG]")
+        pw.println("      Print current foreground app apk path or the specified package path.")
+        pw.println("      Example: am shortx apkpath bin.mt.plus")
+        pw.println()
         pw.println("am shortx action-b64 [BASE64_PROTO_ANY]")
         pw.println("      Execute any packed ProtoAny action.")
+        pw.println("      Example: am shortx action-b64 Cg...==")
+        pw.println()
         pw.println("am shortx dump")
         pw.println("      Dump ShortX states.")
+        pw.println("      Example: am shortx dump")
         pw.flush()
     }
 
@@ -215,35 +252,124 @@ internal class ShortXShellCommandHandler(
         return result
     }
 
-    private fun printCurrentApp(pw: PrintWriter): Int {
-        val currentApps = shortXContext.appState.currentFrontPkgs()
-        if (currentApps.isEmpty()) {
-            pw.println("No current foreground app.")
+    private fun printCurrentApp(shellCommand: ShellCommand, pw: PrintWriter): Int {
+        val installedApps = shortXContext.appState.getInstalledApps()
+        val apps = when (val query = parseCurrentAppQuery(shellCommand, pw)) {
+            null -> return 1
+            is CurrentAppQuery.Current -> shortXContext.appState.currentFrontPkgs()
+            is CurrentAppQuery.ByPkg -> installedApps
+                .filter { it.pkg.pkgName == query.pkgName }
+                .map { it.pkg }
+            is CurrentAppQuery.ByCategory -> installedApps
+                .filter { query.category == null || it.category == query.category }
+                .map { it.pkg }
+        }
+
+        if (apps.isEmpty()) {
+            pw.println("No app found.")
             pw.flush()
             return 1
         }
-        currentApps.forEach { appPkg ->
-            val label = shortXContext.appState.getAppLabel(appPkg).orEmpty()
-            pw.println("${appPkg.pkgName}\t$label")
+
+        apps.distinct().forEach { appPkg ->
+            pw.println(formatAppPkg(appPkg))
         }
         pw.flush()
         return 0
     }
 
-    private fun killCurrentApp(pw: PrintWriter): Int {
-        val currentApps = shortXContext.appState.currentFrontPkgs()
-        if (currentApps.isEmpty()) {
-            pw.println("No current foreground app.")
+    private fun clearRecentsApp(shellCommand: ShellCommand, pw: PrintWriter): Int {
+        val pkgName = shellCommand.nextArg
+        if (pkgName == null) {
+            val tasks = context.activityManager.getRecentTasks(
+                200,
+                ActivityManager.RECENT_WITH_EXCLUDED
+            )
+            val activityManager = android.app.IActivityManager.Stub.asInterface(
+                android.os.ServiceManager.getService(android.content.Context.ACTIVITY_SERVICE)
+            )
+            tasks.orEmpty().forEach { task ->
+                val taskId = try {
+                    if (OsUtils.isQOrAbove()) task.taskId else task.persistentId
+                } catch (_: Throwable) {
+                    0
+                }
+                if (taskId > 0) {
+                    activityManager.removeTask(taskId)
+                }
+            }
+            pw.println("OK")
+            pw.flush()
+            return 0
+        }
+
+        val userId = shellCommand.nextArg?.toIntOrNull()
+        if (userId == null) {
+            pw.println("Missing userId")
             pw.flush()
             return 1
         }
-        pw.println("Killing current foreground app:")
-        currentApps.forEach { appPkg ->
-            val label = shortXContext.appState.getAppLabel(appPkg).orEmpty()
-            pw.println("${appPkg.pkgName}\t$label")
+        val appPkg = buildAppPkg(pkgName, userId)
+        shortXContext.appState.removeTasksForPackage(listOf(appPkg))
+        pw.println(formatAppPkg(appPkg))
+        pw.flush()
+        return 0
+    }
+
+    private fun killCurrentApp(shellCommand: ShellCommand, pw: PrintWriter): Int {
+        val pkgName = shellCommand.nextArg
+        if (pkgName.isNullOrBlank()) {
+            val currentApps = shortXContext.appState.currentFrontPkgs()
+            if (currentApps.isEmpty()) {
+                pw.println("No current foreground app.")
+                pw.flush()
+                return 1
+            }
+            currentApps.forEach { appPkg ->
+                pw.println(formatAppPkg(appPkg))
+            }
+            pw.flush()
+            shortXContext.appState.stopForegroundApp()
+            return 0
+        }
+
+        val userId = shellCommand.nextArg?.toIntOrNull()
+        if (userId == null) {
+            pw.println("Missing userId")
+            pw.flush()
+            return 1
+        }
+        val appPkg = buildAppPkg(pkgName, userId)
+        shortXContext.appState.forceStopApp(appPkg, "shell kill-app")
+        pw.println(formatAppPkg(appPkg))
+        pw.flush()
+        return 0
+    }
+
+    private fun printApkPath(shellCommand: ShellCommand, pw: PrintWriter): Int {
+        val pkgName = shellCommand.nextArg
+        val targets = if (pkgName.isNullOrBlank()) {
+            shortXContext.appState.currentFrontPkgs()
+        } else {
+            shortXContext.appState.getInstalledApps()
+                .filter { it.pkg.pkgName == pkgName }
+                .map { it.pkg }
+                .distinct()
+        }
+
+        if (targets.isEmpty()) {
+            pw.println(if (pkgName.isNullOrBlank()) "No current foreground app." else "App not found.")
+            pw.flush()
+            return 1
+        }
+
+        targets.forEach { appPkg ->
+            val path = getApkPath(appPkg)
+            if (path != null) {
+                pw.println(path)
+            }
         }
         pw.flush()
-        shortXContext.appState.stopForegroundApp()
         return 0
     }
 
@@ -328,6 +454,64 @@ internal class ShortXShellCommandHandler(
             arg = nextArg
         }
         return IconAndText(icon = icon, text = parts.joinToString(" ").trim())
+    }
+
+    private fun parseCurrentAppQuery(
+        shellCommand: ShellCommand,
+        pw: PrintWriter,
+    ): CurrentAppQuery? {
+        val firstArg = shellCommand.nextArg ?: return CurrentAppQuery.Current
+        return when (firstArg) {
+            "-a" -> CurrentAppQuery.ByCategory(null)
+            "-s" -> CurrentAppQuery.ByCategory(AppCategory.System)
+            "-3" -> CurrentAppQuery.ByCategory(AppCategory.User)
+            "-app" -> {
+                val pkgName = shellCommand.nextArg
+                if (pkgName.isNullOrBlank()) {
+                    pw.println("Missing package name for -app")
+                    pw.flush()
+                    null
+                } else {
+                    CurrentAppQuery.ByPkg(pkgName)
+                }
+            }
+
+            else -> {
+                pw.println("Unknown current-app option: $firstArg")
+                pw.flush()
+                null
+            }
+        }
+    }
+
+    private fun formatAppPkg(appPkg: AppPkg): String {
+        val label = shortXContext.appState.getAppLabel(appPkg).orEmpty()
+        val uid = shortXContext.appState.pkgToApp(appPkg)?.uid
+            ?: PkgUtils.getApplicationInfoAsUser(context, appPkg.pkgName, appPkg.userId)?.uid
+            ?: -1
+        return "${appPkg.pkgName}#$label#${appPkg.userId}#$uid"
+    }
+
+    private fun buildAppPkg(pkgName: String, userId: Int): AppPkg {
+        return AppPkg.newBuilder()
+            .setPkgName(pkgName)
+            .setUserId(userId)
+            .build()
+    }
+
+    private fun getApkPath(appPkg: AppPkg): String? {
+        val appInfo: ApplicationInfo? = PkgUtils.getApplicationInfoAsUser(
+            context,
+            appPkg.pkgName,
+            appPkg.userId
+        )
+        return appInfo?.publicSourceDir
+    }
+
+    private sealed interface CurrentAppQuery {
+        data object Current : CurrentAppQuery
+        data class ByPkg(val pkgName: String) : CurrentAppQuery
+        data class ByCategory(val category: AppCategory?) : CurrentAppQuery
     }
 
     private data class IconAndText(

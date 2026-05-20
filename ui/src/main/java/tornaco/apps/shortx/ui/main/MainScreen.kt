@@ -50,6 +50,7 @@ import tornaco.apps.shortx.ui.record.AudioRecordActivity
 import tornaco.apps.shortx.ui.record.EvaRecordActivity
 import tornaco.apps.shortx.ui.record.SettingsAccessRecordActivity
 import tornaco.apps.shortx.ui.settings.SettingsScreen
+import tornaco.apps.shortx.ui.settings.ShellCommandHelpActivity
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsActivity
 import tornaco.apps.shortx.ui.settings.dav.DavSettingsActivity
 import tornaco.apps.shortx.ui.settings.pref.Pref
@@ -125,6 +126,9 @@ fun HomeScreen() {
                         },
                         goToFunctionList = {
                             FunctionListActivity.start(context)
+                        },
+                        goToShellCommandHelp = {
+                            ShellCommandHelpActivity.start(context)
                         },
                         goToDanmuUISettings = {
                             DanmuUISettingsActivity.start(context)
