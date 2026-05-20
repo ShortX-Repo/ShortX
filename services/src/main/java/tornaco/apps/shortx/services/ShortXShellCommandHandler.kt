@@ -115,9 +115,9 @@ internal class ShortXShellCommandHandler(
             return printClipboardText(pw)
         } else if (nextArgs == "current-app") {
             return printCurrentApp(shellCommand, pw)
-        } else if (nextArgs == "clear") {
-            return clearCommand(shellCommand, pw)
-        } else if (nextArgs == "kill-current-app") {
+        } else if (nextArgs == "clear-recents-app") {
+            return clearRecentsApp(shellCommand, pw)
+        } else if (nextArgs == "kill-app") {
             return killCurrentApp(shellCommand, pw)
         } else if (nextArgs == "apkpath") {
             return printApkPath(shellCommand, pw)
@@ -138,30 +138,52 @@ internal class ShortXShellCommandHandler(
     private fun printHelp(pw: PrintWriter) {
         pw.println("Welcome to ShortX(${BuildPropInternal.APP_VERSION_NAME}). Command usage:")
         pw.println("am shortx run [ID] [arg1]=[value] [arg2]=[value] ...")
-        pw.println("Example: am shortx run 7da392dxfjysl size=24 color=#ffffff")
         pw.println("      Run a Direct Action.")
+        pw.println("      Example: am shortx run 7da392dxfjysl size=24 color=#ffffff")
+        pw.println()
         pw.println("am shortx toast [TEXT]")
         pw.println("      Show a toast.")
+        pw.println("      Example: am shortx toast Hello ShortX")
+        pw.println()
         pw.println("am shortx danmu [--icon ICON] [TEXT]")
         pw.println("      Show a danmu overlay.")
+        pw.println("      Example: am shortx danmu --icon ri:ghost-2-fill Hello")
+        pw.println()
         pw.println("am shortx clip [TEXT]")
         pw.println("      Write text to clipboard.")
+        pw.println("      Example: am shortx clip copied-from-shell")
+        pw.println()
         pw.println("am shortx text [TEXT]")
         pw.println("      Input text to the current focused field.")
+        pw.println("      Example: am shortx text hello")
+        pw.println()
         pw.println("am shortx getclip")
         pw.println("      Print clipboard text to stdout.")
+        pw.println("      Example: am shortx getclip")
+        pw.println()
         pw.println("am shortx current-app [-app PKG] [-a|-s|-3]")
-        pw.println("      Print app info as 包名#名称#用户#uid.")
-        pw.println("am shortx clear recents-app [PKG USER_ID]")
+        pw.println("      Print app info as package#label#user#uid.")
+        pw.println("      Example: am shortx current-app -app bin.mt.plus")
+        pw.println()
+        pw.println("am shortx clear-recents-app [PKG USER_ID]")
         pw.println("      Clear all recents app cards or the specified one.")
-        pw.println("am shortx kill-current-app [PKG USER_ID]")
+        pw.println("      Example: am shortx clear-recents-app bin.mt.plus 0")
+        pw.println()
+        pw.println("am shortx kill-app [PKG USER_ID]")
         pw.println("      Kill current foreground app or the specified app.")
+        pw.println("      Example: am shortx kill-app bin.mt.plus 0")
+        pw.println()
         pw.println("am shortx apkpath [PKG]")
         pw.println("      Print current foreground app apk path or the specified package path.")
+        pw.println("      Example: am shortx apkpath bin.mt.plus")
+        pw.println()
         pw.println("am shortx action-b64 [BASE64_PROTO_ANY]")
         pw.println("      Execute any packed ProtoAny action.")
+        pw.println("      Example: am shortx action-b64 Cg...==")
+        pw.println()
         pw.println("am shortx dump")
         pw.println("      Dump ShortX states.")
+        pw.println("      Example: am shortx dump")
         pw.flush()
     }
 
@@ -256,23 +278,6 @@ internal class ShortXShellCommandHandler(
         return 0
     }
 
-    private fun clearCommand(shellCommand: ShellCommand, pw: PrintWriter): Int {
-        return when (shellCommand.nextArg) {
-            "recents-app" -> clearRecentsApp(shellCommand, pw)
-            null -> {
-                pw.println("Missing clear target")
-                pw.flush()
-                1
-            }
-
-            else -> {
-                pw.println("Unknown clear target")
-                pw.flush()
-                1
-            }
-        }
-    }
-
     private fun clearRecentsApp(shellCommand: ShellCommand, pw: PrintWriter): Int {
         val pkgName = shellCommand.nextArg
         if (pkgName == null) {
@@ -335,7 +340,7 @@ internal class ShortXShellCommandHandler(
             return 1
         }
         val appPkg = buildAppPkg(pkgName, userId)
-        shortXContext.appState.forceStopApp(appPkg, "shell kill-current-app")
+        shortXContext.appState.forceStopApp(appPkg, "shell kill-app")
         pw.println(formatAppPkg(appPkg))
         pw.flush()
         return 0

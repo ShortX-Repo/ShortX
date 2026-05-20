@@ -212,6 +212,9 @@
             android:name="tornaco.apps.shortx.ui.settings.log.http.HttpLogActivity"
             android:exported="false" />
         <activity
+            android:name="tornaco.apps.shortx.ui.settings.ShellCommandHelpActivity"
+            android:exported="false" />
+        <activity
             android:name="tornaco.apps.shortx.ui.settings.log.hook.MethodHookLogActivity"
             android:exported="false" />
         <activity

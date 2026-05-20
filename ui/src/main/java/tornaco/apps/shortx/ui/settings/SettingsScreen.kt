@@ -110,6 +110,7 @@ fun SettingsScreen(
     goToPkgSetList: () -> Unit,
     goToGV: () -> Unit,
     goToFunctionList: () -> Unit,
+    goToShellCommandHelp: () -> Unit,
     goToDanmuUISettings: () -> Unit,
     goToStatusBarClipUISettings: () -> Unit,
     goToEvaRecord: () -> Unit,
@@ -245,6 +246,7 @@ fun SettingsScreen(
                         state = state,
                         mainState = subscribeState,
                         vm = vm,
+                        goToShellCommandHelp = goToShellCommandHelp,
                         manageShortcutApps = manageShortcutApps,
                         goToWebdavProfile = goToWebdavProfile
                     )
@@ -1243,6 +1245,7 @@ private fun engineSettings(
     state: SettingsState,
     mainState: LVLStateHolder.State,
     vm: SettingsViewModel,
+    goToShellCommandHelp: () -> Unit,
     manageShortcutApps: () -> Unit,
     goToWebdavProfile: () -> Unit,
 ): List<Preference> {
@@ -1370,6 +1373,13 @@ private fun engineSettings(
                 }
             ),
             null
+        ),
+        Preference.TextPreference(
+            icon = Remix.Development.command_line,
+            title = i18N["ui.settings.shell.commands"],
+            summary = i18N["ui.settings.shell.commands.description"],
+            hasLongSummary = false,
+            onClick = goToShellCommandHelp,
         ),
 
         Preference.SwitchPreference(
