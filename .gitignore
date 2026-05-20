@@ -17,6 +17,8 @@ out/
 /github.properties
 /patch-magisk/bridge/bin/
 *.log
+*.class
+*.jar
 .env*
 *.tmp
 *.swp

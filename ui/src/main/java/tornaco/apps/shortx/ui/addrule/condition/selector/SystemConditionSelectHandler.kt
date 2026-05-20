@@ -213,6 +213,114 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     })
     SIMSlotSelectorDialog(state = mobileDataEnableSelectorState)
 
+    val screenLockStateSelectorState = rememberMenuDialogState<Boolean>(
+        title = LocalI18N.current["ui.conditions.screen.lock.state"],
+        menuItems = listOf(
+            MenuDialogItem(
+                id = false.toString(),
+                title = LocalI18N.current["ui.conditions.screen.locked.y"],
+            ),
+            MenuDialogItem(
+                id = true.toString(),
+                title = LocalI18N.current["ui.conditions.screen.unlocked"],
+            ),
+        ),
+        onItemSelected = { _, id ->
+            addCondition(Condition.KeyguardIsLocked(isInvert = id.toBoolean()))
+        }
+    )
+    MenuDialog(state = screenLockStateSelectorState)
+
+    val screenStayAwakeStateSelectorState = rememberMenuDialogState<Boolean>(
+        title = LocalI18N.current["ui.conditions.screen.stay.awake.state"],
+        menuItems = listOf(
+            MenuDialogItem(
+                id = false.toString(),
+                title = LocalI18N.current["ui.conditions.screen.stay.awake.on"],
+            ),
+            MenuDialogItem(
+                id = true.toString(),
+                title = LocalI18N.current["ui.conditions.screen.stay.awake.off"],
+            ),
+        ),
+        onItemSelected = { _, id ->
+            addCondition(Condition.ScreenStayAwake(isInvert = id.toBoolean()))
+        }
+    )
+    MenuDialog(state = screenStayAwakeStateSelectorState)
+
+    val vpnStateSelectorState = rememberMenuDialogState<Boolean>(
+        title = LocalI18N.current["ui.conditions.vpn.state"],
+        menuItems = listOf(
+            MenuDialogItem(
+                id = false.toString(),
+                title = LocalI18N.current["ui.conditions.vpn.connected"],
+            ),
+            MenuDialogItem(
+                id = true.toString(),
+                title = LocalI18N.current["ui.conditions.vpn.disconnected"],
+            ),
+        ),
+        onItemSelected = { _, id ->
+            addCondition(Condition.VPNIsConnected(isInvert = id.toBoolean()))
+        }
+    )
+    MenuDialog(state = vpnStateSelectorState)
+
+    val screenOrientationStateSelectorState = rememberMenuDialogState<Boolean>(
+        title = LocalI18N.current["ui.conditions.screen.orientation"],
+        menuItems = listOf(
+            MenuDialogItem(
+                id = false.toString(),
+                title = LocalI18N.current["ui.conditions.screen.orientation.portrait"],
+            ),
+            MenuDialogItem(
+                id = true.toString(),
+                title = LocalI18N.current["ui.conditions.screen.orientation.landscape"],
+            ),
+        ),
+        onItemSelected = { _, id ->
+            addCondition(Condition.ScreenOrientationIsPort(isInvert = id.toBoolean()))
+        }
+    )
+    MenuDialog(state = screenOrientationStateSelectorState)
+
+    val callStateSelectorState = rememberMenuDialogState<Boolean>(
+        title = LocalI18N.current["ui.condition.call.state"],
+        menuItems = listOf(
+            MenuDialogItem(
+                id = false.toString(),
+                title = LocalI18N.current["ui.condition.call.state.incall"],
+            ),
+            MenuDialogItem(
+                id = true.toString(),
+                title = LocalI18N.current["ui.condition.call.state.not.incall"],
+            ),
+        ),
+        onItemSelected = { _, id ->
+            addCondition(Condition.IsInCall(isInvert = id.toBoolean()))
+        }
+    )
+    MenuDialog(state = callStateSelectorState)
+
+    val ringingStateSelectorState = rememberMenuDialogState<Boolean>(
+        title = LocalI18N.current["ui.condition.ringing.state"],
+        menuItems = listOf(
+            MenuDialogItem(
+                id = false.toString(),
+                title = LocalI18N.current["ui.condition.ringing.state.ringing"],
+            ),
+            MenuDialogItem(
+                id = true.toString(),
+                title = LocalI18N.current["ui.condition.ringing.state.not.ringing"],
+            ),
+        ),
+        onItemSelected = { _, id ->
+            addCondition(Condition.IsRinging(isInvert = id.toBoolean()))
+        }
+    )
+    MenuDialog(state = ringingStateSelectorState)
+
 
     val headsetPlugMenuState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.fact.headset.plug"],
@@ -377,12 +485,12 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
             }
 
             Condition.ScreenStayAwake::class -> {
-                addCondition(Condition.ScreenStayAwake())
+                screenStayAwakeStateSelectorState.show(source.getConditionAs<Condition.ScreenStayAwake>()?.isInvert)
                 true
             }
 
             Condition.VPNIsConnected::class -> {
-                addCondition(Condition.VPNIsConnected())
+                vpnStateSelectorState.show(source.getConditionAs<Condition.VPNIsConnected>()?.isInvert)
                 true
             }
 
@@ -460,22 +568,22 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
             }
 
             Condition.KeyguardIsLocked::class -> {
-                addCondition(Condition.KeyguardIsLocked())
+                screenLockStateSelectorState.show(source.getConditionAs<Condition.KeyguardIsLocked>()?.isInvert)
                 true
             }
 
             Condition.ScreenOrientationIsPort::class -> {
-                addCondition(Condition.ScreenOrientationIsPort())
+                screenOrientationStateSelectorState.show(source.getConditionAs<Condition.ScreenOrientationIsPort>()?.isInvert)
                 true
             }
 
             Condition.IsInCall::class -> {
-                addCondition(Condition.IsInCall())
+                callStateSelectorState.show(source.getConditionAs<Condition.IsInCall>()?.isInvert)
                 true
             }
 
             Condition.IsRinging::class -> {
-                addCondition(Condition.IsRinging())
+                ringingStateSelectorState.show(source.getConditionAs<Condition.IsRinging>()?.isInvert)
                 true
             }
 

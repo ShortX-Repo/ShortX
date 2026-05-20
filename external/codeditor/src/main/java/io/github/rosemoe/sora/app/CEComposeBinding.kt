@@ -3,8 +3,8 @@ package io.github.rosemoe.sora.app
 import android.graphics.Typeface
 import android.view.MenuItem
 import android.widget.PopupMenu
-import androidx.core.widget.doAfterTextChanged
 import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import io.github.rosemoe.sora.app.R
 import io.github.rosemoe.sora.app.databinding.CodeEditorComposeBinding
 import io.github.rosemoe.sora.event.ContentChangeEvent
