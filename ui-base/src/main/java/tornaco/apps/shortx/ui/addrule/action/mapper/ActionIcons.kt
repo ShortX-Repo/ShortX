@@ -157,6 +157,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Others.lightbulb_fill
         }
 
+        Action.ToggleFlashLight::class -> {
+            Remix.Others.lightbulb_fill
+        }
+
         Action.EnableHotSpot::class -> {
             Remix.Device.hotspot_fill
         }

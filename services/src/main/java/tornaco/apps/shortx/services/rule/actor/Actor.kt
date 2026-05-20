@@ -237,6 +237,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetFlashLightEnabled
     },
+    ToggleFlashLight {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ToggleFlashLight
+    },
     SetDarkModeEnabled {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetDarkModeEnabled

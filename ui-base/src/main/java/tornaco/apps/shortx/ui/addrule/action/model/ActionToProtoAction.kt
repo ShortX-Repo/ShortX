@@ -168,6 +168,7 @@ import tornaco.apps.shortx.core.proto.action.TextProcessingToPinyin
 import tornaco.apps.shortx.core.proto.action.TextProcessingTrimLength
 import tornaco.apps.shortx.core.proto.action.TextProcessingTrimSpace
 import tornaco.apps.shortx.core.proto.action.Toggle5G
+import tornaco.apps.shortx.core.proto.action.ToggleFlashLight
 import tornaco.apps.shortx.core.proto.action.ToggleGestureRecording
 import tornaco.apps.shortx.core.proto.action.ToggleSlot
 import tornaco.apps.shortx.core.proto.action.Vibrate
@@ -578,6 +579,12 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             .setActionOnError(actionOnError)
             .setCustomContextDataKey(contextData.toCustomContextDataKey())
             .setEnable(true)
+            .setNote(overrideNote ?: note).build()
+
+        is Action.ToggleFlashLight -> ToggleFlashLight.newBuilder().setId(overrideId ?: id)
+            .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError)
+            .setCustomContextDataKey(contextData.toCustomContextDataKey())
             .setNote(overrideNote ?: note).build()
 
         is Action.EnableHotSpot -> SetHotSpotEnabled.newBuilder().setId(overrideId ?: id)

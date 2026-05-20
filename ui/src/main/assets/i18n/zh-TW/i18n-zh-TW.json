@@ -1155,6 +1155,7 @@
   "ui.action.nfc": "NFC",
   "ui.action.hotspot": "熱點",
   "ui.action.flashlight": "手電筒",
+  "ui.action.flashlight.toggle": "開關手電筒",
   "ui.other.options": "其他選項",
   "ui.action.dnd": "勿擾模式",
   "ui.action.gps": "定位",

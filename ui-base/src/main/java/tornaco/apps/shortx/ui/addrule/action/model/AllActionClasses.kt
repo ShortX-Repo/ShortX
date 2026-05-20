@@ -55,6 +55,7 @@ val allActionClasses = listOf(
     Action.EnableData::class,
     Action.EnableNFC::class,
     Action.EnableFlashLight::class,
+    Action.ToggleFlashLight::class,
     Action.EnableDND::class,
     Action.EnableLocation::class,
     Action.EnableDarkMode::class,

@@ -1155,6 +1155,7 @@
   "ui.action.kill.process.by.name.summary": "{count} processes",
   "ui.action.enable": "Enable {s}",
   "ui.action.disable": "Disable {s}",
+  "ui.action.flashlight.toggle": "Toggle flashlight",
   "ui.action.bt": "Bluetooth",
   "ui.action.wifi": "Wifi",
   "ui.action.auto.brightness": "Auto brightness",

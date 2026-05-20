@@ -541,6 +541,14 @@ message SetFlashLightEnabled {
   string id = 100;
 }
 
+message ToggleFlashLight {
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message SetLocationEnabled {
   bool enable = 1;
 
