@@ -53,13 +53,8 @@ class NewMethodHookExpressionState(
     var expression by mutableStateOf("")
 
     fun show(current: MethodHookExpressions? = null) {
-        if (current == null) {
-            this.contextKey = ""
-            this.expression = ""
-        } else {
-            this.contextKey = current.contextKey
-            this.expression = current.expressionMVEL
-        }
+        this.contextKey = current?.contextKey ?: ""
+        this.expression = current?.expressionMVEL ?: ""
 
         show()
     }

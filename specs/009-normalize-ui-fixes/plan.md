@@ -7,7 +7,7 @@
 
 ## Summary
 
-Normalize a bounded set of condition presentation labels/options, polish editor and repository UI affordances, and fix small inactive or stale-state behaviors without changing rule/action execution semantics. The approach is UI-first: update localized labels and view-model/UI state mapping where needed, reuse existing shared UI primitives where possible, and keep existing protobuf, AIDL, and runtime service contracts unchanged unless implementation discovery proves a current UI bug cannot be fixed otherwise.
+Normalize a bounded set of condition presentation labels/options and correct the `OCR Engine` label without changing rule/action execution semantics. The approach is UI-first: update localized labels and selector mapping where needed, keep the existing inversion/model behavior, and avoid unrelated editor, repository, logging, or parameter-flow changes.
 
 ## Technical Context
 
@@ -17,9 +17,9 @@ Normalize a bounded set of condition presentation labels/options, polish editor 
 **Testing**: Module compile validation plus targeted manual verification for UI behavior in light/dark modes and editor interactions  
 **Target Platform**: Android application UI and editor flows supported by the existing ShortX app
 **Project Type**: Android mobile app with shared UI libraries and runtime service integration  
-**Performance Goals**: Repository search filters visible content without perceptible delay; editor paste/search interactions preserve responsiveness during normal script sizes  
+**Performance Goals**: Condition selection and rule editing remain as responsive as before after the UI wording changes  
 **Constraints**: Preserve existing condition/action execution behavior; do not modify unrelated conditions/actions; update localized user-facing text in checked-in i18n assets  
-**Scale/Scope**: Nine requested UI/editor fixes spanning condition presentation, sidebar label, code editors, repository search, JS console output actions, and duplicate-input initialization
+**Scale/Scope**: Two requested fixes only: selected condition UI normalization and OCR Engine capitalization correction
 
 ## Constitution Check
 
@@ -29,7 +29,7 @@ The constitution file currently contains placeholder principles and no enforceab
 
 - **Behavior Preservation Gate**: PASS. Plan keeps existing rule/action runtime behavior and limits condition work to UI presentation and mapping.
 - **Localization Gate**: PASS. Plan includes checked-in JSON i18n asset updates for changed user-facing text.
-- **Scope Gate**: PASS. Plan is bounded to the nine requested fixes and excludes unrelated condition/action normalization.
+- **Scope Gate**: PASS. Plan is bounded to the selected condition UI normalization and OCR Engine capitalization correction only.
 - **Contract Gate**: PASS. No AIDL/protobuf contract changes are planned.
 
 ## Project Structure
@@ -57,13 +57,8 @@ ui-base/src/main/java/tornaco/apps/shortx/ui/
 └── base/Search.kt
 
 ui/src/main/java/tornaco/apps/shortx/ui/
-├── base/code/EditorToolsBar.kt
-├── base/code/ShellCommandEditorActivity.kt
-├── base/code/js/JSEditorActivity.kt
-├── base/code/mvel/MVELEditorActivity.kt
 ├── settings/SettingsScreen.kt
-├── remote/
-└── main/ and add-rule/direct-action screens that host repository, console output, method hook, or parameter flows
+└── addrule/condition/ and related rule-authoring screens
 
 ui/src/main/assets/i18n/
 ├── en-US/*.json
@@ -73,7 +68,7 @@ ui/src/main/assets/i18n/
 external/codeditor or editor integration sources, if implementation discovery shows search/paste behavior belongs to the embedded editor wrapper rather than the ShortX editor host.
 ```
 
-**Structure Decision**: Implement as a UI-focused Android feature across `ui` and `ui-base`, with i18n asset updates. Runtime modules are out of scope unless validation reveals an existing console output or editor bridge action already routes there.
+**Structure Decision**: Implement as a UI-focused Android feature across `ui` and `ui-base`, with i18n asset updates. Runtime modules, editor wrappers, code library screens, and logging screens are out of scope.
 
 ## Complexity Tracking
 
@@ -83,7 +78,7 @@ external/codeditor or editor integration sources, if implementation discovery sh
 
 ## Phase 0 Research Summary
 
-See [research.md](research.md). All planning questions are resolved with existing app patterns: keep behavior unchanged, use condition inversion where needed, reuse shared search UI, update checked-in i18n assets, and avoid contract changes.
+See [research.md](research.md). All planning questions are resolved with existing app patterns: keep behavior unchanged, use condition inversion where needed, update checked-in i18n assets, and avoid contract changes.
 
 ## Phase 1 Design Summary
 
@@ -93,5 +88,5 @@ See [data-model.md](data-model.md), [contracts/ui-behavior.md](contracts/ui-beha
 
 - **Behavior Preservation Gate**: PASS. Design contracts explicitly state no rule/action runtime behavior changes.
 - **Localization Gate**: PASS. Data model and quickstart include locale verification.
-- **Scope Gate**: PASS. Artifacts remain bounded to the nine requested fixes.
+- **Scope Gate**: PASS. Artifacts remain bounded to the condition normalization and OCR Engine label correction.
 - **Contract Gate**: PASS. UI behavior contracts only; no AIDL/protobuf/interface contract changes.

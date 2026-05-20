@@ -32,7 +32,6 @@
         android:id="@+id/search_panel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorSurfaceContainer"
         android:orientation="vertical"
         android:paddingHorizontal="12dp"
         android:paddingTop="8dp"
@@ -67,35 +66,35 @@
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_search_prev"
-                    style="?attr/materialButtonOutlinedStyle"
+                    style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/layout_tv_last" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_search_next"
-                    style="?attr/materialButtonOutlinedStyle"
+                    style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/layout_tv_next" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_replace"
-                    style="?attr/materialButtonOutlinedStyle"
+                    style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/layout_tv_replace" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_replace_all"
-                    style="?attr/materialButtonOutlinedStyle"
+                    style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/layout_tv_replaceAll" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/search_options"
-                    style="?attr/materialButtonOutlinedStyle"
+                    style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/layout_tv_search_options" />
@@ -125,7 +124,7 @@
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background="?attr/colorSurfaceContainer"
+            android:background="?colorSurface"
             android:scrollbars="none">
 
             <LinearLayout
