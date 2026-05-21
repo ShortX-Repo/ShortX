@@ -17,8 +17,13 @@
 -keep class ** implements android.os.Parcelable { *; }
 -keep class ** implements android.os.IInterface { *; }
 
--keep class de.robv.android.xposed.**{*;}
--keepclassmembers class tornaco.apps.shortx.services.xposed.hooks.hook** {*;}
+# Xposed API 101 entry and hook callbacks.
+-keep class tornaco.apps.shortx.services.xposed.hooks.hook.** { *; }
+-keep class * implements io.github.libxposed.api.XposedInterface$Hooker { *; }
+-keepclassmembers class * {
+    public static void before(...);
+    public static void after(...);
+}
 
 -keep,allowobfuscation @interface tornaco.apps.shortx.core.annotations.DoNotStrip
 
@@ -132,15 +137,6 @@
 -dontwarn com.android.internal.appwidget.IAppWidgetService
 -dontwarn com.android.internal.inputmethod.InputConnectionCommandHeader
 -dontwarn com.android.internal.view.IInputContext
--dontwarn de.robv.android.xposed.IXposedHookLoadPackage
--dontwarn de.robv.android.xposed.IXposedHookZygoteInit$StartupParam
--dontwarn de.robv.android.xposed.IXposedHookZygoteInit
--dontwarn de.robv.android.xposed.XC_MethodHook$MethodHookParam
--dontwarn de.robv.android.xposed.XC_MethodHook
--dontwarn de.robv.android.xposed.XC_MethodHook$Unhook
--dontwarn de.robv.android.xposed.XposedBridge
--dontwarn de.robv.android.xposed.XposedHelpers
--dontwarn de.robv.android.xposed.callbacks.XC_LoadPackage$LoadPackageParam
 -dontwarn javax.script.AbstractScriptEngine
 -dontwarn javax.script.Compilable
 -dontwarn javax.script.ScriptEngine
@@ -205,7 +201,6 @@
 -dontwarn java.beans.PropertyDescriptor
 -dontwarn javax.lang.model.SourceVersion
 -dontwarn java.beans.FeatureDescriptor
--dontwarn android.app.AndroidAppHelper
 -dontwarn android.util.IntArray
 -dontwarn android.util.LongSparseLongArray
 -dontwarn android.util.TimingsTraceLog
@@ -247,6 +242,10 @@
 
 
 -dontwarn io.github.libxposed.api.XposedInterface
+-dontwarn io.github.libxposed.api.XposedInterface$AfterHookCallback
+-dontwarn io.github.libxposed.api.XposedInterface$BeforeHookCallback
+-dontwarn io.github.libxposed.api.XposedInterface$Hooker
+-dontwarn io.github.libxposed.api.XposedInterface$MethodUnhooker
 -dontwarn io.github.libxposed.api.XposedModule
 -dontwarn io.github.libxposed.api.XposedModuleInterface$ModuleLoadedParam
 -dontwarn io.github.libxposed.api.XposedModuleInterface$PackageLoadedParam

@@ -21,7 +21,7 @@ object AMSHook {
         // Start.
         kotlin.runCatching {
             afterMethod(lpparam.classLoader.amsClass(), Methods.start) { param ->
-                val context = param.thisObject.field<Context>(Fields.mContext)
+                val context = requireNotNull(param.thisObject).field<Context>(Fields.mContext)
                 logger.w("AMS start")
                 if (!ShortXService.isStarted) {
                     logger.w("Invoke ShortXService start")
@@ -59,7 +59,7 @@ object AMSHook {
 
     fun hookAMSLifecycleStart(lpparam: ISystemServerLoaded.Param) = kotlin.runCatching {
         afterMethod(lpparam.classLoader.amsLifecycleClass(), "onStart") { param ->
-            val context = param.thisObject.field<Context>(Fields.mContext)
+            val context = requireNotNull(param.thisObject).field<Context>(Fields.mContext)
             logger.w("AMS Lifecycle start")
             if (!ShortXService.isStarted) {
                 logger.w("Invoke ShortXService start")
@@ -76,7 +76,7 @@ object AMSHook {
             logger.d("onCommand: $command")
             if (command.startsWith("shortx")) {
                 val shellCommand = param.thisObject as ShellCommand
-                param.result = ShortXService.onCommand(shellCommand)
+                param.returnAndSkip(ShortXService.onCommand(shellCommand))
             }
         }
     }.onFailure {

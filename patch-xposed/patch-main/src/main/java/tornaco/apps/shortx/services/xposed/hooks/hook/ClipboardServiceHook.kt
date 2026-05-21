@@ -32,7 +32,7 @@ object ClipboardServiceHook {
             val callingPackage = param.args[1]
             if (callingPackage == "android") {
                 logger.d("Allow android to read clipboard")
-                param.result = true
+                param.returnAndSkip(true)
             }
         }
     }.onFailure {
@@ -40,7 +40,7 @@ object ClipboardServiceHook {
     }
 
     private fun hookGetPrimaryClip(lpparam: ISystemServerLoaded.Param) = kotlin.runCatching {
-        afterMethod(
+        beforeMethod(
             lpparam.classLoader.clipboardServiceImplClass(),
             getPrimaryClip
         ) { param ->
@@ -48,8 +48,8 @@ object ClipboardServiceHook {
             logger.d("getPrimaryClip " + param.args.contentToString() + ", originRes: " + originRes)
             val pkg = param.args[0] as String
             if (pkg == CLIPBOARD_SERVICE_BINDER_CALL_PKG_NAME) {
-                XLog.w("Inject binder for ClipboardService.getPrimaryClip")
-                val service = ShortXManagerNative.shortX ?: return@afterMethod
+                XLog.w("Inject binder for ClipboardService.getPrimaryClip. ShortXManagerNative.shortX= ${ShortXManagerNative.shortX}")
+                val service = ShortXManagerNative.shortX ?: return@beforeMethod
                 val bundle = Bundle()
                 bundle.putBinder("shortx-binder", service.asBinder())
                 val intent = Intent().putExtra("shortx-bundle", bundle)
@@ -59,7 +59,7 @@ object ClipboardServiceHook {
                 } else {
                     originRes.addItem(item)
                 }
-                param.result = originRes
+                param.returnAndSkip(originRes)
                 XLog.w("Set Result to inject shortx binder.")
             }
         }

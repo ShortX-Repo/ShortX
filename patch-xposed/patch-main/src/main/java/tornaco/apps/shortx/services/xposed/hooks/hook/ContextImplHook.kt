@@ -25,7 +25,7 @@ object ContextImplHook {
             ) {
                 if (result != PackageManager.PERMISSION_GRANTED && Binder.getCallingUid() == 1000) {
                     logger.i("${param.args[0]} denied, let's fix it.")
-                    param.result = PackageManager.PERMISSION_GRANTED
+                    param.returnAndSkip(PackageManager.PERMISSION_GRANTED)
                 }
             } else if (result != PackageManager.PERMISSION_GRANTED && BuildPropInternal.APP_IS_DEBUG) {
                 logger.v("checkCallingPermission, DENIED: ${param.args[0]}")

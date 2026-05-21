@@ -3,7 +3,6 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 import android.content.Intent
 import android.os.IBinder
 import android.os.UserHandle
-import de.robv.android.xposed.XC_MethodHook
 import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.platform.ActivityRecordUtils
 import tornaco.apps.shortx.core.platform.Classes.activityRecordClass
@@ -36,7 +35,7 @@ object ActivityRecordHook {
     }
 
     private fun handleActivityResumed(
-        param: XC_MethodHook.MethodHookParam,
+        param: ShortXHookParam,
         lpparam: ISystemServerLoaded.Param
     ) {
         //  final ActivityRecord r = ActivityRecord.forTokenLocked(token);

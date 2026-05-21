@@ -1,7 +1,6 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook.systemui
 
 import android.content.Context
-import de.robv.android.xposed.XposedBridge
 import tornaco.apps.shortx.core.AppGlobals
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.ICallback
@@ -24,6 +23,7 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.su.LibShKtShellImpl
 import tornaco.apps.shortx.services.xposed.hooks.hook.CustomHookApp
+import tornaco.apps.shortx.services.xposed.hooks.hook.XposedLog
 import tornaco.apps.shortx.services.xposed.hooks.hook.afterMethod
 import tornaco.apps.shortx.services.xposed.hooks.hook.api.IPackageLoaded
 import tornaco.apps.shortx.services.xposed.hooks.hook.systemui.data.GlobalSettings
@@ -96,7 +96,7 @@ private fun SystemUIHook.hookSystemUIApp(lpparam: IPackageLoaded.Param, appClass
     ) { param ->
         val shortx = ShortXManagerNative.shortX
         if (shortx == null) {
-            XposedBridge.log("SystemUIHook. ERROR, shortX is null")
+            XposedLog.log("SystemUIHook. ERROR, shortX is null")
             return@afterMethod
         }
         logger.i("ShortX: $shortx")

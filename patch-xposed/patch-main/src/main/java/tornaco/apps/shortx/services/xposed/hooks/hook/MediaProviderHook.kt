@@ -3,8 +3,6 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 import android.content.ContentProvider
 import android.content.Context
 import android.net.Uri
-import de.robv.android.xposed.XC_MethodHook
-import de.robv.android.xposed.XposedBridge
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.logOnDebug
@@ -34,7 +32,7 @@ object MediaProviderHook {
             // Install log
             logAdapter = { _: Int, tag: String, msg: String ->
                 if (BuildPropInternal.APP_IS_DEBUG) {
-                    XposedBridge.log(tag + "\t" + msg)
+                    XposedLog.log(tag + "\t" + msg)
                 }
             }
 
@@ -56,7 +54,7 @@ object MediaProviderHook {
 
     // For Insert.
     private fun hookMediaStore(lpparam: IPackageLoaded.Param) {
-        fun getUriFromParams(param: XC_MethodHook.MethodHookParam): Uri? {
+        fun getUriFromParams(param: ShortXHookParam): Uri? {
             val volumeName = param.args[1] as String
             val type = param.args[2] as Int
             val id = param.args[3] as Long

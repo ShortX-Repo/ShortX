@@ -2,7 +2,6 @@ package tornaco.apps.shortx.services.xposed.hooks.hook.systemui
 
 
 import android.content.ComponentName
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.platform.ClassNames.SYSTEM_UI_CUSTOM_TILE
@@ -37,7 +36,7 @@ fun SystemUIHook.hookTile(lpparam: IPackageLoaded.Param) = kotlin.runCatching {
                         val tile = StatusBarTile.valueOf(tileName)
                         logger.d("handleClick: $name, tile: $tile")
                         it.onTileClick(tile.number)
-                        param.result = null
+                        param.returnAndSkip(null)
 
                         Reflections.callMethod(sAutoHideControllerImpl, "touchAutoHide")
                         logger.d("touchAutoHide done")
