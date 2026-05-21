@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -27,7 +28,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.LocalDrawerState
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -37,6 +40,8 @@ import tornaco.apps.shortx.ui.base.ShortXNavigationBar
 import tornaco.apps.shortx.ui.base.ShortXNavigationBarItem
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextDisplayActivity
+import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
+import tornaco.apps.shortx.ui.changelog.ChangeLogBottomSheet
 import tornaco.apps.shortx.ui.discover.DiscoverScreen
 import tornaco.apps.shortx.ui.featoggle.FeatureToggleActivity
 import tornaco.apps.shortx.ui.function.FunctionListActivity
@@ -182,6 +187,19 @@ fun HomeScreen() {
                     val context = LocalContext.current
                     val pref = remember { Pref(context) }
                     val miscToggles by pref.miscUiToggles.collectAsState(initial = null)
+                    val lastViewedChangeLogVersionCode by pref.lastViewedChangeLogVersionCode.collectAsState(
+                        initial = BuildPropInternal.APP_VERSION_CODE
+                    )
+                    val changeLogState = rememberShortXBottomSheetState()
+                    ChangeLogBottomSheet(state = changeLogState)
+
+                    LaunchedEffect(lastViewedChangeLogVersionCode) {
+                        if (lastViewedChangeLogVersionCode < BuildPropInternal.APP_VERSION_CODE) {
+                            delay(1000)
+                            changeLogState.show()
+                            pref.setLastViewedChangeLogVersionCode(BuildPropInternal.APP_VERSION_CODE)
+                        }
+                    }
 
                     val items = miscToggles?.let {
                         listOfNotNull(

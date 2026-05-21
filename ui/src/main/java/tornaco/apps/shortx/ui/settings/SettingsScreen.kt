@@ -90,6 +90,7 @@ import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.changelog.ChangeLogBottomSheet
 import tornaco.apps.shortx.ui.code.CodeLibraryListActivity
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
@@ -211,6 +212,9 @@ fun SettingsScreen(
                 }
             )
 
+            val changeLogState = rememberShortXBottomSheetState()
+            ChangeLogBottomSheet(state = changeLogState)
+
             val allPreferences = mutableListOf<Preference>().apply {
                 addAll(
                     generalSettings(
@@ -282,6 +286,7 @@ fun SettingsScreen(
                         state = state,
                         viewOpenSourceLicense = viewOpenSourceLicense,
                         viewPrivacyStatement = viewPrivacyStatement,
+                        showChangeLog = { changeLogState.show() },
                     )
                 )
             }
@@ -1493,6 +1498,7 @@ private fun aboutSettings(
     state: SettingsState,
     viewOpenSourceLicense: () -> Unit,
     viewPrivacyStatement: () -> Unit,
+    showChangeLog: () -> Unit,
 ): List<Preference> {
     val context = LocalContext.current
     val i18N = LocalI18N.current
@@ -1543,6 +1549,12 @@ private fun aboutSettings(
                     Toast.LENGTH_LONG
                 ).show()
             }
+        ),
+        Preference.TextPreference(
+            icon = Remix.Document.article_fill,
+            title = i18N["ui.changelog.title"],
+            summary = i18N["ui.changelog.settings.summary"],
+            onClick = showChangeLog,
         ),
         Preference.TextPreference(
             icon = Remix.Logos.open_source_fill,
