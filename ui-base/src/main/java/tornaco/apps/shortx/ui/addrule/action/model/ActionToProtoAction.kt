@@ -168,8 +168,19 @@ import tornaco.apps.shortx.core.proto.action.TextProcessingToPinyin
 import tornaco.apps.shortx.core.proto.action.TextProcessingTrimLength
 import tornaco.apps.shortx.core.proto.action.TextProcessingTrimSpace
 import tornaco.apps.shortx.core.proto.action.Toggle5G
+import tornaco.apps.shortx.core.proto.action.ToggleBT
+import tornaco.apps.shortx.core.proto.action.ToggleData
+import tornaco.apps.shortx.core.proto.action.ToggleDarkMode
+import tornaco.apps.shortx.core.proto.action.ToggleDND
+import tornaco.apps.shortx.core.proto.action.ToggleFlashLight
 import tornaco.apps.shortx.core.proto.action.ToggleGestureRecording
+import tornaco.apps.shortx.core.proto.action.ToggleHotSpot
+import tornaco.apps.shortx.core.proto.action.ToggleLocation
+import tornaco.apps.shortx.core.proto.action.ToggleNFC
+import tornaco.apps.shortx.core.proto.action.ToggleAutoBrightness
+import tornaco.apps.shortx.core.proto.action.ToggleSensorsOff
 import tornaco.apps.shortx.core.proto.action.ToggleSlot
+import tornaco.apps.shortx.core.proto.action.ToggleWifi
 import tornaco.apps.shortx.core.proto.action.Vibrate
 import tornaco.apps.shortx.core.proto.action.WaitForIdle
 import tornaco.apps.shortx.core.proto.action.WaitUtilConditionMatch
@@ -542,11 +553,25 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             .setNote(overrideNote ?: note)
             .build()
 
+        is Action.ToggleBT -> ToggleBT.newBuilder().setId(overrideId ?: id)
+            .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError)
+            .setCustomContextDataKey(contextData.toCustomContextDataKey())
+            .setNote(overrideNote ?: note)
+            .build()
+
         is Action.EnableDND -> SetDNDEnabled.newBuilder().setId(overrideId ?: id)
             .setIsDisabled(!isEnabled)
             .setActionOnError(actionOnError)
             .setCustomContextDataKey(contextData.toCustomContextDataKey())
             .setEnable(true)
+            .setNote(overrideNote ?: note)
+            .build()
+
+        is Action.ToggleDND -> ToggleDND.newBuilder().setId(overrideId ?: id)
+            .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError)
+            .setCustomContextDataKey(contextData.toCustomContextDataKey())
             .setNote(overrideNote ?: note)
             .build()
 
@@ -558,11 +583,24 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             .setNote(overrideNote ?: note)
             .build()
 
+        is Action.ToggleLocation -> ToggleLocation.newBuilder().setId(overrideId ?: id)
+            .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError)
+            .setCustomContextDataKey(contextData.toCustomContextDataKey())
+            .setNote(overrideNote ?: note)
+            .build()
+
         is Action.EnableDarkMode -> SetDarkModeEnabled.newBuilder().setId(overrideId ?: id)
             .setIsDisabled(!isEnabled)
             .setActionOnError(actionOnError)
             .setCustomContextDataKey(contextData.toCustomContextDataKey())
             .setEnable(true)
+            .setNote(overrideNote ?: note).build()
+
+        is Action.ToggleDarkMode -> ToggleDarkMode.newBuilder().setId(overrideId ?: id)
+            .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError)
+            .setCustomContextDataKey(contextData.toCustomContextDataKey())
             .setNote(overrideNote ?: note).build()
 
         is Action.EnableData -> SetDataEnabled.newBuilder().setId(overrideId ?: id)
@@ -573,11 +611,26 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             .setNote(overrideNote ?: note)
             .build()
 
+        is Action.ToggleData -> ToggleData.newBuilder().setId(overrideId ?: id)
+            .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError)
+            .setCustomContextDataKey(contextData.toCustomContextDataKey())
+            .setHasSpecificSlotId(hasSpecificSlotId)
+            .setSlotId(slotId)
+            .setNote(overrideNote ?: note)
+            .build()
+
         is Action.EnableFlashLight -> SetFlashLightEnabled.newBuilder().setId(overrideId ?: id)
             .setIsDisabled(!isEnabled)
             .setActionOnError(actionOnError)
             .setCustomContextDataKey(contextData.toCustomContextDataKey())
             .setEnable(true)
+            .setNote(overrideNote ?: note).build()
+
+        is Action.ToggleFlashLight -> ToggleFlashLight.newBuilder().setId(overrideId ?: id)
+            .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError)
+            .setCustomContextDataKey(contextData.toCustomContextDataKey())
             .setNote(overrideNote ?: note).build()
 
         is Action.EnableHotSpot -> SetHotSpotEnabled.newBuilder().setId(overrideId ?: id)
@@ -587,11 +640,24 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             .setEnable(true)
             .setNote(overrideNote ?: note).build()
 
+        is Action.ToggleHotSpot -> ToggleHotSpot.newBuilder().setId(overrideId ?: id)
+            .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError)
+            .setCustomContextDataKey(contextData.toCustomContextDataKey())
+            .setNote(overrideNote ?: note).build()
+
         is Action.EnableNFC -> SetNFCEnabled.newBuilder().setId(overrideId ?: id)
             .setIsDisabled(!isEnabled)
             .setActionOnError(actionOnError)
             .setCustomContextDataKey(contextData.toCustomContextDataKey())
             .setEnable(true)
+            .setNote(overrideNote ?: note)
+            .build()
+
+        is Action.ToggleNFC -> ToggleNFC.newBuilder().setId(overrideId ?: id)
+            .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError)
+            .setCustomContextDataKey(contextData.toCustomContextDataKey())
             .setNote(overrideNote ?: note)
             .build()
 
@@ -603,11 +669,25 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             .setNote(overrideNote ?: note)
             .build()
 
+        is Action.ToggleWifi -> ToggleWifi.newBuilder().setId(overrideId ?: id)
+            .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError)
+            .setCustomContextDataKey(contextData.toCustomContextDataKey())
+            .setNote(overrideNote ?: note)
+            .build()
+
         is Action.EnableSensorsOff -> SetSensorsOffEnabled.newBuilder().setId(overrideId ?: id)
             .setIsDisabled(!isEnabled)
             .setActionOnError(actionOnError)
             .setCustomContextDataKey(contextData.toCustomContextDataKey())
             .setEnable(true)
+            .setNote(overrideNote ?: note)
+            .build()
+
+        is Action.ToggleSensorsOff -> ToggleSensorsOff.newBuilder().setId(overrideId ?: id)
+            .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError)
+            .setCustomContextDataKey(contextData.toCustomContextDataKey())
             .setNote(overrideNote ?: note)
             .build()
 
@@ -1373,6 +1453,16 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setNote(overrideNote ?: note)
                 .setEnable(false)
+                .build()
+        }
+
+        is Action.ToggleAutoBrightness -> {
+            ToggleAutoBrightness.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
                 .build()
         }
 

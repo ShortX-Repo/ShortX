@@ -209,16 +209,27 @@ fun labelAndDescriptionForActionSelector(
         Action.DisableSensorsOff::class -> i18N["ui.action.disable", mapOf("s" to i18N["ui.action.sensors.off"])] to i18N["ui.action.sensors.off.description"]
 
         Action.EnableBT::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.bt"])] to null
+        Action.ToggleBT::class -> i18N["ui.action.toggle.bt"] to null
         Action.EnableDND::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.dnd"])] to null
+        Action.ToggleDND::class -> i18N["ui.action.toggle.dnd"] to null
         Action.EnableLocation::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.gps"])] to null
+        Action.ToggleLocation::class -> i18N["ui.action.toggle.location"] to null
         Action.EnableDarkMode::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.dark.mode"])] to null
+        Action.ToggleDarkMode::class -> i18N["ui.action.toggle.dark.mode"] to null
         Action.EnableData::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.data"])] to null
+        Action.ToggleData::class -> i18N["ui.action.toggle.data"] to null
         Action.EnableFlashLight::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.flashlight"])] to null
+        Action.ToggleFlashLight::class -> i18N["ui.action.flashlight.toggle"] to null
         Action.EnableHotSpot::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.hotspot"])] to null
+        Action.ToggleHotSpot::class -> i18N["ui.action.toggle.hotspot"] to null
         Action.EnableNFC::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.nfc"])] to null
+        Action.ToggleNFC::class -> i18N["ui.action.toggle.nfc"] to null
         Action.EnableWifi::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.wifi"])] to null
+        Action.ToggleWifi::class -> i18N["ui.action.toggle.wifi"] to null
         Action.EnableAutoBrightness::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.auto.brightness"])] to null
+        Action.ToggleAutoBrightness::class -> i18N["ui.action.toggle.auto.brightness"] to null
         Action.EnableSensorsOff::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.sensors.off"])] to i18N["ui.action.sensors.off.description"]
+        Action.ToggleSensorsOff::class -> i18N["ui.action.toggle.sensors.off"] to i18N["ui.action.sensors.off.description"]
 
         Action.StopApp::class -> i18N["ui.action.stop.app"] to null
         Action.StopAppByPkg::class -> i18N["ui.action.stop.app.by.pkg"] to null
@@ -531,16 +542,26 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.DisableSensorsOff -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.sensors.off"])])
 
         is Action.EnableBT -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.bt"])])
+        is Action.ToggleBT -> listOf(i18N["ui.action.toggle.bt"])
         is Action.EnableDND -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.dnd"])])
+        is Action.ToggleDND -> listOf(i18N["ui.action.toggle.dnd"])
         is Action.EnableLocation -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.gps"])])
+        is Action.ToggleLocation -> listOf(i18N["ui.action.toggle.location"])
         is Action.EnableDarkMode -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.dark.mode"])])
+        is Action.ToggleDarkMode -> listOf(i18N["ui.action.toggle.dark.mode"])
         is Action.EnableData -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.data"])])
         is Action.EnableFlashLight -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.flashlight"])])
+        is Action.ToggleFlashLight -> listOf(i18N["ui.action.flashlight.toggle"])
         is Action.EnableHotSpot -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.hotspot"])])
+        is Action.ToggleHotSpot -> listOf(i18N["ui.action.toggle.hotspot"])
         is Action.EnableNFC -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.nfc"])])
+        is Action.ToggleNFC -> listOf(i18N["ui.action.toggle.nfc"])
         is Action.EnableWifi -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.wifi"])])
+        is Action.ToggleWifi -> listOf(i18N["ui.action.toggle.wifi"])
         is Action.EnableAutoBrightness -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.auto.brightness"])])
+        is Action.ToggleAutoBrightness -> listOf(i18N["ui.action.toggle.auto.brightness"])
         is Action.EnableSensorsOff -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.sensors.off"])])
+        is Action.ToggleSensorsOff -> listOf(i18N["ui.action.toggle.sensors.off"])
 
 
         is Action.StopApp -> mutableListOf(i18N["ui.action.stop.app"]).labelLinesFromAppsAndPkgSets(
@@ -1158,6 +1179,20 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                     "N/A"
                 )
             )
+        }
+
+        is Action.ToggleData -> {
+            buildList {
+                add(i18N["ui.action.toggle.data"])
+                if (action.hasSpecificSlotId && action.slotId >= 0) {
+                    add(
+                        i18N["ui.common.mobile.data.enabled.slot", mapOf(
+                            "slotId" to action.slotId.toString(),
+                            "label" to (shortXManager.getSlotLabel(action.slotId) ?: "")
+                        )]
+                    )
+                }
+            }
         }
 
         is Action.ToggleSlot -> {

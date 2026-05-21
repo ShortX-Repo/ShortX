@@ -213,6 +213,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetSensorsOffEnabled
     },
+    ToggleSensorsOff {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ToggleSensorsOff
+    },
     SetWifiEnabled {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetWifiEnabled
@@ -221,33 +225,73 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetHotSpotEnabled
     },
+    ToggleHotSpot {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ToggleHotSpot
+    },
     SetBTEnabled {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetBTEnabled
+    },
+    ToggleBT {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ToggleBT
     },
     SetLocationEnabled {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetLocationEnabled
     },
+    ToggleLocation {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ToggleLocation
+    },
+    ToggleWifi {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ToggleWifi
+    },
     SetNFCEnabled {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetNFCEnabled
+    },
+    ToggleNFC {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ToggleNFC
     },
     SetFlashLightEnabled {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetFlashLightEnabled
     },
+    ToggleFlashLight {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ToggleFlashLight
+    },
     SetDarkModeEnabled {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetDarkModeEnabled
+    },
+    ToggleDarkMode {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ToggleDarkMode
+    },
+    ToggleAutoBrightness {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ToggleAutoBrightness
     },
     SetDataEnabled {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetDataEnabled
     },
+    ToggleData {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ToggleData
+    },
     SetDNDEnabled {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetDNDEnabled
+    },
+    ToggleDND {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ToggleDND
     },
     BreakActionExecute {
         override val actor: Actor

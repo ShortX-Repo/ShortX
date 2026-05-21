@@ -581,6 +581,28 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             }
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.ToggleBT::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.action.ToggleBT::class.java
+            Action.ToggleBT(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.ToggleWifi::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.action.ToggleWifi::class.java
+            Action.ToggleWifi(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.SetDataEnabled::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.SetDataEnabled::class.java
             if (data.enable) {
@@ -638,6 +660,108 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                     id = data.id
                 )
             }
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.ToggleFlashLight::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.ToggleFlashLight::class.java
+            Action.ToggleFlashLight(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.ToggleNFC::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.action.ToggleNFC::class.java
+            Action.ToggleNFC(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.ToggleDND::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.action.ToggleDND::class.java
+            Action.ToggleDND(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.ToggleDarkMode::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.action.ToggleDarkMode::class.java
+            Action.ToggleDarkMode(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.ToggleData::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.action.ToggleData::class.java
+            Action.ToggleData(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                slotId = data.slotId,
+                hasSpecificSlotId = data.hasSpecificSlotId,
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.ToggleLocation::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.action.ToggleLocation::class.java
+            Action.ToggleLocation(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.ToggleSensorsOff::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.action.ToggleSensorsOff::class.java
+            Action.ToggleSensorsOff(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.ToggleAutoBrightness::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.action.ToggleAutoBrightness::class.java
+            Action.ToggleAutoBrightness(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.ToggleHotSpot::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.action.ToggleHotSpot::class.java
+            Action.ToggleHotSpot(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+            )
         }
 
         this is_ tornaco.apps.shortx.core.proto.action.SetHotSpotEnabled::class.java -> {
