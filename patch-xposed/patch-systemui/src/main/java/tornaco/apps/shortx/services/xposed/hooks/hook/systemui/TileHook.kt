@@ -43,7 +43,7 @@ fun SystemUIHook.hookTileIcon() {
                     logger.d("hookTileIcon getIcon: $label, remixResId?: $remixResId")
                     val iconFixed = Icon.createWithResource(AppGlobals.appContext, remixResId)
                     logger.d("hookTileIcon getIcon: $label, iconFixed?: $iconFixed")
-                    param.result = iconFixed
+                    param.returnAndSkip(iconFixed)
                 }
             }
 
@@ -79,7 +79,7 @@ fun SystemUIHook.hookTileLabel() {
                     shortx.getStatusBarTileSettingsByNumber(sbtOrNull.number).label
                 logger.d("hookTileLabel getLabel for number: $number, overlayLabel?: $overlayLabel")
                 if (overlayLabel != null) {
-                    param.result = overlayLabel
+                    param.returnAndSkip(overlayLabel)
                 }
             }
 

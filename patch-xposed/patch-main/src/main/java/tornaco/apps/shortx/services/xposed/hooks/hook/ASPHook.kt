@@ -26,7 +26,7 @@ object ASPHook {
                 "canRetrieveWindowsLocked"
             ) { param ->
                 param.logParamsAndResOnDebug(logger)
-                param.result = true
+                param.returnAndSkip(true)
             }
         }.onFailure {
             logger.e(it, "hookRWL")
@@ -39,7 +39,7 @@ object ASPHook {
                 "checkAccessibilityAccess"
             ) { param ->
                 param.logParamsAndResOnDebug(logger)
-                param.result = true
+                param.returnAndSkip(true)
             }
         }.onFailure {
             logger.e(it, "hookAA")

@@ -1,6 +1,5 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook.systemui
 
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.services.xposed.hooks.hook.afterMethod
 import tornaco.apps.shortx.services.xposed.hooks.hook.api.IPackageLoaded

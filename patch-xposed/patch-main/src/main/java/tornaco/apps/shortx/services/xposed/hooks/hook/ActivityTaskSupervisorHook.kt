@@ -1,7 +1,6 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import android.content.Intent
-import de.robv.android.xposed.XC_MethodHook
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.platform.Classes.activityStackSupervisorClass
 import tornaco.apps.shortx.core.platform.Classes.amsClass
@@ -68,10 +67,10 @@ object ActivityTaskSupervisorHook {
         }
     }
 
-    private fun handleTaskRemoved(param: XC_MethodHook.MethodHookParam) {
+    private fun handleTaskRemoved(param: ShortXHookParam) {
         // void cleanUpRemovedTaskLocked(TaskRecord tr, boolean killProcess, boolean removeFromRecents)
         logger.d("cleanUpRemovedTaskLocked: ${param.args}")
-        val recentTask = param.args[0].RecentTask()
+        val recentTask = requireNotNull(param.args[0]).RecentTask()
         ShortXService.shortXContext.appState.onTaskRemoved(recentTask)
     }
 

@@ -40,7 +40,7 @@ fun SystemUIHook.hookCustomTile(lpparam: IPackageLoaded.Param) = runCatching {
                     shortx.getStatusBarTileSettingsByNumber(sbtOrNull.number).label
                 logger.d("CustomTile.getTileLabel getLabel for number: $number, overlayLabel?: $overlayLabel")
                 if (overlayLabel != null) {
-                    param.result = overlayLabel
+                    param.returnAndSkip(overlayLabel)
                 }
             }
         }

@@ -1,166 +1,121 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
-import de.robv.android.xposed.XC_MethodHook
-import de.robv.android.xposed.XC_MethodHook.MethodHookParam
-import de.robv.android.xposed.XposedBridge
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.util.Logger
+import java.lang.reflect.Constructor
+import java.lang.reflect.Member
 import java.lang.reflect.Method
 
 private val utilLogger = Logger("ShortXHookUtil")
 
 fun beforeConstruct(
     clazz: Class<*>,
-    beforeConstruct: (param: MethodHookParam) -> Unit,
+    beforeConstruct: (param: ShortXHookParam) -> Unit,
 ) {
-    XposedBridge.hookAllConstructors(clazz, object : XC_MethodHook() {
-        override fun beforeHookedMethod(param: MethodHookParam?) {
-            super.beforeHookedMethod(param)
-            param?.let {
-                kotlin.runCatching {
-                    beforeConstruct(it)
-                }.onFailure {
-                    utilLogger.e(it, "beforeConstruct-$clazz")
-                }
-            }
-        }
-    })
+    val constructors = clazz.declaredConstructors.onEach { it.isAccessible = true }
+    require(constructors.isNotEmpty()) {
+        "beforeConstruct, unable to hook this Constructor: $clazz"
+    }
+    constructors.forEach { constructor ->
+        hookBefore(constructor, beforeConstruct)
+    }
+    utilLogger.d("beforeConstruct, hooked: ${constructors.toList()} for Constructor: $clazz")
 }
 
 fun afterConstruct(
     clazz: Class<*>,
-    afterConstruct: (param: MethodHookParam) -> Unit,
+    afterConstruct: (param: ShortXHookParam) -> Unit,
 ) {
-    XposedBridge.hookAllConstructors(clazz, object : XC_MethodHook() {
-        override fun afterHookedMethod(param: MethodHookParam?) {
-            super.afterHookedMethod(param)
-            param?.let {
-                kotlin.runCatching {
-                    afterConstruct(it)
-                }.onFailure {
-                    utilLogger.e(it, "afterConstruct-$clazz")
-                }
-            }
-        }
-    }).apply {
-        require(this.size > 0) {
-            "afterConstruct, unable to hook this Constructor: $clazz"
-        }
-        utilLogger.d("afterConstruct, unhooks: $this for Constructor: $clazz")
+    val constructors = clazz.declaredConstructors.onEach { it.isAccessible = true }
+    require(constructors.isNotEmpty()) {
+        "afterConstruct, unable to hook this Constructor: $clazz"
     }
+    constructors.forEach { constructor ->
+        hookAfter(constructor, afterConstruct)
+    }
+    utilLogger.d("afterConstruct, hooked: ${constructors.toList()} for Constructor: $clazz")
 }
 
 fun beforeMethod(
     clazz: Class<*>,
     methodName: String,
     logger: Logger = utilLogger,
-    beforeMethod: (param: MethodHookParam) -> Unit,
+    beforeMethod: (param: ShortXHookParam) -> Unit,
 ) {
-    XposedBridge.hookAllMethods(clazz, methodName, object : XC_MethodHook() {
-        override fun beforeHookedMethod(param: MethodHookParam?) {
-            super.beforeHookedMethod(param)
-            param?.let {
-                kotlin.runCatching {
-                    beforeMethod(it)
-                }.onFailure {
-                    logger.e(it, "beforeHookedMethod-$clazz-$methodName")
-                }
-            }
-        }
-    }).apply {
-        require(this.isNotEmpty()) {
-            "beforeMethod, unable to hook this method: $clazz#$methodName"
-        }
-        logger.d("beforeMethod, unhooks: $this for method: $clazz#$methodName")
+    val methods = clazz.declaredMethods
+        .filter { it.name == methodName }
+        .onEach { it.isAccessible = true }
+    require(methods.isNotEmpty()) {
+        "beforeMethod, unable to hook this method: $clazz#$methodName"
     }
+    methods.forEach { method -> hookBefore(method, beforeMethod) }
+    logger.d("beforeMethod, hooked: $methods for method: $clazz#$methodName")
 }
 
 fun afterMethod(
     clazz: Class<*>,
     methodName: String,
     logger: Logger = utilLogger,
-    afterMethod: (param: MethodHookParam) -> Unit,
+    afterMethod: (param: ShortXHookParam) -> Unit,
 ) {
-    XposedBridge.hookAllMethods(clazz, methodName, object : XC_MethodHook() {
-        override fun afterHookedMethod(param: MethodHookParam?) {
-            super.afterHookedMethod(param)
-            param?.let {
-                kotlin.runCatching {
-                    afterMethod(it)
-                }.onFailure {
-                    logger.e(it, "afterHookedMethod-$clazz-$methodName")
-                }
-            }
-        }
-    }).apply {
-        require(this.isNotEmpty()) {
-            "afterMethod, unable to hook this method: $clazz#$methodName"
-        }
-        logger.d("afterMethod, unhooks: $this for method: $clazz#$methodName")
+    val methods = clazz.declaredMethods
+        .filter { it.name == methodName }
+        .onEach { it.isAccessible = true }
+    require(methods.isNotEmpty()) {
+        "afterMethod, unable to hook this method: $clazz#$methodName"
     }
+    methods.forEach { method -> hookAfter(method, afterMethod) }
+    logger.d("afterMethod, hooked: $methods for method: $clazz#$methodName")
 }
 
 fun afterMethod(
     method: Method,
-    afterMethod: (param: MethodHookParam) -> Unit,
+    afterMethod: (param: ShortXHookParam) -> Unit,
 ) {
-    val unHook: XC_MethodHook.Unhook? = XposedBridge.hookMethod(method, object : XC_MethodHook() {
-        override fun afterHookedMethod(param: MethodHookParam?) {
-            super.afterHookedMethod(param)
-            param?.let {
-                kotlin.runCatching {
-                    afterMethod(it)
-                }.onFailure {
-                    utilLogger.e(it, "afterHookedMethod-$method")
-                }
-            }
-        }
-    })
-    require(unHook != null) {
-        "afterMethod, unable to hook this method: $method"
-    }
-    utilLogger.d("afterMethod, unhook: $unHook for method: $method")
+    method.isAccessible = true
+    hookAfter(method, afterMethod)
+    utilLogger.d("afterMethod, hooked: $method")
 }
-
 
 fun beforeMethod(
     method: Method,
-    beforeMethod: (param: MethodHookParam) -> Unit,
+    beforeMethod: (param: ShortXHookParam) -> Unit,
 ) {
-    val unHook: XC_MethodHook.Unhook? = XposedBridge.hookMethod(method, object : XC_MethodHook() {
-        override fun beforeHookedMethod(param: MethodHookParam?) {
-            super.beforeHookedMethod(param)
-            param?.let {
-                kotlin.runCatching {
-                    beforeMethod(it)
-                }.onFailure {
-                    utilLogger.e(it, "beforeMethod-$method")
-                }
-            }
-        }
-    })
-    require(unHook != null) {
-        "beforeMethod, unable to hook this method: $method"
-    }
-    utilLogger.d("beforeMethod, unhook: $unHook for method: $method")
+    method.isAccessible = true
+    hookBefore(method, beforeMethod)
+    utilLogger.d("beforeMethod, hooked: $method")
 }
 
+private fun hookBefore(member: Member, callback: (ShortXHookParam) -> Unit) {
+    hookMember(member, Api101Hooker.before(callback))
+}
 
-fun MethodHookParam.logParamsOnDebug(logger: Logger = utilLogger, printStack: Boolean = false) {
+private fun hookAfter(member: Member, callback: (ShortXHookParam) -> Unit) {
+    hookMember(member, Api101Hooker.after(callback))
+}
+
+@Suppress("UNCHECKED_CAST")
+private fun hookMember(member: Member, hooker: Api101Hooker) {
+    when (member) {
+        is Method -> Api101Runtime.xposed.hook(member).intercept(hooker)
+        is Constructor<*> -> Api101Runtime.xposed.hook(
+            member as Constructor<Any>
+        ).intercept(hooker)
+        else -> error("Unsupported hook member: $member")
+    }
+}
+
+fun ShortXHookParam.logParamsOnDebug(logger: Logger = utilLogger, printStack: Boolean = false) {
     logger.logOnDebug {
-        "${method.name} - ${
-            this.args.map { it }.joinToString()
-        } ${if (printStack) Throwable().stackTraceToString() else ""}"
+        "${method.name} - ${args.map { it }.joinToString()} ${if (printStack) Throwable().stackTraceToString() else ""}"
     }
 }
 
-fun MethodHookParam.logParamsAndResOnDebug(
+fun ShortXHookParam.logParamsAndResOnDebug(
     logger: Logger = utilLogger,
     printStack: Boolean = false
 ) {
     logger.logOnDebug {
-        "${method.name} - ${
-            this.args.map { it }.joinToString()
-        } ---> $result ${if (printStack) Throwable().stackTraceToString() else ""}"
+        "${method.name} - ${args.map { it }.joinToString()} ---> $result ${if (printStack) Throwable().stackTraceToString() else ""}"
     }
 }

@@ -1,7 +1,6 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import android.content.pm.ApplicationInfo
-import de.robv.android.xposed.XC_MethodHook
 import tornaco.apps.shortx.core.platform.Classes.amsClass
 import tornaco.apps.shortx.core.platform.Classes.processListClass
 import tornaco.apps.shortx.core.platform.Methods.handleProcessStartedLocked
@@ -51,15 +50,15 @@ object ProcessListHook {
             logger.e(it, "hookProcessListOnProcessStarted")
         }
 
-    private fun handleProcessStartedLocked(param: XC_MethodHook.MethodHookParam) {
+    private fun handleProcessStartedLocked(param: ShortXHookParam) {
         // boolean handleProcessStartedLocked(ProcessRecord app, int pid, boolean usingWrapper, long expectedStartSeq, boolean procAttached)
-        val record = param.args[0].toProcessRecord()
+        val record = requireNotNull(param.args[0]).toProcessRecord()
         ShortXService.shortXContext.appState.onProcessStarted(record)
     }
 
-    private fun handleRemoveLruProcessLocked(param: XC_MethodHook.MethodHookParam) {
+    private fun handleRemoveLruProcessLocked(param: ShortXHookParam) {
         // void removeLruProcessLocked(ProcessRecord app)
-        val record = param.args[0].toProcessRecord()
+        val record = requireNotNull(param.args[0]).toProcessRecord()
         ShortXService.shortXContext.appState.onProcessRemoved(record)
     }
 

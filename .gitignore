@@ -23,6 +23,7 @@ out/
 *.tmp
 *.swp
 Thumbs.db
+.vscode/
 # Common build directories
 **/build/
 **/bin/

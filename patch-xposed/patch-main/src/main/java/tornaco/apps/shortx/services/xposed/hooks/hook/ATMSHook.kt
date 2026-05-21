@@ -1,15 +1,15 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import android.content.pm.ApplicationInfo
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.platform.Classes.atmsClass
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.ISystemServerLoaded
 
 object ATMSHook {
     private val logger = Logger("ShortXHook.ATMSHook")
 
-    fun hookATMS(lpparam: XC_LoadPackage.LoadPackageParam) {
+    fun hookATMS(lpparam: ISystemServerLoaded.Param) {
         if (BuildPropInternal.APP_IS_DEBUG) {
             kotlin.runCatching {
                 //  public PreBindInfo preBindApplication(WindowProcessController wpc, ApplicationInfo info)

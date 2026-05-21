@@ -18,7 +18,7 @@ ShortX is built as a layered automation system:
 1. `ui` lets the user create and manage rules, direct actions, toggles, settings, and method hooks.
 2. `core-api` defines the shared protobuf models, AIDL contracts, and the `ShortXManager` client wrapper.
 3. `services` is the real runtime engine that stores automation state, publishes facts, evaluates conditions, and executes actions.
-4. `patch-xposed` injects ShortX into system and app processes, observes framework behavior, and feeds hook-driven events back into `services`.
+4. `patch-xposed` injects ShortX into system and app processes through the LSPosed API 101 runtime, observes framework behavior, and feeds hook-driven events back into `services`.
 
 ## Layer Responsibilities
 
@@ -87,7 +87,7 @@ Representative entry points:
 
 Owns:
 
-- Xposed and LSPosed entry points
+- LSPosed API 101 module entry and hook dispatch
 - hook registration in system server and app processes
 - method-hook installation from rule definitions
 - SystemUI-specific hook integrations
@@ -98,7 +98,6 @@ Main role in architecture:
 
 Representative entry points:
 
-- `patch-xposed/patch-main/.../XposedEntry.kt`
 - `patch-xposed/patch-main/.../ShortXLSPosedHookEntry.kt`
 - `patch-xposed/patch-main/.../HookStub2.kt`
 - `patch-xposed/patch-common/.../CustomHookUtil.kt`

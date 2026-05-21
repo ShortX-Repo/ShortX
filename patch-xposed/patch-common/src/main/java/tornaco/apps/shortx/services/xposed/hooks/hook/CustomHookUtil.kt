@@ -1,10 +1,7 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
-import android.app.AndroidAppHelper
 import com.android.internal.annotations.VisibleForTesting
-import de.robv.android.xposed.XC_MethodHook.MethodHookParam
 import org.mvel2.MVEL
-import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.MethodHook
@@ -29,7 +26,7 @@ object CustomHookUtil {
         classLoader: ClassLoader?,
         currentProcessPkgName: String?,
         lifecycle: MethodHookLifecycle,
-        onMethodCall: (MethodHookParam, MethodHook) -> Unit,
+        onMethodCall: (ShortXHookParam, MethodHook) -> Unit,
         log: (String) -> Unit
     ) {
         log("Checking rules for app: $currentProcessPkgName - $lifecycle")
@@ -51,7 +48,7 @@ object CustomHookUtil {
 
     private fun MethodHook.install(
         classLoader: ClassLoader?,
-        onMethodCall: (MethodHookParam, MethodHook) -> Unit,
+        onMethodCall: (ShortXHookParam, MethodHook) -> Unit,
         log: (String) -> Unit
     ) {
         kotlin.runCatching {
@@ -118,7 +115,7 @@ object CustomHookUtil {
     }
 
     fun MethodHook.compileExpressions(
-        methodHookParam: MethodHookParam,
+        methodHookParam: ShortXHookParam,
         log: (String) -> Unit
     ): List<StringPair> {
         val expressions = expressionsList
@@ -132,7 +129,7 @@ object CustomHookUtil {
 
     private fun executeMVEL(
         expression: String,
-        methodHookParam: MethodHookParam,
+        methodHookParam: ShortXHookParam,
         log: (String) -> Unit
     ): String {
         val varsMap: Map<String, Any?> =
@@ -148,12 +145,4 @@ object CustomHookUtil {
             ""
         }
     }
-}
-
-@DoNotStrip
-class InjectedAndroidAppHelper {
-    val currentProcessName get() = AndroidAppHelper.currentProcessName()
-    val currentPackageName get() = AndroidAppHelper.currentPackageName()
-    val currentApplication get() = AndroidAppHelper.currentApplication()
-    val currentApplicationInfo get() = AndroidAppHelper.currentApplicationInfo()
 }

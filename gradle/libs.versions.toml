@@ -23,6 +23,7 @@ jotp = "1.3.0"
 jsoup = "1.18.3"
 kotest-assertions = "5.9.1"
 libsu = "6.0.0"
+libxposed-api = "101.0.1"
 mmkv = "2.2.1"
 orbit = "9.0.0"
 androidx-test-runner = "1.6.2"
@@ -120,6 +121,7 @@ dalvik-dx = { module = "com.jakewharton.android.repackaged:dalvik-dx", version.r
 jotp = { module = "com.amdelamar:jotp", version.ref = "jotp" }
 jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 libsu-core = { module = "com.github.topjohnwu.libsu:core", version.ref = "libsu" }
+libxposed-api = { module = "io.github.libxposed:api", version.ref = "libxposed-api" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest-assertions" }
 kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotest-assertions" }
 libsu-nio = { module = "com.github.topjohnwu.libsu:nio", version.ref = "libsu" }

@@ -1,9 +1,9 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
-import android.app.AndroidAppHelper
 import android.util.Log
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.ShortXManagerNative
+import tornaco.apps.shortx.core.os.AndroidAppHelper
 import tornaco.apps.shortx.core.proto.fact.MethodHookLifecycle
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.services.xposed.hooks.hook.CustomHookUtil.compileExpressions
@@ -24,8 +24,7 @@ object CustomHookApp {
         if (!IS_FEATURE_ENABLED) return
 
         if (currentProcessPkgName == null) {
-            val currentPkgNameOnHook = kotlin.runCatching { AndroidAppHelper.currentPackageName() }
-                .getOrElse { "android" }
+            val currentPkgNameOnHook = AndroidAppHelper.currentPackageName()
             Log.d(
                 "hookApp",
                 "currentPkgNameOnHook: $currentPkgNameOnHook"
@@ -43,8 +42,7 @@ object CustomHookApp {
             currentProcessPkgName = currentProcessPkgName,
             lifecycle = lifecycle,
             onMethodCall = { param, hook ->
-                val currentPkgName = kotlin.runCatching { AndroidAppHelper.currentPackageName() }
-                    .getOrElse { "android" }
+                val currentPkgName = currentProcessPkgName ?: AndroidAppHelper.currentPackageName()
                 if (currentPkgName != BuildPropInternal.APP_PACKAGE_NAME) {
                     val contextDataList = hook.compileExpressions(param, log)
                     shortXManager.onHookedMethodCalled(hook, contextDataList)

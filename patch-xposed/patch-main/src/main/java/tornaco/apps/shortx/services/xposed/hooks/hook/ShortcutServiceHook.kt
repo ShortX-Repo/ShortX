@@ -120,7 +120,7 @@ object ShortcutServiceHook {
                     addAll(infos)
                 }
                 val newRes = ParceledListSlice(newList)
-                param.result = newRes
+                param.returnAndSkip(newRes)
                 logger.d("Add: $insertShortcuts to activity query.")
             }
         }.onFailure {
@@ -207,7 +207,7 @@ object ShortcutServiceHook {
                         val updatedResList = insertShortcuts.toMutableList().apply {
                             addAll(resList)
                         }
-                        param.result = updatedResList
+                        param.returnAndSkip(updatedResList)
                     }
                 } else {
                     logger.d("No shortcuts.")
@@ -244,7 +244,7 @@ object ShortcutServiceHook {
                         shortcut,
                         AppPkg.newBuilder().setPkgName(packageName).setUserId(targetUserId).build()
                     )
-                    param.result = true
+                    param.returnAndSkip(true)
                 }
             }
         }.onFailure {

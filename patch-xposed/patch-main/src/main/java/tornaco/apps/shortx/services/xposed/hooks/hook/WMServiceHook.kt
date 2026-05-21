@@ -28,7 +28,7 @@ object WMServiceHook {
                 systemReady
             ) { param ->
                 logger.d("systemReady: ${param.thisObject}")
-                ServiceHolder.windowManagerService = param.thisObject
+                ServiceHolder.windowManagerService = param.thisObject ?: return@afterMethod
             }
         }.onFailure {
             logger.e(it, "hookSystemReady")
@@ -41,7 +41,7 @@ object WMServiceHook {
                 "notifyFocusChanged"
             ) { param ->
                 logger.d("notifyFocusChanged: ${param.args.map { it }}")
-                val focused = GetFocusedWindowMethodCall.call(param.thisObject)
+                val focused = GetFocusedWindowMethodCall.call(param.thisObject ?: return@afterMethod)
                 logger.d("notifyFocusChanged: $focused")
                 if (focused != null) {
                     val ownerUid = Reflections.getIntField(focused, "mOwnerUid")
@@ -66,7 +66,7 @@ object WMServiceHook {
                 "reportFocusChangedSerialized"
             ) { param ->
                 logger.d("reportFocusChangedSerialized: ${param.args.map { it }}")
-                val wms = Reflections.getObjectField(param.thisObject, "mWmService")
+                val wms = Reflections.getObjectField(param.thisObject ?: return@afterMethod, "mWmService")
                 val focused = GetFocusedWindowMethodCall.call(wms)
                 logger.d("reportFocusChangedSerialized: $focused")
                 if (focused != null) {

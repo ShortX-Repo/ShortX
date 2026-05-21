@@ -167,6 +167,23 @@ class EdgeGestureSequenceDetector(
         elapsedRealtime: () -> Long,
         dpToPx: (Int) -> Int,
         hintSink: EdgeGestureSequenceHintSink,
+        debugLog: (String) -> Unit,
+    ) : this(
+        scheduler = scheduler,
+        service = service,
+        elapsedRealtime = elapsedRealtime,
+        dpToPx = dpToPx,
+        hintSink = hintSink,
+        toAbsolutePortraitPoint = { x, y -> PointF(x, y) },
+        debugLog = debugLog,
+    )
+
+    constructor(
+        scheduler: GestureSequenceScheduler,
+        service: GestureBridge,
+        elapsedRealtime: () -> Long,
+        dpToPx: (Int) -> Int,
+        hintSink: EdgeGestureSequenceHintSink,
         toAbsolutePortraitPoint: (Float, Float) -> PointF,
     ) : this(
         scheduler = scheduler,

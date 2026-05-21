@@ -144,7 +144,7 @@ dependencies {
     implementation(libs.androidx.paging.runtime.ktx)
     implementation(libs.androidx.paging.compose)
 
-    compileOnly(files("${project.rootDir.path}/patch-xposed/patch-main/libs/libxposed-api.jar"))
+    compileOnly(libs.libxposed.api)
     implementation(files("${project.rootDir.path}/patch-xposed/patch-main/libs/libxposed-service.jar"))
     implementation(files("${project.rootDir.path}/patch-xposed/patch-main/libs/libxposed-service-interface.jar"))
 

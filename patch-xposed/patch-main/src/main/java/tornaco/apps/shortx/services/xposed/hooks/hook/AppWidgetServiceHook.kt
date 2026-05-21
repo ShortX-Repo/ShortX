@@ -27,7 +27,7 @@ object AppWidgetServiceHook {
                     val bundle = Bundle().apply {
                         putBinder("shortX-Binder", service)
                     }
-                    hookParam.result = ParceledListSlice(listOf(bundle))
+                    hookParam.returnAndSkip(ParceledListSlice(listOf(bundle)))
                 }
             }
         }.onFailure {

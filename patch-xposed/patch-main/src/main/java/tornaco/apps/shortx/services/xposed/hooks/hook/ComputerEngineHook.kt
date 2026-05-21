@@ -4,7 +4,6 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.ResolveInfo
 import android.content.pm.ServiceInfo
-import de.robv.android.xposed.XposedHelpers
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.classNameToCustomContextMenu
 import tornaco.apps.shortx.core.platform.Classes.pmComputerEngineClass
@@ -56,7 +55,7 @@ object ComputerEngineHook {
                         logger.d("getServiceInfo: $name, resultServiceInfo?: $resultServiceInfo")
                         resultServiceInfo.nonLocalizedLabel = label
                         resultServiceInfo.labelRes = -1
-                        param.result = resultServiceInfo
+                        param.returnAndSkip(resultServiceInfo)
                         logger.d("getServiceInfo: $name, override.")
                     }
                 }
@@ -69,7 +68,7 @@ object ComputerEngineHook {
     private fun hookQueryIntentActivities(lpparam: ISystemServerLoaded.Param) =
         kotlin.runCatching {
             afterMethod(
-                XposedHelpers.findClass(QueryIntentActivities.engineClassName, lpparam.classLoader),
+                lpparam.classLoader.loadClass(QueryIntentActivities.engineClassName),
                 QueryIntentActivities.queryIntentActivityMethodName
             ) { param ->
                 logger.d("queryIntentActivities ${param.args.map { it }}")
@@ -87,7 +86,7 @@ object ComputerEngineHook {
                                 resolveInfo.resolvePackageName + "-" + resolveInfo.activityInfo.name + "-" + resolveInfo.nonLocalizedLabel
                             }
                         }")
-                    param.result = result.map { resultItem ->
+                    param.returnAndSkip(result.map { resultItem ->
                         val resolveInfo = resultItem as ResolveInfo
                         val name: String? = resolveInfo.activityInfo.name
                         if (name?.startsWith(BuildPropInternal.CUSTOM_CONTEXT_MENU_CLASSNAME_BASE) == true) {
@@ -106,7 +105,7 @@ object ComputerEngineHook {
                             }
                         }
                         resolveInfo
-                    }
+                    })
                 }
             }
         }.onFailure {
