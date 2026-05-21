@@ -137,7 +137,15 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Device.bluetooth_connect_fill
         }
 
+        Action.ToggleBT::class -> {
+            Remix.Device.bluetooth_fill
+        }
+
         Action.EnableDND::class -> {
+            Remix.Weather.moon_fill
+        }
+
+        Action.ToggleDND::class -> {
             Remix.Weather.moon_fill
         }
 
@@ -145,11 +153,23 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Device.gps_fill
         }
 
+        Action.ToggleLocation::class -> {
+            Remix.Device.gps_fill
+        }
+
         Action.EnableDarkMode::class -> {
             Remix.Weather.sun_fill
         }
 
+        Action.ToggleDarkMode::class -> {
+            Remix.Weather.sun_fill
+        }
+
         Action.EnableData::class -> {
+            Remix.Arrows.arrow_up_down_fill
+        }
+
+        Action.ToggleData::class -> {
             Remix.Arrows.arrow_up_down_fill
         }
 
@@ -165,7 +185,15 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Device.hotspot_fill
         }
 
+        Action.ToggleHotSpot::class -> {
+            Remix.Device.hotspot_fill
+        }
+
         Action.EnableNFC::class -> {
+            Remix.Device.nfc_fill
+        }
+
+        Action.ToggleNFC::class -> {
             Remix.Device.nfc_fill
         }
 
@@ -173,7 +201,15 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Device.wifi_fill
         }
 
+        Action.ToggleWifi::class -> {
+            Remix.Device.wifi_fill
+        }
+
         Action.EnableSensorsOff::class -> {
+            Remix.Device.sensor_line
+        }
+
+        Action.ToggleSensorsOff::class -> {
             Remix.Device.sensor_line
         }
 
@@ -418,6 +454,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
         }
 
         Action.EnableAutoBrightness::class -> {
+            Remix.System.brightness_auto_fill
+        }
+
+        Action.ToggleAutoBrightness::class -> {
             Remix.System.brightness_auto_fill
         }
 

@@ -215,7 +215,14 @@ class HwImpl implements IHW {
 
     @Override
     public boolean isTetheringEnabled() {
-        return false;
+        try {
+            @SuppressLint("WifiManagerPotentialLeak")
+            WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            return wifiManager.getWifiApState() == WifiManager.WIFI_AP_STATE_ENABLED;
+        } catch (Throwable e) {
+            logger.e(e, "isTetheringEnabled fail");
+            return false;
+        }
     }
 
     @Override
@@ -489,4 +496,3 @@ class FlashlightController {
         }
     }
 }
-

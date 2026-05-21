@@ -338,6 +338,19 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
         })
     SIMSlotSelectorDialog(state = switchMobileDataSelectorState)
 
+    val toggleMobileDataSelectorState = rememberSIMSlotSelectorState(
+        canSelectAny = true,
+        onSelected = {
+            addAction(
+                Action.ToggleData(
+                    slotId = it,
+                    hasSpecificSlotId = it >= 0,
+                )
+            )
+        }
+    )
+    SIMSlotSelectorDialog(state = toggleMobileDataSelectorState)
+
     val toggle5GSelectorState = rememberToggle5GSelectorState {
         addAction(it)
     }
@@ -680,18 +693,32 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
             Action.DisableAutoBrightness::class,
 
             Action.EnableBT::class,
+            Action.ToggleBT::class,
             Action.EnableLocation::class,
+            Action.ToggleLocation::class,
             Action.EnableDND::class,
+            Action.ToggleDND::class,
             Action.EnableDarkMode::class,
+            Action.ToggleDarkMode::class,
             Action.EnableData::class,
             Action.EnableFlashLight::class,
             Action.ToggleFlashLight::class,
             Action.EnableHotSpot::class,
+            Action.ToggleHotSpot::class,
             Action.EnableNFC::class,
+            Action.ToggleNFC::class,
             Action.EnableAutoBrightness::class,
+            Action.ToggleAutoBrightness::class,
             Action.EnableSensorsOff::class,
-            Action.EnableWifi::class -> {
+            Action.ToggleSensorsOff::class,
+            Action.EnableWifi::class,
+            Action.ToggleWifi::class -> {
                 addAction(source.clazz.createInstance())
+                true
+            }
+
+            Action.ToggleData::class -> {
+                toggleMobileDataSelectorState.show()
                 true
             }
 
@@ -802,33 +829,43 @@ fun SystemActions(
         Action.ReadClipboard::class,
         Action.WriteClipboard::class,
         Action.EnableWifi::class,
+        Action.ToggleWifi::class,
         Action.DisableWifi::class,
         Action.EnableLocation::class,
+        Action.ToggleLocation::class,
         Action.DisableLocation::class,
         Action.EnableBT::class,
+        Action.ToggleBT::class,
         Action.DisableBT::class,
         Action.EnableData::class,
+        Action.ToggleData::class,
         Action.DisableData::class,
         Action.SwitchMobileDataSlot::class,
         Action.Toggle5G::class,
         Action.ToggleSlot::class,
         Action.SetAPMModeEnabled::class,
         Action.EnableHotSpot::class,
+        Action.ToggleHotSpot::class,
         Action.DisableHotSpot::class,
         Action.EnableNFC::class,
+        Action.ToggleNFC::class,
         Action.DisableNFC::class,
         Action.EnableDND::class,
+        Action.ToggleDND::class,
         Action.DisableDND::class,
         Action.EnableFlashLight::class,
         Action.ToggleFlashLight::class,
         Action.DisableFlashLight::class,
         Action.EnableDarkMode::class,
+        Action.ToggleDarkMode::class,
         Action.DisableDarkMode::class,
         Action.EnableAutoBrightness::class,
+        Action.ToggleAutoBrightness::class,
         Action.DisableAutoBrightness::class,
         Action.SetBrightness::class,
         Action.ContinuousAdjustBrightness::class,
         Action.EnableSensorsOff::class,
+        Action.ToggleSensorsOff::class,
         Action.DisableSensorsOff::class,
         Action.Vibrate::class,
         Action.PlayRingtone::class,

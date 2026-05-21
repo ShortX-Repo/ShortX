@@ -1,0 +1,18 @@
+package tornaco.apps.shortx.services.rule.actor.impl
+
+import com.google.protobuf.Message
+import tornaco.apps.shortx.services.rule.actor.Actor
+import tornaco.apps.shortx.services.rule.actor.HandleParams
+import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.HwImpl
+
+object ToggleBT : Actor {
+    override fun actionsCanHandle(): Class<out Message> {
+        return tornaco.apps.shortx.core.proto.action.ToggleBT::class.java
+    }
+
+    override suspend fun handle(params: HandleParams) = with(params) {
+        val hw = HwImpl(androidContext, shortXContext)
+        if (hw.isBTEnabled()) hw.disableBT() else hw.enableBT()
+        Actor.Res.EMPTY
+    }
+}

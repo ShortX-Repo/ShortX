@@ -458,9 +458,25 @@ message SetWifiEnabled {
   string id = 100;
 }
 
+message ToggleWifi {
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message SetBTEnabled {
   bool enable = 1;
 
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message ToggleBT {
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
@@ -478,10 +494,29 @@ message SetHotSpotEnabled {
   string id = 100;
 }
 
+message ToggleHotSpot {
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message SetDataEnabled {
   bool enable = 1;
   bool hasSpecificSlotId = 2;
   int32 slotId = 3;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message ToggleData {
+  bool hasSpecificSlotId = 1;
+  int32 slotId = 2;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
@@ -511,6 +546,14 @@ message SetNFCEnabled {
   string id = 100;
 }
 
+message ToggleNFC {
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message SetDNDEnabled {
   bool enable = 1;
 
@@ -521,9 +564,25 @@ message SetDNDEnabled {
   string id = 100;
 }
 
+message ToggleDND {
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message SetDarkModeEnabled {
   bool enable = 1;
 
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message ToggleDarkMode {
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
@@ -559,9 +618,25 @@ message SetLocationEnabled {
   string id = 100;
 }
 
+message ToggleLocation {
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message SetSensorsOffEnabled {
   bool enable = 1;
 
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message ToggleSensorsOff {
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
@@ -1119,6 +1194,14 @@ message SetBrightness {
 message SetAutoBrightness {
   bool enable = 1;
 
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message ToggleAutoBrightness {
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;

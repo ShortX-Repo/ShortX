@@ -122,6 +122,7 @@ protobuf {
 }
 
 tasks.named("compileKotlin") {
+    dependsOn("generateAidlFiles")
     dependsOn("generateProto")
 }
 
