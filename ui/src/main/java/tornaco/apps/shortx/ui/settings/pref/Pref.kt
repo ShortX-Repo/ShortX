@@ -30,6 +30,8 @@ private val WORKDAY_REFRESH_ERROR = stringPreferencesKey("workday_refresh_error"
 private val WORKDAY_REFRESH_AT = stringPreferencesKey("workday_refresh_at")
 private val WORKDAY_REFRESH_YEARS = stringSetPreferencesKey("workday_refresh_years")
 private val WORKDAY_REFRESH_SOURCE = stringPreferencesKey("workday_refresh_source")
+private val LAST_VIEWED_CHANGE_LOG_VERSION_CODE =
+    stringPreferencesKey("last_viewed_change_log_version_code")
 
 private val RECENT_SELECTED_ACTIONS = stringPreferencesKey("recent_selected_actions")
 
@@ -137,6 +139,10 @@ class Pref(val context: Context) {
 
     val workdayRefreshSource: Flow<String> = context.dataStore.data.map { preferences ->
         preferences[WORKDAY_REFRESH_SOURCE] ?: ""
+    }
+
+    val lastViewedChangeLogVersionCode: Flow<Int> = context.dataStore.data.map { preferences ->
+        preferences[LAST_VIEWED_CHANGE_LOG_VERSION_CODE]?.toIntOrNull() ?: 0
     }
 
     val uiShowDetailedDAItemContent: Flow<Boolean> = context.dataStore.data.map { preferences ->
@@ -303,6 +309,12 @@ class Pref(val context: Context) {
             settings[WORKDAY_REFRESH_SOURCE] = sourceUrl
             settings[WORKDAY_REFRESH_STATUS] = status
             settings[WORKDAY_REFRESH_ERROR] = error
+        }
+    }
+
+    suspend fun setLastViewedChangeLogVersionCode(versionCode: Int) {
+        context.dataStore.edit { settings ->
+            settings[LAST_VIEWED_CHANGE_LOG_VERSION_CODE] = versionCode.toString()
         }
     }
 
