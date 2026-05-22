@@ -32,7 +32,7 @@ object ActivityStarterHook {
             )
             logger.i("executeRequest: $executeRequest")
             afterMethod(executeRequest) {
-                val request: Any = it.args[0]
+                val request = requireNotNull(it.args[0])
                 val intent = Reflections.getObjectField(request, "intent") as Intent?
                 val userId = Reflections.getObjectField(request, "userId") as Int
                 // final ActivityRecord caller = ActivityRecord.forTokenLocked(mRequest.resultTo);
@@ -66,4 +66,3 @@ object ActivityStarterHook {
         }
     }
 }
-

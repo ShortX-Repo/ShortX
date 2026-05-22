@@ -18,7 +18,7 @@ object RenderNodeHook {
                 if (param.throwable != null) {
                     logger.w("Fix render node crash: ${param.throwable}")
                     param.throwable = null
-                    param.result = null
+                    param.returnAndSkip(null)
                 }
             }
         }

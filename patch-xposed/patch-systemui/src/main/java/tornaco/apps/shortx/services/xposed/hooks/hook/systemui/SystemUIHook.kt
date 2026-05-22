@@ -2,13 +2,13 @@ package tornaco.apps.shortx.services.xposed.hooks.hook.systemui
 
 import android.content.Context
 import android.util.Log
-import de.robv.android.xposed.XposedBridge
 import tornaco.apps.shortx.core.AppGlobals
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.logAdapter
+import tornaco.apps.shortx.services.xposed.hooks.hook.XposedLog
 import tornaco.apps.shortx.services.xposed.hooks.hook.api.IPackageLoaded
 
 object SystemUIHook {
@@ -17,12 +17,12 @@ object SystemUIHook {
     fun handleLoadPackage(lpparam: IPackageLoaded.Param) {
         if (PackageNames.systemUI == lpparam.packageName) {
             val isMainProcess = PackageNames.systemUI == lpparam.processName
-            XposedBridge.log("SystemUIHook.isMainProcess- $isMainProcess")
+            XposedLog.log("SystemUIHook.isMainProcess- $isMainProcess")
             if (!isMainProcess) return
             // Install log
             logAdapter = { level: Int, tag: String, msg: String ->
                 if (BuildPropInternal.APP_IS_DEBUG) {
-                    XposedBridge.log("ShortXSystemUi $tag - $msg")
+                    XposedLog.log("ShortXSystemUi $tag - $msg")
                 } else {
                     Log.println(Log.INFO, "ShortXSystemUi", "$tag - $msg")
                 }

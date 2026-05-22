@@ -25,7 +25,7 @@ object AccManagerHook {
                 logger.d("suppressingAccessibilityServicesLocked ${param.result}")
                 if (param.result.toString().toBoolean()) {
                     logger.i("Change suppressingAccessibilityServicesLocked result to false")
-                    param.result = false
+                    param.returnAndSkip(false)
                 }
             }
         }.onFailure {
@@ -39,7 +39,7 @@ object AccManagerHook {
                 "canRetrieveInteractiveWindowsLocked"
             ) { param ->
                 param.logParamsAndResOnDebug(logger)
-                param.result = true
+                param.returnAndSkip(true)
             }
         }.onFailure {
             logger.e(it, "hookRIW")

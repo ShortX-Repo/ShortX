@@ -776,11 +776,13 @@ class EdgeGestureSequenceDetectorTest {
             gestureEvent: Gesture,
             downX: Float,
             downY: Float,
+            coordinateMode: PredefinedEdgeCoordinateMode?,
         ): Boolean = false
 
         override fun findMatchingEdgeGestureSequences(
             areas: List<DetectedArea>,
             gestureEvent: Gesture,
+            coordinateMode: PredefinedEdgeCoordinateMode?,
         ): List<EdgeGestureSequenceCandidate> = emptyList()
 
         override fun fireEdgeGestureSequence(
@@ -816,6 +818,7 @@ class EdgeGestureSequenceDetectorTest {
         override fun findContinuousGestureBinding(
             areas: List<DetectedArea>,
             gestureEvent: Gesture,
+            coordinateMode: PredefinedEdgeCoordinateMode?,
         ): ContinuousGestureBinding? = null
         override fun createContinuousActionHandler(payload: ContinuousGestureActionPayload): ContinuousActionHandler? = null
         override val enabledEdgeGestures: Set<EdgeGesture> = emptySet()

@@ -42,7 +42,7 @@ object InputManagerHook {
                 val res = ShortXService.shortXContext.gesture.filterInput(inputEvent)
                 res?.let {
                     logger.logOnDebug { "Set filterInputEvent res: $it" }
-                    param.result = it
+                    param.returnAndSkip(it)
                 }
             }
         }.onFailure {
@@ -106,10 +106,10 @@ object InputManagerHook {
                     ShortXService.shortXContext.input.interceptKeyBeforeQueueing(
                         keyEvent,
                         policyFlags
-                    )
+                )
                 if (res != null) {
                     logger.logOnDebug { "Set interceptKeyBeforeQueueing res: $res" }
-                    param.result = res
+                    param.returnAndSkip(res)
                 }
             }
         }.onFailure {
@@ -138,7 +138,7 @@ object InputManagerHook {
                     ShortXService.shortXContext.input.interceptKeyBeforeDispatching(keyEvent)
                 if (res != null) {
                     logger.logOnDebug { "Set interceptKeyBeforeDispatching res: $res" }
-                    param.result = res
+                    param.returnAndSkip(res)
                 }
             }
         }

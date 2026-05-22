@@ -2,9 +2,9 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import android.util.Log
 import com.android.internal.statusbar.IStatusBar
-import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.services.xposed.hooks.hook.api.ISystemServerLoaded
 import util.Reflections
 import java.lang.reflect.Proxy
 
@@ -17,7 +17,7 @@ object StatusBarDebugHook {
 
     private val logger = Logger("ShortXHook.StatusBarDebugHook")
 
-    fun hook(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
+    fun hook(lpparam: ISystemServerLoaded.Param) = kotlin.runCatching {
         if (BuildPropInternal.APP_IS_DEBUG) {
             hookRegister(lpparam)
         }
@@ -25,7 +25,7 @@ object StatusBarDebugHook {
         logger.e(it, "hookRegister")
     }
 
-    private fun hookRegister(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
+    private fun hookRegister(lpparam: ISystemServerLoaded.Param) = kotlin.runCatching {
         afterMethod(
             Reflections.findClass(
                 "com.android.server.statusbar.StatusBarManagerService",
