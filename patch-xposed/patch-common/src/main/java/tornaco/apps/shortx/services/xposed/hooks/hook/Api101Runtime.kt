@@ -18,5 +18,6 @@ object Api101Runtime {
     fun init(base: XposedInterface, processName: String?, systemServer: Boolean) {
         xposedInterface = base
         isSystemServer = systemServer
+        HookRuntime.useApi101()
     }
 }

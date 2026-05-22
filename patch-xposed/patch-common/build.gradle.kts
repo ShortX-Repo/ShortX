@@ -19,6 +19,7 @@ dependencies {
     libxposedApiAar(libs.libxposed.api)
 
     compileOnly(files("${rootProject.rootDir.path}/android-sdk/31/android-31.jar"))
+    compileOnly(files("${rootProject.rootDir.path}/patch-xposed/patch-main/libs/api-82.jar"))
     compileOnly(files(layout.buildDirectory.file("generated/libxposed-api/libxposed-api.jar")))
 
     implementation(project(":core-api"))

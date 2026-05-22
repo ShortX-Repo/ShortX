@@ -19,6 +19,7 @@
 
 # Xposed API 101 entry and hook callbacks.
 -keep class tornaco.apps.shortx.services.xposed.hooks.hook.** { *; }
+-keep class de.robv.android.xposed.** { *; }
 -keep class * implements io.github.libxposed.api.XposedInterface$Hooker { *; }
 -keepclassmembers class * {
     public static void before(...);
@@ -250,6 +251,15 @@
 -dontwarn io.github.libxposed.api.XposedModuleInterface$ModuleLoadedParam
 -dontwarn io.github.libxposed.api.XposedModuleInterface$PackageLoadedParam
 -dontwarn io.github.libxposed.api.XposedModuleInterface$SystemServerLoadedParam
+
+-dontwarn de.robv.android.xposed.IXposedHookLoadPackage
+-dontwarn de.robv.android.xposed.IXposedHookZygoteInit$StartupParam
+-dontwarn de.robv.android.xposed.IXposedHookZygoteInit
+-dontwarn de.robv.android.xposed.XC_MethodHook$MethodHookParam
+-dontwarn de.robv.android.xposed.XC_MethodHook$Unhook
+-dontwarn de.robv.android.xposed.XC_MethodHook
+-dontwarn de.robv.android.xposed.XposedBridge
+-dontwarn de.robv.android.xposed.callbacks.XC_LoadPackage$LoadPackageParam
 
 -dontwarn android.content.pm.ShortcutQueryWrapper
 -dontwarn com.android.internal.os.ProcessCpuTracker
