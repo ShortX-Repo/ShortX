@@ -33,6 +33,10 @@
   "ui.fact.edge.gesture.child.singletap": "Single tap",
   "ui.fact.edge.gesture.child.doubletap": "Double tap",
   "ui.fact.edge.gesture.child.longtap": "Long tap",
-  "ui.action.continuous.adjust.volume": "Continuous adjust volume"
-  ,"ui.action.continuous.adjust.brightness": "Continuous adjust brightness"
+  "ui.action.continuous.adjust.volume": "Continuous adjust volume",
+  "ui.action.continuous.adjust.brightness": "Continuous adjust brightness",
+  "ui.changelog.title": "Change log",
+  "ui.changelog.settings.summary": "View locally bundled release notes",
+  "ui.changelog.current.version": "Current version {version} ({code})",
+  "ui.changelog.version.code": "Version code {code}"
 }

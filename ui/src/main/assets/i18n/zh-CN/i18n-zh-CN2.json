@@ -33,6 +33,10 @@
   "ui.fact.edge.gesture.child.singletap": "单击",
   "ui.fact.edge.gesture.child.doubletap": "双击",
   "ui.fact.edge.gesture.child.longtap": "长按",
-  "ui.action.continuous.adjust.volume": "连续调节音量"
-  ,"ui.action.continuous.adjust.brightness": "连续调节亮度"
+  "ui.action.continuous.adjust.volume": "连续调节音量",
+  "ui.action.continuous.adjust.brightness": "连续调节亮度",
+  "ui.changelog.title": "更新日志",
+  "ui.changelog.settings.summary": "查看本地记录的版本更新内容",
+  "ui.changelog.current.version": "当前版本 {version} ({code})",
+  "ui.changelog.version.code": "版本号 {code}"
 }

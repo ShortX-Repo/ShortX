@@ -7,15 +7,11 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
-import android.view.MotionEvent;
-import android.view.ViewConfiguration;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 
 public class ControlPanelView extends FrameLayout {
-    private static final float MIN_BUTTON_GAP_DP = 8f;
-    private static final float EDGE_FADE_DEGREES = 12f;
     /**
      * 开关状态
      */
@@ -28,7 +24,6 @@ public class ControlPanelView extends FrameLayout {
      * 半圆的原心位置到子控件之间的距离
      */
     int mRadius;
-    int mMaxRadius;
     float mRadiusScale = 1f;
     /**
      * 子控件的半径
@@ -53,12 +48,6 @@ public class ControlPanelView extends FrameLayout {
      * 第一个按钮的角度
      */
     int mStartAngle = -90;
-    private float mOverflowScrollDegrees = 0f;
-    private float mLastTouchY;
-    private float mDownTouchX;
-    private float mDownTouchY;
-    private boolean mIsDraggingOverflow;
-    private final int mTouchSlop;
     /**
      * 面板宽高
      */
@@ -85,7 +74,6 @@ public class ControlPanelView extends FrameLayout {
 
     public ControlPanelView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
         init(context, attrs);
     }
 
@@ -133,11 +121,7 @@ public class ControlPanelView extends FrameLayout {
         }
         //计算出半圆的圆心心到子控件圆心的距离，就是我们半圆的半径
         //基本是高的一半减去子控件的2倍半径
-        int baseRadius = (int) (mChildRadius * 2.5f * mRadiusScale);
-        int availableHorizontalRadius = Math.max(0, widthSize - (mChildRadius * 2));
-        int availableVerticalRadius = Math.max(0, (heightSize / 2) - mChildRadius);
-        mMaxRadius = Math.min(availableHorizontalRadius, availableVerticalRadius);
-        mRadius = Math.min(mMaxRadius, Math.max(baseRadius, getRequiredRadiusForEvenSpacing(count)));
+        mRadius = (int) (mChildRadius * 2.5 * mRadiusScale);
         //计算按钮的位置，左、右的中间
         if (isLeft) {
             mButtonCenterX = mOffset;
@@ -167,24 +151,26 @@ public class ControlPanelView extends FrameLayout {
         super.onLayout(changed, left, top, right, bottom);
         int count = getChildCount();
         if (count == 0) return;
-        float stepDegrees = getStepDegrees(count);
-        float maxOverflowScroll = getMaxOverflowScrollDegrees(count);
-        if (mOverflowScrollDegrees > maxOverflowScroll) {
-            mOverflowScrollDegrees = maxOverflowScroll;
+        //每份子控件应该占用的角度
+        int childAngle = 180 / count;
+        //每个子View之间的间隔，角度分成4份后，间隔的数量是份数-1
+        int interval = 180;
+        if (count > 1) {
+            interval = (180 / count) / (count - 1);
         }
         for (int i = 0; i < count; i++) {
-            View childView = getChildAt(i);
-            float progressDegrees = (i * stepDegrees) - mOverflowScrollDegrees;
-            float edgeAlpha = computeEdgeAlpha(progressDegrees);
-            boolean isVisibleInArc = edgeAlpha > 0f;
-            childView.setVisibility(isVisibleInArc ? View.VISIBLE : View.INVISIBLE);
-            childView.setAlpha(isVisibleInArc ? edgeAlpha : 0f);
-            childView.setEnabled(progressDegrees >= 0f && progressDegrees <= 180f);
-            if (!isVisibleInArc) {
-                continue;
+            //计算出每个子控件的位置
+            float[] point;
+            //因为在左边时，圆弧的开始角度是从-90度开始的，子View是顺时针从上到下排布
+            //右边时，开始角度是90度，顺时针从下往上排布，但是我们的效果是从-90度逆时针从上往下排布
+            //所以当右边时，将坐标位置和对应方向的位置调换，例如现在位置是0的子View，就要排布到4的位置，就是(count - 1) - i
+            if (!isLeft) {
+                int fixPosition = count - 1 - i;
+                point = getCoordinatePoint(mPanelRadius, mStartAngle + ((fixPosition * childAngle) + (fixPosition * interval)));
+            } else {
+                point = getCoordinatePoint(mPanelRadius, mStartAngle + ((i * childAngle) + (i * interval)));
             }
-            float angle = isLeft ? (-90f + progressDegrees) : (270f - progressDegrees);
-            float[] point = getCoordinatePoint(mPanelRadius, angle);
+            View childView = getChildAt(i);
             int childViewWidth = childView.getMeasuredWidth();
             int childViewHeight = childView.getMeasuredHeight();
             //int halfWidth = childViewWidth / 2;
@@ -198,76 +184,6 @@ public class ControlPanelView extends FrameLayout {
                 childView.layout(pointX - childViewWidth, (pointY - halfHeight), (pointX), (pointY + halfHeight));
             }
         }
-    }
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (!canRotateOverflowButtons()) {
-            return super.onInterceptTouchEvent(ev);
-        }
-        switch (ev.getActionMasked()) {
-            case MotionEvent.ACTION_DOWN:
-                mDownTouchX = ev.getX();
-                mDownTouchY = ev.getY();
-                mLastTouchY = ev.getY();
-                mIsDraggingOverflow = false;
-                break;
-            case MotionEvent.ACTION_MOVE:
-                float dx = ev.getX() - mDownTouchX;
-                float dy = ev.getY() - mDownTouchY;
-                if (!mIsDraggingOverflow && Math.abs(dy) > mTouchSlop && Math.abs(dy) > Math.abs(dx)) {
-                    mIsDraggingOverflow = true;
-                    mLastTouchY = ev.getY();
-                    return true;
-                }
-                break;
-            case MotionEvent.ACTION_CANCEL:
-            case MotionEvent.ACTION_UP:
-                mIsDraggingOverflow = false;
-                break;
-            default:
-                break;
-        }
-        return super.onInterceptTouchEvent(ev);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (!canRotateOverflowButtons()) {
-            return super.onTouchEvent(event);
-        }
-        switch (event.getActionMasked()) {
-            case MotionEvent.ACTION_DOWN:
-                mDownTouchX = event.getX();
-                mDownTouchY = event.getY();
-                mLastTouchY = event.getY();
-                mIsDraggingOverflow = false;
-                return true;
-            case MotionEvent.ACTION_MOVE:
-                float dx = event.getX() - mDownTouchX;
-                float dy = event.getY() - mDownTouchY;
-                if (!mIsDraggingOverflow && Math.abs(dy) > mTouchSlop && Math.abs(dy) > Math.abs(dx)) {
-                    mIsDraggingOverflow = true;
-                    mLastTouchY = event.getY();
-                }
-                if (mIsDraggingOverflow) {
-                    float deltaY = event.getY() - mLastTouchY;
-                    mLastTouchY = event.getY();
-                    updateOverflowScrollByDrag(deltaY);
-                    return true;
-                }
-                break;
-            case MotionEvent.ACTION_CANCEL:
-            case MotionEvent.ACTION_UP:
-                if (mIsDraggingOverflow) {
-                    mIsDraggingOverflow = false;
-                    return true;
-                }
-                break;
-            default:
-                break;
-        }
-        return super.onTouchEvent(event);
     }
 
     /**
@@ -442,101 +358,6 @@ public class ControlPanelView extends FrameLayout {
 
     public void setOnTogglePanelListener(OnTogglePanelListener togglePanelListener) {
         this.mTogglePanelListener = togglePanelListener;
-    }
-
-    private boolean canRotateOverflowButtons() {
-        return isOpen && !isAnimationRunning() && getChildCount() > 1 && getMaxOverflowScrollDegrees(getChildCount()) > 0f;
-    }
-
-    private void updateOverflowScrollByDrag(float deltaY) {
-        float maxOverflowScroll = getMaxOverflowScrollDegrees(getChildCount());
-        if (maxOverflowScroll <= 0f) {
-            return;
-        }
-        float degreesPerPixel = getDegreesPerPixel();
-        if (degreesPerPixel <= 0f) {
-            return;
-        }
-        float next = mOverflowScrollDegrees - deltaY * degreesPerPixel;
-        if (next < 0f) {
-            next = 0f;
-        } else if (next > maxOverflowScroll) {
-            next = maxOverflowScroll;
-        }
-        if (next != mOverflowScrollDegrees) {
-            mOverflowScrollDegrees = next;
-            requestLayout();
-        }
-    }
-
-    private float getDegreesPerPixel() {
-        int radiusForArc = Math.max(mPanelRadius, mRadius);
-        if (radiusForArc <= 0) {
-            return 0f;
-        }
-        double arcPerDegree = (Math.PI * radiusForArc) / 180d;
-        if (arcPerDegree <= 0d) {
-            return 0f;
-        }
-        return (float) (1d / arcPerDegree);
-    }
-
-    private float getStepDegrees(int count) {
-        if (count <= 1) {
-            return 180f;
-        }
-        float evenlyDistributed = 180f / (count - 1);
-        return Math.max(evenlyDistributed, getMinSpacingDegrees());
-    }
-
-    private float getMaxOverflowScrollDegrees(int count) {
-        if (count <= 1) {
-            return 0f;
-        }
-        float totalDegrees = getStepDegrees(count) * (count - 1);
-        return Math.max(0f, totalDegrees - 180f);
-    }
-
-    private int getRequiredRadiusForEvenSpacing(int count) {
-        if (count <= 1) {
-            return 0;
-        }
-        float evenlyDistributed = 180f / (count - 1);
-        double radians = Math.toRadians(evenlyDistributed);
-        if (radians <= 0d) {
-            return 0;
-        }
-        return (int) Math.ceil(getMinButtonArcSpacing() / radians);
-    }
-
-    private float getMinSpacingDegrees() {
-        if (mRadius <= 0) {
-            return 24f;
-        }
-        return (float) Math.toDegrees(getMinButtonArcSpacing() / mRadius);
-    }
-
-    private float getMinButtonArcSpacing() {
-        return (mChildRadius * 2f) + dip2px(getContext(), MIN_BUTTON_GAP_DP);
-    }
-
-    private float computeEdgeAlpha(float progressDegrees) {
-        if (progressDegrees >= 0f && progressDegrees <= 180f) {
-            if (progressDegrees < EDGE_FADE_DEGREES) {
-                return progressDegrees / EDGE_FADE_DEGREES;
-            }
-            if (progressDegrees > (180f - EDGE_FADE_DEGREES)) {
-                return (180f - progressDegrees) / EDGE_FADE_DEGREES;
-            }
-            return 1f;
-        }
-        if (progressDegrees >= -EDGE_FADE_DEGREES) {
-            return (progressDegrees + EDGE_FADE_DEGREES) / EDGE_FADE_DEGREES;
-        }
-        if (progressDegrees <= (180f + EDGE_FADE_DEGREES)) {
-            return ((180f + EDGE_FADE_DEGREES) - progressDegrees) / EDGE_FADE_DEGREES;
-        }
-        return 0f;
     }
 
     public static int dip2px(Context context, float dipValue) {

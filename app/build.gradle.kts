@@ -152,6 +152,7 @@ dependencies {
     implementation(libs.compose.material)
 
     implementation(libs.hiddenapibypass)
+    compileOnly(libs.libxposed.api)
 
     implementation(project(":ui"))
     implementation(project(":services"))
@@ -218,6 +219,7 @@ fun generateRandomPackageName(): String {
 tasks.named("preBuild") {
     dependsOn(generateProguardRules)
 }
+
 
 
 
