@@ -108,7 +108,7 @@ object InputManagerHook {
                         policyFlags
                 )
                 if (res != null) {
-                    logger.logOnDebug { "Set interceptKeyBeforeQueueing res: $res" }
+                    logger.w("Set interceptKeyBeforeQueueing res: $res $keyEvent")
                     param.returnAndSkip(res)
                 }
             }
@@ -137,7 +137,7 @@ object InputManagerHook {
                 val res =
                     ShortXService.shortXContext.input.interceptKeyBeforeDispatching(keyEvent)
                 if (res != null) {
-                    logger.logOnDebug { "Set interceptKeyBeforeDispatching res: $res" }
+                    logger.w("Set interceptKeyBeforeDispatching res: $res $keyEvent")
                     param.returnAndSkip(res)
                 }
             }

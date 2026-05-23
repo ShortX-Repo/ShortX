@@ -17,7 +17,6 @@ import android.telephony.SubscriptionManager
 import android.util.Log
 import android.view.MotionEvent
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.AppGlobals
 import tornaco.apps.shortx.core.BuildPropInternal
@@ -31,6 +30,7 @@ import tornaco.apps.shortx.core.IRuleFeatureStateListener
 import tornaco.apps.shortx.core.ISensorUsageListener
 import tornaco.apps.shortx.core.IShortX
 import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener
+import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.SystemUIClient
 import tornaco.apps.shortx.core.Version
@@ -77,13 +77,10 @@ import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.proto.fact.MethodHook
 import tornaco.apps.shortx.core.proto.fact.ScreenGesture
 import tornaco.apps.shortx.core.proto.feature.AppFeature
-import tornaco.apps.shortx.core.proto.func.`Function` as ShortXFunction
 import tornaco.apps.shortx.core.proto.func.FuncParameterInput
-import tornaco.apps.shortx.services.calendar.workday.WorkdayRepository
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.ActionAsyncMode
-import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleSet
@@ -113,6 +110,7 @@ import tornaco.apps.shortx.core.util.UserHandleUtils.userIdToUserHandle
 import tornaco.apps.shortx.core.util.powerManager
 import tornaco.apps.shortx.core.util.wifiManager
 import tornaco.apps.shortx.services.abtesting.ABTesting
+import tornaco.apps.shortx.services.calendar.workday.WorkdayRepository
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
@@ -132,6 +130,7 @@ import tornaco.apps.shortx.services.watchdog.SystemServerCrashHandler
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
 import java.io.File
+import tornaco.apps.shortx.core.proto.func.Function as ShortXFunction
 
 @SuppressLint("StaticFieldLeak")
 object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
@@ -1826,6 +1825,13 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             systemServiceScope.launchSafety("H.1") {
                 if (feat == AppFeature.AppFeature_EdgeGesture.number) {
                     shortXContext.gesture.notifyGestureSettingsChanged()
+                }
+            }
+            if (feat == AppFeature.AppFeature_EdgeGesture.number) {
+                if (enabled) {
+                    removeHookFlags(ShortXManager.Companion.HookFlags.FLAG_DISABLE_GESTURE_HOOK)
+                } else {
+                    addHookFlags(ShortXManager.Companion.HookFlags.FLAG_DISABLE_GESTURE_HOOK)
                 }
             }
         }
