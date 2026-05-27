@@ -10,6 +10,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.ICallback
+import tornaco.apps.shortx.core.input.InternalInputFlags.FLAG_SHORTX_INJECTION
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.GestureRecord
@@ -91,6 +92,10 @@ class GestureService(shortXContext: ShortXContext) :
         if (input is MotionEvent) {
             if (gestureRecorder.isRecording) {
                 runBlocking { gestureRecorder.onMotionEvent(input) }
+            }
+            if ((input.flags and FLAG_SHORTX_INJECTION) == 0) {
+                // Not our injected event, stop play
+                stopGesturePlayer()
             }
             return filterMotionEvent(input)
         }
@@ -275,21 +280,25 @@ class GestureService(shortXContext: ShortXContext) :
 
         // Stop play gesture if necessary
         if (event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || event.keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-            if (gesturePlayer.isInjecting) {
-                logger.w("Stop inject gesture since VOL key event.")
-                systemServiceScope.launchSafety("handleKeyEvent") {
-                    gesturePlayer.stopInject()
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context,
-                            i18NIns["ui.action.gesture.record.inject.stopped"],
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
+            stopGesturePlayer()
+        }
+        return shortXContext.rule.interceptKeyBeforeQueueing(event, interactive)
+    }
+
+    private fun stopGesturePlayer() {
+        if (gesturePlayer.isInjecting) {
+            logger.w("Stop inject gesture since VOL key event.")
+            systemServiceScope.launchSafety("handleKeyEvent") {
+                gesturePlayer.stopInject()
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        context,
+                        i18NIns["ui.action.gesture.record.inject.stopped"],
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }
-        return shortXContext.rule.interceptKeyBeforeQueueing(event, interactive)
     }
 
     fun getGestureLengthScale(): Float =
