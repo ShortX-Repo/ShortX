@@ -771,6 +771,15 @@ class EdgeGestureSequenceDetectorTest {
 
         val firedEvents = mutableListOf<FiredEvent>()
 
+        override fun getAreaGestureProfile(areas: List<DetectedArea>): AreaGestureProfile {
+            return AreaGestureProfile(
+                hasAnyTrigger = false,
+                hasTapTrigger = false,
+                hasLongPressTrigger = false,
+                hasSwipeTrigger = false,
+            )
+        }
+
         override fun handleEdgeGestureEvent(
             areas: List<DetectedArea>,
             gestureEvent: Gesture,

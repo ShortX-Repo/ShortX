@@ -42,6 +42,8 @@ data class ContinuousGestureBinding(
 )
 
 interface GestureBridge {
+    fun getAreaGestureProfile(areas: List<DetectedArea>): AreaGestureProfile
+
     fun handleEdgeGestureEvent(
         areas: List<DetectedArea>,
         gestureEvent: Gesture,
@@ -97,4 +99,14 @@ interface GestureBridge {
 
     val enabledEdgeGestures: Set<EdgeGesture>
     val enabledCornerSwipeToCenterFacts: Set<CornerSwipeToCenter>
+}
+
+data class AreaGestureProfile(
+    val hasAnyTrigger: Boolean,
+    val hasTapTrigger: Boolean,
+    val hasLongPressTrigger: Boolean,
+    val hasSwipeTrigger: Boolean,
+) {
+    val shouldCaptureOnDown: Boolean
+        get() = hasAnyTrigger
 }
