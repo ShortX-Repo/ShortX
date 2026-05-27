@@ -365,13 +365,18 @@ class EdgeGestureEngine(
 
     private fun onDoubleTapTimeout() {
         if (!gestureCaptured) return
-        bridge.handleEdgeGestureEvent(
-            hitAreas,
-            Gesture.SingleTap,
-            downX,
-            downY
-        )
-        consumeCachedEvent()
+        val hasSingleTap = actionResolver.hasAction(hitAreas, Gesture.SingleTap)
+        if (hasSingleTap) {
+            bridge.handleEdgeGestureEvent(
+                hitAreas,
+                Gesture.SingleTap,
+                downX,
+                downY
+            )
+            consumeCachedEvent()
+        } else {
+            replayCompletedTap()
+        }
         resetState()
     }
 
@@ -485,6 +490,17 @@ class EdgeGestureEngine(
             } catch (e: Exception) {
                 logger.e(e, "Failed to replay cached event")
             }
+        }
+    }
+
+    private fun replayCompletedTap() {
+        val downEvent = cachedDownEvent ?: return
+        val upEvent = firstTapUpEvent ?: return
+        try {
+            injectionBridge.injectEvent(MotionEvent.obtain(downEvent))
+            injectionBridge.injectEvent(MotionEvent.obtain(upEvent))
+        } catch (e: Exception) {
+            logger.e(e, "Failed to replay completed tap")
         }
     }
 
