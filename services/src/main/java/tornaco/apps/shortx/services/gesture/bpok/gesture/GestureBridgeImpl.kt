@@ -552,6 +552,7 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
                                         scrollMode = action.scrollMode,
                                         scrollScale = action.scrollScale.takeIf { it > 0f } ?: 1f,
                                         cancelRegionRadiusDp = action.cancelRegionRadiusDp.takeIf { it > 0 } ?: 48,
+                                        enableCenterActionSwitch = action.enableCenterActionSwitch,
                                     )
                                 }
 
@@ -653,6 +654,7 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
                 scrollMode = payload.scrollMode,
                 scrollScale = payload.scrollScale,
                 cancelRegionRadiusDp = payload.cancelRegionRadiusDp,
+                enableCenterActionSwitch = payload.enableCenterActionSwitch,
             )
 
             is ContinuousGestureActionPayload.Volume -> VolumeContinuousHandler(

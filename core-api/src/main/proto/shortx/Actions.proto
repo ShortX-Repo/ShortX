@@ -2306,6 +2306,7 @@ message ContinuousGesturePointer {
   GesturePointerScrollMode scrollMode = 6;
   float scrollScale = 7;
   int32 cancelRegionRadiusDp = 8;
+  bool enableCenterActionSwitch = 9;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;

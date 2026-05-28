@@ -1712,6 +1712,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 },
                 scrollScale = data.scrollScale.takeIf { it > 0f } ?: 1f,
                 cancelRegionRadiusDp = data.cancelRegionRadiusDp.takeIf { it > 0 } ?: 48,
+                enableCenterActionSwitch = data.enableCenterActionSwitch,
             )
         }
 

@@ -3,10 +3,13 @@ package tornaco.apps.shortx.services.gesture.bpok.gesture.handlers
 import android.content.Context
 import android.view.InputDevice
 import android.view.MotionEvent
+import android.view.ViewConfiguration
+import android.widget.Toast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import android.os.SystemClock
 import tornaco.apps.shortx.core.proto.action.GesturePointerDragButton
 import tornaco.apps.shortx.core.proto.action.GesturePointerReleaseButton
 import tornaco.apps.shortx.core.proto.action.GesturePointerScrollMode
@@ -16,12 +19,14 @@ import tornaco.apps.shortx.services.ctrl.Device
 import tornaco.apps.shortx.services.ctrl.Options
 import tornaco.apps.shortx.services.ctrl.Position
 import tornaco.apps.shortx.services.gesture.bpok.gesture.ContinuousActionHandler
+import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.ui.GesturePointerOverlay
+import tornaco.apps.shortx.services.ui.GesturePointerVisualMode
 import kotlin.math.hypot
 import kotlin.math.roundToInt
 
 class GesturePointerContinuousHandler(
-    context: Context,
+    private val context: Context,
     private val sensitivityScale: Float = 1f,
     private val releaseButton: GesturePointerReleaseButton = GesturePointerReleaseButton.GesturePointerReleaseButtonPrimary,
     private val dragButton: GesturePointerDragButton = GesturePointerDragButton.GesturePointerDragButtonNone,
@@ -29,12 +34,21 @@ class GesturePointerContinuousHandler(
     private val scrollMode: GesturePointerScrollMode = GesturePointerScrollMode.GesturePointerScrollModeNone,
     private val scrollScale: Float = 1f,
     private val cancelRegionRadiusDp: Int = 48,
+    private val enableCenterActionSwitch: Boolean = false,
 ) : ContinuousActionHandler {
     companion object {
         private const val POINTER_ID = -3L
         private const val TOUCH_POINTER_ID = -4L
         private const val DEFAULT_DRAG_HOLD_MS = 350
         private const val SCROLL_STEP_PX = 48f
+        private const val CENTER_SWITCH_HYSTERESIS_DP = 8f
+        private const val LONG_PRESS_SETTLE_MS = 120L
+    }
+
+    private enum class ReleaseMode {
+        SingleClick,
+        LongPress,
+        DoubleClick,
     }
 
     private val logger = Logger("GesturePointerHandler")
@@ -43,6 +57,9 @@ class GesturePointerContinuousHandler(
     private val pointerOverlay = GesturePointerOverlay(context)
     private val overlayScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val cancelRegionRadiusPx = cancelRegionRadiusDp.coerceIn(16, 160) * context.resources.displayMetrics.density
+    private val centerSwitchHysteresisPx = CENTER_SWITCH_HYSTERESIS_DP * context.resources.displayMetrics.density
+    private val longPressDurationMs = ViewConfiguration.getLongPressTimeout().toLong().coerceAtLeast(DEFAULT_DRAG_HOLD_MS.toLong())
+    private val doubleTapIntervalMs = 96L
 
     private var edgeGroup = -1
     private var screenWidth = 0
@@ -60,6 +77,9 @@ class GesturePointerContinuousHandler(
     private var lastVisualY = 0f
     private var overlayShown = false
     private var dragActive = false
+    private var releaseMode = ReleaseMode.SingleClick
+    private var hasExitedCancelRegion = false
+    private var switchArmed = false
 
     override fun onStart(edgeGroup: Int, x: Float, y: Float, time: Long) {
         this.edgeGroup = edgeGroup
@@ -78,6 +98,9 @@ class GesturePointerContinuousHandler(
         lastVisualX = currentX
         lastVisualY = currentY
         dragActive = false
+        releaseMode = ReleaseMode.SingleClick
+        hasExitedCancelRegion = false
+        switchArmed = false
         showPointerOverlay()
         updatePointerOverlay()
         injectHoverMove(pointerX, pointerY, time)
@@ -87,6 +110,7 @@ class GesturePointerContinuousHandler(
     override fun onMove(x: Float, y: Float, time: Long) {
         fingerX = x
         fingerY = y
+        updateCenterActionSwitchState()
         val dx = (x - startX) * sensitivityScale
         val dy = (y - startY) * sensitivityScale
         currentX = (startX + dx).coerceIn(0f, screenWidth.toFloat())
@@ -143,14 +167,11 @@ class GesturePointerContinuousHandler(
                 button = dragButton.toMotionButton(),
             )
             dragActive = false
-        } else if (!shouldCancel && releaseButton != GesturePointerReleaseButton.GesturePointerReleaseButtonNone) {
-            when (releaseButton) {
-                GesturePointerReleaseButton.GesturePointerReleaseButtonTouch -> injectTouchTap(pointerX, pointerY)
-                else -> injectMouseClick(pointerX, pointerY, releaseButton.toMotionButton())
-            }
+        } else if (!shouldCancel && (enableCenterActionSwitch || releaseButton != GesturePointerReleaseButton.GesturePointerReleaseButtonNone)) {
+            performReleaseAction(pointerX, pointerY)
         }
         hidePointerOverlay()
-        logger.d("onFinish: pointer=($pointerX,$pointerY), shouldCancel=$shouldCancel")
+        logger.d("onFinish: pointer=($pointerX,$pointerY), shouldCancel=$shouldCancel, releaseMode=$releaseMode")
     }
 
     override fun onCancel() {
@@ -174,7 +195,12 @@ class GesturePointerContinuousHandler(
         }
         overlayShown = true
         overlayScope.launch {
-            pointerOverlay.show(edgeGroup = edgeGroup, x = currentX, y = currentY)
+            pointerOverlay.show(
+                edgeGroup = edgeGroup,
+                x = currentX,
+                y = currentY,
+                pointerMode = releaseMode.toVisualMode(),
+            )
         }
     }
 
@@ -201,12 +227,90 @@ class GesturePointerContinuousHandler(
                 currentY = currentY,
                 cancelRegionRadius = cancelRegionRadiusPx,
                 isInCancelRegion = isInCancelRegion(fingerX, fingerY),
+                pointerMode = releaseMode.toVisualMode(),
             )
         }
     }
 
     private fun isInCancelRegion(x: Float, y: Float): Boolean {
         return hypot(x - startX, y - startY) <= cancelRegionRadiusPx
+    }
+
+    private fun updateCenterActionSwitchState() {
+        if (!enableCenterActionSwitch) return
+
+        val distance = hypot(fingerX - startX, fingerY - startY)
+        val isOutsideSwitchRegion = distance >= cancelRegionRadiusPx + centerSwitchHysteresisPx
+
+        if (!hasExitedCancelRegion) {
+            if (isOutsideSwitchRegion) {
+                hasExitedCancelRegion = true
+            }
+            return
+        }
+
+        if (!switchArmed && isInCancelRegion(fingerX, fingerY)) {
+            switchArmed = true
+            return
+        }
+
+        if (switchArmed && isOutsideSwitchRegion) {
+            releaseMode = releaseMode.next()
+            switchArmed = false
+            logger.d("Center action switch -> $releaseMode")
+            showModeSwitchToast(releaseMode)
+        }
+    }
+
+    private fun showModeSwitchToast(mode: ReleaseMode) {
+        overlayScope.launch {
+            Toast.makeText(
+                context,
+                i18NIns["ui.action.continuous.gesture.pointer.center.switch.short"] + ": " + mode.label(),
+                Toast.LENGTH_SHORT,
+            ).show()
+        }
+    }
+
+    private fun performReleaseAction(x: Float, y: Float) {
+        when (releaseMode) {
+            ReleaseMode.SingleClick -> performSingleReleaseAction(x, y)
+            ReleaseMode.LongPress -> performLongPressReleaseAction(x, y)
+            ReleaseMode.DoubleClick -> performDoubleReleaseAction(x, y)
+        }
+    }
+
+    private fun performSingleReleaseAction(x: Float, y: Float) {
+        if (enableCenterActionSwitch) {
+            injectTouchTap(x, y)
+            return
+        }
+        when (releaseButton) {
+            GesturePointerReleaseButton.GesturePointerReleaseButtonTouch -> injectTouchTap(x, y)
+            else -> injectMouseClick(x, y, releaseButton.toMotionButton())
+        }
+    }
+
+    private fun performLongPressReleaseAction(x: Float, y: Float) {
+        if (enableCenterActionSwitch) {
+            injectTouchLongPress(x, y)
+            return
+        }
+        when (releaseButton) {
+            GesturePointerReleaseButton.GesturePointerReleaseButtonTouch -> injectTouchLongPress(x, y)
+            else -> injectMouseLongPress(x, y, releaseButton.toMotionButton())
+        }
+    }
+
+    private fun performDoubleReleaseAction(x: Float, y: Float) {
+        if (enableCenterActionSwitch) {
+            injectTouchDoubleTap(x, y)
+            return
+        }
+        when (releaseButton) {
+            GesturePointerReleaseButton.GesturePointerReleaseButtonTouch -> injectTouchDoubleTap(x, y)
+            else -> injectMouseDoubleClick(x, y, releaseButton.toMotionButton())
+        }
     }
 
     private fun injectHoverMove(x: Float, y: Float, eventTime: Long) {
@@ -264,6 +368,20 @@ class GesturePointerContinuousHandler(
     }
 
     private fun injectTouchTap(x: Float, y: Float) {
+        injectTouchPress(x, y, 0L)
+    }
+
+    private fun injectTouchLongPress(x: Float, y: Float) {
+        injectTouchPress(x, y, longPressDurationMs)
+    }
+
+    private fun injectTouchDoubleTap(x: Float, y: Float) {
+        injectTouchTap(x, y)
+        SystemClock.sleep(doubleTapIntervalMs)
+        injectTouchTap(x, y)
+    }
+
+    private fun injectTouchPress(x: Float, y: Float, holdDurationMs: Long) {
         val position = Position(
             x.roundToInt(),
             y.roundToInt(),
@@ -277,6 +395,16 @@ class GesturePointerContinuousHandler(
             1f,
             0,
         )
+        if (holdDurationMs > 0) {
+            val firstHoldMs = longPressDurationMs.coerceAtMost(holdDurationMs)
+            SystemClock.sleep(firstHoldMs)
+            injectTouchMove(position, 1f)
+            val remainingHoldMs = holdDurationMs - firstHoldMs
+            if (remainingHoldMs > 0) {
+                SystemClock.sleep(remainingHoldMs)
+            }
+            SystemClock.sleep(LONG_PRESS_SETTLE_MS)
+        }
         val upOk = controller.injectTouch(
             MotionEvent.ACTION_UP,
             TOUCH_POINTER_ID,
@@ -284,7 +412,54 @@ class GesturePointerContinuousHandler(
             0f,
             0,
         )
-        logger.d("injectTouchTap: downOk=$downOk, upOk=$upOk")
+        logger.d("injectTouchPress: downOk=$downOk, upOk=$upOk, holdDurationMs=$holdDurationMs")
+    }
+
+    private fun injectTouchMove(position: Position, pressure: Float) {
+        controller.injectTouch(
+            MotionEvent.ACTION_MOVE,
+            TOUCH_POINTER_ID,
+            position,
+            pressure,
+            0,
+        )
+    }
+
+    private fun injectMouseLongPress(x: Float, y: Float, button: Int) {
+        injectMousePress(x, y, button, longPressDurationMs)
+    }
+
+    private fun injectMouseDoubleClick(x: Float, y: Float, button: Int) {
+        injectMouseClick(x, y, button)
+        SystemClock.sleep(doubleTapIntervalMs)
+        injectMouseClick(x, y, button)
+    }
+
+    private fun injectMousePress(x: Float, y: Float, button: Int, holdDurationMs: Long) {
+        val position = Position(
+            x.roundToInt(),
+            y.roundToInt(),
+            screenWidth,
+            screenHeight,
+        )
+        val downOk = controller.injectTouch(
+            MotionEvent.ACTION_DOWN,
+            POINTER_ID,
+            position,
+            1f,
+            button,
+        )
+        if (holdDurationMs > 0) {
+            SystemClock.sleep(holdDurationMs)
+        }
+        val upOk = controller.injectTouch(
+            MotionEvent.ACTION_UP,
+            POINTER_ID,
+            position,
+            0f,
+            button,
+        )
+        logger.d("injectMousePress: downOk=$downOk, upOk=$upOk, holdDurationMs=$holdDurationMs")
     }
 
     private fun injectPointerAction(action: Int, x: Float, y: Float, pressure: Float, button: Int): Boolean {
@@ -338,6 +513,30 @@ class GesturePointerContinuousHandler(
             GesturePointerDragButton.GesturePointerDragButtonPrimary -> MotionEvent.BUTTON_PRIMARY
             GesturePointerDragButton.GesturePointerDragButtonSecondary -> MotionEvent.BUTTON_SECONDARY
             else -> 0
+        }
+    }
+
+    private fun ReleaseMode.toVisualMode(): GesturePointerVisualMode {
+        return when (this) {
+            ReleaseMode.SingleClick -> GesturePointerVisualMode.SingleClick
+            ReleaseMode.LongPress -> GesturePointerVisualMode.LongPress
+            ReleaseMode.DoubleClick -> GesturePointerVisualMode.DoubleClick
+        }
+    }
+
+    private fun ReleaseMode.next(): ReleaseMode {
+        return when (this) {
+            ReleaseMode.SingleClick -> ReleaseMode.LongPress
+            ReleaseMode.LongPress -> ReleaseMode.DoubleClick
+            ReleaseMode.DoubleClick -> ReleaseMode.SingleClick
+        }
+    }
+
+    private fun ReleaseMode.label(): String {
+        return when (this) {
+            ReleaseMode.SingleClick -> i18NIns["ui.action.continuous.gesture.pointer.mode.single"]
+            ReleaseMode.LongPress -> i18NIns["ui.action.continuous.gesture.pointer.mode.long"]
+            ReleaseMode.DoubleClick -> i18NIns["ui.action.continuous.gesture.pointer.mode.double"]
         }
     }
 }

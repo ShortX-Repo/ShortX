@@ -3735,6 +3735,7 @@ sealed interface Action : Parcelable {
         val scrollScale: Float = 1f,
         @IntRange(from = 16, to = 160)
         val cancelRegionRadiusDp: Int = 48,
+        val enableCenterActionSwitch: Boolean = false,
     ) : Action {
         override fun clone(
             id: String,

@@ -1525,6 +1525,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 )
                 .setScrollScale(scrollScale)
                 .setCancelRegionRadiusDp(cancelRegionRadiusDp)
+                .setEnableCenterActionSwitch(enableCenterActionSwitch)
                 .build()
             }
 

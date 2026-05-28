@@ -1051,6 +1051,15 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                     }
                     append(" · ")
                     append("${action.cancelRegionRadiusDp}dp")
+                    if (action.enableCenterActionSwitch) {
+                        append(" · ")
+                        append(
+                            i18N.get(
+                                key = "ui.action.continuous.gesture.pointer.center.switch.short",
+                                fallback = "mode switch"
+                            )
+                        )
+                    }
                 }
             )
         }
