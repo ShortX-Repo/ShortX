@@ -28,13 +28,13 @@ class GesturePointerContinuousHandler(
     private val dragHoldDurationMs: Int = 350,
     private val scrollMode: GesturePointerScrollMode = GesturePointerScrollMode.GesturePointerScrollModeNone,
     private val scrollScale: Float = 1f,
+    private val cancelRegionRadiusDp: Int = 48,
 ) : ContinuousActionHandler {
     companion object {
         private const val POINTER_ID = -3L
         private const val TOUCH_POINTER_ID = -4L
         private const val DEFAULT_DRAG_HOLD_MS = 350
         private const val SCROLL_STEP_PX = 48f
-        private const val CANCEL_REGION_RADIUS_DP = 48f
     }
 
     private val logger = Logger("GesturePointerHandler")
@@ -42,7 +42,7 @@ class GesturePointerContinuousHandler(
     private val controller by lazy { Controller(device) }
     private val pointerOverlay = GesturePointerOverlay(context)
     private val overlayScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
-    private val cancelRegionRadiusPx = CANCEL_REGION_RADIUS_DP * context.resources.displayMetrics.density
+    private val cancelRegionRadiusPx = cancelRegionRadiusDp.coerceIn(16, 160) * context.resources.displayMetrics.density
 
     private var edgeGroup = -1
     private var screenWidth = 0
@@ -51,6 +51,8 @@ class GesturePointerContinuousHandler(
     private var currentY = 0f
     private var pointerX = 0f
     private var pointerY = 0f
+    private var fingerX = 0f
+    private var fingerY = 0f
     private var startX = 0f
     private var startY = 0f
     private var startTime = 0L
@@ -66,6 +68,8 @@ class GesturePointerContinuousHandler(
         screenHeight = contentRect.height()
         startX = x
         startY = y
+        fingerX = x
+        fingerY = y
         startTime = time
         currentX = x.coerceIn(0f, screenWidth.toFloat())
         currentY = y.coerceIn(0f, screenHeight.toFloat())
@@ -81,6 +85,8 @@ class GesturePointerContinuousHandler(
     }
 
     override fun onMove(x: Float, y: Float, time: Long) {
+        fingerX = x
+        fingerY = y
         val dx = (x - startX) * sensitivityScale
         val dy = (y - startY) * sensitivityScale
         currentX = (startX + dx).coerceIn(0f, screenWidth.toFloat())
@@ -125,7 +131,9 @@ class GesturePointerContinuousHandler(
     }
 
     override fun onFinish(x: Float, y: Float, time: Long) {
-        val shouldCancel = isInCancelRegion(currentX, currentY)
+        fingerX = x
+        fingerY = y
+        val shouldCancel = isInCancelRegion(fingerX, fingerY)
         if (dragActive) {
             injectPointerAction(
                 action = MotionEvent.ACTION_UP,
@@ -192,7 +200,7 @@ class GesturePointerContinuousHandler(
                 currentX = currentX,
                 currentY = currentY,
                 cancelRegionRadius = cancelRegionRadiusPx,
-                isInCancelRegion = isInCancelRegion(currentX, currentY),
+                isInCancelRegion = isInCancelRegion(fingerX, fingerY),
             )
         }
     }

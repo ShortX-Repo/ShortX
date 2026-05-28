@@ -57,6 +57,7 @@ class ContinuousGesturePointerDialogState(
     var dragHoldDurationMs by mutableIntStateOf(350)
     var scrollMode by mutableStateOf(GesturePointerScrollMode.None)
     var scrollScale by mutableFloatStateOf(1f)
+    var cancelRegionRadiusDp by mutableIntStateOf(48)
 
     fun show(current: Action.ContinuousGesturePointer? = null) {
         sensitivityScale = current?.sensitivityScale ?: 1f
@@ -65,6 +66,7 @@ class ContinuousGesturePointerDialogState(
         dragHoldDurationMs = current?.dragHoldDurationMs ?: 350
         scrollMode = current?.scrollMode ?: GesturePointerScrollMode.None
         scrollScale = current?.scrollScale ?: 1f
+        cancelRegionRadiusDp = current?.cancelRegionRadiusDp ?: 48
         show()
     }
 }
@@ -120,6 +122,7 @@ private fun ContinuousGesturePointerSelector(dialogState: ContinuousGesturePoint
                                         dragHoldDurationMs = dialogState.dragHoldDurationMs,
                                         scrollMode = dialogState.scrollMode,
                                         scrollScale = dialogState.scrollScale,
+                                        cancelRegionRadiusDp = dialogState.cancelRegionRadiusDp,
                                     )
                                 )
                                 dialogState.dismiss()
@@ -244,6 +247,28 @@ private fun ContinuousGesturePointerSelector(dialogState: ContinuousGesturePoint
                             }
                         )
                     }
+
+                    StandardSpacer()
+                    FieldTitle(
+                        text = LocalI18N.current.get(
+                            key = "ui.action.continuous.gesture.pointer.cancel.region.radius",
+                            fallback = "Cancel circle radius"
+                        ) + " ${dialogState.cancelRegionRadiusDp}dp"
+                    )
+                    MediumSpacer()
+                    TipBody(
+                        text = LocalI18N.current.get(
+                            key = "ui.action.continuous.gesture.pointer.cancel.region.radius.tip",
+                            fallback = "If your finger is still inside this start circle when the gesture ends, the release action will be cancelled."
+                        )
+                    )
+                    Slider(
+                        value = dialogState.cancelRegionRadiusDp.toFloat(),
+                        valueRange = 16f..160f,
+                        onValueChange = {
+                            dialogState.cancelRegionRadiusDp = it.roundToInt()
+                        }
+                    )
 
                     StandardSpacer()
                     TipBody(text = LocalI18N.current.get(

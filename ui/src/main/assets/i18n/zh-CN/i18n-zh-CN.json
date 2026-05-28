@@ -803,6 +803,8 @@
   "ui.action.continuous.gesture.pointer.scroll.mode.both": "双轴滚轮",
   "ui.action.continuous.gesture.pointer.scroll.scale": "滚轮灵敏度",
   "ui.action.continuous.gesture.pointer.scroll.scale.tip": "数值越大，相同手势位移会产生更强的滚轮输入。",
+  "ui.action.continuous.gesture.pointer.cancel.region.radius": "取消圈半径",
+  "ui.action.continuous.gesture.pointer.cancel.region.radius.tip": "如果手势结束时手指仍在这个起始小圈内，就不会触发抬手动作。",
   "ui.action.continuous.gesture.pointer.tip": "用手势移动虚拟鼠标指针。你可以配置抬手动作、长按拖拽和滚轮模式。",
   "ui.action.continuous.gesture.pointer.sensitivity.tip": "数值越大，手势指针移动越快。",
   "ui.action.click.tile": "点击磁贴",

@@ -3733,6 +3733,8 @@ sealed interface Action : Parcelable {
         val dragHoldDurationMs: Int = 350,
         val scrollMode: GesturePointerScrollMode = GesturePointerScrollMode.None,
         val scrollScale: Float = 1f,
+        @IntRange(from = 16, to = 160)
+        val cancelRegionRadiusDp: Int = 48,
     ) : Action {
         override fun clone(
             id: String,

@@ -28,6 +28,7 @@ sealed interface ContinuousGestureActionPayload {
         val dragHoldDurationMs: Int,
         val scrollMode: GesturePointerScrollMode,
         val scrollScale: Float,
+        val cancelRegionRadiusDp: Int,
     ) : ContinuousGestureActionPayload
 
     data class Volume(
