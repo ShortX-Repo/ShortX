@@ -7,6 +7,7 @@ import android.util.Base64
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.BuildPropInternal
+import tornaco.apps.shortx.core.unKnownPkg
 import tornaco.apps.shortx.core.proto.common.AppCategory
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.action.InputText
@@ -161,20 +162,24 @@ internal class ShortXShellCommandHandler(
         pw.println("      Print clipboard text to stdout.")
         pw.println("      Example: am shortx getclip")
         pw.println()
-        pw.println("am shortx current-app [-app PKG] [-a|-s|-3]")
+        pw.println("am shortx current-app [--focused] [-app PKG] [-a|-s|-3]")
         pw.println("      Print app info as package#label#user#uid.")
+        pw.println("      Example: am shortx current-app --focused")
         pw.println("      Example: am shortx current-app -app bin.mt.plus")
         pw.println()
-        pw.println("am shortx clear-recents-app [PKG USER_ID]")
+        pw.println("am shortx clear-recents-app [--focused|PKG USER_ID]")
         pw.println("      Clear all recents app cards or the specified one.")
+        pw.println("      Example: am shortx clear-recents-app --focused")
         pw.println("      Example: am shortx clear-recents-app bin.mt.plus 0")
         pw.println()
-        pw.println("am shortx kill-app [PKG USER_ID]")
-        pw.println("      Kill current foreground app or the specified app.")
+        pw.println("am shortx kill-app [--focused|PKG USER_ID]")
+        pw.println("      Kill current foreground app, focused app, or the specified app.")
+        pw.println("      Example: am shortx kill-app --focused")
         pw.println("      Example: am shortx kill-app bin.mt.plus 0")
         pw.println()
-        pw.println("am shortx apkpath [PKG]")
-        pw.println("      Print current foreground app apk path or the specified package path.")
+        pw.println("am shortx apkpath [--focused|PKG]")
+        pw.println("      Print current foreground app, focused app, or the specified package apk path.")
+        pw.println("      Example: am shortx apkpath --focused")
         pw.println("      Example: am shortx apkpath bin.mt.plus")
         pw.println()
         pw.println("am shortx action-b64 [BASE64_PROTO_ANY]")
@@ -257,6 +262,7 @@ internal class ShortXShellCommandHandler(
         val apps = when (val query = parseCurrentAppQuery(shellCommand, pw)) {
             null -> return 1
             is CurrentAppQuery.Current -> shortXContext.appState.currentFrontPkgs()
+            is CurrentAppQuery.Focused -> listOfNotNull(resolveFocusedApp(pw))
             is CurrentAppQuery.ByPkg -> installedApps
                 .filter { it.pkg.pkgName == query.pkgName }
                 .map { it.pkg }
@@ -303,6 +309,14 @@ internal class ShortXShellCommandHandler(
             return 0
         }
 
+        if (pkgName == "--focused") {
+            val focusedApp = resolveFocusedApp(pw) ?: return 1
+            shortXContext.appState.removeTasksForPackage(listOf(focusedApp))
+            pw.println(formatAppPkg(focusedApp))
+            pw.flush()
+            return 0
+        }
+
         val userId = shellCommand.nextArg?.toIntOrNull()
         if (userId == null) {
             pw.println("Missing userId")
@@ -333,6 +347,14 @@ internal class ShortXShellCommandHandler(
             return 0
         }
 
+        if (pkgName == "--focused") {
+            val focusedApp = resolveFocusedApp(pw) ?: return 1
+            shortXContext.appState.forceStopApp(focusedApp, "shell kill-app --focused")
+            pw.println(formatAppPkg(focusedApp))
+            pw.flush()
+            return 0
+        }
+
         val userId = shellCommand.nextArg?.toIntOrNull()
         if (userId == null) {
             pw.println("Missing userId")
@@ -350,6 +372,8 @@ internal class ShortXShellCommandHandler(
         val pkgName = shellCommand.nextArg
         val targets = if (pkgName.isNullOrBlank()) {
             shortXContext.appState.currentFrontPkgs()
+        } else if (pkgName == "--focused") {
+            listOfNotNull(resolveFocusedApp(pw))
         } else {
             shortXContext.appState.getInstalledApps()
                 .filter { it.pkg.pkgName == pkgName }
@@ -462,6 +486,7 @@ internal class ShortXShellCommandHandler(
     ): CurrentAppQuery? {
         val firstArg = shellCommand.nextArg ?: return CurrentAppQuery.Current
         return when (firstArg) {
+            "--focused" -> CurrentAppQuery.Focused
             "-a" -> CurrentAppQuery.ByCategory(null)
             "-s" -> CurrentAppQuery.ByCategory(AppCategory.System)
             "-3" -> CurrentAppQuery.ByCategory(AppCategory.User)
@@ -482,6 +507,16 @@ internal class ShortXShellCommandHandler(
                 null
             }
         }
+    }
+
+    private fun resolveFocusedApp(pw: PrintWriter): AppPkg? {
+        val focusedApp = shortXContext.wm.currentFocusedWindowOwner
+        if (focusedApp == unKnownPkg || focusedApp.pkgName == unKnownPkg.pkgName) {
+            pw.println("No focused app.")
+            pw.flush()
+            return null
+        }
+        return focusedApp
     }
 
     private fun formatAppPkg(appPkg: AppPkg): String {
@@ -510,6 +545,7 @@ internal class ShortXShellCommandHandler(
 
     private sealed interface CurrentAppQuery {
         data object Current : CurrentAppQuery
+        data object Focused : CurrentAppQuery
         data class ByPkg(val pkgName: String) : CurrentAppQuery
         data class ByCategory(val category: AppCategory?) : CurrentAppQuery
     }
