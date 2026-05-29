@@ -518,7 +518,10 @@ class WindowManagerService(shortXContext: ShortXContext) :
     }
 
     fun showClipboard() {
-        logger.logOnDebug("showClipboard: ${shortXContext.input.getAllClipboardText()}")
+        logger.logOnDebug {
+            "showClipboard: ${shortXContext.input.getAllClipboardText().size}"
+        }
+        logger.w("showClipboard start.")
         disableAllOverlayViews("showClipboard") {
             val guideLineView =
                 ClipboardView(
@@ -566,6 +569,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
             showingClipboard.add(guideLineView)
             mainHandler.postSafety("Clipboard.attach") {
                 guideLineView.attach()
+                logger.w("showClipboard attach.")
             }
         }
     }
