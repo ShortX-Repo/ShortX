@@ -481,4 +481,6 @@ interface IShortX {
     void setEdgeGestureSequenceChildSwipeTriggerOnRelease(boolean enabled);
 
     String updateWorkdayCalendarCache(String payload);
+    void insertClipboardTestData(int totalCount, int duplicatePercent);
+
 }

@@ -118,6 +118,7 @@ import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.handleResponseBody
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequestLogging
 import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper
+import java.util.UUID
 import tornaco.apps.shortx.services.rule.systemenv.SystemEnvInit
 import tornaco.apps.shortx.services.ui.I18NCache
 import tornaco.apps.shortx.services.ui.i18NIns
@@ -1446,6 +1447,28 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun isPointerLocationEnabled(): Boolean {
             return shortXContext.systemSettings.isPointerLocationEnabled()
+        }
+
+        override fun insertClipboardTestData(totalCount: Int, duplicatePercent: Int) {
+            enforceCallingPermissions()
+            val sanitizedTotalCount = totalCount.coerceAtLeast(0)
+            if (sanitizedTotalCount == 0) return
+
+            val sanitizedDuplicatePercent = duplicatePercent.coerceIn(0, 100)
+            val duplicateCount = if (sanitizedTotalCount <= 1) {
+                0
+            } else {
+                ((sanitizedTotalCount * sanitizedDuplicatePercent) / 100.0)
+                    .toInt()
+                    .coerceAtMost(sanitizedTotalCount - 1)
+            }
+            val uniqueCount = (sanitizedTotalCount - duplicateCount).coerceAtLeast(1)
+            val batchSeed = System.currentTimeMillis()
+            val uniqueValues = List(uniqueCount) { index ->
+                "ClipboardTest-$batchSeed-$index-${UUID.randomUUID().toString().take(8)}"
+            }
+            val values = (uniqueValues + List(duplicateCount) { uniqueValues.random() }).shuffled()
+            values.forEach(shortXContext.input::addClipboardText)
         }
 
         override fun addPkgSet(set: ByteArrayWrapper) {
