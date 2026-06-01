@@ -313,7 +313,7 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
         var hasSwipeTrigger = false
 
         areas.forEach { area ->
-            val profile = areaGestureProfiles[area] ?: return@forEach
+            val profile = areaProfileForDetectedArea(area) ?: return@forEach
             hasAnyTrigger = hasAnyTrigger || profile.hasAnyTrigger
             hasTapTrigger = hasTapTrigger || profile.hasTapTrigger
             hasLongPressTrigger = hasLongPressTrigger || profile.hasLongPressTrigger
@@ -326,6 +326,24 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
             hasLongPressTrigger = hasLongPressTrigger,
             hasSwipeTrigger = hasSwipeTrigger,
         )
+    }
+
+    private fun areaProfileForDetectedArea(area: DetectedArea): AreaGestureProfile? {
+        return when (area) {
+            is DetectedArea.PredefinedEdge -> {
+                areaGestureProfiles[area]
+                    ?: run {
+                        val parentEdge = getParentEdgeRegion(area.edge)
+                        if (parentEdge != area.edge) {
+                            areaGestureProfiles[DetectedArea.PredefinedEdge(parentEdge, area.coordinateMode)]
+                        } else {
+                            null
+                        }
+                    }
+            }
+
+            is DetectedArea.CustomRect -> areaGestureProfiles[area]
+        }
     }
 
     override fun handleEdgeGestureEvent(
