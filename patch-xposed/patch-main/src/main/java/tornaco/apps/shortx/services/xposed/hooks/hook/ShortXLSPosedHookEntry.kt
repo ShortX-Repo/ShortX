@@ -31,7 +31,7 @@ private lateinit var processName: String
 class ShortXLSPosedHookEntry : XposedModule() {
     override fun onModuleLoaded(param: XposedModuleInterface.ModuleLoadedParam) {
         super.onModuleLoaded(param)
-        Api101Runtime.init(this, param.processName, param.isSystemServer)
+        XposedRuntime.initApi101(this, param.isSystemServer)
         logAdapter = { _, tag, msg ->
             XposedLog.log("$tag $msg")
         }
