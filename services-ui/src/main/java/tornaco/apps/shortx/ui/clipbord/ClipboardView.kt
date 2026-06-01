@@ -31,6 +31,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -145,7 +146,6 @@ class ClipboardView(
                     .focusRequester(focusRequester),
                 contentAlignment = Alignment.BottomCenter
             ) {
-
                 Surface(
                     modifier = Modifier,
                     shape = RoundedCornerShape(
@@ -155,9 +155,16 @@ class ClipboardView(
                     color = ColorDefaults.backgroundSurfaceColor(),
                     shadowElevation = 8.dp,
                 ) {
+                    SideEffect {
+                        logger.w("showClipboard SideEffect in.")
+                    }
                     var clipState by remember { mutableStateOf(clips.sortedBy { !it.isPinned }) }
                     // 使用本地状态，但初始值来自构造器参数
                     var isDeduplicated by remember { mutableStateOf(initialIsDeduplicated) }
+
+                    SideEffect {
+                        logger.w("showClipboard SideEffect. isDeduplicated: $isDeduplicated")
+                    }
 
                     // 去重复逻辑
                     val displayClips = remember(clipState, isDeduplicated) {
@@ -166,6 +173,10 @@ class ClipboardView(
                         } else {
                             clipState
                         }
+                    }
+
+                    SideEffect {
+                        logger.w("showClipboard SideEffect. displayClips size: ${displayClips.size}")
                     }
 
                     // java.lang.IllegalStateException: No OnBackPressedDispatcherOwner was provided via LocalOnBackPressedDispatcherOwner

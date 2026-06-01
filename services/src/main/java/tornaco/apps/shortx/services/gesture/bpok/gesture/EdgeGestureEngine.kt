@@ -105,6 +105,12 @@ class EdgeGestureEngine(
             return false
         }
 
+        val areaProfile = bridge.getAreaGestureProfile(detectedAreas)
+        if (!areaProfile.shouldCaptureOnDown) {
+            if (LOGV) logger.d("handleEdgeDownStart: no triggers for areas=$detectedAreas, skip capture")
+            return false
+        }
+
         hitAreas = detectedAreas
         hitRegion = detectedAreas.filterIsInstance<DetectedArea.PredefinedEdge>().firstOrNull()?.edge ?: Edge.UNRECOGNIZED
         gestureCaptured = true
@@ -125,6 +131,12 @@ class EdgeGestureEngine(
         if (detectedAreas.isEmpty() || detectedAreas != hitAreas) {
             resetState()
             return handleEdgeDownStart(event)
+        }
+
+        val areaProfile = bridge.getAreaGestureProfile(detectedAreas)
+        if (!areaProfile.shouldCaptureOnDown) {
+            resetState()
+            return false
         }
 
         downX = event.rawX
@@ -157,6 +169,58 @@ class EdgeGestureEngine(
 
         if (executionStarted) {
             continuousHandler?.onMove(event.rawX, event.rawY, event.eventTime)
+            return true
+        }
+
+        // 它的意思其实是：
+        //
+        //这个区域没有任何滑动类触发器
+        //但当前触摸流已经在 ACTION_DOWN 时被我们抓住了
+        //这时候用户手指刚开始轻微移动，还不能立刻断定他不是在做单击 / 双击 / 长按
+        //所以在位移还没超过阈值前，要继续“持有”这条触摸流
+        //一旦位移超过阈值，就认为这更像是滑动，而当前区域又没有滑动触发器
+        //那就放弃这条流，cancelAndReplay()，并 return false 让后续事件还给系统
+        //为什么这里不能直接 return false 因为如果这里在“小幅移动阶段”就直接 return false，会出问题：
+        //
+        //DOWN 当时已经被我们拦下来了
+        //系统还没收到原始 DOWN
+        //如果现在 MOVE 直接放过去，系统可能先收到一个 MOVE
+        //但没有对应的 DOWN
+        //触摸序列就乱了
+        //所以必须分两段：
+        //
+        //小幅移动时：return true
+        //继续拦着，先别放
+        //给点击/双击/长按留判断空间
+        //确定是滑动倾向后：cancelAndReplay() + return false
+        //先补回放 DOWN
+        //再把当前和后续事件交还给系统
+        //为什么阈值这么小 这里用的是：
+        //
+        //DIRECTION_MIN_THRESHOLD_DP = 8dp
+        //不是正常滑动触发的 24dp 阈值。
+        //
+        //这是有意的，意思是：
+        //
+        //对“没有滑动触发器”的区域
+        //不需要等到真正滑动成立
+        //只要用户明显开始拖动了，就尽快释放给系统
+        //所以这个 return true 本质上是一个短暂的观察期。
+        //
+        //一句话总结 这里最后的 return true 是为了：
+        //
+        //在“没有滑动触发器”的前提下
+        //仍然给 单击 / 双击 / 长按 留出一个很短的判定窗口
+        //避免太早放行导致触摸流断裂或误判
+        //而不是说“这里已经识别成某个手势了”。
+        if (!bridge.getAreaGestureProfile(hitAreas).hasSwipeTrigger) {
+            val travelSq = travelDistanceSq(event.rawX, event.rawY)
+            val thresholdPx = DIRECTION_MIN_THRESHOLD_DP._dp.toFloat()
+            if (travelSq >= thresholdPx * thresholdPx) {
+                logger.logOnDebug("No swipe trigger for $hitAreas, release captured stream")
+                cancelAndReplay()
+                return false
+            }
             return true
         }
 
@@ -365,13 +429,18 @@ class EdgeGestureEngine(
 
     private fun onDoubleTapTimeout() {
         if (!gestureCaptured) return
-        bridge.handleEdgeGestureEvent(
-            hitAreas,
-            Gesture.SingleTap,
-            downX,
-            downY
-        )
-        consumeCachedEvent()
+        val hasSingleTap = actionResolver.hasAction(hitAreas, Gesture.SingleTap)
+        if (hasSingleTap) {
+            bridge.handleEdgeGestureEvent(
+                hitAreas,
+                Gesture.SingleTap,
+                downX,
+                downY
+            )
+            consumeCachedEvent()
+        } else {
+            replayCompletedTap()
+        }
         resetState()
     }
 
@@ -485,6 +554,17 @@ class EdgeGestureEngine(
             } catch (e: Exception) {
                 logger.e(e, "Failed to replay cached event")
             }
+        }
+    }
+
+    private fun replayCompletedTap() {
+        val downEvent = cachedDownEvent ?: return
+        val upEvent = firstTapUpEvent ?: return
+        try {
+            injectionBridge.injectEvent(MotionEvent.obtain(downEvent))
+            injectionBridge.injectEvent(MotionEvent.obtain(upEvent))
+        } catch (e: Exception) {
+            logger.e(e, "Failed to replay completed tap")
         }
     }
 

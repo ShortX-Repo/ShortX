@@ -90,6 +90,10 @@ class GestureService(shortXContext: ShortXContext) :
         if (!isSystemReady) return null
         if (input == null) return null
         if (input is MotionEvent) {
+            if ((input.flags and FLAG_SHORTX_INJECTION) != 0) {
+                logger.logOnDebug("Ignore injected MotionEvent: $input")
+                return null
+            }
             if (gestureRecorder.isRecording) {
                 runBlocking { gestureRecorder.onMotionEvent(input) }
             }

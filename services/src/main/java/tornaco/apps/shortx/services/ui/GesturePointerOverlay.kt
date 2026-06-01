@@ -13,6 +13,12 @@ import android.view.WindowManager
 import tornaco.apps.shortx.core.util.OsUtils
 import kotlin.math.hypot
 
+enum class GesturePointerVisualMode {
+    SingleClick,
+    LongPress,
+    DoubleClick,
+}
+
 class GesturePointerOverlay(private val context: Context) {
     private val windowManager by lazy {
         context.getSystemService(WindowManager::class.java)
@@ -20,13 +26,13 @@ class GesturePointerOverlay(private val context: Context) {
 
     private var overlayView: GesturePointerOverlayView? = null
 
-    fun show(edgeGroup: Int, x: Float, y: Float) {
+    fun show(edgeGroup: Int, x: Float, y: Float, pointerMode: GesturePointerVisualMode = GesturePointerVisualMode.SingleClick) {
         if (overlayView != null) {
-            update(edgeGroup = edgeGroup, anchorX = x, anchorY = y, currentX = x, currentY = y)
+            update(edgeGroup = edgeGroup, anchorX = x, anchorY = y, currentX = x, currentY = y, pointerMode = pointerMode)
             return
         }
         val view = GesturePointerOverlayView(context).also {
-            it.updatePointer(anchorX = x, anchorY = y, currentX = x, currentY = y)
+            it.updatePointer(anchorX = x, anchorY = y, currentX = x, currentY = y, pointerMode = pointerMode)
         }
         windowManager.addView(view, createLayoutParams())
         overlayView = view
@@ -40,6 +46,7 @@ class GesturePointerOverlay(private val context: Context) {
         currentY: Float,
         cancelRegionRadius: Float = 0f,
         isInCancelRegion: Boolean = false,
+        pointerMode: GesturePointerVisualMode = GesturePointerVisualMode.SingleClick,
     ) {
         overlayView?.updatePointer(
             anchorX = anchorX,
@@ -48,6 +55,7 @@ class GesturePointerOverlay(private val context: Context) {
             currentY = currentY,
             cancelRegionRadius = cancelRegionRadius,
             isInCancelRegion = isInCancelRegion,
+            pointerMode = pointerMode,
         )
     }
 
@@ -135,6 +143,7 @@ private class GesturePointerOverlayView(context: Context) : View(context) {
     private var currentY = 0f
     private var cancelRegionRadius = 0f
     private var isInCancelRegion = false
+    private var pointerMode = GesturePointerVisualMode.SingleClick
 
     fun updatePointer(
         anchorX: Float,
@@ -143,6 +152,7 @@ private class GesturePointerOverlayView(context: Context) : View(context) {
         currentY: Float,
         cancelRegionRadius: Float = 0f,
         isInCancelRegion: Boolean = false,
+        pointerMode: GesturePointerVisualMode = GesturePointerVisualMode.SingleClick,
     ) {
         this.anchorX = anchorX
         this.anchorY = anchorY
@@ -150,6 +160,7 @@ private class GesturePointerOverlayView(context: Context) : View(context) {
         this.currentY = currentY
         this.cancelRegionRadius = cancelRegionRadius
         this.isInCancelRegion = isInCancelRegion
+        this.pointerMode = pointerMode
         invalidate()
     }
 
@@ -184,11 +195,23 @@ private class GesturePointerOverlayView(context: Context) : View(context) {
     }
 
     private fun drawCurrentPointer(canvas: Canvas) {
-        val ringRadius = 9f * density
         val crossHalf = 13f * density
         val gap = 4f * density
 
-        canvas.drawCircle(currentX, currentY, ringRadius, anchorRingPaint)
+        when (pointerMode) {
+            GesturePointerVisualMode.SingleClick -> {
+                canvas.drawCircle(currentX, currentY, 9f * density, anchorRingPaint)
+            }
+
+            GesturePointerVisualMode.LongPress -> {
+                canvas.drawCircle(currentX, currentY, 13f * density, anchorRingPaint)
+            }
+
+            GesturePointerVisualMode.DoubleClick -> {
+                canvas.drawCircle(currentX, currentY, 7f * density, anchorRingPaint)
+                canvas.drawCircle(currentX, currentY, 13f * density, anchorRingPaint)
+            }
+        }
         canvas.drawLine(currentX - crossHalf, currentY, currentX - gap, currentY, anchorCrossPaint)
         canvas.drawLine(currentX + gap, currentY, currentX + crossHalf, currentY, anchorCrossPaint)
         canvas.drawLine(currentX, currentY - crossHalf, currentX, currentY - gap, anchorCrossPaint)

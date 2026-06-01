@@ -50,6 +50,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectAsState
@@ -67,6 +68,7 @@ import tornaco.apps.shortx.ui.TestData
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
 import tornaco.apps.shortx.ui.base.ConfirmDialog
 import tornaco.apps.shortx.ui.base.ErrorCard
+import tornaco.apps.shortx.ui.base.InputValidateResult
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LinkText
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -1078,6 +1080,37 @@ private fun devSettings(
     state: SettingsState,
     vm: SettingsViewModel
 ): List<Preference> {
+    val scope = rememberCoroutineScope()
+    fun parseClipboardSeedArgs(value: String): Pair<Int, Int>? {
+        val parts = value.split(',').map { it.trim() }
+        if (parts.size != 2) return null
+        val totalCount = parts[0].toIntOrNull() ?: return null
+        val duplicatePercent = parts[1].toIntOrNull() ?: return null
+        if (totalCount <= 0 || duplicatePercent !in 0..100) return null
+        return totalCount to duplicatePercent
+    }
+
+    val clipboardSeedDialogState = rememberTextInputState(
+        title = "Insert Clipboard",
+        message = "Format: totalCount,duplicatePercent\nExample: 100,30",
+        showSymbolButton = false,
+        inputValidator = {
+            if (parseClipboardSeedArgs(it) != null) {
+                InputValidateResult.OK
+            } else {
+                InputValidateResult.Error("Use format: count,duplicatePercent and duplicatePercent must be 0-100")
+            }
+        },
+        onSelected = {
+            parseClipboardSeedArgs(it)?.let { (totalCount, duplicatePercent) ->
+                scope.launch(Dispatchers.IO) {
+                    TestData.insertClipboardTestData(totalCount, duplicatePercent)
+                }
+            }
+        }
+    )
+    TextInputDialog(state = clipboardSeedDialogState)
+
     val permissionRequester = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { _: Boolean ->
@@ -1173,6 +1206,16 @@ private fun devSettings(
                                 value = state.isIgnoreFrameworkUpdate,
                                 onCheckChanged = { enable ->
                                     vm.setIgnoreFrameworkUpdate(enable)
+                                }
+                            ))
+
+                        add(
+                            Preference.TextPreference(
+                                icon = Remix.System.loader_2_line,
+                                title = "Insert Clipboard",
+                                summary = "Insert clipboard test data by count and duplicate ratio",
+                                onClick = {
+                                    clipboardSeedDialogState.show("100,30")
                                 }
                             ))
 

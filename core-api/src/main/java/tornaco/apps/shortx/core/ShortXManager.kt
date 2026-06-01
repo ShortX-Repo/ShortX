@@ -210,6 +210,12 @@ class ShortXManager(val service: IShortX) {
         }
     }
 
+    fun insertClipboardTestData(totalCount: Int, duplicatePercent: Int) {
+        invokeService(Unit) {
+            insertClipboardTestData(totalCount, duplicatePercent)
+        }
+    }
+
     fun getLogDir(): String {
         return invokeService("") {
             logDir

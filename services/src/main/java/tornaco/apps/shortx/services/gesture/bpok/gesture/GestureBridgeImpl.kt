@@ -71,6 +71,7 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
     override val enabledEdgeGestures = mutableSetOf<EdgeGesture>()
     override val enabledCornerSwipeToCenterFacts = mutableSetOf<CornerSwipeToCenter>()
     private val continuousGestureBindings = mutableListOf<ContinuousGestureBinding>()
+    private val areaGestureProfiles = linkedMapOf<DetectedArea, AreaGestureProfile>()
 
     private val requiredFrontApps = mutableSetOf<AppPkg>()
     private val currentFrontApps = mutableSetOf<AppPkg>()
@@ -303,6 +304,30 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
         }
     }
 
+    override fun getAreaGestureProfile(areas: List<DetectedArea>): AreaGestureProfile {
+        if (areas.isEmpty()) return AreaGestureProfile(false, false, false, false)
+
+        var hasAnyTrigger = false
+        var hasTapTrigger = false
+        var hasLongPressTrigger = false
+        var hasSwipeTrigger = false
+
+        areas.forEach { area ->
+            val profile = areaGestureProfiles[area] ?: return@forEach
+            hasAnyTrigger = hasAnyTrigger || profile.hasAnyTrigger
+            hasTapTrigger = hasTapTrigger || profile.hasTapTrigger
+            hasLongPressTrigger = hasLongPressTrigger || profile.hasLongPressTrigger
+            hasSwipeTrigger = hasSwipeTrigger || profile.hasSwipeTrigger
+        }
+
+        return AreaGestureProfile(
+            hasAnyTrigger = hasAnyTrigger,
+            hasTapTrigger = hasTapTrigger,
+            hasLongPressTrigger = hasLongPressTrigger,
+            hasSwipeTrigger = hasSwipeTrigger,
+        )
+    }
+
     override fun handleEdgeGestureEvent(
         areas: List<DetectedArea>,
         gestureEvent: Gesture,
@@ -484,6 +509,7 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
         enabledEdgeGestures.clear()
         enabledCornerSwipeToCenterFacts.clear()
         continuousGestureBindings.clear()
+        areaGestureProfiles.clear()
         requiredFrontApps.clear()
 
         val tempEnabledFacts = mutableSetOf<EdgeGesture>()
@@ -525,6 +551,8 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
                                         dragHoldDurationMs = action.dragHoldDurationMs.takeIf { it > 0 } ?: 350,
                                         scrollMode = action.scrollMode,
                                         scrollScale = action.scrollScale.takeIf { it > 0f } ?: 1f,
+                                        cancelRegionRadiusDp = action.cancelRegionRadiusDp.takeIf { it > 0 } ?: 48,
+                                        enableCenterActionSwitch = action.enableCenterActionSwitch,
                                     )
                                 }
 
@@ -579,6 +607,7 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
         enabledEdgeGestures.addAll(tempEnabledFacts)
         enabledCornerSwipeToCenterFacts.addAll(tempEnabledCornerFacts)
         continuousGestureBindings.addAll(tempContinuousGestureBindings)
+        areaGestureProfiles.putAll(buildAreaGestureProfiles(tempEnabledFacts))
         requiredFrontApps.addAll(tempRequiredApps)
 
         checkFrontAppPkg("updateQuickCheckDataOnRuleChange")
@@ -586,6 +615,7 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
         logger.d("updateQuickCheckDataOnRuleChange, enabledEdgeGestures: $enabledEdgeGestures")
         logger.d("updateQuickCheckDataOnRuleChange, enabledCornerSwipeToCenterFacts: $enabledCornerSwipeToCenterFacts")
         logger.d("updateQuickCheckDataOnRuleChange, continuousGestureBindings: $continuousGestureBindings")
+        logger.d("updateQuickCheckDataOnRuleChange, areaGestureProfiles: $areaGestureProfiles")
         logger.d("updateQuickCheckDataOnRuleChange, requiredFrontApps: $requiredFrontApps")
         logger.d("updateQuickCheckDataOnRuleChange, requiredFrontAppMatchQuick: $requiredFrontAppMatchQuick")
         logger.d("updateQuickCheckDataOnRuleChange, requiredFrontAppAny: $requiredFrontAppAny")
@@ -623,6 +653,8 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
                 dragHoldDurationMs = payload.dragHoldDurationMs,
                 scrollMode = payload.scrollMode,
                 scrollScale = payload.scrollScale,
+                cancelRegionRadiusDp = payload.cancelRegionRadiusDp,
+                enableCenterActionSwitch = payload.enableCenterActionSwitch,
             )
 
             is ContinuousGestureActionPayload.Volume -> VolumeContinuousHandler(
@@ -631,5 +663,52 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
                 sensitivityScale = payload.sensitivityScale,
             )
         }
+    }
+
+    private fun buildAreaGestureProfiles(rules: Set<EdgeGesture>): Map<DetectedArea, AreaGestureProfile> {
+        val profiles = linkedMapOf<DetectedArea, MutableAreaGestureProfile>()
+        rules.forEach { rule ->
+            val area = areaKeyForRule(rule)
+            val profile = profiles.getOrPut(area) { MutableAreaGestureProfile() }
+            profile.hasAnyTrigger = true
+            when (rule.gesture) {
+                Gesture.SingleTap,
+                Gesture.DoubleTap -> profile.hasTapTrigger = true
+
+                Gesture.LongTap -> profile.hasLongPressTrigger = true
+
+                Gesture.SwipeFromLeft,
+                Gesture.SwipeFromRight,
+                Gesture.SwipeFromTop,
+                Gesture.SwipeFromBottom -> profile.hasSwipeTrigger = true
+
+                else -> Unit
+            }
+        }
+        return profiles.mapValues { (_, profile) ->
+            AreaGestureProfile(
+                hasAnyTrigger = profile.hasAnyTrigger,
+                hasTapTrigger = profile.hasTapTrigger,
+                hasLongPressTrigger = profile.hasLongPressTrigger,
+                hasSwipeTrigger = profile.hasSwipeTrigger,
+            )
+        }
+    }
+
+    private fun areaKeyForRule(rule: EdgeGesture): DetectedArea {
+        val hasCustomRect = rule.hasCustomRect() &&
+                rule.customRect != tornaco.apps.shortx.core.proto.common.Rect.getDefaultInstance()
+        return if (hasCustomRect) {
+            DetectedArea.CustomRect(rule.customRect)
+        } else {
+            DetectedArea.PredefinedEdge(rule.edge, rule.expectedDirectionCoordinateMode())
+        }
+    }
+
+    private class MutableAreaGestureProfile {
+        var hasAnyTrigger: Boolean = false
+        var hasTapTrigger: Boolean = false
+        var hasLongPressTrigger: Boolean = false
+        var hasSwipeTrigger: Boolean = false
     }
 }
