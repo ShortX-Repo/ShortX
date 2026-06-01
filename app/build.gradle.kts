@@ -152,6 +152,7 @@ dependencies {
     implementation(libs.compose.material)
 
     implementation(libs.hiddenapibypass)
+    compileOnly(files("${rootProject.rootDir.path}/patch-xposed/patch-main/libs/api-82.jar"))
     compileOnly(libs.libxposed.api)
 
     implementation(project(":ui"))
