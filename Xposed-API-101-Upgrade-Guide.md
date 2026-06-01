@@ -1,6 +1,6 @@
 # Xposed API 101 升级手册
 
-本文面向需要将 Xposed 模块升级到 **LSPosed / libxposed API 101** 的项目，重点覆盖工程配置、入口迁移、Hook 写法、混淆规则、`XposedScope` 迁移和常见问题排查。本文最终目标是：**彻底去掉 legacy 模式，只支持 API 101**。
+本文面向需要将 Xposed 模块升级到 **Xposed API 101** 的项目，重点覆盖工程配置、入口迁移、Hook 写法、混淆规则、兼容策略和常见问题排查。
 
 > 说明：不同框架、模板或 `libxposed` 版本的具体类名可能存在细微差异。本文以现代 Xposed / libxposed API 的迁移思路为主，实际落地时请以项目当前依赖和框架文档为准。
 
@@ -44,7 +44,16 @@ dependencies {
 }
 ```
 
-如果你的目标和本项目一样，是彻底迁移到 API 101 并废弃 legacy 支持，则不要再保留传统 API 依赖，也不要继续携带本地旧版 API jar。
+如果项目仍需兼容传统 API，可临时保留旧依赖：
+
+```kotlin
+dependencies {
+    compileOnly("de.robv.android.xposed:api:82")
+    compileOnly("io.github.libxposed:api:101")
+}
+```
+
+如果你的目标和本项目一样，是彻底迁移到 LSPosed API 101 并废弃 legacy 支持，则不要再保留传统 API 依赖，也不要继续携带本地旧版 API jar。
 
 推荐优先使用上游 Maven Central 依赖，例如：
 
@@ -54,18 +63,16 @@ dependencies {
 }
 ```
 
-注意：
+注意：`io.github.libxposed:api:101.0.1` 发布物是 AAR。Android 模块可以直接消费；纯 Kotlin/JVM 模块如果需要 `compileOnly`，可能需要在构建中提取其中的 `classes.jar` 参与编译。
 
-- `io.github.libxposed:api:101.0.1` 发布物是 AAR。Android 模块可以直接消费；纯 Kotlin/JVM 模块如果需要 `compileOnly`，可能需要在构建中提取其中的 `classes.jar` 参与编译。
-- `io.github.libxposed:service:101.0.0` 是给模块 app 侧用的动态通信 service API。`ui` 这种 Android library 在 `compileSdk 36` 下可以直接 `implementation`。
-- 如果项目 `compileSdk < 36`，则 `service` AAR 会触发 metadata gate，不能直接消费。
-
-长期维护时建议彻底删除 legacy 入口，不要再混用两套 API。
+长期维护时建议将传统入口和现代入口隔离，避免在同一个类中混写两套 API。
 
 推荐结构：
 
 ```text
 src/main/java/your/package/module/
+  legacy/
+    LegacyXposedEntry.kt
   modern/
     ModernXposedModule.kt
   common/
@@ -114,13 +121,13 @@ src/main/java/your/package/module/
 
 注意事项：
 
-- 如果你决定只支持 API 101，那么 `xposedminversion` 就必须是 `101`，同时要删除 `assets/xposed_init`。
+- 如果仍需兼容旧框架，不要直接把 `xposedminversion` 改成 `101`。
 - 如果现代 API 需要额外声明模块入口，请按所使用模板或框架文档补充对应 `meta-data`。
 - Manifest 变更后需要重新安装模块 APK，并在框架中重新启用模块。
 
 ## 5. 模块入口迁移
 
-legacy 写法通常如下：
+传统 API 写法通常如下：
 
 ```kotlin
 class MainHook : IXposedHookLoadPackage {

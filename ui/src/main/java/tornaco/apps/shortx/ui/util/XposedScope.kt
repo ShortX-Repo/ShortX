@@ -36,7 +36,7 @@ object XposedScope {
             kotlin.runCatching {
                 if (!it.scope.contains(pkg.pkgName)) {
                     logger.w("XposedScope requestScope: $pkg")
-                    it.requestScope(listOf(pkg.pkgName), object : XposedService.OnScopeEventListener {})
+                    it.requestScope(pkg.pkgName, object : XposedService.OnScopeEventListener {})
                 } else {
                     logger.w("XposedScope already scoped: $pkg")
                 }

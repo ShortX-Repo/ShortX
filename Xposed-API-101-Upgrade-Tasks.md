@@ -2,14 +2,14 @@
 
 本文基于 `AI/` 目录中的架构说明和当前源码扫描结果，梳理 ShortX 升级到 Xposed API 101 的执行任务。目标不是泛化迁移手册，而是面向当前项目结构拆出可落地、可验证的任务清单。
 
-## API 101 Migration Status
+## API 101-only Migration Status
 
 - 当前 feature：`specs/010-upgrade-lsposed-api`
 - 分支：`010-upgrade-lsposed-api`
-- 策略：最终完全废弃 legacy Xposed 支持，只支持 LSPosed API 101。
+- 策略：完全废弃 legacy Xposed 支持，只支持 LSPosed API 101。
 - API 101 依赖：使用 Gradle 依赖 `io.github.libxposed:api:101.0.1`，不再使用本地 `patch-xposed/patch-main/libs/libxposed-api.jar`。
 - Legacy 盘点：见 `specs/010-upgrade-lsposed-api/legacy-reference-inventory.md`。
-- 当前结果：最终目标仍是 API101-only；若中途尝试过 dual-support，请以删除 `XposedEntry`、删除 `xposed_init`、删除 `api-82.jar` 构建使用为收口标准。
+- 当前结果：`patch-xposed:patch-common`、`patch-xposed:patch-systemui`、`patch-xposed:patch-main` 已迁移到 API 101 hook 门面并通过编译；`app/src/main/assets/xposed_init` 已删除，legacy `XposedEntry` 不再作为打包入口。
 - 本地验证：`:app:assemblePrcDebug` 和 `:app:assemblePrcRelease` 已通过；默认 `:app:assembleDebug` 受本地 `google-services.json` 缺失阻塞；SystemUI 测试任务受既有测试 API drift 阻塞。
 - 待验证：system_server、SystemUI、普通 app Method Hook、失败隔离和自 hook 保护仍需在支持 LSPosed API 101 的设备环境上完成。
 
@@ -40,7 +40,7 @@ AI 文档中的关键结论：
 
 - `patch-xposed/patch-main/src/main/java/.../ShortXLSPosedHookEntry.kt` 已继承 `io.github.libxposed.api.XposedModule`。
 - `patch-xposed/patch-main/build.gradle.kts` 已同时编译 `api-82.jar` 和 `libxposed-api.jar`。
-- `ui/build.gradle.kts` 需要迁移到 Maven 的 `io.github.libxposed:service:101.0.0`，并配合 `compileSdk 36` 直接消费。
+- `ui/build.gradle.kts` 使用 `libxposed-api.jar`、`libxposed-service.jar`、`libxposed-service-interface.jar`。
 - `app/proguard-rules.pro` 已包含 `io.github.libxposed.api.*` 的 `dontwarn`。
 
 迁移前项目仍保留大量传统 API 依赖：
@@ -99,9 +99,12 @@ API 101 升级应达到以下目标：
 需要决策：
 
 - 方案 A：只支持 API 101，移除 `XposedEntry.kt` 和 `api-82.jar` 编译依赖。
+- 方案 B：短期双入口兼容，保留 `XposedEntry.kt`，但通用 Hook 基建先抽象出双实现。
+- 方案 C：保留传统 API 分支，但 API 101 为默认主路径，后续版本再删除 legacy。
+
 建议：
 
-- 不要做双入口兼容。ShortX 已验证双支持运行时不稳定，应直接收口到 API101-only。
+- 当前项目已经有 `ShortXLSPosedHookEntry`，但 `patch-common` 仍基于传统 `XC_MethodHook`。建议先采用方案 C，降低一次性迁移风险。
 
 验收标准：
 

@@ -145,7 +145,8 @@ dependencies {
     implementation(libs.androidx.paging.compose)
 
     compileOnly(libs.libxposed.api)
-    implementation(libs.libxposed.service)
+    implementation(files("${project.rootDir.path}/patch-xposed/patch-main/libs/libxposed-service.jar"))
+    implementation(files("${project.rootDir.path}/patch-xposed/patch-main/libs/libxposed-service-interface.jar"))
 
     val rowImplementation by configurations
     // This dependency is downloaded from the Google’s Maven repository.
