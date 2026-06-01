@@ -3,109 +3,131 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ShortX LSPosed API 101 迁移教程</title>
+  <title>ShortX LSPosed API 101 手把手迁移教程</title>
   <style>
     :root {
       color-scheme: light dark;
-      --bg: #0b1020;
-      --panel: #11162a;
-      --text: #e8ecf3;
-      --muted: #94a3b8;
+      --bg: #0f172a;
+      --panel: #111827;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
       --accent: #38bdf8;
-      --border: #293249;
-      --code: #060a14;
-      --warn: #f59e0b;
+      --accent2: #a78bfa;
+      --border: #334155;
+      --code: #020617;
       --ok: #22c55e;
+      --warn: #f59e0b;
+      --bad: #ef4444;
     }
-    body { margin: 0; background: linear-gradient(180deg, #0f172a, var(--bg)); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.7; }
-    main { max-width: 1200px; margin: 0 auto; padding: 28px 20px 80px; }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top left, #1e3a8a 0, var(--bg) 36rem);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.7;
+    }
+    main { max-width: 1180px; margin: 0 auto; padding: 32px 20px 80px; }
     h1, h2, h3 { line-height: 1.25; }
     h1 { font-size: 2.2rem; margin: 0 0 12px; }
-    h2 { margin-top: 42px; padding-top: 16px; border-top: 1px solid var(--border); }
-    .card, .toc { background: rgba(17, 22, 42, .92); border: 1px solid var(--border); border-radius: 16px; padding: 20px; box-shadow: 0 20px 50px rgba(0,0,0,.22); }
-    .hero { margin-bottom: 20px; }
+    h2 { margin-top: 44px; padding-top: 20px; border-top: 1px solid var(--border); color: #f8fafc; }
+    h3 { margin-top: 28px; color: #dbeafe; }
+    a { color: var(--accent); }
+    .hero, .card, .toc {
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 24px 64px rgb(0 0 0 / 24%);
+    }
+    .hero { margin-bottom: 22px; }
     .muted { color: var(--muted); }
-    code { font-family: "SFMono-Regular", Consolas, monospace; color: #c4f1ff; }
-    pre { overflow-x: auto; background: var(--code); border: 1px solid var(--border); border-radius: 12px; padding: 16px; line-height: 1.45; }
-    pre code { color: #e5edf7; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--border); color: #bae6fd; font-size: 0.86rem; }
+    .ok { color: var(--ok); }
+    .warn { color: var(--warn); }
+    .bad { color: var(--bad); }
+    code { font-family: "SFMono-Regular", Consolas, monospace; color: #bae6fd; }
+    pre {
+      overflow-x: auto;
+      background: var(--code);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      line-height: 1.45;
+      tab-size: 4;
+    }
+    pre code { color: #e2e8f0; }
     table { width: 100%; border-collapse: collapse; margin: 14px 0; }
     th, td { border: 1px solid var(--border); padding: 10px; vertical-align: top; }
-    th { background: #17203a; }
-    .note { border-left: 4px solid var(--warn); padding: 10px 14px; background: rgba(245,158,11,.08); }
-    .ok { color: var(--ok); }
-    ul, ol { padding-left: 22px; }
+    th { background: #172554; }
+    .step { border-left: 4px solid var(--accent); padding-left: 16px; }
+    .note { border-left: 4px solid var(--warn); padding: 10px 14px; background: rgb(245 158 11 / 10%); }
+    .danger { border-left: 4px solid var(--bad); padding: 10px 14px; background: rgb(239 68 68 / 10%); }
+    .small { font-size: 0.92rem; }
   </style>
 </head>
 <body>
 <main>
-  <section class="card hero">
-    <h1>ShortX LSPosed API 101 迁移教程</h1>
-    <p class="muted">这是一份基于 ShortX 本次真实迁移结果整理的实操教程。目标非常明确：<strong>彻底去掉 legacy 模式，只支持 LSPosed / libxposed API 101</strong>。你照着本文改，应该可以直接落地。</p>
-    <p><strong>最终状态：</strong>不再保留 <code>XposedEntry</code>、不再保留 <code>assets/xposed_init</code>、不再依赖 <code>api-82.jar</code>、不再在业务 Hook 中出现 <code>de.robv.android.xposed.*</code>。</p>
+  <section class="hero">
+    <span class="badge">ShortX Migration Notes</span>
+    <h1>LSPosed API 101 手把手迁移教程</h1>
+    <p class="muted">基于 ShortX 本次 <code>010-upgrade-lsposed-api</code> 迁移记录、源码实现和验证结果整理。目标是把传统 legacy Xposed 入口与 <code>XC_MethodHook</code> 写法迁移到 LSPosed/libxposed API 101，并完全废弃 legacy 支持。</p>
+    <div class="grid">
+      <div class="card"><strong>迁移目标</strong><br>仅支持 LSPosed API 101，不再声明或依赖 legacy Xposed 入口。</div>
+      <div class="card"><strong>核心模式</strong><br><code>XposedModule</code> 入口 + <code>XposedInterface.Hooker</code> 实例拦截 + 项目内 <code>ShortXHookParam</code> 兼容层。</div>
+      <div class="card"><strong>验证命令</strong><br><code>./gradlew :patch-xposed:patch-main:compileKotlin :patch-xposed:patch-systemui:compileKotlin</code><br><code>./gradlew :app:assemblePrcDebug</code></div>
+    </div>
   </section>
 
-  <section class="toc card">
+  <nav class="toc">
     <h2>目录</h2>
     <ol>
-      <li>目标与最终边界</li>
-      <li>第 1 步：升级 SDK 36</li>
-      <li>第 2 步：清理旧依赖，统一用 Maven</li>
-      <li>第 3 步：模块 metadata 改成 API101-only</li>
-      <li>第 4 步：入口迁移到 <code>XposedModule</code></li>
-      <li>第 5 步：建立项目内 Hook 抽象</li>
-      <li>第 6 步：迁移动态 MethodHook</li>
-      <li>第 7 步：处理 <code>XposedScope</code></li>
-      <li>第 8 步：R8 / ProGuard</li>
-      <li>第 9 步：验证命令</li>
-      <li>常见坑</li>
+      <li><a href="#before">迁移前后差异</a></li>
+      <li><a href="#deps">依赖和构建配置</a></li>
+      <li><a href="#metadata">模块 metadata 配置</a></li>
+      <li><a href="#entry">API 101 入口迁移</a></li>
+      <li><a href="#facade">Hook facade 设计</a></li>
+      <li><a href="#code">完整可复用核心代码</a></li>
+      <li><a href="#business">业务 Hook 迁移示例</a></li>
+      <li><a href="#method-hook">用户动态 MethodHook 迁移</a></li>
+      <li><a href="#systemui">SystemUI 迁移要点</a></li>
+      <li><a href="#r8">R8/ProGuard 配置</a></li>
+      <li><a href="#validate">验证和排错</a></li>
     </ol>
-  </section>
+  </nav>
 
-  <section>
-    <h2>1. 目标与最终边界</h2>
+  <section id="before">
+    <h2>1. 迁移前后差异</h2>
     <table>
-      <thead><tr><th>项</th><th>最终要求</th></tr></thead>
+      <thead><tr><th>legacy Xposed</th><th>LSPosed API 101</th><th>ShortX 迁移策略</th></tr></thead>
       <tbody>
-        <tr><td>模块入口</td><td>只保留 <code>ShortXLSPosedHookEntry : XposedModule</code></td></tr>
-        <tr><td>legacy 入口</td><td>删除 <code>XposedEntry.kt</code></td></tr>
-        <tr><td>legacy asset</td><td>删除 <code>app/src/main/assets/xposed_init</code></td></tr>
-        <tr><td>legacy jar</td><td>删除 <code>patch-xposed/patch-main/libs/api-82.jar</code> 的构建使用</td></tr>
-        <tr><td>hook 业务层</td><td>统一使用项目内 <code>ShortXHookParam</code>、<code>Hooks.kt</code></td></tr>
-        <tr><td>UI scope 请求</td><td>使用 <code>io.github.libxposed:service:101.0.0</code>，不再依赖本地 service jar</td></tr>
-        <tr><td>compileSdk / targetSdk</td><td>升级到 36</td></tr>
+        <tr><td><code>IXposedHookLoadPackage</code></td><td><code>XposedModule</code></td><td>删除 <code>XposedEntry.kt</code>，使用 <code>ShortXLSPosedHookEntry</code></td></tr>
+        <tr><td><code>assets/xposed_init</code></td><td><code>META-INF/xposed/java_init.list</code></td><td>删除旧 asset，入口写入 <code>java_init.list</code></td></tr>
+        <tr><td><code>XC_MethodHook</code></td><td><code>XposedInterface.Hooker</code></td><td>用 <code>Api101Hooker</code> 包装 before/after lambda</td></tr>
+        <tr><td><code>MethodHookParam</code></td><td><code>Chain</code></td><td>引入 <code>ShortXHookParam</code>，保持业务层和 MVEL 的 <code>param</code> 语义</td></tr>
+        <tr><td><code>XposedBridge.log</code></td><td><code>XposedInterface.log</code></td><td>引入 <code>XposedLog</code> 门面</td></tr>
+        <tr><td><code>AndroidAppHelper</code></td><td>无等价公开类</td><td>在 <code>core-api</code> 提供项目自己的 <code>AndroidAppHelper</code></td></tr>
       </tbody>
     </table>
+    <div class="danger">不要保留双入口作为“保险”。如果产品目标是 API 101-only，旧入口、旧 jar、旧 keep 规则和旧 metadata 都会制造歧义，设备上排错会非常困难。</div>
   </section>
 
-  <section>
-    <h2>2. 第 1 步：升级 SDK 36</h2>
-    <p>ShortX 这个项目的 SDK 版本集中定义在：</p>
-<pre><code>buildSrc/src/main/kotlin/tornaco/project/android/shortx/BuildConfigs.kt</code></pre>
-    <p>修改成：</p>
-<pre><code class="language-kotlin">object Configs {
-    const val compileSdkVersion = 36
-    const val minSdkVersion = 26
-    const val targetSdkVersion = 36
-}</code></pre>
-    <div class="note">为什么一定要升到 36：<code>io.github.libxposed:service:101.0.0</code> 的 AAR metadata 要求依赖方至少 <code>compileSdk 36</code>。如果你停留在 35，就只能走“解压 AAR 里的 classes.jar”这种绕路方案。</div>
-  </section>
-
-  <section>
-    <h2>3. 第 2 步：清理旧依赖，统一用 Maven</h2>
-    <h3>3.1 版本目录</h3>
-    <p>在 <code>gradle/libs.versions.toml</code> 里声明：</p>
+  <section id="deps">
+    <h2>2. 依赖和构建配置</h2>
+    <div class="step">
+      <h3>步骤 2.1：版本目录增加 API 101 依赖</h3>
+      <p>在 <code>gradle/libs.versions.toml</code> 中声明 Maven 依赖，不再依赖本地旧 jar。</p>
+    </div>
 <pre><code class="language-toml">[versions]
 libxposed-api = "101.0.1"
-libxposed-service = "101.0.0"
 
 [libraries]
-libxposed-api = { module = "io.github.libxposed:api", version.ref = "libxposed-api" }
-libxposed-service = { module = "io.github.libxposed:service", version.ref = "libxposed-service" }</code></pre>
+libxposed-api = { module = "io.github.libxposed:api", version.ref = "libxposed-api" }</code></pre>
 
-    <h3>3.2 patch-xposed 子模块</h3>
-    <p><code>patch-main</code>、<code>patch-common</code>、<code>patch-systemui</code> 是 Kotlin/JVM 模块，不是 Android library，所以不能像 app/ui 那样直接消费 AAR。这里仍然要从 Maven 拉下 API AAR，再提取里面的 <code>classes.jar</code> 作为 <code>compileOnly</code>。</p>
-    <p>这是“理论上都用 Maven；个别模块需要解压 Maven 下来的包”的典型例子。</p>
-
+    <div class="step">
+      <h3>步骤 2.2：JVM hook 模块提取 AAR 内 classes.jar</h3>
+      <p><code>io.github.libxposed:api:101.0.1</code> 是 AAR。ShortX 的 <code>patch-xposed</code> 子模块是 Kotlin/JVM library，因此使用一个 Copy task 解包 <code>classes.jar</code> 再作为 <code>compileOnly</code>。</p>
+    </div>
 <pre><code class="language-kotlin">plugins {
     alias(libs.plugins.kotlin.jvm)
 }
@@ -128,37 +150,39 @@ dependencies {
 
     compileOnly(files("${rootProject.rootDir.path}/android-sdk/31/android-31.jar"))
     compileOnly(files(layout.buildDirectory.file("generated/libxposed-api/libxposed-api.jar")))
+
+    implementation(project(":core-api"))
+    implementation(project(":core"))
+    implementation(project(":external:utils"))
 }
 
 tasks.named("compileKotlin") {
     dependsOn(extractLibxposedApi)
 }</code></pre>
-
-    <h3>3.3 ui 模块</h3>
-    <p><code>ui</code> 是 Android library，已经升级到 <code>compileSdk 36</code> 之后，可以直接用 Maven service 依赖，不需要自己解压。</p>
-
-<pre><code class="language-kotlin">dependencies {
-    compileOnly(libs.libxposed.api)
-    implementation(libs.libxposed.service)
-}</code></pre>
-
-    <h3>3.4 必须清理的旧依赖</h3>
-    <ul>
-      <li>删除 <code>compileOnly(files("libs/api-82.jar"))</code></li>
-      <li>删除本地 <code>libxposed-api.jar</code> 使用</li>
-      <li>删除本地 <code>libxposed-service.jar</code> / <code>libxposed-service-interface.jar</code> 使用</li>
-      <li>不要再把 <code>de.robv.android.xposed:api:82</code> 放进构建路径</li>
-    </ul>
+    <p>同样的配置需要放到使用 API 101 类型的 <code>patch-main</code>、<code>patch-common</code>、<code>patch-systemui</code>。</p>
   </section>
 
-  <section>
-    <h2>4. 第 3 步：模块 metadata 改成 API101-only</h2>
-    <h3>4.1 module.prop</h3>
+  <section id="metadata">
+    <h2>3. 模块 metadata 配置</h2>
+    <h3>步骤 3.1：删除 legacy 入口 asset</h3>
+<pre><code>app/src/main/assets/xposed_init</code></pre>
+    <p>这个文件是 legacy 入口声明。本次迁移中应该删除，避免框架或文档继续认为模块支持旧入口。</p>
+
+    <h3>步骤 3.2：配置 API 101 module.prop</h3>
 <pre><code class="language-properties">minApiVersion=101
 targetApiVersion=101
 staticScope=false</code></pre>
+    <p><code>minApiVersion=101</code> 是 API 101-only 的关键。只改 <code>targetApiVersion</code> 不够，因为 <code>minApiVersion=53</code> 仍然表示你支持旧环境。</p>
 
-    <h3>4.2 Manifest</h3>
+    <h3>步骤 3.3：配置 java_init.list</h3>
+<pre><code>tornaco.apps.shortx.services.xposed.hooks.hook.ShortXLSPosedHookEntry</code></pre>
+
+    <h3>步骤 3.4：保留 scope.list</h3>
+<pre><code>system
+com.android.systemui</code></pre>
+    <p>如果你使用动态 scope，<code>staticScope=false</code> 可以保留。<code>scope.list</code> 作为初始/默认 scope 使用。</p>
+
+    <h3>步骤 3.5：Manifest 兼容 metadata</h3>
 <pre><code class="language-xml">&lt;meta-data
     android:name="xposedmodule"
     android:value="true" /&gt;
@@ -171,15 +195,11 @@ staticScope=false</code></pre>
 &lt;meta-data
     android:name="xposedscope"
     android:resource="@array/xposed_scope" /&gt;</code></pre>
-
-    <h3>4.3 删除 legacy 入口 asset</h3>
-<pre><code>app/src/main/assets/xposed_init</code></pre>
-    <p>这个文件必须删除。只要它还在，legacy 入口就还在被声明。</p>
   </section>
 
-  <section>
-    <h2>5. 第 4 步：入口迁移到 <code>XposedModule</code></h2>
-    <p>最终入口代码如下：</p>
+  <section id="entry">
+    <h2>4. API 101 入口迁移</h2>
+    <p>API 101 入口继承 <code>XposedModule</code>。ShortX 最终把常规业务 hook 放在 <code>onPackageReady</code>，把 <code>onPackageLoaded</code> 作为极早期日志/特殊需求入口。</p>
 <pre><code class="language-kotlin">package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import io.github.libxposed.api.XposedModule
@@ -229,17 +249,76 @@ class ShortXLSPosedHookEntry : XposedModule() {
         HookStub2.systemServerLoaded(ISystemServerLoaded.Param(param.classLoader))
     }
 }</code></pre>
-
-    <p>同时删除：</p>
-<pre><code>patch-xposed/patch-main/src/main/java/.../XposedEntry.kt</code></pre>
+    <div class="note">经验：大多数 legacy <code>handleLoadPackage</code> 的逻辑应迁到 <code>onPackageReady</code>。只有需要抢在 AppComponentFactory 或 Application 之前的极早期 hook，才放到 <code>onPackageLoaded</code>。</div>
   </section>
 
-  <section>
-    <h2>6. 第 5 步：建立项目内 Hook 抽象</h2>
-    <p>核心原则：业务 hook 不直接碰 <code>XposedBridge</code>、<code>XC_MethodHook</code>、<code>Chain</code>。统一走项目内门面。</p>
+  <section id="facade">
+    <h2>5. Hook facade 设计</h2>
+    <p>迁移时不要让业务代码直接依赖 API 101 的 <code>Chain</code>。更稳的方式是保持原来的 <code>beforeMethod/afterMethod</code> 函数名，只替换底层实现。</p>
+    <h3>为什么不要使用全局 callback registry</h3>
+    <p>一开始可以想到这样的设计：注册时把 <code>Member -&gt; callback</code> 存进内存 map，运行时用 <code>chain.executable</code> 回查。但是实际测试发现，注册时的 <code>Method/Constructor</code> 对象和运行时 <code>chain.executable</code> 不一定是同一个对象或可稳定 equals 命中，导致日志显示已注册，但 before/after 运行时找不到 callback。</p>
+    <p>最终采用实例 Hooker 方案：每次 hook 注册一个带 callback 的 <code>Api101Hooker</code> 实例，运行时直接执行实例字段里的 lambda，不再按 member 查 map。</p>
+  </section>
 
-    <h3>6.1 ShortXHookParam</h3>
-<pre><code class="language-kotlin">class ShortXHookParam(
+  <section id="code">
+    <h2>6. 完整可复用核心代码</h2>
+    <h3>6.1 Api101Runtime.kt</h3>
+<pre><code class="language-kotlin">package tornaco.apps.shortx.services.xposed.hooks.hook
+
+import android.content.pm.ApplicationInfo
+import io.github.libxposed.api.XposedInterface
+
+object Api101Runtime {
+    private var xposedInterface: XposedInterface? = null
+
+    var isSystemServer: Boolean = false
+        private set
+
+    val xposed: XposedInterface
+        get() = checkNotNull(xposedInterface) { "XposedInterface is not initialized" }
+
+    val applicationInfo: ApplicationInfo?
+        get() = runCatching { xposedInterface?.moduleApplicationInfo }.getOrNull()
+
+    fun init(base: XposedInterface, processName: String?, systemServer: Boolean) {
+        xposedInterface = base
+        isSystemServer = systemServer
+    }
+}</code></pre>
+    <p>注意：不要在这里维护 <code>currentProcessName/currentPackageName/currentApplication</code>。这类信息应通过 Android 运行时查询或通过生命周期参数传递，避免跨 package callback 污染。</p>
+
+    <h3>6.2 XposedLog.kt</h3>
+<pre><code class="language-kotlin">package tornaco.apps.shortx.services.xposed.hooks.hook
+
+import android.util.Log
+
+object XposedLog {
+    fun log(message: String) {
+        val result = runCatching&lt;Unit&gt; {
+            Api101Runtime.xposed.log(Log.INFO, "ShortX", message)
+        }
+        result.onFailure {
+            Log.i("ShortX.Xposed", message)
+        }
+    }
+
+    fun log(message: String, throwable: Throwable) {
+        val result = runCatching&lt;Unit&gt; {
+            Api101Runtime.xposed.log(Log.ERROR, "ShortX", message, throwable)
+        }
+        result.onFailure {
+            Log.e("ShortX.Xposed", message, throwable)
+        }
+    }
+}</code></pre>
+
+    <h3>6.3 ShortXHookParam.kt</h3>
+<pre><code class="language-kotlin">package tornaco.apps.shortx.services.xposed.hooks.hook
+
+import java.lang.reflect.Member
+import java.lang.reflect.Method
+
+class ShortXHookParam(
     val method: Member,
     val thisObject: Any?,
     val args: Array&lt;Any?&gt;,
@@ -281,13 +360,22 @@ class ShortXLSPosedHookEntry : XposedModule() {
         skipOriginal = true
     }
 }</code></pre>
+    <p>迁移约定：所有希望替换返回值并阻止原方法继续执行的 before hook 使用 <code>param.returnAndSkip(value)</code>，不要只写 <code>param.result = value</code>。</p>
 
-    <h3>6.2 Api101Hooker</h3>
-<pre><code class="language-kotlin">class Api101Hooker(
+    <h3>6.4 Api101Hooker.kt</h3>
+<pre><code class="language-kotlin">package tornaco.apps.shortx.services.xposed.hooks.hook
+
+import io.github.libxposed.api.XposedInterface
+import tornaco.apps.shortx.core.BuildPropInternal
+
+class Api101Hooker(
     private val beforeCallback: ((ShortXHookParam) -&gt; Unit)? = null,
     private val afterCallback: ((ShortXHookParam) -&gt; Unit)? = null,
 ) : XposedInterface.Hooker {
     override fun intercept(chain: XposedInterface.Chain): Any? {
+        if (BuildPropInternal.APP_IS_DEBUG) {
+            XposedLog.log("Api101Hooker intercept - $chain")
+        }
         val member = chain.executable
         val args = chain.args.toTypedArray()
         val beforeParam = ShortXHookParam(
@@ -296,7 +384,14 @@ class ShortXLSPosedHookEntry : XposedModule() {
             args = args,
             isBefore = true,
         )
-        beforeCallback?.invoke(beforeParam)
+        beforeCallback?.let { hook -&gt;
+            runCatching {
+                if (BuildPropInternal.APP_IS_DEBUG) {
+                    XposedLog.log("Api101Hooker invoke beforeCallback - $hook $member")
+                }
+                hook(beforeParam)
+            }.onFailure { XposedLog.log("before hook failed: $member", it) }
+        }
 
         var result: Any? = null
         var throwable: Throwable? = null
@@ -318,7 +413,14 @@ class ShortXLSPosedHookEntry : XposedModule() {
             result = result,
             throwable = throwable,
         )
-        afterCallback?.invoke(afterParam)
+        afterCallback?.let { hook -&gt;
+            runCatching {
+                if (BuildPropInternal.APP_IS_DEBUG) {
+                    XposedLog.log("Api101Hooker invoke afterCallback - $hook $member")
+                }
+                hook(afterParam)
+            }.onFailure { XposedLog.log("after hook failed: $member", it) }
+        }
         afterParam.throwable?.takeIf { afterParam.throwableChanged }?.let { throw it }
         if (!afterParam.throwableChanged) {
             throwable?.let { throw it }
@@ -327,20 +429,103 @@ class ShortXLSPosedHookEntry : XposedModule() {
     }
 
     companion object {
-        fun before(callback: (ShortXHookParam) -&gt; Unit) = Api101Hooker(beforeCallback = callback)
-        fun after(callback: (ShortXHookParam) -&gt; Unit) = Api101Hooker(afterCallback = callback)
+        fun before(callback: (ShortXHookParam) -&gt; Unit): Api101Hooker {
+            return Api101Hooker(beforeCallback = callback)
+        }
+
+        fun after(callback: (ShortXHookParam) -&gt; Unit): Api101Hooker {
+            return Api101Hooker(afterCallback = callback)
+        }
     }
 }</code></pre>
 
-    <h3>6.3 Hooks.kt</h3>
-<pre><code class="language-kotlin">fun beforeMethod(method: Method, beforeMethod: (param: ShortXHookParam) -&gt; Unit) {
-    method.isAccessible = true
-    hookBefore(method, beforeMethod)
+    <h3>6.5 Hooks.kt</h3>
+<pre><code class="language-kotlin">package tornaco.apps.shortx.services.xposed.hooks.hook
+
+import tornaco.apps.shortx.core.logOnDebug
+import tornaco.apps.shortx.core.util.Logger
+import java.lang.reflect.Constructor
+import java.lang.reflect.Member
+import java.lang.reflect.Method
+
+private val utilLogger = Logger("ShortXHookUtil")
+
+fun beforeConstruct(
+    clazz: Class&lt;*&gt;,
+    beforeConstruct: (param: ShortXHookParam) -&gt; Unit,
+) {
+    val constructors = clazz.declaredConstructors.onEach { it.isAccessible = true }
+    require(constructors.isNotEmpty()) {
+        "beforeConstruct, unable to hook this Constructor: $clazz"
+    }
+    constructors.forEach { constructor -&gt;
+        hookBefore(constructor, beforeConstruct)
+    }
+    utilLogger.d("beforeConstruct, hooked: ${constructors.toList()} for Constructor: $clazz")
 }
 
-fun afterMethod(method: Method, afterMethod: (param: ShortXHookParam) -&gt; Unit) {
+fun afterConstruct(
+    clazz: Class&lt;*&gt;,
+    afterConstruct: (param: ShortXHookParam) -&gt; Unit,
+) {
+    val constructors = clazz.declaredConstructors.onEach { it.isAccessible = true }
+    require(constructors.isNotEmpty()) {
+        "afterConstruct, unable to hook this Constructor: $clazz"
+    }
+    constructors.forEach { constructor -&gt;
+        hookAfter(constructor, afterConstruct)
+    }
+    utilLogger.d("afterConstruct, hooked: ${constructors.toList()} for Constructor: $clazz")
+}
+
+fun beforeMethod(
+    clazz: Class&lt;*&gt;,
+    methodName: String,
+    logger: Logger = utilLogger,
+    beforeMethod: (param: ShortXHookParam) -&gt; Unit,
+) {
+    val methods = clazz.declaredMethods
+        .filter { it.name == methodName }
+        .onEach { it.isAccessible = true }
+    require(methods.isNotEmpty()) {
+        "beforeMethod, unable to hook this method: $clazz#$methodName"
+    }
+    methods.forEach { method -&gt; hookBefore(method, beforeMethod) }
+    logger.d("beforeMethod, hooked: $methods for method: $clazz#$methodName")
+}
+
+fun afterMethod(
+    clazz: Class&lt;*&gt;,
+    methodName: String,
+    logger: Logger = utilLogger,
+    afterMethod: (param: ShortXHookParam) -&gt; Unit,
+) {
+    val methods = clazz.declaredMethods
+        .filter { it.name == methodName }
+        .onEach { it.isAccessible = true }
+    require(methods.isNotEmpty()) {
+        "afterMethod, unable to hook this method: $clazz#$methodName"
+    }
+    methods.forEach { method -&gt; hookAfter(method, afterMethod) }
+    logger.d("afterMethod, hooked: $methods for method: $clazz#$methodName")
+}
+
+fun afterMethod(
+    method: Method,
+    afterMethod: (param: ShortXHookParam) -&gt; Unit,
+) {
     method.isAccessible = true
     hookAfter(method, afterMethod)
+    utilLogger.d("afterMethod, hooked: $method")
+}
+
+fun beforeMethod(
+    method: Method,
+    beforeMethod: (param: ShortXHookParam) -&gt; Unit,
+) {
+    method.isAccessible = true
+    hookBefore(method, beforeMethod)
+    utilLogger.d("beforeMethod, hooked: $method")
 }
 
 private fun hookBefore(member: Member, callback: (ShortXHookParam) -&gt; Unit) {
@@ -355,115 +540,205 @@ private fun hookAfter(member: Member, callback: (ShortXHookParam) -&gt; Unit) {
 private fun hookMember(member: Member, hooker: Api101Hooker) {
     when (member) {
         is Method -&gt; Api101Runtime.xposed.hook(member).intercept(hooker)
-        is Constructor&lt;*&gt; -&gt; Api101Runtime.xposed.hook(member as Constructor&lt;Any&gt;).intercept(hooker)
+        is Constructor&lt;*&gt; -&gt; Api101Runtime.xposed.hook(
+            member as Constructor&lt;Any&gt;
+        ).intercept(hooker)
         else -&gt; error("Unsupported hook member: $member")
-    }
-}</code></pre>
-
-    <div class="note">一定不要再做 legacy / API101 双 adapter。你已经实测双支持不稳定，那就让业务层只对 API101 负责，结构会简单很多。</div>
-  </section>
-
-  <section>
-    <h2>7. 第 6 步：迁移动态 MethodHook</h2>
-    <p>目标是保留用户配置和表达式语义，但底层改成 API101。</p>
-
-<pre><code class="language-kotlin">fun MethodHook.compileExpressions(
-    methodHookParam: ShortXHookParam,
-    log: (String) -&gt; Unit
-): List&lt;StringPair&gt; {
-    return expressionsList.map {
-        val value = executeMVEL(it.expressionMVEL, methodHookParam, log)
-        StringPair.newBuilder().setFirst(it.contextKey).setSecond(value).build()
     }
 }
 
-private fun executeMVEL(
+fun ShortXHookParam.logParamsOnDebug(logger: Logger = utilLogger, printStack: Boolean = false) {
+    logger.logOnDebug {
+        "${method.name} - ${args.map { it }.joinToString()} ${if (printStack) Throwable().stackTraceToString() else ""}"
+    }
+}
+
+fun ShortXHookParam.logParamsAndResOnDebug(
+    logger: Logger = utilLogger,
+    printStack: Boolean = false
+) {
+    logger.logOnDebug {
+        "${method.name} - ${args.map { it }.joinToString()} ---&gt; $result ${if (printStack) Throwable().stackTraceToString() else ""}"
+    }
+}</code></pre>
+  </section>
+
+  <section id="business">
+    <h2>7. 业务 Hook 迁移示例</h2>
+    <h3>legacy 写法</h3>
+<pre><code class="language-kotlin">XposedHelpers.findAndHookMethod(
+    clazz,
+    "onCommand",
+    object : XC_MethodHook() {
+        override fun beforeHookedMethod(param: MethodHookParam) {
+            if (param.args[0].toString().startsWith("shortx")) {
+                param.result = ShortXService.onCommand(param.thisObject as ShellCommand)
+            }
+        }
+    }
+)</code></pre>
+    <h3>API 101 facade 写法</h3>
+<pre><code class="language-kotlin">beforeMethod(lpparam.classLoader.amsShellCommandClass(), "onCommand") { param -&gt;
+    val command = param.args[0].toString()
+    if (command.startsWith("shortx")) {
+        val shellCommand = param.thisObject as ShellCommand
+        param.returnAndSkip(ShortXService.onCommand(shellCommand))
+    }
+}</code></pre>
+    <p>关键点：要阻止原方法继续执行时使用 <code>returnAndSkip</code>，不要只改 <code>result</code>。after hook 中替换最终返回值也统一用 <code>returnAndSkip</code>，便于语义一致。</p>
+  </section>
+
+  <section id="method-hook">
+    <h2>8. 用户动态 MethodHook 迁移</h2>
+    <p>ShortX 的用户自定义 MethodHook 是核心能力。迁移目标不是让用户重建规则，而是让旧的 proto 配置继续生效。</p>
+<pre><code class="language-kotlin">object CustomHookUtil {
+    fun installHookForRules(
+        rules: List&lt;Rule&gt;,
+        das: List&lt;DirectAction&gt;,
+        classLoader: ClassLoader?,
+        currentProcessPkgName: String?,
+        lifecycle: MethodHookLifecycle,
+        onMethodCall: (ShortXHookParam, MethodHook) -&gt; Unit,
+        log: (String) -&gt; Unit
+    ) {
+        log("Checking rules for app: $currentProcessPkgName - $lifecycle")
+        (rules.filter { it.isEnabled }.map { it.factsAndQuitFacts } + das.map { it.quitFacts })
+            .flatten()
+            .forEach { proto -&gt;
+                if (proto is_ MethodHook::class.java) {
+                    val mh = proto unpack_ MethodHook::class.java
+                    if ((currentProcessPkgName == null || mh.packageName == currentProcessPkgName)
+                        &amp;&amp; mh.lifecycle == lifecycle
+                    ) {
+                        log("Installing method hook: ${mh.className}-${mh.methodName}")
+                        mh.install(classLoader, onMethodCall, log)
+                    }
+                }
+            }
+    }
+
+    private fun MethodHook.install(
+        classLoader: ClassLoader?,
+        onMethodCall: (ShortXHookParam, MethodHook) -&gt; Unit,
+        log: (String) -&gt; Unit
+    ) {
+        kotlin.runCatching {
+            val clazz = Reflections.findClass(className, classLoader)
+            val constraints = constraintList
+            val methodsNameFiltered = ReflectionUtils.getDeclaredMethods(clazz)
+                .filter { it.name == methodName }
+            val methodConstraintsFiltered =
+                methodsNameFiltered.filter { matchConstraints(it, constraints, log) }
+            require(methodConstraintsFiltered.isNotEmpty()) {
+                "No method match your constraints"
+            }
+            val firstMethod = methodConstraintsFiltered.first()
+            if (beforeMethod) {
+                beforeMethod(firstMethod) {
+                    onMethodCall(it, this)
+                }
+            } else {
+                afterMethod(firstMethod) {
+                    onMethodCall(it, this)
+                }
+            }
+        }.onFailure {
+            log(it.stackTraceToString())
+        }
+    }
+}</code></pre>
+    <h3>MVEL 表达式兼容</h3>
+<pre><code class="language-kotlin">private fun executeMVEL(
     expression: String,
     methodHookParam: ShortXHookParam,
     log: (String) -&gt; Unit
 ): String {
-    val varsMap = mapOf(
-        "param" to methodHookParam,
-        "helper" to InjectedAndroidAppHelper()
-    )
-    return runCatching {
+    val varsMap: Map&lt;String, Any?&gt; =
+        mapOf(
+            "param" to methodHookParam,
+            "helper" to InjectedAndroidAppHelper()
+        )
+    return kotlin.runCatching {
         MVEL.executeExpression(MVEL.compileExpression(expression), varsMap)?.toString().orEmpty()
     }.getOrElse {
         log(it.stackTraceToString())
         ""
     }
 }</code></pre>
+    <p>用户原来的表达式仍然可以读取 <code>param.args</code>、<code>param.result</code>、<code>param.thisObject</code>、<code>param.method</code>，也可以读取 <code>helper.currentPackageName</code> 等字段。</p>
 
-    <p>这里的关键是：MVEL 里的 <code>param</code> 和 <code>helper</code> 名字不变，用户现有表达式尽量不受影响。</p>
-  </section>
+    <h3>AndroidAppHelper 替代</h3>
+<pre><code class="language-java">package tornaco.apps.shortx.core.os;
 
-  <section>
-    <h2>8. 第 7 步：处理 <code>XposedScope</code></h2>
-    <p>这一步很容易踩坑。</p>
-    <ul>
-      <li><code>io.github.libxposed:api</code> 不包含动态 request scope 能力</li>
-      <li>动态 scope 请求来自单独的 <code>io.github.libxposed:service:101.0.0</code></li>
-      <li>升级到 <code>compileSdk 36</code> 后，<code>ui</code> 可以直接 <code>implementation(libs.libxposed.service)</code></li>
-    </ul>
+import android.app.ActivityThread;
+import android.app.Application;
+import android.content.pm.ApplicationInfo;
+import util.Reflections;
 
-    <p>最终代码如下：</p>
-<pre><code class="language-kotlin">package tornaco.apps.shortx.ui.util
+public final class AndroidAppHelper {
+    private AndroidAppHelper() {}
 
-import github.tornaco.android.thanos.core.pm.Pkg
-import io.github.libxposed.service.XposedService
-import io.github.libxposed.service.XposedServiceHelper
-import tornaco.apps.shortx.core.util.Logger
-
-object XposedScope {
-    private var _service: XposedService? = null
-    val service get() = _service
-    private val logger = Logger("XposedScope")
-
-    private inline fun withService(onService: (XposedService) -&gt; Unit) {
-        service?.let { onService(it) }
+    public static String currentProcessName() {
+        String processName = ActivityThread.currentPackageName();
+        if (processName == null) return "android";
+        return processName;
     }
 
-    fun requestScope(pkg: Pkg) {
-        withService {
-            kotlin.runCatching {
-                if (!it.scope.contains(pkg.pkgName)) {
-                    logger.w("XposedScope requestScope: $pkg")
-                    it.requestScope(listOf(pkg.pkgName), object : XposedService.OnScopeEventListener {})
-                } else {
-                    logger.w("XposedScope already scoped: $pkg")
+    public static ApplicationInfo currentApplicationInfo() {
+        ActivityThread am = ActivityThread.currentActivityThread();
+        if (am == null) return null;
+        Object boundApplication = Reflections.getObjectField(am, "mBoundApplication");
+        if (boundApplication == null) return null;
+        return (ApplicationInfo) Reflections.getObjectField(boundApplication, "appInfo");
+    }
+
+    public static String currentPackageName() {
+        ApplicationInfo ai = currentApplicationInfo();
+        return (ai != null) ? ai.packageName : "android";
+    }
+
+    public static Application currentApplication() {
+        return ActivityThread.currentApplication();
+    }
+}</code></pre>
+  </section>
+
+  <section id="systemui">
+    <h2>9. SystemUI 迁移要点</h2>
+    <ul>
+      <li>只在 <code>com.android.systemui</code> 主进程执行 SystemUI hook。</li>
+      <li>把 <code>XposedBridge.log</code> 替换为 <code>XposedLog</code> 或项目日志门面。</li>
+      <li>保留启动顺序：SystemUI Application onCreate 后初始化 ShortX context/resources，等待 runtime ready，再安装 input monitor。</li>
+      <li>Quick Settings、自定义 tile、状态栏图标/label 这类 after hook 替换返回值时使用 <code>returnAndSkip</code>。</li>
+    </ul>
+<pre><code class="language-kotlin">fun SystemUIHook.hookTile(lpparam: IPackageLoaded.Param) = kotlin.runCatching {
+    if (PackageNames.systemUI == lpparam.packageName) {
+        afterMethod(
+            Reflections.findClass(SYSTEM_UI_CUSTOM_TILE, lpparam.classLoader),
+            "handleClick"
+        ) { param -&gt;
+            ShortXManagerNative.shortX?.let {
+                if (it.isQSTileOptEnabled) {
+                    val name = Reflections.getObjectField(param.thisObject, "mComponent") as ComponentName
+                    if (name.packageName.contains(BuildPropInternal.APP_PACKAGE_NAME)) {
+                        val tileName = name.className.substringAfterLast(".")
+                        val tile = StatusBarTile.valueOf(tileName)
+                        it.onTileClick(tile.number)
+                        param.returnAndSkip(null)
+                        Reflections.callMethod(sAutoHideControllerImpl, "touchAutoHide")
+                    }
                 }
-            }.onFailure {
-                logger.e(it)
             }
         }
     }
-
-    fun init() {
-        logger.w("Init.")
-        kotlin.runCatching {
-            XposedServiceHelper.registerListener(object : XposedServiceHelper.OnServiceListener {
-                override fun onServiceBind(service: XposedService) {
-                    logger.w("XposedScope onServiceBind: $service")
-                    _service = service
-                }
-
-                override fun onServiceDied(service: XposedService) {
-                    logger.w("XposedScope onServiceDied: $service")
-                    _service = null
-                }
-            })
-        }.onFailure {
-            logger.e(it)
-        }
-    }
+}.onFailure {
+    logger.e(it, "hookTile")
 }</code></pre>
-
-    <div class="note">注意新版 API：<code>requestScope</code> 的第一个参数是 <code>List&lt;String&gt;</code>，不是单个 <code>String</code>。</div>
   </section>
 
-  <section>
-    <h2>9. 第 8 步：R8 / ProGuard</h2>
-    <p>只保留 API101 相关规则，删掉 legacy keep / dontwarn。</p>
+  <section id="r8">
+    <h2>10. R8/ProGuard 配置</h2>
+    <p>API 101 入口、Hooker、Hook facade 不能被删。ShortX 当前使用较宽的 keep 策略，先保证迁移稳定，再考虑缩小范围。</p>
 <pre><code class="language-proguard"># Xposed API 101 entry and hook callbacks.
 -keep class tornaco.apps.shortx.services.xposed.hooks.hook.** { *; }
 -keep class * implements io.github.libxposed.api.XposedInterface$Hooker { *; }
@@ -473,39 +748,70 @@ object XposedScope {
 }
 
 -dontwarn io.github.libxposed.api.XposedInterface
--dontwarn io.github.libxposed.api.XposedInterface$AfterHookCallback
--dontwarn io.github.libxposed.api.XposedInterface$BeforeHookCallback
 -dontwarn io.github.libxposed.api.XposedInterface$Hooker
--dontwarn io.github.libxposed.api.XposedInterface$MethodUnhooker
 -dontwarn io.github.libxposed.api.XposedModule
 -dontwarn io.github.libxposed.api.XposedModuleInterface$ModuleLoadedParam
 -dontwarn io.github.libxposed.api.XposedModuleInterface$PackageLoadedParam
--dontwarn io.github.libxposed.api.XposedModuleInterface$SystemServerStartingParam</code></pre>
+-dontwarn io.github.libxposed.api.XposedModuleInterface$SystemServerLoadedParam</code></pre>
+    <div class="note">如果你使用实例 <code>Api101Hooker</code>，不一定需要静态 <code>before/after</code> keep，但保留不影响功能。若改回静态 Hooker 模式，则必须保留静态回调方法。</div>
   </section>
 
-  <section>
-    <h2>10. 第 9 步：验证命令</h2>
+  <section id="validate">
+    <h2>11. 验证和排错</h2>
+    <h3>本地编译验证</h3>
 <pre><code class="language-bash">./gradlew :patch-xposed:patch-common:compileKotlin
-./gradlew :patch-xposed:patch-main:compileKotlin
-./gradlew :patch-xposed:patch-systemui:compileKotlin
-./gradlew :ui:compilePrcDebugKotlin
-./gradlew :app:assemblePrcDebug</code></pre>
+./gradlew :patch-xposed:patch-main:compileKotlin :patch-xposed:patch-systemui:compileKotlin
+./gradlew :app:assemblePrcDebug
+./gradlew :app:assemblePrcRelease</code></pre>
+    <h3>设备验证清单</h3>
+    <ol>
+      <li>安装 PRC debug 或 release APK。</li>
+      <li>在支持 API 101 的 LSPosed 环境中启用模块。</li>
+      <li>确认模块 metadata 显示 API 101-only。</li>
+      <li>重启 system_server、SystemUI 或整机。</li>
+      <li>确认 <code>ShortXLSPosedHookEntry.onModuleLoaded</code> 有日志。</li>
+      <li>确认 <code>onSystemServerStarting</code> 和 <code>onPackageReady</code> 进入调度。</li>
+      <li>验证 system_server fact、SystemUI 手势/QS、普通 app MethodHook before/after。</li>
+      <li>验证 ShortX 自 hook 保护。</li>
+      <li>故意配置一个不存在的方法，确认只记录诊断，不影响其他 hook。</li>
+    </ol>
 
-    <p>如果你项目和 ShortX 一样，默认 <code>assembleDebug</code> 会受本地配置影响，那么就以 <code>assemblePrcDebug</code> 作为主验证命令。</p>
-  </section>
-
-  <section>
-    <h2>11. 常见坑</h2>
+    <h3>常见问题</h3>
     <table>
-      <thead><tr><th>现象</th><th>原因</th><th>解决</th></tr></thead>
+      <thead><tr><th>现象</th><th>原因</th><th>处理</th></tr></thead>
       <tbody>
-        <tr><td>双支持看起来能编译，运行却不稳定</td><td>legacy 和 API101 生命周期、回调模型不同，业务层维护两套语义很容易出错</td><td>不要双支持，直接 API101-only</td></tr>
-        <tr><td><code>ui</code> 里 <code>requestScope</code> 编译不过</td><td>新版签名是 <code>List&lt;String&gt;</code></td><td>改成 <code>requestScope(listOf(pkg.pkgName), ...)</code></td></tr>
-        <tr><td><code>service</code> AAR 无法直接依赖</td><td>项目 compileSdk 低于 36</td><td>升级 <code>compileSdk / targetSdk</code> 到 36</td></tr>
-        <tr><td>仍然被识别为支持 legacy</td><td><code>xposed_init</code> 没删、<code>minApiVersion</code> 不是 101</td><td>删掉 asset，统一把 min version 改成 101</td></tr>
-        <tr><td>Hook 设置返回值但原方法继续执行</td><td>没有调用 <code>returnAndSkip</code></td><td>统一改用 <code>param.returnAndSkip(xxx)</code></td></tr>
+        <tr><td>注册 hook 有日志，但 before/after 不触发 callback</td><td>使用全局 <code>Member -&gt; callback</code> map，运行时 <code>chain.executable</code> 不能命中注册 key</td><td>使用本文的实例 <code>Api101Hooker</code>，不要使用 registry 回查</td></tr>
+        <tr><td>before hook 设置返回值后原方法仍执行</td><td>只写了 <code>param.result = x</code></td><td>改为 <code>param.returnAndSkip(x)</code></td></tr>
+        <tr><td>legacy 框架仍显示模块兼容</td><td><code>minApiVersion</code> 或 manifest <code>xposedminversion</code> 仍是旧版本</td><td>统一改成 101，并删除 <code>assets/xposed_init</code></td></tr>
+        <tr><td>D8/R8 Kotlin metadata warning</td><td>AGP/R8 与 Kotlin metadata 版本兼容警告</td><td>构建成功时可先记录；根治通常是升级 AGP/R8</td></tr>
+        <tr><td><code>:app:assembleDebug</code> 因 Google Services 失败</td><td>本地缺少 <code>google-services.json</code></td><td>使用项目验证命令 <code>:app:assemblePrcDebug</code></td></tr>
       </tbody>
     </table>
+
+    <h3>最终迁移完成标准</h3>
+    <ul>
+      <li><code>de.robv.android.xposed</code>、<code>XC_MethodHook</code>、<code>XposedBridge</code>、<code>XposedHelpers</code> 不再出现在活跃 hook 源码中。</li>
+      <li><code>XposedEntry.kt</code> 删除。</li>
+      <li><code>app/src/main/assets/xposed_init</code> 删除。</li>
+      <li><code>META-INF/xposed/module.prop</code> 的 <code>minApiVersion</code> 和 <code>targetApiVersion</code> 都是 101。</li>
+      <li><code>java_init.list</code> 指向 API 101 <code>XposedModule</code> 入口。</li>
+      <li>debug/release 都能打包，设备上 system_server/SystemUI/app process 三类 hook 都能验证。</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>附录：推荐迁移顺序</h2>
+    <ol>
+      <li>先提交当前 legacy 状态，确保可回滚。</li>
+      <li>引入 <code>io.github.libxposed:api:101.0.1</code>，解决 JVM 模块 AAR 解包。</li>
+      <li>创建 <code>Api101Runtime</code>、<code>XposedLog</code>、<code>ShortXHookParam</code>、<code>Api101Hooker</code>、<code>Hooks.kt</code> facade。</li>
+      <li>迁移入口到 <code>XposedModule</code>。</li>
+      <li>先迁移一个简单 system_server hook，确认 before/after 能触发。</li>
+      <li>迁移动态 MethodHook，保证用户规则不需要重建。</li>
+      <li>迁移 SystemUI hook，重点验证启动顺序和 input monitor。</li>
+      <li>清理 legacy import、旧 jar、旧 asset、旧 keep 规则。</li>
+      <li>跑编译、debug/release 打包、设备 runtime 验证。</li>
+    </ol>
   </section>
 </main>
 </body>
