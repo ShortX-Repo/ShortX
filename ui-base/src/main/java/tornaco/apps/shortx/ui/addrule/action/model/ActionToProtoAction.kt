@@ -11,6 +11,7 @@ import tornaco.apps.shortx.core.proto.action.BreakActionExecute
 import tornaco.apps.shortx.core.proto.action.ClickNotification
 import tornaco.apps.shortx.core.proto.action.ClickNotificationActionButton
 import tornaco.apps.shortx.core.proto.action.ClickTile
+import tornaco.apps.shortx.core.proto.action.CloseActivity
 import tornaco.apps.shortx.core.proto.action.ConnectWifi
 import tornaco.apps.shortx.core.proto.action.ContinuousAdjustBrightness
 import tornaco.apps.shortx.core.proto.action.ContinuousGesturePointer
@@ -1607,6 +1608,18 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setNote(overrideNote ?: note)
                 .addAllPkgAndUsers(stringPairs)
+                .build()
+        }
+
+        is Action.CloseActivity -> {
+            CloseActivity.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setMode(mode)
+                .setComponent(component)
                 .build()
         }
 

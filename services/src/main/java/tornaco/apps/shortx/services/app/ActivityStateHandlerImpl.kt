@@ -66,6 +66,14 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
         return topVisibleActivities.any { it.pkg == appPkg }
     }
 
+    fun findActivityRecord(componentName: ComponentName, userId: Int): Any? {
+        return func.findActivityRecord(componentName, userId)
+    }
+
+    fun findActivityRecord(appPkg: AppPkg): Any? {
+        return func.findActivityRecord(appPkg)
+    }
+
     fun onActivityResumed(
         componentName: ComponentName,
         userId: Int,
@@ -313,6 +321,10 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
 
 private interface Funs {
     fun getTopVisibleActivities(): List<InDisplay<AppComponent>>
+
+    fun findActivityRecord(componentName: android.content.ComponentName, userId: Int): Any?
+
+    fun findActivityRecord(appPkg: AppPkg): Any?
 }
 
 // http://aospxref.com/android-10.0.0_r47/xref/frameworks/base/services/core/java/com/android/server/wm/ActivityTaskManagerService.java#6125
@@ -325,6 +337,21 @@ private class FuncV29(val context: Context) : Funs {
     override fun getTopVisibleActivities(): List<InDisplay<AppComponent>> {
         return ATMSFuncs.getTopVisibleActivities(requireNotNull(atmsInt) { "atmsInt is null." })
     }
+
+    override fun findActivityRecord(componentName: android.content.ComponentName, userId: Int): Any? {
+        return ATMSFuncs.findActivityRecord(
+            requireNotNull(atmsInt) { "atmsInt is null." },
+            componentName,
+            userId,
+        )
+    }
+
+    override fun findActivityRecord(appPkg: AppPkg): Any? {
+        return ATMSFuncs.findActivityRecord(
+            requireNotNull(atmsInt) { "atmsInt is null." },
+            appPkg,
+        )
+    }
 }
 
 // http://aospxref.com/android-9.0.0_r61/search?project=frameworks&full=getTopVisibleActivities&defs=&refs=&path=&hist=&type=&xrd=&nn=1
@@ -336,5 +363,20 @@ private class FuncV28(val context: Context) : Funs {
 
     override fun getTopVisibleActivities(): List<InDisplay<AppComponent>> {
         return AMSIntFuncs.getTopVisibleActivities(requireNotNull(amsInt) { "amsInt is null." })
+    }
+
+    override fun findActivityRecord(componentName: android.content.ComponentName, userId: Int): Any? {
+        return AMSIntFuncs.findActivityRecord(
+            requireNotNull(amsInt) { "amsInt is null." },
+            componentName,
+            userId,
+        )
+    }
+
+    override fun findActivityRecord(appPkg: AppPkg): Any? {
+        return AMSIntFuncs.findActivityRecord(
+            requireNotNull(amsInt) { "amsInt is null." },
+            appPkg,
+        )
     }
 }

@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
 import tornaco.apps.shortx.core.proto.action.ContextMenuAction
 import tornaco.apps.shortx.core.proto.action.CurrentLocationProviderPreference
+import tornaco.apps.shortx.core.proto.action.CloseActivityMode
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.proto.action.MediaPlaybackAction
 import tornaco.apps.shortx.core.proto.action.FindImagePositionOutputType
@@ -29,6 +30,7 @@ import tornaco.apps.shortx.core.proto.common.WindowInsetType
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.toType
 import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.core.util.select
@@ -303,6 +305,7 @@ fun labelAndDescriptionForActionSelector(
         Action.StartService::class -> i18N["ui.action.start.service"] to null
         Action.RemoveTasks::class -> i18N["ui.action.remove.tasks"] to null
         Action.RemoveTasksByPkg::class -> i18N["ui.action.remove.tasks.by.pkg"] to null
+        Action.CloseActivity::class -> i18N["ui.action.close.activity"] to null
         Action.KillProcessByName::class -> i18N["ui.action.kill.process.by.name"] to null
         Action.HttpRequest::class -> i18N["ui.action.http.request"] to null
         Action.InjectKeyCode::class -> i18N["ui.action.inject.keycode"] to null
@@ -1092,6 +1095,21 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
 
         is Action.RemoveTasksByPkg -> {
             listOf(i18N["ui.action.remove.tasks.by.pkg"])
+        }
+
+        is Action.CloseActivity -> {
+            when (action.mode) {
+                CloseActivityMode.CloseActivityMode_Component -> listOf(
+                    i18N["ui.action.close.activity"],
+                    "${action.component.toComponentName().flattenToShortString()}$PREFIX_APP_ICON${action.component.pkg.pkgName}"
+                )
+
+                CloseActivityMode.CloseActivityMode_Focused,
+                CloseActivityMode.UNRECOGNIZED -> listOf(
+                    i18N["ui.action.close.activity"],
+                    i18N["ui.action.close.activity.focused"]
+                )
+            }
         }
 
         is Action.KillProcessByName -> {

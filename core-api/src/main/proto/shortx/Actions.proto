@@ -1257,6 +1257,22 @@ message RemoveTasksByPkg {
   string id = 100;
 }
 
+enum CloseActivityMode {
+  CloseActivityMode_Focused = 0;
+  CloseActivityMode_Component = 1;
+}
+
+message CloseActivity {
+  CloseActivityMode mode = 1;
+  AppComponent component = 2;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message KillProcessByName {
   repeated ProcessName processes = 1;
 
