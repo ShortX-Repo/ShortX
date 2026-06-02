@@ -15,6 +15,7 @@ import tornaco.apps.shortx.core.proto.common.DialogUiStyleSettings
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.BaseComposeView
 import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
+import tornaco.apps.shortx.ui.theme.normalized
 
 @SuppressLint("ViewConstructor")
 abstract class DialogView(
@@ -28,7 +29,7 @@ abstract class DialogView(
             context.getDialogCornerRadius()
         }.getOrNull()?.takeIf { it > 10f }
         Logger.nameless.w("platformRadius: $platformRadius")
-        ShortXServiceUITheme {
+        ShortXServiceUITheme(style.themeMode.normalized()) {
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = if (platformRadius == null) {

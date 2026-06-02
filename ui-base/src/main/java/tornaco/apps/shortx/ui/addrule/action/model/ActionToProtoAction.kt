@@ -393,6 +393,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setDisableAutoEdge(disableAutoEdge)
                 .setCloseOnTouchOutside(closeOnTouchOutside)
                 .setCloseOnAction(closeOnAction)
+                .setThemeMode(themeMode)
                 .setNote(overrideNote ?: note).build()
         }
 
@@ -414,6 +415,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setTag(tag.fallbackOnEmpty(DateUtils.formatLongForMessageTime(System.currentTimeMillis())))
                 .addAllButtonSettings(settings)
                 .setPanelRadiusScale(panelRadiusScale)
+                .setThemeMode(themeMode)
                 .setNote(overrideNote ?: note).build()
         }
 
@@ -434,6 +436,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setTag(tag.fallbackOnEmpty(DateUtils.formatLongForMessageTime(System.currentTimeMillis())))
                 .addAllButtonSettings(settings)
+                .setThemeMode(themeMode)
                 .setNote(overrideNote ?: note).build()
         }
 
@@ -448,6 +451,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setDisplayTitle(displayTitle)
                 .setPosition(position)
                 .setStyle(style)
+                .setThemeMode(themeMode)
                 .setTag(tag.fallbackOnEmpty(DateUtils.formatLongForMessageTime(System.currentTimeMillis())))
                 .setNote(overrideNote ?: note).build()
         }
@@ -2068,6 +2072,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setNote(overrideNote ?: note)
                 .setTitle(title)
                 .setSubTitle(subtitle)
+                .setThemeMode(themeMode)
                 .addAllAllowActions(allowActions.map { it.toProtoAction().pack_() })
                 .addAllDenyActions(denyActions.map { it.toProtoAction().pack_() })
                 .build()
@@ -2432,6 +2437,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setIsDisabled(!isEnabled)
                 .setActionOnError(actionOnError)
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setThemeMode(themeMode)
                 .setNote(overrideNote ?: note)
                 .build()
         }
@@ -2442,6 +2448,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setIsDisabled(!isEnabled)
                 .setActionOnError(actionOnError)
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setThemeMode(themeMode)
                 .setNote(overrideNote ?: note)
                 .build()
         }
@@ -2513,6 +2520,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setIsDisabled(!isEnabled)
                 .setActionOnError(actionOnError)
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setThemeMode(themeMode)
                 .setNote(overrideNote ?: note)
                 .setImageUrl(imageUrl)
                 .setScaleType(scaleType)

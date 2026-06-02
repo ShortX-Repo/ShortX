@@ -32,6 +32,7 @@ import tornaco.apps.shortx.core.proto.action.ActionSidebarPosition
 import tornaco.apps.shortx.core.proto.action.ActionSidebarStyleSettings
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
+import tornaco.apps.shortx.ui.addrule.action.selector.ActionThemeModeSelector
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
@@ -105,6 +106,10 @@ private fun ColumnScope.Content(vm: ShowActionSidebarSelectorViewModel, showSort
         style = state.style,
         updateStyle = vm::updateStyle,
     )
+    StandardSpacer()
+    ActionThemeModeSelector(themeMode = state.themeMode) {
+        vm.updateThemeMode(it)
+    }
     StandardSpacer()
     Row(verticalAlignment = Alignment.CenterVertically) {
         Button(onClick = { vm.addButton() }) { Text(LocalI18N.current["ui.action.show.add.button"]) }

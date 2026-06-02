@@ -192,6 +192,7 @@ message ShowOverlayButton {
   bool disableAutoEdge = 13;
   bool closeOnTouchOutside = 14;
   bool closeOnAction = 15;
+  UiThemeMode themeMode = 16;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
@@ -214,6 +215,7 @@ message ShowFloatWindow {
   repeated OverlayButtonSetting buttonSettings = 1;
   string tag = 2;
   float panelRadiusScale = 3;
+  UiThemeMode themeMode = 4;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
@@ -225,6 +227,7 @@ message ShowFloatWindow {
 message ShowSideBar {
   repeated OverlayButtonSetting buttonSettings = 1;
   string tag = 2;
+  UiThemeMode themeMode = 3;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
@@ -280,6 +283,7 @@ message ShowActionSidebar {
   string tag = 4;
   ActionSidebarPosition position = 5;
   ActionSidebarStyleSettings style = 6;
+  UiThemeMode themeMode = 7;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
@@ -1489,6 +1493,8 @@ message InjectGestureRecording {
 }
 
 message EnableUniversalCopy {
+  UiThemeMode themeMode = 1;
+
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
@@ -1497,6 +1503,8 @@ message EnableUniversalCopy {
 }
 
 message EnableViewIdViewer {
+  UiThemeMode themeMode = 1;
+
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
@@ -1629,6 +1637,7 @@ message BiometricVerify {
   repeated google.protobuf.Any denyActions = 2;
   string title = 3;
   string subTitle = 4;
+  UiThemeMode themeMode = 5;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
@@ -1763,6 +1772,8 @@ enum ContextMenuAction {
 }
 
 message ShowDrawBoard {
+  UiThemeMode themeMode = 1;
+
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
@@ -1831,6 +1842,8 @@ message SetMasterSync {
 }
 
 message ShowClipboardView {
+  UiThemeMode themeMode = 1;
+
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
@@ -2035,6 +2048,8 @@ message FindPointsByColorAndClick {
 }
 
 message AreaScreenshot {
+  UiThemeMode themeMode = 1;
+
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
@@ -2043,6 +2058,8 @@ message AreaScreenshot {
 }
 
 message SelectScreenArea {
+  UiThemeMode themeMode = 1;
+
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
@@ -2098,6 +2115,7 @@ message PanoramicLightEffect {
 message DisplayImage {
   string imageUrl = 1;
   ImageScaleType scaleType = 2;
+  UiThemeMode themeMode = 3;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;

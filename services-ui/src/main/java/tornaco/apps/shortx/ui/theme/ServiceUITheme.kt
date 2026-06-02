@@ -11,7 +11,9 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import tornaco.apps.shortx.core.proto.common.UiThemeMode
 import tornaco.apps.shortx.ui.base.LocalShortXColorSchema
+import tornaco.apps.shortx.ui.theme.resolveDarkTheme
 
 
 @Composable
@@ -74,4 +76,17 @@ fun ShortXServiceUITheme(
             content = content
         )
     }
+}
+
+@Composable
+fun ShortXServiceUITheme(
+    themeMode: UiThemeMode,
+    dynamicColor: Boolean = true,
+    content: @Composable () -> Unit,
+) {
+    ShortXServiceUITheme(
+        darkTheme = themeMode.resolveDarkTheme(),
+        dynamicColor = dynamicColor,
+        content = content,
+    )
 }

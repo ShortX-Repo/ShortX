@@ -22,12 +22,14 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
+import tornaco.apps.shortx.core.proto.common.UiThemeMode
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.core.util.windowManager
 import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
+import tornaco.apps.shortx.ui.theme.normalized
 
 @SuppressLint("ViewConstructor")
 @Keep
@@ -39,6 +41,7 @@ abstract class AbstractComposeOverlay(
     private val initialPos: Pair<Int, Int>,
     private val onPosChange: (Int, Int) -> Unit,
     private val onTouchOutside: () -> Boolean,
+    private val themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System,
 ) : FrameLayout(context) {
     private val logger: Logger = Logger("ComposeOverlay")
     private val overlayLP = createLayoutParams()
@@ -152,7 +155,7 @@ abstract class AbstractComposeOverlay(
 
         val composeView = ComposeView(contextWrapper).apply {
             setContent {
-                ShortXServiceUITheme {
+                ShortXServiceUITheme(themeMode.normalized()) {
                     val contentColor: Color = contentColorFor(MaterialTheme.colorScheme.surface)
                     CompositionLocalProvider(
                         LocalContext provides appContext,

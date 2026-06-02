@@ -90,6 +90,7 @@ class ActionSidebarManager(
             buttons = buttons,
             position = action.position.normalized(),
             sidebarStyle = action.style,
+            themeMode = action.themeMode,
             callbacks = ActionSidebarCallbacks(
                 onDismiss = { postHideActionSidebar() },
                 onButtonTap = { button ->

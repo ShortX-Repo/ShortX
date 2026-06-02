@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
@@ -13,6 +14,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.ortiz.touchview.TouchImageView
+import tornaco.apps.shortx.core.proto.common.UiThemeMode
 import tornaco.apps.shortx.core.proto.common.ImageScaleType
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
@@ -20,6 +22,7 @@ import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.biometric.BiometricVerifyActivityStarter.EXTRA_REQUEST_CODE
 import tornaco.apps.shortx.ui.media.DisplayImageActivityStarter.EXTRA_IMAGE_SCALE_TYPE
+import tornaco.apps.shortx.ui.media.DisplayImageActivityStarter.EXTRA_THEME_MODE
 import tornaco.apps.shortx.ui.media.DisplayImageActivityStarter.EXTRA_IMAGE_URL
 import tornaco.apps.shortx.ui.util.GlideApp
 
@@ -29,10 +32,12 @@ class DisplayImageActivity : AppCompatActivity() {
     private var requestCode = 0
     private var imageUrl: String = ""
     private var scaleType: ImageScaleType = ImageScaleType.IMAGE_SCALE_TYPE_FIT_CENTER
+    private var themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         resolveIntent()
+        delegate.localNightMode = themeMode.toNightMode()
+        super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.ui_display_image)
         val imageView = findViewById<TouchImageView>(R.id.image).apply {
@@ -84,6 +89,17 @@ class DisplayImageActivity : AppCompatActivity() {
             intent.getStringExtra(EXTRA_IMAGE_SCALE_TYPE)
                 .fallbackOnEmpty(ImageScaleType.IMAGE_SCALE_TYPE_FIT_CENTER.name)
         )
+        themeMode = runCatching {
+            UiThemeMode.valueOf(intent.getStringExtra(EXTRA_THEME_MODE).fallbackOnEmpty(UiThemeMode.UiThemeMode_System.name))
+        }.getOrDefault(UiThemeMode.UiThemeMode_System)
+    }
+
+    private fun UiThemeMode.toNightMode(): Int {
+        return when (this) {
+            UiThemeMode.UiThemeMode_Light -> AppCompatDelegate.MODE_NIGHT_NO
+            UiThemeMode.UiThemeMode_Dark -> AppCompatDelegate.MODE_NIGHT_YES
+            UiThemeMode.UNRECOGNIZED, UiThemeMode.UiThemeMode_System -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        }
     }
 
     override fun onStop() {

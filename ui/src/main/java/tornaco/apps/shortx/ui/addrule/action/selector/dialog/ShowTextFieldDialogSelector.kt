@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.proto.common.DialogUiStyleSettings
 import tornaco.apps.shortx.core.proto.common.TextFieldProp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
@@ -64,12 +65,14 @@ class ShowTextFieldDialogSettingsDialogState(
     var message by mutableStateOf("")
     var isCancelable by mutableStateOf(true)
     var items by mutableStateOf<List<TextFieldProp>>(emptyList())
+    var style by mutableStateOf(DialogUiStyleSettings.newBuilder().setFontScale(1f).build())
 
     fun show(currentSettings: Action.ShowTextFieldDialog? = null) {
         this.title = currentSettings?.title ?: ""
         this.message = currentSettings?.message ?: ""
         this.isCancelable = currentSettings?.cancelable ?: true
         this.items = currentSettings?.textFields ?: emptyList()
+        this.style = currentSettings?.style ?: DialogUiStyleSettings.newBuilder().setFontScale(1f).build()
 
         show()
     }
@@ -84,6 +87,10 @@ class ShowTextFieldDialogSettingsDialogState(
 
     fun updateCancelable(cancelable: Boolean) {
         this.isCancelable = cancelable
+    }
+
+    fun updateStyle(style: DialogUiStyleSettings) {
+        this.style = style
     }
 
     fun addItem(item: TextFieldProp) {
@@ -164,7 +171,7 @@ private fun ShowTextFieldDialogSelector(dialogState: ShowTextFieldDialogSettings
                                         message = dialogState.message,
                                         cancelable = dialogState.isCancelable,
                                         textFields = dialogState.items,
-                                        style = tornaco.apps.shortx.core.proto.common.DialogUiStyleSettings.getDefaultInstance()
+                                        style = dialogState.style
                                     )
                                 )
                                 dialogState.dismiss()
@@ -239,6 +246,12 @@ private fun ShowTextFieldDialogSelector(dialogState: ShowTextFieldDialogSettings
                     ) {
                         dialogState.updateCancelable(it)
                     }
+
+                    LargeSpacer()
+
+                    DialogUiStyleSettings(style = dialogState.style, update = {
+                        dialogState.updateStyle(it)
+                    })
 
                     LargeSpacer()
 

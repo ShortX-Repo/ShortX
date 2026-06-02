@@ -32,7 +32,7 @@ object AreaScreenshot : Actor {
         params: HandleParams
     ): Actor.Res = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.AreaScreenshot::class.java
-        val area = startSelectScreenArea(shortXContext)
+        val area = startSelectScreenArea(shortXContext, d.themeMode)
         logger.d("area: $area")
         val rect: Rect? = area?.getRect(androidContext)
         logger.d("rect: $rect")

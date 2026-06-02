@@ -10,8 +10,10 @@ import androidx.compose.runtime.setValue
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.proto.action.ActionSidebarPosition
 import tornaco.apps.shortx.core.proto.action.ActionSidebarStyleSettings
+import tornaco.apps.shortx.core.proto.common.UiThemeMode
 import tornaco.apps.shortx.ui.BaseComposeView
 import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
+import tornaco.apps.shortx.ui.theme.normalized
 
 const val ACTION_SIDEBAR_ANIMATION_DURATION_MS = 220
 
@@ -21,6 +23,7 @@ class ActionSidebarDialogView(
     private val callbacks: ActionSidebarCallbacks,
     private val position: ActionSidebarPosition,
     private val sidebarStyle: ActionSidebarStyleSettings,
+    private val themeMode: UiThemeMode,
     context: Context,
     i18N: I18N,
 ) : BaseComposeView(context, i18N) {
@@ -29,7 +32,7 @@ class ActionSidebarDialogView(
     @Composable
     override fun ComposeContent() {
         LaunchedEffect(Unit) { visible = true }
-        ShortXServiceUITheme {
+        ShortXServiceUITheme(themeMode.normalized()) {
             ActionSidebarPanel(
                 buttons = buttons,
                 callbacks = callbacks,

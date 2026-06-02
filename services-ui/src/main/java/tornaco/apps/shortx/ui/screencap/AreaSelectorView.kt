@@ -6,15 +6,18 @@ import android.graphics.Rect
 import android.view.WindowManager
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.I18N
+import tornaco.apps.shortx.core.proto.common.UiThemeMode
 import tornaco.apps.shortx.ui.AttachableComposeView
 import tornaco.apps.shortx.ui.FlashingBorderBox
 import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
+import tornaco.apps.shortx.ui.theme.normalized
 
 @SuppressLint("ViewConstructor")
 class AreaSelectorView(
     context: Context,
     i18N: I18N,
     onDetach: (AttachableComposeView) -> Unit,
+    private val themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System,
     private val onDragEnd: () -> Unit,
     private val onSelectFullScreen: () -> Unit = {},
     val selected: (Rect) -> Unit,
@@ -23,7 +26,7 @@ class AreaSelectorView(
 
     @Composable
     override fun ComposeContent() {
-        ShortXServiceUITheme {
+        ShortXServiceUITheme(themeMode.normalized()) {
             FlashingBorderBox {
                 RectangleCaptureScreen(
                     onSelectFullScreen = {

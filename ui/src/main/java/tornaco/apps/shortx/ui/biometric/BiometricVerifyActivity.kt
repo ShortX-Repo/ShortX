@@ -2,10 +2,12 @@ package tornaco.apps.shortx.ui.biometric
 
 import android.app.Activity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.biometric.BiometricPrompt
 import androidx.compose.runtime.Composable
 import androidx.core.os.bundleOf
 import tornaco.apps.shortx.core.proto.common.BiometricVerifyResultCase
+import tornaco.apps.shortx.core.proto.common.UiThemeMode
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.ConfirmDeviceCredentialUtils
 import tornaco.apps.shortx.core.util.Logger
@@ -13,6 +15,7 @@ import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.biometric.BiometricVerifyActivityStarter.EXTRA_REQUEST_CODE
 import tornaco.apps.shortx.ui.biometric.BiometricVerifyActivityStarter.EXTRA_SUBTITLE
+import tornaco.apps.shortx.ui.biometric.BiometricVerifyActivityStarter.EXTRA_THEME_MODE
 import tornaco.apps.shortx.ui.biometric.BiometricVerifyActivityStarter.EXTRA_TITLE
 import tornaco.apps.shortx.ui.biometric.BiometricVerifyActivityStarter.RESULT_CASE
 
@@ -22,12 +25,14 @@ class BiometricVerifyActivity : BaseActivity() {
     private var requestCode = 0
     private var title = "ShortX"
     private var subTitle = ""
+    private var themeMode = UiThemeMode.UiThemeMode_System
 
     private var biometricPrompt: BiometricPrompt? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         resolveIntent()
+        delegate.localNightMode = themeMode.toNightMode()
+        super.onCreate(savedInstanceState)
         startVerifyWithBiometrics()
     }
 
@@ -43,6 +48,17 @@ class BiometricVerifyActivity : BaseActivity() {
         }
         title = intent.getStringExtra(EXTRA_TITLE).fallbackOnEmpty("ShortX")
         subTitle = intent.getStringExtra(EXTRA_SUBTITLE).fallbackOnEmpty("")
+        themeMode = runCatching {
+            UiThemeMode.valueOf(intent.getStringExtra(EXTRA_THEME_MODE).fallbackOnEmpty(UiThemeMode.UiThemeMode_System.name))
+        }.getOrDefault(UiThemeMode.UiThemeMode_System)
+    }
+
+    private fun UiThemeMode.toNightMode(): Int {
+        return when (this) {
+            UiThemeMode.UiThemeMode_Light -> AppCompatDelegate.MODE_NIGHT_NO
+            UiThemeMode.UiThemeMode_Dark -> AppCompatDelegate.MODE_NIGHT_YES
+            UiThemeMode.UNRECOGNIZED, UiThemeMode.UiThemeMode_System -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        }
     }
 
     private fun startVerifyWithBiometrics() {

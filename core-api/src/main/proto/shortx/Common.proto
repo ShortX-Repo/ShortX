@@ -617,6 +617,13 @@ message WebDavProfileList {
 
 message DialogUiStyleSettings {
   float fontScale = 1;
+  UiThemeMode themeMode = 2;
+}
+
+enum UiThemeMode {
+  UiThemeMode_System = 0;
+  UiThemeMode_Light = 1;
+  UiThemeMode_Dark = 2;
 }
 
 message SystemEnv {

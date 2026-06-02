@@ -5,6 +5,7 @@ import android.content.Context
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import tornaco.apps.shortx.core.IActionEvaluateListener
+import tornaco.apps.shortx.core.proto.common.UiThemeMode
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
@@ -15,6 +16,7 @@ data class BiometricVerifySelectorState(
     val id: String = defaultNewActionId(),
     val title: String = "ShortX",
     val subtitle: String = "",
+    val themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System,
     val evaluatingActions: List<String> = emptyList()
 )
 
@@ -62,6 +64,7 @@ class BiometricVerifySelectorViewModel @Inject constructor(@ApplicationContext c
                     id = it.id,
                     title = it.title,
                     subtitle = it.subtitle,
+                    themeMode = it.themeMode,
                     evaluatingActions = shortXManager.getEvaluatingActions()
                 )
             }
@@ -76,6 +79,7 @@ class BiometricVerifySelectorViewModel @Inject constructor(@ApplicationContext c
                 id = id,
                 title = title,
                 subtitle = subtitle,
+                themeMode = themeMode,
                 allowActions = allowedActionHandler.actions,
                 denyActions = deniedActionHandler.actions,
             )
@@ -88,5 +92,9 @@ class BiometricVerifySelectorViewModel @Inject constructor(@ApplicationContext c
 
     fun updateSubtitle(title: String) {
         updateState { copy(subtitle = title) }
+    }
+
+    fun updateThemeMode(themeMode: UiThemeMode) {
+        updateState { copy(themeMode = themeMode) }
     }
 }

@@ -11,6 +11,7 @@ import android.view.Surface
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Toast
+import tornaco.apps.shortx.core.proto.common.UiThemeMode
 import androidx.test.uiautomator.imp.UiDevice
 import androidx.test.uiautomator.imp.UiSelector
 import androidx.test.uiautomator.imp.adapter.InstrumentationAdapter
@@ -409,13 +410,14 @@ class WindowManagerService(shortXContext: ShortXContext) :
         return result
     }
 
-    fun enableUniversalCopy() {
+    fun enableUniversalCopy(themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System) {
         disableAllOverlayViews("enableUniversalCopy") {
             val screenTexts = mutableListOf<TextViewNode>()
 
             val guideLineView =
                 UniversalCopyView(
                     context = context,
+                    themeMode = themeMode,
                     onClick = { x, y ->
                         disableAllOverlayViews("UniversalCopyView.onClick") {
                             lookUpTextFromClick(screenTexts, x, y)
@@ -449,12 +451,13 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
     }
 
-    fun enableDrawBoard() {
+    fun enableDrawBoard(themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System) {
         disableAllOverlayViews("enableDrawBoard") {
             val guideLineView =
                 DrawBoardView(
                     context = context,
-                    i18N = i18NIns
+                    i18N = i18NIns,
+                    themeMode = themeMode,
                 ) {
                     showingDrawerBoard.remove(it)
                 }
@@ -466,6 +469,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
     }
 
     fun enableAreaSelector(
+        themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System,
         onSelect: (Rect) -> Unit,
         onSelectFullScreen: () -> Unit,
         onDetach: () -> Unit
@@ -475,6 +479,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
                 AreaSelectorView(
                     context = context,
                     i18N = i18NIns,
+                    themeMode = themeMode,
                     onDetach = {
                         showingAreaSelector.remove(it)
                         onDetach()
@@ -517,7 +522,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
         disableAllOverlayViews("disableAreaSelector") { }
     }
 
-    fun showClipboard() {
+    fun showClipboard(themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System) {
         logger.logOnDebug {
             "showClipboard: ${shortXContext.input.getAllClipboardText().size}"
         }
@@ -527,6 +532,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
                 ClipboardView(
                     context = ServiceGlideContextWrapper(Dirs.picassoCacheDir(), context),
                     i18N = i18NIns,
+                    themeMode = themeMode,
                     clips = shortXContext.input.getAllClipboardText().reversed(),
                     onDetach = {
                         showingClipboard.remove(it)
@@ -574,13 +580,14 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
     }
 
-    fun enableIdViewer() {
+    fun enableIdViewer(themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System) {
         disableAllOverlayViews("enableIdViewer") {
             val idNodes = mutableListOf<ViewNode>()
 
             val guideLineView =
                 IdViewerView(
                     context = context,
+                    themeMode = themeMode,
                     onClick = { x, y ->
                         disableAllOverlayViews("IdViewerView.onClick") {
                             lookUpViewNodeFromClick(idNodes, x, y)
@@ -985,4 +992,3 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
     }
 }
-

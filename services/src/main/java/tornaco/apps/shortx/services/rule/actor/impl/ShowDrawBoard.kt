@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 
@@ -13,7 +14,8 @@ object ShowDrawBoard : Actor {
     override suspend fun handle(
         params: HandleParams
     ) = with(params) {
-        shortXContext.wm.enableDrawBoard()
+        val data = action unpack_ tornaco.apps.shortx.core.proto.action.ShowDrawBoard::class.java
+        shortXContext.wm.enableDrawBoard(data.themeMode)
         Actor.Res.EMPTY
     }
 }

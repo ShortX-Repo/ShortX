@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.proto.action.ActionSidebarButton
 import tornaco.apps.shortx.core.proto.action.ActionSidebarDismissBehavior
 import tornaco.apps.shortx.core.proto.action.ActionSidebarPosition
 import tornaco.apps.shortx.core.proto.action.ActionSidebarStyleSettings
+import tornaco.apps.shortx.core.proto.common.UiThemeMode
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
@@ -77,6 +78,7 @@ data class ShowActionSidebarSelectorState(
     val dismissBehavior: ActionSidebarDismissBehavior = ActionSidebarDismissBehavior.ActionSidebarDismissBehavior_OutsideTapOrClose,
     val position: ActionSidebarPosition = ActionSidebarPosition.ActionSidebarPosition_Left,
     val style: ActionSidebarStyleSettings = defaultActionSidebarStyleSettings(),
+    val themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System,
     val id: String = defaultNewActionId(),
     val evaluatingActions: List<String> = emptyList(),
     val validationMessage: String? = null,
@@ -123,6 +125,7 @@ fun ShowActionSidebarSelectorState.toAction(): Action.ShowActionSidebar {
         displayTitle = displayTitle,
         position = position,
         style = style.withDefaults(),
+        themeMode = themeMode,
         tag = tag,
     )
 }
@@ -161,6 +164,7 @@ class ShowActionSidebarSelectorViewModel @Inject constructor(@ApplicationContext
                 dismissBehavior = action.dismissBehavior,
                 position = action.position,
                 style = action.style.withDefaults(),
+                themeMode = action.themeMode,
                 evaluatingActions = shortXManager.getEvaluatingActions(),
                 validationMessage = null,
             )
@@ -193,6 +197,10 @@ class ShowActionSidebarSelectorViewModel @Inject constructor(@ApplicationContext
 
     fun updateStyle(style: ActionSidebarStyleSettings) {
         updateState { copy(style = style.withDefaults()) }
+    }
+
+    fun updateThemeMode(themeMode: UiThemeMode) {
+        updateState { copy(themeMode = themeMode) }
     }
 
     fun validate(): Boolean {

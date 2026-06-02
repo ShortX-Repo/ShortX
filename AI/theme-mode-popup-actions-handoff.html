@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ShortX Popup Action Theme Mode Handoff</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #0b1020;
+      --panel: #121a2b;
+      --panel-2: #1a2438;
+      --text: #e7ecf5;
+      --muted: #a8b3c7;
+      --accent: #7cc4ff;
+      --ok: #86d993;
+      --warn: #ffd27d;
+      --bad: #ff9b9b;
+      --border: #2a3550;
+      --code: #0f1524;
+    }
+    body {
+      margin: 0;
+      font: 14px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 80px;
+    }
+    h1, h2, h3 {
+      line-height: 1.25;
+    }
+    h1 { font-size: 30px; margin: 0 0 12px; }
+    h2 {
+      font-size: 22px;
+      margin: 36px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    h3 { font-size: 17px; margin: 24px 0 8px; }
+    p, li { color: var(--text); }
+    .muted { color: var(--muted); }
+    .panel {
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin: 14px 0;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-right: 8px;
+    }
+    .ok { background: rgba(134, 217, 147, 0.16); color: var(--ok); }
+    .warn { background: rgba(255, 210, 125, 0.16); color: var(--warn); }
+    .bad { background: rgba(255, 155, 155, 0.16); color: var(--bad); }
+    code {
+      background: var(--code);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1px 6px;
+      color: var(--accent);
+      word-break: break-word;
+    }
+    pre {
+      background: var(--code);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      overflow: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      background: rgba(124, 196, 255, 0.08);
+      font-weight: 700;
+    }
+    ul { padding-left: 20px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+    }
+  </style>
+</head>
+<body>
+<main>
+  <h1>ShortX 弹出类 Action 深色模式交接文档</h1>
+  <p class="muted">用途：给后续 AI / 工程师继续接手本需求。内容覆盖需求目标、动作范围、当前已实现状态、未完成项、关键文件和后续 tasking。</p>
+
+  <section class="panel">
+    <p><strong>需求摘要</strong></p>
+    <p>给“会弹出页面 / 浮层 / 对话框 / 独立页面”的 ShortX 自渲染动作增加主题模式选项，并在运行时根据动作自身配置，以 <code>跟随系统 / 浅色 / 深色</code> 三态来展示 UI。</p>
+    <p><strong>用户确认的范围</strong></p>
+    <p>只做 <strong>ShortX 自己控制渲染的 UI</strong>。系统面板、最近任务、电源菜单、外部 App 页面不要求强制套主题。</p>
+  </section>
+
+  <h2>1. 本次需求范围</h2>
+  <div class="grid">
+    <div class="panel">
+      <h3>纳入范围</h3>
+      <ul>
+        <li>ShortX 对话框</li>
+        <li>ShortX Compose 浮层 / Overlay</li>
+        <li>ShortX 侧边栏 / Action Sidebar</li>
+        <li>ShortX 剪贴板浮层 / 画板 / 选区 / UniversalCopy / ViewIdViewer</li>
+        <li>ShortX 自己的 Activity：<code>DisplayImage</code>、<code>BiometricVerify</code></li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>不纳入范围</h3>
+      <ul>
+        <li>系统通知面板：<code>ExpandNotification</code></li>
+        <li>系统最近任务：<code>ShowRecentApps</code></li>
+        <li>系统全局操作菜单：<code>ShowGlobalActionsMenu</code></li>
+        <li>外部 App 页面：<code>LaunchApp</code>、<code>StartActivity*</code>、<code>AppShortcut</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>2. 要处理的 Action</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Action</th>
+        <th>UI 类型</th>
+        <th>本次目标</th>
+        <th>当前状态</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>ShowAlertDialog</code></td>
+        <td>Dialog</td>
+        <td>通过动作配置决定深浅模式</td>
+        <td><span class="badge ok">已实现</span></td>
+      </tr>
+      <tr>
+        <td><code>ShowTextFieldDialog</code></td>
+        <td>Dialog</td>
+        <td>通过动作配置决定深浅模式</td>
+        <td><span class="badge ok">已实现</span></td>
+      </tr>
+      <tr>
+        <td><code>ShowChoiceDialog</code></td>
+        <td>Dialog</td>
+        <td>通过动作配置决定深浅模式</td>
+        <td><span class="badge ok">已实现</span></td>
+      </tr>
+      <tr>
+        <td><code>ShowListDialog</code></td>
+        <td>Dialog</td>
+        <td>通过动作配置决定深浅模式</td>
+        <td><span class="badge ok">已实现</span></td>
+      </tr>
+      <tr>
+        <td><code>ShowMenuDialog</code></td>
+        <td>Dialog</td>
+        <td>通过动作配置决定深浅模式</td>
+        <td><span class="badge ok">已实现</span></td>
+      </tr>
+      <tr>
+        <td><code>ShowOverlay</code></td>
+        <td>Compose Overlay</td>
+        <td>通过动作配置决定深浅模式</td>
+        <td><span class="badge ok">已实现</span></td>
+      </tr>
+      <tr>
+        <td><code>ShowSideBar</code></td>
+        <td>ShortX Sidebar</td>
+        <td>通过动作配置决定深浅模式</td>
+        <td><span class="badge ok">已实现</span></td>
+      </tr>
+      <tr>
+        <td><code>ShowActionSidebar</code></td>
+        <td>Compose Dialog Sidebar</td>
+        <td>通过动作配置决定深浅模式</td>
+        <td><span class="badge ok">已实现</span></td>
+      </tr>
+      <tr>
+        <td><code>ShowClipboardView</code></td>
+        <td>Compose Overlay</td>
+        <td>增加轻量配置页 + 运行时主题切换</td>
+        <td><span class="badge ok">已实现</span></td>
+      </tr>
+      <tr>
+        <td><code>ShowDrawBoard</code></td>
+        <td>Compose Overlay</td>
+        <td>增加轻量配置页 + 运行时主题切换</td>
+        <td><span class="badge ok">已实现</span></td>
+      </tr>
+      <tr>
+        <td><code>EnableUniversalCopy</code></td>
+        <td>Compose Overlay</td>
+        <td>增加轻量配置页 + 运行时主题切换</td>
+        <td><span class="badge ok">已实现</span></td>
+      </tr>
+      <tr>
+        <td><code>EnableViewIdViewer</code></td>
+        <td>Compose Overlay</td>
+        <td>增加轻量配置页 + 运行时主题切换</td>
+        <td><span class="badge ok">已实现</span></td>
+      </tr>
+      <tr>
+        <td><code>SelectScreenArea</code></td>
+        <td>Compose Overlay</td>
+        <td>增加轻量配置页 + 运行时主题切换</td>
+        <td><span class="badge ok">已实现</span></td>
+      </tr>
+      <tr>
+        <td><code>AreaScreenshot</code></td>
+        <td>依赖选区浮层</td>
+        <td>通过选区 UI 使用动作主题</td>
+        <td><span class="badge ok">已实现</span></td>
+      </tr>
+      <tr>
+        <td><code>DisplayImage</code></td>
+        <td>ShortX Activity</td>
+        <td>通过 Activity 局部 night mode 强制深浅</td>
+        <td><span class="badge ok">已实现</span></td>
+      </tr>
+      <tr>
+        <td><code>BiometricVerify</code></td>
+        <td>ShortX Activity</td>
+        <td>通过 Activity 局部 night mode 强制深浅</td>
+        <td><span class="badge ok">已实现</span></td>
+      </tr>
+      <tr>
+        <td><code>ShowFloatWindow</code></td>
+        <td>老式自定义 View 浮窗</td>
+        <td>理论上要支持动作主题</td>
+        <td><span class="badge warn">字段与 selector 已接，视觉主题未完成</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>3. Tasking 拆分</h2>
+  <ol>
+    <li>定义共享主题模式枚举与解析逻辑</li>
+    <li>给目标 action proto 增加主题字段</li>
+    <li>给 Kotlin action model 增加字段并打通 proto 映射</li>
+    <li>让共享运行时主题入口支持 <code>UiThemeMode</code></li>
+    <li>对话框类动作通过 <code>DialogUiStyleSettings.themeMode</code> 生效</li>
+    <li>Compose 浮层类动作通过 <code>ShortXServiceUITheme(themeMode)</code> 生效</li>
+    <li>Activity 类动作通过局部 night mode 生效</li>
+    <li>给已有 selector 的动作增加主题模式选择 UI</li>
+    <li>给原本无配置页的动作补一个轻量 selector，仅配置主题模式</li>
+    <li>编译并验证跨模块联动，尤其是 <code>services-ui/jar/classes.jar</code> 依赖链</li>
+  </ol>
+
+  <h2>4. 已实现内容</h2>
+  <div class="panel">
+    <h3>4.1 数据层</h3>
+    <ul>
+      <li>在 <code>core-api/src/main/proto/shortx/Common.proto</code> 新增 <code>UiThemeMode</code> 枚举</li>
+      <li>在 <code>DialogUiStyleSettings</code> 中新增 <code>themeMode</code></li>
+      <li>在以下 action proto 中新增 <code>themeMode</code> 字段：
+        <ul>
+          <li><code>ShowOverlayButton</code></li>
+          <li><code>ShowFloatWindow</code></li>
+          <li><code>ShowSideBar</code></li>
+          <li><code>ShowActionSidebar</code></li>
+          <li><code>EnableUniversalCopy</code></li>
+          <li><code>EnableViewIdViewer</code></li>
+          <li><code>BiometricVerify</code></li>
+          <li><code>ShowDrawBoard</code></li>
+          <li><code>ShowClipboardView</code></li>
+          <li><code>AreaScreenshot</code></li>
+          <li><code>SelectScreenArea</code></li>
+          <li><code>DisplayImage</code></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h3>4.2 共享主题基础设施</h3>
+    <ul>
+      <li>新增 <code>ui-base/.../UiThemeModeExt.kt</code></li>
+      <li>新增：
+        <ul>
+          <li><code>UiThemeMode.normalized()</code></li>
+          <li><code>UiThemeMode.resolveDarkTheme()</code></li>
+          <li><code>UiThemeMode.resolveDarkTheme(context)</code></li>
+        </ul>
+      </li>
+      <li>在 <code>services-ui/.../ServiceUITheme.kt</code> 新增基于 <code>UiThemeMode</code> 的重载入口</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h3>4.3 Model 与映射</h3>
+    <ul>
+      <li><code>ui-base/.../Action.kt</code> 中为目标 action 增加 <code>themeMode</code> 字段</li>
+      <li><code>ActionToProtoAction.kt</code> 和 <code>ProtoAnyToAction.kt</code> 已打通对应序列化/反序列化</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h3>4.4 运行时展示层</h3>
+    <ul>
+      <li>对话框基类：
+        <ul>
+          <li><code>DialogView.kt</code></li>
+          <li><code>ShadowDialogView.kt</code></li>
+        </ul>
+        已改成读取 <code>style.themeMode</code></li>
+      <li>Compose Overlay 基类：<code>AbstractComposeOverlay.kt</code> 已支持 <code>themeMode</code></li>
+      <li>已接上主题的服务 UI 组件：
+        <ul>
+          <li><code>ComposeOverlay.kt</code></li>
+          <li><code>ActionSidebarDialogView.kt</code></li>
+          <li><code>ClipboardView.kt</code></li>
+          <li><code>DrawBoardView.kt</code></li>
+          <li><code>AreaSelectorView.kt</code></li>
+          <li><code>UniversalCopyView.kt</code></li>
+          <li><code>IdViewerView.kt</code></li>
+        </ul>
+      </li>
+      <li><code>WindowManagerService.kt</code> 已给以下入口加主题参数：
+        <ul>
+          <li><code>enableUniversalCopy(themeMode)</code></li>
+          <li><code>enableDrawBoard(themeMode)</code></li>
+          <li><code>enableAreaSelector(themeMode,...)</code></li>
+          <li><code>showClipboard(themeMode)</code></li>
+          <li><code>enableIdViewer(themeMode)</code></li>
+        </ul>
+      </li>
+      <li>相关 actor 已改成把动作中的 <code>themeMode</code> 传给上述入口</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h3>4.5 Activity 级别主题</h3>
+    <ul>
+      <li><code>DisplayImageActivityStarter.kt</code> / <code>BiometricVerifyActivityStarter.kt</code> 已透传 <code>EXTRA_THEME_MODE</code></li>
+      <li><code>DisplayImageActivity.kt</code> / <code>BiometricVerifyActivity.kt</code> 已在 <code>super.onCreate</code> 前设置 <code>delegate.localNightMode</code></li>
+      <li>这两类 Activity 已实现动作级的浅色 / 深色 / 跟随系统切换</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h3>4.6 配置 UI</h3>
+    <ul>
+      <li>新增共享主题选择组件：<code>ui/.../ActionThemeModeSelector.kt</code></li>
+      <li>新增轻量 selector：<code>ActionThemeModeOnlySelectorActivity.kt</code></li>
+      <li>已接入主题选择的已有 selector：
+        <ul>
+          <li><code>ShowOverlayButtonSelector</code></li>
+          <li><code>ShowFloatWindowSelector</code></li>
+          <li><code>ShowSideBarSelector</code></li>
+          <li><code>ShowActionSidebarSelector</code></li>
+          <li><code>DisplayImageSelectorActivity</code></li>
+          <li><code>BiometricVerifySelectorActivity</code></li>
+          <li>对话框类统一通过 <code>DialogUiStyleSettings</code> 编辑</li>
+        </ul>
+      </li>
+      <li>原本无配置页但现在可配置主题的动作：
+        <ul>
+          <li><code>EnableUniversalCopy</code></li>
+          <li><code>EnableViewIdViewer</code></li>
+          <li><code>ShowDrawBoard</code></li>
+          <li><code>ShowClipboardView</code></li>
+          <li><code>SelectScreenArea</code></li>
+          <li><code>AreaScreenshot</code></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <h2>5. 已验证结果</h2>
+  <div class="panel">
+    <p><span class="badge ok">通过</span> <code>./gradlew :services-ui:bundleLibCompileToJarDebug</code></p>
+    <p><span class="badge ok">通过</span> <code>./gradlew :services:compileKotlin</code></p>
+    <p><span class="badge ok">通过</span> <code>./gradlew :ui:compilePrcDebugKotlin</code></p>
+    <p class="muted">注意：<code>services</code> 模块依赖的是仓库中的 <code>services-ui/jar/classes.jar</code>，不是直接依赖 <code>:services-ui</code> 源码模块。因此每次改动 <code>services-ui</code> 以后，必须重新生成并同步这个 jar。</p>
+  </div>
+
+  <h2>6. 当前未完成 / 风险项</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>项</th>
+        <th>当前状态</th>
+        <th>建议</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>ShowFloatWindow</code> 的真实视觉深浅切换</td>
+        <td><span class="badge warn">未完成</span> 字段、selector、proto 已接好，但老式 Java/View 浮窗本身还未按 <code>themeMode</code> 切换资源 / tint</td>
+        <td>继续改 <code>FloatButtonWindowController</code>、<code>FloatPanelWindowController</code>，为按钮背景、图标 tint、面板按钮背景引入 light/dark 分支</td>
+      </tr>
+      <tr>
+        <td>翻译文本</td>
+        <td><span class="badge warn">部分复用现有 key</span> 主题模式 label 复用了全局设置里的 key</td>
+        <td>如果需要更明确文案，可补 <code>ui.action.theme.mode</code> 相关 i18n key</td>
+      </tr>
+      <tr>
+        <td><code>services-ui/jar/classes.jar</code> 管理方式</td>
+        <td><span class="badge warn">手工同步</span></td>
+        <td>可以考虑补一个构建任务自动把 <code>out/services-ui/.../classes.jar</code> 同步到 <code>services-ui/jar/classes.jar</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>7. 下一位 AI 的推荐 Tasking</h2>
+  <ol>
+    <li>完成 <code>ShowFloatWindow</code> 的 light/dark 视觉切换：
+      <ul>
+        <li><code>services/src/main/java/tornaco/apps/shortx/services/ui/floating/controller/FloatButtonWindowController.kt</code></li>
+        <li><code>services/src/main/java/tornaco/apps/shortx/services/ui/floating/controller/FloatPanelWindowController.kt</code></li>
+        <li>必要时新增 <code>values-night</code> / 新 drawable / 代码 tint 分支</li>
+      </ul>
+    </li>
+    <li>确认是否需要让 <code>UniversalCopyEditDialog</code>、<code>ViewIdViewerNodeSelectorDialog</code> 这种二级弹窗也显式跟随所属动作主题，而不是默认系统主题</li>
+    <li>如果要提交最终版本，补一个交互验证清单：
+      <ul>
+        <li>对话框类各测一次 System/Light/Dark</li>
+        <li>Overlay / Sidebar / Clipboard / DrawBoard / AreaSelector 各测一次</li>
+        <li><code>DisplayImage</code> / <code>BiometricVerify</code> Activity 各测一次</li>
+      </ul>
+    </li>
+  </ol>
+
+  <h2>8. 关键文件索引</h2>
+  <pre><code>core-api/src/main/proto/shortx/Common.proto
+core-api/src/main/proto/shortx/Actions.proto
+
+ui-base/src/main/java/tornaco/apps/shortx/ui/theme/UiThemeModeExt.kt
+ui-base/src/main/java/tornaco/apps/shortx/ui/addrule/action/model/Action.kt
+ui-base/src/main/java/tornaco/apps/shortx/ui/addrule/action/model/ActionToProtoAction.kt
+ui-base/src/main/java/tornaco/apps/shortx/ui/addrule/action/model/ProtoAnyToAction.kt
+
+services-ui/src/main/java/tornaco/apps/shortx/ui/theme/ServiceUITheme.kt
+services-ui/src/main/java/tornaco/apps/shortx/ui/dialog/DialogView.kt
+services-ui/src/main/java/tornaco/apps/shortx/ui/dialog/ShadowDialogView.kt
+services-ui/src/main/java/tornaco/apps/shortx/ui/overlay/AbstractComposeOverlay.kt
+services-ui/src/main/java/tornaco/apps/shortx/ui/overlay/ComposeOverlay.kt
+services-ui/src/main/java/tornaco/apps/shortx/ui/clipbord/ClipboardView.kt
+services-ui/src/main/java/tornaco/apps/shortx/ui/draw/DrawBoardView.kt
+services-ui/src/main/java/tornaco/apps/shortx/ui/screencap/AreaSelectorView.kt
+services-ui/src/main/java/tornaco/apps/shortx/ui/overlay/UniversalCopyView.kt
+services-ui/src/main/java/tornaco/apps/shortx/ui/overlay/IdViewerView.kt
+services-ui/src/main/java/tornaco/apps/shortx/ui/actionsidebar/ActionSidebarDialogView.kt
+services-ui/src/main/java/tornaco/apps/shortx/ui/media/DisplayImageActivityStarter.kt
+services-ui/src/main/java/tornaco/apps/shortx/ui/biometric/BiometricVerifyActivityStarter.kt
+
+services/src/main/java/tornaco/apps/shortx/services/wm/WindowManagerService.kt
+services/src/main/java/tornaco/apps/shortx/services/overlay/actionsidebar/ActionSidebarManager.kt
+services/src/main/java/tornaco/apps/shortx/services/rule/actor/impl/EnableUniversalCopy.kt
+services/src/main/java/tornaco/apps/shortx/services/rule/actor/impl/EnableViewIdViewer.kt
+services/src/main/java/tornaco/apps/shortx/services/rule/actor/impl/ShowClipboardView.kt
+services/src/main/java/tornaco/apps/shortx/services/rule/actor/impl/ShowDrawBoard.kt
+services/src/main/java/tornaco/apps/shortx/services/rule/actor/impl/SelectScreenArea.kt
+services/src/main/java/tornaco/apps/shortx/services/rule/actor/impl/AreaScreenshot.kt
+
+ui/src/main/java/tornaco/apps/shortx/ui/addrule/action/selector/ActionThemeModeSelector.kt
+ui/src/main/java/tornaco/apps/shortx/ui/addrule/action/selector/ActionThemeModeOnlySelectorActivity.kt
+ui/src/main/java/tornaco/apps/shortx/ui/addrule/action/selector/UiActions.kt
+ui/src/main/java/tornaco/apps/shortx/ui/addrule/action/selector/ShowOverlayButtonSelector.kt
+ui/src/main/java/tornaco/apps/shortx/ui/addrule/action/selector/ShowFloatWindowSelector.kt
+ui/src/main/java/tornaco/apps/shortx/ui/addrule/action/selector/ShowSideBarSelector.kt
+ui/src/main/java/tornaco/apps/shortx/ui/addrule/action/selector/actionsidebar/ShowActionSidebarSelector.kt
+ui/src/main/java/tornaco/apps/shortx/ui/addrule/action/selector/BiometricVerifySelectorActivity.kt
+ui/src/main/java/tornaco/apps/shortx/ui/addrule/action/selector/DisplayImageSelectorActivity.kt
+ui/src/main/java/tornaco/apps/shortx/ui/addrule/action/selector/dialog/DialogUiStyleSettings.kt
+ui/src/main/java/tornaco/apps/shortx/ui/addrule/action/selector/dialog/ShowTextFieldDialogSelector.kt
+
+ui/src/main/java/tornaco/apps/shortx/ui/media/DisplayImageActivity.kt
+ui/src/main/java/tornaco/apps/shortx/ui/biometric/BiometricVerifyActivity.kt
+ui/src/main/java/tornaco/apps/shortx/ui/base/BaseActivity.kt
+
+services-ui/jar/classes.jar  &lt;-- remember to refresh after services-ui changes</code></pre>
+
+  <h2>9. 给下一位 AI 的一句话结论</h2>
+  <div class="panel">
+    <p>这次需求的大框架已经打通，<strong>除 <code>ShowFloatWindow</code> 的老式自定义浮窗视觉深浅切换外，其余目标动作的主题模式数据、配置 UI、运行时展示、编译链路都已经接好并通过编译</strong>。</p>
+  </div>
+</main>
+</body>
+</html>

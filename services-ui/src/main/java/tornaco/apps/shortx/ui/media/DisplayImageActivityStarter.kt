@@ -9,6 +9,7 @@ object DisplayImageActivityStarter {
     const val EXTRA_REQUEST_CODE = "extra.request.code"
     const val EXTRA_IMAGE_URL = "extra.url"
     const val EXTRA_IMAGE_SCALE_TYPE = "extra.scale.type"
+    const val EXTRA_THEME_MODE = "extra.theme.mode"
 
     @JvmStatic
     fun start(context: Context, requestCode: Int, action: DisplayImage) {
@@ -21,6 +22,7 @@ object DisplayImageActivityStarter {
             .putExtra(EXTRA_REQUEST_CODE, requestCode)
             .putExtra(EXTRA_IMAGE_URL, action.imageUrl)
             .putExtra(EXTRA_IMAGE_SCALE_TYPE, action.scaleType.name)
+            .putExtra(EXTRA_THEME_MODE, action.themeMode.name)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         context.startActivity(starter)

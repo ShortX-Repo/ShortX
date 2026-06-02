@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.settings.pref.Pref
+import tornaco.apps.shortx.core.proto.common.UiThemeMode
 import tornaco.apps.shortx.ui.subscribe.ShortXProps
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -66,6 +67,8 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     open fun beforeOnCreate() {}
+
+    open fun themeModeOverride(): UiThemeMode? = null
 
     @Composable
     abstract fun Content()

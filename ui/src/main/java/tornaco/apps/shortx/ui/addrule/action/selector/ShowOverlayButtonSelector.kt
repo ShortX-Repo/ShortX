@@ -46,6 +46,7 @@ import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonComponentType
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
+import tornaco.apps.shortx.ui.addrule.action.selector.ActionThemeModeSelector
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
@@ -315,6 +316,13 @@ private fun Content(
                 ShortXTextField(value = state.tag, onValueChange = {
                     vm.updateTag(it)
                 })
+            }
+        }
+
+        item {
+            StandardSpacer()
+            ActionThemeModeSelector(themeMode = state.themeMode) {
+                vm.setThemeMode(it)
             }
         }
 
@@ -648,4 +656,3 @@ private fun ProgressBarListItem(
         }
     }
 }
-

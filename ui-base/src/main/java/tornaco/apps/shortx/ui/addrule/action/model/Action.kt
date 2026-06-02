@@ -55,6 +55,7 @@ import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.common.TextFieldProp
 import tornaco.apps.shortx.core.proto.common.TimeUnit
+import tornaco.apps.shortx.core.proto.common.UiThemeMode
 import tornaco.apps.shortx.core.proto.common.VolumeDirection
 import tornaco.apps.shortx.core.proto.common.WebDavProfile
 import tornaco.apps.shortx.core.proto.common.WindowInsetType
@@ -492,6 +493,7 @@ sealed interface Action : Parcelable {
         override val note: String = "",
         val imageUrl: String,
         val scaleType: ImageScaleType,
+        val themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System,
     ) : Action {
         override fun clone(
             id: String,
@@ -610,6 +612,7 @@ sealed interface Action : Parcelable {
         val settings: List<OverlayButtonSetting>,
         val tag: String,
         val panelRadiusScale: Float,
+        val themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System,
     ) : Action {
         override fun clone(
             id: String,
@@ -637,6 +640,7 @@ sealed interface Action : Parcelable {
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val settings: List<OverlayButtonSetting>,
+        val themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System,
         val tag: String,
     ) : Action {
         override fun clone(
@@ -669,6 +673,7 @@ sealed interface Action : Parcelable {
         val displayTitle: String = "",
         val position: tornaco.apps.shortx.core.proto.action.ActionSidebarPosition = tornaco.apps.shortx.core.proto.action.ActionSidebarPosition.ActionSidebarPosition_Left,
         val style: ActionSidebarStyleSettings = ActionSidebarStyleSettings.getDefaultInstance(),
+        val themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System,
         val tag: String,
     ) : Action {
         override fun clone(
@@ -764,6 +769,7 @@ sealed interface Action : Parcelable {
         val disableAutoEdge: Boolean,
         val closeOnTouchOutside: Boolean,
         val closeOnAction: Boolean,
+        val themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System,
     ) : Action {
         override fun clone(
             id: String,
@@ -3244,6 +3250,7 @@ sealed interface Action : Parcelable {
         val subtitle: String,
         val allowActions: List<Action> = emptyList(),
         val denyActions: List<Action> = emptyList(),
+        val themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System,
     ) : Action {
         override fun clone(
             id: String,
@@ -4557,6 +4564,7 @@ sealed interface Action : Parcelable {
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
+        val themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System,
 
         ) : Action {
         override fun clone(
@@ -4584,6 +4592,7 @@ sealed interface Action : Parcelable {
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
+        val themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System,
     ) : Action {
         override fun clone(
             id: String,
@@ -4611,6 +4620,7 @@ sealed interface Action : Parcelable {
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
+        val themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System,
     ) : Action {
         override fun clone(
             id: String,
@@ -4637,6 +4647,7 @@ sealed interface Action : Parcelable {
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
+        val themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System,
 
         ) : Action {
         override fun clone(
@@ -5686,6 +5697,7 @@ sealed interface Action : Parcelable {
             customContextDataKey
         ),
         override val note: String = "",
+        val themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System,
     ) : Action {
         override fun clone(
             id: String,
@@ -5714,6 +5726,7 @@ sealed interface Action : Parcelable {
             customContextDataKey
         ),
         override val note: String = "",
+        val themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System,
     ) : Action {
         override fun clone(
             id: String,
