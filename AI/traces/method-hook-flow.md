@@ -15,7 +15,7 @@ This trace spans:
 
 ## High-Level Idea
 
-ShortX lets a user define a `MethodHook` fact in a rule. At runtime, the Xposed path scans rule facts, installs matching hooks into the target process, evaluates optional MVEL expressions against `MethodHookParam`, and sends the resulting context back into the main rule engine as a `MethodHook` fact.
+ShortX lets a user define a `MethodHook` fact in a rule. At runtime, the Xposed path scans rule facts, installs matching hooks into the target process, evaluates optional MVEL expressions against `ShortXHookParam`, and sends the resulting context back into the main rule engine as a `MethodHook` fact.
 
 ## Configuration Origin
 
@@ -40,10 +40,11 @@ These build a `MethodHook` fact model containing fields such as:
 
 The Xposed path starts from entry classes such as:
 
-- `ShortXLSPosedHookEntry.kt`
 - `XposedEntry.kt`
+- `ShortXLSPosedHook100Entry.kt`
+- `ShortXLSPosedHook101Entry.kt`
 
-These route into `HookStub2`.
+These initialize `XposedRuntime` with a concrete runtime adapter and then route into `HookStub2`.
 
 ### 2. `HookStub2` chooses the lifecycle branch
 
@@ -93,13 +94,19 @@ This is controlled by the `beforeMethod` field in the `MethodHook` proto.
 
 ### 6. The hooked method is called in the target process
 
-When the target method runs, the Xposed hook callback receives `MethodHookParam`.
+When the target method runs, the runtime-specific Xposed hook callback is normalized into `ShortXHookParam`.
 
-That object exposes the runtime values users care about:
+That normalized object exposes the runtime values users care about:
 
 - `param.args`
 - `param.result`
 - `param.thisObject`
+
+The runtime-specific registration mechanism is different per module:
+
+- `patch-legacy` uses legacy `XC_MethodHook`
+- `patch-100` uses API 100 `@XposedHooker` with `@BeforeInvocation` / `@AfterInvocation`
+- `patch-101` uses chain-based `Hooker.intercept(...)`
 
 ### 7. MVEL expressions are evaluated against the hook param
 
@@ -160,6 +167,10 @@ So method hooks are not a separate action engine. They are a specialized fact so
 - `patch-xposed/patch-main/src/main/java/tornaco/apps/shortx/services/xposed/hooks/hook/CustomHookSystemServer.kt`
 - `patch-xposed/patch-common/src/main/java/tornaco/apps/shortx/services/xposed/hooks/hook/CustomHookApp.kt`
 - `patch-xposed/patch-common/src/main/java/tornaco/apps/shortx/services/xposed/hooks/hook/CustomHookUtil.kt`
+- `patch-xposed/patch-common/src/main/java/tornaco/apps/shortx/services/xposed/hooks/hook/XposedAdapter.kt`
+- `patch-xposed/patch-100/src/main/java/tornaco/apps/shortx/services/xposed/hooks/hook/Api100XposedAdapter.kt`
+- `patch-xposed/patch-101/src/main/java/tornaco/apps/shortx/services/xposed/hooks/hook/Api101XposedAdapter.kt`
+- `patch-xposed/patch-legacy/src/main/java/tornaco/apps/shortx/services/xposed/hooks/hook/LegacyXposedAdapter.kt`
 - `core-api/src/main/java/tornaco/apps/shortx/core/ShortXManager.kt`
 - `core-api/src/main/java/tornaco/apps/shortx/core/IShortX.aidl`
 - `services/src/main/java/tornaco/apps/shortx/services/ShortXService.kt`
@@ -170,8 +181,8 @@ So method hooks are not a separate action engine. They are a specialized fact so
 The method-hook feature is best understood as:
 
 - user-configured hook definition in rule facts
-- Xposed hook installer in target processes
-- MVEL extraction of runtime values from `MethodHookParam`
+- runtime-specific Xposed hook installer in target processes
+- normalization into `ShortXHookParam`
 - binder or direct callback bridge into `services`
 - standard fact-driven rule execution after that
 

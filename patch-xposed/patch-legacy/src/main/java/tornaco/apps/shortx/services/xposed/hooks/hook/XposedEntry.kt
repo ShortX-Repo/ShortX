@@ -11,7 +11,7 @@ import tornaco.apps.shortx.services.xposed.hooks.hook.api.ISystemServerLoaded
 @DoNotStrip
 class XposedEntry : IXposedHookLoadPackage, IXposedHookZygoteInit {
     override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam) {
-        XposedRuntime.initLegacy(systemServer = lpparam.packageName == PackageNames.android)
+        XposedRuntime.init(LegacyXposedAdapter, systemServer = lpparam.packageName == PackageNames.android)
         val pkgParam = IPackageLoaded.Param(
             lpparam.packageName,
             lpparam.processName,
@@ -25,7 +25,7 @@ class XposedEntry : IXposedHookLoadPackage, IXposedHookZygoteInit {
     }
 
     override fun initZygote(startupParam: IXposedHookZygoteInit.StartupParam) {
-        XposedRuntime.initLegacy()
+        XposedRuntime.init(LegacyXposedAdapter)
         HookStub2.initZygote()
     }
 }

@@ -1,1 +1,2 @@
-tornaco.apps.shortx.services.xposed.hooks.hook.ShortXLSPosedHookEntry
+tornaco.apps.shortx.services.xposed.hooks.hook.ShortXLSPosedHook100Entry
+tornaco.apps.shortx.services.xposed.hooks.hook.ShortXLSPosedHook101Entry

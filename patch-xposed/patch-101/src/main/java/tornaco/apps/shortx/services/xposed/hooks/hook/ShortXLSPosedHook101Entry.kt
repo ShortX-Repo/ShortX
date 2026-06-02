@@ -28,14 +28,14 @@ import tornaco.apps.shortx.services.xposed.hooks.hook.api.ISystemServerLoaded
 private lateinit var processName: String
 
 @DoNotStrip
-class ShortXLSPosedHookEntry : XposedModule() {
+class ShortXLSPosedHook101Entry : XposedModule() {
     override fun onModuleLoaded(param: XposedModuleInterface.ModuleLoadedParam) {
         super.onModuleLoaded(param)
-        XposedRuntime.initApi101(this, param.isSystemServer)
+        XposedRuntime.init(Api101XposedAdapter(this), param.isSystemServer)
         logAdapter = { _, tag, msg ->
             XposedLog.log("$tag $msg")
         }
-        XposedLog.log("ShortXLSPosedHookEntry.onModuleLoaded ${param.processName} isSystemServer: ${param.isSystemServer}")
+        XposedLog.log("ShortXLSPosedHook101Entry.onModuleLoaded ${param.processName} isSystemServer: ${param.isSystemServer}")
         processName = param.processName
         HookStub2.initZygote()
     }
