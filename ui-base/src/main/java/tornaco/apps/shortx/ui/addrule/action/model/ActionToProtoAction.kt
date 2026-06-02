@@ -1921,6 +1921,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setIsDisabled(!isEnabled)
                 .setActionOnError(actionOnError)
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setThemeMode(themeMode)
                 .setNote(overrideNote ?: note)
                 .build()
         }
@@ -1931,6 +1932,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setIsDisabled(!isEnabled)
                 .setActionOnError(actionOnError)
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setThemeMode(themeMode)
                 .setNote(overrideNote ?: note)
                 .build()
         }
@@ -1941,6 +1943,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setIsDisabled(!isEnabled)
                 .setActionOnError(actionOnError)
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setThemeMode(themeMode)
                 .setNote(overrideNote ?: note)
                 .build()
         }
@@ -1951,6 +1954,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setIsDisabled(!isEnabled)
                 .setActionOnError(actionOnError)
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setThemeMode(themeMode)
                 .setNote(overrideNote ?: note)
                 .build()
         }
