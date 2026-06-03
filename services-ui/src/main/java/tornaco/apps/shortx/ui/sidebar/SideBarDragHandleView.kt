@@ -17,9 +17,11 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.MutableStateFlow
+import tornaco.apps.shortx.core.proto.common.UiThemeMode
 import tornaco.apps.shortx.ui.overlay.AbstractComposeOverlay
 import tornaco.apps.shortx.ui.theme.NoteTextColor
 import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
+import tornaco.apps.shortx.ui.theme.normalized
 
 private const val DRAG_HANDLE_W = 4
 private const val DRAG_HANDLE_H = 64
@@ -31,6 +33,7 @@ class SideBarDragHandleView(
     context: Context,
     initialPos: Pair<Int, Int>,
     onPosChange: (Int, Int) -> Unit,
+    private val themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System,
     private val showBar: () -> Unit
 ) : AbstractComposeOverlay(
     context = context,
@@ -40,11 +43,12 @@ class SideBarDragHandleView(
     initialPos = initialPos,
     onPosChange = onPosChange,
     onTouchOutside = { true },
+    themeMode = themeMode,
 ) {
 
     @Composable
     override fun ComposeContent() {
-        ShortXServiceUITheme {
+        ShortXServiceUITheme(themeMode.normalized()) {
             val isExpanded by expandState.collectAsState()
             DragHandle(onDrag = {
                 showBar()

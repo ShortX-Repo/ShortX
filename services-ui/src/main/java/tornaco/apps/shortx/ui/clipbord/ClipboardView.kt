@@ -54,6 +54,7 @@ import kotlinx.coroutines.launch
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.I18N
+import tornaco.apps.shortx.core.proto.common.UiThemeMode
 import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.proto.clipboard.ClipboardItem
 import tornaco.apps.shortx.core.proto.common.AppPkg
@@ -78,6 +79,7 @@ import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.theme.AliBlue
 import tornaco.apps.shortx.ui.theme.PrefIcon
 import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
+import tornaco.apps.shortx.ui.theme.normalized
 import java.util.Date
 import java.util.UUID
 
@@ -94,6 +96,7 @@ class ClipboardView(
     val clearAll: () -> Unit,
     val initialIsDeduplicated: Boolean,
     val onDeduplicateChanged: (Boolean) -> Unit,
+    private val themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System,
 ) : AttachableComposeView(context, i18N, onDetach) {
     override fun createLayoutParams(): WindowManager.LayoutParams {
         return super.createLayoutParams().apply {
@@ -103,7 +106,7 @@ class ClipboardView(
 
     @Composable
     override fun ComposeContent() {
-        ShortXServiceUITheme {
+        ShortXServiceUITheme(themeMode.normalized()) {
             val focusRequester = remember { FocusRequester() }
 
             var inputState by remember { mutableStateOf("") }

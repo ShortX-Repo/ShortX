@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.IActionEvaluateListener
+import tornaco.apps.shortx.core.proto.common.UiThemeMode
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonComponentType
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.rule.pack_
@@ -38,6 +39,7 @@ data class OverlayButtonSelectorState(
     val enableAutoEdge: Boolean = false,
     val closeOnTouchOutside: Boolean = false,
     val closeOnAction: Boolean = false,
+    val themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System,
     val id: String = defaultNewActionId(),
     val evaluatingActions: List<String> = emptyList(),
 
@@ -111,6 +113,7 @@ fun OverlayButtonSelectorState.toAction(): Action.ShowOverlay {
         disableAutoEdge = !this.enableAutoEdge,
         closeOnTouchOutside = this.closeOnTouchOutside,
         closeOnAction = this.closeOnAction,
+        themeMode = this.themeMode,
     )
 }
 
@@ -161,6 +164,7 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
                 enableAutoEdge = !settings.disableAutoEdge,
                 closeOnTouchOutside = settings.closeOnTouchOutside,
                 closeOnAction = settings.closeOnAction,
+                themeMode = settings.themeMode,
                 evaluatingActions = shortXManager.getEvaluatingActions()
             )
         }
@@ -257,6 +261,10 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
 
     fun setCloseOnAction(closeOnAction: Boolean) {
         updateState { copy(closeOnAction = closeOnAction) }
+    }
+
+    fun setThemeMode(themeMode: UiThemeMode) {
+        updateState { copy(themeMode = themeMode) }
     }
 
     fun addButton(componentType: OverlayButtonComponentType = OverlayButtonComponentType.OverlayButtonComponentType_Button) {

@@ -24,7 +24,7 @@ object SelectScreenArea : Actor {
         val d =
             action unpack_ tornaco.apps.shortx.core.proto.action.SelectScreenArea::class.java
 
-        val rect: Rect? = startSelectScreenArea(shortXContext)?.getRect(androidContext)
+        val rect: Rect? = startSelectScreenArea(shortXContext, d.themeMode)?.getRect(androidContext)
 
         requireNotNull(rect) {
             "No Rect selected."
@@ -59,9 +59,10 @@ object SelectScreenArea : Actor {
         Actor.Res(rect.flattenToString())
     }
 
-    suspend fun startSelectScreenArea(shortXContext: ShortXContext): AreaSelection? {
+    suspend fun startSelectScreenArea(shortXContext: ShortXContext, themeMode: tornaco.apps.shortx.core.proto.common.UiThemeMode = tornaco.apps.shortx.core.proto.common.UiThemeMode.UiThemeMode_System): AreaSelection? {
         val rect: AreaSelection? = suspendCancellableCoroutine<AreaSelection?> { con ->
             shortXContext.wm.enableAreaSelector(
+                themeMode = themeMode,
                 onSelect = {
                     con.resume(AreaSelection.SelectRect(it)) {}
                 },

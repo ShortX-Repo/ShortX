@@ -338,6 +338,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 disableAutoEdge = data.disableAutoEdge,
                 closeOnTouchOutside = data.closeOnTouchOutside,
                 closeOnAction = data.closeOnAction,
+                themeMode = data.themeMode,
             )
         }
 
@@ -375,6 +376,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 settings = data.buttonSettingsList,
                 tag = data.tag,
                 panelRadiusScale = data.panelRadiusScale,
+                themeMode = data.themeMode,
             )
         }
 
@@ -401,6 +403,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 id = data.id,
                 note = data.note,
                 settings = data.buttonSettingsList,
+                themeMode = data.themeMode,
                 tag = data.tag
             )
         }
@@ -419,6 +422,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 displayTitle = data.displayTitle,
                 position = data.position,
                 style = data.style,
+                themeMode = data.themeMode,
                 tag = data.tag
             )
         }
@@ -2168,7 +2172,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 actionOnError = data.actionOnError,
                 customContextDataKey = data.customContextDataKey,
                 id = data.id,
-                note = data.note
+                note = data.note,
+                themeMode = data.themeMode,
             )
         }
 
@@ -2180,7 +2185,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 actionOnError = data.actionOnError,
                 customContextDataKey = data.customContextDataKey,
                 id = data.id,
-                note = data.note
+                note = data.note,
+                themeMode = data.themeMode,
             )
         }
 
@@ -2192,7 +2198,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 actionOnError = data.actionOnError,
                 customContextDataKey = data.customContextDataKey,
                 id = data.id,
-                note = data.note
+                note = data.note,
+                themeMode = data.themeMode,
             )
         }
 
@@ -2204,7 +2211,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 actionOnError = data.actionOnError,
                 customContextDataKey = data.customContextDataKey,
                 id = data.id,
-                note = data.note
+                note = data.note,
+                themeMode = data.themeMode,
             )
         }
 
@@ -2290,6 +2298,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 subtitle = data.subTitle,
                 allowActions = data.allowActionsList.mapNotNull { it.toAction(shortXManager) },
                 denyActions = data.denyActionsList.mapNotNull { it.toAction(shortXManager) },
+                themeMode = data.themeMode,
             )
         }
 
@@ -2729,7 +2738,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 actionOnError = data.actionOnError,
                 customContextDataKey = data.customContextDataKey,
                 id = data.id,
-                note = data.note
+                note = data.note,
+                themeMode = data.themeMode,
             )
         }
 
@@ -2741,7 +2751,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 actionOnError = data.actionOnError,
                 customContextDataKey = data.customContextDataKey,
                 id = data.id,
-                note = data.note
+                note = data.note,
+                themeMode = data.themeMode,
             )
         }
 
@@ -2788,6 +2799,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 note = data.note,
                 imageUrl = data.imageUrl,
                 scaleType = data.scaleType,
+                themeMode = data.themeMode,
             )
         }
 

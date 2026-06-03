@@ -2,7 +2,7 @@
 
 ## Role
 
-`patch-xposed/patch-systemui` contains SystemUI-specific hook logic. It is the specialization layer that runs inside the `com.android.systemui` process under the LSPosed API 101 runtime and adds ShortX behavior that only makes sense in SystemUI, such as quick settings integration, status bar/view hooks, OCR helpers, and global gesture interception.
+`patch-xposed/patch-systemui` contains SystemUI-specific hook logic. It is the specialization layer that runs inside the `com.android.systemui` process after whichever Xposed runtime entry bootstrapped ShortX, and adds behavior that only makes sense in SystemUI, such as quick settings integration, status bar/view hooks, OCR helpers, and global gesture interception.
 
 ## Module Type
 
@@ -39,7 +39,7 @@
 
 ## How It Connects
 
-This module is invoked from `patch-main` when the loaded package is SystemUI. It is not generic app-hook logic; it is the SystemUI specialization layer. Under the API 101-only migration, it relies on `patch-common`'s shared hook facade instead of direct legacy callback types.
+This module is invoked from `patch-main` when the loaded package is SystemUI. It is not generic app-hook logic; it is the SystemUI specialization layer. It relies on `patch-common`'s shared hook facade, so the business logic here stays mostly independent from whether the active runtime is legacy, API 100, or API 101.
 
 ## SystemUI Startup Chain
 

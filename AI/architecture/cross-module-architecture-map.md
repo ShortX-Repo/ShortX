@@ -18,7 +18,7 @@ ShortX is built as a layered automation system:
 1. `ui` lets the user create and manage rules, direct actions, toggles, settings, and method hooks.
 2. `core-api` defines the shared protobuf models, AIDL contracts, and the `ShortXManager` client wrapper.
 3. `services` is the real runtime engine that stores automation state, publishes facts, evaluates conditions, and executes actions.
-4. `patch-xposed` injects ShortX into system and app processes through the LSPosed API 101 runtime, observes framework behavior, and feeds hook-driven events back into `services`.
+4. `patch-xposed` injects ShortX into system and app processes through one of three runtime entry paths: legacy Xposed, libxposed API 100, or libxposed API 101. Those entries share a common hook layer, observe framework behavior, and feed hook-driven events back into `services`.
 
 ## Layer Responsibilities
 
@@ -87,7 +87,8 @@ Representative entry points:
 
 Owns:
 
-- LSPosed API 101 module entry and hook dispatch
+- runtime-specific module entries for legacy Xposed, API 100, and API 101
+- adapter-based runtime abstraction in `patch-common`
 - hook registration in system server and app processes
 - method-hook installation from rule definitions
 - SystemUI-specific hook integrations
@@ -98,8 +99,11 @@ Main role in architecture:
 
 Representative entry points:
 
-- `patch-xposed/patch-main/.../ShortXLSPosedHookEntry.kt`
+- `patch-xposed/patch-legacy/.../XposedEntry.kt`
+- `patch-xposed/patch-100/.../ShortXLSPosedHook100Entry.kt`
+- `patch-xposed/patch-101/.../ShortXLSPosedHook101Entry.kt`
 - `patch-xposed/patch-main/.../HookStub2.kt`
+- `patch-xposed/patch-common/.../XposedAdapter.kt`
 - `patch-xposed/patch-common/.../CustomHookUtil.kt`
 
 ## Main Runtime Connections
@@ -149,15 +153,16 @@ This is the injected-process path.
 
 Flow:
 
-1. Xposed or LSPosed loads `patch-xposed` entry code
-2. `HookStub2` chooses system-server, package-loaded, or init-zygote hook flow
-3. hook modules observe framework or app behavior
-4. for method hooks, `CustomHookUtil.installHookForRules(...)` scans rule facts and installs live hooks
-5. when a hook fires, the Xposed layer extracts runtime values from `MethodHookParam`
-6. the hook callback either:
+1. Legacy Xposed, libxposed API 100, or libxposed API 101 loads the corresponding `patch-xposed` entry code
+2. The entry module installs its runtime-specific `XposedAdapter` into `XposedRuntime`
+3. `HookStub2` chooses system-server, package-loaded, or init-zygote hook flow
+4. hook modules observe framework or app behavior
+5. for method hooks, `CustomHookUtil.installHookForRules(...)` scans rule facts and installs live hooks
+6. when a hook fires, the Xposed layer extracts runtime values from `ShortXHookParam`
+7. the hook callback either:
    - publishes directly into `services` if running inside system server, or
    - calls back through `ShortXManager` / `IShortX` if running in an app process
-7. `services` receives the event as a normal fact and runs the standard rule engine
+8. `services` receives the event as a normal fact and runs the standard rule engine
 
 This is the most important architectural idea in the project: Xposed is not the automation engine. Xposed is an event and control source that feeds the same runtime engine in `services`.
 

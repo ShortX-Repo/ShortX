@@ -5,7 +5,7 @@ import android.util.Log
 object XposedLog {
     fun log(message: String) {
         val result = runCatching<Unit> {
-            Api101Runtime.xposed.log(Log.INFO, "ShortX", message)
+            XposedRuntime.current.log(message)
         }
         result.onFailure {
             Log.i("ShortX.Xposed", message)
@@ -14,7 +14,7 @@ object XposedLog {
 
     fun log(message: String, throwable: Throwable) {
         val result = runCatching<Unit> {
-            Api101Runtime.xposed.log(Log.ERROR, "ShortX", message, throwable)
+            XposedRuntime.current.log(message, throwable)
         }
         result.onFailure {
             Log.e("ShortX.Xposed", message, throwable)

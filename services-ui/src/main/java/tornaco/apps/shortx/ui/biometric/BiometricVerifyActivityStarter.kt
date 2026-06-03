@@ -9,6 +9,7 @@ object BiometricVerifyActivityStarter {
     const val EXTRA_REQUEST_CODE = "extra.request.code"
     const val EXTRA_TITLE = "extra.title"
     const val EXTRA_SUBTITLE = "extra.subtitle"
+    const val EXTRA_THEME_MODE = "extra.theme.mode"
     const val RESULT_CASE = "result.case"
 
     @JvmStatic
@@ -22,6 +23,7 @@ object BiometricVerifyActivityStarter {
             .putExtra(EXTRA_REQUEST_CODE, requestCode)
             .putExtra(EXTRA_TITLE, action.title)
             .putExtra(EXTRA_SUBTITLE, action.subTitle)
+            .putExtra(EXTRA_THEME_MODE, action.themeMode.name)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         context.startActivity(starter)

@@ -12,7 +12,8 @@
 
 - Declares product flavors `row` and `prc`.
 - Applies Google services and Firebase only for the `row` flavor.
-- Includes `patch-xposed:patch-main` directly, which is a strong signal that the packaged app and Xposed path are intentionally coupled.
+- Packages all current Xposed runtime modules directly: `patch-xposed:patch-legacy`, `patch-xposed:patch-100`, `patch-xposed:patch-101`, plus the shared `patch-xposed:patch-main` layer.
+- Adds compile-only visibility for legacy Xposed API 82, libxposed API 100, and libxposed API 101 so app compilation and shrink steps can resolve Xposed-facing types.
 - Generates dynamic ProGuard rules and random repackaging names during build.
 
 ## Key Source Areas
@@ -31,8 +32,8 @@
 
 ## How It Connects
 
-This module owns packaging and startup, not most feature logic. It initializes `ui` entry points, brings in `services`, and packages the Xposed path into the installable app.
+This module owns packaging and startup, not most feature logic. It initializes `ui` entry points, brings in `services`, and packages the full multi-runtime Xposed path into the installable app.
 
 ## Reading Outcome
 
-Read this module to understand how ShortX is shipped as both an Android app and an Xposed-capable package.
+Read this module to understand how ShortX is shipped as both an Android app and a package that currently contains legacy, API 100, and API 101 Xposed entry paths.

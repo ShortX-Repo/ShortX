@@ -51,6 +51,7 @@ object DisplayImage : Actor {
                     requestCode = actionRequestCode,
                     action = DisplayImage.newBuilder().setImageUrl(url)
                         .setScaleType(d.scaleType)
+                        .setThemeMode(d.themeMode)
                         .build()
                 )
             }

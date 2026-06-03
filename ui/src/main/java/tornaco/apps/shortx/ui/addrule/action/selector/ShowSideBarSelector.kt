@@ -30,6 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
+import tornaco.apps.shortx.ui.addrule.action.selector.ActionThemeModeSelector
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
@@ -139,6 +140,10 @@ private fun ColumnScope.Content(
         Text(text = LocalI18N.current["ui.action.show.add.button"])
     }
 
+    SectionSpacer()
+    ActionThemeModeSelector(themeMode = state.themeMode) {
+        vm.setThemeMode(it)
+    }
     SectionSpacer()
     SectionSpacer()
     SuggestedNavEntry()
@@ -259,4 +264,3 @@ private fun ButtonListItem(
         }
     }
 }
-

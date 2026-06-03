@@ -87,22 +87,11 @@ fun beforeMethod(
 }
 
 private fun hookBefore(member: Member, callback: (ShortXHookParam) -> Unit) {
-    hookMember(member, Api101Hooker.before(callback))
+    XposedRuntime.current.hookBefore(member, callback)
 }
 
 private fun hookAfter(member: Member, callback: (ShortXHookParam) -> Unit) {
-    hookMember(member, Api101Hooker.after(callback))
-}
-
-@Suppress("UNCHECKED_CAST")
-private fun hookMember(member: Member, hooker: Api101Hooker) {
-    when (member) {
-        is Method -> Api101Runtime.xposed.hook(member).intercept(hooker)
-        is Constructor<*> -> Api101Runtime.xposed.hook(
-            member as Constructor<Any>
-        ).intercept(hooker)
-        else -> error("Unsupported hook member: $member")
-    }
+    XposedRuntime.current.hookAfter(member, callback)
 }
 
 fun ShortXHookParam.logParamsOnDebug(logger: Logger = utilLogger, printStack: Boolean = false) {

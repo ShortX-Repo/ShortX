@@ -152,11 +152,16 @@ dependencies {
     implementation(libs.compose.material)
 
     implementation(libs.hiddenapibypass)
+    compileOnly(files("${rootProject.rootDir.path}/patch-xposed/patch-legacy/libs/api-82.jar"))
+    compileOnly(files("${rootProject.rootDir.path}/patch-xposed/patch-100/libs/libxposed100api.jar"))
     compileOnly(libs.libxposed.api)
 
     implementation(project(":ui"))
     implementation(project(":services"))
+    implementation(project(":patch-xposed:patch-legacy"))
     implementation(project(":patch-xposed:patch-main"))
+    implementation(project(":patch-xposed:patch-100"))
+    implementation(project(":patch-xposed:patch-101"))
     implementation(project(":core"))
     implementation(project(":core-api"))
 

@@ -16,14 +16,17 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.I18N
+import tornaco.apps.shortx.core.proto.common.UiThemeMode
 import tornaco.apps.shortx.ui.AttachableComposeView
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
+import tornaco.apps.shortx.ui.theme.normalized
 
 @SuppressLint("ViewConstructor")
 class DrawBoardView(
     context: Context,
     i18N: I18N,
+    private val themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System,
     onDetach: (AttachableComposeView) -> Unit
 ) : AttachableComposeView(context, i18N, onDetach) {
     @Composable
@@ -35,7 +38,7 @@ class DrawBoardView(
 
     @Composable
     private fun DrawBoardContent(onBack: () -> Unit) {
-        ShortXServiceUITheme {
+        ShortXServiceUITheme(themeMode.normalized()) {
             val controlBarState = rememberCommonDialogState()
             LaunchedEffect(controlBarState) {
                 delay(250)
@@ -73,4 +76,3 @@ class DrawBoardView(
         }
     }
 }
-

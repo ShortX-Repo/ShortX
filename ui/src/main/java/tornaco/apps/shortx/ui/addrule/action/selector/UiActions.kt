@@ -288,6 +288,14 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
         }
     )
 
+    val showThemeModeOnlyLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action>()
+            action?.let { addAction(it) }
+        }
+    )
+
     return { source ->
         when (source.clazz) {
             Action.ShowToast::class -> {
@@ -301,12 +309,24 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
             }
 
             Action.SelectScreenArea::class -> {
-                addAction(Action.SelectScreenArea())
+                showThemeModeOnlyLauncher.launch(
+                    newIntent(
+                        context = context,
+                        currentData = source.getActionAs<Action.SelectScreenArea>() ?: Action.SelectScreenArea(),
+                        clazz = ActionThemeModeOnlySelectorActivity::class.java
+                    )
+                )
                 true
             }
 
             Action.AreaScreenshot::class -> {
-                addAction(Action.AreaScreenshot())
+                showThemeModeOnlyLauncher.launch(
+                    newIntent(
+                        context = context,
+                        currentData = source.getActionAs<Action.AreaScreenshot>() ?: Action.AreaScreenshot(),
+                        clazz = ActionThemeModeOnlySelectorActivity::class.java
+                    )
+                )
                 true
             }
 
@@ -535,12 +555,24 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
             }
 
             Action.EnableUniversalCopy::class -> {
-                addAction(Action.EnableUniversalCopy())
+                showThemeModeOnlyLauncher.launch(
+                    newIntent(
+                        context = context,
+                        currentData = source.getActionAs<Action.EnableUniversalCopy>() ?: Action.EnableUniversalCopy(),
+                        clazz = ActionThemeModeOnlySelectorActivity::class.java
+                    )
+                )
                 true
             }
 
             Action.EnableViewIdViewer::class -> {
-                addAction(Action.EnableViewIdViewer())
+                showThemeModeOnlyLauncher.launch(
+                    newIntent(
+                        context = context,
+                        currentData = source.getActionAs<Action.EnableViewIdViewer>() ?: Action.EnableViewIdViewer(),
+                        clazz = ActionThemeModeOnlySelectorActivity::class.java
+                    )
+                )
                 true
             }
 
@@ -570,12 +602,24 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
             }
 
             Action.ShowDrawBoard::class -> {
-                addAction(Action.ShowDrawBoard())
+                showThemeModeOnlyLauncher.launch(
+                    newIntent(
+                        context = context,
+                        currentData = source.getActionAs<Action.ShowDrawBoard>() ?: Action.ShowDrawBoard(),
+                        clazz = ActionThemeModeOnlySelectorActivity::class.java
+                    )
+                )
                 true
             }
 
             Action.ShowClipboardView::class -> {
-                addAction(Action.ShowClipboardView())
+                showThemeModeOnlyLauncher.launch(
+                    newIntent(
+                        context = context,
+                        currentData = source.getActionAs<Action.ShowClipboardView>() ?: Action.ShowClipboardView(),
+                        clazz = ActionThemeModeOnlySelectorActivity::class.java
+                    )
+                )
                 true
             }
 

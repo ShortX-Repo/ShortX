@@ -35,14 +35,18 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.BuildPropInternal
+import tornaco.apps.shortx.core.proto.common.UiThemeMode
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
+import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
+import tornaco.apps.shortx.ui.theme.normalized
 
 @SuppressLint("ViewConstructor", "ClickableViewAccessibility")
 class UniversalCopyView(
     context: Context,
     onClick: (Float, Float) -> Unit,
+    private val themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System,
     private val onDetach: (UniversalCopyView) -> Unit
 ) :
     LinearLayout(context) {
@@ -91,9 +95,11 @@ class UniversalCopyView(
 
         val composeView = ComposeView(contextWrapper).apply {
             setContent {
-                CompositionLocalProvider(LocalContext provides appContext) {
-                    UCVContent(isLoading) {
-                        detach()
+                ShortXServiceUITheme(themeMode.normalized()) {
+                    CompositionLocalProvider(LocalContext provides appContext) {
+                        UCVContent(isLoading) {
+                            detach()
+                        }
                     }
                 }
             }

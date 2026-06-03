@@ -32,7 +32,8 @@ class ComposeOverlay(
     onTouchOutside = {
         onTouchOutside()
         false
-    }
+    },
+    themeMode = action.themeMode,
 ) {
 
     @Composable

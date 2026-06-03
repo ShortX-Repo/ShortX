@@ -5,6 +5,7 @@ import android.content.Context
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import tornaco.apps.shortx.core.IActionEvaluateListener
+import tornaco.apps.shortx.core.proto.common.UiThemeMode
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
@@ -19,6 +20,7 @@ data class FloatWindowSelectorState(
     val evaluatingActions: List<String> = emptyList(),
 
     val panelRadiusScale: Float = 1f,
+    val themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System,
     val isButtonListExpanded: Boolean = true
 )
 
@@ -27,6 +29,7 @@ fun FloatWindowSelectorState.toAction(): Action.ShowFloatWindow {
         id = this.id,
         tag = this.tag,
         panelRadiusScale = this.panelRadiusScale,
+        themeMode = this.themeMode,
         settings = this.buttons.map { it.toOverlayButtonSetting() }
     )
 }
@@ -67,6 +70,7 @@ class ShowFloatWindowSelectorViewModel @Inject constructor(@ApplicationContext c
                 buttons = settings.settings.map { it.toButton() },
                 tag = settings.tag,
                 panelRadiusScale = settings.panelRadiusScale,
+                themeMode = settings.themeMode,
                 evaluatingActions = shortXManager.getEvaluatingActions()
             )
         }
@@ -93,6 +97,10 @@ class ShowFloatWindowSelectorViewModel @Inject constructor(@ApplicationContext c
 
     fun setRadiusScale(scale: Float) {
         updateState { copy(panelRadiusScale = scale) }
+    }
+
+    fun setThemeMode(themeMode: UiThemeMode) {
+        updateState { copy(themeMode = themeMode) }
     }
 
     fun addButton() {

@@ -25,6 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.selector.ActionThemeModeSelector
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -107,6 +108,11 @@ private fun BaseSelectorActivity<Action.BiometricVerify>.Selector(currentAction:
                     vm.updateSubtitle(it)
                 }, showSymbolButton = true
             )
+            StandardSpacer()
+
+            ActionThemeModeSelector(themeMode = state.themeMode) {
+                vm.updateThemeMode(it)
+            }
             StandardSpacer()
             StandardSpacer()
 

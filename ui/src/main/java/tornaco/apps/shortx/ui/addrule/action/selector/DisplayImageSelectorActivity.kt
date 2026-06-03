@@ -20,8 +20,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import tornaco.apps.shortx.core.proto.common.ImageScaleType
+import tornaco.apps.shortx.core.proto.common.UiThemeMode
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.selector.ActionThemeModeSelector
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.FieldTitle
@@ -107,6 +109,12 @@ private fun BaseSelectorActivity<Action.DisplayImage>.Selector(currentAction: Ac
             }) {
                 Text(text = state.scaleType.displayName)
             }
+
+            SectionSpacer()
+
+            ActionThemeModeSelector(themeMode = state.themeMode) {
+                vm.setThemeMode(it)
+            }
         }
 
     }
@@ -118,6 +126,7 @@ data class DisplayImageSelectorState(
     val id: String = defaultNewActionId(),
     val url: String = "",
     val scaleType: ImageScaleType = ImageScaleType.IMAGE_SCALE_TYPE_FIT_CENTER,
+    val themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System,
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -136,7 +145,8 @@ class DisplayImageSelectorViewModel @Inject constructor(@ApplicationContext cont
                 copy(
                     id = it.id,
                     url = it.imageUrl,
-                    scaleType = it.scaleType
+                    scaleType = it.scaleType,
+                    themeMode = it.themeMode,
                 )
             }
         }
@@ -146,7 +156,8 @@ class DisplayImageSelectorViewModel @Inject constructor(@ApplicationContext cont
         return Action.DisplayImage(
             id = state.value.id,
             imageUrl = state.value.url,
-            scaleType = state.value.scaleType
+            scaleType = state.value.scaleType,
+            themeMode = state.value.themeMode,
         )
     }
 
@@ -160,5 +171,9 @@ class DisplayImageSelectorViewModel @Inject constructor(@ApplicationContext cont
         updateState {
             copy(scaleType = it)
         }
+    }
+
+    fun setThemeMode(it: UiThemeMode) {
+        updateState { copy(themeMode = it) }
     }
 }
