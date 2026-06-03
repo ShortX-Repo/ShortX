@@ -83,7 +83,7 @@ class MethodHookLogActivity : BaseActivity() {
                     topBar = {
                         ShortXTopAppBar(
                             modifier = Modifier,
-                            title = { Text(text = "Log") },
+                            title = {  },
                             navigationIcon = {
                                 IconButton(onClick = {
                                     finish()

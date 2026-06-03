@@ -81,7 +81,7 @@ class JSLogActivity : BaseActivity() {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = "Console output") },
+                        title = {  },
                         navigationIcon = {
                             IconButton(onClick = {
                                 finish()

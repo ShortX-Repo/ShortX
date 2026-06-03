@@ -85,7 +85,7 @@ class HttpLogActivity : BaseActivity() {
                     topBar = {
                         ShortXTopAppBar(
                             modifier = Modifier,
-                            title = { Text(text = "Http log") },
+                            title = {  },
                             navigationIcon = {
                                 IconButton(onClick = {
                                     finish()
