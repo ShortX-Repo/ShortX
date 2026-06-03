@@ -21,6 +21,7 @@ import tornaco.apps.shortx.core.proto.action.ScrollViewToLocation
 import tornaco.apps.shortx.core.proto.action.ActionSidebarButton
 import tornaco.apps.shortx.core.proto.action.ActionSidebarDismissBehavior
 import tornaco.apps.shortx.core.proto.action.ActionSidebarStyleSettings
+import tornaco.apps.shortx.core.proto.action.CloseActivityMode
 import tornaco.apps.shortx.core.proto.action.ShowListDialogDataType
 import tornaco.apps.shortx.core.proto.action.WriteGlobalVarOp
 import tornaco.apps.shortx.core.proto.common.ActionOnError
@@ -3864,6 +3865,35 @@ sealed interface Action : Parcelable {
         override val note: String = "",
 
         val stringPairs: List<StringPair>
+    ) : Action {
+        override fun clone(
+            id: String,
+            note: String,
+            isEnabled: Boolean,
+            actionOnError: ActionOnError,
+            contextData: List<ContextData>
+        ): Action {
+            return this.copy(
+                id = id,
+                note = note,
+                isEnabled = isEnabled,
+                actionOnError = actionOnError,
+                contextData = contextData
+            )
+        }
+    }
+
+    @Parcelize
+    data class CloseActivity(
+        override val id: String = defaultNewActionId(),
+        override val isEnabled: Boolean = true,
+        override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val contextData: List<ContextData> = emptyList(),
+        override val note: String = "",
+
+        val mode: CloseActivityMode = CloseActivityMode.CloseActivityMode_Focused,
+        val component: AppComponent = AppComponent.getDefaultInstance()
     ) : Action {
         override fun clone(
             id: String,

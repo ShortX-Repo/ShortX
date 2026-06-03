@@ -24,10 +24,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.settings.log.LogState
 import java.io.BufferedReader
@@ -57,8 +59,15 @@ class JSLogViewModel @Inject constructor(@ApplicationContext private val context
             kotlin.runCatching {
                 val logPath = shortXManager.getJSLogPath()
                 val fd = shortXManager.getJSLogFD()
-                val br = BufferedReader(InputStreamReader(FileInputStream(fd?.fileDescriptor)))
-                val lines = br.readLines()
+                val lines = withContext(Dispatchers.IO) {
+                    requireNotNull(fd) { "JavaScript log file is unavailable." }.use { pfd ->
+                        FileInputStream(pfd.fileDescriptor).use { fis ->
+                            BufferedReader(InputStreamReader(fis)).use { br ->
+                                br.readLines()
+                            }
+                        }
+                    }
+                }
                 _state.value =
                     _state.value.copy(
                         isLoading = false,

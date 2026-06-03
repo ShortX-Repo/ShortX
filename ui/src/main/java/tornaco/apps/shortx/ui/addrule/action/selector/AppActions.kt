@@ -7,6 +7,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import tornaco.apps.shortx.core.proto.action.CloseActivityMode
 import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
@@ -28,7 +29,10 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAppComponentSelector
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorResult
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MenuDialog
+import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.TextInputDialog
+import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
@@ -259,6 +263,49 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         startActivityComponentSelectorState.show(it.pkg)
     }
     SingleAppSelectorDialog(state = singleAppSelectorState)
+
+    val closeActivityComponentSelectorState = rememberAppComponentSelectorState(
+        types = listOf(ComponentType.Activity),
+        maxItemCount = 1,
+        onAppComponentSelected = { infoList ->
+            if (infoList.isNotEmpty()) {
+                addAction(
+                    Action.CloseActivity(
+                        mode = CloseActivityMode.CloseActivityMode_Component,
+                        component = infoList[0].component
+                    )
+                )
+            }
+        }
+    )
+    AppComponentSelectorDialog(closeActivityComponentSelectorState)
+
+    val closeActivityAppSelectorState = rememberSingleAppPkgSelectorState {
+        closeActivityComponentSelectorState.show(it.pkg)
+    }
+    SingleAppSelectorDialog(state = closeActivityAppSelectorState)
+
+    val closeActivitySelectorState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.action.close.activity"],
+        menuItems = listOf(
+            MenuDialogItem(
+                id = CloseActivityMode.CloseActivityMode_Focused.name,
+                title = LocalI18N.current["ui.action.close.activity.focused"]
+            ),
+            MenuDialogItem(
+                id = CloseActivityMode.CloseActivityMode_Component.name,
+                title = LocalI18N.current["ui.action.close.activity.component"]
+            )
+        ),
+        onItemSelected = { _, id ->
+            when (CloseActivityMode.valueOf(id)) {
+                CloseActivityMode.CloseActivityMode_Focused -> addAction(Action.CloseActivity())
+                CloseActivityMode.CloseActivityMode_Component -> closeActivityAppSelectorState.show()
+                CloseActivityMode.UNRECOGNIZED -> addAction(Action.CloseActivity())
+            }
+        }
+    )
+    MenuDialog(state = closeActivitySelectorState)
 
 
     val startActivityUrlSchemaDialogState = rememberStartActivityUrlSchemaDialogState {
@@ -533,6 +580,11 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.CloseActivity::class -> {
+                closeActivitySelectorState.show()
+                true
+            }
+
             Action.LaunchPinedItem::class -> {
                 pinedItemSelectorState.show()
                 true
@@ -575,6 +627,7 @@ fun AppActions(
         Action.AddAppsToPkgSetByPkg::class,
         Action.RemoveAppsFromPkgSetByPkg::class,
         Action.StopCurrentApp::class,
+        Action.CloseActivity::class,
         Action.StartAppProcess::class,
         Action.StartAppProcessByPkg::class,
         Action.SetAppInactive::class,
@@ -591,6 +644,7 @@ fun AppActions(
         Action.StopService::class,
         Action.RemoveTasks::class,
         Action.RemoveTasksByPkg::class,
+        Action.CloseActivity::class,
         Action.KillProcessByName::class,
         Action.AppShortcut::class,
         Action.LaunchPinedItem::class,

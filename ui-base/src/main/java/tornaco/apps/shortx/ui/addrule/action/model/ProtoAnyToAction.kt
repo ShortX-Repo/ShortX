@@ -1802,6 +1802,20 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.CloseActivity::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.CloseActivity::class.java
+            Action.CloseActivity(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                mode = data.mode,
+                component = data.component
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.RemoveNotificationForPackage::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.action.RemoveNotificationForPackage::class.java

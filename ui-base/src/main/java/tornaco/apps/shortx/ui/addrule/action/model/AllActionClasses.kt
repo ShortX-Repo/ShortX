@@ -118,6 +118,7 @@ val allActionClasses = listOf(
     Action.StartService::class,
     Action.RemoveTasks::class,
     Action.RemoveTasksByPkg::class,
+    Action.CloseActivity::class,
     Action.KillProcessByName::class,
     Action.RemoveNotificationForPackage::class,
     Action.RemoveNotificationForPackageByPkg::class,

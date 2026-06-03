@@ -13,7 +13,9 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
+import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.os.ParcelFileDescriptor
 import android.os.Process
 import android.os.ServiceManager
@@ -54,6 +56,7 @@ import tornaco.apps.shortx.core.settings.defaultDynamicShortcutSettings
 import tornaco.apps.shortx.core.store.WRITE_DELAY
 import tornaco.apps.shortx.core.toAppComponent
 import tornaco.apps.shortx.core.toComponentName
+import tornaco.apps.shortx.core.unKnownPkg
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.activityManager
@@ -78,6 +81,7 @@ import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
+import util.Reflections
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -99,6 +103,9 @@ class AppStateService(shortXContext: ShortXContext) :
 
     private val ams by lazy {
         ServiceRetriever(context.classLoader).getAMS()
+    }
+    private val atms by lazy {
+        ServiceRetriever(context.classLoader).getATMS()
     }
     private val activeServices by lazy {
         ServiceRetriever(context.classLoader).getActiveServices()
@@ -366,6 +373,86 @@ class AppStateService(shortXContext: ShortXContext) :
 
     fun currentResumedActivities(): List<AppComponent> {
         return activityState.currentResumedActivities.toList()
+    }
+
+    fun finishActivity(componentName: ComponentName, userId: Int): Boolean {
+        logger.d("finishActivity: $componentName u$userId")
+        return runClearCallingIdentity {
+            val activityRecord = activityState.findActivityRecord(componentName, userId)
+            if (activityRecord == null) {
+                logger.w("finishActivity, no ActivityRecord found for $componentName u$userId")
+                return@runClearCallingIdentity false
+            }
+
+            finishActivityRecord(activityRecord)
+        } == true
+    }
+
+    fun finishCurrentFocusedActivity(): Boolean {
+        val focusedApp = shortXContext.wm.currentFocusedWindowOwner
+        logger.d("finishCurrentFocusedActivity: ${focusedApp.appPkgToString()}")
+        if (focusedApp == unKnownPkg || focusedApp.pkgName == unKnownPkg.pkgName) {
+            logger.w("finishCurrentFocusedActivity, no focused window owner")
+            return false
+        }
+
+        return runClearCallingIdentity {
+            val activityRecord = activityState.findActivityRecord(focusedApp)
+            if (activityRecord == null) {
+                logger.w("finishCurrentFocusedActivity, no ActivityRecord found for ${focusedApp.appPkgToString()}")
+                return@runClearCallingIdentity false
+            }
+
+            finishActivityRecord(activityRecord)
+        } == true
+    }
+
+    private fun finishActivityRecord(activityRecord: Any): Boolean {
+        val token = getActivityToken(activityRecord)
+        if (token == null) {
+            logger.w("finishActivityRecord, no token found for $activityRecord")
+            return false
+        }
+
+        return finishActivityWithService(atms, token)
+                || finishActivityWithService(ams, token)
+    }
+
+    private fun getActivityToken(activityRecord: Any): IBinder? {
+        return runCatching {
+            Reflections.getObjectField(activityRecord, "token") as IBinder
+        }.getOrElse { tokenError ->
+            logger.e(tokenError, "getActivityToken .token error, fallback to .appToken")
+            runCatching {
+                Reflections.getObjectField(activityRecord, "appToken") as IBinder
+            }.getOrElse { appTokenError ->
+                logger.e(appTokenError, "getActivityToken .appToken error")
+                null
+            }
+        }
+    }
+
+    private fun finishActivityWithService(service: Any?, token: IBinder): Boolean {
+        if (service == null) return false
+        return runCatching {
+            when {
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.N -> {
+                    Reflections.callMethod(service, "finishActivity", token, 0, Intent(), 0)
+                }
+
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP -> {
+                    Reflections.callMethod(service, "finishActivity", token, 0, Intent(), false)
+                }
+
+                else -> {
+                    Reflections.callMethod(service, "finishActivity", token, 0, Intent())
+                }
+            }
+            true
+        }.getOrElse {
+            logger.e(it, "finishActivityWithService error, service: ${service.javaClass.name}")
+            false
+        }
     }
 
     fun onActivityResumed(
