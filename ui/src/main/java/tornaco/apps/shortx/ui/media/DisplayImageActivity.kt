@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
@@ -24,6 +23,7 @@ import tornaco.apps.shortx.ui.biometric.BiometricVerifyActivityStarter.EXTRA_REQ
 import tornaco.apps.shortx.ui.media.DisplayImageActivityStarter.EXTRA_IMAGE_SCALE_TYPE
 import tornaco.apps.shortx.ui.media.DisplayImageActivityStarter.EXTRA_THEME_MODE
 import tornaco.apps.shortx.ui.media.DisplayImageActivityStarter.EXTRA_IMAGE_URL
+import tornaco.apps.shortx.ui.theme.toNightMode
 import tornaco.apps.shortx.ui.util.GlideApp
 
 class DisplayImageActivity : AppCompatActivity() {
@@ -92,14 +92,6 @@ class DisplayImageActivity : AppCompatActivity() {
         themeMode = runCatching {
             UiThemeMode.valueOf(intent.getStringExtra(EXTRA_THEME_MODE).fallbackOnEmpty(UiThemeMode.UiThemeMode_System.name))
         }.getOrDefault(UiThemeMode.UiThemeMode_System)
-    }
-
-    private fun UiThemeMode.toNightMode(): Int {
-        return when (this) {
-            UiThemeMode.UiThemeMode_Light -> AppCompatDelegate.MODE_NIGHT_NO
-            UiThemeMode.UiThemeMode_Dark -> AppCompatDelegate.MODE_NIGHT_YES
-            UiThemeMode.UNRECOGNIZED, UiThemeMode.UiThemeMode_System -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-        }
     }
 
     override fun onStop() {

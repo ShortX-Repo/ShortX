@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.theme
 
 import android.content.Context
 import android.content.res.Configuration
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.proto.common.UiThemeMode
@@ -31,5 +32,13 @@ fun UiThemeMode.resolveDarkTheme(context: Context): Boolean {
             val nightMode = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
             nightMode == Configuration.UI_MODE_NIGHT_YES
         }
+    }
+}
+
+fun UiThemeMode.toNightMode(): Int {
+    return when (normalized()) {
+        UiThemeMode.UiThemeMode_Light -> AppCompatDelegate.MODE_NIGHT_NO
+        UiThemeMode.UiThemeMode_Dark -> AppCompatDelegate.MODE_NIGHT_YES
+        UiThemeMode.UNRECOGNIZED, UiThemeMode.UiThemeMode_System -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
     }
 }
