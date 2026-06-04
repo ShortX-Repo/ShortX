@@ -261,6 +261,10 @@ fun KClass<out Fact>.factContextData(customContextDataKey: CustomContextDataKey 
             dats<ContextDataMapping.OnStartDynamicShortcut>(customContextDataKey)
         }
 
+        Fact.IncomingShare::class -> {
+            dats<ContextDataMapping.IncomingShare>(customContextDataKey)
+        }
+
         else -> {
             emptyList()
         }

@@ -4,6 +4,7 @@ import android.content.ClipData
 import android.net.Uri
 import android.webkit.MimeTypeMap
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.clipboardManager
@@ -30,7 +31,10 @@ object WriteClipboard : Actor {
 
             if (filePath.isNotBlank()) {
                 val file = File(filePath)
-                val uri = Uri.fromFile(file)
+                require(file.exists() && file.isFile && file.canRead()) {
+                    "File is not readable: $filePath"
+                }
+                val uri = file.toShortXContentUri()
                 val ext = MimeTypeMap.getFileExtensionFromUrl(filePath)
                 val mimeType = if (ext.isNotBlank()) {
                     MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext)
@@ -53,4 +57,14 @@ object WriteClipboard : Actor {
             Actor.Res.EMPTY
         }
     }
+}
+
+private fun File.toShortXContentUri(): Uri {
+    val relativePath = canonicalPath.removePrefix(File.separator)
+    return Uri.Builder()
+        .scheme("content")
+        .authority(BuildPropInternal.APP_PACKAGE_NAME)
+        .appendPath("root")
+        .appendEncodedPath(Uri.encode(relativePath, "/"))
+        .build()
 }

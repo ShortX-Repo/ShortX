@@ -1,9 +1,11 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
+import android.content.ClipData
 import android.content.Intent
 import android.net.Uri
 import android.webkit.MimeTypeMap
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.RuleContextAndVars
@@ -35,7 +37,10 @@ object ShareContent : Actor {
 
                 if (filePath.isNotBlank()) {
                     val file = File(filePath)
-                    val uri = Uri.fromFile(file)
+                    require(file.exists() && file.isFile && file.canRead()) {
+                        "File is not readable: $filePath"
+                    }
+                    val uri = file.toShortXContentUri()
                     val ext = MimeTypeMap.getFileExtensionFromUrl(filePath)
                     val detectedMimeType = if (ext.isNotBlank()) {
                         MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext)
@@ -43,6 +48,7 @@ object ShareContent : Actor {
 
                     type = mimeTypeOverride.ifBlank { detectedMimeType ?: "*/*" }
                     putExtra(Intent.EXTRA_STREAM, uri)
+                    clipData = ClipData.newUri(androidContext.contentResolver, file.name, uri)
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
                     if (text.isNotBlank()) {
@@ -65,4 +71,14 @@ object ShareContent : Actor {
             Actor.Res.EMPTY
         }
     }
+}
+
+private fun File.toShortXContentUri(): Uri {
+    val relativePath = canonicalPath.removePrefix(File.separator)
+    return Uri.Builder()
+        .scheme("content")
+        .authority(BuildPropInternal.APP_PACKAGE_NAME)
+        .appendPath("root")
+        .appendEncodedPath(Uri.encode(relativePath, "/"))
+        .build()
 }
