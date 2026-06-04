@@ -152,6 +152,11 @@ fun miscFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolea
                 true
             }
 
+            Fact.IncomingShare::class -> {
+                addFact(Fact.IncomingShare())
+                true
+            }
+
             Fact.MethodHook::class -> {
                 methodHookLauncher.launch(
                     BaseSelectorActivity.newIntent(

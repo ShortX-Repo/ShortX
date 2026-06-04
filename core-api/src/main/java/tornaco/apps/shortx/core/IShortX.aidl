@@ -483,4 +483,6 @@ interface IShortX {
     String updateWorkdayCalendarCache(String payload);
     void insertClipboardTestData(int totalCount, int duplicatePercent);
 
+    void onIncomingShare(String sharedText, String sharedUri, String mimeType, String sourceAppPkg);
+
 }

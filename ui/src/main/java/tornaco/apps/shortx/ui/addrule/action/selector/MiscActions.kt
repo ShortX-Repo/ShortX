@@ -59,6 +59,11 @@ fun miscActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
     }
     TextInputDialog(state = backupFileDialogState)
 
+    val shareContentSelectorState = rememberShareContentSelectorState {
+        addAction(it)
+    }
+    ShareContentSelectorDialog(state = shareContentSelectorState)
+
     val context = LocalContext.current
 
     return { source ->
@@ -94,6 +99,11 @@ fun miscActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
                 true
             }
 
+            Action.ShareContent::class -> {
+                shareContentSelectorState.show(source.getActionAs<Action.ShareContent>())
+                true
+            }
+
             else -> {
                 false
             }
@@ -113,6 +123,7 @@ fun MiscActions(
     val actionItems = listOf(
         Action.TTS::class,
         Action.DownloadFile::class,
+        Action.ShareContent::class,
         Action.NoAction::class,
         Action.StopAllActions::class,
         Action.ExportBackup::class,

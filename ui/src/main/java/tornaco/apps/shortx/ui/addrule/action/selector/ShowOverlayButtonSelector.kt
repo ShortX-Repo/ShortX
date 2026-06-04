@@ -383,7 +383,7 @@ private fun Content(
                 FieldTitle(text = LocalI18N.current["ui.common.overlay.max.width"])
                 Text(text = state.maxWidth.toString())
                 Slider(
-                    valueRange = 20f..500f,
+                    valueRange = 20f..2000f,
                     value = state.maxWidth.toFloat(),
                     onValueChange = {
                         vm.setMaxWidth(it.roundToInt())
@@ -397,7 +397,7 @@ private fun Content(
                 FieldTitle(text = LocalI18N.current["ui.common.overlay.max.height"])
                 Text(text = state.maxHeight.toString())
                 Slider(
-                    valueRange = 20f..500f,
+                    valueRange = 20f..2000f,
                     value = state.maxHeight.toFloat(),
                     onValueChange = {
                         vm.setMaxHeight(it.roundToInt())
@@ -410,7 +410,7 @@ private fun Content(
                 FieldTitle(text = LocalI18N.current["ui.common.button.min.width"])
                 Text(text = state.buttonMinWidth.toString())
                 Slider(
-                    valueRange = 20f..500f,
+                    valueRange = 20f..2000f,
                     value = state.buttonMinWidth.toFloat(),
                     onValueChange = {
                         vm.setButtonMinWidth(it.roundToInt())

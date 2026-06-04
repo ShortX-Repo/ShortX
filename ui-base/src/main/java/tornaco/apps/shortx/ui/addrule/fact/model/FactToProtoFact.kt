@@ -44,6 +44,7 @@ import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DeepLinkCall
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.EdgeGestureStep
+import tornaco.apps.shortx.core.proto.fact.normalizedForSingleChildStep
 import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.fact.FlashLightStatusChanged
 import tornaco.apps.shortx.core.proto.fact.GlobalVarChanged
@@ -51,6 +52,7 @@ import tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen
 import tornaco.apps.shortx.core.proto.fact.HeadsetPlug
 import tornaco.apps.shortx.core.proto.fact.HotSpotStatusChanged
 import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
+import tornaco.apps.shortx.core.proto.fact.IncomingShare
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.fact.LightSensor
 import tornaco.apps.shortx.core.proto.fact.LocationStatusChanged
@@ -208,8 +210,8 @@ fun Fact.toProtoFact(
             
             // 如果有自定义矩形，则设置它
             customRect?.let { builder.setCustomRect(it) }
-            
-            builder.build()
+
+            builder.build().normalizedForSingleChildStep()
         }
 
         is Fact.CornerSwipeToCenter -> {
@@ -891,6 +893,14 @@ fun Fact.toProtoFact(
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
                 .setDeepLinkTag(deepLinkTag)
+                .build()
+        }
+
+        is Fact.IncomingShare -> {
+            IncomingShare.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
+                .setTag(overrideTag ?: tag)
+                .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
 

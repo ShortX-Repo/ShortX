@@ -52,10 +52,12 @@ import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DeepLinkCall
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
+import tornaco.apps.shortx.core.proto.fact.normalizedForSingleChildStep
 import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.fact.FlashLightStatusChanged
 import tornaco.apps.shortx.core.proto.fact.GlobalVarChanged
 import tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen
+import tornaco.apps.shortx.core.proto.fact.IncomingShare
 import tornaco.apps.shortx.core.proto.fact.HeadsetPlug
 import tornaco.apps.shortx.core.proto.fact.HotSpotStatusChanged
 import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
@@ -424,8 +426,8 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
         }
 
         register(EdgeGesture::class.java) { actual, rule ->
-            val actualN = (actual as EdgeGesture)
-            val ruleN = (rule as EdgeGesture)
+            val actualN = (actual as EdgeGesture).normalizedForSingleChildStep()
+            val ruleN = (rule as EdgeGesture).normalizedForSingleChildStep()
 
             val gestureMatches = actualN.gesture == ruleN.gesture
             val childStepsMatch = actualN.childStepsList == ruleN.childStepsList
@@ -683,6 +685,11 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
             val actualN = (actual as DeepLinkCall)
             val ruleN = (rule as DeepLinkCall)
             actualN.deepLinkTag == ruleN.deepLinkTag
+        }
+
+        register(IncomingShare::class.java) { _, _ ->
+            // Wildcard match - content is passed via context data
+            true
         }
 
         register(ConnectedWifiSignalLevelChanged::class.java) { actual, rule ->

@@ -1167,6 +1167,7 @@ message ReadClipboard {
 
 message WriteClipboard {
   string text = 1;
+  string filePath = 2;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
@@ -2341,6 +2342,19 @@ message ContinuousGesturePointer {
   float scrollScale = 7;
   int32 cancelRegionRadiusDp = 8;
   bool enableCenterActionSwitch = 9;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message ShareContent {
+  string text = 1;
+  string filePath = 2;
+  string mimeType = 3;
+  string chooserTitle = 4;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;

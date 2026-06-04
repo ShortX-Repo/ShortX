@@ -1785,6 +1785,12 @@ class ShortXManager(val service: IShortX) {
         }
     }
 
+    fun onIncomingShare(sharedText: String, sharedUri: String, mimeType: String, sourceAppPkg: String) {
+        invokeService(Unit) {
+            onIncomingShare(sharedText, sharedUri, mimeType, sourceAppPkg)
+        }
+    }
+
     fun getAllRingtones(): List<Ringtone> {
         return invokeService(emptyList()) {
             allRingtones.map {
