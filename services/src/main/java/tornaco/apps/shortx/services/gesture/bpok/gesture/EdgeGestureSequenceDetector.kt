@@ -1,6 +1,5 @@
 package tornaco.apps.shortx.services.gesture.bpok.gesture
 
-import android.graphics.PointF
 import android.os.Handler
 import android.os.SystemClock
 import android.view.MotionEvent
@@ -90,7 +89,7 @@ class EdgeGestureSequenceDetector(
     private val elapsedRealtime: () -> Long,
     private val dpToPx: (Int) -> Int,
     private val hintSink: EdgeGestureSequenceHintSink,
-    private val toAbsolutePortraitPoint: (Float, Float) -> PointF,
+    private val toAbsolutePortraitPoint: (Float, Float) -> Pair<Float, Float>,
     private val debugLog: (String) -> Unit,
 ) {
     constructor(handler: Handler, service: GestureBridge) : this(
@@ -99,7 +98,7 @@ class EdgeGestureSequenceDetector(
         elapsedRealtime = SystemClock::elapsedRealtime,
         dpToPx = { it._dp },
         hintSink = NoOpEdgeGestureSequenceHintSink,
-        toAbsolutePortraitPoint = { x, y -> PointF(x, y) },
+        toAbsolutePortraitPoint = { x, y -> x to y },
         debugLog = tornaco.apps.shortx.core.util.Logger("EdgeGestureSequence")::d,
     )
 
@@ -112,7 +111,7 @@ class EdgeGestureSequenceDetector(
         elapsedRealtime = SystemClock::elapsedRealtime,
         dpToPx = { it._dp },
         hintSink = NoOpEdgeGestureSequenceHintSink,
-        toAbsolutePortraitPoint = { x, y -> PointF(x, y) },
+        toAbsolutePortraitPoint = { x, y -> x to y },
         debugLog = {},
     )
 
@@ -126,7 +125,7 @@ class EdgeGestureSequenceDetector(
         elapsedRealtime = elapsedRealtime,
         dpToPx = { it._dp },
         hintSink = NoOpEdgeGestureSequenceHintSink,
-        toAbsolutePortraitPoint = { x, y -> PointF(x, y) },
+        toAbsolutePortraitPoint = { x, y -> x to y },
         debugLog = {},
     )
 
@@ -141,7 +140,7 @@ class EdgeGestureSequenceDetector(
         elapsedRealtime = elapsedRealtime,
         dpToPx = dpToPx,
         hintSink = NoOpEdgeGestureSequenceHintSink,
-        toAbsolutePortraitPoint = { x, y -> PointF(x, y) },
+        toAbsolutePortraitPoint = { x, y -> x to y },
         debugLog = {},
     )
 
@@ -157,7 +156,7 @@ class EdgeGestureSequenceDetector(
         elapsedRealtime = elapsedRealtime,
         dpToPx = dpToPx,
         hintSink = hintSink,
-        toAbsolutePortraitPoint = { x, y -> PointF(x, y) },
+        toAbsolutePortraitPoint = { x, y -> x to y },
         debugLog = tornaco.apps.shortx.core.util.Logger("EdgeGestureSequence")::d,
     )
 
@@ -174,7 +173,7 @@ class EdgeGestureSequenceDetector(
         elapsedRealtime = elapsedRealtime,
         dpToPx = dpToPx,
         hintSink = hintSink,
-        toAbsolutePortraitPoint = { x, y -> PointF(x, y) },
+        toAbsolutePortraitPoint = { x, y -> x to y },
         debugLog = debugLog,
     )
 
@@ -184,7 +183,7 @@ class EdgeGestureSequenceDetector(
         elapsedRealtime: () -> Long,
         dpToPx: (Int) -> Int,
         hintSink: EdgeGestureSequenceHintSink,
-        toAbsolutePortraitPoint: (Float, Float) -> PointF,
+        toAbsolutePortraitPoint: (Float, Float) -> Pair<Float, Float>,
     ) : this(
         scheduler = scheduler,
         service = service,
@@ -258,6 +257,7 @@ class EdgeGestureSequenceDetector(
     private var hoverStepCandidates: List<CurrentStepCandidate> = emptyList()
     private var directionalStepCandidates: List<CurrentStepCandidate> = emptyList()
     private var currentStepTypes: Set<EdgeGestureStepType> = emptySet()
+    private var coastingDirectionType: EdgeGestureStepType? = null
     private var cachedCurrentStepHintEnabled = false
     private var cachedCurrentStepHapticEnabled = false
     private var cachedHoverDurationMs = 0L
@@ -329,16 +329,16 @@ class EdgeGestureSequenceDetector(
         this.downX = downX
         this.downY = downY
         toAbsolutePortraitPoint(downX, downY).also {
-            this.downAbsoluteX = it.x
-            this.downAbsoluteY = it.y
+            this.downAbsoluteX = it.first
+            this.downAbsoluteY = it.second
         }
         this.anchorX = anchorX
         this.anchorY = anchorY
         toAbsolutePortraitPoint(anchorX, anchorY).also {
-            this.anchorAbsoluteX = it.x
-            this.anchorAbsoluteY = it.y
-            this.latestAbsoluteX = it.x
-            this.latestAbsoluteY = it.y
+            this.anchorAbsoluteX = it.first
+            this.anchorAbsoluteY = it.second
+            this.latestAbsoluteX = it.first
+            this.latestAbsoluteY = it.second
         }
         this.hoverAnchorX = anchorX
         this.hoverAnchorY = anchorY
@@ -348,6 +348,7 @@ class EdgeGestureSequenceDetector(
         this.candidates = candidates
         this.currentStepIndex = 0
         this.matchedSteps.clear()
+        this.coastingDirectionType = primaryGesture.toDirectionalStepType()
         refreshThresholdCache()
         refreshCurrentStepSnapshot()
         initializeStepPhase()
@@ -418,6 +419,7 @@ class EdgeGestureSequenceDetector(
     }
 
     private fun handleMove(): Boolean {
+        maybeAdvanceAnchorWhileCoasting()
         updateDirectionalIntentTracking()
 
         // hint 是连续更新的，用户在做当前步骤时可以实时看到进度和 ready 状态。
@@ -517,6 +519,7 @@ class EdgeGestureSequenceDetector(
             hoverAnchorX = latestX
             hoverAnchorY = latestY
             startedAtElapsed = elapsedRealtime()
+            coastingDirectionType = matchedStep.type.takeIf { directionFor(it) != null }
             refreshCurrentStepSnapshot()
             initializeStepPhase()
             emitCurrentStepHint()
@@ -778,6 +781,34 @@ class EdgeGestureSequenceDetector(
         }.map { it.candidate }
     }
 
+    private fun maybeAdvanceAnchorWhileCoasting() {
+        val directionType = coastingDirectionType ?: return
+        if (stepPhase is StepPhase.LockedDirection) return
+        if (currentStepCandidates.isEmpty()) return
+        if (currentStepTypes.contains(directionType)) return
+        if (hasDirectionalProgressForCurrentStep()) return
+
+        val direction = directionFor(directionType) ?: return
+        val metrics = directionalMotionMetrics(currentStepCandidates.first(), latestX, latestY) ?: return
+        if (metrics.projectedDistanceFor(directionType) <= 0f) return
+        if (metrics.dotFor(direction) < minDirectionDot()) return
+
+        anchorX = latestX
+        anchorY = latestY
+        anchorAbsoluteX = latestAbsoluteX
+        anchorAbsoluteY = latestAbsoluteY
+        debugLog(
+            "$DIAG_PREFIX anchor coast: stepIndex=$currentStepIndex, direction=$directionType, anchor=($anchorX,$anchorY)"
+        )
+    }
+
+    private fun hasDirectionalProgressForCurrentStep(): Boolean {
+        return directionalStepCandidates.any { candidate ->
+            val metrics = directionalMotionMetrics(candidate, latestX, latestY) ?: return@any false
+            metrics.projectedDistanceFor(candidate.step.type) > 0f
+        }
+    }
+
     private fun hoverDurationMs(): Long = cachedHoverDurationMs
 
     private fun hoverRadiusPx(): Float = cachedHoverRadiusPx
@@ -823,8 +854,8 @@ class EdgeGestureSequenceDetector(
 
     private fun directionalMotionMetricsAbsolute(x: Float, y: Float): DirectionalMotionMetrics? {
         val absolutePoint = toAbsolutePortraitPoint(x, y)
-        val deltaX = absolutePoint.x - anchorAbsoluteX
-        val deltaY = absolutePoint.y - anchorAbsoluteY
+        val deltaX = absolutePoint.first - anchorAbsoluteX
+        val deltaY = absolutePoint.second - anchorAbsoluteY
         val distance = hypot(deltaX.toDouble(), deltaY.toDouble()).toFloat()
         if (distance <= 0f) return null
         return DirectionalMotionMetrics(
@@ -962,6 +993,7 @@ class EdgeGestureSequenceDetector(
         hoverStepCandidates = emptyList()
         directionalStepCandidates = emptyList()
         currentStepTypes = emptySet()
+        coastingDirectionType = null
         cachedCurrentStepHintEnabled = false
         cachedCurrentStepHapticEnabled = false
     }
@@ -1016,8 +1048,8 @@ class EdgeGestureSequenceDetector(
 
     private fun updateLatestAbsoluteCoordinates(x: Float, y: Float) {
         toAbsolutePortraitPoint(x, y).also {
-            latestAbsoluteX = it.x
-            latestAbsoluteY = it.y
+            latestAbsoluteX = it.first
+            latestAbsoluteY = it.second
         }
     }
 
@@ -1027,6 +1059,16 @@ class EdgeGestureSequenceDetector(
             EdgeGestureStepType.SwipeRight -> 1f to 0f
             EdgeGestureStepType.SwipeUp -> 0f to -1f
             EdgeGestureStepType.SwipeDown -> 0f to 1f
+            else -> null
+        }
+    }
+
+    private fun Gesture.toDirectionalStepType(): EdgeGestureStepType? {
+        return when (this) {
+            Gesture.SwipeFromLeft -> EdgeGestureStepType.SwipeRight
+            Gesture.SwipeFromRight -> EdgeGestureStepType.SwipeLeft
+            Gesture.SwipeFromTop -> EdgeGestureStepType.SwipeDown
+            Gesture.SwipeFromBottom -> EdgeGestureStepType.SwipeUp
             else -> null
         }
     }

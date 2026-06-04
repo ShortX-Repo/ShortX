@@ -15,12 +15,14 @@ import tornaco.apps.shortx.services.gesture.bpok.gesture.ContinuousActionHandler
 import tornaco.apps.shortx.services.gesture.bpok.gesture.ContinuousGestureActionPayload
 import tornaco.apps.shortx.services.gesture.bpok.gesture.ContinuousGestureBinding
 import tornaco.apps.shortx.services.gesture.bpok.gesture.DetectedArea
+import tornaco.apps.shortx.services.gesture.bpok.gesture.AreaGestureProfile
 import tornaco.apps.shortx.services.gesture.bpok.gesture.EdgeGestureSequenceCandidate
 import tornaco.apps.shortx.services.gesture.bpok.gesture.EdgeGestureSequenceDetector
 import tornaco.apps.shortx.services.gesture.bpok.gesture.EdgeGestureSequenceHintSink
 import tornaco.apps.shortx.services.gesture.bpok.gesture.GestureBridge
 import tornaco.apps.shortx.services.gesture.bpok.gesture.GestureSequencePointerEvent
 import tornaco.apps.shortx.services.gesture.bpok.gesture.GestureSequenceScheduler
+import tornaco.apps.shortx.services.gesture.bpok.gesture.PredefinedEdgeCoordinateMode
 
 class EdgeGestureSequenceDetectorTest {
     companion object {
@@ -494,6 +496,45 @@ class EdgeGestureSequenceDetectorTest {
             EdgeGestureStepType.SwipeUp,
             EdgeGestureStepType.Hover,
         )
+        detector.isTracking() shouldBe false
+    }
+
+    @Test
+    fun should_fire_swipe_down_after_swipe_up_even_if_finger_coasts_up_first() {
+        val scheduler = FakeScheduler()
+        val service = FakeGestureBridge()
+        val clock = FakeClock()
+        val detector = EdgeGestureSequenceDetector(scheduler, service, clock::now, ::identityDpToPx)
+        val area = DetectedArea.PredefinedEdge(Edge.BottomAll)
+        val candidates = listOf(
+            EdgeGestureSequenceCandidate(
+                area = area,
+                rule = EdgeGesture.newBuilder()
+                    .setEdge(Edge.BottomAll)
+                    .setGesture(Gesture.SwipeFromBottom)
+                    .addChildSteps(step(EdgeGestureStepType.SwipeDown))
+                    .build()
+            )
+        )
+
+        detector.startTracking(
+            pointerId = 1,
+            primaryGesture = Gesture.SwipeFromBottom,
+            downX = 300f,
+            downY = 900f,
+            anchorX = 300f,
+            anchorY = 820f,
+            candidates = candidates,
+        ) shouldBe true
+
+        detector.onTouchEvent(moveEvent(pointerId = 1, x = 300f, y = 760f)) shouldBe true
+        service.firedEvents shouldHaveSize 0
+        detector.isTracking() shouldBe true
+
+        detector.onTouchEvent(moveEvent(pointerId = 1, x = 300f, y = 860f)) shouldBe true
+
+        service.firedEvents shouldHaveSize 1
+        service.firedEvents.single().childSteps.map { it.type } shouldBe listOf(EdgeGestureStepType.SwipeDown)
         detector.isTracking() shouldBe false
     }
 
