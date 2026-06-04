@@ -11,6 +11,7 @@ import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.EdgeGestureStep
 import tornaco.apps.shortx.core.proto.fact.EdgeGestureStepType
 import tornaco.apps.shortx.core.proto.fact.Gesture
+import tornaco.apps.shortx.core.proto.fact.normalizedForSingleChildStep
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.logAdapter
 import tornaco.apps.shortx.services.rule.fact.FactMatcher
@@ -114,5 +115,33 @@ class FactMatcherImplTest {
             .build()
 
         impl.match(actual, listOf(rule.pack_())) shouldBe FactMatcher.MatcherResult.NotMatch
+    }
+
+    @Test
+    fun should_match_edge_gesture_after_normalizing_legacy_extra_child_steps() {
+        val impl = FactMatcherImpl {
+            throw Error()
+        }
+        val firstStep = EdgeGestureStep.newBuilder()
+            .setType(EdgeGestureStepType.SwipeDown)
+            .build()
+        val hiddenLegacyStep = EdgeGestureStep.newBuilder()
+            .setType(EdgeGestureStepType.Hover)
+            .build()
+        val actual = EdgeGesture.newBuilder()
+            .setEdge(Edge.BottomAll)
+            .setGesture(Gesture.SwipeFromBottom)
+            .addChildSteps(firstStep)
+            .build()
+        val legacyRule = EdgeGesture.newBuilder()
+            .setTag("EdgeSequenceLegacy")
+            .setEdge(Edge.BottomAll)
+            .setGesture(Gesture.SwipeFromBottom)
+            .addChildSteps(firstStep)
+            .addChildSteps(hiddenLegacyStep)
+            .build()
+
+        impl.match(actual, listOf(legacyRule.pack_())) shouldBe FactMatcher.MatcherResult.Match("EdgeSequenceLegacy")
+        legacyRule.normalizedForSingleChildStep().childStepsList shouldBe listOf(firstStep)
     }
 }

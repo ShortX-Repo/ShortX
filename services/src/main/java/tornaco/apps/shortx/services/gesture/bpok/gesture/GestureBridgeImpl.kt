@@ -24,6 +24,7 @@ import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.EdgeGestureStep
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.proto.fact.ScreenCorner
+import tornaco.apps.shortx.core.proto.fact.normalizedForSingleChildStep
 import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.rule.DAObserver
 import tornaco.apps.shortx.core.rule.IPkgSetObserver
@@ -542,7 +543,8 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
             rule.factsList.forEach { protoFact ->
                 val isEG = protoFact is_ EdgeGesture::class.java
                 if (isEG) {
-                    val eg = protoFact unpack_ EdgeGesture::class.java
+                    val eg = (protoFact unpack_ EdgeGesture::class.java)
+                        .normalizedForSingleChildStep()
                     if (!eg.isDisabled) {
                         tempEnabledFacts.add(eg)
                         val continuousPayload = rule.actionsList.firstNotNullOfOrNull { actionProto ->
