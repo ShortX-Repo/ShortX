@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.foundation.layout.Column
@@ -5,22 +7,28 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.CommonDialogState
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
+import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
-import tornaco.apps.shortx.ui.base.TopBar
-import tornaco.apps.shortx.ui.base.LocalI18N
 
 
 class ShareContentSelectorState(
@@ -61,19 +69,27 @@ private fun ShareContentSelector(state: ShareContentSelectorState) {
     val i18N = LocalI18N.current
     Scaffold(
         topBar = {
-            TopBar(
-                title = i18N.get(key = "ui.action.share.content", fallback = "Share content"),
-                onClose = { state.dismiss() },
-                onConfirm = {
-                    state.onSelected(
-                        Action.ShareContent(
-                            text = state.text,
-                            filePath = state.filePath,
-                            mimeType = state.mimeType,
-                            chooserTitle = state.chooserTitle
+            ShortXTopAppBar(
+                title = { Text(text = i18N.get(key = "ui.action.share.content", fallback = "Share content")) },
+                navigationIcon = {
+                    IconButton(onClick = { state.dismiss() }) {
+                        RemixIcon(remixName = Remix.System.close_line)
+                    }
+                },
+                actions = {
+                    IconButton(onClick = {
+                        state.onSelected(
+                            Action.ShareContent(
+                                text = state.text,
+                                filePath = state.filePath,
+                                mimeType = state.mimeType,
+                                chooserTitle = state.chooserTitle
+                            )
                         )
-                    )
-                    state.dismiss()
+                        state.dismiss()
+                    }) {
+                        Icon(imageVector = Icons.Outlined.Check, contentDescription = "Done")
+                    }
                 }
             )
         }
@@ -87,7 +103,7 @@ private fun ShareContentSelector(state: ShareContentSelectorState) {
             ShortXTextField(
                 value = state.text,
                 onValueChange = { state.text = it },
-                label = { "Text (supports variables)" },
+                label = { Text("Text (supports variables)") },
                 showSymbolButton = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -97,7 +113,7 @@ private fun ShareContentSelector(state: ShareContentSelectorState) {
             ShortXTextField(
                 value = state.filePath,
                 onValueChange = { state.filePath = it },
-                label = { "File path (absolute, supports variables)" },
+                label = { Text("File path (absolute, supports variables)") },
                 showSymbolButton = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -107,7 +123,7 @@ private fun ShareContentSelector(state: ShareContentSelectorState) {
             ShortXTextField(
                 value = state.mimeType,
                 onValueChange = { state.mimeType = it },
-                label = { "MIME type (optional, auto-detected)" },
+                label = { Text("MIME type (optional, auto-detected)") },
                 showSymbolButton = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -117,7 +133,7 @@ private fun ShareContentSelector(state: ShareContentSelectorState) {
             ShortXTextField(
                 value = state.chooserTitle,
                 onValueChange = { state.chooserTitle = it },
-                label = { "Chooser title (optional)" },
+                label = { Text("Chooser title (optional)") },
                 showSymbolButton = true,
                 modifier = Modifier.fillMaxWidth()
             )

@@ -3,7 +3,6 @@ package tornaco.apps.shortx.services.rule.actor.impl
 import android.content.Intent
 import android.net.Uri
 import android.webkit.MimeTypeMap
-import androidx.core.content.FileProvider
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
@@ -36,11 +35,7 @@ object ShareContent : Actor {
 
                 if (filePath.isNotBlank()) {
                     val file = File(filePath)
-                    val uri = FileProvider.getUriForFile(
-                        androidContext,
-                        "tornaco.apps.shortx",
-                        file
-                    )
+                    val uri = Uri.fromFile(file)
                     val ext = MimeTypeMap.getFileExtensionFromUrl(filePath)
                     val detectedMimeType = if (ext.isNotBlank()) {
                         MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext)

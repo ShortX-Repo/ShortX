@@ -1,8 +1,8 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
 import android.content.ClipData
+import android.net.Uri
 import android.webkit.MimeTypeMap
-import androidx.core.content.FileProvider
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
@@ -30,18 +30,13 @@ object WriteClipboard : Actor {
 
             if (filePath.isNotBlank()) {
                 val file = File(filePath)
-                val uri = FileProvider.getUriForFile(
-                    androidContext,
-                    "tornaco.apps.shortx",
-                    file
-                )
+                val uri = Uri.fromFile(file)
                 val ext = MimeTypeMap.getFileExtensionFromUrl(filePath)
                 val mimeType = if (ext.isNotBlank()) {
                     MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext)
                 } else null
                 val label = data.note?.ifBlank { file.name } ?: file.name
                 val clipData = ClipData(
-                    androidContext.clipboardManager,
                     label,
                     arrayOf(mimeType ?: "*/*"),
                     ClipData.Item(uri)
