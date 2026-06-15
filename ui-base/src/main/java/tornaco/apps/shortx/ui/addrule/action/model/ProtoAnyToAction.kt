@@ -132,7 +132,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 customContextDataKey = data.customContextDataKey,
                 id = data.id,
                 note = data.note,
-                text = data.text
+                text = data.text,
+                filePath = data.filePath
             )
         }
 
@@ -2854,6 +2855,22 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 useSlim = data.useSlim,
                 separator = data.separator,
                 outputType = data.outputType,
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.ShareContent::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.ShareContent::class.java
+            Action.ShareContent(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                text = data.text,
+                filePath = data.filePath,
+                mimeType = data.mimeType,
+                chooserTitle = data.chooserTitle
             )
         }
 

@@ -384,6 +384,10 @@ fun labelAndDescriptionForActionSelector(
         Action.WebDavGet::class -> i18N["ui.action.web.dav.get"] to null
         Action.WebDavPut::class -> i18N["ui.action.web.dav.put"] to null
         Action.RequestAudioFocus::class -> i18N["ui.action.request.audio.focus"] to null
+        Action.ShareContent::class -> i18N.get(
+            key = "ui.action.share.content",
+            fallback = "Share content"
+        ) to null
 
         Action.SwitchCase::class -> i18N.get(
             key = "ui.action.switch.case",
@@ -1568,6 +1572,12 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             },
             action.url,
             action.localFilePath
+        )
+
+        is Action.ShareContent -> listOfNotNull(
+            i18N.get(key = "ui.action.share.content", fallback = "Share content"),
+            action.text.ifBlank { null },
+            action.filePath.ifBlank { null }
         )
 
         is Action.PluginAction -> listOfNotNull("PLUGIN NOT SUPPORTED.")

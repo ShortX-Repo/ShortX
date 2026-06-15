@@ -55,7 +55,7 @@ enum class EdgeGestureStepModel {
     LongTap,
 }
 
-fun EdgeGestureStepType.toModel(): EdgeGestureStepModel {
+fun EdgeGestureStepType.toModelOrNull(): EdgeGestureStepModel? {
     return when (this) {
         EdgeGestureStepType.SwipeLeft -> EdgeGestureStepModel.SwipeLeft
         EdgeGestureStepType.SwipeRight -> EdgeGestureStepModel.SwipeRight
@@ -65,7 +65,13 @@ fun EdgeGestureStepType.toModel(): EdgeGestureStepModel {
         EdgeGestureStepType.SingleTapStep -> EdgeGestureStepModel.SingleTap
         EdgeGestureStepType.DoubleTapStep -> EdgeGestureStepModel.DoubleTap
         EdgeGestureStepType.LongTapStep -> EdgeGestureStepModel.LongTap
-        EdgeGestureStepType.UNRECOGNIZED -> EdgeGestureStepModel.SwipeUp
+        EdgeGestureStepType.UNRECOGNIZED -> null
+    }
+}
+
+fun EdgeGestureStepType.toModel(): EdgeGestureStepModel {
+    return requireNotNull(toModelOrNull()) {
+        "Unsupported edge gesture step type: $this"
     }
 }
 
@@ -2378,6 +2384,32 @@ sealed interface Fact : Parcelable {
         override val id: String = defaultNewFactId(),
 
         val deepLinkTag: String
+    ) : Fact {
+        override fun clone(
+            id: String,
+            note: String,
+            tag: String,
+            isDisabled: Boolean,
+            customContextDataKey: CustomContextDataKey
+        ): Fact {
+            return copy(
+                id = id,
+                note = note,
+                tag = tag,
+                isDisabled = isDisabled,
+                customContextDataKey = customContextDataKey
+            )
+        }
+    }
+
+    // Fact class
+    @Parcelize
+    data class IncomingShare(
+        override val note: String = "",
+        override val isDisabled: Boolean = false,
+        override val tag: String = "",
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val id: String = defaultNewFactId()
     ) : Fact {
         override fun clone(
             id: String,

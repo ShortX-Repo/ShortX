@@ -71,6 +71,7 @@ import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.core.proto.fact.CornerSwipeToCenter
 import tornaco.apps.shortx.core.proto.fact.DeepLinkCall
+import tornaco.apps.shortx.core.proto.fact.IncomingShare
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.Gesture
@@ -555,6 +556,24 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                 DeepLinkCall.newBuilder().setDeepLinkTag(tag).build()
             ) {
                 emptyMap()
+            }
+        }
+
+        override fun onIncomingShare(sharedText: String, sharedUri: String, mimeType: String, sourceAppPkg: String) {
+            enforceCallingPermissions()
+            shortXContext.rule.publishFact(
+                "onIncomingShare",
+                IncomingShare.newBuilder()
+                    .setMimeType(mimeType)
+                    .setSourceAppPkg(sourceAppPkg)
+                    .build()
+            ) {
+                mapOf(
+                    "sharedText" to sharedText,
+                    "sharedUri" to sharedUri,
+                    "sharedMimeType" to mimeType,
+                    "sourceAppPkg" to sourceAppPkg
+                )
             }
         }
 

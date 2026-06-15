@@ -189,6 +189,7 @@ import tornaco.apps.shortx.core.proto.action.WakeupScreen
 import tornaco.apps.shortx.core.proto.action.WebDavGet
 import tornaco.apps.shortx.core.proto.action.WebDavList
 import tornaco.apps.shortx.core.proto.action.WebDavPut
+import tornaco.apps.shortx.core.proto.action.ShareContent
 import tornaco.apps.shortx.core.proto.action.WebSocketConnect
 import tornaco.apps.shortx.core.proto.action.WebSocketSend
 import tornaco.apps.shortx.core.proto.action.WhileLoop
@@ -1389,6 +1390,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setNote(overrideNote ?: note)
                 .setText(text)
+                .setFilePath(filePath)
                 .build()
         }
 
@@ -2567,6 +2569,19 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .build()
         }
 
+        is Action.ShareContent -> {
+            ShareContent.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setText(text)
+                .setFilePath(filePath)
+                .setMimeType(mimeType)
+                .setChooserTitle(chooserTitle)
+                .build()
+        }
 
         is Action.NoAction -> {
             NoAction.newBuilder()

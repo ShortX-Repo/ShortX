@@ -6,6 +6,7 @@ import tornaco.apps.shortx.core.alarm.toFixedBy
 import tornaco.apps.shortx.core.proto.common.CustomContextMenu
 import tornaco.apps.shortx.core.proto.common.DynamicShortcut
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
+import tornaco.apps.shortx.core.proto.fact.normalizedForSingleChildStep
 import tornaco.apps.shortx.core.proto.fact.NodeMatcherText
 import tornaco.apps.shortx.core.proto.fact.NodeMatcherViewId
 import tornaco.apps.shortx.core.rule.ProtoAny
@@ -67,12 +68,13 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.EdgeGesture::class.java -> {
-            val data = this unpack_ tornaco.apps.shortx.core.proto.fact.EdgeGesture::class.java
+            val data = (this unpack_ tornaco.apps.shortx.core.proto.fact.EdgeGesture::class.java)
+                .normalizedForSingleChildStep()
             val models = (data.appsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
             Fact.EdgeGesture(
                 edge = data.edge,
                 gesture = data.gesture,
-                childSteps = data.childStepsList.map { it.type.toModel() },
+                childSteps = data.childStepsList.mapNotNull { it.type.toModelOrNull() },
                 apps = models.first,
                 pkgSets = models.second,
                 customRect = if (data.hasCustomRect()) data.customRect else null,
@@ -1184,6 +1186,19 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 isDisabled = data.isDisabled,
                 tag = data.tag,
                 deepLinkTag = data.deepLinkTag
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.fact.IncomingShare::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.IncomingShare::class.java
+
+            Fact.IncomingShare(
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                isDisabled = data.isDisabled,
+                tag = data.tag
             )
         }
 

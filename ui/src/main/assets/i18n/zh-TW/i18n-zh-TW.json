@@ -265,6 +265,7 @@
   "ui.fact.has.found.node.on.screen.timeout.description": "設定一個頁面內容檢測的逾時時間（毫秒），如果超過逾時時間依然沒有匹配到目標視圖，則會停止檢測；輸入負數表示不設定逾時時間，持續檢測",
   "ui.fact.deeplink.call": "Deeplink",
   "ui.fact.deeplink.call.message": "請輸入deeplink的tag，你可以在其他App裡調用ShortX的deeplink來觸發這個觸發器：{url}",
+  "ui.fact.incoming.share": "接收分享",
   "ui.fact.screen.off": "螢幕關閉",
   "ui.fact.screen.on": "螢幕開啟",
   "ui.fact.screen.user.present": "螢幕解鎖",

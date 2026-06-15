@@ -104,12 +104,24 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     }
     ContinuousBrightnessDialog(state = continuousBrightnessDialogState)
 
+    var writeClipboardText by remember { mutableStateOf("") }
+
+    val writeClipboardFilePathDialogState = rememberTextInputState(
+        title = "File Path (Optional)",
+        message = "Enter absolute path to file or image",
+        inputValidator = { InputValidateResult.OK },
+        onSelected = {
+            addAction(Action.WriteClipboard(text = writeClipboardText, filePath = it))
+        })
+    TextInputDialog(state = writeClipboardFilePathDialogState)
+
     val writeClipboardSelectorDialogState = rememberTextInputState(
         title = LocalI18N.current["ui.action.write.clipboard"],
         message = null,
         inputValidator = { InputValidateResult.OK },
         onSelected = {
-            addAction(Action.WriteClipboard(text = it))
+            writeClipboardText = it
+            writeClipboardFilePathDialogState.show("")
         })
     TextInputDialog(state = writeClipboardSelectorDialogState)
 
@@ -573,7 +585,9 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
             }
 
             Action.WriteClipboard::class -> {
-                writeClipboardSelectorDialogState.show(source.getActionAs<Action.WriteClipboard>()?.text)
+                val current = source.getActionAs<Action.WriteClipboard>()
+                writeClipboardText = current?.text ?: ""
+                writeClipboardSelectorDialogState.show(current?.text)
                 true
             }
 

@@ -25,6 +25,7 @@ fun MiscFacts(
     val items = mutableListOf(
         Fact.OnQSTileClick::class,
         Fact.DeepLinkCall::class,
+        Fact.IncomingShare::class,
         Fact.GlobalVarChanged::class,
         Fact.BackNavStart::class,
         Fact.BackNavDone::class,

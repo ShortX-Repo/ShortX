@@ -115,6 +115,16 @@
 
         </activity>
         <activity
+            android:name="tornaco.apps.shortx.ui.share.ShareReceiverActivity"
+            android:exported="true"
+            android:label="@string/ui.fact.incoming.share">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="*/*" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name="tornaco.apps.shortx.ui.gvar.GlobalVarListActivity"
             android:exported="false" />
         <activity

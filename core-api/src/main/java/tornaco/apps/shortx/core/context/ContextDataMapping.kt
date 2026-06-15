@@ -525,4 +525,12 @@ object ContextDataMapping {
         pkgName("Package name of the Dynamic shortcut start event"),
         userId("User id of the Dynamic shortcut start event"),
     }
+
+    @DoNotStrip
+    enum class IncomingShare(val description: String) {
+        sharedText("The shared text content"),
+        sharedUri("The shared URI (content:// or file://)"),
+        sharedMimeType("The MIME type of the shared content"),
+        sourceAppPkg("The package name of the app that shared the content"),
+    }
 }

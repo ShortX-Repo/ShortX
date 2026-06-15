@@ -288,6 +288,10 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
             i18n["ui.fact.deeplink.call"] to null
         }
 
+        Fact.IncomingShare::class -> {
+            i18n.get(key = "ui.fact.incoming.share", fallback = "Incoming share") to null
+        }
+
         Fact.Logcat::class -> {
             i18n["ui.fact.logcat"] to null
         }
@@ -925,6 +929,12 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
             listOf(
                 i18N["ui.fact.deeplink.call"],
                 fact.deepLinkTag
+            )
+        }
+
+        is Fact.IncomingShare -> {
+            listOf(
+                i18N.get(key = "ui.fact.incoming.share", fallback = "Incoming share")
             )
         }
 

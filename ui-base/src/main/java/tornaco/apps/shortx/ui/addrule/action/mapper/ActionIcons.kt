@@ -756,6 +756,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Media.volume_down_fill
         }
 
+        Action.ShareContent::class -> {
+            Remix.Arrows.arrow_right_up_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }
