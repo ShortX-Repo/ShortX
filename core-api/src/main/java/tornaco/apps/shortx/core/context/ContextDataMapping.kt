@@ -222,6 +222,12 @@ object ContextDataMapping {
     }
 
     @DoNotStrip
+    enum class TakePhoto(val description: String) {
+        photoFilePath("The file path of the photo"),
+        photoFileUri("The file uri of the photo"),
+    }
+
+    @DoNotStrip
     enum class ShellCommand(val description: String) {
         shellOut("Output message of the shell command"),
         shellErr("Error message of the shell command, error will redirect to out by default."),

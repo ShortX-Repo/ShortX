@@ -760,6 +760,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Arrows.arrow_right_up_fill
         }
 
+        Action.TakePhoto::class -> {
+            Remix.Hardware.camera_one
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

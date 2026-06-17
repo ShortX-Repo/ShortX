@@ -2583,6 +2583,17 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .build()
         }
 
+        is Action.TakePhoto -> {
+            tornaco.apps.shortx.core.proto.action.TakePhoto.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setTargetFilePath(targetFilePath)
+                .build()
+        }
+
         is Action.NoAction -> {
             NoAction.newBuilder()
                 .setId(overrideId ?: id)

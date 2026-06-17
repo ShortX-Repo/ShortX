@@ -120,6 +120,11 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
     })
     InjectGestureRecordSelectorDialog(state = injectGestureSelectorState)
 
+    val takePhotoSelectorState = rememberTakePhotoSelectorState {
+        addAction(it)
+    }
+    TakePhotoSelectorDialog(state = takePhotoSelectorState)
+
     val showTextFieldSelectorState = rememberShowTextFieldDialogSettingsDialogState {
         addAction(it)
     }
@@ -327,6 +332,11 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                         clazz = ActionThemeModeOnlySelectorActivity::class.java
                     )
                 )
+                true
+            }
+
+            Action.TakePhoto::class -> {
+                takePhotoSelectorState.show(source.getActionAs<Action.TakePhoto>())
                 true
             }
 
@@ -652,6 +662,7 @@ fun UiActions(
         Action.TakeScreenshot::class,
         Action.AreaScreenshot::class,
         Action.SelectScreenArea::class,
+        Action.TakePhoto::class,
         Action.ShowToast::class,
         Action.ShowDanmu::class,
         Action.ShowStatusBarChip::class,

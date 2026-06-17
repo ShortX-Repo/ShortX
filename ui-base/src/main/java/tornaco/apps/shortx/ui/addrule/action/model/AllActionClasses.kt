@@ -204,4 +204,5 @@ val allActionClasses = listOf(
     Action.RequestAudioFocus::class,
     Action.NoAction::class,
     Action.ShareContent::class,
+    Action.TakePhoto::class,
 )

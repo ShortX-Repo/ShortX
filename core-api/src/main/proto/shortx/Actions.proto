@@ -2362,3 +2362,13 @@ message ShareContent {
   string note = 99;
   string id = 100;
 }
+
+message TakePhoto {
+  string targetFilePath = 1;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}

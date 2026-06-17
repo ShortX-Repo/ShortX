@@ -50,6 +50,14 @@
             android:theme="@style/UiTheme.MaterialTransparent" />
 
         <activity
+            android:name="tornaco.apps.shortx.ui.takephoto.TakePhotoActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:taskAffinity="ui.takephoto.TakePhotoActivity"
+            android:theme="@style/UiTheme.MaterialTransparent" />
+
+        <activity
             android:name=".shortcut.ActionShortcutActivity"
             android:excludeFromRecents="true"
             android:exported="true"

@@ -5945,6 +5945,35 @@ sealed interface Action : Parcelable {
             )
         }
     }
+
+    @Parcelize
+    data class TakePhoto(
+        override val id: String = defaultNewActionId(),
+        override val isEnabled: Boolean = true,
+        override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val contextData: List<ContextData> = dats<ContextDataMapping.TakePhoto>(
+            customContextDataKey
+        ),
+        override val note: String = "",
+        val targetFilePath: String = ""
+    ) : Action {
+        override fun clone(
+            id: String,
+            note: String,
+            isEnabled: Boolean,
+            actionOnError: ActionOnError,
+            contextData: List<ContextData>
+        ): Action {
+            return this.copy(
+                id = id,
+                note = note,
+                isEnabled = isEnabled,
+                actionOnError = actionOnError,
+                contextData = contextData
+            )
+        }
+    }
 }
 
 @Parcelize

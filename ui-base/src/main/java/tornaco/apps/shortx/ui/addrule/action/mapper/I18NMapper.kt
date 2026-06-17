@@ -389,6 +389,14 @@ fun labelAndDescriptionForActionSelector(
             fallback = "Share content"
         ) to null
 
+        Action.TakePhoto::class -> i18N.get(
+            key = "ui.action.take.photo",
+            fallback = "Take photo"
+        ) to i18N.get(
+            key = "ui.action.take.photo.desc",
+            fallback = "Take a photo using the system camera"
+        )
+
         Action.SwitchCase::class -> i18N.get(
             key = "ui.action.switch.case",
             fallback = "Switch case"
@@ -1578,6 +1586,11 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             i18N.get(key = "ui.action.share.content", fallback = "Share content"),
             action.text.ifBlank { null },
             action.filePath.ifBlank { null }
+        )
+
+        is Action.TakePhoto -> listOfNotNull(
+            i18N.get(key = "ui.action.take.photo", fallback = "Take photo"),
+            action.targetFilePath.ifBlank { null }
         )
 
         is Action.PluginAction -> listOfNotNull("PLUGIN NOT SUPPORTED.")
