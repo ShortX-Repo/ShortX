@@ -112,6 +112,7 @@ fun SettingsScreen(
     back: () -> Unit,
     goToPkgSetList: () -> Unit,
     goToGV: () -> Unit,
+    goToSystemEnv: () -> Unit,
     goToFunctionList: () -> Unit,
     goToShellCommandHelp: () -> Unit,
     goToDanmuUISettings: () -> Unit,
@@ -225,6 +226,7 @@ fun SettingsScreen(
                         vm = vm,
                         goToPkgSetList = goToPkgSetList,
                         goToGV = goToGV,
+                        goToSystemEnv = goToSystemEnv,
                         goToFunctionList = goToFunctionList,
                         goToDanmuUISettings = goToDanmuUISettings,
                         goToStatusBarClipUISettings = goToStatusBarClipUISettings,
@@ -704,6 +706,7 @@ private fun generalSettings(
     vm: SettingsViewModel,
     goToPkgSetList: () -> Unit,
     goToGV: () -> Unit,
+    goToSystemEnv: () -> Unit,
     goToFunctionList: () -> Unit,
     goToDanmuUISettings: () -> Unit,
     goToStatusBarClipUISettings: () -> Unit,
@@ -735,6 +738,15 @@ private fun generalSettings(
             summary = LocalI18N.current["ui.global.var.desc"],
             onClick = {
                 goToGV()
+            }
+        ),
+
+        Preference.TextPreference(
+            icon = Remix.Device.cpu_fill,
+            title = LocalI18N.current["ui.system.env"],
+            summary = LocalI18N.current["ui.system.env"],
+            onClick = {
+                goToSystemEnv()
             }
         ),
 

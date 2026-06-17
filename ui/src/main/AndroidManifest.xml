@@ -131,6 +131,9 @@
             android:name="tornaco.apps.shortx.ui.gvar.GlobalVarDetailActivity"
             android:exported="false" />
         <activity
+            android:name="tornaco.apps.shortx.ui.contextdata.ContextVarListActivity"
+            android:exported="false" />
+        <activity
             android:name="tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsActivity"
             android:exported="false" />
         <activity
