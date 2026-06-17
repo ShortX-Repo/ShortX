@@ -1929,6 +1929,12 @@ class ShortXManager(val service: IShortX) {
         }
     }
 
+    fun resolveSystemEnvValues(rawKeys: List<String>): List<String> {
+        return invokeService(emptyList()) {
+            resolveSystemEnvValues(rawKeys)
+        }
+    }
+
     fun isLightBarTransitionsIconsDark(): Boolean {
         return invokeService(false) {
             isLightBarTransitionsIconsDark

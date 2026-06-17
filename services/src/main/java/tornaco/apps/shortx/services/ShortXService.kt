@@ -1693,6 +1693,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }
         }
 
+        override fun resolveSystemEnvValues(rawKeys: List<String?>): List<String> {
+            return rawKeys.map { key ->
+                if (key.isNullOrBlank()) "" else {
+                    SystemEnvInit.resolveEnvValue(context, shortXContext, key) ?: ""
+                }
+            }
+        }
+
         override fun setCustomSU(path: String?) {
             shortXContext.shell.setCustomSU(path)
         }

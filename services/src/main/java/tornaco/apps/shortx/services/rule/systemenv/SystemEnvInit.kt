@@ -1,14 +1,24 @@
 package tornaco.apps.shortx.services.rule.systemenv
 
 import android.content.Context
+import android.media.AudioManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.BatteryManager
+import android.os.Build
+import android.os.SystemClock
 import android.provider.Settings
 import tornaco.apps.shortx.core.context.SystemEnv
 import tornaco.apps.shortx.core.util.DateUtils
+import tornaco.apps.shortx.core.util.audioManager
+import tornaco.apps.shortx.core.util.batteryManager
 import tornaco.apps.shortx.core.util.clipboardManager
+import tornaco.apps.shortx.core.util.connectivityManager
+import tornaco.apps.shortx.core.util.notificationManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.fact.trigger.BatteryTemperatureTrigger
 import kotlin.math.roundToInt
+import kotlin.random.Random
 
 object SystemEnvInit {
     fun install(context: Context, shortXContext: ShortXContext) {
@@ -22,6 +32,13 @@ object SystemEnvInit {
                 }
             })
         }
+    }
+
+    fun resolveEnvValue(context: Context, shortXContext: ShortXContext, rawKey: String): String? {
+        val env = Env.entries.firstOrNull { it.key == rawKey } ?: return null
+        return runCatching {
+            env.getValue(GetValueInput(context, shortXContext, null))
+        }.getOrElse { null }
     }
 
     fun getAllEnv(): List<tornaco.apps.shortx.core.proto.common.SystemEnv> {
@@ -161,5 +178,144 @@ enum class Env(
         getValue = {
             (BatteryTemperatureTrigger.temperature.value / 10f).roundToInt().toString()
         }
+    ),
+    NetworkType(
+        displayName = "$I18N_KEY_PREFIX.network.type",
+        key = "NetworkType",
+        getValue = {
+            val cm = context.connectivityManager
+            val network = cm.activeNetwork
+            if (network == null) {
+                "disconnected"
+            } else {
+                val caps = cm.getNetworkCapabilities(network)
+                when {
+                    caps == null -> "unknown"
+                    caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> "wifi"
+                    caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> "cellular"
+                    caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> "ethernet"
+                    caps.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH) -> "bluetooth"
+                    else -> "other"
+                }
+            }
+        }
+    ),
+    WifiSSID(
+        displayName = "$I18N_KEY_PREFIX.wifi.ssid",
+        key = "WifiSSID",
+        getValue = {
+            shortXContext.network.connectedWifiSSID
+        }
+    ),
+    IsConnected(
+        displayName = "$I18N_KEY_PREFIX.is.connected",
+        key = "IsConnected",
+        getValue = {
+            (context.connectivityManager.activeNetwork != null).toString()
+        }
+    ),
+    RingerMode(
+        displayName = "$I18N_KEY_PREFIX.ringer.mode",
+        key = "RingerMode",
+        getValue = {
+            when (context.audioManager.ringerMode) {
+                AudioManager.RINGER_MODE_SILENT -> "silent"
+                AudioManager.RINGER_MODE_VIBRATE -> "vibrate"
+                AudioManager.RINGER_MODE_NORMAL -> "normal"
+                else -> "unknown"
+            }
+        }
+    ),
+    DndMode(
+        displayName = "$I18N_KEY_PREFIX.dnd.mode",
+        key = "DndMode",
+        getValue = {
+            val filter = try {
+                context.notificationManager.currentInterruptionFilter
+            } catch (_: Exception) {
+                0
+            }
+            when (filter) {
+                android.app.NotificationManager.INTERRUPTION_FILTER_NONE -> "none"
+                android.app.NotificationManager.INTERRUPTION_FILTER_PRIORITY -> "priority"
+                android.app.NotificationManager.INTERRUPTION_FILTER_ALARMS -> "alarms"
+                android.app.NotificationManager.INTERRUPTION_FILTER_ALL -> "all"
+                else -> "off"
+            }
+        }
+    ),
+    MediaVolume(
+        displayName = "$I18N_KEY_PREFIX.media.volume",
+        key = "MediaVolume",
+        getValue = {
+            context.audioManager.getStreamVolume(AudioManager.STREAM_MUSIC).toString()
+        }
+    ),
+    IsCharging(
+        displayName = "$I18N_KEY_PREFIX.is.charging",
+        key = "IsCharging",
+        getValue = {
+            context.batteryManager.isCharging.toString()
+        }
+    ),
+    ScreenBrightness(
+        displayName = "$I18N_KEY_PREFIX.screen.brightness",
+        key = "ScreenBrightness",
+        getValue = {
+            Settings.System.getInt(
+                context.contentResolver,
+                Settings.System.SCREEN_BRIGHTNESS
+            ).toString()
+        }
+    ),
+    DeviceUpTime(
+        displayName = "$I18N_KEY_PREFIX.device.uptime",
+        key = "DeviceUpTime",
+        getValue = {
+            (SystemClock.elapsedRealtime() / 1000).toString()
+        },
+        tip = "$I18N_KEY_PREFIX.device.uptime.tip"
+    ),
+    DeviceModel(
+        displayName = "$I18N_KEY_PREFIX.device.model",
+        key = "DeviceModel",
+        getValue = {
+            Build.MODEL
+        }
+    ),
+    AndroidVersion(
+        displayName = "$I18N_KEY_PREFIX.android.version",
+        key = "AndroidVersion",
+        getValue = {
+            Build.VERSION.RELEASE
+        }
+    ),
+    RandomInt(
+        displayName = "$I18N_KEY_PREFIX.random.int",
+        key = "RandomInt",
+        getValue = {
+            if (param.isNullOrBlank()) {
+                Random.nextInt(0, 100).toString()
+            } else {
+                val parts = param.split("-")
+                if (parts.size == 2) {
+                    val from = parts[0].trim().toIntOrNull() ?: 0
+                    val to = parts[1].trim().toIntOrNull() ?: 100
+                    Random.nextInt(from, (to + 1).coerceAtLeast(from + 1)).toString()
+                } else {
+                    Random.nextInt(0, 100).toString()
+                }
+            }
+        },
+        tip = "$I18N_KEY_PREFIX.random.int.tip",
+        requireParam = true
+    ),
+    LastRebootTime(
+        displayName = "$I18N_KEY_PREFIX.last.reboot.time",
+        key = "LastRebootTime",
+        getValue = {
+            (System.currentTimeMillis() - SystemClock.elapsedRealtime()).toString()
+        },
+        tip = "$I18N_KEY_PREFIX.last.reboot.time.tip"
     ),
 }
