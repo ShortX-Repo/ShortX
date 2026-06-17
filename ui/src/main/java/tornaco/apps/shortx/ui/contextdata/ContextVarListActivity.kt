@@ -18,11 +18,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import tornaco.apps.shortx.core.context.allKeys
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.clipboardManager
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ListItem
@@ -52,6 +53,7 @@ class ContextVarListActivity : BaseActivity() {
 fun ContextVarListScreen(back: () -> Unit) {
     val context = LocalContext.current
     val i18N = LocalI18N.current
+    val allEnvs = remember { shortXManager.getAllSystemEnv() }
 
     ShortXTheme {
         Surface(
@@ -67,7 +69,7 @@ fun ContextVarListScreen(back: () -> Unit) {
                                 context.clipboardManager.setPrimaryClip(
                                     ClipData.newPlainText(
                                         "ShortX",
-                                        allKeys.joinToString(separator = "\n") { "{$it}" }
+                                        allEnvs.joinToString(separator = "\n") { it.keyDecored }
                                     )
                                 )
                                 Toast.makeText(
@@ -91,40 +93,35 @@ fun ContextVarListScreen(back: () -> Unit) {
                         .fillMaxSize()
                         .padding(paddingValues)
                 ) {
-                    val searchBarState = rememberSearchBarState(allKeys.size)
+                    val searchBarState = rememberSearchBarState(allEnvs.size)
                     SearchBar(
                         searchBarState = searchBarState,
                         modifier = Modifier.padding(16.dp)
                     )
 
-                    val filteredKeys = allKeys.filter {
-                        searchBarState.keyword.isBlank() || it.contains(
-                            searchBarState.keyword,
-                            ignoreCase = true
-                        )
+                    val filteredEnvs = allEnvs.filter { env ->
+                        searchBarState.keyword.isBlank() ||
+                                env.keyDecored.contains(searchBarState.keyword, ignoreCase = true) ||
+                                i18N[env.displayName].contains(searchBarState.keyword, ignoreCase = true)
                     }
 
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        items(filteredKeys) { key ->
+                        items(filteredEnvs) { env ->
+                            val displayName = i18N[env.displayName]
+                            val tip = env.tip.takeIf { it.isNotBlank() }?.let { i18N[it] }
                             ListItem(
-                                title = key,
-                                action1 = {
-                                    IconButton(onClick = {
-                                        context.clipboardManager.setPrimaryClip(
-                                            ClipData.newPlainText("ShortX", "{${key}}")
-                                        )
-                                        Toast.makeText(
-                                            context,
-                                            i18N["ui.common.copied.to.clipboard"],
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }) {
-                                        RemixIcon(remixName = Remix.Document.clipboard_line)
+                                title = displayName,
+                                text1 = env.keyDecored,
+                                text2 = buildString {
+                                    tip?.let { append(it) }
+                                    if (env.requireParam) {
+                                        if (isNotEmpty()) append(" · ")
+                                        append(i18N["ui.system.env.require.param"])
                                     }
-                                },
+                                }.takeIf { it.isNotBlank() },
                                 onClick = {
                                     context.clipboardManager.setPrimaryClip(
-                                        ClipData.newPlainText("ShortX", "{${key}}")
+                                        ClipData.newPlainText("ShortX", env.keyDecored)
                                     )
                                     Toast.makeText(
                                         context,
