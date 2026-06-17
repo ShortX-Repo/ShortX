@@ -365,6 +365,16 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
         }
     }
 
+    override fun shouldDisableForIME(areas: List<DetectedArea>): Boolean {
+        if (!isIMEShown) return false
+        if (areas.isEmpty()) return false
+
+        return enabledEdgeGestures.any { enabledGesture ->
+            enabledGesture.hasDisableWhenIME() && enabledGesture.disableWhenIME &&
+                    areas.any { area -> matchedTriggerArea(area, enabledGesture) != null }
+        }
+    }
+
     override fun handleEdgeGestureEvent(
         areas: List<DetectedArea>,
         gestureEvent: Gesture,

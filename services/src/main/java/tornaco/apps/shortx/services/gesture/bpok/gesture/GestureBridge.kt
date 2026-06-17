@@ -46,6 +46,8 @@ data class ContinuousGestureBinding(
 interface GestureBridge {
     fun getAreaGestureProfile(areas: List<DetectedArea>): AreaGestureProfile
 
+    fun shouldDisableForIME(areas: List<DetectedArea>): Boolean
+
     fun handleEdgeGestureEvent(
         areas: List<DetectedArea>,
         gestureEvent: Gesture,

@@ -105,6 +105,11 @@ class EdgeGestureEngine(
             return false
         }
 
+        if (bridge.shouldDisableForIME(detectedAreas)) {
+            if (LOGV) logger.d("handleEdgeDownStart: disabled for IME, areas=$detectedAreas")
+            return false
+        }
+
         val areaProfile = bridge.getAreaGestureProfile(detectedAreas)
         if (!areaProfile.shouldCaptureOnDown) {
             if (LOGV) logger.d("handleEdgeDownStart: no triggers for areas=$detectedAreas, skip capture")
