@@ -379,7 +379,6 @@ interface IShortX {
     ByteArrayWrapper getWebDavProfileById(String profileId);
 
     List<ByteArrayWrapper> getAllSystemEnv();
-    List<String> resolveSystemEnvValues(in List<String> rawKeys);
 
     void setCustomSU(String path);
     String getCustomSU();
@@ -489,4 +488,5 @@ interface IShortX {
 
     void onIncomingShare(String sharedText, String sharedUri, String mimeType, String sourceAppPkg);
 
+    List<String> resolveSystemEnvValues(in List<String> rawKeys);
 }
