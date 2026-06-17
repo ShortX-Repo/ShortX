@@ -228,6 +228,17 @@ object ContextDataMapping {
     }
 
     @DoNotStrip
+    enum class ParseQRCode(val description: String) {
+        qrCodeText("The decoded text content of the QR code"),
+    }
+
+    @DoNotStrip
+    enum class GenerateQRCode(val description: String) {
+        qrCodeFilePath("The file path of the generated QR code image"),
+        qrCodeFileUri("The file uri of the generated QR code image"),
+    }
+
+    @DoNotStrip
     enum class ShellCommand(val description: String) {
         shellOut("Output message of the shell command"),
         shellErr("Error message of the shell command, error will redirect to out by default."),

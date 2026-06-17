@@ -205,4 +205,6 @@ val allActionClasses = listOf(
     Action.NoAction::class,
     Action.ShareContent::class,
     Action.TakePhoto::class,
+    Action.ParseQRCode::class,
+    Action.GenerateQRCode::class,
 )

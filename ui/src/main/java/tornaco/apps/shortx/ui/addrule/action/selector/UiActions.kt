@@ -125,6 +125,16 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
     }
     TakePhotoSelectorDialog(state = takePhotoSelectorState)
 
+    val parseQRCodeSelectorState = rememberParseQRCodeSelectorState {
+        addAction(it)
+    }
+    ParseQRCodeSelectorDialog(state = parseQRCodeSelectorState)
+
+    val generateQRCodeSelectorState = rememberGenerateQRCodeSelectorState {
+        addAction(it)
+    }
+    GenerateQRCodeSelectorDialog(state = generateQRCodeSelectorState)
+
     val showTextFieldSelectorState = rememberShowTextFieldDialogSettingsDialogState {
         addAction(it)
     }
@@ -337,6 +347,16 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
 
             Action.TakePhoto::class -> {
                 takePhotoSelectorState.show(source.getActionAs<Action.TakePhoto>())
+                true
+            }
+
+            Action.ParseQRCode::class -> {
+                parseQRCodeSelectorState.show(source.getActionAs<Action.ParseQRCode>())
+                true
+            }
+
+            Action.GenerateQRCode::class -> {
+                generateQRCodeSelectorState.show(source.getActionAs<Action.GenerateQRCode>())
                 true
             }
 
@@ -663,6 +683,8 @@ fun UiActions(
         Action.AreaScreenshot::class,
         Action.SelectScreenArea::class,
         Action.TakePhoto::class,
+        Action.ParseQRCode::class,
+        Action.GenerateQRCode::class,
         Action.ShowToast::class,
         Action.ShowDanmu::class,
         Action.ShowStatusBarChip::class,

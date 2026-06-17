@@ -2372,3 +2372,24 @@ message TakePhoto {
   string note = 99;
   string id = 100;
 }
+
+message ParseQRCode {
+  string imagePath = 1;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message GenerateQRCode {
+  string text = 1;
+  string targetDirPath = 2;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}

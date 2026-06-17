@@ -2887,6 +2887,33 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.ParseQRCode::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.ParseQRCode::class.java
+            Action.ParseQRCode(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                imagePath = data.imagePath,
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.GenerateQRCode::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.GenerateQRCode::class.java
+            Action.GenerateQRCode(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                text = data.text,
+                targetDirPath = data.targetDirPath,
+            )
+        }
+
         else -> null
     }
 }

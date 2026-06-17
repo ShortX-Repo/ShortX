@@ -764,6 +764,14 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Hardware.camera_one
         }
 
+        Action.ParseQRCode::class -> {
+            Remix.Device.qr_scan_line
+        }
+
+        Action.GenerateQRCode::class -> {
+            Remix.Device.qr_code_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

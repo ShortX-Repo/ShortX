@@ -2594,6 +2594,29 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .build()
         }
 
+        is Action.ParseQRCode -> {
+            tornaco.apps.shortx.core.proto.action.ParseQRCode.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setImagePath(imagePath)
+                .build()
+        }
+
+        is Action.GenerateQRCode -> {
+            tornaco.apps.shortx.core.proto.action.GenerateQRCode.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setText(text)
+                .setTargetDirPath(targetDirPath)
+                .build()
+        }
+
         is Action.NoAction -> {
             NoAction.newBuilder()
                 .setId(overrideId ?: id)

@@ -828,6 +828,14 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.TakePhoto
     },
+    ParseQRCode {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ParseQRCode
+    },
+    GenerateQRCode {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.GenerateQRCode
+    },
 
     ;
 

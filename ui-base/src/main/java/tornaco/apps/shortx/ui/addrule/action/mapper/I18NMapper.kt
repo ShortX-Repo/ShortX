@@ -397,6 +397,22 @@ fun labelAndDescriptionForActionSelector(
             fallback = "Take a photo using the system camera"
         )
 
+        Action.ParseQRCode::class -> i18N.get(
+            key = "ui.action.parse.qrcode",
+            fallback = "Parse QR code"
+        ) to i18N.get(
+            key = "ui.action.parse.qrcode.desc",
+            fallback = "Decode QR code from an image file"
+        )
+
+        Action.GenerateQRCode::class -> i18N.get(
+            key = "ui.action.generate.qrcode",
+            fallback = "Generate QR code"
+        ) to i18N.get(
+            key = "ui.action.generate.qrcode.desc",
+            fallback = "Generate a QR code image from text"
+        )
+
         Action.SwitchCase::class -> i18N.get(
             key = "ui.action.switch.case",
             fallback = "Switch case"
@@ -1591,6 +1607,17 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.TakePhoto -> listOfNotNull(
             i18N.get(key = "ui.action.take.photo", fallback = "Take photo"),
             action.targetFilePath.ifBlank { null }
+        )
+
+        is Action.ParseQRCode -> listOfNotNull(
+            i18N.get(key = "ui.action.parse.qrcode", fallback = "Parse QR code"),
+            action.imagePath.ifBlank { null }
+        )
+
+        is Action.GenerateQRCode -> listOfNotNull(
+            i18N.get(key = "ui.action.generate.qrcode", fallback = "Generate QR code"),
+            action.text.ifBlank { null },
+            action.targetDirPath.ifBlank { null }
         )
 
         is Action.PluginAction -> listOfNotNull("PLUGIN NOT SUPPORTED.")
