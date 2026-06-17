@@ -67,6 +67,7 @@ message Rule {
     ActionAsyncMode actionAsyncMode = 24;
     int32 requireMinShortXProtoVersion = 25;
     string iconColor = 26;
+    bool isLocked = 27;
 }
 
 message RuleInstanceIdGenerator_Static {

@@ -98,11 +98,13 @@ class AddRuleActivity : BaseActivity() {
     companion object {
         private const val KEY_RULE_ID = "ruleId"
         private const val KEY_RULE_SET_ID = "ruleSetId"
+        private const val KEY_READ_ONLY = "readOnly"
 
         @JvmStatic
-        fun edit(context: Context, ruleId: String) {
+        fun edit(context: Context, ruleId: String, readOnly: Boolean = false) {
             val starter = Intent(context, AddRuleActivity::class.java)
                 .putExtra(KEY_RULE_ID, ruleId)
+                .putExtra(KEY_READ_ONLY, readOnly)
             context.startActivity(starter)
         }
 
@@ -118,9 +120,11 @@ class AddRuleActivity : BaseActivity() {
     override fun Content() {
         val ruleId = intent.getStringExtra(KEY_RULE_ID)
         val ruleSetId = intent.getStringExtra(KEY_RULE_SET_ID)
+        val isReadOnly = intent.getBooleanExtra(KEY_READ_ONLY, false)
         AddRuleScreen(
             ruleId = ruleId,
             ruleSetId = ruleSetId,
+            readOnly = isReadOnly,
             screenTitle = if (ruleId != null) {
                 LocalI18N.current["ui.title.edit.rule"]
             } else {
@@ -294,13 +298,15 @@ fun AddRuleScreen(
             ) {
                 RemixIcon(remixName = Remix.Editor.flow_chart)
             }
-            IconButton(
-                enabled = canSaveWithoutChanges || hasAnyChanges,
-                onClick = {
-                    vm.save(shortXProps.firstOrNull())
-                    back(true)
-                }) {
-                RemixIcon(remixName = saveIconName)
+            if (!readOnly) {
+                IconButton(
+                    enabled = canSaveWithoutChanges || hasAnyChanges,
+                    onClick = {
+                        vm.save(shortXProps.firstOrNull())
+                        back(true)
+                    }) {
+                    RemixIcon(remixName = saveIconName)
+                }
             }
         },
         scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),

@@ -41,7 +41,7 @@ fun getLocalRuleItemHandler(
         }
 
         override fun edit(rule: RuleUM) {
-            AddRuleActivity.edit(context, rule.id)
+            AddRuleActivity.edit(context, rule.id, readOnly = rule.isLocked)
         }
 
         override fun click(rule: RuleUM) {
@@ -106,6 +106,10 @@ fun getLocalRuleItemHandler(
 
         override fun togglePin(rule: RuleUM) {
             vm.togglePin(rule)
+        }
+
+        override fun toggleLock(rule: RuleUM) {
+            vm.toggleLock(rule)
         }
     }
     return handler

@@ -131,7 +131,8 @@ fun ContextViewModel<*, *>.ruleToRuleUM(
         rule = rule,
         versionCode = rule.versionCode,
         hasAnyParameter = rule.parametersList.isNotEmpty(),
-        isPinned = pinnedRuleIds.contains(rule.id)
+        isPinned = pinnedRuleIds.contains(rule.id),
+        isLocked = rule.isLocked
     )
 }
 

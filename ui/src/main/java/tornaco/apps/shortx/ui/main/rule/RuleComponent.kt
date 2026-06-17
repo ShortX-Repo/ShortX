@@ -195,6 +195,16 @@ private fun RuleItem(
                         )
                     )
                 }
+                if (rule.isLocked) {
+                    RemixIcon(
+                        modifier = Modifier.size(16.dp),
+                        remixName = Remix.System.lock_fill,
+                        tint = colorfulCard.select(
+                            themedTextColor(color = iconColor),
+                            MaterialTheme.colorScheme.primary
+                        )
+                    )
+                }
             }
             androidx.compose.animation.AnimatedVisibility(showDescription) {
                 Text(
@@ -309,7 +319,13 @@ private fun listItemOverflowMenu(
     DropdownSelector(
         widthFraction = menuDropdownFraction,
         state = menuState,
-        items = listOf(
+        items = listOfNotNull(
+            DropdownItem(
+                labelLines = listOf(i18N[if (rule.isLocked) "ui.common.unlock" else "ui.common.lock"]),
+                data = RuleItemMenuOptions.ToggleLock,
+                icon = {
+                    RemixIcon(if (rule.isLocked) Remix.System.lock_unlock_line else Remix.System.lock_fill)
+                }),
             DropdownItem(
                 labelLines = listOf(i18N[if (rule.isPinned) "ui.common.unpin" else "ui.common.pinned"]),
                 data = RuleItemMenuOptions.TogglePin,
@@ -328,19 +344,19 @@ private fun listItemOverflowMenu(
                 icon = {
                     RemixIcon(Remix.Media.play_fill)
                 }),
-            DropdownItem(
+            if (!rule.isLocked) DropdownItem(
                 labelLines = listOf(i18N["ui.common.dup"]),
                 data = RuleItemMenuOptions.Dup,
                 badge = badge,
                 icon = {
                     RemixIcon(Remix.Document.file_copy_2_fill)
-                }),
-            DropdownItem(
+                }) else null,
+            if (!rule.isLocked) DropdownItem(
                 labelLines = listOf(i18N["ui.common.edit"]),
                 data = RuleItemMenuOptions.Edit,
                 icon = {
                     RemixIcon(Remix.Design.edit_line)
-                }),
+                }) else null,
             DropdownItem(
                 labelLines = listOf(i18N["ui.common.share"]),
                 data = RuleItemMenuOptions.Share,
@@ -348,38 +364,38 @@ private fun listItemOverflowMenu(
                 icon = {
                     RemixIcon(Remix.System.share_line)
                 }),
-            DropdownItem(
+            if (!rule.isLocked) DropdownItem(
                 labelLines = listOf(i18N["ui.common.move.to.set"]),
                 data = RuleItemMenuOptions.MoveToSet,
                 badge = badge,
                 icon = {
                     RemixIcon(Remix.Document.folders_fill)
-                }),
-            DropdownItem(
+                }) else null,
+            if (!rule.isLocked) DropdownItem(
                 labelLines = listOf(LocalI18N.current["ui.common.move.out.set"]),
                 data = RuleItemMenuOptions.MoveOutSet,
                 icon = {
                     RemixIcon(Remix.Document.folder_reduce_fill)
-                }),
+                }) else null,
             DropdownItem(
                 labelLines = listOf(LocalI18N.current["ui.settings.eva.record"]),
                 data = RuleItemMenuOptions.ViewEvaRecord,
                 icon = {
                     RemixIcon(Remix.System.history_fill)
                 }),
-            DropdownItem(
+            if (!rule.isLocked) DropdownItem(
                 labelLines = listOf(LocalI18N.current["ui.rule.extract.as.da"]),
                 data = RuleItemMenuOptions.ExtractAsDA,
                 badge = badge,
                 icon = {
                     RemixIcon(Remix.Development.command_line)
-                }),
-            DropdownItem(
+                }) else null,
+            if (!rule.isLocked) DropdownItem(
                 labelLines = listOf(i18N["ui.common.delete"]),
                 data = RuleItemMenuOptions.Delete,
                 icon = {
                     RemixIcon(Remix.System.delete_bin_4_line)
-                })
+                }) else null
         ), onSelect = {
             Logger("RuleMenu").d("onSelect: ${it.data}")
             when (it.data) {
@@ -438,11 +454,15 @@ private fun listItemOverflowMenu(
                         subscribeDialogState.show()
                     }
                 }
+
+                RuleItemMenuOptions.ToggleLock -> {
+                    handler.toggleLock(rule)
+                }
             }
         })
     return menuState
 }
 
 enum class RuleItemMenuOptions {
-    TogglePin, Select, Dup, Delete, Edit, Share, Execute, MoveToSet, MoveOutSet, ViewEvaRecord, ExtractAsDA
+    ToggleLock, TogglePin, Select, Dup, Delete, Edit, Share, Execute, MoveToSet, MoveOutSet, ViewEvaRecord, ExtractAsDA
 }

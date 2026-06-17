@@ -34,4 +34,7 @@ data class RuleUM(
 
     // For Pin
     val isPinned: Boolean = false,
+
+    // For Lock
+    val isLocked: Boolean = false,
 )
