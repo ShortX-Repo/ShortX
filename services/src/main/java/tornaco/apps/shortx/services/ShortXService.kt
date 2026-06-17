@@ -1894,6 +1894,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.appState.unRegisterFrontAppChangeListener(callback)
         }
 
+        override fun registerIMEVisibilityChangeListener(callback: ICallback) {
+            shortXContext.input.registerIMEVisibilityChangeListener(callback)
+        }
+
+        override fun unregisterIMEVisibilityChangeListener(callback: ICallback) {
+            shortXContext.input.unregisterIMEVisibilityChangeListener(callback)
+        }
+
         override fun getShortXServerDirs(): ByteArrayWrapper {
             return ByteArrayWrapper(
                 ShortXServerDirs.newBuilder().setBaseServerDir(Dirs.baseServerDir.absolutePath)

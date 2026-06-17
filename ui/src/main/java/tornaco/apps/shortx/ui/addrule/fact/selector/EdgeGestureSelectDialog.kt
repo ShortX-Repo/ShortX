@@ -89,6 +89,7 @@ data class EdgeGestureSelectDialogResult(
     val useAbsoluteArea: Boolean = false,
     val enableGestureHint: Boolean = true,
     val enableGestureHaptic: Boolean = false,
+    val disableWhenIME: Boolean = false,
 )
 
 private val supportedChildGestureSteps = listOf(
@@ -109,6 +110,7 @@ class EdgeGestureSelectorState(
     var gesture by mutableStateOf(Gesture.DoubleTap)
     var enableGestureHint by mutableStateOf(true)
     var enableGestureHaptic by mutableStateOf(false)
+    var disableWhenIME by mutableStateOf(false)
     var customRect by mutableStateOf<Rect?>(null)
     var useCustomRect by mutableStateOf(false)
     var useAbsoluteArea by mutableStateOf(false)
@@ -124,6 +126,7 @@ class EdgeGestureSelectorState(
         this.gesture = data?.gesture ?: Gesture.SingleTap
         this.enableGestureHint = data?.enableGestureHint ?: true
         this.enableGestureHaptic = data?.enableGestureHaptic ?: false
+        this.disableWhenIME = data?.disableWhenIME ?: false
         this.customRect = data?.customRect
         this.useCustomRect = data?.customRect != null
         this.useAbsoluteArea = data?.useAbsoluteArea ?: false
@@ -179,6 +182,7 @@ class EdgeGestureSelectorState(
             useAbsoluteArea = useAbsoluteArea,
             enableGestureHint = enableGestureHint,
             enableGestureHaptic = enableGestureHaptic,
+            disableWhenIME = disableWhenIME,
         )
     }
 }
@@ -589,6 +593,22 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                 }
                                 StandardSpacer()
                             }
+
+                            StandardSpacer()
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                FieldTitle(text = i18N["ui.fact.edge.gesture.disable.when.ime"])
+                                ShortXSwitch(
+                                    checked = state.disableWhenIME,
+                                    onCheckedChange = {
+                                        state.disableWhenIME = it
+                                    }
+                                )
+                            }
+                            TipRow(text = i18N["ui.fact.edge.gesture.disable.when.ime.description"])
 
                             val appFgPkgSelectorState =
                                 rememberAppPkgSelectorState(

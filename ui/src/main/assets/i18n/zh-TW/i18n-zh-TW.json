@@ -1707,5 +1707,7 @@
   "ui.fact.edge.gesture.indicator": "手勢指示器",
   "ui.fact.edge.gesture.indicator.disabled": "指示器已關閉",
   "ui.fact.edge.gesture.haptic": "回饋震動",
-  "ui.fact.edge.gesture.haptic.disabled": "震動回饋已關閉"
+  "ui.fact.edge.gesture.haptic.disabled": "震動回饋已關閉",
+  "ui.fact.edge.gesture.disable.when.ime": "輸入法顯示時禁用",
+  "ui.fact.edge.gesture.disable.when.ime.description": "開啟後，當輸入法顯示時，此邊緣手勢將不會觸發"
 }

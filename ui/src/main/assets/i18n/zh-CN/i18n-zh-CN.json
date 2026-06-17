@@ -1709,6 +1709,8 @@
   "ui.fact.edge.gesture.indicator.disabled": "指示器已关闭",
   "ui.fact.edge.gesture.haptic": "反馈震动",
   "ui.fact.edge.gesture.haptic.disabled": "震动反馈已关闭",
+  "ui.fact.edge.gesture.disable.when.ime": "输入法显示时禁用",
+  "ui.fact.edge.gesture.disable.when.ime.description": "开启后，当输入法显示时，此边缘手势将不会触发",
   "ui.code.library.title": "代码库",
   "ui.code.library.summary": "管理MVEL和JavaScript代码片段",
   "ui.code.library.list.title": "代码库",

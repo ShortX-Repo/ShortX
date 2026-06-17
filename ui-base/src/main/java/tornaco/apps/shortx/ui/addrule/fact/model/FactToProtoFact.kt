@@ -196,6 +196,7 @@ fun Fact.toProtoFact(
                 .setUseAbsoluteArea(useAbsoluteArea)
                 .setEnableGestureHint(enableGestureHint)
                 .setEnableGestureHaptic(enableGestureHaptic)
+                .setDisableWhenIME(disableWhenIME)
                 .addAllChildSteps(childSteps.map {
                     EdgeGestureStep.newBuilder().setType(it.toProtoType()).build()
                 })

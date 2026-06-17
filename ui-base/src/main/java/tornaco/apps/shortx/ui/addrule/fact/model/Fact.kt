@@ -376,6 +376,7 @@ sealed interface Fact : Parcelable {
         val useAbsoluteArea: Boolean = false,
         val enableGestureHint: Boolean = true,
         val enableGestureHaptic: Boolean = false,
+        val disableWhenIME: Boolean = false,
         override val note: String = "",
         override val isDisabled: Boolean = false,
         override val tag: String = "",

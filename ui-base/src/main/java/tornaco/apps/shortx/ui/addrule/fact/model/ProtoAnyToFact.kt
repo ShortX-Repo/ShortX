@@ -81,6 +81,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 useAbsoluteArea = data.hasUseAbsoluteArea() && data.useAbsoluteArea,
                 enableGestureHint = data.hasEnableGestureHint() && data.enableGestureHint,
                 enableGestureHaptic = data.hasEnableGestureHaptic() && data.enableGestureHaptic,
+                disableWhenIME = data.hasDisableWhenIME() && data.disableWhenIME,
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
                 isDisabled = data.isDisabled,

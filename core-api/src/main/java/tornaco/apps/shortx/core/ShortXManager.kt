@@ -689,6 +689,18 @@ class ShortXManager(val service: IShortX) {
         }
     }
 
+    fun registerIMEVisibilityChangeListener(listener: ICallback) {
+        invokeService(Unit) {
+            registerIMEVisibilityChangeListener(listener)
+        }
+    }
+
+    fun unregisterIMEVisibilityChangeListener(listener: ICallback) {
+        invokeService(Unit) {
+            unregisterIMEVisibilityChangeListener(listener)
+        }
+    }
+
     fun registerRecorderStateListener(listener: ICallback) {
         invokeService(Unit) {
             registerRecorderStateListener(listener)

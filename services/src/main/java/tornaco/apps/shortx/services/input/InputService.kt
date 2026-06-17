@@ -7,9 +7,11 @@ import com.android.internal.view.IInputContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.input.InternalInputFlags.FLAG_SHORTX_INJECTION
 import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.os.myUserId
+import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.proto.clipboard.ClipboardItem
 import tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange
 import tornaco.apps.shortx.core.proto.feature.AppFeature
@@ -358,6 +360,16 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
 
     fun isIMEShown() = isIMEShown.get()
 
+    private val imeVisibilityChangeListeners = mutableListOf<ICallback>()
+
+    fun registerIMEVisibilityChangeListener(callback: ICallback) {
+        imeVisibilityChangeListeners.add(callback)
+    }
+
+    fun unregisterIMEVisibilityChangeListener(callback: ICallback) {
+        imeVisibilityChangeListeners.remove(callback)
+    }
+
     private fun imeVisibilityChanged() {
         logger.d("imeVisibilityChanged, isIMEShown? ${isIMEShown.get()}")
         shortXContext.rule.publishFactChecked(IMEVisibilityChange.getDefaultInstance()) {
@@ -365,6 +377,15 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
                 reason = "imeVisibilityChanged",
                 fact = IMEVisibilityChange.newBuilder().setIsShown(isIMEShown.get()).build()
             )
+        }
+
+        val data = IMEVisibilityChange.newBuilder().setIsShown(isIMEShown.get()).build().toByteArray()
+        imeVisibilityChangeListeners.forEach { listener ->
+            try {
+                listener.receive(ByteArrayWrapper(data))
+            } catch (e: Exception) {
+                logger.e(e, "Failed to notify IME visibility change listener")
+            }
         }
     }
 

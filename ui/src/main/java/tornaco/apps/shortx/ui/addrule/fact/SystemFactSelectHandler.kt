@@ -96,6 +96,7 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
                     useAbsoluteArea = eg.useAbsoluteArea,
                     enableGestureHint = eg.enableGestureHint,
                     enableGestureHaptic = eg.enableGestureHaptic,
+                    disableWhenIME = eg.disableWhenIME
                 )
             )
         },

@@ -427,6 +427,9 @@ interface IShortX {
     void registerFrontAppChangeListener(in ICallback listener);
     void unRegisterFrontAppChangeListener(in ICallback listener);
 
+    void registerIMEVisibilityChangeListener(in ICallback listener);
+    void unregisterIMEVisibilityChangeListener(in ICallback listener);
+
     ByteArrayWrapper getShortXServerDirs();
 
     // Shortcuts

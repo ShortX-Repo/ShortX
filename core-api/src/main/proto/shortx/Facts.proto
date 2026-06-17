@@ -154,6 +154,7 @@ message EdgeGesture {
   repeated EdgeGestureStep childSteps = 11;
   optional bool enableGestureHaptic = 12;
   optional bool useAbsoluteArea = 13;
+  optional bool disableWhenIME = 14;
 
   string tag = 97;
   CustomContextDataKey customContextDataKey = 98;

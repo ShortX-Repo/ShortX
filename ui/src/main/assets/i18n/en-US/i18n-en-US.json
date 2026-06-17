@@ -1710,6 +1710,8 @@
   "ui.fact.edge.gesture.indicator.disabled": "Indicator disabled",
   "ui.fact.edge.gesture.haptic": "Haptic feedback",
   "ui.fact.edge.gesture.haptic.disabled": "Haptic feedback disabled",
+  "ui.fact.edge.gesture.disable.when.ime": "Disable when IME is shown",
+  "ui.fact.edge.gesture.disable.when.ime.description": "When enabled, this edge gesture will not trigger when the input method is visible",
   "ui.code.library.title": "Code Library",
   "ui.code.library.summary": "Manage MVEL and JavaScript code snippets",
   "ui.code.library.list.title": "Code Library",

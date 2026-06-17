@@ -79,6 +79,8 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
     private var requiredFrontAppAny: Boolean = false
     private var requiredFrontAppMatchQuick: Boolean = false
 
+    private var isIMEShown = false
+
     val shouldDetectMotion
         get() = !isRuleFeatureDisabled
                 && isGestureEnabledQuick
@@ -154,6 +156,21 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
                     }
                 }
                 logger.w("requiredFrontAppMatchQuick - $requiredFrontAppMatchQuick")
+            }
+        })
+
+        shortx.registerIMEVisibilityChangeListener(object : ICallback.Stub() {
+            override fun receive(data: ByteArrayWrapper) {
+                logger.w("IMEVisibilityChange.")
+                kotlin.runCatching {
+                    val isShown = data.byteData?.let {
+                        tornaco.apps.shortx.core.proto.fact.IMEVisibilityChange.parseFrom(it).isShown
+                    } ?: false
+                    isIMEShown = isShown
+                    logger.logOnDebug("isIMEShown: $isIMEShown")
+                }.onFailure {
+                    logger.e(it, "IMEVisibilityChange received.")
+                }
             }
         })
 
@@ -301,6 +318,7 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
                     binding.rule.gesture == gestureEvent &&
                     (!gestureEvent.requiresDirectionalCoordinateMode() ||
                             (coordinateMode != null && binding.rule.expectedDirectionCoordinateMode() == coordinateMode)) &&
+                    !(binding.rule.hasDisableWhenIME() && binding.rule.disableWhenIME && isIMEShown) &&
                     areas.any { area -> matchedTriggerArea(area, binding.rule) != null }
         }
     }
@@ -364,6 +382,11 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
                 return@mapNotNull null
             }
 
+            if (enabledGesture.hasDisableWhenIME() && enabledGesture.disableWhenIME && isIMEShown) {
+                logger.logOnDebug("Edge gesture disabled due to IME shown: $enabledGesture")
+                return@mapNotNull null
+            }
+
             val matchedArea = areas.firstNotNullOfOrNull { area ->
                 matchedTriggerArea(area, enabledGesture)
             } ?: return@mapNotNull null
@@ -390,6 +413,11 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
                             (coordinateMode != null && it.expectedDirectionCoordinateMode() == coordinateMode))
         }
         val matched = allSequenceRules.mapNotNull { enabledGesture ->
+            if (enabledGesture.hasDisableWhenIME() && enabledGesture.disableWhenIME && isIMEShown) {
+                logger.logOnDebug("Edge gesture sequence disabled due to IME shown: $enabledGesture")
+                return@mapNotNull null
+            }
+
             val matchedArea = areas.firstNotNullOfOrNull { area ->
                 matchedTriggerArea(area, enabledGesture)
             } ?: return@mapNotNull null
