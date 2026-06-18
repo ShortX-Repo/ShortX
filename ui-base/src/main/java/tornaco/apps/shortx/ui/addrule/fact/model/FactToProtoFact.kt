@@ -905,6 +905,15 @@ fun Fact.toProtoFact(
                 .build()
         }
 
+        is Fact.BrowserIntercept -> {
+            tornaco.apps.shortx.core.proto.fact.BrowserIntercept.newBuilder()
+                .setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .setIsDisabled(isDisabled)
+                .setTag(overrideTag ?: tag)
+                .setCustomContextDataKey(customContextDataKey)
+                .build()
+        }
+
         is Fact.ConnectedWifiSignalLevelChanged -> {
             ConnectedWifiSignalLevelChanged.newBuilder().setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)

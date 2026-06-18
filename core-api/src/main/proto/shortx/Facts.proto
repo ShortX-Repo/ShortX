@@ -926,6 +926,14 @@ message IncomingShare {
   bool isDisabled = 101;
 }
 
+message BrowserIntercept {
+  string tag = 97;
+  CustomContextDataKey customContextDataKey = 98;
+  string note = 99;
+  string id = 100;
+  bool isDisabled = 101;
+}
+
 message ConnectedWifiSignalLevelChanged {
   int32 level = 1;
   int32 rssi = 2;

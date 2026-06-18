@@ -157,6 +157,11 @@ fun miscFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolea
                 true
             }
 
+            Fact.BrowserIntercept::class -> {
+                addFact(Fact.BrowserIntercept())
+                true
+            }
+
             Fact.MethodHook::class -> {
                 methodHookLauncher.launch(
                     BaseSelectorActivity.newIntent(

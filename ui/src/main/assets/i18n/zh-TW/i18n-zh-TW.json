@@ -266,6 +266,7 @@
   "ui.fact.deeplink.call": "Deeplink",
   "ui.fact.deeplink.call.message": "請輸入deeplink的tag，你可以在其他App裡調用ShortX的deeplink來觸發這個觸發器：{url}",
   "ui.fact.incoming.share": "接收分享",
+  "ui.fact.browser.intercept": "瀏覽器連結攔截",
   "ui.fact.screen.off": "螢幕關閉",
   "ui.fact.screen.on": "螢幕開啟",
   "ui.fact.screen.user.present": "螢幕解鎖",

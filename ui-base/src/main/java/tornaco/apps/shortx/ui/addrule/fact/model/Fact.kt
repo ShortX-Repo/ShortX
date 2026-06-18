@@ -2429,6 +2429,31 @@ sealed interface Fact : Parcelable {
         }
     }
 
+    @Parcelize
+    data class BrowserIntercept(
+        override val note: String = "",
+        override val isDisabled: Boolean = false,
+        override val tag: String = "",
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val id: String = defaultNewFactId()
+    ) : Fact {
+        override fun clone(
+            id: String,
+            note: String,
+            tag: String,
+            isDisabled: Boolean,
+            customContextDataKey: CustomContextDataKey
+        ): Fact {
+            return copy(
+                id = id,
+                note = note,
+                tag = tag,
+                isDisabled = isDisabled,
+                customContextDataKey = customContextDataKey
+            )
+        }
+    }
+
     // Fact class
     @Parcelize
     data class Logcat(

@@ -550,4 +550,14 @@ object ContextDataMapping {
         sharedMimeType("The MIME type of the shared content"),
         sourceAppPkg("The package name of the app that shared the content"),
     }
+
+    @DoNotStrip
+    enum class BrowserIntercept(val description: String) {
+        url("The full URL"),
+        host("The host/domain of the URL"),
+        scheme("The scheme of the URL (http or https)"),
+        path("The path of the URL"),
+        query("The query string of the URL"),
+        sourceAppPkg("The package name of the app that opened the URL"),
+    }
 }

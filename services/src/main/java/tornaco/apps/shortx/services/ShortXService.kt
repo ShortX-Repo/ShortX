@@ -577,6 +577,25 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }
         }
 
+        override fun onBrowserIntercept(url: String, sourceAppPkg: String) {
+            enforceCallingPermissions()
+            val uri = android.net.Uri.parse(url)
+            shortXContext.rule.publishFact(
+                "onBrowserIntercept",
+                tornaco.apps.shortx.core.proto.fact.BrowserIntercept.newBuilder()
+                    .build()
+            ) {
+                mapOf(
+                    "url" to url,
+                    "host" to (uri.host.orEmpty()),
+                    "scheme" to (uri.scheme.orEmpty()),
+                    "path" to (uri.path.orEmpty()),
+                    "query" to (uri.query.orEmpty()),
+                    "sourceAppPkg" to sourceAppPkg
+                )
+            }
+        }
+
         override fun getAllRingtones(): List<ByteArrayWrapper> {
             return shortXContext.audio.getAllRingtones().map {
                 ByteArrayWrapper(it.toByteArray())

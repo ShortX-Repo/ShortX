@@ -26,6 +26,7 @@ fun MiscFacts(
         Fact.OnQSTileClick::class,
         Fact.DeepLinkCall::class,
         Fact.IncomingShare::class,
+        Fact.BrowserIntercept::class,
         Fact.GlobalVarChanged::class,
         Fact.BackNavStart::class,
         Fact.BackNavDone::class,

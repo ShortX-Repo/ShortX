@@ -17,4 +17,5 @@
     <string name="ui_create_shortcut">Pick shortcut</string>
     <string name="ui_share_viewer">ShortX shared file viewer</string>
     <string name="ui.fact.incoming.share">Incoming share</string>
+    <string name="ui.fact.browser.intercept">Browser link intercept</string>
 </resources>

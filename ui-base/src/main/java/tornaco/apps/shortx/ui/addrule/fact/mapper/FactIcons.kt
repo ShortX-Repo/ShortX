@@ -102,6 +102,7 @@ fun imageVectorForFact(fact: KClass<out Fact>): String {
         Fact.SunRiseSet::class -> Remix.Weather.sun_fill
         Fact.CpuAvgAvailability::class -> Remix.Hardware.cpu
         Fact.IncomingShare::class -> Remix.Arrows.arrow_right_up_fill
+        Fact.BrowserIntercept::class -> Remix.Business.global_line
 
         else -> {
             Remix.Document.file_unknow_fill

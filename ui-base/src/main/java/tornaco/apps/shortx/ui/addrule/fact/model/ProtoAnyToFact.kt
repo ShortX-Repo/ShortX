@@ -1203,6 +1203,19 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.fact.BrowserIntercept::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.BrowserIntercept::class.java
+
+            Fact.BrowserIntercept(
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                isDisabled = data.isDisabled,
+                tag = data.tag
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.fact.Logcat::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.Logcat::class.java

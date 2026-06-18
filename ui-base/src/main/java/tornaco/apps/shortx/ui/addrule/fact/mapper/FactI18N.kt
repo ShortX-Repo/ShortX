@@ -292,6 +292,10 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
             i18n.get(key = "ui.fact.incoming.share", fallback = "Incoming share") to null
         }
 
+        Fact.BrowserIntercept::class -> {
+            i18n.get(key = "ui.fact.browser.intercept", fallback = "Browser link intercept") to null
+        }
+
         Fact.Logcat::class -> {
             i18n["ui.fact.logcat"] to null
         }
@@ -939,6 +943,12 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         is Fact.IncomingShare -> {
             listOf(
                 i18N.get(key = "ui.fact.incoming.share", fallback = "Incoming share")
+            )
+        }
+
+        is Fact.BrowserIntercept -> {
+            listOf(
+                i18N.get(key = "ui.fact.browser.intercept", fallback = "Browser link intercept")
             )
         }
 

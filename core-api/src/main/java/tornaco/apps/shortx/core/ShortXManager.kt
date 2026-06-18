@@ -1803,6 +1803,12 @@ class ShortXManager(val service: IShortX) {
         }
     }
 
+    fun onBrowserIntercept(url: String, sourceAppPkg: String) {
+        invokeService(Unit) {
+            onBrowserIntercept(url, sourceAppPkg)
+        }
+    }
+
     fun getAllRingtones(): List<Ringtone> {
         return invokeService(emptyList()) {
             allRingtones.map {

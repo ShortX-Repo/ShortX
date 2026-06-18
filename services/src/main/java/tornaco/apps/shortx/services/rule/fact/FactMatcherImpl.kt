@@ -692,6 +692,10 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
             true
         }
 
+        register(tornaco.apps.shortx.core.proto.fact.BrowserIntercept::class.java) { _, _ ->
+            true
+        }
+
         register(ConnectedWifiSignalLevelChanged::class.java) { actual, rule ->
             val actualN = (actual as ConnectedWifiSignalLevelChanged)
             val ruleN = (rule as ConnectedWifiSignalLevelChanged)

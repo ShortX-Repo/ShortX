@@ -133,6 +133,19 @@
             </intent-filter>
         </activity>
         <activity
+            android:name="tornaco.apps.shortx.ui.browser.BrowserInterceptActivity"
+            android:exported="true"
+            android:label="@string/ui.fact.browser.intercept"
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name="tornaco.apps.shortx.ui.gvar.GlobalVarListActivity"
             android:exported="false" />
         <activity

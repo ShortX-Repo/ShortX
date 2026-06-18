@@ -488,5 +488,7 @@ interface IShortX {
 
     void onIncomingShare(String sharedText, String sharedUri, String mimeType, String sourceAppPkg);
 
+    void onBrowserIntercept(String url, String sourceAppPkg);
+
     List<String> resolveSystemEnvValues(in List<String> rawKeys);
 }
