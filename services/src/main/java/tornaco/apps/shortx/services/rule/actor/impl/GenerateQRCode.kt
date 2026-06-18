@@ -12,6 +12,7 @@ import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
+import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
@@ -46,7 +47,16 @@ object GenerateQRCode : Actor {
         val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
         bitmap.setPixels(pixels, 0, size, 0, 0, size, size)
 
-        val dir = if (compiledTargetDir.isNotEmpty()) {
+        val fileName = "QRCode_${DateUtils.formatForFileName(System.currentTimeMillis())}.png"
+
+        val tmpDir = File(Dirs.baseServerCacheDir(), "qrcode").apply { mkdirs() }
+        val tmpFile = File(tmpDir, fileName)
+        FileOutputStream(tmpFile).use {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+        }
+        bitmap.recycle()
+
+        val destDir = if (compiledTargetDir.isNotEmpty()) {
             File(compiledTargetDir)
         } else {
             File(
@@ -54,14 +64,14 @@ object GenerateQRCode : Actor {
                 "ShortX"
             )
         }
-        dir.mkdirs()
+        val destFile = File(destDir, fileName)
 
-        val fileName = "QRCode_${DateUtils.formatForFileName(System.currentTimeMillis())}.png"
-        val destFile = File(dir, fileName)
-        FileOutputStream(destFile).use {
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
-        }
-        bitmap.recycle()
+        CopyFile.copyFile(
+            shortXContext,
+            tmpFile,
+            destFile,
+            true
+        )
 
         val fileAndUri = MediaUtil.scanFile(androidContext, destFile.absolutePath)
         val finalPath = fileAndUri.first
