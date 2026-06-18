@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.rule
 
 import android.content.Context
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
@@ -17,6 +18,8 @@ import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.actor.ActionEvaluator
 import tornaco.apps.shortx.services.rule.cond.ConditionEvaluator
 import tornaco.apps.shortx.services.rule.fact.FactMatcher
+
+data class FireResult(val anyMatch: Boolean, val jobs: List<Job>)
 
 interface Engine {
     val conditionEvaluator: ConditionEvaluator
@@ -44,7 +47,7 @@ interface Engine {
         rules: List<Rule>,
         das: List<DirectAction>,
         initialContextDataLazy: () -> Map<String, Any>
-    ): Boolean
+    ): FireResult
 
     fun evaluateActions(
         context: EvaluateContext,

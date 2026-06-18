@@ -218,10 +218,10 @@ class DefaultRuleEngine(
         rules: List<Rule>,
         das: List<DirectAction>,
         initialContextDataLazy: () -> Map<String, Any>
-    ): Boolean {
+    ): FireResult {
         if (!isRuleFeatureEnabled()) {
             logger.w("Drop fact since Rule feature is disabled: ${fact.javaClass}")
-            return false
+            return FireResult(anyMatch = false, jobs = emptyList())
         }
         if (fact is SystemReady) {
             logger.w("fire SystemReady")
@@ -229,11 +229,12 @@ class DefaultRuleEngine(
 
         if (fact !is SystemReady && !isSystemReadyPublished()) {
             logger.w("Drop fact since System NOT ready: ${fact.javaClass}")
-            return false
+            return FireResult(anyMatch = false, jobs = emptyList())
         }
 
         logger.logOnDebug { ("fire: ${fact.javaClass}") }
         var anyMatch = false
+        val firedJobs = mutableListOf<Job>()
         rules.filterInvalid().forEach { rule ->
             // Try fire for Rule.
             val factMatcherResult = factMatcher.match(fact, rule.factsList)
@@ -356,6 +357,7 @@ class DefaultRuleEngine(
                     }
 
                     logger.logOnDebug { ("Created job(ins: $ruleInstanceId): $job for rule: ${rule.title}") }
+                    firedJobs.add(job)
                     synchronized(jobs) {
                         jobs.add(
                             JobRecord(
@@ -582,7 +584,7 @@ class DefaultRuleEngine(
 
             }
 
-        return anyMatch
+        return FireResult(anyMatch = anyMatch, jobs = firedJobs)
     }
 
     private suspend fun runActionsJobLocked(

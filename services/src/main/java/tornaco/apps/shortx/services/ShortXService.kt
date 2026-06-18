@@ -580,7 +580,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         override fun onBrowserIntercept(url: String, sourceAppPkg: String) {
             enforceCallingPermissions()
             val uri = android.net.Uri.parse(url)
-            shortXContext.rule.publishFact(
+            shortXContext.rule.publishFactAwait(
                 "onBrowserIntercept",
                 tornaco.apps.shortx.core.proto.fact.BrowserIntercept.newBuilder()
                     .build()

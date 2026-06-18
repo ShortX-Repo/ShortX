@@ -483,20 +483,61 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             val startTime = System.currentTimeMillis()
             logger.logOnDebug("publishFact, ${fact::class.java}: $reason")
             logger.logOnDebug("publishFact: $fact")
-            val anyMatch = engine.fire(
+            val result = engine.fire(
                 fact = fact,
                 rules = getAllEnabledRules(),
                 das = getAllDirectAction(),
                 initialContextDataLazy = initialContextDataLazy
             )
 
-            if (anyMatch) {
+            if (result.anyMatch) {
                 factPublishRecorder.add(fact.toFactPublishRecord(publishTimeMillis))
             }
 
             notifyInternalFactListeners(fact, initialContextDataLazy)
             val takenTime = System.currentTimeMillis() - startTime
             logger.d("publishFact, take time: $takenTime ms")
+        }
+    }
+
+    fun publishFactAwait(
+        reason: String,
+        fact: ProtoMessage,
+        initialContextDataLazy: () -> Map<String, Any>
+    ) {
+        val publishTimeMillis = System.currentTimeMillis()
+        val latch = CountDownLatch(1)
+        var firedJobs: List<kotlinx.coroutines.Job> = emptyList()
+        handler.postSafety("publishFactAwait") {
+            try {
+                val startTime = System.currentTimeMillis()
+                logger.logOnDebug("publishFactAwait, ${fact::class.java}: $reason")
+                logger.logOnDebug("publishFactAwait: $fact")
+                val result = engine.fire(
+                    fact = fact,
+                    rules = getAllEnabledRules(),
+                    das = getAllDirectAction(),
+                    initialContextDataLazy = initialContextDataLazy
+                )
+
+                if (result.anyMatch) {
+                    factPublishRecorder.add(fact.toFactPublishRecord(publishTimeMillis))
+                }
+                firedJobs = result.jobs
+
+                notifyInternalFactListeners(fact, initialContextDataLazy)
+                val takenTime = System.currentTimeMillis() - startTime
+                logger.d("publishFactAwait, fire take time: $takenTime ms")
+            } finally {
+                latch.countDown()
+            }
+        }
+        latch.await()
+        if (firedJobs.isNotEmpty()) {
+            runBlocking {
+                firedJobs.forEach { it.join() }
+            }
+            logger.d("publishFactAwait, all jobs completed for: $reason")
         }
     }
 
