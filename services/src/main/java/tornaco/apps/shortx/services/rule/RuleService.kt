@@ -619,6 +619,12 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     }
 
     fun deleteRule(ruleId: String) {
+        val existing = ruleSettingsStore.getRuleById(ruleId)
+        if (existing != null && existing.isLocked) {
+            logger.w("Cannot delete locked rule: $ruleId")
+            return
+        }
+
         // Disable first.
         setRuleEnabled(ruleId, false)
 
