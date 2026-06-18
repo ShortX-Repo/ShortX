@@ -265,6 +265,10 @@ fun KClass<out Fact>.factContextData(customContextDataKey: CustomContextDataKey 
             dats<ContextDataMapping.IncomingShare>(customContextDataKey)
         }
 
+        Fact.BrowserIntercept::class -> {
+            dats<ContextDataMapping.BrowserIntercept>(customContextDataKey)
+        }
+
         else -> {
             emptyList()
         }
