@@ -11,6 +11,7 @@ import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
+import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.RuleContextAndVars
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
@@ -29,28 +30,40 @@ object ParseQRCode : Actor {
         val compiledImagePath = d.imagePath.fallbackOnEmpty("").compileContextAndVars(contextAndVars)
 
         require(compiledImagePath.isNotEmpty()) { "Image path is empty." }
-        val file = File(compiledImagePath)
-        require(file.exists()) { "Image file does not exist: $compiledImagePath" }
+        val srcFile = File(compiledImagePath)
 
-        val bitmap = BitmapFactory.decodeFile(compiledImagePath)
-            ?: error("Failed to decode image: $compiledImagePath")
-
-        val width = bitmap.width
-        val height = bitmap.height
-        val pixels = IntArray(width * height)
-        bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
-        bitmap.recycle()
-
-        val binaryBitmap = BinaryBitmap(HybridBinarizer(RGBLuminanceSource(width, height, pixels)))
-        val result = MultiFormatReader().decode(binaryBitmap)
-        val qrText = result.text
-
-        params.contextData.add(
-            d.customContextDataKey.forKey(ContextDataMapping.ParseQRCode.qrCodeText.name)
-                .fallbackOnEmpty { ContextDataMapping.ParseQRCode.qrCodeText.name },
-            qrText
+        val tmpDir = File(Dirs.baseServerCacheDir(), "qrcode").apply { mkdirs() }
+        val tmpFile = File(tmpDir, "parse_${System.currentTimeMillis()}_${srcFile.name}")
+        CopyFile.copyFile(
+            shortXContext,
+            srcFile,
+            tmpFile,
+            false
         )
 
-        Actor.Res(qrText)
+        try {
+            val bitmap = BitmapFactory.decodeFile(tmpFile.absolutePath)
+                ?: error("Failed to decode image: $compiledImagePath")
+
+            val width = bitmap.width
+            val height = bitmap.height
+            val pixels = IntArray(width * height)
+            bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
+            bitmap.recycle()
+
+            val binaryBitmap = BinaryBitmap(HybridBinarizer(RGBLuminanceSource(width, height, pixels)))
+            val result = MultiFormatReader().decode(binaryBitmap)
+            val qrText = result.text
+
+            params.contextData.add(
+                d.customContextDataKey.forKey(ContextDataMapping.ParseQRCode.qrCodeText.name)
+                    .fallbackOnEmpty { ContextDataMapping.ParseQRCode.qrCodeText.name },
+                qrText
+            )
+
+            Actor.Res(qrText)
+        } finally {
+            tmpFile.delete()
+        }
     }
 }
