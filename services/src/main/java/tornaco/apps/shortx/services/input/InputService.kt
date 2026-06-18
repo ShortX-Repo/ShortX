@@ -145,10 +145,7 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         logger.w("onInputFilterStateChangedHandleTimes: $onInputFilterStateChangedHandleTimes")
         if (!isEnabled) {
             if (onInputFilterStateChangedHandleTimes > 100) {
-                shortXContext.watchDog.onFatalError(
-                    Throwable(),
-                    "Too many times: onInputFilterStateChangedHandleTimes"
-                )
+                logger.w("Too many times: onInputFilterStateChangedHandleTimes")
                 return
             }
             onInputFilterStateChangedHandleTimes += 1
