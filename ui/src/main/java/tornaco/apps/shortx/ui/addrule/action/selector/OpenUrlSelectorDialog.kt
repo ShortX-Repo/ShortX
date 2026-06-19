@@ -23,6 +23,8 @@ import androidx.compose.ui.Modifier
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.i18n.I18N_R
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.base.SingleAppSelectorDialog
+import tornaco.apps.shortx.ui.addrule.base.rememberSingleAppPkgSelectorState
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -88,6 +90,11 @@ private fun OpenUrlSelector(state: OpenUrlSelectorState) {
             )
         }
     ) { paddingValues ->
+        val singleAppSelectorState = rememberSingleAppPkgSelectorState {
+            state.browserPkg = it.pkg.pkgName
+        }
+        SingleAppSelectorDialog(state = singleAppSelectorState)
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -121,6 +128,11 @@ private fun OpenUrlSelector(state: OpenUrlSelectorState) {
                             fallback = "Browser package name (optional, blank = system default)"
                         )
                     )
+                },
+                trailingIcon = {
+                    IconButton(onClick = { singleAppSelectorState.show() }) {
+                        RemixIcon(remixName = Remix.System.search_2_line)
+                    }
                 },
                 showSymbolButton = true,
                 modifier = Modifier.fillMaxWidth()

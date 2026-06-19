@@ -118,6 +118,71 @@ This allows service-driven UI such as:
 
 to use the same translation keys as the main app UI.
 
+## Compile-Time Key Constants (I18N_R)
+
+All i18n keys have compile-time constant definitions generated automatically from the JSON translation files.
+
+### How it works
+
+A Gradle task `generateI18NR` in:
+
+- `buildSrc/src/main/kotlin/tornaco/project/android/shortx/GenerateI18NR.kt`
+
+reads all keys from `ui/src/main/assets/i18n/en-US/*.json` and generates:
+
+- `out/core-api/generated/i18n/tornaco/apps/shortx/core/i18n/I18N_R.kt`
+
+This file is added to `core-api`'s source sets and compiled as part of `core-api`. Since both `ui` and `services` depend on `core-api`, the constants are available everywhere.
+
+The task runs automatically before `compileKotlin` via the dependency declared in `core-api/build.gradle.kts`.
+
+### Key naming convention
+
+JSON keys are transformed to Kotlin constant names by:
+
+- replacing `.` `-` `:` with `_`
+- uppercasing everything
+
+Examples:
+
+| JSON key | Constant |
+|---|---|
+| `ui.privacy.statement.title` | `I18N_R.UI_PRIVACY_STATEMENT_TITLE` |
+| `ui.sort.by_name` | `I18N_R.UI_SORT_BY_NAME` |
+| `ui.settings.http:chucker` | `I18N_R.UI_SETTINGS_HTTP_CHUCKER` |
+
+### How to use I18N_R
+
+Import:
+
+```kotlin
+import tornaco.apps.shortx.core.i18n.I18N_R
+```
+
+In Compose UI:
+
+```kotlin
+val i18n = LocalI18N.current
+i18n[I18N_R.UI_COMMON_DELETE]
+i18n[I18N_R.UI_SEARCH_TITLE_SEARCH_N_ITEMS, mapOf("count" to "42")]
+```
+
+In services:
+
+```kotlin
+i18NIns[I18N_R.UI_COMMON_DELETE]
+```
+
+### When to regenerate
+
+Run `./gradlew :core-api:generateI18NR` after adding new keys to the JSON files. Normal builds do this automatically, but if you only changed JSON and want to update IDE completion, run the task manually.
+
+### Why use I18N_R instead of raw strings
+
+- **Compile-time safety**: a typo in `I18N_R.UI_COMMO_DELETE` fails to compile. A typo in `"ui.commo.delete"` silently shows the key as text at runtime.
+- **IDE support**: autocomplete, find usages, and rename refactoring work on constants.
+- **Single source of truth**: the JSON file defines the key set, the generated file mirrors it.
+
 ## Compose Integration
 
 In the Compose UI layer, translations are exposed through:
@@ -130,7 +195,7 @@ Specifically:
 
 This lets composables call:
 
-- `LocalI18N.current["ui.some.key"]`
+- `LocalI18N.current[I18N_R.UI_SOME_KEY]`
 
 View models and base context models also carry `i18NIns`, so non-composable UI logic can use the same lookup path.
 
@@ -195,17 +260,20 @@ So today, the repo appears to rely on checked-in asset files rather than refresh
 - UI lowercases keys on load, services do not, which is inconsistent
 - the build sync task is present but not active in normal builds
 - because the main strings are not classic Android string resources, Android tooling support is weaker than with `strings.xml`
+- if a new key is added to JSON but `generateI18NR` is not re-run, the constant will be missing until the next build
 
 ## Practical Reading Guide
 
 If you want to understand or change i18n behavior, read these files in order:
 
 1. `core-api/src/main/java/tornaco/apps/shortx/core/I18N.kt`
-2. `ui/src/main/java/tornaco/apps/shortx/ui/base/I18NImpl.kt`
-3. `services/src/main/java/tornaco/apps/shortx/services/ui/I18NImpl.kt`
-4. `ui/src/main/res/values*/i18n.xml`
-5. `ui/src/main/assets/i18n/**`
-6. `buildSrc/src/main/kotlin/tornaco/project/android/shortx/GetI18N.kt`
+2. `buildSrc/src/main/kotlin/tornaco/project/android/shortx/GenerateI18NR.kt`
+3. `out/core-api/generated/i18n/tornaco/apps/shortx/core/i18n/I18N_R.kt` (generated)
+4. `ui/src/main/java/tornaco/apps/shortx/ui/base/I18NImpl.kt`
+5. `services/src/main/java/tornaco/apps/shortx/services/ui/I18NImpl.kt`
+6. `ui/src/main/res/values*/i18n.xml`
+7. `ui/src/main/assets/i18n/**`
+8. `buildSrc/src/main/kotlin/tornaco/project/android/shortx/GetI18N.kt`
 
 ## Key Insight
 
