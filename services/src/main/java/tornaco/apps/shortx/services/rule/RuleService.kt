@@ -756,7 +756,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         // Skip subscription check if only isLocked field is changed
         val isOnlyLockChanged = existing != null && 
                 unMaskedDA.isLocked != existing.isLocked &&
-                unMaskedDA.toBuilder().setIsLocked(existing.isLocked).clearExtras().build() == existing
+                unMaskedDA.toBuilder().setIsLocked(existing.isLocked).build() == existing
         
         if (!isOnlyLockChanged) {
             // Check Subscribe state.
